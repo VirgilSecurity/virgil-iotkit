@@ -33,3 +33,65 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
+
+
+# ---------------------------------------------------------------------------
+#   Helper modules
+# ---------------------------------------------------------------------------
+include("crypto/cmake/clangformat.cmake")
+
+
+# ---------------------------------------------------------------------------
+#   Version options
+# ---------------------------------------------------------------------------
+set(VIRGIL_IOT_SDK_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
+
+file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil-iot-sdk-VERSION}")
+
+if(VIRGIL_IOT_SDK_VERSION_LABEL)
+    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
+endif()
+
+file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
+
+
+# ---------------------------------------------------------------------------
+#   Build options
+# ---------------------------------------------------------------------------
+
+#
+# Test
+#
+option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
+
+#
+# Features
+#
+option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" OFF)
+option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
+option(VIRGIL_IOT_PROVISION "Enable 'provision'" OFF)
+option(VIRGIL_IOT_SECBOX "Enable 'security box'" OFF)
+option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+
+
+# ---------------------------------------------------------------------------
+#   Dependencies / thirdparty libraries
+# ---------------------------------------------------------------------------
+
+#
+#   Virgil crypto
+#
+set(ENABLE_TESTING OFF CACHE BOOL "On/Off integration tests." FORCE)
+set(VIRGIL_C_TESTING OFF CACHE BOOL "On/Off C library integration tests." FORCE)
+set(VIRGIL_LIB_PYTHIA OFF CACHE BOOL "Build 'pythia' library" FORCE)
+set(VIRGIL_LIB_ED25519 OFF CACHE BOOL "Build 'ed25519' library" FORCE)
+set(VIRGIL_LIB_RATCHET OFF CACHE BOOL "Build 'ratchet' library" FORCE)
+set(VIRGIL_LIB_PHE OFF CACHE BOOL "Build 'phe' library" FORCE)
+set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
+set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
+set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
+
