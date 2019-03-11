@@ -1,0 +1,33 @@
+#####
+build*/
+install*/
+.depends_cache/
+codegen/generated/
+codegen/test/gsl/
+
+#####
+# OS X temporary files that should never be committed
+
+.DS_Store
+*.swp
+*.lock
+profile
+
+#####
+# CLion
+.idea
+cmake-build-*/
+
+####
+# Sublime Text 3
+*.sublime-workspace
+
+####
+# Visual Studio (VisualGDB)
+Debug*/
+gcc*
+obj/
+bin/
+.vs/
+
+Carthage
