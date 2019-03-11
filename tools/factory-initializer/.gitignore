@@ -1,0 +1,43 @@
+#####
+*build*/
+*install*/
+origin_lib/
+examples_bin/
+.depends_cache/
+
+#####
+# OS X temporary files that should never be committed
+
+.DS_Store
+*.swp
+*.lock
+profile
+
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff:
+.idea/*
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+CMakeCache.txt
+CMakeCache/
+CMakeTmp/
+CMakeFiles/
+depends/
+virgil-sdk-cpp/
+crypto/
+Makefile
