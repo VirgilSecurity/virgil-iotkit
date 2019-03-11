@@ -1,0 +1,3 @@
+[submodule "crypto"]
+	path = crypto
+	url = git@github.com:VirgilSecurity/virgil-crypto-c.git
