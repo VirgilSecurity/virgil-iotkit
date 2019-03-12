@@ -7,7 +7,7 @@ import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from virgil_keymanager import __version__
-from virgil_keymanager.core_utils.config_loader import ConfigLoader
+from virgil_keymanager.core_utils.config import Config
 from virgil_keymanager.external_utils.atmel_dongles_controller import AtmelDonglesController
 from .ui import UI
 from .utility_manager import UtilityManager
@@ -54,48 +54,22 @@ class Core(object):
             self.__util_manager.run_utility()
 
     def __load_configs(self):
-        # Try load config from argument variable, if arg not set try from default path
-        try:
-            if self.__args['config']:
-                config_path = os.path.abspath(self.__args['config'])
-            else:
-                if sys.platform == "win32":
-                    config_path = os.path.join(self.__get_home_path(), "keymanager\\keymanager.conf")
-                else:
-                    home_config_path = os.path.join(self.__get_home_path(), ".keymanager", "keymanager.conf")
-                    if os.path.exists(home_config_path):
-                        config_path = home_config_path
-                    else:
-                        config_path = "/etc/keymanager/keymanager.conf"
-
-            config = ConfigLoader(config_path).get_config()
-
-            if config:
-                self.__check_configs(config)
-                return config
-            else:
-                sys.exit("[FATAL]: Configuration file is empty! Please setup config at {}".format(config_path))
-        except IOError as error:
-            sys.exit(error)
-
-    def __check_configs(self, config):
-        section = "MAIN"
-        important_keys_main = [
-            "storage_path",
-            "log_path",
-            "dongles_cli_path",
-            "dongles_cli_emulator_path",
-            "secure_transfer_keys_path",
-            "secure_transfer_keys_passwd",
-            "dev_mode_folder_path",
-            "release_trust_list_folder"
-        ]
-        if section not in config.keys():
-            sys.exit("[FATAL]: Missing section {} in config".format(section))
-
-        for important_key in important_keys_main:
-            if important_key not in config["MAIN"].keys():
-                sys.exit("Missing config parameter {} in section MAIN".format(important_key))
+        config_path = self.__args.get('config', None)
+        config = Config(config_path)
+        required_content = {
+            "MAIN": [
+                "storage_path",
+                "log_path",
+                "dongles_cli_path",
+                "dongles_cli_emulator_path",
+                "secure_transfer_keys_path",
+                "secure_transfer_keys_passwd",
+                "dev_mode_folder_path",
+                "release_trust_list_folder"
+            ]
+        }
+        config.check_content(required_content)
+        return config
 
     @staticmethod
     def __get_home_path():
