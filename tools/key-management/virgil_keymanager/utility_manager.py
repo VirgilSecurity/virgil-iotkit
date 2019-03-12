@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 from io import BytesIO
+from contextlib import contextmanager
 
 from PyCRC.CRCCCITT import CRCCCITT
 from prettytable import PrettyTable
@@ -81,196 +82,38 @@ class UtilityManager(object):
         self.__logger.info("initialization successful")
 
         # Main db's plugs
-        self.__logger.info("UpperLevelKeys initialization")
-        self.__logger.debug("UpperLevelKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "UpperLevelKeys")
-        ))
-        if self.__dev_mode:
-            self.__upper_level_pub_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "UpperLevelKeys")
-            )
-        else:
-            self.__upper_level_pub_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "UpperLevelKeys"),
-                storage_type=SignedByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": None
-                }
-            )
-        self.__logger.info("TrustListPubKeys initialization")
-        self.__logger.debug("TrustListPubKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "TrustListPubKeys")
-        ))
-        if self.__dev_mode:
-            self.__trust_list_pub_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "TrustListPubKeys")
-            )
-        else:
-            self.__trust_list_pub_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "TrustListPubKeys"),
-                storage_type=SignedByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("InternalPrivateKeys initialization")
-        self.__logger.debug("InternalPrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "InternalPrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__internal_private_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "InternalPrivateKeys")
-            )
-        else:
-            self.__internal_private_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "InternalPrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("FactoryPrivateKeys initialization")
-        self.__logger.debug("FactoryPrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "FactoryPrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__factory_priv_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "FactoryPrivateKeys")
-            )
-        else:
-            self.__factory_priv_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "FactoryPrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("CloudPrivateKeys initialization")
-        self.__logger.debug("CloudPrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "CloudPrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__cloud_private_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "CloudPrivateKeys")
-            )
-        else:
-            self.__cloud_private_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "CloudPrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("TrustListVersions initialization")
-        self.__logger.debug("TrustListVersions db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "TrustListVersions")
-        ))
-        if self.__dev_mode:
-            self.__trust_list_version_db = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "TrustListVersions")
-            )
-        else:
-            self.__trust_list_version_db = TLVersionTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "TrustListVersions"),
-                storage_type=SignedByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
+        self.__upper_level_pub_keys = self.__init_storage(
+            "UpperLevelKeys", storage_class=KeysTinyDBStorage, storage_type=SignedByteStorage, no_upper_level_db=True
+        )
+        self.__trust_list_pub_keys = self.__init_storage(
+            "TrustListPubKeys", storage_class=KeysTinyDBStorage, storage_type=SignedByteStorage
+        )
+        self.__internal_private_keys = self.__init_storage(
+            "InternalPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__factory_priv_keys = self.__init_storage(
+            "FactoryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__cloud_private_keys = self.__init_storage(
+            "CloudPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__trust_list_version_db = self.__init_storage(
+            "TrustListVersions", storage_class=TLVersionTinyDBStorage, storage_type=SignedByteStorage
+        )
 
         # private keys db's for DevMode
-        self.__logger.info("FirmwarePrivateKeys initialization")
-        self.__logger.debug("FirmwarePrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "FirmwarePrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__firmware_priv_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "FirmwarePrivateKeys")
-            )
-        else:
-            self.__firmware_priv_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "FirmwarePrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("AuthPrivateKeys initialization")
-        self.__logger.debug("AuthPrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "AuthPrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__auth_private_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "AuthPrivateKeys")
-            )
-        else:
-            self.__auth_private_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "AuthPrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("RecoveryPrivateKeys initialization")
-        self.__logger.debug("RecoveryPrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "RecoveryPrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__recovery_private_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "RecoveryPrivateKeys")
-            )
-        else:
-            self.__recovery_private_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "RecoveryPrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
-        self.__logger.info("initialization successful")
-        self.__logger.info("TLServicePrivateKeys initialization")
-        self.__logger.debug("TLServicePrivateKeys db at {}".format(
-            os.path.join(self.__key_storage_path, "db", "TLServicePrivateKeys")
-        ))
-        if self.__dev_mode:
-            self.__trust_list_service_private_keys = DBStorage(
-                os.path.join(self.__key_storage_path, "db", "TLServicePrivateKeys")
-            )
-        else:
-            self.__trust_list_service_private_keys = KeysTinyDBStorage(
-                os.path.join(self.__key_storage_path, "db", "TLServicePrivateKeys"),
-                storage_type=CryptoByteStorage,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": self.__upper_level_pub_keys
-                }
-            )
+        self.__firmware_priv_keys = self.__init_storage(
+            "FirmwarePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__auth_private_keys = self.__init_storage(
+            "AuthPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__recovery_private_keys = self.__init_storage(
+            "RecoveryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
+        self.__trust_list_service_private_keys = self.__init_storage(
+            "TLServicePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
+        )
         self.__dongle_chooser = DongleChooser(
             self.__ui,
             self.__atmel,
@@ -294,6 +137,30 @@ class UtilityManager(object):
         self.__trust_list_service_key_generator = AtmelTrustListServiceKeyGenerator(self.__ui, self.__atmel)
         self.__trust_list_generator = TrustListGenerator(self.__ui, self.__trust_list_pub_keys, self.__atmel)
         self.__logger.info("initialization successful")
+
+    def __init_storage(self, name, storage_class, storage_type, no_upper_level_db=False):
+
+        @contextmanager
+        def db_init_logs():
+            self.__logger.info("{} initialization".format(name))
+            self.__logger.debug("{} db at {}".format(name, storage_path))
+            yield
+            self.__logger.info("Initialization successful")
+
+        storage_path = os.path.join(self.__key_storage_path, "db", name)
+        with db_init_logs():
+            if self.__dev_mode:
+                return DBStorage(storage_path)
+            upper_level_keys = None if no_upper_level_db else self.__upper_level_pub_keys
+            return storage_class(
+                storage_path,
+                storage_type=storage_type,
+                storage_kwargs={
+                    "atmel": self.__atmel,
+                    "ui": self.__ui,
+                    "upper_level_keys_db": upper_level_keys
+                }
+            )
 
     def __generate_initial_keys(self):
         self.__logger.info("initial generation stage started")
