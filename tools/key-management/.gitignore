@@ -1,8 +1,7 @@
 .idea/
-test_fs/
+test_fs/*
 !test_fs/keymanager.conf
 !test_fs/keys
-!test_fs/_virgil_crypto_python.so
 *DS_STORE*
 
 # binary compilation
@@ -16,6 +15,7 @@ __pycache__/
 
 # C extensions
 *.so
+!test_fs/_virgil_crypto_python.so
 
 # Distribution / packaging
 .Python
