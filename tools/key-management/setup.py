@@ -1,8 +1,8 @@
-from soraa_keymanager import __version__, __author__
+from virgil_keymanager import __version__, __author__
 from setuptools import setup, find_packages
 
 setup(
-    name="soraa-keymanager",
+    name="virgil-keymanager",
     version=__version__,
     packages=find_packages(),
     install_requires=[
@@ -16,16 +16,16 @@ setup(
         'tinydb'
     ],
     package_data={
-        "soraa_keymanager": [
-            "external_utils/util/origin/soraa-dongles-cli",
-            "external_utils/util/emulator/soraa-dongles-cli"
+        "virgil_keymanager": [
+            "external_utils/util/origin/dongles-cli",
+            "external_utils/util/emulator/dongles-cli"
         ],
     },
     entry_points={
         'console_scripts':
             [
-                'keymanager = soraa_keymanager.__main__:main',
-                'dbconverter = soraa_keymanager.__main__:converter_main'
+                'keymanager = virgil_keymanager.__main__:main',
+                'dbconverter = virgil_keymanager.__main__:converter_main'
             ]
     },
     author=__author__,
@@ -39,6 +39,6 @@ setup(
         "Topic :: Security :: Cryptography",
         ],
     license="BSD",
-    description="Soraa key manager cli",
-    long_description="Soraa key manager cli",
+    description="Virgil key manager cli",
+    long_description="Virgil key manager cli",
 )

@@ -12,8 +12,8 @@ endef
 
 define clean_nuitka_build
 	@echo "Clean after nuitka build directory"
-	@if [ -d ./soraa-keymanager.build ]; then \
-		rm -r ./soraa-keymanager.build; \
+	@if [ -d ./virgil-keymanager.build ]; then \
+		rm -r ./virgil-keymanager.build; \
 	fi
 	@if [ -d ./db_converter.build ]; then \
 		rm -r ./db_converter.build; \
@@ -37,16 +37,16 @@ define clean_after_wheel
 endef
 
 build_nuitka:
-	nuitka --standalone --python-version=3.5 ./soraa-keymanager.py
-	cp ./test_fs/_virgil_crypto_python.so ./soraa-keymanager.dist/
+	nuitka --standalone --python-version=3.5 ./virgil-keymanager.py
+	cp ./test_fs/_virgil_crypto_python.so ./virgil-keymanager.dist/
 
 build_nuitka_converter:
 	nuitka --standalone --python-version=3.5 ./db_converter.py
-	rsync --ignore-existing ./db_converter.dist/* ./soraa-keymanager.dist/
+	rsync --ignore-existing ./db_converter.dist/* ./virgil-keymanager.dist/
 
 build_nuitka_buld_devmode:
 	nuitka --standalone --python-version=3.5 ./bulb_devmode.py
-	rsync --ignore-existing ./bulb_devmode.dist/* ./soraa-keymanager.dist/
+	rsync --ignore-existing ./bulb_devmode.dist/* ./virgil-keymanager.dist/
 
 wheel:
 	${PYTHON3} setup.py bdist_wheel --universal
