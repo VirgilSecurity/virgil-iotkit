@@ -4,6 +4,7 @@ import logging
 import os
 import psutil
 import sys
+from pathlib import Path
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from virgil_keymanager import __version__
@@ -18,7 +19,7 @@ class Core(object):
     def __init__(self):
         self._args = None
         self.__config = self.__load_configs()
-        self.pid_file_path = os.path.join(self.__get_home_path(), ".keymanager/keymanager.pid")
+        self.pid_file_path = os.path.join(str(Path.home()), '.keymanager', 'keymanager.pid')
         self._ui = None
         self.__dongles_mode = "emulator" if self.__args["emulator"] else "dongles"
         self.__skip_confirm = self.__args["skip_confirm"]
@@ -70,13 +71,6 @@ class Core(object):
         }
         config.check_content(required_content)
         return config
-
-    @staticmethod
-    def __get_home_path():
-        if sys.platform == "win32":
-            return os.environ(os.getenv('LOCALAPPDATA'), "")
-        else:
-            return os.getenv("HOME")
 
     def __is_have_run_instance(self):
         if os.path.exists(self.pid_file_path) and os.stat(self.pid_file_path).st_size != 0:

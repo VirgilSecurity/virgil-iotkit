@@ -17,22 +17,20 @@ from virgil_keymanager.core_utils import VirgilSignExtractor, DonglesCache, Dong
 from virgil_keymanager.core_utils.virgil_bridge import VirgilBridge
 from virgil_keymanager.data_types.key_pair_type import KeyPair
 from virgil_keymanager.external_utils.printer_controller import PrinterController
-from virgil_keymanager.generators.keys.atmel_factory_key import AtmelFactoryKeyGenerator
-from virgil_keymanager.generators.keys.atmel_firmware_key import AtmelFirmwareKeyGenerator
-from virgil_keymanager.generators.keys.atmel_trustlist_service_key import AtmelTrustListServiceKeyGenerator
-from virgil_keymanager.generators.keys.virgil_auth_internal_key import VirgilAuthInternalKeyGenerator
-from virgil_keymanager.generators.keys.virgil_cloud_key import VirgilCloudKeyGenerator
-from virgil_keymanager.generators.keys.virgil_firmaware_internal_key import VirgilFirmwareInternalKeyGenerator
+from virgil_keymanager.generators import TrustListGenerator
+from virgil_keymanager.generators.keys.atmel import (
+    AtmelFirmwareKeyGenerator,
+    AtmelRecoveryKeyGenerator,
+    AtmelAuthKeyGenerator,
+    AtmelFactoryKeyGenerator,
+    AtmelTrustListServiceKeyGenerator
+)
+from virgil_keymanager.generators.keys.virgil import VirgilKeyGenerator
 from virgil_keymanager.storage import FileKeyStorage
 from virgil_keymanager.storage.db_storage import DBStorage
 from virgil_keymanager.storage.keys_tinydb_storage import KeysTinyDBStorage
 from virgil_keymanager.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
 from virgil_keymanager.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
-from .generators import TrustListGenerator
-from .generators.keys import AtmelAuthKeyGenerator
-from .generators.keys import AtmelRecoveryKeyGenerator
-from .generators.keys import VirgilFactoryKeyGenerator
-from .generators.keys import VirgilSDMPDKeyGenerator
 
 
 class UtilityManager(object):
@@ -129,11 +127,11 @@ class UtilityManager(object):
         self.__recovery_key_generator = AtmelRecoveryKeyGenerator(self.__ui, self.__atmel)
         self.__factory_key_generator = AtmelFactoryKeyGenerator(self.__ui, self.__atmel)
         self.__auth_key_generator = AtmelAuthKeyGenerator(self.__ui, self.__atmel)
-        self.__auth_internal_key_generator = VirgilAuthInternalKeyGenerator()
+        self.__auth_internal_key_generator = VirgilKeyGenerator()
         self.__firmware_key_generator = AtmelFirmwareKeyGenerator(self.__ui, self.__atmel)
-        self.__firmware_internal_key_generator = VirgilFirmwareInternalKeyGenerator()
-        self.__sdmpd_key_generator = VirgilSDMPDKeyGenerator()
-        self.__cloud_key_generator = VirgilCloudKeyGenerator()
+        self.__firmware_internal_key_generator = VirgilKeyGenerator()
+        self.__sdmpd_key_generator = VirgilKeyGenerator()
+        self.__cloud_key_generator = VirgilKeyGenerator()
         self.__trust_list_service_key_generator = AtmelTrustListServiceKeyGenerator(self.__ui, self.__atmel)
         self.__trust_list_generator = TrustListGenerator(self.__ui, self.__trust_list_pub_keys, self.__atmel)
         self.__logger.info("initialization successful")
@@ -533,8 +531,7 @@ class UtilityManager(object):
 
     def __generate_sdmpd_key(self):
         self.__ui.print_message("\nGenerating SDMPD Key...")
-        generator = VirgilFactoryKeyGenerator()
-        key_pair = generator.generate()
+        key_pair = self.__sdmpd_key_generator.generate()
         self.__ui.print_message("Generation finished")
         self.__ui.print_message("Auth and TL Service dongles can be unplugged")
         return key_pair

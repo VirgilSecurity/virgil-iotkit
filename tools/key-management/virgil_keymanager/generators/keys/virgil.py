@@ -2,7 +2,7 @@ from virgil_keymanager.data_types import KeyPair
 from virgil_crypto import VirgilKeyPair
 
 
-class Virgil(object):
+class VirgilKeyGenerator(object):
 
     def generate(self):
         virgil_key_pair = VirgilKeyPair.generate(VirgilKeyPair.Type_EC_SECP256R1)
