@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/registrator/XLSXIOReader.h>
+#include <virgil/iot/registrator/XLSXIOReader.h>
 
 using virgil::soraa::registrator::XLSXIOReader;
 

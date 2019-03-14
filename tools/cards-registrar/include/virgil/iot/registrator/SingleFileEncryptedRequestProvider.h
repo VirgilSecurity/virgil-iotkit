@@ -34,42 +34,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
-#define VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
 
+#include <fstream>
 #include <memory>
+#include <list>
 
-#include <virgil/soraa/registrator/ParamsInterface.h>
-#include <virgil/soraa/registrator/CardsServiceInfo.h>
-
+#include <virgil/sdk/crypto/Crypto.h>
+#include <virgil/iot/registrator/Common.h>
+#include <virgil/iot/registrator/RequestProviderInterface.h>
 
 namespace virgil {
-    namespace soraa {
-        namespace registrator {
-            class ParamsCommadLine: public ParamsInterface {
-            public:
-                ParamsCommadLine(int argc, char *argv[]);
-                
-                // Used for decryption of file with requests for Cards registration
-                std::string dataFile() const final;
-                bool isXlsInputFile() const final;
-                VirgilByteArray fileDecryptionPrivateKey() const final;
-                std::string fileDecryptionPrivateKeyPassword() const final;
-                VirgilByteArray fileSenderPublicKey() const final;
-                
-                // Info for work with Virgil Cards Service
-                CardsServiceInfo cardsServiceInfo() const final;
+namespace soraa {
+    namespace registrator {
+        class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
+        public:
+            SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
+                                               const sdk::crypto::keys::PrivateKey &privateKey,
+                                               const sdk::crypto::keys::PublicKey &publicKey,
+                                               const std::string &filename,
+                                               bool isXlsInputFile);
 
-            private:
-                bool xlsInputFile_;
-                std::string dataFile_;
-                VirgilByteArray fileDecryptionPrivateKey_;
-                std::string fileDecryptionPrivateKeyPassword_;
-                VirgilByteArray fileSenderPublicKey_;
-                CardsServiceInfo cardsServiceInfo_;
-            };
-        }
+            std::string getData() override;
+            std::string getSerialNumbers() override;
+            bool hasData() const override;
+
+        private:
+            std::list <std::string> cardRequests_;
+            std::list <std::string> serialNumbers_;
+        };
     }
 }
+}
 
-#endif //VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H

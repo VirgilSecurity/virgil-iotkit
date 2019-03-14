@@ -39,8 +39,8 @@
 
 #include <memory>
 
-#include <virgil/soraa/registrator/RequestProviderInterface.h>
-#include <virgil/soraa/registrator/CardsServiceInfo.h>
+#include <virgil/iot/registrator/RequestProviderInterface.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
 
 using virgil::soraa::registrator::CardsServiceInfo;
 

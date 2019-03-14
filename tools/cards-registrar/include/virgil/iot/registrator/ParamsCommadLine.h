@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,34 +34,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#define VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
 
-#include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/soraa/registrator/CardsServiceInfo.h>
+#include <memory>
 
-using virgil::soraa::registrator::CardsServiceInfo;
-using virgil::sdk::crypto::Crypto;
-using virgil::crypto::VirgilByteArray;
+#include <virgil/iot/registrator/ParamsInterface.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
+
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class ParamsInterface {
-        public:
-            virtual ~ParamsInterface() = default;
-            
-            virtual std::string dataFile() const = 0;
-            virtual bool isXlsInputFile() const = 0;
-            virtual VirgilByteArray fileDecryptionPrivateKey() const = 0;
-            virtual std::string fileDecryptionPrivateKeyPassword() const = 0;
-            virtual VirgilByteArray fileSenderPublicKey() const = 0;
-            
-            // Info for work with Virgil Cards Service
-            virtual CardsServiceInfo cardsServiceInfo() const = 0;
-        };
+    namespace soraa {
+        namespace registrator {
+            class ParamsCommadLine: public ParamsInterface {
+            public:
+                ParamsCommadLine(int argc, char *argv[]);
+                
+                // Used for decryption of file with requests for Cards registration
+                std::string dataFile() const final;
+                bool isXlsInputFile() const final;
+                VirgilByteArray fileDecryptionPrivateKey() const final;
+                std::string fileDecryptionPrivateKeyPassword() const final;
+                VirgilByteArray fileSenderPublicKey() const final;
+                
+                // Info for work with Virgil Cards Service
+                CardsServiceInfo cardsServiceInfo() const final;
+
+            private:
+                bool xlsInputFile_;
+                std::string dataFile_;
+                VirgilByteArray fileDecryptionPrivateKey_;
+                std::string fileDecryptionPrivateKeyPassword_;
+                VirgilByteArray fileSenderPublicKey_;
+                CardsServiceInfo cardsServiceInfo_;
+            };
+        }
     }
 }
-}
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#endif //VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H

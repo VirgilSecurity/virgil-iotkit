@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/registrator/SingleFileEncryptedRequestProvider.h>
-#include <virgil/soraa/registrator/XLSXIOReader.h>
+#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
+#include <virgil/iot/registrator/XLSXIOReader.h>
 #include <iostream>
 #include <iterator>
 

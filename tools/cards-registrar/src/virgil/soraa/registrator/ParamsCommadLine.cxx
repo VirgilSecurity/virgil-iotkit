@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/registrator/ParamsCommadLine.h>
-#include <virgil/soraa/registrator/Filesystem.h>
+#include <virgil/iot/registrator/ParamsCommadLine.h>
+#include <virgil/iot/registrator/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
 using virgil::soraa::registrator::ParamsCommadLine;

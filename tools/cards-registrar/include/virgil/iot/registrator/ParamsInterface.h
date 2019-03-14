@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2017 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,38 +34,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
-
-#include <fstream>
-#include <memory>
-#include <list>
+#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
 
 #include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/soraa/registrator/Common.h>
-#include <virgil/soraa/registrator/RequestProviderInterface.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
+
+using virgil::soraa::registrator::CardsServiceInfo;
+using virgil::sdk::crypto::Crypto;
+using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
 namespace soraa {
     namespace registrator {
-        class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
+        class ParamsInterface {
         public:
-            SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
-                                               const sdk::crypto::keys::PrivateKey &privateKey,
-                                               const sdk::crypto::keys::PublicKey &publicKey,
-                                               const std::string &filename,
-                                               bool isXlsInputFile);
-
-            std::string getData() override;
-            std::string getSerialNumbers() override;
-            bool hasData() const override;
-
-        private:
-            std::list <std::string> cardRequests_;
-            std::list <std::string> serialNumbers_;
+            virtual ~ParamsInterface() = default;
+            
+            virtual std::string dataFile() const = 0;
+            virtual bool isXlsInputFile() const = 0;
+            virtual VirgilByteArray fileDecryptionPrivateKey() const = 0;
+            virtual std::string fileDecryptionPrivateKeyPassword() const = 0;
+            virtual VirgilByteArray fileSenderPublicKey() const = 0;
+            
+            // Info for work with Virgil Cards Service
+            virtual CardsServiceInfo cardsServiceInfo() const = 0;
         };
     }
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H

@@ -103,4 +103,4 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 #
 #   Factory initalizer
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/factory-initializer)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
