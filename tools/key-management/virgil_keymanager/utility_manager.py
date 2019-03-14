@@ -19,11 +19,9 @@ from virgil_keymanager.data_types.key_pair_type import KeyPair
 from virgil_keymanager.external_utils.printer_controller import PrinterController
 from virgil_keymanager.generators import TrustListGenerator
 from virgil_keymanager.generators.keys.atmel import (
-    AtmelFirmwareKeyGenerator,
+    AtmelSignedKeyGenerator,
     AtmelRecoveryKeyGenerator,
-    AtmelAuthKeyGenerator,
-    AtmelFactoryKeyGenerator,
-    AtmelTrustListServiceKeyGenerator
+    AtmelFactoryKeyGenerator
 )
 from virgil_keymanager.generators.keys.virgil import VirgilKeyGenerator
 from virgil_keymanager.storage import FileKeyStorage
@@ -126,13 +124,13 @@ class UtilityManager(object):
         self.__logger.info("Keys and TrustList generators initialization")
         self.__recovery_key_generator = AtmelRecoveryKeyGenerator(self.__ui, self.__atmel)
         self.__factory_key_generator = AtmelFactoryKeyGenerator(self.__ui, self.__atmel)
-        self.__auth_key_generator = AtmelAuthKeyGenerator(self.__ui, self.__atmel)
+        self.__auth_key_generator = AtmelSignedKeyGenerator("auth", self.__ui, self.__atmel)
         self.__auth_internal_key_generator = VirgilKeyGenerator()
-        self.__firmware_key_generator = AtmelFirmwareKeyGenerator(self.__ui, self.__atmel)
+        self.__firmware_key_generator = AtmelSignedKeyGenerator("firmware", self.__ui, self.__atmel)
         self.__firmware_internal_key_generator = VirgilKeyGenerator()
         self.__sdmpd_key_generator = VirgilKeyGenerator()
         self.__cloud_key_generator = VirgilKeyGenerator()
-        self.__trust_list_service_key_generator = AtmelTrustListServiceKeyGenerator(self.__ui, self.__atmel)
+        self.__trust_list_service_key_generator = AtmelSignedKeyGenerator("tl_service", self.__ui, self.__atmel)
         self.__trust_list_generator = TrustListGenerator(self.__ui, self.__trust_list_pub_keys, self.__atmel)
         self.__logger.info("initialization successful")
 
