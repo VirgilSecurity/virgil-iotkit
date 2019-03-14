@@ -95,3 +95,12 @@ set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
+
+# ---------------------------------------------------------------------------
+#   Tools
+# ---------------------------------------------------------------------------
+
+#
+#   Factory initalizer
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/factory-initializer)

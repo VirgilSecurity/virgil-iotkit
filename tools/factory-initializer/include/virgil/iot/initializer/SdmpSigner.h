@@ -34,25 +34,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H
+#define VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H
 
-#include <virgil/soraa/initializer/Common.h>
+#include <memory>
+
+#include <virgil/iot/initializer/SignerInterface.h>
+#include <virgil/iot/initializer/SdmpProcessor.h>
+#include <virgil/sdk/crypto/keys/PrivateKey.h>
+
+using virgil::soraa::initializer::SdmpProcessor;
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class SignerInterface {
+        class SdmpSigner: public SignerInterface {
         public:
-            virtual VirgilByteArray sign(const VirgilByteArray &data) = 0;
-            virtual bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) = 0;
-            virtual uint16_t signerId() = 0;
-            virtual VirgilByteArray publicKeyFull() = 0;
+            SdmpSigner(std::shared_ptr<SdmpProcessor> processor);
 
-            virtual ~SignerInterface() = default;
+            VirgilByteArray sign(const VirgilByteArray &data) override;
+            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+            uint16_t signerId() override;
+            VirgilByteArray publicKeyFull() override;
+
+        private:
+            std::shared_ptr<SdmpProcessor> processor_;
         };
     }
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
+#endif //VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H

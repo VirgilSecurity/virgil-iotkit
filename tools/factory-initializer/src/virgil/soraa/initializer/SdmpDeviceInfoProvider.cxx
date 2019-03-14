@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/SdmpDeviceInfoProvider.h>
+#include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
 #include <virgil/sdk/crypto/Crypto.h>
 #include <externals/json.hpp>
 

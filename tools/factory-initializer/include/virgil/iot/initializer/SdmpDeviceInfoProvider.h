@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2017 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,31 +34,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
-#define VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
+#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
 
-#include <memory>
+#include <unordered_map>
+#include <sstream>
+#include <iomanip>
 
-#include <virgil/soraa/initializer/PublicKeyProviderInterface.h>
-#include <virgil/sdk/crypto/keys/PublicKey.h>
-#include <virgil/soraa/initializer/SdmpProcessor.h>
+#include <virgil/iot/initializer/DeviceInfoProviderInterface.h>
+#include <virgil/iot/initializer/SdmpProcessor.h>
 
 using virgil::soraa::initializer::SdmpProcessor;
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class SdmpPublicKeyProvider: public PublicKeyProviderInterface {
+        class SdmpDeviceInfoProvider: public DeviceInfoProviderInterface {
         public:
-            SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor);
-
-            VirgilByteArray publicKey() final;
+            SdmpDeviceInfoProvider(const ProvisioningInfo & provisioningInfo,
+                                   std::shared_ptr<SdmpProcessor> processor);
+            
+            virtual DeviceInfo deviceInfo() final;
+            virtual std::string payloadJson() final;
 
         private:
+            std::unordered_map<std::string, std::string> payload();
+            ProvisioningInfo provisioningInfo_;
+            DeviceType deviceType_;
             std::shared_ptr<SdmpProcessor> processor_;
+            
+            static const std::string kIdentityType;
+            static const std::string kDeviceTypeLamp;
+            static const std::string kDeviceTypeSnap;
+            static const std::string kDeviceTypeGateway;
+            static const std::string kDeviceTypeNCM;
+            static const std::string kDeviceTypeUnknown;
+
+            template< typename T >
+            std::string _hex(T i)
+            {
+                std::stringbuf buf;
+                std::ostream os(&buf);
+
+                os << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2)
+                   << std::hex << i;
+
+                return buf.str().c_str();
+            }
         };
     }
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H

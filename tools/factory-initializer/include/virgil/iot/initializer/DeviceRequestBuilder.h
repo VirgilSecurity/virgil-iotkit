@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2017 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,24 +34,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
 
-#include <virgil/soraa/initializer/DeviceInfo.h>
+#include <memory>
+
+#include <virgil/iot/initializer/DeviceInfoProviderInterface.h>
+#include <virgil/iot/initializer/PublicKeyProviderInterface.h>
+#include <virgil/iot/initializer/DeviceRequestBuilderInterface.h>
+#include <virgil/iot/initializer/SignerInterface.h>
+#include <virgil/sdk/crypto/Crypto.h>
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class DeviceInfoProviderInterface {
+        class DeviceRequestBuilder: public DeviceRequestBuilderInterface {
         public:
-            virtual DeviceInfo deviceInfo() = 0;
-            virtual std::string payloadJson() = 0;
+            DeviceRequestBuilder(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
+                                 std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider,
+                                 std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider,
+                                 std::shared_ptr<SignerInterface> signer);
 
-            DeviceInfoProviderInterface() = default;
-            virtual ~DeviceInfoProviderInterface() = default;
+            std::string buildRequest() override;
+            std::string getDeviceInfo() override;
+
+        private:
+            std::shared_ptr<virgil::sdk::crypto::Crypto> crypto_;
+            std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider_;
+            std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider_;
+            std::shared_ptr<SignerInterface> signer_;
         };
     }
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H

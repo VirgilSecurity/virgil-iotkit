@@ -34,38 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
-#define VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#define VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
 
-#include <fstream>
 #include <memory>
 
-#include <virgil/sdk/crypto/keys/PrivateKey.h>
-#include <virgil/sdk/crypto/keys/PublicKey.h>
-
-#include <virgil/soraa/initializer/Common.h>
-#include <virgil/soraa/initializer/PersistenceManagerInterface.h>
+#include <virgil/iot/initializer/DeviceRequestBuilderInterface.h>
+#include <virgil/iot/initializer/PersistenceManagerInterface.h>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class SingleFileEncryptedPersistenceManager: public PersistenceManagerInterface {
-        public:
-            explicit SingleFileEncryptedPersistenceManager(const std::string &filename,
-                                                           std::shared_ptr<sdk::crypto::Crypto> crypto,
-                                                           sdk::crypto::keys::PrivateKey privateKey,
-                                                           std::vector<sdk::crypto::keys::PublicKey> publicKeys);
-
-            void persist(const std::string &data) override;
-
-        private:
-            std::string filename_;
-            std::shared_ptr<sdk::crypto::Crypto> crypto_;
-            sdk::crypto::keys::PrivateKey privateKey_;
-            std::vector<sdk::crypto::keys::PublicKey> publicKeys_;
-        };
+    namespace soraa {
+        namespace initializer {
+            class AssemblyLineProcessor {
+            public:
+                static void processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
+                                          PersistenceManagerInterface &persistenceManager,
+                                          PersistenceManagerInterface &deviceInfoPersistenceManager);
+            };
+        }
     }
 }
-}
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#endif //VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H

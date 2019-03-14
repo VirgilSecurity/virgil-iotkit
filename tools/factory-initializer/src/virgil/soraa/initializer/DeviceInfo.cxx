@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/DeviceInfo.h>
+#include <virgil/iot/initializer/DeviceInfo.h>
 #include <virgil/sdk/util/JsonUtils.h>
 
 using virgil::soraa::initializer::DeviceInfo;

@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/Filesystem.h>
+#include <virgil/iot/initializer/Filesystem.h>
 #include <virgil/crypto/VirgilByteArrayUtils.h>
 #include <fstream>
 #include <iostream>

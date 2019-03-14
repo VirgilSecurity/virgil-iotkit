@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2017 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,25 +34,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
-#define VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
 
-#include <memory>
-
-#include <virgil/soraa/initializer/DeviceRequestBuilderInterface.h>
-#include <virgil/soraa/initializer/PersistenceManagerInterface.h>
+#include <virgil/iot/initializer/DeviceInfo.h>
 
 namespace virgil {
-    namespace soraa {
-        namespace initializer {
-            class AssemblyLineProcessor {
-            public:
-                static void processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
-                                          PersistenceManagerInterface &persistenceManager,
-                                          PersistenceManagerInterface &deviceInfoPersistenceManager);
-            };
-        }
+namespace soraa {
+    namespace initializer {
+        class DeviceInfoProviderInterface {
+        public:
+            virtual DeviceInfo deviceInfo() = 0;
+            virtual std::string payloadJson() = 0;
+
+            DeviceInfoProviderInterface() = default;
+            virtual ~DeviceInfoProviderInterface() = default;
+        };
     }
 }
+}
 
-#endif //VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H

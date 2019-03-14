@@ -34,33 +34,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
-#define VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#define VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
 
+#include <fstream>
 #include <memory>
 
-#include <virgil/soraa/initializer/SignerInterface.h>
 #include <virgil/sdk/crypto/keys/PrivateKey.h>
+#include <virgil/sdk/crypto/keys/PublicKey.h>
+
+#include <virgil/iot/initializer/Common.h>
+#include <virgil/iot/initializer/PersistenceManagerInterface.h>
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class VirgilCryptoSigner: public SignerInterface {
+        class SingleFileEncryptedPersistenceManager: public PersistenceManagerInterface {
         public:
-            VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto,
-                               sdk::crypto::keys::PrivateKey privateKey);
+            explicit SingleFileEncryptedPersistenceManager(const std::string &filename,
+                                                           std::shared_ptr<sdk::crypto::Crypto> crypto,
+                                                           sdk::crypto::keys::PrivateKey privateKey,
+                                                           std::vector<sdk::crypto::keys::PublicKey> publicKeys);
 
-            VirgilByteArray sign(const VirgilByteArray &data) override;
-            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
-            uint16_t signerId() override;
-            VirgilByteArray publicKeyFull() override;
+            void persist(const std::string &data) override;
 
         private:
+            std::string filename_;
             std::shared_ptr<sdk::crypto::Crypto> crypto_;
             sdk::crypto::keys::PrivateKey privateKey_;
+            std::vector<sdk::crypto::keys::PublicKey> publicKeys_;
         };
     }
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#endif //VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H

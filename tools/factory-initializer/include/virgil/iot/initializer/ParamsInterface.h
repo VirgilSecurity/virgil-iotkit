@@ -38,7 +38,7 @@
 #define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PARAMSINTERFACE_H
 
 #include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/soraa/initializer/ProvisioningInfo.h>
+#include <virgil/iot/initializer/ProvisioningInfo.h>
 
 using virgil::soraa::initializer::ProvisioningInfo;
 using virgil::sdk::crypto::Crypto;

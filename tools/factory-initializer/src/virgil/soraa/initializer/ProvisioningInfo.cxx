@@ -35,8 +35,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/ProvisioningInfo.h>
-#include <virgil/soraa/initializer/Filesystem.h>
+#include <virgil/iot/initializer/ProvisioningInfo.h>
+#include <virgil/iot/initializer/Filesystem.h>
 #include <externals/ini.hpp>
 
 using virgil::soraa::initializer::ProvisioningInfo;

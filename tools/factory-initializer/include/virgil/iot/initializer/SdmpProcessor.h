@@ -39,8 +39,8 @@
 
 #include <string>
 #include <vector>
-#include <virgil/soraa/initializer/ProvisioningInfo.h>
-#include <virgil/soraa/initializer/SignerInterface.h>
+#include <virgil/iot/initializer/ProvisioningInfo.h>
+#include <virgil/iot/initializer/SignerInterface.h>
 
 using virgil::soraa::initializer::ProvisioningInfo;
 using virgil::soraa::initializer::SignerInterface;

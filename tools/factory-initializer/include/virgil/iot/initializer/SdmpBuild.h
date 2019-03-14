@@ -39,11 +39,11 @@
 
 #if defined(USE_SDMP)
 
-#include <virgil/soraa/initializer/SdmpSigner.h>
-#include <virgil/soraa/initializer/SdmpDeviceInfoProvider.h>
-#include <virgil/soraa/initializer/SdmpPublicKeyProvider.h>
-#include <virgil/soraa/initializer/SdmpProcessor.h>
-#include <virgil/soraa/initializer/AtmelCryptoSigner.h>
+#include <virgil/iot/initializer/SdmpSigner.h>
+#include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
+#include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
+#include <virgil/iot/initializer/SdmpProcessor.h>
+#include <virgil/iot/initializer/AtmelCryptoSigner.h>
 
 using virgil::soraa::initializer::SdmpSigner;
 using virgil::soraa::initializer::SdmpDeviceInfoProvider;

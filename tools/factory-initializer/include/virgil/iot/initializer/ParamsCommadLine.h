@@ -39,7 +39,7 @@
 
 #include <memory>
 
-#include <virgil/soraa/initializer/ParamsInterface.h>
+#include <virgil/iot/initializer/ParamsInterface.h>
 
 
 namespace virgil {

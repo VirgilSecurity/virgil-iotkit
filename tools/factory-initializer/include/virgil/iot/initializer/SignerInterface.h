@@ -34,25 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
+#define VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
 
-#include <virgil/soraa/initializer/DeviceInfo.h>
-#include <virgil/soraa/initializer/PublicKeyProviderInterface.h>
-#include <virgil/soraa/initializer/SignerInterface.h>
+#include <virgil/iot/initializer/Common.h>
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class DeviceRequestBuilderInterface {
+        class SignerInterface {
         public:
-            virtual std::string buildRequest() = 0;
-            virtual std::string getDeviceInfo() = 0;
+            virtual VirgilByteArray sign(const VirgilByteArray &data) = 0;
+            virtual bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) = 0;
+            virtual uint16_t signerId() = 0;
+            virtual VirgilByteArray publicKeyFull() = 0;
 
-            virtual ~DeviceRequestBuilderInterface() = default;
+            virtual ~SignerInterface() = default;
         };
     }
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#endif //VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H

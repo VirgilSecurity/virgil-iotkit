@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2017 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,16 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
+#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
+#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
 
-using virgil::soraa::initializer::SdmpPublicKeyProvider;
-using virgil::soraa::initializer::VirgilByteArray;
+#include <virgil/crypto/VirgilByteArray.h>
 
-SdmpPublicKeyProvider::SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor) :
-processor_(std::move(processor)) {
-    
+#include <memory>
+
+#include <virgil/iot/initializer/SignerInterface.h>
+
+namespace virgil {
+    namespace soraa {
+        namespace initializer {
+            class AtmelCryptoSigner: public SignerInterface {
+            public:
+                AtmelCryptoSigner();
+
+                VirgilByteArray sign(const VirgilByteArray &data) override;
+                bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+                uint16_t signerId() override;
+                VirgilByteArray publicKeyFull() override;
+
+            private:
+            };
+        }
+    }
 }
 
-VirgilByteArray SdmpPublicKeyProvider::publicKey() {
-    return processor_->devicePublicKey();
-}
+#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H

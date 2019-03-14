@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/ParamsCommadLine.h>
-#include <virgil/soraa/initializer/Filesystem.h>
+#include <virgil/iot/initializer/ParamsCommadLine.h>
+#include <virgil/iot/initializer/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
 using virgil::soraa::initializer::ParamsCommadLine;

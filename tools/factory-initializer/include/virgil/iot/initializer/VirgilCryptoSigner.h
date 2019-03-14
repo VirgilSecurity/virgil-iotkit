@@ -34,38 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
-#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#ifndef VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#define VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
 
 #include <memory>
 
-#include <virgil/soraa/initializer/DeviceInfoProviderInterface.h>
-#include <virgil/soraa/initializer/PublicKeyProviderInterface.h>
-#include <virgil/soraa/initializer/DeviceRequestBuilderInterface.h>
-#include <virgil/soraa/initializer/SignerInterface.h>
-#include <virgil/sdk/crypto/Crypto.h>
+#include <virgil/iot/initializer/SignerInterface.h>
+#include <virgil/sdk/crypto/keys/PrivateKey.h>
 
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        class DeviceRequestBuilder: public DeviceRequestBuilderInterface {
+        class VirgilCryptoSigner: public SignerInterface {
         public:
-            DeviceRequestBuilder(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
-                                 std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider,
-                                 std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider,
-                                 std::shared_ptr<SignerInterface> signer);
+            VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto,
+                               sdk::crypto::keys::PrivateKey privateKey);
 
-            std::string buildRequest() override;
-            std::string getDeviceInfo() override;
+            VirgilByteArray sign(const VirgilByteArray &data) override;
+            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+            uint16_t signerId() override;
+            VirgilByteArray publicKeyFull() override;
 
         private:
-            std::shared_ptr<virgil::sdk::crypto::Crypto> crypto_;
-            std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider_;
-            std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider_;
-            std::shared_ptr<SignerInterface> signer_;
+            std::shared_ptr<sdk::crypto::Crypto> crypto_;
+            sdk::crypto::keys::PrivateKey privateKey_;
         };
     }
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#endif //VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H

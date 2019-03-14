@@ -37,7 +37,7 @@
 #ifndef VIRGIL_SORAA_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
 #define VIRGIL_SORAA_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
 
-#include <virgil/soraa/initializer/Common.h>
+#include <virgil/iot/initializer/Common.h>
 
 namespace virgil {
 namespace soraa {
