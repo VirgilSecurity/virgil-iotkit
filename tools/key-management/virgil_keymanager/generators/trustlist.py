@@ -1,7 +1,4 @@
-import base64
-
-from PyCRC.CRCCCITT import CRCCCITT
-
+from virgil_keymanager.core_utils.helpers import to_b64
 from virgil_keymanager.data_types import TrustList
 
 
@@ -30,8 +27,8 @@ class TrustListGenerator(object):
 
     def generate(
         self,
-        auth_key_serial,
-        tl_svc_key_serial,
+        auth_key,
+        tl_svc_key,
         tl_version,
         release_tl_keys_structure=None,
         dev_mode=False,
@@ -61,21 +58,22 @@ class TrustListGenerator(object):
         self.__tl = TrustList(keys_dict, tl_type, tl_version, release_tl_keys_structure)
 
         # get data for sign
-        data_for_sign = base64.b64encode(bytes(self.__tl.get_bytes_for_sign())).decode("utf-8")
+        data_for_sign = to_b64(self.__tl.get_bytes_for_sign())
 
         # get public tl_svc_key
-        tl_svc_pub_key = self.__a_check(self.__atmel.get_public_key(tl_svc_key_serial))
+        tl_svc_pub_key = tl_svc_key.public_key
+        # tl_svc_pub_key = self.__a_check(self.__atmel.get_public_key(tl_svc_key_serial))
         if tl_svc_pub_key == 0:
             return
 
         # calculate tl_svc_key_id
-        tl_svc_pub_key_id = CRCCCITT().calculate(base64.b64decode(tl_svc_pub_key))
+        tl_svc_pub_key_id = tl_svc_key.key_id
+        # tl_svc_pub_key_id = CRCCCITT().calculate(base64.b64decode(tl_svc_pub_key))
         if tl_svc_pub_key_id == 0:
             return
 
         # sign tl by tl_svc_key
-        tl_svc_key_signature = self.__a_check(
-            self.__atmel.sign_by_device(data_for_sign, device_serial=tl_svc_key_serial))
+        tl_svc_key_signature = tl_svc_key.sign(data_for_sign)
         if tl_svc_key_signature == 0:
             return
 
@@ -86,17 +84,17 @@ class TrustListGenerator(object):
         self.__tl.tl_service_key_id = tl_svc_pub_key_id
 
         # get public auth key
-        auth_pub_key = self.__a_check(self.__atmel.get_public_key(auth_key_serial))
+        auth_pub_key = auth_key.public_key
         if auth_pub_key == 0:
             return
 
         # calculate auth_key_id
-        auth_pub_key_id = CRCCCITT().calculate(base64.b64decode(auth_pub_key))
+        auth_pub_key_id = auth_key.key_id
         if auth_pub_key_id == 0:
             return
 
         # sign tl by auth key
-        auth_key_signature = self.__a_check(self.__atmel.sign_by_device(data_for_sign, device_serial=auth_key_serial))
+        auth_key_signature = auth_key.sign(data_for_sign)
         if auth_key_signature == 0:
             return
 

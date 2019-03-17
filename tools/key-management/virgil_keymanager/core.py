@@ -14,6 +14,28 @@ from .ui import UI
 from .utility_manager import UtilityManager
 
 
+class UtilContext:
+    def __init__(self, config_, ui, logger, atmel_util, **cli_args):
+        self.config = config_
+        self.ui = ui
+        self.logger = logger
+        self.atmel = atmel_util
+
+        self.dongles_mode = "emulator" if cli_args["emulator"] else "dongles"
+        self.skip_confirm = cli_args["skip_confirm"]
+        self.dev_mode = "dev" if cli_args["development"] else "main"
+        self.disable_cache = cli_args["no_cache"]
+        self.printer_disable = cli_args["printer_disable"]
+        self.debug_logging = cli_args["verbose_logging"]
+        self.no_dongles = cli_args["no_dongles"]
+
+        self.storage_path = config_["MAIN"]["storage_path"]
+        self.secure_transfer_keys_path = config_["MAIN"]["secure_transfer_keys_path"]
+        self.secure_transfer_password = config_["MAIN"]["secure_transfer_keys_passwd"]
+        self.release_trust_list_folder = config_["MAIN"]["release_trust_list_folder"]
+        self.device_dev_mode_list_path = config_["MAIN"]["dev_mode_folder_path"]
+
+
 class Core(object):
 
     def __init__(self):
@@ -112,6 +134,8 @@ class Core(object):
                 formatter_class=RawTextHelpFormatter
             )
             arguments.add_argument('-b', '--verbose-logging', action='store_true', help="enable debug logging")
+            arguments.add_argument('-w', '--no-dongles', action='store_true',
+                                   help="Virgil Crypto use only, all keys will be stored on the disk")
             arguments.add_argument('-d', '--development', action='store_true', help="development mode"),
             arguments.add_argument('-e', '--emulator', action='store_true', help="enable dongles emulator mode")
             arguments.add_argument('-p', "--printer-disable", action="store_true",
@@ -223,19 +247,13 @@ class Core(object):
     @property
     def __util_manager(self):
         if not self._util_manager:
-            self._util_manager = UtilityManager(
+            util_context = UtilContext(
+                self.__config,
                 self.__ui,
-                self.__skip_confirm,
                 self.logger,
-                self.__dev_mode,
-                self.__dongles_mode,
-                self.__disable_cache,
-                self.__printer_disable,
-                self.__config["MAIN"]["storage_path"],
                 self.__atmel,
-                self.__config["MAIN"]["secure_transfer_keys_path"],
-                self.__config["MAIN"]["secure_transfer_keys_passwd"],
-                self.__config["MAIN"]["release_trust_list_folder"],
-                self.__config["MAIN"]["dev_mode_folder_path"]
+                **self.__args
             )
+
+            self._util_manager = UtilityManager(util_context)
         return self._util_manager
