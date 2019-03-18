@@ -63,8 +63,8 @@ int main (int argc, char *argv[]) {
     
     auto fixedDataFile = Filesystem::fixPath(params->dataFile());
     
-    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile, params->isXlsInputFile());
-    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), params->isXlsInputFile());
+    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
+    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), false);
     
     registrator.registerLamps();
 

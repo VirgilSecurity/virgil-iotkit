@@ -52,7 +52,6 @@ namespace virgil {
                 
                 // Used for decryption of file with requests for Cards registration
                 std::string dataFile() const final;
-                bool isXlsInputFile() const final;
                 VirgilByteArray fileDecryptionPrivateKey() const final;
                 std::string fileDecryptionPrivateKeyPassword() const final;
                 VirgilByteArray fileSenderPublicKey() const final;
@@ -61,7 +60,6 @@ namespace virgil {
                 CardsServiceInfo cardsServiceInfo() const final;
 
             private:
-                bool xlsInputFile_;
                 std::string dataFile_;
                 VirgilByteArray fileDecryptionPrivateKey_;
                 std::string fileDecryptionPrivateKeyPassword_;
