@@ -35,6 +35,8 @@
 #ifndef KUNLUN_SDMP_STRUCTS_H
 #define KUNLUN_SDMP_STRUCTS_H
 
+#include <stdint.h>
+
 typedef struct {
 //    /// An opaque context likely used to point to a simulated device context
 //    void        *netif_user_data;
