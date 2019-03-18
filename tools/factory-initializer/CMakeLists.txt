@@ -43,15 +43,7 @@ set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Link with shared library if defined
-set (USE_SDMP ON CACHE BOOL "Build for real usage. Use OFF to build test app.")
 add_subdirectory (${PROJECT_SOURCE_DIR}/../../ext/virgil-sdk-cpp virgil-sdk-cpp)
-
-#set (PLATFORM "osx" CACHE STRING "Platform type" FORCE)
-#set (ENABLE_TESTING OFF CACHE BOOL "Build test app" FORCE)
-#set (CRYPTO_MBEDTLS OFF CACHE BOOL "Build MBEDTLS crypto" FORCE)
-#set (CRYPTO_ATMEL ON CACHE BOOL "Build ATECC508A-based crypto" FORCE)
-#add_subdirectory (${PROJECT_SOURCE_DIR}/../../sdmp/SDMPKit/crypto crypto)
-#set_target_properties (virgil_mcu_crypto_mac PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB_RECURSE SRC_LIST_SRC "src/*.cxx")
 set (SRC_LIST ${SRC_LIST_BIN} ${SRC_LIST_SRC})
@@ -64,16 +56,7 @@ message (STATUS "PROJECT_SOURCE_DIR: " ${PROJECT_SOURCE_DIR})
 message (STATUS "Source list: " ${SRC_LIST})
 
 include_directories (${PROJECT_SOURCE_DIR}/include)
-include_directories (${PROJECT_SOURCE_DIR}/../../sdmp/SDMPKit/crypto/include)
 include_directories (${PROJECT_SOURCE_DIR}/cmake-build-debug/depends/virgil_crypto/build/src/virgil_crypto-depends/lib/include)
-
-# Add definitions
-if (USE_SDMP)
-    message (STATUS "Build SDMP code")
-    add_definitions(-DUSE_SDMP)
-else()
-    message (STATUS "Build test code")
-endif ()
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 

@@ -36,7 +36,7 @@
 
 #include <virgil/iot/initializer/NetRequestSender.h>
 #include <sys/socket.h>
-#include <sys/un.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <ostream>
 #include <sstream>
@@ -45,24 +45,25 @@
 
 using virgil::soraa::initializer::NetRequestSender;
 
-const std::string NetRequestSender::kSocket("/tmp/sdmpd.sock");
+const std::string NetRequestSender::kSocket("127.0.0.1");
+const uint16_t NetRequestSender::kPort(3333);
 
 int NetRequestSender::openSocketAndSendRequest(const std::string &request, size_t timeout) {
-    struct sockaddr_un addr;
+    struct sockaddr_in server;
     int fd;
 
-    fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (-1 == fd) {
         throw std::runtime_error(std::string("Can't open ") + kSocket);
     }
 
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, kSocket.c_str(), sizeof(addr.sun_path) - 1);
+    server.sin_addr.s_addr = inet_addr(kSocket.c_str());
+    server.sin_family = AF_INET;
+    server.sin_port = htons(kPort);
 
-    if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        throw std::runtime_error(std::string("Can't connect to ") + kSocket);
+    if (connect(fd, (struct sockaddr*)&server, sizeof(server)) == -1) {
+        throw std::runtime_error(std::string("Can't connect to ") + kSocket + ":" + std::to_string(kPort));
     }
 
     struct timeval tv;

@@ -49,6 +49,7 @@ namespace virgil {
 
             private:
                 static const std::string kSocket;
+                static const uint16_t kPort;
 
                 static int openSocketAndSendRequest(const std::string &request, size_t timeout);
 
