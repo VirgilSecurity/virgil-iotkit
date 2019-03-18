@@ -36,6 +36,7 @@
 
 #include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
 #include <virgil/iot/registrator/XLSXIOReader.h>
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 
