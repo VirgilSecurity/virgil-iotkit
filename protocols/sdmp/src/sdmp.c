@@ -33,12 +33,40 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/protocols/sdmp.h>
+#include "hal/macro.h"
 
-int
-vs_sdmp_init(const vs_netif_t *default_netif) {
+#include <stdio.h>
+
+static const vs_netif_t *_sdmp_default_netif = 0;
+
+/******************************************************************************/
+static int
+_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) {
+
+    printf("\033[32;1m >>> %s <<< \033[0m\n", data);
+
     return -1;
 }
 
+/******************************************************************************/
+int
+vs_sdmp_init(const vs_netif_t *default_netif) {
+
+    // Check input data
+    VS_ASSERT(default_netif);
+    VS_ASSERT(default_netif->init);
+    VS_ASSERT(default_netif->tx);
+
+    // Save default network interface
+    _sdmp_default_netif = default_netif;
+
+    // Init default network interface
+    default_netif->init(_sdmp_rx_cb);
+
+    return 0;
+}
+
+/******************************************************************************/
 int
 vs_sdmp_send(const vs_netif_t *netif) {
     return -1;

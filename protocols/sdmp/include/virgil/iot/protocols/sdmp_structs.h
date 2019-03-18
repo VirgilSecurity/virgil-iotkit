@@ -36,17 +36,31 @@
 #define KUNLUN_SDMP_STRUCTS_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
-typedef struct {
-//    /// An opaque context likely used to point to a simulated device context
-//    void        *netif_user_data;
+struct vs_netif_t;
+
+// Callback for Received data
+typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz);
+
+typedef int (*vs_netif_tx_t)(const uint8_t *data, const size_t data_sz);
+typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
+
+typedef struct vs_netif_t {
+    /// An opaque context likely used to point to a simulated device context
+    void        *netif_user_data;
 //    /// A function that returns the parsed destination and source addresses from a buffer pointing to an interface header
 //    int (* parse_hw_header) (uint8_t *pdu, uint8_t *dst, uint8_t *src);
 //    /// A function that writes the given destination and protocol information to a buffer - typically used just prior to transmit
 //    int (* write_hw_header) (netif_t * netif, uint8_t *pdu, const void * const dest, protocol_t protocol);
 //    int (* interface_match) (netif_t * netif, uint8_t * pdu, size_t len, void*);
-//    /// A function, that handles common transmit functionality for interfaces of the same type, simulated or not
-//    int (* tx) (netif_t * netif, uint8_t * pdu, uint16_t len, void*, netif_t * src_netif);
+
+    /// A function, that inits communication over network interface
+    vs_netif_init_t init;
+
+    /// A function, that handles common transmit functionality for interfaces of the same type, simulated or not
+    vs_netif_tx_t tx;
+
 //    /// A function that performs the real transmission - either on a real or simulated medium
 //    int (* hw_tx) (netif_t * netif, uint8_t * data, size_t length, void*, netif_t *src_netif);
 //    /// Maximum transmission unit
