@@ -3,6 +3,7 @@ from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
 
+from virgil_keymanager.core_utils import VirgilSignExtractor
 from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
@@ -24,7 +25,7 @@ class VirgilKeyGenerator:
         # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
-            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[:-64]
+            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-64:]
 
         if self.__private_key is None:
             virgil_key_pair = VirgilKeyPair.generate(VirgilKeyPair.Type_EC_SECP256R1)
@@ -45,7 +46,7 @@ class VirgilKeyGenerator:
         return to_b64(self.__public_key)
 
     @property
-    def full_public_key(self):
+    def public_key_full(self):
         virgil_private_key = self._crypto.import_private_key(b64_to_bytes(self.private_key))
         return to_b64(self._crypto.extract_public_key(virgil_private_key))
 
@@ -65,16 +66,18 @@ class VirgilKeyGenerator:
         data = b64_to_bytes(data)
         private_key = b64_to_bytes(self.private_key)
         signature = self._crypto.sign(data, self._crypto.import_private_key(private_key))
+        if not long_sign:
+            signature = VirgilSignExtractor.extract_sign(signature)
         return to_b64(signature)
 
-    def verify(self, data, signature):
+    def verify(self, data, signature, long_sign=False):
         data = b64_to_bytes(data)
-        public_key = b64_to_bytes(self.full_public_key)  # verify  signature with full public key
+        public_key = b64_to_bytes(self.public_key_full)  # verify  signature with full public key
         return self._crypto.verify(data, signature, self._crypto.import_public_key(public_key))
 
     def encrypt(self, data):
         data = b64_to_bytes(data)
-        public_key = b64_to_bytes(self.full_public_key)  # encrypt with full public key
+        public_key = b64_to_bytes(self.public_key_full)  # encrypt with full public key
         encrypted = self._crypto.encrypt(data, self._crypto.import_public_key(public_key))
         return to_b64(encrypted)
 
