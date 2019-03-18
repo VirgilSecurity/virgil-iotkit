@@ -53,8 +53,7 @@ namespace soraa {
             SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
                                                const sdk::crypto::keys::PrivateKey &privateKey,
                                                const sdk::crypto::keys::PublicKey &publicKey,
-                                               const std::string &filename,
-                                               bool isXlsInputFile);
+                                               const std::string &filename);
 
             std::string getData() override;
             std::string getSerialNumbers() override;

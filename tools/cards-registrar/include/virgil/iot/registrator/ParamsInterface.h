@@ -52,7 +52,6 @@ namespace soraa {
             virtual ~ParamsInterface() = default;
             
             virtual std::string dataFile() const = 0;
-            virtual bool isXlsInputFile() const = 0;
             virtual VirgilByteArray fileDecryptionPrivateKey() const = 0;
             virtual std::string fileDecryptionPrivateKeyPassword() const = 0;
             virtual VirgilByteArray fileSenderPublicKey() const = 0;

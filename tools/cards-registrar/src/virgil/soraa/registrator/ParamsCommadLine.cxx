@@ -61,7 +61,6 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         
         options.add_options()
         ("d,data", "File with encrypted data", cxxopts::value<std::string>(dataFile_))
-        ("x,xls_input", "Exel format of input data file")
         ("k,file_key", "File with private key to decrypt received data file", cxxopts::value<std::string>(filePrivateKeyFile))
         ("p,file_key_pass", "Password file with private key to decrypt received data file", cxxopts::value<std::string>(fileDecryptionPrivateKeyPassword_))
         ("s,file_sender_key", "Public key of sender of data file", cxxopts::value<std::string>(fileSenderKey))
@@ -81,8 +80,6 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         if (dataFile_.empty()) {
             throw cxxopts::OptionException("Data file does't specified.");
         }
-
-        xlsInputFile_ = options.count("xls_input");
 
         if (!filePrivateKeyFile.empty()) {
             fileDecryptionPrivateKey_ = Filesystem::loadFile(filePrivateKeyFile);
@@ -152,8 +149,4 @@ VirgilByteArray ParamsCommadLine::fileSenderPublicKey() const {
 
 CardsServiceInfo ParamsCommadLine::cardsServiceInfo() const {
     return cardsServiceInfo_;
-}
-
-bool ParamsCommadLine::isXlsInputFile() const {
-    return xlsInputFile_;
 }
