@@ -100,9 +100,16 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 #   Tools
 # ---------------------------------------------------------------------------
 
-#
-#   Factory initalizer
-#
 if (NOT MCU_BUILD)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Features
+# ---------------------------------------------------------------------------
+
+#
+#   Protocols
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/protocols)
