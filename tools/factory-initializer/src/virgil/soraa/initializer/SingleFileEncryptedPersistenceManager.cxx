@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/SingleFileEncryptedPersistenceManager.h>
-#include <virgil/soraa/initializer/Filesystem.h>
+#include <virgil/iot/initializer/SingleFileEncryptedPersistenceManager.h>
+#include <virgil/iot/initializer/Filesystem.h>
 #include "virgil/sdk/crypto/Crypto.h"
 
 using virgil::soraa::initializer::SingleFileEncryptedPersistenceManager;

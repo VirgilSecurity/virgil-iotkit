@@ -1,0 +1,7 @@
+virgil/
+.idea/
+.DS_Store
+*.pyc
+.project
+.pydevproject
+sign.conf

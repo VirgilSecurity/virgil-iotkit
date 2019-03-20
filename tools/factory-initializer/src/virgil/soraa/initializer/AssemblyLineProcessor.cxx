@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/AssemblyLineProcessor.h>
+#include <virgil/iot/initializer/AssemblyLineProcessor.h>
 #include <iostream>
 
 using virgil::soraa::initializer::AssemblyLineProcessor;

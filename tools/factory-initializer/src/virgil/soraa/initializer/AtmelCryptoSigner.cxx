@@ -34,53 +34,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "virgil/soraa/initializer/AtmelCryptoSigner.h"
-#include <virgil/crypto.h>
-#include <virgil/crypto_tiny.h>
-#include <virgil/converters/converters_tiny.h>
-#include <virgil/soraa/initializer/Filesystem.h>
-#include <virgil/soraa/initializer/Crc16.h>
+#include "virgil/iot/initializer/AtmelCryptoSigner.h"
+//#include <virgil/crypto.h>
+//#include <virgil/crypto_tiny.h>
+//#include <virgil/converters/converters_tiny.h>
+#include <virgil/iot/initializer/Filesystem.h>
+#include <virgil/iot/initializer/Crc16.h>
 
 using virgil::soraa::initializer::AtmelCryptoSigner;
 using virgil::soraa::initializer::VirgilByteArray;
 
 AtmelCryptoSigner::AtmelCryptoSigner() {
-    crypto_init();
+//    crypto_init();
 }
 
 VirgilByteArray AtmelCryptoSigner::sign(const VirgilByteArray &data) {
     auto res = VirgilByteArray();
 
-    uint8_t signature[256];
-    size_t signature_sz;
-    if (crypto_sign(0, 0,
-                    data.data(), data.size(),
-                    signature, sizeof(signature), &signature_sz)) {
-        res = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(signature, signature_sz);
-    }
+//    uint8_t signature[256];
+//    size_t signature_sz;
+//    if (crypto_sign(0, 0,
+//                    data.data(), data.size(),
+//                    signature, sizeof(signature), &signature_sz)) {
+//        res = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(signature, signature_sz);
+//    }
 
     return res;
 }
 
 bool AtmelCryptoSigner::verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) {
-    return crypto_verify(publicKey.data(), publicKey.size(),
-                         signature.data(), signature.size(),
-                         data.data(), data.size());
+//    return crypto_verify(publicKey.data(), publicKey.size(),
+//                         signature.data(), signature.size(),
+//                         data.data(), data.size());
+    return false;
 }
 
 uint16_t AtmelCryptoSigner::signerId() {
     uint8_t * key;
-    crypto_tiny_own_public_key(&key);
+//    crypto_tiny_own_public_key(&key);
     return Crc16::calc(key, 64);
 }
 
 VirgilByteArray AtmelCryptoSigner::publicKeyFull() {
     uint8_t * ownKey;
-    crypto_tiny_own_public_key(&ownKey);
+//    crypto_tiny_own_public_key(&ownKey);
 
     uint8_t ownKeyFull[128];
     size_t ownKeyFullSz = sizeof(ownKeyFull);
-    tiny_pubkey_to_virgil(ownKey, ownKeyFull, &ownKeyFullSz);
+//    tiny_pubkey_to_virgil(ownKey, ownKeyFull, &ownKeyFullSz);
 
     return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(ownKeyFull, ownKeyFullSz);
 }

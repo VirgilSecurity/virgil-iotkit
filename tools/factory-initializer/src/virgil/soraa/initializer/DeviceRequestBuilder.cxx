@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/DeviceRequestBuilder.h>
+#include <virgil/iot/initializer/DeviceRequestBuilder.h>
 #include <virgil/sdk/client/models/RawSignature.h>
 #include <virgil/sdk/client/models/RawCardContent.h>
 #include <virgil/sdk/cards/CardManager.h>

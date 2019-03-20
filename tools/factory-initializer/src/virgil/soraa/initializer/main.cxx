@@ -38,19 +38,19 @@
 #include <vector>
 #include <iostream>
 
-#include <virgil/soraa/initializer/AssemblyLineProcessor.h>
-#include <virgil/soraa/initializer/DeviceRequestBuilder.h>
-#include <virgil/soraa/initializer/SingleFileEncryptedPersistenceManager.h>
-#include <virgil/soraa/initializer/ParamsCommadLine.h>
-#include <virgil/soraa/initializer/Filesystem.h>
-#include <virgil/soraa/initializer/SdmpBuild.h>
-#include <virgil/soraa/initializer/SingleFileEncryptedPersistenceManager.h>
-#include <virgil/soraa/initializer/SdmpDeviceInfoProvider.h>
-#include <virgil/soraa/initializer/SdmpSigner.h>
-#include <virgil/soraa/initializer/DeviceRequestBuilder.h>
-#include <virgil/soraa/initializer/AssemblyLineProcessor.h>
-#include <virgil/soraa/initializer/ProvisioningInfo.h>
-#include <virgil/soraa/initializer/VirgilCryptoSigner.h>
+#include <virgil/iot/initializer/AssemblyLineProcessor.h>
+#include <virgil/iot/initializer/DeviceRequestBuilder.h>
+#include <virgil/iot/initializer/SingleFileEncryptedPersistenceManager.h>
+#include <virgil/iot/initializer/ParamsCommadLine.h>
+#include <virgil/iot/initializer/Filesystem.h>
+#include <virgil/iot/initializer/SdmpBuild.h>
+#include <virgil/iot/initializer/SingleFileEncryptedPersistenceManager.h>
+#include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
+#include <virgil/iot/initializer/SdmpSigner.h>
+#include <virgil/iot/initializer/DeviceRequestBuilder.h>
+#include <virgil/iot/initializer/AssemblyLineProcessor.h>
+#include <virgil/iot/initializer/ProvisioningInfo.h>
+#include <virgil/iot/initializer/VirgilCryptoSigner.h>
 
 using virgil::soraa::initializer::AssemblyLineProcessor;
 using virgil::soraa::initializer::DeviceRequestBuilder;
@@ -96,13 +96,13 @@ int main (int argc, char *argv[]) {
     std::shared_ptr<SignerInterface> deviceSigner;
 
     // Soraa device initialization
-    if (params->factoryPrivateKey().empty()) {
-        deviceSigner = std::make_shared<AtmelCryptoSigner>();
-    } else {
+//    if (params->factoryPrivateKey().empty()) {
+//        deviceSigner = std::make_shared<AtmelCryptoSigner>();
+//    } else {
         auto keyData = virgil::soraa::initializer::Filesystem::loadFile(params->factoryPrivateKey());
         auto deviceSignPrivateKey = virgil::sdk::crypto::Crypto().importPrivateKey(keyData);
         deviceSigner = std::make_shared<VirgilCryptoSigner>(crypto, deviceSignPrivateKey);
-    }
+//    }
 
     std::vector<SOneDev_t> devices = SdmpProcessor::discoverDevices();
 
