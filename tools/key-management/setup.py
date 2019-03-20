@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name="virgil-keymanager",
     version=__version__,
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests',)),
     install_requires=[
         'virgil-sdk>=4.2.0,<5',
         'virgil-crypto>=2.0.4,<3',
