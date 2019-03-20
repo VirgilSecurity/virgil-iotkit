@@ -4,3 +4,6 @@ url=https://github.com/VirgilSecurity/virgil-crypto-c.git
 [submodule "ext/noisesocket"]
 	path = ext/noisesocket
 	url = https://github.com/VirgilSecurity/noisesocket-lib.git
+[submodule "ext/integration_tests_framework"]
+	path = ext/integration_tests_framework
+	url = https://github.com/VirgilSecurity/iot-integration-tests-framework
