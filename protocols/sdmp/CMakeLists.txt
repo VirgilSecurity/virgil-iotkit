@@ -44,6 +44,7 @@ set(SDMP_LIB sdmp)
 #
 set(SDMP_SRC
         src/sdmp.c
+        src/services/PRVS.c
         )
 
 #
@@ -57,8 +58,9 @@ add_library(${SDMP_LIB}
 #   Common include directories
 #
 target_include_directories(${PROJECT_NAME}
-        PRIVATE
+        PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
         )
 

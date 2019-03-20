@@ -44,16 +44,57 @@ struct vs_netif_t;
 typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz);
 
 typedef int (*vs_netif_tx_t)(const uint8_t *data, const size_t data_sz);
+
 typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
 
+// SDMP Services processor
+typedef int (*vs_sdmp_service_processor_t)(const struct vs_netif_t *netif,
+                                           const uint8_t *request, const size_t request_sz,
+                                           uint8_t *response, const size_t response_buf_sz, size_t *response_sz);
+
+#define ETH_ADDR_LEN (6)
+#define ETH_TYPE_LEN (2)
+#define ETH_CRC_LEN (4)
+#define ETH_HEADER_LEN (ETH_ADDR_LEN+ETH_ADDR_LEN+ETH_TYPE_LEN)
+#define ETH_MIN_LEN (64)
+#define ETH_MTU (1500)
+
+/******************************************************************************/
+
+typedef uint16_t vs_sdmp_transaction_id_t;
+typedef uint32_t vs_sdmp_service_id_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) mac_addr {
+    uint8_t bytes[ETH_ADDR_LEN];
+} vs_mac_addr_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) ethernet_header {
+    vs_mac_addr_t dest;
+    vs_mac_addr_t src;
+    uint16_t type;
+} vs_ethernet_header_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) {
+    vs_sdmp_transaction_id_t transaction_id;
+    vs_sdmp_service_id_t service_id;
+    uint16_t padding;
+    uint16_t content_size;
+} vs_sdmp_header_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) {
+    vs_ethernet_header_t eth_header;
+    vs_sdmp_header_t header;
+    uint8_t *content;
+} vs_sdmp_packet_t;
+
+/******************************************************************************/
 typedef struct vs_netif_t {
     /// An opaque context likely used to point to a simulated device context
-    void        *netif_user_data;
-//    /// A function that returns the parsed destination and source addresses from a buffer pointing to an interface header
-//    int (* parse_hw_header) (uint8_t *pdu, uint8_t *dst, uint8_t *src);
-//    /// A function that writes the given destination and protocol information to a buffer - typically used just prior to transmit
-//    int (* write_hw_header) (netif_t * netif, uint8_t *pdu, const void * const dest, protocol_t protocol);
-//    int (* interface_match) (netif_t * netif, uint8_t * pdu, size_t len, void*);
+    void *netif_user_data;
 
     /// A function, that inits communication over network interface
     vs_netif_init_t init;
@@ -61,30 +102,16 @@ typedef struct vs_netif_t {
     /// A function, that handles common transmit functionality for interfaces of the same type, simulated or not
     vs_netif_tx_t tx;
 
-//    /// A function that performs the real transmission - either on a real or simulated medium
-//    int (* hw_tx) (netif_t * netif, uint8_t * data, size_t length, void*, netif_t *src_netif);
-//    /// Maximum transmission unit
-    uint32_t        mtu;
-//    /// Minimum frame length, used to ensure enough zero padding
-//    uint32_t        min_len;
-//    /// number of frames transmitted
-//    uint32_t        stats_tx_count;
-//    /// number of frames received
-//    uint32_t        stats_rx_count;
-//    /// number of dropped frames (queue full)
-//    uint32_t        stats_dropped_frames;
-//    /// length of interface header
-//    uint16_t        hw_header_len;
-//    /// current state
-//    netif_state     state;
-//    /// type of the interface
-//    netif_type      type;
-//    /// lenght of addresses on the interface
-//    uint8_t     hw_addr_len;
-//    /// a buffer pointing to the address of this interface
-//    uint8_t     hw_addr[MAX_ADDR_LEN];
-//    /// a bufer pointing to the broadcast address of this interface
-//    uint8_t     brcst_addr[MAX_ADDR_LEN];
 } vs_netif_t;
+
+/******************************************************************************/
+typedef struct {
+    void *user_data;
+
+    vs_sdmp_service_id_t id;
+
+    vs_sdmp_service_processor_t process;
+
+} vs_sdmp_service_t;
 
 #endif //KUNLUN_SDMP_STRUCTS_H

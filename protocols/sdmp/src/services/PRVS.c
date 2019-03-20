@@ -32,29 +32,34 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdint.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <stdbool.h>
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+static vs_sdmp_service_t _prvs_service = {0};
+static bool _prvs_service_ready = false;
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int
-vs_sdmp_init(const vs_netif_t *default_netif);
-
-#if 0
-int
-vs_sdmp_add_netif(const vs_netif_t *netif);
-#endif
-
-int
-vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz);
-
-int
-vs_sdmp_register_service(const vs_sdmp_service_t *service);
-
-#ifdef __cplusplus
+/******************************************************************************/
+static int
+_prvs_service_processor(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
+        uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
+    return -1;
 }
-#endif
+
+/******************************************************************************/
+static void
+_prepare_prvs_service() {
+    _prvs_service.user_data = 0;
+    _prvs_service.id = 'PRVS';
+    _prvs_service.process = _prvs_service_processor;
+}
+
+/******************************************************************************/
+const vs_sdmp_service_t *
+vs_sdmp_prvs_service() {
+    if (!_prvs_service_ready) {
+        _prepare_prvs_service();
+        _prvs_service_ready = true;
+    }
+
+    return &_prvs_service;
+}

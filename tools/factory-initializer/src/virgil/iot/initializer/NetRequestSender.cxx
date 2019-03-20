@@ -35,6 +35,10 @@
  */
 
 #include <virgil/iot/initializer/NetRequestSender.h>
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/initializer/hal/netif_plc_sim.h>
+
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -50,6 +54,21 @@ const std::string NetRequestSender::kSocket("127.0.0.1");
 const uint16_t NetRequestSender::kPort(3333);
 
 int NetRequestSender::openSocketAndSendRequest(const std::string &request, size_t timeout) {
+    if (0 != vs_sdmp_init(vs_hal_netif_plc_sim())) {
+        throw std::runtime_error(std::string("Can't start SDMP communication"));
+    }
+
+    if (0 != vs_sdmp_send(0,
+            reinterpret_cast<const uint8_t *>(request.c_str()),
+            request.length() + 1)) {
+        throw std::runtime_error(std::string("Can't send SDMP data"));
+    }
+
+    if (0 != vs_sdmp_register_service(vs_sdmp_prvs_service())) {
+        throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
+    }
+
+#if 0
     struct sockaddr_in server;
     int fd;
 
@@ -84,6 +103,9 @@ int NetRequestSender::openSocketAndSendRequest(const std::string &request, size_
     }
 
     return fd;
+#else
+    return 0;
+#endif
 }
 
 std::string NetRequestSender::readMultipleResponses(int fd) {

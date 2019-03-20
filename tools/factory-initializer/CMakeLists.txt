@@ -45,8 +45,12 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 ## Link with shared library if defined
 add_subdirectory (${PROJECT_SOURCE_DIR}/../../ext/virgil-sdk-cpp virgil-sdk-cpp)
 
-file (GLOB_RECURSE SRC_LIST_SRC "src/*.cxx")
-set (SRC_LIST ${SRC_LIST_BIN} ${SRC_LIST_SRC})
+file (GLOB_RECURSE SRC_LIST_CXX_SRC "src/*.cxx")
+file (GLOB_RECURSE SRC_LIST_C_SRC "src/*.c")
+set (SRC_LIST
+        ${SRC_LIST_CXX_SRC}
+        ${SRC_LIST_C_SRC}
+        )
 
 file (GLOB_RECURSE HEADER_LIST "include/*.h")
 

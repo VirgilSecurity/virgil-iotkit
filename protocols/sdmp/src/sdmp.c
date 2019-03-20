@@ -39,11 +39,34 @@
 
 static const vs_netif_t *_sdmp_default_netif = 0;
 
+#define RESPONSE_SZ_MAX (1024)
+#define RESPONSE_RESERVED_SZ (128)
+#define SERVICES_CNT_MAX (10)
+static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
+static size_t _sdmp_services_num = 0;
+
+
 /******************************************************************************/
 static int
 _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) {
+    int i;
+    const vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+    uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
+    size_t response_sz = 0;
 
-    printf("\033[32;1m >>> %s <<< \033[0m\n", data);
+    printf("\033[32;1m >>> Process packet: %d <<< \033[0m\n", (int)data_sz);
+
+    // Check packet
+
+    // Check is my packet
+
+    // Detect required command
+    for (i = 0; i < _sdmp_services_num; i++) {
+        if (_sdmp_services[i]->id == packet->header.service_id) {
+            _sdmp_services[i]->process(netif, packet->content, packet->header.content_size,
+                    &response[RESPONSE_RESERVED_SZ], RESPONSE_SZ_MAX, &response_sz);
+        }
+    }
 
     return -1;
 }
@@ -68,6 +91,29 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
 
 /******************************************************************************/
 int
-vs_sdmp_send(const vs_netif_t *netif) {
+vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz) {
+    VS_ASSERT(_sdmp_default_netif);
+    VS_ASSERT(_sdmp_default_netif->tx);
+
+    if (!netif) {
+        return _sdmp_default_netif->tx(data, data_sz);
+    }
+
     return -1;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_register_service(const vs_sdmp_service_t *service) {
+
+    VS_ASSERT(service);
+
+    if (_sdmp_services_num >= SERVICES_CNT_MAX) {
+        return -1;
+    }
+
+    _sdmp_services[_sdmp_services_num] = service;
+    _sdmp_services_num++;
+
+    return 0;
 }

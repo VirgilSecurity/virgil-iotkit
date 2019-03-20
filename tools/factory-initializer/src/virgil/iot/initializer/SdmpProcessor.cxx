@@ -415,6 +415,7 @@ VirgilByteArray SdmpProcessor::signature() const {
 uint32_t SdmpProcessor::manufacturer() const {
     return manufacturer_;
 }
+
 uint32_t SdmpProcessor::model() const {
     return model_;
 }

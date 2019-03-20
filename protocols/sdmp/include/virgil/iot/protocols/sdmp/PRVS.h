@@ -32,29 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdint.h>
-
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-
+#ifndef KUNLUN_PRVS_H
+#define KUNLUN_PRVS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int
-vs_sdmp_init(const vs_netif_t *default_netif);
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#if 0
-int
-vs_sdmp_add_netif(const vs_netif_t *netif);
-#endif
-
-int
-vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz);
-
-int
-vs_sdmp_register_service(const vs_sdmp_service_t *service);
+const vs_sdmp_service_t *
+vs_sdmp_prvs_service();
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif //KUNLUN_PRVS_H
