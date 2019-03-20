@@ -4,13 +4,36 @@ import logging
 import os
 import psutil
 import sys
+from pathlib import Path
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from virgil_keymanager import __version__
-from virgil_keymanager.core_utils.config_loader import ConfigLoader
+from virgil_keymanager.core_utils.config import Config
 from virgil_keymanager.external_utils.atmel_dongles_controller import AtmelDonglesController
 from .ui import UI
 from .utility_manager import UtilityManager
+
+
+class UtilContext:
+    def __init__(self, config_, ui, logger, atmel_util, **cli_args):
+        self.config = config_
+        self.ui = ui
+        self.logger = logger
+        self.atmel = atmel_util
+
+        self.dongles_mode = "emulator" if cli_args["emulator"] else "dongles"
+        self.skip_confirm = cli_args["skip_confirm"]
+        self.dev_mode = "dev" if cli_args["development"] else "main"
+        self.disable_cache = cli_args["no_cache"]
+        self.printer_disable = cli_args["printer_disable"]
+        self.debug_logging = cli_args["verbose_logging"]
+        self.no_dongles = cli_args["no_dongles"]
+
+        self.storage_path = config_["MAIN"]["storage_path"]
+        self.secure_transfer_keys_path = config_["MAIN"]["secure_transfer_keys_path"]
+        self.secure_transfer_password = config_["MAIN"]["secure_transfer_keys_passwd"]
+        self.release_trust_list_folder = config_["MAIN"]["release_trust_list_folder"]
+        self.device_dev_mode_list_path = config_["MAIN"]["dev_mode_folder_path"]
 
 
 class Core(object):
@@ -18,7 +41,7 @@ class Core(object):
     def __init__(self):
         self._args = None
         self.__config = self.__load_configs()
-        self.pid_file_path = os.path.join(self.__get_home_path(), ".keymanager/keymanager.pid")
+        self.pid_file_path = os.path.join(str(Path.home()), '.keymanager', 'keymanager.pid')
         self._ui = None
         self.__dongles_mode = "emulator" if self.__args["emulator"] else "dongles"
         self.__skip_confirm = self.__args["skip_confirm"]
@@ -54,55 +77,22 @@ class Core(object):
             self.__util_manager.run_utility()
 
     def __load_configs(self):
-        # Try load config from argument variable, if arg not set try from default path
-        try:
-            if self.__args['config']:
-                config_path = os.path.abspath(self.__args['config'])
-            else:
-                if sys.platform == "win32":
-                    config_path = os.path.join(self.__get_home_path(), "keymanager\\keymanager.conf")
-                else:
-                    home_config_path = os.path.join(self.__get_home_path(), ".keymanager", "keymanager.conf")
-                    if os.path.exists(home_config_path):
-                        config_path = home_config_path
-                    else:
-                        config_path = "/etc/keymanager/keymanager.conf"
-
-            config = ConfigLoader(config_path).get_config()
-
-            if config:
-                self.__check_configs(config)
-                return config
-            else:
-                sys.exit("[FATAL]: Configuration file is empty! Please setup config at {}".format(config_path))
-        except IOError as error:
-            sys.exit(error)
-
-    def __check_configs(self, config):
-        section = "MAIN"
-        important_keys_main = [
-            "storage_path",
-            "log_path",
-            "dongles_cli_path",
-            "dongles_cli_emulator_path",
-            "secure_transfer_keys_path",
-            "secure_transfer_keys_passwd",
-            "dev_mode_folder_path",
-            "release_trust_list_folder"
-        ]
-        if section not in config.keys():
-            sys.exit("[FATAL]: Missing section {} in config".format(section))
-
-        for important_key in important_keys_main:
-            if important_key not in config["MAIN"].keys():
-                sys.exit("Missing config parameter {} in section MAIN".format(important_key))
-
-    @staticmethod
-    def __get_home_path():
-        if sys.platform == "win32":
-            return os.environ(os.getenv('LOCALAPPDATA'), "")
-        else:
-            return os.getenv("HOME")
+        config_path = self.__args.get('config', None)
+        config = Config(config_path)
+        required_content = {
+            "MAIN": [
+                "storage_path",
+                "log_path",
+                "dongles_cli_path",
+                "dongles_cli_emulator_path",
+                "secure_transfer_keys_path",
+                "secure_transfer_keys_passwd",
+                "dev_mode_folder_path",
+                "release_trust_list_folder"
+            ]
+        }
+        config.check_content(required_content)
+        return config
 
     def __is_have_run_instance(self):
         if os.path.exists(self.pid_file_path) and os.stat(self.pid_file_path).st_size != 0:
@@ -144,6 +134,8 @@ class Core(object):
                 formatter_class=RawTextHelpFormatter
             )
             arguments.add_argument('-b', '--verbose-logging', action='store_true', help="enable debug logging")
+            arguments.add_argument('-w', '--no-dongles', action='store_true',
+                                   help="Virgil Crypto use only, all keys will be stored on the disk")
             arguments.add_argument('-d', '--development', action='store_true', help="development mode"),
             arguments.add_argument('-e', '--emulator', action='store_true', help="enable dongles emulator mode")
             arguments.add_argument('-p', "--printer-disable", action="store_true",
@@ -255,19 +247,13 @@ class Core(object):
     @property
     def __util_manager(self):
         if not self._util_manager:
-            self._util_manager = UtilityManager(
+            util_context = UtilContext(
+                self.__config,
                 self.__ui,
-                self.__skip_confirm,
                 self.logger,
-                self.__dev_mode,
-                self.__dongles_mode,
-                self.__disable_cache,
-                self.__printer_disable,
-                self.__config["MAIN"]["storage_path"],
                 self.__atmel,
-                self.__config["MAIN"]["secure_transfer_keys_path"],
-                self.__config["MAIN"]["secure_transfer_keys_passwd"],
-                self.__config["MAIN"]["release_trust_list_folder"],
-                self.__config["MAIN"]["dev_mode_folder_path"]
+                **self.__args
             )
+
+            self._util_manager = UtilityManager(util_context)
         return self._util_manager

@@ -1,7 +1,10 @@
 
-.PHONY: wheel clean
+.PHONY: wheel clean venv test
 binary: build_nuitka build_nuitka_converter build_nuitka_buld_devmode clean_binary_build
 PYTHON3="python3.5"
+MKFILE_PATH=$(abspath $(lastword $(MAKEFILE_LIST)))
+PWD=$(patsubst %/,%,$(dir $(MKFILE_PATH)))
+VENV=$(PWD)/venv
 
 define clean_dist
 	@echo "Clean dist directory"
@@ -60,3 +63,24 @@ clean_binary_build:
 
 clean_dist:
 	$(call clean_dist)
+
+venv:
+	@if [ ! -d "$(VENV)" ]; then \
+		echo ">>>Creating venv at $(VENV)"; \
+		python3.5 -m venv $(VENV); \
+		. $(VENV)/bin/activate; \
+		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; \
+		python get-pip.py; \
+		rm -f get-pip.py; \
+	fi
+
+test_requirements: venv
+	@. $(VENV)/bin/activate; \
+	pip install .; \
+	cd ../../ext/integration_tests_framework; \
+	pip install .; \
+	cd -
+
+test: test_requirements
+	@. $(VENV)/bin/activate; \
+	pytest -s tests
