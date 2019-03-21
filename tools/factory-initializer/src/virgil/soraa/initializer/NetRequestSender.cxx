@@ -42,6 +42,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
 using virgil::soraa::initializer::NetRequestSender;
 
