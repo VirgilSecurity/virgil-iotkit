@@ -34,86 +34,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/registrator/SingleFileEncryptedRequestProvider.h>
-#include <virgil/soraa/registrator/XLSXIOReader.h>
+#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 
 using virgil::sdk::crypto::Crypto;
 using virgil::soraa::registrator::SingleFileEncryptedRequestProvider;
-using virgil::soraa::registrator::XLSXIOReader;
 using namespace virgil::crypto;
 
 SingleFileEncryptedRequestProvider::SingleFileEncryptedRequestProvider(
         std::shared_ptr<Crypto> crypto, const sdk::crypto::keys::PrivateKey &privateKey,
-        const sdk::crypto::keys::PublicKey &publicKey,  const std::string &filename, bool isXlsInputFile) {
+        const sdk::crypto::keys::PublicKey &publicKey,  const std::string &filename) {
 
-    if(isXlsInputFile) {
-
-        std::cout << "Exel input file with visible serials mode" << std::endl;
-        serialNumbers_.clear();
-
-        XLSXIOReader* xlsxsfile= new XLSXIOReader(filename.c_str());
-
-
-        if (xlsxsfile -> OpenSheet(NULL, XLSXIOREAD_SKIP_EMPTY_ROWS)) {
-            std::vector <std::string> cardRequests;
-            std::vector <std::string> serialNumbers;
-
-            std::string requestColumnName("Programmed Provisioning Card Request:");
-            xlsxsfile->GetNextRow();
-            auto cardRequestColumnNumber = xlsxsfile->GetColumnNumberByContent(requestColumnName, 1);
-
-            xlsxsfile -> ReopenSheet( NULL, XLSXIOREAD_SKIP_EMPTY_ROWS);
-
-            xlsxsfile -> GetNextRow();
-
-            requestColumnName = "Label Number";
-            auto serialColumnNumber = xlsxsfile->GetColumnNumberByContent(requestColumnName, 1);
-
-            if(cardRequestColumnNumber < 0 || serialColumnNumber < 0) return;
-
-            while(xlsxsfile->GetNextRow()) {
-                std::string cardReq;
-                std::string serialNum;
-
-                if(cardRequestColumnNumber > serialColumnNumber) {
-                    if( !xlsxsfile->GetCellString(serialNum, serialColumnNumber, 1)
-                        || !xlsxsfile->GetCellString(cardReq, cardRequestColumnNumber, serialColumnNumber + 1)){
-                        continue;
-                    }
-                } else {
-                    if( !xlsxsfile->GetCellString(cardReq, cardRequestColumnNumber, 1)
-                        || !xlsxsfile->GetCellString(serialNum, serialColumnNumber, cardRequestColumnNumber + 1)){
-                        continue;
-                    }
-                }
-
-                if(cardReq.empty()
-                        || serialNum.empty()) {
-                    continue;
-                }
-
-                cardRequests.push_back(cardReq);
-                serialNumbers_.push_back(serialNum);
-            }
-            delete(xlsxsfile);
-
-            std::transform(cardRequests.begin(),
-                           cardRequests.end(),
-                           std::back_inserter(cardRequests_),
-                           [&] (const std::string & line) {
-                               auto data = VirgilBase64::decode(line);
-                               auto decryptedData = crypto->decryptThenVerify(data,
-                                                                              privateKey,
-                                                                              publicKey);
-                               return bytes2str(decryptedData);
-                           });
-        } else {
-            std::cout << "Can`t open xls file" << std::endl;
-        }
-
-    } else {
         std::cout << "Txt input file mode" << std::endl;
         std::ifstream input;
         input.open(filename, std::fstream::in);
@@ -128,8 +61,6 @@ SingleFileEncryptedRequestProvider::SingleFileEncryptedRequestProvider(
                                                                           publicKey);
                            return bytes2str(decryptedData);
                        });
-    }
-
 }
 
 std::string SingleFileEncryptedRequestProvider::getData() {

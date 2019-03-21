@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/SdmpPublicKeyProvider.h>
+#include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
 
 using virgil::soraa::initializer::SdmpPublicKeyProvider;
 using virgil::soraa::initializer::VirgilByteArray;

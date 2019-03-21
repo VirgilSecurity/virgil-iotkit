@@ -35,10 +35,10 @@
  */
 
 #include <cstring>
-#include <virgil/soraa/initializer/SdmpProcessor.h>
-#include <virgil/soraa/initializer/NetRequestSender.h>
+#include <virgil/iot/initializer/SdmpProcessor.h>
+#include <virgil/iot/initializer/NetRequestSender.h>
 #include <externals/json.hpp>
-#include <virgil/soraa/initializer/SdmpBuild.h>
+#include <virgil/iot/initializer/SdmpBuild.h>
 
 using virgil::soraa::initializer::SdmpProcessor;
 using service_PRVS_provision_info_t = virgil::soraa::initializer::service_PRVS_provision_info_t;

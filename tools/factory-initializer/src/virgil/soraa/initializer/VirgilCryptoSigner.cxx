@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/VirgilCryptoSigner.h>
-#include <virgil/soraa/initializer/Crc16.h>
+#include <virgil/iot/initializer/VirgilCryptoSigner.h>
+#include <virgil/iot/initializer/Crc16.h>
 #include "virgil/crypto/VirgilSigner.h"
 #include <virgil/sdk/crypto/Crypto.h>
 

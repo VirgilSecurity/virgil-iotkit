@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/NetRequestSender.h>
+#include <virgil/iot/initializer/NetRequestSender.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>

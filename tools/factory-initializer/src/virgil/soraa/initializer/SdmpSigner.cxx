@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/initializer/SdmpSigner.h>
+#include <virgil/iot/initializer/SdmpSigner.h>
 
 using virgil::soraa::initializer::SdmpSigner;
 using virgil::soraa::initializer::VirgilByteArray;

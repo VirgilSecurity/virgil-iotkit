@@ -36,14 +36,11 @@
 
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
-project (virgil-demo-soraa-lamp-registrator VERSION 1.0.0 LANGUAGES CXX)
+project (virgil-iot-registrar VERSION 1.0.0 LANGUAGES CXX)
 
 # Enable C++14
 set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory (${PROJECT_SOURCE_DIR}/../../sdk/virgil-sdk-cpp virgil-sdk-cpp)
-add_subdirectory(${PROJECT_SOURCE_DIR}/xlsxio xlsxio_read)
 
 file (GLOB_RECURSE SRC_LIST_SRC "src/*.cxx")
 set (SRC_LIST ${SRC_LIST_BIN} ${SRC_LIST_SRC})
@@ -57,13 +54,12 @@ message (STATUS "PROJECT_SOURCE_DIR: " ${PROJECT_SOURCE_DIR})
 message (STATUS "Source list: " ${SRC_LIST})
 
 include_directories (${PROJECT_SOURCE_DIR}/include)
-include_directories (${PROJECT_SOURCE_DIR}/xlsxio/include)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
-target_link_libraries (${PROJECT_NAME} virgil_sdk xlsxio_read_STATIC)
+target_link_libraries (${PROJECT_NAME} virgil_sdk)
 
 IF("${CMAKE_SYSTEM}" MATCHES "Linux")
     target_link_libraries (${PROJECT_NAME} pthread)
 endif()
-set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "soraa-device-registrator")
+set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "iot-registrar")

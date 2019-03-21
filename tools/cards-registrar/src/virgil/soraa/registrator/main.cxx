@@ -35,11 +35,11 @@
  */
 
 #include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/soraa/registrator/Common.h>
-#include <virgil/soraa/registrator/Filesystem.h>
-#include <virgil/soraa/registrator/ParamsCommadLine.h>
-#include <virgil/soraa/registrator/LampRegistrator.h>
-#include <virgil/soraa/registrator/SingleFileEncryptedRequestProvider.h>
+#include <virgil/iot/registrator/Common.h>
+#include <virgil/iot/registrator/Filesystem.h>
+#include <virgil/iot/registrator/ParamsCommadLine.h>
+#include <virgil/iot/registrator/LampRegistrator.h>
+#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
 
 using virgil::sdk::crypto::Crypto;
 using virgil::soraa::registrator::VirgilBase64;
@@ -63,8 +63,8 @@ int main (int argc, char *argv[]) {
     
     auto fixedDataFile = Filesystem::fixPath(params->dataFile());
     
-    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile, params->isXlsInputFile());
-    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), params->isXlsInputFile());
+    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
+    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), false);
     
     registrator.registerLamps();
 

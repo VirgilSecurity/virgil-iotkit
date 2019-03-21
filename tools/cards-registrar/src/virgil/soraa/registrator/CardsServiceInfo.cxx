@@ -35,7 +35,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/soraa/registrator/CardsServiceInfo.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
 
 using virgil::soraa::registrator::CardsServiceInfo;
 

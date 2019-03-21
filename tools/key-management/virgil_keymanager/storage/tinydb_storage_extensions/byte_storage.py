@@ -22,6 +22,7 @@ class ByteStorage(Storage):
         """
 
         super(ByteStorage, self).__init__()
+        self._suppress_db_warning = kwargs.pop("suppress_db_warning") or False
         touch(path, create_dirs=create_dirs)  # Create file if not exists
         self.kwargs = kwargs
         self._handle = open(path, 'r+b')

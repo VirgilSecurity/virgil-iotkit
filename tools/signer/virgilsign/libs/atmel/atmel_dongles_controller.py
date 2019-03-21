@@ -82,7 +82,7 @@ class AtmelDonglesController(object):
     def get_key_type(self, device_serial=None):
         # type: (Optional[Union[int, str]]) -> Tuple(bool, str)
         """
-        Get type of soraa key wrote to atmel device.
+        Get type of iot key wrote to atmel device.
         Args:
             device_serial: Serial of plugged atmel device.
 

@@ -3,10 +3,9 @@ import os
 from PyCRC.CRCCCITT import CRCCCITT
 
 from virgil_keymanager.data_types import KeyPair, TrustList
-from .key_storage import KeyStorage
 
 
-class FileKeyStorage(KeyStorage):
+class FileKeyStorage:
 
     def __init__(self, storage_path):
         super(FileKeyStorage, self).__init__()
@@ -48,4 +47,3 @@ class FileKeyStorage(KeyStorage):
 
         if isinstance(data, (bytes, bytearray)):
             self.__save_blob(place, data)
-

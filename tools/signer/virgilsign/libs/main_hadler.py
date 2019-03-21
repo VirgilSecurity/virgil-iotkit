@@ -77,7 +77,7 @@ class MainHandler:
     @staticmethod
     def __get_cli_args():
         args = argparse.ArgumentParser(prog='virgilsign', description='Virgil Security util for signing'
-                                                                      'soraa bulb firmware',
+                                                                      'iot bulb firmware',
                                        formatter_class=argparse.RawTextHelpFormatter)
         args.add_argument('-c', '--config', type=str, help='Use config file from custom path')
         args.add_argument('-i', '--input', type=str, help='Input file')

@@ -36,7 +36,7 @@
 
 #include <iostream>
 #include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/soraa/registrator/LampRegistrator.h>
+#include <virgil/iot/registrator/LampRegistrator.h>
 #include <virgil/sdk/client/CardClient.h>
 #include <virgil/sdk/client/models/RawCardContent.h>
 #include <virgil/sdk/cards/ModelSigner.h>
