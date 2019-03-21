@@ -35,6 +35,7 @@
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/initializer/hal/netif_plc_sim.h>
 
+#include <string.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <pthread.h>
@@ -57,17 +58,17 @@ static vs_netif_rx_cb_t _netif_plc_rx_cb_sim = 0;
 /******************************************************************************/
 static void *
 _plc_receive_processor(void *sock_desc) {
-    char server_reply[PLC_RX_BUF_SZ];
+    char received_data[PLC_RX_BUF_SZ];
     ssize_t recv_sz;
 
     while (1) {
-        recv_sz = recv(_plc_sock, server_reply, PLC_RX_BUF_SZ, 0);
+        recv_sz = recv(_plc_sock, received_data, PLC_RX_BUF_SZ, 0);
         if (recv_sz < 0) {
             printf("PLC recv failed\n");
         }
 
         // Pass received data to upper level via callback
-        _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t*)server_reply, recv_sz);
+        _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t*)received_data, recv_sz);
     }
 }
 
@@ -90,6 +91,8 @@ _plc_tx_sim(const uint8_t *data, const size_t data_sz) {
 static int
 _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
     struct sockaddr_in server;
+
+    _netif_plc_rx_cb_sim = rx_cb;
 
     // Create socket
     _plc_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -115,11 +118,24 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
 }
 
 /******************************************************************************/
+int
+_plc_mac_sim(struct vs_mac_addr_t *mac_addr) {
+
+    if (mac_addr) {
+        memset(mac_addr->bytes, 0x01, sizeof(vs_mac_addr_t));
+        return 0;
+    }
+
+    return 1;
+}
+
+/******************************************************************************/
 static void
 _prepare_netif_plc_sim() {
-    _netif_plc_sim.netif_user_data = NULL;
+    _netif_plc_sim.user_data = NULL;
     _netif_plc_sim.init = _plc_init_sim;
     _netif_plc_sim.tx = _plc_tx_sim;
+    _netif_plc_sim.mac_addr = _plc_mac_sim;
 }
 
 /******************************************************************************/

@@ -38,19 +38,37 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONL_IN_COMPILE_TIME(val)  (uint32_t)(((uint32_t)val & 0xFF)<<24 | ((uint32_t)val & 0xFF00)<<8 | ((uint32_t)val & 0xFF0000)>>8 | ((uint32_t)val & 0xFF000000)>>24)
+#else
+#define HTONL_IN_COMPILE_TIME(val)  (val)
+#endif
+
+// Macro used to do htons in compile time
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONS_IN_COMPILE_TIME(val)  (uint16_t)(((uint16_t)val & 0xFF)<<8 | ((uint16_t)val & 0xFF00)>>8)
+#else
+#define HTONS_IN_COMPILE_TIME(val) (val)
+#endif
+
 struct vs_netif_t;
+struct vs_mac_addr_t;
 
 // Callback for Received data
 typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz);
 
 typedef int (*vs_netif_tx_t)(const uint8_t *data, const size_t data_sz);
+typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
 typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
 
 // SDMP Services processor
-typedef int (*vs_sdmp_service_processor_t)(const struct vs_netif_t *netif,
+typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
                                            const uint8_t *request, const size_t request_sz,
                                            uint8_t *response, const size_t response_buf_sz, size_t *response_sz);
+
+typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
+                                                   const uint8_t *response, const size_t response_sz);
 
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
@@ -59,13 +77,21 @@ typedef int (*vs_sdmp_service_processor_t)(const struct vs_netif_t *netif,
 #define ETH_MIN_LEN (64)
 #define ETH_MTU (1500)
 
+#define VS_ETHERTYPE_VIRGIL (HTONS_IN_COMPILE_TIME(0xABCD))
+
+typedef enum {
+    VS_SDMP_FLAG_ACK  = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
+} vs_sdmp_flags_e;
+
 /******************************************************************************/
 
 typedef uint16_t vs_sdmp_transaction_id_t;
 typedef uint32_t vs_sdmp_service_id_t;
+typedef uint32_t vs_sdmp_element_t;
 
 /******************************************************************************/
-typedef struct __attribute__((__packed__)) mac_addr {
+typedef struct __attribute__((__packed__)) vs_mac_addr_t {
     uint8_t bytes[ETH_ADDR_LEN];
 } vs_mac_addr_t;
 
@@ -80,6 +106,7 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id;
     vs_sdmp_service_id_t service_id;
+    uint32_t flags;
     uint16_t padding;
     uint16_t content_size;
 } vs_sdmp_header_t;
@@ -88,30 +115,37 @@ typedef struct __attribute__((__packed__)) {
 typedef struct __attribute__((__packed__)) {
     vs_ethernet_header_t eth_header;
     vs_sdmp_header_t header;
-    uint8_t *content;
+    uint8_t content[];
 } vs_sdmp_packet_t;
 
 /******************************************************************************/
 typedef struct vs_netif_t {
-    /// An opaque context likely used to point to a simulated device context
-    void *netif_user_data;
+    void *user_data;
 
-    /// A function, that inits communication over network interface
+    // Functions
     vs_netif_init_t init;
-
-    /// A function, that handles common transmit functionality for interfaces of the same type, simulated or not
     vs_netif_tx_t tx;
-
+    vs_netif_mac_t mac_addr;
 } vs_netif_t;
 
 /******************************************************************************/
 typedef struct {
     void *user_data;
-
     vs_sdmp_service_id_t id;
-
-    vs_sdmp_service_processor_t process;
-
+    vs_sdmp_service_request_processor_t request_process;
+    vs_sdmp_service_response_processor_t response_process;
 } vs_sdmp_service_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) {
+    uint16_t len;
+    uint8_t data[];
+} vs_sdmp_data_t;
+
+/******************************************************************************/
+typedef struct __attribute__((__packed__)) {
+    vs_sdmp_element_t element_id;
+    vs_sdmp_data_t data;
+} vs_sdmp_element_data_t;
 
 #endif //KUNLUN_SDMP_STRUCTS_H

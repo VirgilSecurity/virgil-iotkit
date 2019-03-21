@@ -41,6 +41,8 @@
 #include <vector>
 #include <virgil/iot/initializer/ProvisioningInfo.h>
 #include <virgil/iot/initializer/SignerInterface.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
 
 using virgil::soraa::initializer::ProvisioningInfo;
 using virgil::soraa::initializer::SignerInterface;
@@ -54,70 +56,6 @@ using virgil::soraa::initializer::SignerInterface;
 namespace virgil {
 namespace soraa {
     namespace initializer {
-        typedef struct SOneDev {
-            std::string macAddr;
-            DeviceType type;
-        } SOneDev_t;
-
-        enum dev_type_t {
-            dev_unknown = 0x00,
-            dev_lamp,
-            dev_snap,
-            dev_gateway,
-            dev_ncm,
-        };
-
-        typedef struct __attribute__((__packed__)) {
-            uint8_t mac[6];
-            dev_type_t deviceType;
-            uint8_t reserved[10];
-        } service_PRVS_DNID_t;
-
-        typedef struct __attribute__((__packed__)) {
-            uint8_t data_sz;
-            uint8_t device_type;
-            uint8_t data[200];
-        } service_PRVS_data_t;
-
-        typedef struct __attribute__((__packed__)) {
-            uint8_t val[PUBKEY_TINY_ID_SZ];
-        } crypto_public_key_id_t;
-
-        typedef struct __attribute__((__packed__)) {
-            crypto_public_key_id_t signer_id;
-            uint8_t val[SIGNATURE_SZ];
-        } crypto_signature_t;
-
-        typedef struct __attribute__((__packed__)) {
-            uint8_t tiny[PUBKEY_TINY_SZ];
-            uint8_t full_sz;
-            uint8_t full[100];
-        } service_PRVS_own_key_t;
-
-        typedef struct __attribute__((__packed__)) {
-            uint32_t manufacturer;
-            uint32_t model;
-            uint8_t mac[6];
-            uint8_t udid_of_device[32];
-            crypto_signature_t signature;
-            service_PRVS_own_key_t own_key;
-        } service_PRVS_provision_info_t;
-
-        typedef struct __attribute__((__packed__)) {
-            uint16_t id;
-            uint8_t val_sz;
-            uint8_t val[];
-        } service_PRVS_full_signature_t;
-
-        typedef struct __attribute__((__packed__)) {
-            service_PRVS_provision_info_t info;
-            service_PRVS_full_signature_t signature;
-        } service_PRVS_provision_info_signed_t;
-
-        typedef struct __attribute__((__packed__)) {
-            service_PRVS_own_key_t key;
-            service_PRVS_full_signature_t signature;
-        } service_PRVS_own_key_signed_t;
         
         class SdmpProcessor {
         public:
@@ -140,14 +78,9 @@ namespace soraa {
 
             VirgilByteArray signDataInDevice(const VirgilByteArray & data) const;
 
-            static std::vector<SOneDev_t> discoverDevices();
+            static vs_sdmp_prvs_dnid_list_t discoverDevices();
             
         private:
-            std::string createRequest(const std::string & action,
-                                      const std::string & param,
-                                      const std::string & value = "") const;
-
-            static bool isOk(const std::string & netResponse);
             bool initDevice();
             bool setTrustList(const ProvisioningInfo & provisioningInfo) const;
             bool setKeys(const ProvisioningInfo & provisioningInfo) const;

@@ -41,8 +41,62 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
+typedef enum {
+    VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'),	/**< Discover Not Initialized Devices */
+    VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'),	/**< Signature of own public key (by private key VS_PRVS_PBDM)  */
+    VS_PRVS_PBR1 = HTONL_IN_COMPILE_TIME('PBR1'),	/**< Set Recovery Key 1 */
+    VS_PRVS_PBR2 = HTONL_IN_COMPILE_TIME('PBR2'),	/**< Set Recovery Key 2 */
+    VS_PRVS_PBA1 = HTONL_IN_COMPILE_TIME('PBA1'),	/**< Set Auth Key 1 */
+    VS_PRVS_PBA2 = HTONL_IN_COMPILE_TIME('PBA2'),	/**< Set Auth Key 2 */
+    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'),	/**< Set Trust List Key 1 */
+    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'),	/**< Set Trust List 2 */
+    VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'),   /**< Set Firmware Key 1 */
+    VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'),   /**< Set Firmware Key 2 */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),	/**< Set Trust List header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List footer */
+} vs_sdmp_prvs_element_t;
+
+typedef struct {
+    vs_mac_addr_t mac_addr;
+    uint8_t device_type;
+    uint8_t reserved[10];
+} vs_sdmp_prvs_dnid_element_t;
+
+#define DNID_LIST_SZ_MAX (10)
+
+typedef struct {
+    vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
+    size_t count;
+} vs_sdmp_prvs_dnid_list_t;
+
+typedef int (*vs_sdmp_prvs_dnid_t)();
+
+
+// Get Service descriptor
+
 const vs_sdmp_service_t *
 vs_sdmp_prvs_service();
+
+// HAL
+int
+vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_dnid_t dnid_func);
+
+// Commands
+int
+vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
+
+int
+vs_sdmp_prvs_device_info();
+
+int
+vs_sdmp_prvs_sign_data();
+
+int
+vs_sdmp_prvs_set(vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz);
+
+int
+vs_sdmp_prvs_get(vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz);
 
 #ifdef __cplusplus
 }
