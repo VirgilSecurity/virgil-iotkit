@@ -45,30 +45,7 @@
 
 using virgil::soraa::initializer::SdmpProcessor;
 
-const std::string SdmpProcessor::kBaseAddr("0.0.0.0");
-const std::string SdmpProcessor::kServiceName("prvs");
-
-const std::string SdmpProcessor::kSetData("iSET");
-const std::string SdmpProcessor::kGetData("iGET");
-
-const std::string SdmpProcessor::kSetRecKey1("PBR1");
-const std::string SdmpProcessor::kSetRecKey2("PBR2");
-const std::string SdmpProcessor::kSetAuthKey1("PBA1");
-const std::string SdmpProcessor::kSetAuthKey2("PBA2");
-const std::string SdmpProcessor::kSetTLKey1("PBT1");
-const std::string SdmpProcessor::kSetTLKey2("PBT2");
-const std::string SdmpProcessor::kSetFWKey1("PBF1");
-const std::string SdmpProcessor::kSetFWKey2("PBF2");
-
-const std::string SdmpProcessor::kSaveActionParam("ASAV");
-const std::string SdmpProcessor::kDeviceInfoParam("DEVI");
-const std::string SdmpProcessor::kDeviceSignatureParam("SGNP");
-const std::string SdmpProcessor::kSignActionParam("ASGN");
-const std::string SdmpProcessor::kDiscoveryNotInitedDevicesParam("DNID");
-
-const std::string SdmpProcessor::kSetTLHeader("_TLH");
-const std::string SdmpProcessor::kSetTLChunks("_TLC");
-const std::string SdmpProcessor::kSetTLFooter("_TLF");
+const size_t SdmpProcessor::kDefaultWaitTimeMs = 500;
 
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
@@ -102,7 +79,6 @@ deviceSigner_(std::move(deviceSigner)), deviceInfo_(deviceInfo) {
 
 vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
     vs_sdmp_prvs_dnid_list_t list;
-    const size_t wait500ms = 500;
 
     memset(&list, 0, sizeof(list));
 
@@ -115,7 +91,7 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
         throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
     }
 
-    vs_sdmp_prvs_uninitialized_devices(0, &list, wait500ms);
+    vs_sdmp_prvs_uninitialized_devices(0, &list, kDefaultWaitTimeMs);
 
     // Disconnect from PLC bus
     vs_sdmp_deinit();
@@ -201,14 +177,12 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
 
 bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
-    const size_t wait500ms = 500;
-
     // Recovery public keys
     std::cout << "Upload Recovery key 1" << std::endl;
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR1,
                               provisioningInfo.recPubKey1().data(),
                               provisioningInfo.recPubKey1().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -216,16 +190,16 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR2,
                               provisioningInfo.recPubKey2().data(),
                               provisioningInfo.recPubKey2().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
     // Auth Public keys
     std::cout << "Upload Auth key 1" << std::endl;
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA1,
-            provisioningInfo.authPubKey1().data(),
-            provisioningInfo.authPubKey1().size(),
-            wait500ms)) {
+                              provisioningInfo.authPubKey1().data(),
+                              provisioningInfo.authPubKey1().size(),
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -233,7 +207,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA2,
                               provisioningInfo.authPubKey2().data(),
                               provisioningInfo.authPubKey2().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -243,7 +217,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF1,
                               provisioningInfo.fwPubKey1().data(),
                               provisioningInfo.fwPubKey1().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -251,7 +225,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF2,
                               provisioningInfo.fwPubKey2().data(),
                               provisioningInfo.fwPubKey2().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -261,7 +235,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT1,
                               provisioningInfo.tlPubKey1().data(),
                               provisioningInfo.tlPubKey1().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -269,7 +243,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT2,
                               provisioningInfo.tlPubKey2().data(),
                               provisioningInfo.tlPubKey2().size(),
-                              wait500ms)) {
+                              kDefaultWaitTimeMs)) {
         return false;
     }
     
@@ -277,32 +251,32 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 }
 
 bool SdmpProcessor::signDevice() const {
-//    auto signatureVal = deviceSigner_->sign(devicePublicKeyTiny_);
-//
-//    if (signatureVal.empty()) {
-//        std::cerr << "ERROR: signature empty" << std::endl;
-//        return false;
-//    }
-//
-//    if (!deviceSigner_->verify(devicePublicKeyTiny_,
-//                              signatureVal,
-//                              deviceSigner_->publicKeyFull())) {
-//        std::cerr << "ERROR: signature is wrong" << std::endl;
-//        return false;
-//    }
-//
-//    std::cout << "Public key: " << VirgilBase64::encode(deviceSigner_->publicKeyFull()) << std::endl;
-//    std::cout << "Signer ID: " << deviceSigner_->signerId() << std::endl;
-//    std::cout << "Device key: " << VirgilBase64::encode(devicePublicKeyTiny_) << std::endl;
-//    std::cout << "Signature: " << VirgilBase64::encode(signatureVal) << std::endl;
-//
+    auto signatureVal = deviceSigner_->sign(devicePublicKeyTiny_);
+
+    if (signatureVal.empty()) {
+        std::cerr << "ERROR: signature empty" << std::endl;
+        return false;
+    }
+
+    if (!deviceSigner_->verify(devicePublicKeyTiny_,
+                               signatureVal,
+                               deviceSigner_->publicKeyFull())) {
+        std::cerr << "ERROR: signature is wrong" << std::endl;
+        return false;
+    }
+
+    std::cout << "Public key: " << VirgilBase64::encode(deviceSigner_->publicKeyFull()) << std::endl;
+    std::cout << "Signer ID: " << deviceSigner_->signerId() << std::endl;
+    std::cout << "Device key: " << VirgilBase64::encode(devicePublicKeyTiny_) << std::endl;
+    std::cout << "Signature: " << VirgilBase64::encode(signatureVal) << std::endl;
+
 //    VirgilByteArray data;
 //    data.resize(sizeof(service_PRVS_full_signature_t) + signatureVal.size());
 //    auto signature = reinterpret_cast<service_PRVS_full_signature_t *>(data.data());
 //    signature->id = deviceSigner_->signerId();
 //    signature->val_sz = signatureVal.size();
 //    memcpy(signature->val, signatureVal.data(), signature->val_sz);
-//
+
 //    const auto _signRequest(createRequest(kSetData,
 //                                          kDeviceSignatureParam,
 //                                          VirgilBase64::encode(data)));
@@ -312,17 +286,14 @@ bool SdmpProcessor::signDevice() const {
 }
 
 bool SdmpProcessor::getProvisionInfo() {
-    
-//    const auto response = NetRequestSender::netRequest(createRequest(kGetData, kDeviceInfoParam));
-//
-//    if (isOk(response)) {
-//        try {
-//            auto jsonData = json::parse(response);
-//            const std::string responseData = jsonData["ethernet"]["sdmp"]["content"]["ack"]["message_data"]["data"]["val"];
-//
-//            VirgilByteArray ba = VirgilBase64::decode(responseData);
-//            auto res = reinterpret_cast <service_PRVS_provision_info_signed_t *> (ba.data());
-//
+    vs_sdmp_prvs_devi_t device_info;
+
+    memset(&device_info, 0 , sizeof(device_info));
+
+    if (0 != vs_sdmp_prvs_device_info(0, &device_info, kDefaultWaitTimeMs)) {
+        return false;
+    }
+
 //            auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_provision_info_t));
 //            auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.tiny, 64);
 //            auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.full, res->info.own_key.full_sz);
@@ -335,23 +306,16 @@ bool SdmpProcessor::getProvisionInfo() {
 //                throw std::runtime_error(what);
 //            }
 //
-//            deviceID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.udid_of_device, 32);
 //            devicePublicKey_ = keyFull;
 //            devicePublicKeyTiny_ = keyTiny;
-//            deviceMacAddr_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.mac, 6);
 //            signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.signer_id.val, PUBKEY_TINY_ID_SZ);
 //            signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.val, SIGNATURE_SZ);
-//            manufacturer_ = res->info.manufacturer;
-//            model_ = res->info.model;
-//
-//            return true;
-//        } catch(...) {
-//            const auto what(std::string("Wrong data in response \n" + response));
-//            throw std::runtime_error(what);
-//        }
-//    }
-    
-//    return false;
+
+    deviceID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.udid_of_device, 32);
+    deviceMacAddr_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.mac.bytes, 6);
+    manufacturer_ = device_info.manufacturer;
+    model_ = device_info.model;
+
     return true;
 }
 

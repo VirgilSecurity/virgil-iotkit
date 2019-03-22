@@ -55,6 +55,7 @@ typedef enum {
     VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),	/**< Set Trust List header */
     VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List chunk */
     VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List footer */
+    VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'),	/**< Get DEVice Info */
 } vs_sdmp_prvs_element_t;
 
 typedef struct {
@@ -70,10 +71,21 @@ typedef struct {
     size_t count;
 } vs_sdmp_prvs_dnid_list_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint32_t manufacturer;
+    uint32_t model;
+    vs_mac_addr_t mac;
+    uint8_t udid_of_device[32];
+#if 0
+    crypto_signature_t signature;
+    service_PRVS_own_key_t own_key;
+#endif
+} vs_sdmp_prvs_devi_t;
+
 typedef int (*vs_sdmp_prvs_dnid_t)();
 typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_load_data_t)();
-typedef int (*vs_sdmp_prvs_device_info_t)();
+typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info);
 typedef int (*vs_sdmp_prvs_finalize_storage_t)();
 typedef int (*vs_sdmp_prvs_save_tl_part_t)();
 typedef int (*vs_sdmp_prvs_finalize_tl_t)();
@@ -102,7 +114,7 @@ int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
 
 int
-vs_sdmp_prvs_device_info();
+vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t wait_ms);
 
 int
 vs_sdmp_prvs_sign_data();

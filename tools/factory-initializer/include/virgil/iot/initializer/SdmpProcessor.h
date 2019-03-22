@@ -102,40 +102,7 @@ namespace soraa {
             uint32_t manufacturer_;
             uint32_t model_;
 
-            static const std::string kBaseAddr;
-
-            static const std::string kServiceName;
-            
-            static const std::string kSetData;
-            static const std::string kGetData;
-
-            static const std::string kSetRecKey1;
-            static const std::string kSetRecKey2;
-            static const std::string kSetAuthKey1;
-            static const std::string kSetAuthKey2;
-            static const std::string kSetTLKey1;
-            static const std::string kSetTLKey2;
-            static const std::string kSetFWKey1;
-            static const std::string kSetFWKey2;
-
-            static const std::string kSetTLHeader;
-            static const std::string kSetTLChunks;
-            static const std::string kSetTLFooter;
-
-            static const std::string kSerialNumberParam;
-            static const std::string kModelParam;
-            static const std::string kManufactureParam;
-            static const std::string kPartsCountParam;
-            static const std::string kPartParam;
-            static const std::string kFirmwarePublicKeyParam;
-            static const std::string kFirmwarePublicKeyAlternativeParam;
-            static const std::string kDeviceVerificationPublicKeyParam;
-            static const std::string kDeviceVerificationPublicKeyAlternativeParam;
-            static const std::string kSaveActionParam;
-            static const std::string kDeviceInfoParam;
-            static const std::string kDeviceSignatureParam;
-            static const std::string kSignActionParam;
-            static const std::string kDiscoveryNotInitedDevicesParam;
+            static const size_t kDefaultWaitTimeMs;
         };
     }
 }

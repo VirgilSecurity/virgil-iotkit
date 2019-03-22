@@ -48,7 +48,10 @@ static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;
 static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 
 // Last result
+#define PRVS_BUF_SZ (1024)
 static int _last_res = -1;
+static size_t _last_data_sz = 0;
+static uint8_t _last_data[PRVS_BUF_SZ];
 
 /******************************************************************************/
 int
@@ -106,6 +109,23 @@ _prvs_key_save_process_request(
 
 /******************************************************************************/
 static int
+_prvs_devi_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
+        uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
+
+    vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
+
+    VS_ASSERT(_prvs_impl.device_info_func);
+    if (0 != _prvs_impl.device_info_func(devi_response)) {
+        return -1;
+    }
+
+    *response_sz = sizeof(vs_sdmp_prvs_devi_t);
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
 _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
         const size_t request_sz, uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
@@ -116,6 +136,9 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
     switch (element_id) {
     case VS_PRVS_DNID:
         return _prvs_dnid_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_PRVS_DEVI:
+        return _prvs_devi_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_PBR1:
     case VS_PRVS_PBR2:
@@ -143,22 +166,15 @@ _prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element
     case VS_PRVS_DNID:
         return _prvs_dnid_process_response(netif, response, response_sz);
 
-    case VS_PRVS_PBR1:
-    case VS_PRVS_PBR2:
-    case VS_PRVS_PBA1:
-    case VS_PRVS_PBA2:
-    case VS_PRVS_PBT1:
-    case VS_PRVS_PBT2:
-    case VS_PRVS_PBF1:
-    case VS_PRVS_PBF2:
-        _last_res = is_ack ? 0 : -1;
-        return 0;
-
     default: {
+        _last_res = is_ack ? 0 : -1;
+        if (response_sz && response_sz < PRVS_BUF_SZ) {
+            _last_data_sz = response_sz;
+            memcpy(_last_data, response, response_sz);
+        }
+        return 0;
     }
     }
-
-    return -1;
 }
 
 /******************************************************************************/
@@ -225,8 +241,9 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_device_info() {
-    return -1;
+vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t wait_ms) {
+    size_t sz;
+    return vs_sdmp_prvs_get(netif, VS_PRVS_DEVI, (uint8_t *)device_info, sizeof(vs_sdmp_prvs_devi_t), &sz, wait_ms);
 }
 
 /******************************************************************************/
@@ -239,6 +256,7 @@ vs_sdmp_prvs_sign_data() {
 static void
 _reset_last_result() {
     _last_res = -1;
+    _last_data_sz = 0;
 }
 
 /******************************************************************************/
@@ -264,5 +282,24 @@ vs_sdmp_prvs_set(
 int
 vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz,
         size_t wait_ms) {
+
+    _reset_last_result();
+
+    // Send request
+    if (0 != _send_request(netif, element, 0, 0)) {
+        return -1;
+    }
+
+    // Wait request
+    // TODO: Fix wait here
+    usleep(wait_ms * 1000);
+
+    // Pass data
+    if (0 == _last_res && _last_data_sz <= buf_sz) {
+        memcpy(data, _last_data, _last_data_sz);
+        *data_sz = _last_data_sz;
+        return 0;
+    }
+
     return -1;
 }
