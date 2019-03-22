@@ -72,8 +72,8 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
 
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
-                _sdmp_services[i]->response_process(
-                        netif, packet->header.element_id, packet->content, packet->header.content_size);
+                _sdmp_services[i]->response_process(netif, packet->header.element_id,
+                        packet->header.flags & VS_SDMP_FLAG_ACK, packet->content, packet->header.content_size);
 
                 // Process request
             } else {
@@ -128,6 +128,8 @@ vs_sdmp_deinit() {
     VS_ASSERT(_sdmp_default_netif->deinit);
 
     _sdmp_default_netif->deinit();
+
+    return 0;
 }
 
 /******************************************************************************/

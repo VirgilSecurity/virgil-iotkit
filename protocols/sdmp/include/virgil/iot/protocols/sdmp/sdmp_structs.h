@@ -37,6 +37,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define HTONL_IN_COMPILE_TIME(val)  (uint32_t)(((uint32_t)val & 0xFF)<<24 | ((uint32_t)val & 0xFF00)<<8 | ((uint32_t)val & 0xFF0000)>>8 | ((uint32_t)val & 0xFF000000)>>24)
@@ -77,6 +78,7 @@ typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *neti
 
 typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
                                                     vs_sdmp_element_t element_id,
+                                                    bool is_ack,
                                                     const uint8_t *response, const size_t response_sz);
 
 #define ETH_ADDR_LEN (6)

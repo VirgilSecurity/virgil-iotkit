@@ -136,8 +136,8 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
 
 /******************************************************************************/
 static int
-_prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *response,
-        const size_t response_sz) {
+_prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, bool is_ack,
+        const uint8_t *response, const size_t response_sz) {
 
     switch (element_id) {
     case VS_PRVS_DNID:
@@ -151,7 +151,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element
     case VS_PRVS_PBT2:
     case VS_PRVS_PBF1:
     case VS_PRVS_PBF2:
-        _last_res = 0;
+        _last_res = is_ack ? 0 : -1;
         return 0;
 
     default: {
