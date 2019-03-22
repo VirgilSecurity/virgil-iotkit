@@ -79,9 +79,8 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
             } else {
                 processed = true;
                 if (0 == _sdmp_services[i]->request_process(netif, packet->header.element_id, packet->content,
-                                                            packet->header.content_size, response_packet->content,
-                                                            RESPONSE_SZ_MAX,
-                                                            &response_sz)) {
+                                 packet->header.content_size, response_packet->content, RESPONSE_SZ_MAX,
+                                 &response_sz)) {
                     // Send response
 
                     response_packet->header.content_size = response_sz;

@@ -58,7 +58,7 @@ static int
 _prvs_dnid_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
         uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
-    vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *) response;
+    vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
 #if 0
     VS_ASSERT(_prvs_dnid_func);
@@ -93,8 +93,7 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 /******************************************************************************/
 static int
 _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
-                                const size_t request_sz, uint8_t *response, const size_t response_buf_sz,
-                                size_t *response_sz) {
+        const size_t request_sz, uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
     // Process DNID
     if (VS_PRVS_DNID == element_id) {
@@ -107,7 +106,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
 /******************************************************************************/
 static int
 _prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *response,
-                                 const size_t response_sz) {
+        const size_t response_sz) {
     // Process DNID
     if (VS_PRVS_DNID == element_id) {
         return _prvs_dnid_process_response(netif, response, response_sz);
