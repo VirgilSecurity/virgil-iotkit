@@ -47,11 +47,13 @@
 using virgil::soraa::initializer::ProvisioningInfo;
 using virgil::soraa::initializer::SignerInterface;
 
+#if 0
 #define SIGNATURE_SZ      (64)
 #define SALT_SZ           (32)
 #define PUBKEY_TINY_SZ    (64)
 #define PUBKEY_TINY_ID_SZ (2)
 #define SERIAL_SIZE       (32)
+#endif
 
 namespace virgil {
 namespace soraa {
@@ -60,8 +62,7 @@ namespace soraa {
         class SdmpProcessor {
         public:
             SdmpProcessor(const ProvisioningInfo & provisioningInfo,
-                          std::string addr,
-                          DeviceType type,
+                          vs_sdmp_prvs_dnid_element_t deviceInfo,
                           std::shared_ptr<SignerInterface> deviceSigner);
 
             virtual ~SdmpProcessor() = default;
@@ -88,7 +89,7 @@ namespace soraa {
             bool signDevice() const;
             bool getProvisionInfo();
 
-            std::string addr_;
+            vs_sdmp_prvs_dnid_element_t deviceInfo_;
             DeviceType deviceType_;
 
             std::shared_ptr<SignerInterface> deviceSigner_;

@@ -71,19 +71,17 @@ const std::string SdmpProcessor::kSetTLChunks("_TLC");
 const std::string SdmpProcessor::kSetTLFooter("_TLF");
 
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
-                             std::string addr,
-                             DeviceType type,
+                             vs_sdmp_prvs_dnid_element_t deviceInfo,
                              std::shared_ptr<SignerInterface> deviceSigner) :
-deviceSigner_(std::move(deviceSigner)), addr_(addr), deviceType_(type) {
+deviceSigner_(std::move(deviceSigner)), deviceInfo_(deviceInfo) {
+    // Connect to PLC bus
+    if (0 != vs_sdmp_init(vs_hal_netif_plc_sim())) {
+        throw std::runtime_error(std::string("Can't start SDMP communication"));
+    }
 
-//    // Connect to PLC bus
-//    if (0 != vs_sdmp_init (vs_hal_netif_plc_sim())) {
-//        throw std::runtime_error(std::string("Can't start SDMP communication"));
-//    }
-//
-//    if (0 != vs_sdmp_register_service (vs_sdmp_prvs_service())) {
-//        throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
-//    }
+    if (0 != vs_sdmp_register_service(vs_sdmp_prvs_service())) {
+        throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
+    }
 
     //
     if (provisioningInfo.trustListOnly()) {
@@ -109,15 +107,18 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
     memset(&list, 0, sizeof(list));
 
     // Connect to PLC bus
-    if (0 != vs_sdmp_init (vs_hal_netif_plc_sim())) {
+    if (0 != vs_sdmp_init(vs_hal_netif_plc_sim())) {
         throw std::runtime_error(std::string("Can't start SDMP communication"));
     }
 
-    if (0 != vs_sdmp_register_service (vs_sdmp_prvs_service())) {
+    if (0 != vs_sdmp_register_service(vs_sdmp_prvs_service())) {
         throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
     }
 
     vs_sdmp_prvs_uninitialized_devices(0, &list, wait500ms);
+
+    // Disconnect from PLC bus
+    vs_sdmp_deinit();
 
     return list;
 }
@@ -155,7 +156,9 @@ bool SdmpProcessor::initDevice() {
 //        }
 //    }
 
-    return false;
+//    return false;
+
+    return true;
 }
 
 bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) const {
@@ -198,51 +201,79 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
 
 bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
-//    const auto _setAuthPublicKey1(createRequest(kSetData,
-//                                                kSetAuthKey1,
-//                                                VirgilBase64::encode(provisioningInfo.authPubKey1())));
-//    const auto _setAuthPublicKey2(createRequest(kSetData,
-//                                                kSetAuthKey2,
-//                                                VirgilBase64::encode(provisioningInfo.authPubKey2())));
-//    const auto _setRecPublicKey1(createRequest( kSetData,
-//                                                kSetRecKey1,
-//                                                VirgilBase64::encode(provisioningInfo.recPubKey1())));
-//    const auto _setRecPublicKey2(createRequest( kSetData,
-//                                                kSetRecKey2,
-//                                                VirgilBase64::encode(provisioningInfo.recPubKey2())));
-//    const auto _setTlPublicKey1(createRequest( kSetData,
-//                                               kSetTLKey1,
-//                                               VirgilBase64::encode(provisioningInfo.tlPubKey1())));
-//    const auto _setTlPublicKey2(createRequest( kSetData,
-//                                               kSetTLKey2,
-//                                               VirgilBase64::encode(provisioningInfo.tlPubKey2())));
-//    const auto _setFWPublicKey1(createRequest( kSetData,
-//                                               kSetFWKey1,
-//                                               VirgilBase64::encode(provisioningInfo.fwPubKey1())));
-//    const auto _setFWPublicKey2(createRequest( kSetData,
-//                                               kSetFWKey2,
-//                                               VirgilBase64::encode(provisioningInfo.fwPubKey2())));
-//
-//
-//    try {
-//
-//        if (isOk(NetRequestSender::netRequest(_setRecPublicKey1))
-//            && isOk(NetRequestSender::netRequest(_setRecPublicKey2))
-//            && isOk(NetRequestSender::netRequest(_setAuthPublicKey1))
-//            && isOk(NetRequestSender::netRequest(_setAuthPublicKey2))
-//            && isOk(NetRequestSender::netRequest(_setTlPublicKey1))
-//            && isOk(NetRequestSender::netRequest(_setTlPublicKey2))
-//            && isOk(NetRequestSender::netRequest(_setFWPublicKey1))
-//            && isOk(NetRequestSender::netRequest(_setFWPublicKey2))
-//            && setTrustList(provisioningInfo)) {
-//
-//            return true;
-//        }
-//    } catch (...) {
-//        std::cerr << "ERROR: Can't initialize device" << std::endl;
-//    }
+    const size_t wait500ms = 500;
+
+    // Recovery public keys
+    std::cout << "Upload Recovery key 1" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR1,
+                              provisioningInfo.recPubKey1().data(),
+                              provisioningInfo.recPubKey1().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+    std::cout << "Upload Recovery key 2" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR2,
+                              provisioningInfo.recPubKey2().data(),
+                              provisioningInfo.recPubKey2().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+    // Auth Public keys
+    std::cout << "Upload Auth key 1" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA1,
+            provisioningInfo.authPubKey1().data(),
+            provisioningInfo.authPubKey1().size(),
+            wait500ms)) {
+        return false;
+    }
+
+    std::cout << "Upload Auth key 2" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA2,
+                              provisioningInfo.authPubKey2().data(),
+                              provisioningInfo.authPubKey2().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+
+    // Firmware public keys
+    std::cout << "Upload Firmware key 1" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF1,
+                              provisioningInfo.fwPubKey1().data(),
+                              provisioningInfo.fwPubKey1().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+    std::cout << "Upload Firmware key 2" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF2,
+                              provisioningInfo.fwPubKey2().data(),
+                              provisioningInfo.fwPubKey2().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+
+    // TrustList Public keys
+    std::cout << "Upload TrustList key 1" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT1,
+                              provisioningInfo.tlPubKey1().data(),
+                              provisioningInfo.tlPubKey1().size(),
+                              wait500ms)) {
+        return false;
+    }
+
+    std::cout << "Upload TrustList key 2" << std::endl;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT2,
+                              provisioningInfo.tlPubKey2().data(),
+                              provisioningInfo.tlPubKey2().size(),
+                              wait500ms)) {
+        return false;
+    }
     
-    return false;
+    return true;
 }
 
 bool SdmpProcessor::signDevice() const {
@@ -276,7 +307,8 @@ bool SdmpProcessor::signDevice() const {
 //                                          kDeviceSignatureParam,
 //                                          VirgilBase64::encode(data)));
 //    return isOk(NetRequestSender::netRequest(_signRequest));
-    return false;
+//    return false;
+    return true;
 }
 
 bool SdmpProcessor::getProvisionInfo() {
@@ -319,7 +351,8 @@ bool SdmpProcessor::getProvisionInfo() {
 //        }
 //    }
     
-    return false;
+//    return false;
+    return true;
 }
 
 VirgilByteArray SdmpProcessor::deviceID() const {

@@ -117,22 +117,21 @@ int main (int argc, char *argv[]) {
                       << std::hex << static_cast<int> (devices.elements[i].mac_addr.bytes[j]);
         }
 
-//        auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(), device.macAddr, device.type,
-//                                                             deviceSigner);
-//
-//        if (!params->provisioningInfo().trustListOnly()) {
-//            auto deviceInfoProvider = std::make_shared<SdmpDeviceInfoProvider>(params->provisioningInfo(), sdmpProcessor);
-//
-//            auto publicKeyProvider = std::make_shared<SdmpPublicKeyProvider>(sdmpProcessor);
-//
-//            auto signer = std::make_shared<SdmpSigner>(sdmpProcessor);
-//
-//            // Get all things needed for creating request
-//            auto deviceRequestBuilder = DeviceRequestBuilder(crypto, deviceInfoProvider, publicKeyProvider, signer);
-//
+        auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(),
+                                                             devices.elements[i],
+                                                             deviceSigner);
+
+        if (!params->provisioningInfo().trustListOnly()) {
+            auto deviceInfoProvider = std::make_shared<SdmpDeviceInfoProvider>(params->provisioningInfo(), sdmpProcessor);
+            auto publicKeyProvider = std::make_shared<SdmpPublicKeyProvider>(sdmpProcessor);
+            auto signer = std::make_shared<SdmpSigner>(sdmpProcessor);
+
+            // Get all things needed for creating request
+            auto deviceRequestBuilder = DeviceRequestBuilder(crypto, deviceInfoProvider, publicKeyProvider, signer);
+
 //            // Create request and persist to persistence manager
-//            AssemblyLineProcessor::processDevice(deviceRequestBuilder, persistenceManager, deviceInfoPersistenceManager);
-//        }
+            AssemblyLineProcessor::processDevice(deviceRequestBuilder, persistenceManager, deviceInfoPersistenceManager);
+        }
     }
 
     return 0;

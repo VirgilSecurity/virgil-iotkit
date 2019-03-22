@@ -71,7 +71,22 @@ typedef struct {
 } vs_sdmp_prvs_dnid_list_t;
 
 typedef int (*vs_sdmp_prvs_dnid_t)();
+typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_load_data_t)();
+typedef int (*vs_sdmp_prvs_device_info_t)();
+typedef int (*vs_sdmp_prvs_finalize_storage_t)();
+typedef int (*vs_sdmp_prvs_save_tl_part_t)();
+typedef int (*vs_sdmp_prvs_finalize_tl_t)();
 
+typedef struct {
+    vs_sdmp_prvs_dnid_t dnid_func;
+    vs_sdmp_prvs_save_data_t save_data_func;
+    vs_sdmp_prvs_load_data_t load_data_func;
+    vs_sdmp_prvs_device_info_t device_info_func;
+    vs_sdmp_prvs_finalize_storage_t finalize_storage_func;
+    vs_sdmp_prvs_save_tl_part_t save_tl_part_func;
+    vs_sdmp_prvs_finalize_tl_t finalize_tl_func;
+} vs_sdmp_prvs_impl_t;
 
 // Get Service descriptor
 
@@ -80,7 +95,7 @@ vs_sdmp_prvs_service();
 
 // HAL
 int
-vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_dnid_t dnid_func);
+vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl);
 
 // Commands
 int
@@ -93,10 +108,10 @@ int
 vs_sdmp_prvs_sign_data();
 
 int
-vs_sdmp_prvs_set(vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz);
+vs_sdmp_prvs_set(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms);
 
 int
-vs_sdmp_prvs_get(vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz);
+vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz, size_t wait_ms);
 
 #ifdef __cplusplus
 }

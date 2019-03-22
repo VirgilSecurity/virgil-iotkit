@@ -35,6 +35,7 @@
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/initializer/hal/netif_plc_sim.h>
 
+#include <unistd.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -65,11 +66,14 @@ _plc_receive_processor(void *sock_desc) {
         recv_sz = recv(_plc_sock, received_data, PLC_RX_BUF_SZ, 0);
         if (recv_sz < 0) {
             printf("PLC recv failed\n");
+            break;
         }
 
         // Pass received data to upper level via callback
         _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t*)received_data, recv_sz);
     }
+
+    return NULL;
 }
 
 /******************************************************************************/
@@ -119,6 +123,14 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
 
 /******************************************************************************/
 int
+_plc_deinit_sim() {
+    close(_plc_sock);
+    pthread_join(receive_thread, NULL);
+    return 0;
+}
+
+/******************************************************************************/
+int
 _plc_mac_sim(struct vs_mac_addr_t *mac_addr) {
 
     if (mac_addr) {
@@ -134,6 +146,7 @@ static void
 _prepare_netif_plc_sim() {
     _netif_plc_sim.user_data = NULL;
     _netif_plc_sim.init = _plc_init_sim;
+    _netif_plc_sim.deinit = _plc_deinit_sim;
     _netif_plc_sim.tx = _plc_tx_sim;
     _netif_plc_sim.mac_addr = _plc_mac_sim;
 }

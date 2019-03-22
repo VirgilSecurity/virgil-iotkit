@@ -42,14 +42,18 @@
 
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
-static vs_sdmp_prvs_dnid_t _prvs_dnid_func = 0;
 static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;
+
+// External functions for access to upper level implementations
+static vs_sdmp_prvs_impl_t _prvs_impl = {0};
+
+// Last result
+static int _last_res = -1;
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_dnid_t dnid_func) {
-    VS_ASSERT(dnid_func);
-    _prvs_dnid_func = dnid_func;
+vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
+    _prvs_impl = impl;
     return 0;
 }
 
@@ -60,9 +64,12 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif, const uint8_t *reques
 
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
-#if 0
-    VS_ASSERT(_prvs_dnid_func);
-#endif
+    VS_ASSERT(_prvs_impl.dnid_func);
+
+    if (0 != _prvs_impl.dnid_func()) {
+        return -1;
+    }
+
     const size_t required_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
     VS_ASSERT(response_buf_sz >= required_sz);
 
@@ -80,7 +87,6 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
     if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
-
         memcpy(&_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_sdmp_prvs_dnid_element_t));
         _prvs_dnid_list->count++;
 
@@ -92,12 +98,37 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 
 /******************************************************************************/
 static int
+_prvs_key_save_process_request(
+        const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *key, const size_t key_sz) {
+    VS_ASSERT(_prvs_impl.save_data_func);
+    return _prvs_impl.save_data_func(element_id, key, key_sz);
+}
+
+/******************************************************************************/
+static int
 _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
         const size_t request_sz, uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
     // Process DNID
-    if (VS_PRVS_DNID == element_id) {
+
+    *response_sz = 0;
+
+    switch (element_id) {
+    case VS_PRVS_DNID:
         return _prvs_dnid_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_PRVS_PBR1:
+    case VS_PRVS_PBR2:
+    case VS_PRVS_PBA1:
+    case VS_PRVS_PBA2:
+    case VS_PRVS_PBT1:
+    case VS_PRVS_PBT2:
+    case VS_PRVS_PBF1:
+    case VS_PRVS_PBF2:
+        return _prvs_key_save_process_request(netif, element_id, request, request_sz);
+
+    default: {
+    }
     }
 
     return -1;
@@ -107,9 +138,24 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
 static int
 _prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *response,
         const size_t response_sz) {
-    // Process DNID
-    if (VS_PRVS_DNID == element_id) {
+
+    switch (element_id) {
+    case VS_PRVS_DNID:
         return _prvs_dnid_process_response(netif, response, response_sz);
+
+    case VS_PRVS_PBR1:
+    case VS_PRVS_PBR2:
+    case VS_PRVS_PBA1:
+    case VS_PRVS_PBA2:
+    case VS_PRVS_PBT1:
+    case VS_PRVS_PBT2:
+    case VS_PRVS_PBF1:
+    case VS_PRVS_PBF2:
+        _last_res = 0;
+        return 0;
+
+    default: {
+    }
     }
 
     return -1;
@@ -136,14 +182,10 @@ vs_sdmp_prvs_service() {
 }
 
 /******************************************************************************/
-int
-vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms) {
-
-    uint8_t buffer[sizeof(vs_sdmp_packet_t)];
+static int
+_send_request(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz) {
+    uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
     vs_sdmp_packet_t *packet;
-
-    // Check input parameters
-    VS_ASSERT(list);
 
     memset(buffer, 0, sizeof(buffer));
 
@@ -151,16 +193,27 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     packet = (vs_sdmp_packet_t *)buffer;
 
     // Prepare request
-    packet->header.element_id = VS_PRVS_DNID;
+    packet->header.element_id = element;
     packet->header.service_id = _prvs_service.id;
-    packet->header.content_size = 0;
+    packet->header.content_size = data_sz;
+    if (data_sz) {
+        memcpy(packet->content, data, data_sz);
+    }
     _sdmp_fill_header(0, packet);
+
+    // Send request
+    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
+}
+/******************************************************************************/
+int
+vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms) {
 
     // Set storage for DNID request
     _prvs_dnid_list = list;
+    memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
 
     // Send request
-    if (0 != vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size)) {
+    if (0 != _send_request(netif, VS_PRVS_DNID, 0, 0)) {
         return -1;
     }
 
@@ -183,13 +236,33 @@ vs_sdmp_prvs_sign_data() {
 }
 
 /******************************************************************************/
-int
-vs_sdmp_prvs_set(vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz) {
-    return -1;
+static void
+_reset_last_result() {
+    _last_res = -1;
 }
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_get(vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz) {
+vs_sdmp_prvs_set(
+        const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms) {
+
+    _reset_last_result();
+
+    // Send request
+    if (0 != _send_request(netif, element, data, data_sz)) {
+        return -1;
+    }
+
+    // Wait request
+    // TODO: Fix wait here
+    usleep(wait_ms * 1000);
+
+    return _last_res;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz,
+        size_t wait_ms) {
     return -1;
 }

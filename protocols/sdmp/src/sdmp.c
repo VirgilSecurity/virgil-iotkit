@@ -82,11 +82,11 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
                                  packet->header.content_size, response_packet->content, RESPONSE_SZ_MAX,
                                  &response_sz)) {
                     // Send response
-
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
                 } else {
                     // Send response with error code
+                    // TODO: Fill structure with error code here
                     response_packet->header.flags |= VS_SDMP_FLAG_NACK;
                     response_packet->header.content_size = 0;
                 }
@@ -119,6 +119,15 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
     default_netif->init(_sdmp_rx_cb);
 
     return 0;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_deinit() {
+    VS_ASSERT(_sdmp_default_netif);
+    VS_ASSERT(_sdmp_default_netif->deinit);
+
+    _sdmp_default_netif->deinit();
 }
 
 /******************************************************************************/

@@ -66,6 +66,9 @@ typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
 typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
 
+typedef int (*vs_netif_deinit_t)();
+
+
 // SDMP Services processor
 typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
                                                    vs_sdmp_element_t element_id,
@@ -126,6 +129,7 @@ typedef struct vs_netif_t {
 
     // Functions
     vs_netif_init_t init;
+    vs_netif_deinit_t deinit;
     vs_netif_tx_t tx;
     vs_netif_mac_t mac_addr;
 } vs_netif_t;

@@ -44,6 +44,9 @@ extern "C" {
 int
 vs_sdmp_init(const vs_netif_t *default_netif);
 
+int
+vs_sdmp_deinit();
+
 #if 0
 int
 vs_sdmp_add_netif(const vs_netif_t *netif);
