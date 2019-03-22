@@ -72,13 +72,16 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
 
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
-                _sdmp_services[i]->response_process(netif, packet->content, packet->header.content_size);
+                _sdmp_services[i]->response_process(
+                        netif, packet->header.element_id, packet->content, packet->header.content_size);
 
                 // Process request
             } else {
                 processed = true;
-                if (0 == _sdmp_services[i]->request_process(netif, packet->content, packet->header.content_size,
-                                 response_packet->content, RESPONSE_SZ_MAX, &response_sz)) {
+                if (0 == _sdmp_services[i]->request_process(netif, packet->header.element_id, packet->content,
+                                                            packet->header.content_size, response_packet->content,
+                                                            RESPONSE_SZ_MAX,
+                                                            &response_sz)) {
                     // Send response
 
                     response_packet->header.content_size = response_sz;

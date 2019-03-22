@@ -54,6 +54,10 @@
 struct vs_netif_t;
 struct vs_mac_addr_t;
 
+typedef uint16_t vs_sdmp_transaction_id_t;
+typedef uint32_t vs_sdmp_service_id_t;
+typedef uint32_t vs_sdmp_element_t;
+
 // Callback for Received data
 typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz);
 
@@ -64,11 +68,13 @@ typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
 
 // SDMP Services processor
 typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
-                                           const uint8_t *request, const size_t request_sz,
-                                           uint8_t *response, const size_t response_buf_sz, size_t *response_sz);
+                                                   vs_sdmp_element_t element_id,
+                                                   const uint8_t *request, const size_t request_sz,
+                                                   uint8_t *response, const size_t response_buf_sz, size_t *response_sz);
 
 typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
-                                                   const uint8_t *response, const size_t response_sz);
+                                                    vs_sdmp_element_t element_id,
+                                                    const uint8_t *response, const size_t response_sz);
 
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
@@ -84,11 +90,6 @@ typedef enum {
     VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
 } vs_sdmp_flags_e;
 
-/******************************************************************************/
-
-typedef uint16_t vs_sdmp_transaction_id_t;
-typedef uint32_t vs_sdmp_service_id_t;
-typedef uint32_t vs_sdmp_element_t;
 
 /******************************************************************************/
 typedef struct __attribute__((__packed__)) vs_mac_addr_t {
@@ -106,6 +107,7 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id;
     vs_sdmp_service_id_t service_id;
+    vs_sdmp_element_t element_id;
     uint32_t flags;
     uint16_t padding;
     uint16_t content_size;
@@ -136,16 +138,5 @@ typedef struct {
     vs_sdmp_service_response_processor_t response_process;
 } vs_sdmp_service_t;
 
-/******************************************************************************/
-typedef struct __attribute__((__packed__)) {
-    uint16_t len;
-    uint8_t data[];
-} vs_sdmp_data_t;
-
-/******************************************************************************/
-typedef struct __attribute__((__packed__)) {
-    vs_sdmp_element_t element_id;
-    vs_sdmp_data_t data;
-} vs_sdmp_element_data_t;
 
 #endif //KUNLUN_SDMP_STRUCTS_H

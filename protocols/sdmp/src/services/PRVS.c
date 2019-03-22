@@ -58,15 +58,12 @@ static int
 _prvs_dnid_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
         uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
-    vs_sdmp_element_data_t *sdmp_data = (vs_sdmp_element_data_t *)response;
-    vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)sdmp_data->data.data;
-    sdmp_data->data.len = sizeof(vs_sdmp_prvs_dnid_element_t);
-    sdmp_data->element_id = VS_PRVS_DNID;
+    vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *) response;
 
 #if 0
     VS_ASSERT(_prvs_dnid_func);
 #endif
-    const size_t required_sz = sizeof(vs_sdmp_element_data_t) + sizeof(vs_sdmp_prvs_dnid_element_t);
+    const size_t required_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
     VS_ASSERT(response_buf_sz >= required_sz);
 
     vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
@@ -95,36 +92,28 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 
 /******************************************************************************/
 static int
-_prvs_service_request_processor(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
-        uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
-
-    int res = -1;
-    vs_sdmp_element_data_t *sdmp_data = (vs_sdmp_element_data_t *)request;
+_prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
+                                const size_t request_sz, uint8_t *response, const size_t response_buf_sz,
+                                size_t *response_sz) {
 
     // Process DNID
-    if (VS_PRVS_DNID == sdmp_data->element_id) {
-        res = _prvs_dnid_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+    if (VS_PRVS_DNID == element_id) {
+        return _prvs_dnid_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
     }
 
-    // Prepare response;
-    if (0 == res) {
-    }
-
-    return res;
+    return -1;
 }
 
 /******************************************************************************/
 static int
-_prvs_service_response_processor(const struct vs_netif_t *netif, const uint8_t *response, const size_t response_sz) {
-    int res = -1;
-    vs_sdmp_element_data_t *sdmp_data = (vs_sdmp_element_data_t *)response;
-
+_prvs_service_response_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *response,
+                                 const size_t response_sz) {
     // Process DNID
-    if (VS_PRVS_DNID == sdmp_data->element_id) {
-        res = _prvs_dnid_process_response(netif, sdmp_data->data.data, sdmp_data->data.len);
+    if (VS_PRVS_DNID == element_id) {
+        return _prvs_dnid_process_response(netif, response, response_sz);
     }
 
-    return res;
+    return -1;
 }
 
 /******************************************************************************/
@@ -151,9 +140,8 @@ vs_sdmp_prvs_service() {
 int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms) {
 
-    uint8_t buffer[sizeof(vs_sdmp_packet_t) + sizeof(vs_sdmp_element_data_t)];
+    uint8_t buffer[sizeof(vs_sdmp_packet_t)];
     vs_sdmp_packet_t *packet;
-    vs_sdmp_element_data_t *content;
 
     // Check input parameters
     VS_ASSERT(list);
@@ -162,15 +150,11 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
 
     // Prepare pointers
     packet = (vs_sdmp_packet_t *)buffer;
-    content = (vs_sdmp_element_data_t *)packet->content;
 
     // Prepare request
-    content->element_id = VS_PRVS_DNID;
-    content->data.len = 0;
-
+    packet->header.element_id = VS_PRVS_DNID;
     packet->header.service_id = _prvs_service.id;
-    packet->header.content_size = sizeof(vs_sdmp_element_data_t);
-
+    packet->header.content_size = 0;
     _sdmp_fill_header(0, packet);
 
     // Set storage for DNID request
