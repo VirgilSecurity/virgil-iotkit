@@ -64,21 +64,6 @@ target_include_directories(${PROJECT_NAME}
         )
 
 #
-#   platform include directories
-#
-if (IOTELIC_PLATFORM)
-    set(SP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../sp)
-    set (AP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../ap)
-
-    target_include_directories(${PROJECT_NAME}
-            PRIVATE
-            "${AP_DIR}/inc"
-            "${SP_DIR}/crypto/inc"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../crypto/thirdparty/iotelic/include"
-            )
-endif ()
-
-#
 # Format code
 #
 if (COMMAND add_clangformat)
