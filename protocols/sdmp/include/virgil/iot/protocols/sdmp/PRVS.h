@@ -41,6 +41,9 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
+#define DNID_LIST_SZ_MAX (10)
+#define PUBKEY_MAX_SZ (100)
+
 typedef enum {
     VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'),	/**< Discover Not Initialized Devices */
     VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'),	/**< Signature of own public key (by private key VS_PRVS_PBDM)  */
@@ -52,10 +55,11 @@ typedef enum {
     VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'),	/**< Set Trust List 2 */
     VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'),   /**< Set Firmware Key 1 */
     VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'),   /**< Set Firmware Key 2 */
-    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),	/**< Set Trust List header */
-    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List chunk */
-    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List footer */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),	/**< Set Trust List Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List Footer */
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'),	/**< Get DEVice Info */
+    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'),	/**< Save provision */
 } vs_sdmp_prvs_element_t;
 
 typedef struct {
@@ -63,8 +67,6 @@ typedef struct {
     uint8_t device_type;
     uint8_t reserved[10];
 } vs_sdmp_prvs_dnid_element_t;
-
-#define DNID_LIST_SZ_MAX (10)
 
 typedef struct {
     vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
@@ -82,11 +84,16 @@ typedef struct __attribute__((__packed__)) {
 #endif
 } vs_sdmp_prvs_devi_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint8_t pubkey[PUBKEY_MAX_SZ];
+    uint8_t pubkey_sz;
+} vs_sdmp_asav_res_t;
+
 typedef int (*vs_sdmp_prvs_dnid_t)();
 typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_load_data_t)();
 typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info);
-typedef int (*vs_sdmp_prvs_finalize_storage_t)();
+typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_asav_res_t *asav_response);
 typedef int (*vs_sdmp_prvs_save_tl_part_t)();
 typedef int (*vs_sdmp_prvs_finalize_tl_t)();
 
@@ -112,6 +119,9 @@ vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl);
 // Commands
 int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
+
+int
+vs_sdmp_prvs_save_provision(const vs_netif_t *netif, vs_sdmp_asav_res_t *asav_res, size_t wait_ms);
 
 int
 vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t wait_ms);

@@ -100,39 +100,29 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
 }
 
 bool SdmpProcessor::initDevice() {
-//    const auto response = NetRequestSender::netRequest(createRequest(kSetData, kSaveActionParam), 20);
-//
-//    if (isOk(response)) {
-//        try {
-//            auto jsonData = json::parse(response);
-//            const std::string responseData = jsonData["ethernet"]["sdmp"]["content"]["ack"]["message_data"]["data"]["val"];
-//
-//            VirgilByteArray ba = VirgilBase64::decode(responseData);
-//
-//            auto res = reinterpret_cast <service_PRVS_own_key_signed_t *> (ba.data());
-//
-//            auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_own_key_t));
-//            auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->key.tiny, 64);
-//            auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->key.full, res->key.full_sz);
-//            auto signature = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->signature.val, res->signature.val_sz);
-//
-//            if (!deviceSigner_->verify(dataToVerify,
-//                                       signature,
-//                                       keyFull)) {
-//                const auto what(std::string("Wrong key value of device in PRVS:ASAV \n" + response));
-//                throw std::runtime_error(what);
-//            }
-//
-//            devicePublicKeyTiny_ = keyTiny;
-//
-//            return true;
-//        } catch(...) {
-//            const auto what(std::string("Wrong data in response \n" + response));
-//            throw std::runtime_error(what);
-//        }
-//    }
+    vs_sdmp_asav_res_t asav_info;
 
-//    return false;
+    memset(&asav_info, 0 , sizeof(asav_info));
+
+    if (0 != vs_sdmp_prvs_save_provision(0, &asav_info, kDefaultWaitTimeMs)) {
+        return false;
+    }
+
+    auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(asav_info.pubkey, 64);
+
+#if 0
+    auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_own_key_t));
+    auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->key.full, res->key.full_sz);
+    auto signature = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->signature.val, res->signature.val_sz);
+
+    if (!deviceSigner_->verify(dataToVerify,
+                               signature,
+                               keyFull)) {
+        const auto what(std::string("Wrong key value of device in PRVS:ASAV \n" + response));
+        throw std::runtime_error(what);
+    }
+#endif
+    devicePublicKeyTiny_ = keyTiny;
 
     return true;
 }
@@ -294,22 +284,24 @@ bool SdmpProcessor::getProvisionInfo() {
         return false;
     }
 
-//            auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_provision_info_t));
-//            auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.tiny, 64);
-//            auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.full, res->info.own_key.full_sz);
-//            auto signature = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->signature.val, res->signature.val_sz);
-//
-//            if (!deviceSigner_->verify(dataToVerify,
-//                                       signature,
-//                                       keyFull)) {
-//                const auto what(std::string("Wrong data value of device in PRVS:DEVI \n" + response));
-//                throw std::runtime_error(what);
-//            }
-//
-//            devicePublicKey_ = keyFull;
-//            devicePublicKeyTiny_ = keyTiny;
-//            signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.signer_id.val, PUBKEY_TINY_ID_SZ);
-//            signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.val, SIGNATURE_SZ);
+#if 0
+    auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_provision_info_t));
+    auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.tiny, 64);
+    auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.full, res->info.own_key.full_sz);
+    auto signature = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->signature.val, res->signature.val_sz);
+
+    if (!deviceSigner_->verify(dataToVerify,
+                               signature,
+                               keyFull)) {
+        const auto what(std::string("Wrong data value of device in PRVS:DEVI \n" + response));
+        throw std::runtime_error(what);
+    }
+
+    devicePublicKey_ = keyFull;
+    devicePublicKeyTiny_ = keyTiny;
+    signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.signer_id.val, PUBKEY_TINY_ID_SZ);
+    signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.val, SIGNATURE_SZ);
+#endif
 
     deviceID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.udid_of_device, 32);
     deviceMacAddr_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.mac.bytes, 6);

@@ -126,6 +126,23 @@ _prvs_devi_process_request(const struct vs_netif_t *netif, const uint8_t *reques
 
 /******************************************************************************/
 static int
+_prvs_asav_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
+        uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
+
+    vs_sdmp_asav_res_t *asav_response = (vs_sdmp_asav_res_t *)response;
+
+    VS_ASSERT(_prvs_impl.finalize_storage_func);
+    if (0 != _prvs_impl.finalize_storage_func(asav_response)) {
+        return -1;
+    }
+
+    *response_sz = sizeof(vs_sdmp_asav_res_t);
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
 _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
         const size_t request_sz, uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
@@ -139,6 +156,9 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
 
     case VS_PRVS_DEVI:
         return _prvs_devi_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_PRVS_ASAV:
+        return _prvs_asav_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_PBR1:
     case VS_PRVS_PBR2:
@@ -302,4 +322,13 @@ vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_
     }
 
     return -1;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_save_provision(const vs_netif_t *netif, vs_sdmp_asav_res_t *asav_res, size_t wait_ms) {
+    VS_ASSERT(asav_res);
+
+    size_t sz;
+    return vs_sdmp_prvs_get(netif, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_asav_res_t), &sz, wait_ms);
 }

@@ -116,6 +116,7 @@ int main (int argc, char *argv[]) {
             std::cout << std::setfill ('0') << std::setw(sizeof(uint8_t)*2)
                       << std::hex << static_cast<int> (devices.elements[i].mac_addr.bytes[j]);
         }
+        std::cout << std::endl;
 
         auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(),
                                                              devices.elements[i],
