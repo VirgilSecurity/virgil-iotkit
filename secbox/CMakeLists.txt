@@ -33,3 +33,54 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(secbox VERSION 0.1.0 LANGUAGES C)
+
+set(SECBOX_LIB secbox)
+
+#
+#   Source code
+#
+set(SECBOX_SRC
+        src/secbox.c
+        )
+
+#
+#   SDMP library
+#
+add_library(${SECBOX_LIB}
+        ${SECBOX_SRC}
+        )
+
+#
+#   Common include directories
+#
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/secbox
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/virgil/iot/protocols
+        )
+
+#
+#   platform include directories
+#
+if (IOTELIC_PLATFORM)
+    set(SP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../sp)
+    set (AP_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../ap)
+
+    target_include_directories(${PROJECT_NAME}
+            PRIVATE
+            "${AP_DIR}/inc"
+            "${SP_DIR}/crypto/inc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../crypto/thirdparty/iotelic/include"
+            )
+endif ()
+
+#
+# Format code
+#
+if (COMMAND add_clangformat)
+    add_clangformat(${SECBOX_LIB})
+endif ()

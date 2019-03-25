@@ -112,4 +112,10 @@ endif()
 #
 #   Protocols
 #
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/protocols)
+
+#
+#   Secbox
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
