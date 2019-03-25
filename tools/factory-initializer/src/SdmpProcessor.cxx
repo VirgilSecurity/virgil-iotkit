@@ -45,7 +45,7 @@
 
 using virgil::soraa::initializer::SdmpProcessor;
 
-const size_t SdmpProcessor::kDefaultWaitTimeMs = 500;
+const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
 
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
@@ -75,6 +75,11 @@ deviceSigner_(std::move(deviceSigner)), deviceInfo_(deviceInfo) {
 
         std::cout << "OK: Device initialization done successfully. " << std::endl;
     }
+}
+
+SdmpProcessor::~SdmpProcessor() {
+    // Disconnect from PLC bus
+    vs_sdmp_deinit();
 }
 
 vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {

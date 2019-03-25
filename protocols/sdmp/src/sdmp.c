@@ -47,6 +47,28 @@ static const vs_netif_t *_sdmp_default_netif = 0;
 #define SERVICES_CNT_MAX (10)
 static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
 static size_t _sdmp_services_num = 0;
+static uint8_t _sdmp_broadcast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+/******************************************************************************/
+static bool
+_is_broadcast(const vs_mac_addr_t *mac_addr) {
+    return 0 == memcmp(mac_addr->bytes, _sdmp_broadcast_mac, ETH_ADDR_LEN);
+}
+
+/******************************************************************************/
+static bool
+_is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
+    vs_mac_addr_t netif_mac_addr;
+    netif->mac_addr(&netif_mac_addr);
+
+    return 0 == memcmp(mac_addr->bytes, netif_mac_addr.bytes, ETH_ADDR_LEN);
+}
+
+/******************************************************************************/
+static bool
+_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
+    return _is_broadcast(mac_addr) || _is_my_mac(netif, mac_addr);
+}
 
 /******************************************************************************/
 static int
@@ -61,6 +83,9 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
     // Check packet
 
     // Check is my packet
+    if (!_accept_packet(netif, &packet->eth_header.dest)) {
+        return -1;
+    }
 
     // Prepare request
     memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_packet_t));

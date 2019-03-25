@@ -65,7 +65,7 @@ namespace soraa {
                           vs_sdmp_prvs_dnid_element_t deviceInfo,
                           std::shared_ptr<SignerInterface> deviceSigner);
 
-            virtual ~SdmpProcessor() = default;
+            virtual ~SdmpProcessor();
             
             VirgilByteArray deviceID() const;
             VirgilByteArray deviceMacAddr() const;
