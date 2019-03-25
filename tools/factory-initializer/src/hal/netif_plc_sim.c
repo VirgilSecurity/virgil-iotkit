@@ -65,7 +65,6 @@ _plc_receive_processor(void *sock_desc) {
     while (1) {
         recv_sz = recv(_plc_sock, received_data, PLC_RX_BUF_SZ, 0);
         if (recv_sz < 0) {
-            printf("PLC recv failed\n");
             break;
         }
 
