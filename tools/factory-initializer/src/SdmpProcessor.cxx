@@ -70,6 +70,7 @@ deviceSigner_(std::move(deviceSigner)), deviceInfo_(deviceInfo) {
             if (!initDevice()) throw std::runtime_error("Can't initialize device");
             if (!setKeys(provisioningInfo)) throw std::runtime_error("Can't set keys to device");
             if (!signDevice()) throw std::runtime_error("Can't sign device");
+            if (!setTrustList(provisioningInfo)) throw std::runtime_error("Can't set Trust List");
         }
         if (!getProvisionInfo()) throw std::runtime_error("Can't get provision info from device");
 
@@ -133,41 +134,34 @@ bool SdmpProcessor::initDevice() {
 }
 
 bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) const {
-//    const auto _setTlHeader(createRequest(kSetData,
-//                                          kSetTLHeader,
-//                                          VirgilBase64::encode(provisioningInfo.tlHeader())));
-//    const auto _setTlFooter(createRequest(kSetData,
-//                                          kSetTLFooter,
-//                                          VirgilBase64::encode(provisioningInfo.tlFooter())));
-//
-//    std::string  _setTLChunks[provisioningInfo.tlChunksAmount()];
-//
-//    for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount();i++) {
-//        _setTLChunks[i] = createRequest(kSetData,
-//                                        kSetTLChunks,
-//                                        VirgilBase64::encode(provisioningInfo.tlChunk(i)));
-//    }
-//
-//    try {
-//        if (isOk(NetRequestSender::netRequest(_setTlHeader))) {
-//
-//            for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount(); i++) {
-//                if (!isOk(NetRequestSender::netRequest(_setTLChunks[i]))) {
-//                    return false;
-//                }
-//            }
-//
-//            if (!isOk(NetRequestSender::netRequest(_setTlFooter, 30))) {
-//                return false;
-//            }
-//
-//            return true;
-//        }
-//    } catch (...) {
-//        std::cerr << "ERROR: Can't set Trust List" << std::endl;
-//    }
 
-    return false;
+    // Set TL header
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_TLH,
+                              provisioningInfo.tlHeader().data(),
+                              provisioningInfo.tlHeader().size(),
+                              kDefaultWaitTimeMs)) {
+        return false;
+    }
+
+    // Set TL chunks
+    for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount();i++) {
+        if (0 != vs_sdmp_prvs_set(0, VS_PRVS_TLC,
+                                  provisioningInfo.tlChunk(i).data(),
+                                  provisioningInfo.tlChunk(i).size(),
+                                  kDefaultWaitTimeMs)) {
+            return false;
+        }
+    }
+
+    // Set TL footer
+    if (0 != vs_sdmp_prvs_finalize_tl(0,
+                              provisioningInfo.tlFooter().data(),
+                              provisioningInfo.tlFooter().size(),
+                              kDefaultWaitTimeMs)) {
+        return false;
+    }
+
+    return true;
 }
 
 bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
@@ -265,18 +259,22 @@ bool SdmpProcessor::signDevice() const {
     std::cout << "Device key: " << VirgilBase64::encode(devicePublicKeyTiny_) << std::endl;
     std::cout << "Signature: " << VirgilBase64::encode(signatureVal) << std::endl;
 
-//    VirgilByteArray data;
-//    data.resize(sizeof(service_PRVS_full_signature_t) + signatureVal.size());
-//    auto signature = reinterpret_cast<service_PRVS_full_signature_t *>(data.data());
-//    signature->id = deviceSigner_->signerId();
-//    signature->val_sz = signatureVal.size();
-//    memcpy(signature->val, signatureVal.data(), signature->val_sz);
+#if 0
+    VirgilByteArray data;
+    data.resize(sizeof(service_PRVS_full_signature_t) + signatureVal.size());
+    auto signature = reinterpret_cast<service_PRVS_full_signature_t *>(data.data());
+    signature->id = deviceSigner_->signerId();
+    signature->val_sz = signatureVal.size();
+    memcpy(signature->val, signatureVal.data(), signature->val_sz);
+#endif
 
-//    const auto _signRequest(createRequest(kSetData,
-//                                          kDeviceSignatureParam,
-//                                          VirgilBase64::encode(data)));
-//    return isOk(NetRequestSender::netRequest(_signRequest));
-//    return false;
+    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_SGNP,
+                              signatureVal.data(),
+                              signatureVal.size(),
+                              kDefaultWaitTimeMs)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -353,24 +351,14 @@ virgil::soraa::initializer::DeviceType SdmpProcessor::deviceType() const {
 }
 
 VirgilByteArray SdmpProcessor::signDataInDevice(const VirgilByteArray & data) const {
-    
-//    const auto _signRequest(createRequest(kSetData,
-//                                          kSignActionParam,
-//                                          VirgilBase64::encode(data)));
-//
-//    const auto response = NetRequestSender::netRequest(_signRequest);
-//
-//    if (isOk(response)) {
-//        try {
-//            auto jsonData = json::parse(response);
-//            const std::string responseData = jsonData["ethernet"]["sdmp"]["content"]["ack"]["message_data"]["data"]["val"];
-//
-//            return VirgilBase64::decode(responseData);
-//        } catch(...) {
-//            const auto what(std::string("Wrong data in response \n" + response));
-//            throw std::runtime_error(what);
-//        }
-//    }
+    uint8_t signature[512];
+    size_t signature_sz = 0;
+
+    if (0 == vs_sdmp_prvs_sign_data(0, data.data(), data.size(),
+                                    signature, sizeof(signature), &signature_sz,
+                                    kDefaultWaitTimeMs)) {
+        return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(signature, signature_sz);
+    }
     
     return VirgilByteArray();
 }

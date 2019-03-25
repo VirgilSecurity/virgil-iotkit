@@ -143,6 +143,43 @@ _prvs_asav_process_request(const struct vs_netif_t *netif, const uint8_t *reques
 
 /******************************************************************************/
 static int
+_prvs_asgn_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
+        uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
+
+    VS_ASSERT(_prvs_impl.sign_data_func);
+    if (0 != _prvs_impl.sign_data_func(request, request_sz, response, response_buf_sz, response_sz)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
+_prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz) {
+
+    VS_ASSERT(_prvs_impl.save_tl_part_func);
+    if (0 != _prvs_impl.save_tl_part_func(request, request_sz)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
+_prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz) {
+
+    VS_ASSERT(_prvs_impl.finalize_tl_func);
+    if (0 != _prvs_impl.finalize_tl_func(request, request_sz)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
 _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_t element_id, const uint8_t *request,
         const size_t request_sz, uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
@@ -160,6 +197,16 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
     case VS_PRVS_ASAV:
         return _prvs_asav_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
 
+    case VS_PRVS_ASGN:
+        return _prvs_asgn_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_PRVS_TLH:
+    case VS_PRVS_TLC:
+        return _prvs_tl_part_process_request(netif, request, request_sz);
+
+    case VS_PRVS_TLF:
+        return _prvs_finalize_tl_process_request(netif, request, request_sz);
+
     case VS_PRVS_PBR1:
     case VS_PRVS_PBR2:
     case VS_PRVS_PBA1:
@@ -168,6 +215,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif, vs_sdmp_element_
     case VS_PRVS_PBT2:
     case VS_PRVS_PBF1:
     case VS_PRVS_PBF2:
+    case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
     default: {
@@ -267,12 +315,6 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_in
 }
 
 /******************************************************************************/
-int
-vs_sdmp_prvs_sign_data() {
-    return -1;
-}
-
-/******************************************************************************/
 static void
 _reset_last_result() {
     _last_res = -1;
@@ -331,4 +373,35 @@ vs_sdmp_prvs_save_provision(const vs_netif_t *netif, vs_sdmp_asav_res_t *asav_re
 
     size_t sz;
     return vs_sdmp_prvs_get(netif, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_asav_res_t), &sz, wait_ms);
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, uint8_t *signature, size_t buf_sz,
+        size_t *signature_sz, size_t wait_ms) {
+    _reset_last_result();
+
+    // Send request
+    if (0 != _send_request(netif, VS_PRVS_ASGN, data, data_sz)) {
+        return -1;
+    }
+
+    // Wait request
+    // TODO: Fix wait here
+    usleep(wait_ms * 1000);
+
+    // Pass data
+    if (0 == _last_res && _last_data_sz <= buf_sz) {
+        memcpy(signature, _last_data, _last_data_sz);
+        *signature_sz = _last_data_sz;
+        return 0;
+    }
+
+    return -1;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, size_t wait_ms) {
+    return vs_sdmp_prvs_set(netif, VS_PRVS_TLF, data, data_sz, wait_ms);
 }

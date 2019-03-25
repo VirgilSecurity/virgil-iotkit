@@ -59,7 +59,8 @@ typedef enum {
     VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List Chunk */
     VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List Footer */
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'),	/**< Get DEVice Info */
-    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'),	/**< Save provision */
+    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'),	/**< Action SAVe provision */
+    VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'),	/**< Action SiGN data */
 } vs_sdmp_prvs_element_t;
 
 typedef struct {
@@ -94,8 +95,10 @@ typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const
 typedef int (*vs_sdmp_prvs_load_data_t)();
 typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info);
 typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_asav_res_t *asav_response);
-typedef int (*vs_sdmp_prvs_save_tl_part_t)();
-typedef int (*vs_sdmp_prvs_finalize_tl_t)();
+typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data, size_t data_sz,
+                                   uint8_t *signature, size_t buf_sz, size_t *signature_sz);
 
 typedef struct {
     vs_sdmp_prvs_dnid_t dnid_func;
@@ -105,6 +108,7 @@ typedef struct {
     vs_sdmp_prvs_finalize_storage_t finalize_storage_func;
     vs_sdmp_prvs_save_tl_part_t save_tl_part_func;
     vs_sdmp_prvs_finalize_tl_t finalize_tl_func;
+    vs_sdmp_sign_data_t sign_data_func;
 } vs_sdmp_prvs_impl_t;
 
 // Get Service descriptor
@@ -127,13 +131,19 @@ int
 vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t wait_ms);
 
 int
-vs_sdmp_prvs_sign_data();
+vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
+        const uint8_t *data, size_t data_sz,
+        uint8_t *signature, size_t buf_sz, size_t *signature_sz,
+        size_t wait_ms);
 
 int
 vs_sdmp_prvs_set(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms);
 
 int
 vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz, size_t wait_ms);
+
+int
+vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, size_t wait_ms);
 
 #ifdef __cplusplus
 }
