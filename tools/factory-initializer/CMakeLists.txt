@@ -67,6 +67,8 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 target_link_libraries (${PROJECT_NAME} virgil_sdk)
 set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "iot-initializer")
 
+find_package (Threads)
+
 if (APPLE)
     find_library (IOKIT_LIBRARY IOKit)
     find_library (CORE_FOUNDATION_LIBRARY CoreFoundation)
@@ -78,4 +80,4 @@ else()
     target_link_libraries (${PROJECT_NAME} m)
 endif()
 
-target_link_libraries (${PROJECT_NAME} sdmp)
+target_link_libraries (${PROJECT_NAME} sdmp ${CMAKE_THREAD_LIBS_INIT})
