@@ -37,8 +37,6 @@
 #ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H
 #define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H
 
-#if defined(USE_SDMP)
-
 #include <virgil/iot/initializer/SdmpSigner.h>
 #include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
 #include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
@@ -50,7 +48,5 @@ using virgil::soraa::initializer::SdmpDeviceInfoProvider;
 using virgil::soraa::initializer::SdmpPublicKeyProvider;
 using virgil::soraa::initializer::SdmpProcessor;
 using virgil::soraa::initializer::AtmelCryptoSigner;
-
-#endif //USE_SDMP
 
 #endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H

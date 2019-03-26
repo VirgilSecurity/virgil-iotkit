@@ -34,7 +34,48 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+project(sdmp VERSION 0.1.0 LANGUAGES C)
+
+set(SDMP_LIB sdmp)
+
+
 #
-#   SDMP protocol
+#   Source code
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sdmp)
+set(SDMP_SRC
+        src/sdmp.c
+        src/services/PRVS.c
+        )
+
+#
+#   SDMP library
+#
+add_library(${SDMP_LIB}
+        ${SDMP_SRC}
+        )
+
+#
+#   Common include directories
+#
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
+        )
+
+#
+#   Link libraries
+#
+#target_link_libraries (${SIM_LIB}
+#        ed25519_sp
+#        mbedcrypto_sp
+#        kunlun_sodium
+#        iotelic)
+
+#
+# Format code
+#
+if(COMMAND add_clangformat)
+    add_clangformat(${SDMP_LIB})
+endif()

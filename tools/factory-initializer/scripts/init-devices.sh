@@ -103,6 +103,24 @@ echo "---------------------------"
 
 FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD=$(cat ${FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD_PATH})
 
+echo "---------------------------"
+echo "--factory_key ${FACTORY_KEY}"
+echo "--trust_list ${TRUST_LIST}"
+echo "--rec_pub_key_1 ${RECOVERY_1}"
+echo "--rec_pub_key_2 ${RECOVERY_2}"
+echo "--auth_pub_key_1 ${AUTH_1}"
+echo "--auth_pub_key_2 ${AUTH_2}"
+echo "--tl_pub_key_1 ${TL_1}"
+echo "--tl_pub_key_2 ${TL_2}"
+echo "--fw_pub_key_1 ${FW_1}"
+echo "--fw_pub_key_2 ${FW_2}"
+echo "--output ${CARD_REQUESTS_FILE}"
+echo "--device_info_output ${INFO_FILE}"
+echo "--file_transfer_key ${FACTORY_TRANSFER_PRIVATE_KEY_PATH}"
+echo "--file_transfer_key_pass ${FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD}"
+echo "--file_recipient_key ${REGISTRAR_TRANSFER_PUBLIC_KEY_PATH}"
+echo "---------------------------"
+
 pushd "${SCRIPT_FOLDER}/.."
 
     if [ "${MODE}" == "stg" ]; then
