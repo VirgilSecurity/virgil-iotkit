@@ -63,7 +63,6 @@ using virgil::soraa::initializer::SdmpSigner;
 using virgil::soraa::initializer::DeviceRequestBuilder;
 using virgil::soraa::initializer::AssemblyLineProcessor;
 using virgil::soraa::initializer::DeviceType;
-using virgil::soraa::initializer::SOneDev_t;
 using virgil::soraa::initializer::VirgilCryptoSigner;
 using virgil::soraa::initializer::AtmelCryptoSigner;
 using virgil::sdk::crypto::Crypto;
@@ -96,42 +95,42 @@ int main (int argc, char *argv[]) {
     std::shared_ptr<SignerInterface> deviceSigner;
 
     // Soraa device initialization
-//    if (params->factoryPrivateKey().empty()) {
-//        deviceSigner = std::make_shared<AtmelCryptoSigner>();
-//    } else {
-        auto keyData = virgil::soraa::initializer::Filesystem::loadFile(params->factoryPrivateKey());
-        auto deviceSignPrivateKey = virgil::sdk::crypto::Crypto().importPrivateKey(keyData);
-        deviceSigner = std::make_shared<VirgilCryptoSigner>(crypto, deviceSignPrivateKey);
-//    }
+    auto keyData = virgil::soraa::initializer::Filesystem::loadFile(params->factoryPrivateKey());
+    auto deviceSignPrivateKey = virgil::sdk::crypto::Crypto().importPrivateKey(keyData);
+    deviceSigner = std::make_shared<VirgilCryptoSigner>(crypto, deviceSignPrivateKey);
 
-    std::vector<SOneDev_t> devices = SdmpProcessor::discoverDevices();
+    vs_sdmp_prvs_dnid_list_t devices = SdmpProcessor::discoverDevices();
 
-    std::cout << "Got " + std::to_string(devices.size()) + " devices" << std::endl;
+    std::cout << "Got " + std::to_string(devices.count) + " devices :" << std::endl << std::endl;
 
-    for (const auto &device: devices) {
 
-        std::string deviceType;
-        if (DeviceType::Lamp == device.type) deviceType = "LAMP";
-        if (DeviceType::Snap == device.type) deviceType = "SNAP";
-        if (DeviceType::Gateway == device.type) deviceType = "GATEWAY";
-        if (DeviceType::NCM == device.type) deviceType = "NCM";
+    for (int i = 0; i < devices.count; i++) {
 
-        std::cout << "Device provisioning : " + device.macAddr + " type : " << deviceType << std::endl;
+        std::cout << "Device type : " << std::to_string(devices.elements[i].device_type) << std::endl;
+        std::cout << "Device MAC  : ";
+        for (int j = 0; j < ETH_ADDR_LEN; j++) {
+            if (j) {
+                std::cout << ":";
+            }
 
-        auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(), device.macAddr, device.type,
+            std::cout << std::setfill ('0') << std::setw(sizeof(uint8_t)*2)
+                      << std::hex << static_cast<int> (devices.elements[i].mac_addr.bytes[j]);
+        }
+        std::cout << std::endl;
+
+        auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(),
+                                                             devices.elements[i],
                                                              deviceSigner);
 
         if (!params->provisioningInfo().trustListOnly()) {
             auto deviceInfoProvider = std::make_shared<SdmpDeviceInfoProvider>(params->provisioningInfo(), sdmpProcessor);
-
             auto publicKeyProvider = std::make_shared<SdmpPublicKeyProvider>(sdmpProcessor);
-
             auto signer = std::make_shared<SdmpSigner>(sdmpProcessor);
 
             // Get all things needed for creating request
             auto deviceRequestBuilder = DeviceRequestBuilder(crypto, deviceInfoProvider, publicKeyProvider, signer);
 
-            // Create request and persist to persistence manager
+//            // Create request and persist to persistence manager
             AssemblyLineProcessor::processDevice(deviceRequestBuilder, persistenceManager, deviceInfoPersistenceManager);
         }
     }
