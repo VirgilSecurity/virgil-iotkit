@@ -33,9 +33,6 @@ int
 vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t buf_sz, size_t *out_sz) {
     VS_ASSERT(_hal_mpl);
     VS_ASSERT(_hal_mpl->load);
-    VS_ASSERT(element_info);
-    VS_ASSERT(out_data);
-    VS_ASSERT(out_sz);
 
     return _hal_mpl->load(element_info, out_data, buf_sz, out_sz);
 }

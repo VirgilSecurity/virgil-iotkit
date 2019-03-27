@@ -106,7 +106,7 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
 }
 
 bool SdmpProcessor::initDevice() {
-    vs_sdmp_asav_res_t asav_info;
+    vs_sdmp_prvs_asav_res_t asav_info;
 
     memset(&asav_info, 0 , sizeof(asav_info));
 
@@ -259,18 +259,16 @@ bool SdmpProcessor::signDevice() const {
     std::cout << "Device key: " << VirgilBase64::encode(devicePublicKeyTiny_) << std::endl;
     std::cout << "Signature: " << VirgilBase64::encode(signatureVal) << std::endl;
 
-#if 0
     VirgilByteArray data;
-    data.resize(sizeof(service_PRVS_full_signature_t) + signatureVal.size());
-    auto signature = reinterpret_cast<service_PRVS_full_signature_t *>(data.data());
+    data.resize(sizeof(vs_sdmp_prvs_signature_t) + signatureVal.size());
+    auto signature = reinterpret_cast<vs_sdmp_prvs_signature_t *>(data.data());
     signature->id = deviceSigner_->signerId();
     signature->val_sz = signatureVal.size();
     memcpy(signature->val, signatureVal.data(), signature->val_sz);
-#endif
 
     if (0 != vs_sdmp_prvs_set(0, VS_PRVS_SGNP,
-                              signatureVal.data(),
-                              signatureVal.size(),
+                              (uint8_t *)signature,
+                              sizeof(vs_sdmp_prvs_signature_t) + signature->val_sz,
                               kDefaultWaitTimeMs)) {
         return false;
     }
@@ -279,11 +277,12 @@ bool SdmpProcessor::signDevice() const {
 }
 
 bool SdmpProcessor::getProvisionInfo() {
-    vs_sdmp_prvs_devi_t device_info;
+    uint8_t devi_buf[512];
+    vs_sdmp_prvs_devi_t *device_info = (vs_sdmp_prvs_devi_t *)devi_buf;
 
-    memset(&device_info, 0 , sizeof(device_info));
+    memset(device_info, 0, sizeof(devi_buf));
 
-    if (0 != vs_sdmp_prvs_device_info(0, &device_info, kDefaultWaitTimeMs)) {
+    if (0 != vs_sdmp_prvs_device_info(0, device_info, sizeof(devi_buf), kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -302,14 +301,15 @@ bool SdmpProcessor::getProvisionInfo() {
 
     devicePublicKey_ = keyFull;
     devicePublicKeyTiny_ = keyTiny;
-    signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.signer_id.val, PUBKEY_TINY_ID_SZ);
-    signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.signature.val, SIGNATURE_SZ);
 #endif
+    signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(&device_info->signature.id, sizeof(device_info->signature.id));
+    signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info->signature.val, device_info->signature.val_sz);
 
-    deviceID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.udid_of_device, 32);
-    deviceMacAddr_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info.mac.bytes, 6);
-    manufacturer_ = device_info.manufacturer;
-    model_ = device_info.model;
+
+    deviceID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info->udid_of_device, 32);
+    deviceMacAddr_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info->mac.bytes, 6);
+    manufacturer_ = device_info->manufacturer;
+    model_ = device_info->model;
 
     return true;
 }
