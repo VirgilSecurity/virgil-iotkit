@@ -102,7 +102,8 @@ typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const
 typedef int (*vs_sdmp_prvs_load_data_t)();
 typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz);
 typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_prvs_asav_res_t *asav_response);
-typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_save_tl_part_t)(size_t tl_element, const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data, size_t data_sz,
                                    uint8_t *signature, size_t buf_sz, size_t *signature_sz);
@@ -113,6 +114,7 @@ typedef struct {
     vs_sdmp_prvs_load_data_t load_data_func;
     vs_sdmp_prvs_device_info_t device_info_func;
     vs_sdmp_prvs_finalize_storage_t finalize_storage_func;
+    vs_sdmp_prvs_start_save_tl_t start_save_tl_func;
     vs_sdmp_prvs_save_tl_part_t save_tl_part_func;
     vs_sdmp_prvs_finalize_tl_t finalize_tl_func;
     vs_sdmp_sign_data_t sign_data_func;
