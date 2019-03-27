@@ -11,6 +11,7 @@ typedef enum {
     VS_SECBOX_ELEMENT_TLH,
     VS_SECBOX_ELEMENT_TLC,
     VS_SECBOX_ELEMENT_TLF,
+    VS_SECBOX_ELEMENT_SGN,
     VS_SECBOX_ELEMENT_MAX,
 }vs_secbox_element_e;
 
