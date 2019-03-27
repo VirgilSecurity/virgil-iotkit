@@ -268,7 +268,8 @@ vs_sdmp_prvs_service() {
 
 /******************************************************************************/
 static int
-_send_request(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz) {
+_send_request(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, const uint8_t *data,
+        size_t data_sz) {
     uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
     vs_sdmp_packet_t *packet;
 
@@ -284,7 +285,7 @@ _send_request(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uin
     if (data_sz) {
         memcpy(packet->content, data, data_sz);
     }
-    _sdmp_fill_header(0, packet);
+    _sdmp_fill_header(mac, packet);
 
     // Send request
     return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
@@ -298,7 +299,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
 
     // Send request
-    if (0 != _send_request(netif, VS_PRVS_DNID, 0, 0)) {
+    if (0 != _send_request(netif, 0, VS_PRVS_DNID, 0, 0)) {
         return -1;
     }
 
@@ -310,9 +311,10 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t buf_sz, size_t wait_ms) {
+vs_sdmp_prvs_device_info(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_devi_t *device_info,
+        size_t buf_sz, size_t wait_ms) {
     size_t sz;
-    return vs_sdmp_prvs_get(netif, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms);
+    return vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms);
 }
 
 /******************************************************************************/
@@ -324,13 +326,13 @@ _reset_last_result() {
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_set(
-        const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms) {
+vs_sdmp_prvs_set(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, const uint8_t *data,
+        size_t data_sz, size_t wait_ms) {
 
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, element, data, data_sz)) {
+    if (0 != _send_request(netif, mac, element, data, data_sz)) {
         return -1;
     }
 
@@ -343,13 +345,13 @@ vs_sdmp_prvs_set(
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz,
-        size_t wait_ms) {
+vs_sdmp_prvs_get(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, uint8_t *data,
+        size_t buf_sz, size_t *data_sz, size_t wait_ms) {
 
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, element, 0, 0)) {
+    if (0 != _send_request(netif, mac, element, 0, 0)) {
         return -1;
     }
 
@@ -369,21 +371,23 @@ vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_save_provision(const vs_netif_t *netif, vs_sdmp_prvs_asav_res_t *asav_res, size_t wait_ms) {
+vs_sdmp_prvs_save_provision(
+        const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_asav_res_t *asav_res, size_t wait_ms) {
     VS_ASSERT(asav_res);
 
     size_t sz;
-    return vs_sdmp_prvs_get(netif, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_prvs_asav_res_t), &sz, wait_ms);
+    return vs_sdmp_prvs_get(
+            netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_prvs_asav_res_t), &sz, wait_ms);
 }
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, uint8_t *signature, size_t buf_sz,
-        size_t *signature_sz, size_t wait_ms) {
+vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const vs_mac_addr_t *mac, const uint8_t *data, size_t data_sz,
+        uint8_t *signature, size_t buf_sz, size_t *signature_sz, size_t wait_ms) {
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, VS_PRVS_ASGN, data, data_sz)) {
+    if (0 != _send_request(netif, mac, VS_PRVS_ASGN, data, data_sz)) {
         return -1;
     }
 
@@ -403,6 +407,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const uint8_t *data, size_t data
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, size_t wait_ms) {
-    return vs_sdmp_prvs_set(netif, VS_PRVS_TLF, data, data_sz, wait_ms);
+vs_sdmp_prvs_finalize_tl(
+        const vs_netif_t *netif, const vs_mac_addr_t *mac, const uint8_t *data, size_t data_sz, size_t wait_ms) {
+    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
 }

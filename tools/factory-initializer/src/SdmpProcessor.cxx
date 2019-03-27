@@ -110,7 +110,7 @@ bool SdmpProcessor::initDevice() {
 
     memset(&asav_info, 0 , sizeof(asav_info));
 
-    if (0 != vs_sdmp_prvs_save_provision(0, &asav_info, kDefaultWaitTimeMs)) {
+    if (0 != vs_sdmp_prvs_save_provision(0, &deviceInfo_.mac_addr, &asav_info, kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -136,7 +136,7 @@ bool SdmpProcessor::initDevice() {
 bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) const {
 
     // Set TL header
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_TLH,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLH,
                               provisioningInfo.tlHeader().data(),
                               provisioningInfo.tlHeader().size(),
                               kDefaultWaitTimeMs)) {
@@ -145,7 +145,7 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
 
     // Set TL chunks
     for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount();i++) {
-        if (0 != vs_sdmp_prvs_set(0, VS_PRVS_TLC,
+        if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLC,
                                   provisioningInfo.tlChunk(i).data(),
                                   provisioningInfo.tlChunk(i).size(),
                                   kDefaultWaitTimeMs)) {
@@ -154,8 +154,8 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
     }
 
     // Set TL footer
-    if (0 != vs_sdmp_prvs_finalize_tl(0,
-                              provisioningInfo.tlFooter().data(),
+    if (0 != vs_sdmp_prvs_finalize_tl(0, &deviceInfo_.mac_addr,
+                                      provisioningInfo.tlFooter().data(),
                               provisioningInfo.tlFooter().size(),
                               kDefaultWaitTimeMs)) {
         return false;
@@ -168,7 +168,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // Recovery public keys
     std::cout << "Upload Recovery key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR1,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBR1,
                               provisioningInfo.recPubKey1().data(),
                               provisioningInfo.recPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -176,7 +176,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Recovery key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBR2,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBR2,
                               provisioningInfo.recPubKey2().data(),
                               provisioningInfo.recPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -185,7 +185,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // Auth Public keys
     std::cout << "Upload Auth key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA1,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBA1,
                               provisioningInfo.authPubKey1().data(),
                               provisioningInfo.authPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -193,7 +193,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Auth key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBA2,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBA2,
                               provisioningInfo.authPubKey2().data(),
                               provisioningInfo.authPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -203,7 +203,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // Firmware public keys
     std::cout << "Upload Firmware key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF1,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBF1,
                               provisioningInfo.fwPubKey1().data(),
                               provisioningInfo.fwPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -211,7 +211,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Firmware key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBF2,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBF2,
                               provisioningInfo.fwPubKey2().data(),
                               provisioningInfo.fwPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -221,7 +221,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // TrustList Public keys
     std::cout << "Upload TrustList key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT1,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBT1,
                               provisioningInfo.tlPubKey1().data(),
                               provisioningInfo.tlPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -229,7 +229,7 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload TrustList key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_PBT2,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBT2,
                               provisioningInfo.tlPubKey2().data(),
                               provisioningInfo.tlPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -266,7 +266,7 @@ bool SdmpProcessor::signDevice() const {
     signature->val_sz = signatureVal.size();
     memcpy(signature->val, signatureVal.data(), signature->val_sz);
 
-    if (0 != vs_sdmp_prvs_set(0, VS_PRVS_SGNP,
+    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_SGNP,
                               (uint8_t *)signature,
                               sizeof(vs_sdmp_prvs_signature_t) + signature->val_sz,
                               kDefaultWaitTimeMs)) {
@@ -282,7 +282,7 @@ bool SdmpProcessor::getProvisionInfo() {
 
     memset(device_info, 0, sizeof(devi_buf));
 
-    if (0 != vs_sdmp_prvs_device_info(0, device_info, sizeof(devi_buf), kDefaultWaitTimeMs)) {
+    if (0 != vs_sdmp_prvs_device_info(0, &deviceInfo_.mac_addr, device_info, sizeof(devi_buf), kDefaultWaitTimeMs)) {
         return false;
     }
 
@@ -354,7 +354,7 @@ VirgilByteArray SdmpProcessor::signDataInDevice(const VirgilByteArray & data) co
     uint8_t signature[512];
     size_t signature_sz = 0;
 
-    if (0 == vs_sdmp_prvs_sign_data(0, data.data(), data.size(),
+    if (0 == vs_sdmp_prvs_sign_data(0, &deviceInfo_.mac_addr, data.data(), data.size(),
                                     signature, sizeof(signature), &signature_sz,
                                     kDefaultWaitTimeMs)) {
         return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(signature, signature_sz);

@@ -132,25 +132,25 @@ int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
 
 int
-vs_sdmp_prvs_save_provision(const vs_netif_t *netif, vs_sdmp_prvs_asav_res_t *asav_res, size_t wait_ms);
+vs_sdmp_prvs_save_provision(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_asav_res_t *asav_res, size_t wait_ms);
 
 int
-vs_sdmp_prvs_device_info(const vs_netif_t *netif, vs_sdmp_prvs_devi_t *device_info, size_t buf_sz, size_t wait_ms);
+vs_sdmp_prvs_device_info(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_devi_t *device_info, size_t buf_sz, size_t wait_ms);
 
 int
-vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
-        const uint8_t *data, size_t data_sz,
+vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const vs_mac_addr_t *mac,
+                       const uint8_t *data, size_t data_sz,
         uint8_t *signature, size_t buf_sz, size_t *signature_sz,
         size_t wait_ms);
 
 int
-vs_sdmp_prvs_set(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms);
+vs_sdmp_prvs_set(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms);
 
 int
-vs_sdmp_prvs_get(const vs_netif_t *netif, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz, size_t wait_ms);
+vs_sdmp_prvs_get(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz, size_t wait_ms);
 
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const uint8_t *data, size_t data_sz, size_t wait_ms);
+vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const vs_mac_addr_t *mac, const uint8_t *data, size_t data_sz, size_t wait_ms);
 
 #ifdef __cplusplus
 }
