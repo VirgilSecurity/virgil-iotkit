@@ -53,9 +53,6 @@ static int _last_res = -1;
 static size_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
-// TL part counter
-static size_t tl_element_count = 0;
-
 /******************************************************************************/
 int
 vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
@@ -166,7 +163,6 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
     if (0 != _prvs_impl.start_save_tl_func(request, request_sz)) {
         return -1;
     }
-    tl_element_count = 0;
 
     return 0;
 }
@@ -176,11 +172,9 @@ static int
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz) {
 
     VS_ASSERT(_prvs_impl.save_tl_part_func);
-    if (0 != _prvs_impl.save_tl_part_func(tl_element_count, request, request_sz)) {
+    if (0 != _prvs_impl.save_tl_part_func(request, request_sz)) {
         return -1;
     }
-
-    tl_element_count++;
 
     return 0;
 }
