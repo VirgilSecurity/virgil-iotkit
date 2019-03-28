@@ -120,8 +120,6 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
     }
 
     if (processed) {
-        printf("\033[32;1m >>> Send response: %lu <<< \033[0m\n",
-                sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 

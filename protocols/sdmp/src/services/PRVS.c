@@ -53,7 +53,7 @@ static int _last_res = -1;
 static size_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
-//TL part counter
+// TL part counter
 static size_t tl_element_count = 0;
 
 /******************************************************************************/
@@ -133,14 +133,14 @@ static int
 _prvs_asav_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz,
         uint8_t *response, const size_t response_buf_sz, size_t *response_sz) {
 
-    vs_sdmp_prvs_asav_res_t *asav_response = (vs_sdmp_prvs_asav_res_t *)response;
+    vs_sdmp_pubkey_t *asav_response = (vs_sdmp_pubkey_t *)response;
 
     VS_ASSERT(_prvs_impl.finalize_storage_func);
     if (0 != _prvs_impl.finalize_storage_func(asav_response)) {
         return -1;
     }
 
-    *response_sz = sizeof(vs_sdmp_prvs_asav_res_t);
+    *response_sz = sizeof(vs_sdmp_pubkey_t);
 
     return 0;
 }
@@ -392,12 +392,11 @@ vs_sdmp_prvs_get(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs
 /******************************************************************************/
 int
 vs_sdmp_prvs_save_provision(
-        const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_asav_res_t *asav_res, size_t wait_ms) {
+        const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_pubkey_t *asav_res, size_t wait_ms) {
     VS_ASSERT(asav_res);
 
     size_t sz;
-    return vs_sdmp_prvs_get(
-            netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_prvs_asav_res_t), &sz, wait_ms);
+    return vs_sdmp_prvs_get(netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, sizeof(vs_sdmp_pubkey_t), &sz, wait_ms);
 }
 
 /******************************************************************************/

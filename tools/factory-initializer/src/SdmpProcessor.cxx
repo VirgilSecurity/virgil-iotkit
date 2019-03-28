@@ -106,7 +106,7 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
 }
 
 bool SdmpProcessor::initDevice() {
-    vs_sdmp_prvs_asav_res_t asav_info;
+    vs_sdmp_pubkey_t asav_info;
 
     memset(&asav_info, 0 , sizeof(asav_info));
 
@@ -136,6 +136,7 @@ bool SdmpProcessor::initDevice() {
 bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) const {
 
     // Set TL header
+    std::cout << "Upload TrustList Header" << std::endl;
     if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLH,
                               provisioningInfo.tlHeader().data(),
                               provisioningInfo.tlHeader().size(),
@@ -145,6 +146,7 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
 
     // Set TL chunks
     for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount();i++) {
+        std::cout << "Upload TrustList Chunk " << std::to_string(i) << std::endl;
         if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLC,
                                   provisioningInfo.tlChunk(i).data(),
                                   provisioningInfo.tlChunk(i).size(),
@@ -154,6 +156,7 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
     }
 
     // Set TL footer
+    std::cout << "Upload TrustList Footer" << std::endl;
     if (0 != vs_sdmp_prvs_finalize_tl(0, &deviceInfo_.mac_addr,
                                       provisioningInfo.tlFooter().data(),
                               provisioningInfo.tlFooter().size(),
@@ -286,10 +289,10 @@ bool SdmpProcessor::getProvisionInfo() {
         return false;
     }
 
+    auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info->own_key.pubkey, device_info->own_key.pubkey_sz);
 #if 0
     auto dataToVerify = VirgilByteArray(ba.begin(), ba.begin() + sizeof(service_PRVS_provision_info_t));
     auto keyTiny = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.tiny, 64);
-    auto keyFull = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->info.own_key.full, res->info.own_key.full_sz);
     auto signature = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(res->signature.val, res->signature.val_sz);
 
     if (!deviceSigner_->verify(dataToVerify,
@@ -299,10 +302,11 @@ bool SdmpProcessor::getProvisionInfo() {
         throw std::runtime_error(what);
     }
 
-    devicePublicKey_ = keyFull;
     devicePublicKeyTiny_ = keyTiny;
 #endif
-    signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(&device_info->signature.id, sizeof(device_info->signature.id));
+    devicePublicKey_ = keyFull;
+    auto id = device_info->signature.id;
+    signerID_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(&id, sizeof(id));
     signature_ = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(device_info->signature.val, device_info->signature.val_sz);
 
 
