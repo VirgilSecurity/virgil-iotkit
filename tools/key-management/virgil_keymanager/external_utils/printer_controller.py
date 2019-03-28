@@ -6,7 +6,13 @@ class PrinterController(object):
 
     def __init__(self, ui):
         self.__ui = ui
-        self.conn = cups.Connection()
+        self.__conn = None
+
+    @property
+    def conn(self):
+        if self.__conn is None:
+            self.__conn = cups.Connection()
+        return self.__conn
 
     def __choose_printer(self):
         self.__ui.print_message("Searching printers...")
