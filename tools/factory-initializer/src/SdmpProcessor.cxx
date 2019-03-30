@@ -97,7 +97,7 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
         throw std::runtime_error(std::string("Can't register SDMP:PRVS service"));
     }
 
-    vs_sdmp_prvs_uninitialized_devices(0, &list, kDefaultWaitTimeMs);
+    vs_sdmp_prvs_uninitialized_devices(0, &list, kDefaultWaitTimeMs * 10);
 
     // Disconnect from PLC bus
     vs_sdmp_deinit();
