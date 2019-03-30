@@ -101,7 +101,7 @@ typedef int (*vs_sdmp_prvs_load_data_t)();
 typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz);
 typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_pubkey_t *asav_response);
 typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
-typedef int (*vs_sdmp_prvs_save_tl_part_t)(size_t tl_element, const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data, size_t data_sz,
                                    uint8_t *signature, size_t buf_sz, size_t *signature_sz);

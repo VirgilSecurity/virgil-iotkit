@@ -49,7 +49,7 @@ class UI(object):
     def __init__(self, logger=None):
         self.__logger = logger
 
-    def choose_from_list(self, choose_list, input_prompt, greating_msg=None):
+    def choose_from_list(self, choose_list, input_prompt, greeting_msg=None):
         """
         Get choose from user, from presented list.
 
@@ -63,12 +63,12 @@ class UI(object):
         Args:
             choose_list: Dict with various objects struct exampled above
             input_prompt: Prompt witch printed at end of list
-            greating_msg: Greating string, printed before list
+            greeting_msg: Greeting string, printed before list
 
         Returns: number which represent dict key.
         """
-        if greating_msg:
-            self.print_message(greating_msg)
+        if greeting_msg:
+            self.print_message(greeting_msg)
         if len(choose_list) == 0:
             return
         cleaned_choose_list = list()
@@ -85,12 +85,12 @@ class UI(object):
             print('Invalid value, please try again')
             if self.__logger:
                 self.__logger.warning('entered invalid value at user choice action')
-            return self.choose_from_list(choose_list, input_prompt, greating_msg)
+            return self.choose_from_list(choose_list, input_prompt, greeting_msg)
         if choice not in range(1, len(cleaned_choose_list) + 1):
             print('Invalid value, please try again')
             if self.__logger:
                 self.__logger.warning('entered invalid value at user choice action')
-            return self.choose_from_list(choose_list, input_prompt, greating_msg)
+            return self.choose_from_list(choose_list, input_prompt, greeting_msg)
         else:
             return int(choice - 1)
 

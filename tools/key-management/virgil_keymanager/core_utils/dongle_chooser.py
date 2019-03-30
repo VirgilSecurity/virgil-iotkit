@@ -105,7 +105,7 @@ class DongleChooser(object):
             self.__logger.debug(devices_info)
         return devices_info
 
-    def choose_atmel_device(self, key_type, greating_msg="Please choose dongle: ",
+    def choose_atmel_device(self, key_type, greeting_msg="Please choose dongle: ",
                             suppress_db_warning=False, hw_info=False):
         while True:
             ops_status = self.__atmel.list_devices()
@@ -147,7 +147,7 @@ class DongleChooser(object):
             if len(device_list):
                 if len(device_list) > 1:
                     self.__ui.print_message(
-                        greating_msg
+                        greeting_msg
                     )
                     user_choose = self.__ui.choose_from_list(
                         device_info_list,
