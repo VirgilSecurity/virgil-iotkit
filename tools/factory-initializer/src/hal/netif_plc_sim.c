@@ -123,6 +123,9 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
 /******************************************************************************/
 int
 _plc_deinit_sim() {
+#if !defined(__APPLE__)
+    shutdown(_plc_sock, SHUT_RDWR);
+#endif
     close(_plc_sock);
     pthread_join(receive_thread, NULL);
     return 0;
