@@ -41,7 +41,7 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#define DNID_LIST_SZ_MAX (10)
+#define DNID_LIST_SZ_MAX (50)
 #define PUBKEY_MAX_SZ (100)
 
 typedef enum {
