@@ -63,10 +63,21 @@ _plc_receive_processor(void *sock_desc) {
     ssize_t recv_sz;
 
     while (1) {
+    	memset(received_data, 0, PLC_RX_BUF_SZ);
         recv_sz = recv(_plc_sock, received_data, PLC_RX_BUF_SZ, 0);
         if (recv_sz < 0) {
             break;
         }
+        
+        if (!recv_sz) {
+        	continue;
+        }
+        
+        printf(">>> ");
+        for (int i = 0; i < recv_sz; i++) {
+        	printf("%02x", (uint8_t)received_data[i]);
+        }
+        printf("\n");
 
         // Pass received data to upper level via callback
         _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t*)received_data, recv_sz);
@@ -123,6 +134,9 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
 /******************************************************************************/
 int
 _plc_deinit_sim() {
+#if !defined(__APPLE__)
+    shutdown(_plc_sock, SHUT_RDWR);
+#endif
     close(_plc_sock);
     pthread_join(receive_thread, NULL);
     return 0;

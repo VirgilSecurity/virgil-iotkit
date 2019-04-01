@@ -72,9 +72,8 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 static int
-_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) {
+_process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
     int i;
-    const vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
     size_t response_sz = 0;
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
@@ -120,12 +119,77 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
     }
 
     if (processed) {
-        printf("\033[32;1m >>> Send response: %lu <<< \033[0m\n",
-                sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 
     return -1;
+}
+
+/******************************************************************************/
+static int
+_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) {
+#define LEFT_INCOMING ((int)data_sz - bytes_processed)
+#define PACKET_SIZE (sizeof(vs_sdmp_packet_t) + packet->header.content_size)
+    static uint8_t packet_buf[1024];
+    static size_t packet_buf_filled = 0;
+
+    int bytes_processed = 0;
+    int need_bytes_for_header;
+    int need_bytes_for_packet;
+    size_t copy_bytes;
+
+    const vs_sdmp_packet_t *packet = 0;
+
+    while (LEFT_INCOMING) {
+
+        if (!packet_buf_filled) {
+            if (LEFT_INCOMING >= sizeof(vs_sdmp_packet_t)) {
+                packet = (vs_sdmp_packet_t *)&data[bytes_processed];
+
+                if (LEFT_INCOMING < PACKET_SIZE) {
+                    memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                    packet = 0;
+                    bytes_processed += LEFT_INCOMING;
+                } else {
+                    bytes_processed += PACKET_SIZE;
+                }
+            }
+
+        } else {
+
+            // Fill packet struct
+            if (packet_buf_filled < sizeof(vs_sdmp_packet_t)) {
+                need_bytes_for_header = sizeof(vs_sdmp_packet_t) - packet_buf_filled;
+
+                copy_bytes = LEFT_INCOMING >= need_bytes_for_header ? need_bytes_for_header : LEFT_INCOMING;
+                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], copy_bytes);
+                bytes_processed += copy_bytes;
+                packet_buf_filled += copy_bytes;
+            }
+
+            // Fill content
+            if (packet_buf_filled >= sizeof(vs_sdmp_packet_t)) {
+                need_bytes_for_packet = PACKET_SIZE - packet_buf_filled;
+
+                copy_bytes = LEFT_INCOMING >= need_bytes_for_packet ? need_bytes_for_packet : LEFT_INCOMING;
+                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], copy_bytes);
+                bytes_processed += copy_bytes;
+                packet_buf_filled += copy_bytes;
+
+                if (packet_buf_filled >= PACKET_SIZE) {
+                    packet = (vs_sdmp_packet_t *)packet_buf;
+                }
+            }
+        }
+
+        if (packet) {
+            _process_packet(netif, packet);
+            packet = 0;
+            packet_buf_filled = 0;
+        }
+    }
+
+    return 0;
 }
 
 /******************************************************************************/
