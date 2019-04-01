@@ -86,8 +86,6 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
         return -1;
     }
 
-    printf(">>>>> accepted : %d \n", (int)(sizeof(vs_sdmp_packet_t) + packet->header.content_size));
-
     // Prepare request
     memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_packet_t));
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
@@ -157,11 +155,16 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
 
                 if (LEFT_INCOMING < packet_sz) {
                     memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                    packet_buf_filled += LEFT_INCOMING;
                     bytes_processed += LEFT_INCOMING;
                 } else {
                     packet = (vs_sdmp_packet_t *)&data[bytes_processed];
                     bytes_processed += packet_sz;
                 }
+            } else {
+                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                packet_buf_filled += LEFT_INCOMING;
+                bytes_processed += LEFT_INCOMING;
             }
 
         } else {
@@ -228,6 +231,8 @@ vs_sdmp_deinit() {
     VS_ASSERT(_sdmp_default_netif->deinit);
 
     _sdmp_default_netif->deinit();
+
+    _sdmp_services_num = 0;
 
     return 0;
 }
