@@ -45,7 +45,7 @@
 
 using virgil::soraa::initializer::SdmpProcessor;
 
-const size_t SdmpProcessor::kDefaultWaitTimeMs = 200;
+const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
 
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
