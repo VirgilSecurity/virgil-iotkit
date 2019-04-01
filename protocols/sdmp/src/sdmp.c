@@ -86,7 +86,7 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
         return -1;
     }
 
-    printf(">>>>> accepted : %d \n", sizeof(vs_sdmp_packet_t) + packet->header.content_size);
+    printf(">>>>> accepted : %d \n", (int)(sizeof(vs_sdmp_packet_t) + packet->header.content_size));
 
     // Prepare request
     memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_packet_t));
