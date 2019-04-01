@@ -1,4 +1,4 @@
-from binascii import unhexlify
+import io
 
 from pyasn1.codec.ber import decoder
 from pyasn1.type import univ, namedtype
@@ -46,10 +46,6 @@ class VirgilSignExtractor(object):
 
     @classmethod
     def __long_to_bytes(cls, val, endianness='big'):
-        width = val.bit_length()
-        width += 8 - ((width % 8) or 8)
-        fmt = '%%0%dx' % (width // 4)
-        s = unhexlify(fmt % val)
-        if endianness == 'little':
-            s = s[::-1]
-        return s
+        byte_buffer = io.BytesIO()
+        byte_buffer.write(int(val).to_bytes(32, byteorder=endianness, signed=False))
+        return bytearray(byte_buffer.getvalue())
