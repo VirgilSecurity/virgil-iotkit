@@ -172,7 +172,7 @@ static int
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const size_t request_sz) {
 
     VS_ASSERT(_prvs_impl.save_tl_part_func);
-    if (0 != _prvs_impl.save_tl_part_func(0, request, request_sz)) {
+    if (0 != _prvs_impl.save_tl_part_func(request, request_sz)) {
         return -1;
     }
 
