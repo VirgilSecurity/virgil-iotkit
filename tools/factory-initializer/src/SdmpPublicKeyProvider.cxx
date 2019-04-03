@@ -36,8 +36,8 @@
 
 #include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
 
-using virgil::soraa::initializer::SdmpPublicKeyProvider;
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::SdmpPublicKeyProvider;
+using virgil::iot::initializer::VirgilByteArray;
 
 SdmpPublicKeyProvider::SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor) :
 processor_(std::move(processor)) {

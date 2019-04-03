@@ -38,21 +38,17 @@
 #include <virgil/sdk/crypto/Crypto.h>
 #include <externals/json.hpp>
 
-using virgil::soraa::initializer::SdmpDeviceInfoProvider;
-using virgil::soraa::initializer::DeviceInfo;
+using virgil::iot::initializer::SdmpDeviceInfoProvider;
+using virgil::iot::initializer::DeviceInfo;
 using virgil::sdk::VirgilBase64;
 using namespace virgil::crypto;
 using json = nlohmann::json;
 
 const std::string SdmpDeviceInfoProvider::kIdentityType = "id";
-const std::string SdmpDeviceInfoProvider::kDeviceTypeLamp = "Soraa Lamp";
-const std::string SdmpDeviceInfoProvider::kDeviceTypeSnap = "Soraa Snap";
-const std::string SdmpDeviceInfoProvider::kDeviceTypeGateway = "Soraa Gateway";
-const std::string SdmpDeviceInfoProvider::kDeviceTypeNCM = "Soraa NCM";
 
 SdmpDeviceInfoProvider::SdmpDeviceInfoProvider(const ProvisioningInfo & provisioningInfo,
                                                std::shared_ptr<SdmpProcessor> processor) :
-provisioningInfo_(std::move(provisioningInfo)), deviceType_(processor->deviceType()), processor_(std::move(processor)) {
+provisioningInfo_(std::move(provisioningInfo)), processor_(std::move(processor)) {
     
 }
 
@@ -77,17 +73,7 @@ std::string SdmpDeviceInfoProvider::payloadJson() {
 }
 
 DeviceInfo SdmpDeviceInfoProvider::deviceInfo() {
-    std::string deviceTypeStr;
-
-    switch (deviceType_) {
-        case DeviceType::Lamp: deviceTypeStr = kDeviceTypeLamp; break;
-        case DeviceType::Snap: deviceTypeStr = kDeviceTypeSnap; break;
-        case DeviceType::Gateway : deviceTypeStr = kDeviceTypeGateway; break;
-        case DeviceType::NCM : deviceTypeStr = kDeviceTypeNCM; break;
-        default:
-            deviceTypeStr = "";
-    }
-    
+    std::string deviceTypeStr = "";
     return DeviceInfo(bytes2hex(processor_->deviceID()),
                       kIdentityType,
                       deviceTypeStr,

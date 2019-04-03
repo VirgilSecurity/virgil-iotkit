@@ -38,8 +38,8 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
-using virgil::soraa::initializer::ParamsCommadLine;
-using virgil::soraa::initializer::Filesystem;
+using virgil::iot::initializer::ParamsCommadLine;
+using virgil::iot::initializer::Filesystem;
 
 ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
     
@@ -74,7 +74,7 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         bool trustListOnly = false;
         bool createCardOnly = false;
 
-        cxxopts::Options options(argv[0], " - Lamp Initializer command line options");
+        cxxopts::Options options(argv[0], " - Virgil IoT Initializer command line options");
         
         options.add_options()
         ("o,output", "Encrypted output file", cxxopts::value<std::string>(exportFile_))

@@ -34,18 +34,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PARAMSINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PARAMSINTERFACE_H
+#ifndef VIRGIL_IOT_LAMP_INITIALIZER_PARAMSINTERFACE_H
+#define VIRGIL_IOT_LAMP_INITIALIZER_PARAMSINTERFACE_H
 
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/iot/initializer/ProvisioningInfo.h>
 
-using virgil::soraa::initializer::ProvisioningInfo;
+using virgil::iot::initializer::ProvisioningInfo;
 using virgil::sdk::crypto::Crypto;
 using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class ParamsInterface {
         public:
@@ -71,4 +71,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PARAMSINTERFACE_H
+#endif //VIRGIL_IOT_LAMP_INITIALIZER_PARAMSINTERFACE_H

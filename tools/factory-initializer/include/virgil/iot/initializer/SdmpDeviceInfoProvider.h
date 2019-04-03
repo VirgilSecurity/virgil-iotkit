@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
+#ifndef VIRGIL_IOT_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
+#define VIRGIL_IOT_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
 
 #include <unordered_map>
 #include <sstream>
@@ -44,10 +44,10 @@
 #include <virgil/iot/initializer/DeviceInfoProviderInterface.h>
 #include <virgil/iot/initializer/SdmpProcessor.h>
 
-using virgil::soraa::initializer::SdmpProcessor;
+using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class SdmpDeviceInfoProvider: public DeviceInfoProviderInterface {
         public:
@@ -60,15 +60,9 @@ namespace soraa {
         private:
             std::unordered_map<std::string, std::string> payload();
             ProvisioningInfo provisioningInfo_;
-            DeviceType deviceType_;
             std::shared_ptr<SdmpProcessor> processor_;
             
             static const std::string kIdentityType;
-            static const std::string kDeviceTypeLamp;
-            static const std::string kDeviceTypeSnap;
-            static const std::string kDeviceTypeGateway;
-            static const std::string kDeviceTypeNCM;
-            static const std::string kDeviceTypeUnknown;
 
             template< typename T >
             std::string _hex(T i)
@@ -86,4 +80,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
+#endif //VIRGIL_IOT_LAMP_INITIALIZER_SDMPDEVICEINFOPROVIDER_H

@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
+#ifndef VIRGIL_IOT_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
+#define VIRGIL_IOT_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
 
 #include <virgil/crypto/VirgilByteArray.h>
 
@@ -44,7 +44,7 @@
 #include <virgil/iot/initializer/SignerInterface.h>
 
 namespace virgil {
-    namespace soraa {
+    namespace iot {
         namespace initializer {
             class AtmelCryptoSigner: public SignerInterface {
             public:
@@ -61,4 +61,4 @@ namespace virgil {
     }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H
+#endif //VIRGIL_IOT_LAMP_INITIALIZER_ATMELCRYPTOSIGNER_H

@@ -42,11 +42,11 @@
 #include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
 
 using virgil::sdk::crypto::Crypto;
-using virgil::soraa::registrator::VirgilBase64;
-using virgil::soraa::registrator::Filesystem;
-using virgil::soraa::registrator::ParamsCommadLine;
-using virgil::soraa::registrator::LampRegistrator;
-using virgil::soraa::registrator::SingleFileEncryptedRequestProvider;
+using virgil::iot::registrator::VirgilBase64;
+using virgil::iot::registrator::Filesystem;
+using virgil::iot::registrator::ParamsCommadLine;
+using virgil::iot::registrator::LampRegistrator;
+using virgil::iot::registrator::SingleFileEncryptedRequestProvider;
 
 int main (int argc, char *argv[]) {
     Filesystem::init();

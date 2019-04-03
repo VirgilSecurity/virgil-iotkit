@@ -34,16 +34,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_FILESYSTEM_H
+#define VIRGIL_IOT_LAMP_REGISTRATOR_FILESYSTEM_H
 
 #include <string>
 #include "Common.h"
 
-using virgil::soraa::registrator::VirgilByteArray;
+using virgil::iot::registrator::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace registrator {
         class Filesystem {
         public:
@@ -69,4 +69,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+#endif //VIRGIL_IOT_LAMP_REGISTRATOR_FILESYSTEM_H

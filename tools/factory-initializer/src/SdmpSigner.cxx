@@ -36,8 +36,8 @@
 
 #include <virgil/iot/initializer/SdmpSigner.h>
 
-using virgil::soraa::initializer::SdmpSigner;
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::SdmpSigner;
+using virgil::iot::initializer::VirgilByteArray;
 
 SdmpSigner::SdmpSigner(std::shared_ptr<SdmpProcessor> processor) :
 processor_(std::move(processor)) {

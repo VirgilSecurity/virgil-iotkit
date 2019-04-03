@@ -46,7 +46,7 @@
 #include <sys/stat.h>
 #include <pwd.h>
 
-using virgil::soraa::initializer::Filesystem;
+using virgil::iot::initializer::Filesystem;
 using virgil::crypto::VirgilByteArrayUtils;
 
 std::string Filesystem::currentPath_;

@@ -62,6 +62,6 @@ echo "private_keys_paths = ${AUTH_KEY}" 			>> "${DESTINATION_FILE}"
 echo "                     ${FW_KEY}" 				>> "${DESTINATION_FILE}"
 echo "" 											>> "${DESTINATION_FILE}"
 echo "[HSM]" 										>> "${DESTINATION_FILE}"
-echo "atmel_util_path = ../utils/soraa-dongles-cli" >> "${DESTINATION_FILE}"
+echo "atmel_util_path = ../utils/iot-dongles-cli" >> "${DESTINATION_FILE}"
 
 cat "${DESTINATION_FILE}"

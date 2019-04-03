@@ -34,18 +34,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
+#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
+#define VIRGIL_IOT_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
 
 #include <memory>
 
 #include <virgil/iot/registrator/RequestProviderInterface.h>
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::soraa::registrator::CardsServiceInfo;
+using virgil::iot::registrator::CardsServiceInfo;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace registrator {
         class LampRegistrator {
         public:
@@ -63,4 +63,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
+#endif //VIRGIL_IOT_LAMP_REGISTRATOR_LAMPREGISTRATOR_H

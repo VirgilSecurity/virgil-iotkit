@@ -34,17 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#define VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H
 
 #include <string>
 #include <unordered_map>
 #include "Common.h"
 
-using virgil::soraa::registrator::VirgilByteArray;
+using virgil::iot::registrator::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace registrator {
         class CardsServiceInfo {
         public:
@@ -75,4 +75,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#endif //VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H

@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#define VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
 
 #include <fstream>
 #include <memory>
@@ -46,7 +46,7 @@
 #include <virgil/iot/registrator/RequestProviderInterface.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace registrator {
         class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
         public:
@@ -67,4 +67,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#endif //VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H

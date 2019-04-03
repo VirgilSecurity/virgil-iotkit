@@ -49,7 +49,7 @@ using virgil::sdk::crypto::Crypto;
 using virgil::sdk::crypto::keys::KeyPair;
 using virgil::sdk::crypto::keys::PrivateKey;
 using virgil::sdk::crypto::keys::PublicKey;
-using virgil::soraa::registrator::LampRegistrator;
+using virgil::iot::registrator::LampRegistrator;
 using virgil::sdk::client::CardClient;
 using virgil::sdk::client::networking::errors::Error;
 using virgil::sdk::client::models::RawCardContent;

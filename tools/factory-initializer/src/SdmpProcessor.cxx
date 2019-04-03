@@ -43,7 +43,7 @@
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/initializer/hal/netif_plc_sim.h>
 
-using virgil::soraa::initializer::SdmpProcessor;
+using virgil::iot::initializer::SdmpProcessor;
 
 const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
 
@@ -348,10 +348,6 @@ uint32_t SdmpProcessor::manufacturer() const {
 
 uint32_t SdmpProcessor::model() const {
     return model_;
-}
-
-virgil::soraa::initializer::DeviceType SdmpProcessor::deviceType() const {
-    return deviceType_;
 }
 
 VirgilByteArray SdmpProcessor::signDataInDevice(const VirgilByteArray & data) const {

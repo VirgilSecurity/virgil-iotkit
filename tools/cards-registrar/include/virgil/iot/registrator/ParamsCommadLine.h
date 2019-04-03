@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
-#define VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H
+#define VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H
 
 #include <memory>
 
@@ -44,7 +44,7 @@
 
 
 namespace virgil {
-    namespace soraa {
+    namespace iot {
         namespace registrator {
             class ParamsCommadLine: public ParamsInterface {
             public:
@@ -70,4 +70,4 @@ namespace virgil {
     }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#endif //VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H

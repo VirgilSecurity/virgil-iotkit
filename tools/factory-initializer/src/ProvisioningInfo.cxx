@@ -39,8 +39,8 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include <externals/ini.hpp>
 
-using virgil::soraa::initializer::ProvisioningInfo;
-using virgil::soraa::initializer::Filesystem;
+using virgil::iot::initializer::ProvisioningInfo;
+using virgil::iot::initializer::Filesystem;
 
 ProvisioningInfo::ProvisioningInfo(bool tl_only,
                                    bool card_only,

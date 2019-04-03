@@ -34,18 +34,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#define VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H
 
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::soraa::registrator::CardsServiceInfo;
+using virgil::iot::registrator::CardsServiceInfo;
 using virgil::sdk::crypto::Crypto;
 using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace registrator {
         class ParamsInterface {
         public:
@@ -63,4 +63,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#endif //VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H

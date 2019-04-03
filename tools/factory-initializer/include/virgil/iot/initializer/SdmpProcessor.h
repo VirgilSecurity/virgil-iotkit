@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
+#ifndef VIRGIL_IOT_LAMP_INITIALIZER_SDMPPROCESSOR_H
+#define VIRGIL_IOT_LAMP_INITIALIZER_SDMPPROCESSOR_H
 
 #include <string>
 #include <vector>
@@ -44,8 +44,8 @@
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 
-using virgil::soraa::initializer::ProvisioningInfo;
-using virgil::soraa::initializer::SignerInterface;
+using virgil::iot::initializer::ProvisioningInfo;
+using virgil::iot::initializer::SignerInterface;
 
 #if 0
 #define SIGNATURE_SZ      (64)
@@ -56,7 +56,7 @@ using virgil::soraa::initializer::SignerInterface;
 #endif
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         
         class SdmpProcessor {
@@ -75,7 +75,6 @@ namespace soraa {
             VirgilByteArray signature() const;
             uint32_t manufacturer() const;
             uint32_t model() const;
-            DeviceType deviceType() const;
 
             VirgilByteArray signDataInDevice(const VirgilByteArray & data) const;
 
@@ -90,7 +89,6 @@ namespace soraa {
             bool getProvisionInfo();
 
             vs_sdmp_prvs_dnid_element_t deviceInfo_;
-            DeviceType deviceType_;
 
             std::shared_ptr<SignerInterface> deviceSigner_;
             VirgilByteArray deviceID_;
@@ -108,4 +106,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
+#endif //VIRGIL_IOT_LAMP_INITIALIZER_SDMPPROCESSOR_H
