@@ -40,7 +40,7 @@
 #include <iterator>
 
 using virgil::sdk::crypto::Crypto;
-using virgil::soraa::registrator::SingleFileEncryptedRequestProvider;
+using virgil::iot::registrar::SingleFileEncryptedRequestProvider;
 using namespace virgil::crypto;
 
 SingleFileEncryptedRequestProvider::SingleFileEncryptedRequestProvider(

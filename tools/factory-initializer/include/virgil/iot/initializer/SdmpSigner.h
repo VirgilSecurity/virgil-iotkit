@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H
-#define VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_SDMPCRYPTOSIGNER_H
+#define VIRGIL_IOT_MANUFACTURE_SDMPCRYPTOSIGNER_H
 
 #include <memory>
 
@@ -43,10 +43,10 @@
 #include <virgil/iot/initializer/SdmpProcessor.h>
 #include <virgil/sdk/crypto/keys/PrivateKey.h>
 
-using virgil::soraa::initializer::SdmpProcessor;
+using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class SdmpSigner: public SignerInterface {
         public:
@@ -64,4 +64,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SDMPCRYPTOSIGNER_H
+#endif //VIRGIL_IOT_MANUFACTURE_SDMPCRYPTOSIGNER_H

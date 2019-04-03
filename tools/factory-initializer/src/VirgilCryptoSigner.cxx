@@ -39,8 +39,8 @@
 #include "virgil/crypto/VirgilSigner.h"
 #include <virgil/sdk/crypto/Crypto.h>
 
-using virgil::soraa::initializer::VirgilCryptoSigner;
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::VirgilCryptoSigner;
+using virgil::iot::initializer::VirgilByteArray;
 using virgil::crypto::VirgilSigner;
 using virgil::sdk::crypto::Crypto;
 

@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PROVISIONINGINFO_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PROVISIONINGINFO_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_PROVISIONINGINFO_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_PROVISIONINGINFO_H
 
 #include <string>
 #include <unordered_map>
@@ -45,19 +45,11 @@ typedef struct {
     uint8_t bytes[32];
 } serial_number_t;
 
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
-
-        enum class DeviceType {
-            Unknown = 0x00,
-            Lamp,
-            Snap,
-            Gateway,
-            NCM
-        };
         
         typedef struct __attribute__((__packed__)) {
             uint32_t tl_size;
@@ -106,8 +98,6 @@ namespace soraa {
                              VirgilByteArray & fwPubKey2,
                              VirgilByteArray & trustList);
 
-            DeviceType deviceType() const { return deviceType_; }
-
             VirgilByteArray authPubKey1() const;
             VirgilByteArray authPubKey2() const;
             VirgilByteArray recPubKey1() const;
@@ -152,11 +142,9 @@ namespace soraa {
 
             VirgilByteArray fwPubKey1_;
             VirgilByteArray fwPubKey2_;
-
-            DeviceType deviceType_;
         };
     }
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_PROVISIONINGINFO_H
+#endif //VIRGIL_IOT_DEVICE_INITIALIZER_PROVISIONINGINFO_H

@@ -34,14 +34,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H
 
 #include <string>
 #include <unordered_map>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class DeviceInfo {
         public:
@@ -67,4 +67,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
+#endif //VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H

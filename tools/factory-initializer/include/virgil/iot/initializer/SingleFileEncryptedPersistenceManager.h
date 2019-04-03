@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
-#define VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#define VIRGIL_IOT_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
 
 #include <fstream>
 #include <memory>
@@ -47,7 +47,7 @@
 #include <virgil/iot/initializer/PersistenceManagerInterface.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class SingleFileEncryptedPersistenceManager: public PersistenceManagerInterface {
         public:
@@ -68,4 +68,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#endif //VIRGIL_IOT_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H

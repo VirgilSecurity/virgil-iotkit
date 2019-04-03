@@ -37,7 +37,7 @@
 #include <virgil/iot/initializer/AssemblyLineProcessor.h>
 #include <iostream>
 
-using virgil::soraa::initializer::AssemblyLineProcessor;
+using virgil::iot::initializer::AssemblyLineProcessor;
 
 void AssemblyLineProcessor::processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
                                           PersistenceManagerInterface &persistenceManager,

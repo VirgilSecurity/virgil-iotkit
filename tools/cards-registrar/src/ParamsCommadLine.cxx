@@ -38,8 +38,8 @@
 #include <virgil/iot/registrator/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
-using virgil::soraa::registrator::ParamsCommadLine;
-using virgil::soraa::registrator::Filesystem;
+using virgil::iot::registrar::ParamsCommadLine;
+using virgil::iot::registrar::Filesystem;
 
 ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
     
@@ -57,7 +57,7 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         VirgilByteArray apiPrivateKey;
         VirgilByteArray iotPrivateKey;
         
-        cxxopts::Options options(argv[0], " - Cards registrator for Soraa devices");
+        cxxopts::Options options(argv[0], " - Cards registrar for IoT devices");
         
         options.add_options()
         ("d,data", "File with encrypted data", cxxopts::value<std::string>(dataFile_))

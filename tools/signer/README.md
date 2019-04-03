@@ -1,4 +1,4 @@
-Virgil Security util for signing soraa bulb firmware
+Virgil Security util for signing iot firmware
 
 ## Requirments:
 * Python 3.x - 3.5

@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
-#define VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#define VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H
 
 #include <memory>
 
@@ -43,7 +43,7 @@
 #include <virgil/sdk/crypto/keys/PrivateKey.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class VirgilCryptoSigner: public SignerInterface {
         public:
@@ -63,4 +63,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#endif //VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H

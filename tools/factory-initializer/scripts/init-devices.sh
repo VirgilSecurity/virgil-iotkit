@@ -75,8 +75,8 @@ get_keys_by_prefix "${PUBLIC_KEYS_DIR}" "firmware_"
 FW_1="${KEY_1}"
 FW_2="${KEY_2}"
 
-CARD_REQUESTS_FILE="${WORK_DIR}/soraa_cards_requests.txt"
-INFO_FILE="${WORK_DIR}/soraa_info_output.txt"
+CARD_REQUESTS_FILE="${WORK_DIR}/virgil_iot_cards_requests.txt"
+INFO_FILE="${WORK_DIR}/virgil_iot_info_output.txt"
 
 FACTORY_TRANSFER_PRIVATE_KEY_PATH="${BASE_PATH}/factory-file-transfer/factory-sender-key/private.key"
 FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD_PATH="${BASE_PATH}/factory-file-transfer/factory-sender-key/password.txt"

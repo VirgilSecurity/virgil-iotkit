@@ -34,33 +34,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H
+#include <virgil/sdk/crypto/Crypto.h>
+#include <virgil/iot/registrator/Common.h>
+#include <virgil/iot/registrator/Filesystem.h>
+#include <virgil/iot/registrator/ParamsCommadLine.h>
+#include <virgil/iot/registrator/DeviceRegistrar.h>
+#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
 
-#include <memory>
+using virgil::sdk::crypto::Crypto;
+using virgil::iot::registrar::VirgilBase64;
+using virgil::iot::registrar::Filesystem;
+using virgil::iot::registrar::ParamsCommadLine;
+using virgil::iot::registrar::DeviceRegistrar;
+using virgil::iot::registrar::SingleFileEncryptedRequestProvider;
 
-#include <virgil/iot/registrator/RequestProviderInterface.h>
-#include <virgil/iot/registrator/CardsServiceInfo.h>
+int main (int argc, char *argv[]) {
+    Filesystem::init();
+    
+    // Get parameters
+    auto params = std::make_shared<ParamsCommadLine>(argc, argv);
+    
+    // initialize crypto
+    auto crypto = std::make_shared<Crypto>();
+    
+    // import keys for decryption and verifying
+    auto privateKey = crypto->importPrivateKey(params->fileDecryptionPrivateKey(), params->fileDecryptionPrivateKeyPassword());
+    auto publicKey = crypto->importPublicKey(params->fileSenderPublicKey());
+    
+    auto fixedDataFile = Filesystem::fixPath(params->dataFile());
+    
+    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
+    DeviceRegistrar registrator(requestProvider, params->cardsServiceInfo(), false);
 
-using virgil::soraa::registrator::CardsServiceInfo;
+    registrator.registerDevice();
 
-namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class LampRegistrator {
-        public:
-            explicit LampRegistrator(std::shared_ptr<RequestProviderInterface> requestProvider,
-                                     const CardsServiceInfo & cardsServiceInfo, bool isAddSerialNumber);
-
-            void registerLamps();
-
-        private:
-            bool isAddSerialNumber_;
-            std::shared_ptr<RequestProviderInterface> requestProvider_;
-            CardsServiceInfo cardsServiceInfo_;
-        };
-    }
+    return 0;
 }
-}
-
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_LAMPREGISTRATOR_H

@@ -38,8 +38,8 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include "virgil/sdk/crypto/Crypto.h"
 
-using virgil::soraa::initializer::SingleFileEncryptedPersistenceManager;
-using virgil::soraa::initializer::Filesystem;
+using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
+using virgil::iot::initializer::Filesystem;
 using virgil::sdk::crypto::Crypto;
 
 SingleFileEncryptedPersistenceManager::SingleFileEncryptedPersistenceManager(const std::string &filename,

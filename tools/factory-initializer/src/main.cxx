@@ -52,19 +52,18 @@
 #include <virgil/iot/initializer/ProvisioningInfo.h>
 #include <virgil/iot/initializer/VirgilCryptoSigner.h>
 
-using virgil::soraa::initializer::AssemblyLineProcessor;
-using virgil::soraa::initializer::DeviceRequestBuilder;
-using virgil::soraa::initializer::SingleFileEncryptedPersistenceManager;
-using virgil::soraa::initializer::ParamsCommadLine;
-using virgil::soraa::initializer::Filesystem;
-using virgil::soraa::initializer::SingleFileEncryptedPersistenceManager;
-using virgil::soraa::initializer::SdmpDeviceInfoProvider;
-using virgil::soraa::initializer::SdmpSigner;
-using virgil::soraa::initializer::DeviceRequestBuilder;
-using virgil::soraa::initializer::AssemblyLineProcessor;
-using virgil::soraa::initializer::DeviceType;
-using virgil::soraa::initializer::VirgilCryptoSigner;
-using virgil::soraa::initializer::AtmelCryptoSigner;
+using virgil::iot::initializer::AssemblyLineProcessor;
+using virgil::iot::initializer::DeviceRequestBuilder;
+using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
+using virgil::iot::initializer::ParamsCommadLine;
+using virgil::iot::initializer::Filesystem;
+using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
+using virgil::iot::initializer::SdmpDeviceInfoProvider;
+using virgil::iot::initializer::SdmpSigner;
+using virgil::iot::initializer::DeviceRequestBuilder;
+using virgil::iot::initializer::AssemblyLineProcessor;
+using virgil::iot::initializer::VirgilCryptoSigner;
+using virgil::iot::initializer::AtmelCryptoSigner;
 using virgil::sdk::crypto::Crypto;
 
 int main (int argc, char *argv[]) {
@@ -94,8 +93,8 @@ int main (int argc, char *argv[]) {
 
     std::shared_ptr<SignerInterface> deviceSigner;
 
-    // Soraa device initialization
-    auto keyData = virgil::soraa::initializer::Filesystem::loadFile(params->factoryPrivateKey());
+    // IoT device initialization
+    auto keyData = virgil::iot::initializer::Filesystem::loadFile(params->factoryPrivateKey());
     auto deviceSignPrivateKey = virgil::sdk::crypto::Crypto().importPrivateKey(keyData);
     deviceSigner = std::make_shared<VirgilCryptoSigner>(crypto, deviceSignPrivateKey);
 
