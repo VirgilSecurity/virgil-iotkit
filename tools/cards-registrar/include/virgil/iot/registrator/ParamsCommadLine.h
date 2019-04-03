@@ -45,7 +45,7 @@
 
 namespace virgil {
     namespace iot {
-        namespace registrator {
+        namespace registrar {
             class ParamsCommadLine: public ParamsInterface {
             public:
                 ParamsCommadLine(int argc, char *argv[]);

@@ -1,5 +1,6 @@
+
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2017 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,39 +35,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/iot/registrator/Common.h>
-#include <virgil/iot/registrator/Filesystem.h>
-#include <virgil/iot/registrator/ParamsCommadLine.h>
-#include <virgil/iot/registrator/LampRegistrator.h>
-#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::sdk::crypto::Crypto;
-using virgil::iot::registrator::VirgilBase64;
-using virgil::iot::registrator::Filesystem;
-using virgil::iot::registrator::ParamsCommadLine;
-using virgil::iot::registrator::LampRegistrator;
-using virgil::iot::registrator::SingleFileEncryptedRequestProvider;
+using virgil::iot::registrar::CardsServiceInfo;
 
-int main (int argc, char *argv[]) {
-    Filesystem::init();
+CardsServiceInfo::CardsServiceInfo(std::string appID,
+                                   std::string apiKeyID,
+                                   VirgilByteArray apiPrivateKey,
+                                   VirgilByteArray iotPrivateKey,
+                                   std::string baseCardServiceUrl) :
+        baseCardServiceUrl_(std::move(baseCardServiceUrl)),
+        appID_(std::move(appID)),
+        apiKeyID_(std::move(apiKeyID)),
+        apiPrivateKey_(std::move(apiPrivateKey)),
+        iotPrivateKey_(std::move(iotPrivateKey)) {
     
-    // Get parameters
-    auto params = std::make_shared<ParamsCommadLine>(argc, argv);
-    
-    // initialize crypto
-    auto crypto = std::make_shared<Crypto>();
-    
-    // import keys for decryption and verifying
-    auto privateKey = crypto->importPrivateKey(params->fileDecryptionPrivateKey(), params->fileDecryptionPrivateKeyPassword());
-    auto publicKey = crypto->importPublicKey(params->fileSenderPublicKey());
-    
-    auto fixedDataFile = Filesystem::fixPath(params->dataFile());
-    
-    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
-    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), false);
-    
-    registrator.registerLamps();
-
-    return 0;
 }

@@ -1,6 +1,5 @@
-
 /**
- * Copyright (C) 2017 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,19 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef VIRGIL_IOT_DEVICE_REGISTRAR_H
+#define VIRGIL_IOT_DEVICE_REGISTRAR_H
+
+#include <memory>
+
+#include <virgil/iot/registrator/RequestProviderInterface.h>
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::iot::registrator::CardsServiceInfo;
+using virgil::iot::registrar::CardsServiceInfo;
 
-CardsServiceInfo::CardsServiceInfo(std::string appID,
-                                   std::string apiKeyID,
-                                   VirgilByteArray apiPrivateKey,
-                                   VirgilByteArray iotPrivateKey,
-                                   std::string baseCardServiceUrl) :
-        baseCardServiceUrl_(std::move(baseCardServiceUrl)),
-        appID_(std::move(appID)),
-        apiKeyID_(std::move(apiKeyID)),
-        apiPrivateKey_(std::move(apiPrivateKey)),
-        iotPrivateKey_(std::move(iotPrivateKey)) {
-    
+namespace virgil {
+namespace iot {
+    namespace registrar {
+        class DeviceRegistrar {
+        public:
+            explicit DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
+                                     const CardsServiceInfo & cardsServiceInfo, bool isAddSerialNumber);
+
+            void registerDevice();
+
+        private:
+            bool isAddSerialNumber_;
+            std::shared_ptr<RequestProviderInterface> requestProvider_;
+            CardsServiceInfo cardsServiceInfo_;
+        };
+    }
 }
+}
+
+#endif //VIRGIL_IOT_DEVICE_REGISTRAR_H

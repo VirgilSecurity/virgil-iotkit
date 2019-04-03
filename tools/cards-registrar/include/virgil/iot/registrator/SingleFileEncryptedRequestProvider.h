@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
-#define VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
 
 #include <fstream>
 #include <memory>
@@ -47,7 +47,7 @@
 
 namespace virgil {
 namespace iot {
-    namespace registrator {
+    namespace registrar {
         class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
         public:
             SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
@@ -67,4 +67,4 @@ namespace iot {
 }
 }
 
-#endif //VIRGIL_IOT_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H

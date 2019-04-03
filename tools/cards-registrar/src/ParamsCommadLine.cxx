@@ -38,8 +38,8 @@
 #include <virgil/iot/registrator/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
-using virgil::iot::registrator::ParamsCommadLine;
-using virgil::iot::registrator::Filesystem;
+using virgil::iot::registrar::ParamsCommadLine;
+using virgil::iot::registrar::Filesystem;
 
 ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
     

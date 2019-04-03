@@ -46,7 +46,7 @@
 #include <sys/stat.h>
 #include <pwd.h>
 
-using virgil::iot::registrator::Filesystem;
+using virgil::iot::registrar::Filesystem;
 using virgil::crypto::VirgilByteArrayUtils;
 
 std::string Filesystem::currentPath_;

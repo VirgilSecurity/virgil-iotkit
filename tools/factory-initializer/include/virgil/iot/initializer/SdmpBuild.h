@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_IOT_LAMP_INITIALIZER_SDMPBUILD_H
-#define VIRGIL_IOT_LAMP_INITIALIZER_SDMPBUILD_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H
 
 #include <virgil/iot/initializer/SdmpSigner.h>
 #include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
@@ -49,4 +49,4 @@ using virgil::iot::initializer::SdmpPublicKeyProvider;
 using virgil::iot::initializer::SdmpProcessor;
 using virgil::iot::initializer::AtmelCryptoSigner;
 
-#endif //VIRGIL_IOT_LAMP_INITIALIZER_SDMPBUILD_H
+#endif //VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H

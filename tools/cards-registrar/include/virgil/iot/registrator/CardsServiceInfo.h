@@ -34,18 +34,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H
-#define VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H
+#define VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H
 
 #include <string>
 #include <unordered_map>
 #include "Common.h"
 
-using virgil::iot::registrator::VirgilByteArray;
+using virgil::iot::registrar::VirgilByteArray;
 
 namespace virgil {
 namespace iot {
-    namespace registrator {
+    namespace registrar {
         class CardsServiceInfo {
         public:
             CardsServiceInfo() = default;
@@ -75,4 +75,4 @@ namespace iot {
 }
 }
 
-#endif //VIRGIL_IOT_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#endif //VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H

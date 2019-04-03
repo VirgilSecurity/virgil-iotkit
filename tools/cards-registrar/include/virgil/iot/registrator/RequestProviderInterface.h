@@ -34,14 +34,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
-#define VIRGIL_IOT_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
 
 #include <string>
 
 namespace virgil {
 namespace iot {
-    namespace registrator {
+    namespace registrar {
         class RequestProviderInterface {
         public:
             virtual std::string getData() = 0;
@@ -54,4 +54,4 @@ namespace iot {
 }
 }
 
-#endif //VIRGIL_IOT_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H

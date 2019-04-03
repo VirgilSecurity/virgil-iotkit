@@ -36,7 +36,7 @@
 
 #include <iostream>
 #include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/iot/registrator/LampRegistrator.h>
+#include <virgil/iot/registrator/DeviceRegistrar.h>
 #include <virgil/sdk/client/CardClient.h>
 #include <virgil/sdk/client/models/RawCardContent.h>
 #include <virgil/sdk/cards/ModelSigner.h>
@@ -49,7 +49,7 @@ using virgil::sdk::crypto::Crypto;
 using virgil::sdk::crypto::keys::KeyPair;
 using virgil::sdk::crypto::keys::PrivateKey;
 using virgil::sdk::crypto::keys::PublicKey;
-using virgil::iot::registrator::LampRegistrator;
+using virgil::iot::registrar::DeviceRegistrar;
 using virgil::sdk::client::CardClient;
 using virgil::sdk::client::networking::errors::Error;
 using virgil::sdk::client::models::RawCardContent;
@@ -62,14 +62,14 @@ using virgil::sdk::util::JsonUtils;
 using nlohmann::json;
 using virgil::sdk::VirgilByteArray;
 
-LampRegistrator::LampRegistrator(std::shared_ptr<RequestProviderInterface> requestProvider,
+DeviceRegistrar::DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
                                  const CardsServiceInfo & cardsServiceInfo,
                                  bool isAddSerialNumber)
 : requestProvider_(std::move(requestProvider)), cardsServiceInfo_(std::move(cardsServiceInfo)) {
     isAddSerialNumber_ = isAddSerialNumber;
 }
 
-void LampRegistrator::registerLamps() {
+void DeviceRegistrar::registerDevice() {
 
     auto crypto = std::make_shared<Crypto>();
     auto iotPrivateKey = crypto->importPrivateKey(cardsServiceInfo_.iotPrivateKey());

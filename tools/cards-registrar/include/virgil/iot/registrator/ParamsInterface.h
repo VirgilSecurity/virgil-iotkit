@@ -34,19 +34,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H
-#define VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_PARAMSINTERFACE_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_PARAMSINTERFACE_H
 
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::iot::registrator::CardsServiceInfo;
+using virgil::iot::registrar::CardsServiceInfo;
 using virgil::sdk::crypto::Crypto;
 using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
 namespace iot {
-    namespace registrator {
+    namespace registrar {
         class ParamsInterface {
         public:
             virtual ~ParamsInterface() = default;
@@ -63,4 +63,4 @@ namespace iot {
 }
 }
 
-#endif //VIRGIL_IOT_LAMP_REGISTRATOR_PARAMSINTERFACE_H
+#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_PARAMSINTERFACE_H

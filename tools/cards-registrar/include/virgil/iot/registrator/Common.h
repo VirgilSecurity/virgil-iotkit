@@ -41,7 +41,7 @@
 
 namespace virgil {
 namespace iot {
-    namespace registrator {
+    namespace registrar {
         using VirgilByteArray = virgil::crypto::VirgilByteArray;
         using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
         using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
