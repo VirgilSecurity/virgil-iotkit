@@ -65,10 +65,10 @@ include_directories (${PROJECT_SOURCE_DIR}/cmake-build-debug/depends/virgil_cryp
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 #
-#   -Wall -Weeror
+#   -Wall -Werror
 #   TODO: Pay attention to -Wno-delete-non-virtual-dtor !
 #
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-delete-non-virtual-dtor")
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-delete-non-virtual-dtor -Wno-multichar")
 
 target_link_libraries (${PROJECT_NAME} virgil_sdk)
 set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "iot-initializer")
