@@ -160,7 +160,7 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
     if (0 != vs_sdmp_prvs_finalize_tl(0, &deviceInfo_.mac_addr,
                                       provisioningInfo.tlFooter().data(),
                               provisioningInfo.tlFooter().size(),
-                              kDefaultWaitTimeMs)) {
+                              kDefaultWaitTimeMs * 10)) {
         return false;
     }
 
