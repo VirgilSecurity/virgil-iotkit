@@ -57,6 +57,11 @@ include_directories (${PROJECT_SOURCE_DIR}/include)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
+#
+#   -Wall -Weeror
+#
+set_target_properties(${IOT_INITIALIZER} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+
 target_link_libraries (${PROJECT_NAME} virgil_sdk)
 
 IF("${CMAKE_SYSTEM}" MATCHES "Linux")

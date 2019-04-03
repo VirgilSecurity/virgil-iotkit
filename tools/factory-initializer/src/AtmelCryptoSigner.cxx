@@ -76,7 +76,7 @@ uint16_t AtmelCryptoSigner::signerId() {
 }
 
 VirgilByteArray AtmelCryptoSigner::publicKeyFull() {
-    uint8_t * ownKey;
+//    uint8_t * ownKey;
 //    crypto_tiny_own_public_key(&ownKey);
 
     uint8_t ownKeyFull[128];

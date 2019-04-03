@@ -46,11 +46,16 @@ set(SECBOX_SRC
         )
 
 #
-#   SDMP library
+#   SecBox library
 #
 add_library(${SECBOX_LIB}
         ${SECBOX_SRC}
         )
+
+#
+#   -Wall -Weeror
+#
+set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
 #
 #   Common include directories

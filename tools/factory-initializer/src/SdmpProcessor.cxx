@@ -50,7 +50,7 @@ const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
                              std::shared_ptr<SignerInterface> deviceSigner) :
-deviceSigner_(std::move(deviceSigner)), deviceInfo_(deviceInfo) {
+        deviceInfo_(deviceInfo), deviceSigner_(std::move(deviceSigner)) {
     // Connect to PLC bus
     if (0 != vs_sdmp_init(vs_hal_netif_plc_sim())) {
         throw std::runtime_error(std::string("Can't start SDMP communication"));
