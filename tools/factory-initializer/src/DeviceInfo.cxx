@@ -37,7 +37,7 @@
 #include <virgil/iot/initializer/DeviceInfo.h>
 #include <virgil/sdk/util/JsonUtils.h>
 
-using virgil::soraa::initializer::DeviceInfo;
+using virgil::iot::initializer::DeviceInfo;
 using virgil::sdk::util::JsonUtils;
 
 DeviceInfo::DeviceInfo(std::string identity, std::string identityType, std::string device, std::string deviceName,

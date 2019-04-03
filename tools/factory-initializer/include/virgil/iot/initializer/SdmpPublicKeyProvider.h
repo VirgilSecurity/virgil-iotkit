@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
-#define VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#define VIRGIL_IOT_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
 
 #include <memory>
 
@@ -43,10 +43,10 @@
 #include <virgil/sdk/crypto/keys/PublicKey.h>
 #include <virgil/iot/initializer/SdmpProcessor.h>
 
-using virgil::soraa::initializer::SdmpProcessor;
+using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class SdmpPublicKeyProvider: public PublicKeyProviderInterface {
         public:
@@ -61,4 +61,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#endif //VIRGIL_IOT_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H

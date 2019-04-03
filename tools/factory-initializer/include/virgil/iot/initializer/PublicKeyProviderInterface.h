@@ -34,13 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
+#define VIRGIL_IOT_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
 
 #include <virgil/iot/initializer/Common.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class PublicKeyProviderInterface {
         public:
@@ -52,4 +52,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
+#endif //VIRGIL_IOT_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H

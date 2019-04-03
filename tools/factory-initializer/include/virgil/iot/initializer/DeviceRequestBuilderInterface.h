@@ -34,15 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#define VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
 
 #include <virgil/iot/initializer/DeviceInfo.h>
 #include <virgil/iot/initializer/PublicKeyProviderInterface.h>
 #include <virgil/iot/initializer/SignerInterface.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class DeviceRequestBuilderInterface {
         public:
@@ -55,4 +55,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#endif //VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H

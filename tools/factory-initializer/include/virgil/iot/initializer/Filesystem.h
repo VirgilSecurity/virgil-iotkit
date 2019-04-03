@@ -34,16 +34,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_FILESYSTEM_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_FILESYSTEM_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_FILESYSTEM_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_FILESYSTEM_H
 
 #include <string>
 #include "Common.h"
 
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class Filesystem {
         public:
@@ -69,4 +69,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_FILESYSTEM_H
+#endif //VIRGIL_IOT_DEVICE_INITIALIZER_FILESYSTEM_H

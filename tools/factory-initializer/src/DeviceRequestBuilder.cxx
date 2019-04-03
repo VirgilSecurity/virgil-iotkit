@@ -40,9 +40,9 @@
 #include <virgil/sdk/cards/CardManager.h>
 #include <virgil/crypto/foundation/VirgilHash.h>
 
-using virgil::soraa::initializer::DeviceRequestBuilder;
-using virgil::soraa::initializer::PublicKeyProviderInterface;
-using virgil::soraa::initializer::DeviceInfo;
+using virgil::iot::initializer::DeviceRequestBuilder;
+using virgil::iot::initializer::PublicKeyProviderInterface;
+using virgil::iot::initializer::DeviceInfo;
 using virgil::sdk::client::models::RawCardContent;
 using virgil::sdk::client::models::RawSignature;
 using virgil::sdk::cards::ModelSigner;

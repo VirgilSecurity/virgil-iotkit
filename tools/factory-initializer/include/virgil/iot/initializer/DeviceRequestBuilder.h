@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
-#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#define VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H
 
 #include <memory>
 
@@ -46,7 +46,7 @@
 #include <virgil/sdk/crypto/Crypto.h>
 
 namespace virgil {
-namespace soraa {
+namespace iot {
     namespace initializer {
         class DeviceRequestBuilder: public DeviceRequestBuilderInterface {
         public:
@@ -68,4 +68,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#endif //VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H

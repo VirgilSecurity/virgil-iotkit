@@ -34,39 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/iot/registrator/Common.h>
-#include <virgil/iot/registrator/Filesystem.h>
-#include <virgil/iot/registrator/ParamsCommadLine.h>
-#include <virgil/iot/registrator/LampRegistrator.h>
-#include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
+#ifndef VIRGIL_IOT_DEVICE_REGISTRAR_H
+#define VIRGIL_IOT_DEVICE_REGISTRAR_H
 
-using virgil::sdk::crypto::Crypto;
-using virgil::soraa::registrator::VirgilBase64;
-using virgil::soraa::registrator::Filesystem;
-using virgil::soraa::registrator::ParamsCommadLine;
-using virgil::soraa::registrator::LampRegistrator;
-using virgil::soraa::registrator::SingleFileEncryptedRequestProvider;
+#include <memory>
 
-int main (int argc, char *argv[]) {
-    Filesystem::init();
-    
-    // Get parameters
-    auto params = std::make_shared<ParamsCommadLine>(argc, argv);
-    
-    // initialize crypto
-    auto crypto = std::make_shared<Crypto>();
-    
-    // import keys for decryption and verifying
-    auto privateKey = crypto->importPrivateKey(params->fileDecryptionPrivateKey(), params->fileDecryptionPrivateKeyPassword());
-    auto publicKey = crypto->importPublicKey(params->fileSenderPublicKey());
-    
-    auto fixedDataFile = Filesystem::fixPath(params->dataFile());
-    
-    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
-    LampRegistrator registrator(requestProvider, params->cardsServiceInfo(), false);
-    
-    registrator.registerLamps();
+#include <virgil/iot/registrator/RequestProviderInterface.h>
+#include <virgil/iot/registrator/CardsServiceInfo.h>
 
-    return 0;
+using virgil::iot::registrar::CardsServiceInfo;
+
+namespace virgil {
+namespace iot {
+    namespace registrar {
+        class DeviceRegistrar {
+        public:
+            explicit DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
+                                     const CardsServiceInfo & cardsServiceInfo, bool isAddSerialNumber);
+
+            void registerDevice();
+
+        private:
+            bool isAddSerialNumber_;
+            std::shared_ptr<RequestProviderInterface> requestProvider_;
+            CardsServiceInfo cardsServiceInfo_;
+        };
+    }
 }
+}
+
+#endif //VIRGIL_IOT_DEVICE_REGISTRAR_H

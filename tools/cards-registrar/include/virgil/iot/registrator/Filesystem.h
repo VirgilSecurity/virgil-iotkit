@@ -34,17 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H
 
 #include <string>
 #include "Common.h"
 
-using virgil::soraa::registrator::VirgilByteArray;
+using virgil::iot::registrar::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
+namespace iot {
+    namespace registrar {
         class Filesystem {
         public:
             static VirgilByteArray loadFile(const std::string & filename, const std::string & basePath = "");
@@ -69,4 +69,4 @@ namespace soraa {
 }
 }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H

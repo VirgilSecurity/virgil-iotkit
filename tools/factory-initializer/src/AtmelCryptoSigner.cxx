@@ -41,8 +41,8 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include <virgil/iot/initializer/Crc16.h>
 
-using virgil::soraa::initializer::AtmelCryptoSigner;
-using virgil::soraa::initializer::VirgilByteArray;
+using virgil::iot::initializer::AtmelCryptoSigner;
+using virgil::iot::initializer::VirgilByteArray;
 
 AtmelCryptoSigner::AtmelCryptoSigner() {
 //    crypto_init();

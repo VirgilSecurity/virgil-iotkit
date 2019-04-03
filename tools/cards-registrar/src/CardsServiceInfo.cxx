@@ -37,7 +37,7 @@
 
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
-using virgil::soraa::registrator::CardsServiceInfo;
+using virgil::iot::registrar::CardsServiceInfo;
 
 CardsServiceInfo::CardsServiceInfo(std::string appID,
                                    std::string apiKeyID,
