@@ -84,7 +84,7 @@ VirgilByteArray Filesystem::loadFile(const std::string & filename, const std::st
         fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
 
-        if (fileSize > kFileSizeLimit) {
+        if (fileSize > static_cast<std::streampos>(kFileSizeLimit)) {
             throw std::runtime_error(std::string("File size more than ") + std::to_string(kFileSizeLimit) + " bytes. Current size is " + std::to_string(fileSize) + "bytes.");
         }
 

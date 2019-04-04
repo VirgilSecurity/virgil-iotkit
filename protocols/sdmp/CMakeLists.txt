@@ -55,6 +55,11 @@ add_library(${SDMP_LIB}
         )
 
 #
+#   -Wall -Werror
+#
+set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+
+#
 #   Common include directories
 #
 target_include_directories(${PROJECT_NAME}
