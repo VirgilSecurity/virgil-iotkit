@@ -41,12 +41,10 @@
 #include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
 #include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
 #include <virgil/iot/initializer/SdmpProcessor.h>
-#include <virgil/iot/initializer/AtmelCryptoSigner.h>
 
 using virgil::iot::initializer::SdmpSigner;
 using virgil::iot::initializer::SdmpDeviceInfoProvider;
 using virgil::iot::initializer::SdmpPublicKeyProvider;
 using virgil::iot::initializer::SdmpProcessor;
-using virgil::iot::initializer::AtmelCryptoSigner;
 
 #endif //VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H
