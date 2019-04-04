@@ -63,7 +63,6 @@ using virgil::iot::initializer::SdmpSigner;
 using virgil::iot::initializer::DeviceRequestBuilder;
 using virgil::iot::initializer::AssemblyLineProcessor;
 using virgil::iot::initializer::VirgilCryptoSigner;
-using virgil::iot::initializer::AtmelCryptoSigner;
 using virgil::sdk::crypto::Crypto;
 
 int main (int argc, char *argv[]) {
@@ -103,7 +102,7 @@ int main (int argc, char *argv[]) {
     std::cout << "Got " + std::to_string(devices.count) + " devices :" << std::endl << std::endl;
 
 
-    for (int i = 0; i < devices.count; i++) {
+    for (size_t i = 0; i < devices.count; i++) {
 
         std::cout << "Device type : " << std::to_string(devices.elements[i].device_type) << std::endl;
         std::cout << "Device MAC  : ";
