@@ -70,13 +70,18 @@ func newFooterSignatureByKey(keyPath string, data *[]byte) (FooterSignature, err
     s := strings.Split(file, "_")
 
     // get key type
+    keyTypeStr := s[0]
     var keyType int
-    switch s[0] {
+
+    switch keyTypeStr {
     case "auth":
         keyType = 4
     case "firmware":
         keyType = 1
+    default:
+        return FooterSignature{}, fmt.Errorf("unknown key type: %s (%s)", keyTypeStr, file)
     }
+
     // get key id
     keyID := s[1]
     keyIDInt, _ := strconv.ParseUint(keyID, 10, 16)
