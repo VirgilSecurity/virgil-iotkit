@@ -50,6 +50,12 @@ endfunction()
 function(clangformat_folder)
     if (CLANG_FORMAT_EXECUTABLE)
 
+        if (NOT TARGET clang-format)
+            add_custom_target(clang-format)
+        endif ()
+
+        set(_sources "")
+
         foreach (_folder ${ARGN})
             # figure out which sources this should be applied to
             file(GLOB_RECURSE _clang_sources
@@ -58,7 +64,6 @@ function(clangformat_folder)
                     ${_folder}/*.cpp
                     ${_folder}/*.h
                     )
-            set(_sources "")
 
             file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_SOURCE_DIR} ${_folder})
             string(REPLACE "/" "_" _dir_name ${_rel_path})
@@ -84,19 +89,22 @@ function(clangformat_folder)
                     list(APPEND _sources ${_format_file})
                 endif ()
             endforeach ()
-
-            if (NOT TARGET clang-format)
-                add_custom_target(clang-format)
-            endif ()
-
-            if (_sources)
-                add_custom_target(clangformat_${_dir_name}
-                        SOURCES ${_sources}
-                        COMMENT "Clang-Format for folder ${_dir_name}")
-
-                add_dependencies(clang-format clangformat_${_dir_name})
-            endif ()
         endforeach ()
+
+        if(CMAKE_SOURCE_DIR STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+            set(_pwd "main")
+        else()
+            file(RELATIVE_PATH _rel_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+            string(REPLACE "/" "_" _pwd ${_rel_path})
+        endif()
+
+        if (_sources)
+            add_custom_target(clangformat_${_pwd}
+                    SOURCES ${_sources}
+                    COMMENT "Clang-Format for folder ${_pwd}")
+
+            add_dependencies(clang-format clangformat_${_pwd})
+        endif ()
 
     endif ()
 endfunction()

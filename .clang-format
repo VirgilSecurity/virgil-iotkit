@@ -6,11 +6,14 @@ TabWidth:        4
 UseTab:          Never
 ColumnLimit:     120
 IndentWidth:     4
+AllowShortLoopsOnASingleLine: false
+AlignTrailingComments: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
 ContinuationIndentWidth: 8
-AllowShortFunctionsOnASingleLine : false
 DerivePointerAlignment: false
 PointerAlignment: Right
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: Align
 AccessModifierOffset: -4
 AllowAllParametersOfDeclarationOnNextLine: true
 BinPackArguments: true
