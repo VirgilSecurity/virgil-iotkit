@@ -43,11 +43,7 @@ CardsServiceInfo::CardsServiceInfo(std::string appID,
                                    std::string apiKeyID,
                                    VirgilByteArray apiPrivateKey,
                                    VirgilByteArray iotPrivateKey,
-                                   std::string baseCardServiceUrl) :
-        baseCardServiceUrl_(std::move(baseCardServiceUrl)),
-        appID_(std::move(appID)),
-        apiKeyID_(std::move(apiKeyID)),
-        apiPrivateKey_(std::move(apiPrivateKey)),
-        iotPrivateKey_(std::move(iotPrivateKey)) {
-    
+                                   std::string baseCardServiceUrl)
+    : baseCardServiceUrl_(std::move(baseCardServiceUrl)), appID_(std::move(appID)), apiKeyID_(std::move(apiKeyID)),
+      apiPrivateKey_(std::move(apiPrivateKey)), iotPrivateKey_(std::move(iotPrivateKey)) {
 }

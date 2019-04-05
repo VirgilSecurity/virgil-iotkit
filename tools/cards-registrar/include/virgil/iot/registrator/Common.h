@@ -41,13 +41,13 @@
 
 namespace virgil {
 namespace iot {
-    namespace registrar {
-        using VirgilByteArray = virgil::crypto::VirgilByteArray;
-        using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
-        using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
-        using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
-    }
-}
-}
+namespace registrar {
+using VirgilByteArray = virgil::crypto::VirgilByteArray;
+using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
+using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
+using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_COMMON_H
+#endif // VIRGIL_IOT_MANUFACTURE_COMMON_H

@@ -38,25 +38,25 @@
 #include <virgil/sdk/crypto/Crypto.h>
 #include <externals/json.hpp>
 
-using virgil::iot::initializer::SdmpDeviceInfoProvider;
 using virgil::iot::initializer::DeviceInfo;
+using virgil::iot::initializer::SdmpDeviceInfoProvider;
 using virgil::sdk::VirgilBase64;
 using namespace virgil::crypto;
 using json = nlohmann::json;
 
 const std::string SdmpDeviceInfoProvider::kIdentityType = "id";
 
-SdmpDeviceInfoProvider::SdmpDeviceInfoProvider(const ProvisioningInfo & provisioningInfo,
-                                               std::shared_ptr<SdmpProcessor> processor) :
-provisioningInfo_(std::move(provisioningInfo)), processor_(std::move(processor)) {
-    
+SdmpDeviceInfoProvider::SdmpDeviceInfoProvider(const ProvisioningInfo &provisioningInfo,
+                                               std::shared_ptr<SdmpProcessor> processor)
+    : provisioningInfo_(std::move(provisioningInfo)), processor_(std::move(processor)) {
 }
 
-std::unordered_map<std::string, std::string> SdmpDeviceInfoProvider::payload() {
+std::unordered_map<std::string, std::string>
+SdmpDeviceInfoProvider::payload() {
     std::unordered_map<std::string, std::string> payload;
 
-    payload["manufacturer"] = _hex< uint32_t >(processor_->manufacturer());
-    payload["model"] = _hex< uint32_t >(processor_->model());
+    payload["manufacturer"] = _hex<uint32_t>(processor_->manufacturer());
+    payload["model"] = _hex<uint32_t>(processor_->model());
     payload["mac"] = VirgilBase64::encode(processor_->deviceMacAddr());
     payload["serial"] = VirgilBase64::encode(processor_->deviceID());
     payload["publicKeyTiny"] = VirgilBase64::encode(processor_->devicePublicKeyTiny());
@@ -66,13 +66,15 @@ std::unordered_map<std::string, std::string> SdmpDeviceInfoProvider::payload() {
     return payload;
 };
 
-std::string SdmpDeviceInfoProvider::payloadJson() {
+std::string
+SdmpDeviceInfoProvider::payloadJson() {
     json json(payload());
 
     return json.dump();
 }
 
-DeviceInfo SdmpDeviceInfoProvider::deviceInfo() {
+DeviceInfo
+SdmpDeviceInfoProvider::deviceInfo() {
     std::string deviceTypeStr = "";
     return DeviceInfo(bytes2hex(processor_->deviceID()),
                       kIdentityType,

@@ -39,42 +39,35 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include <externals/ini.hpp>
 
-using virgil::iot::initializer::ProvisioningInfo;
 using virgil::iot::initializer::Filesystem;
+using virgil::iot::initializer::ProvisioningInfo;
 
 ProvisioningInfo::ProvisioningInfo(bool tl_only,
                                    bool card_only,
-                                   VirgilByteArray & authPubKey1,
-                                   VirgilByteArray & authPubKey2,
-                                   VirgilByteArray & recPubKey1,
-                                   VirgilByteArray & recPubKey2,
-                                   VirgilByteArray & tlPubKey1,
-                                   VirgilByteArray & tlPubKey2,
-                                   VirgilByteArray & fwPubKey1,
-                                   VirgilByteArray & fwPubKey2,
-                                   VirgilByteArray & trustList) {
-    init(authPubKey1,
-         authPubKey2,
-         recPubKey1,
-         recPubKey2,
-         tlPubKey1,
-         tlPubKey2,
-         fwPubKey1,
-         fwPubKey2,
-         trustList);
+                                   VirgilByteArray &authPubKey1,
+                                   VirgilByteArray &authPubKey2,
+                                   VirgilByteArray &recPubKey1,
+                                   VirgilByteArray &recPubKey2,
+                                   VirgilByteArray &tlPubKey1,
+                                   VirgilByteArray &tlPubKey2,
+                                   VirgilByteArray &fwPubKey1,
+                                   VirgilByteArray &fwPubKey2,
+                                   VirgilByteArray &trustList) {
+    init(authPubKey1, authPubKey2, recPubKey1, recPubKey2, tlPubKey1, tlPubKey2, fwPubKey1, fwPubKey2, trustList);
     trustListOnly_ = tl_only;
     createCardOnly_ = card_only;
 }
 
-void ProvisioningInfo::init(VirgilByteArray & authPubKey1,
-                            VirgilByteArray & authPubKey2,
-                            VirgilByteArray & recPubKey1,
-                            VirgilByteArray & recPubKey2,
-                            VirgilByteArray & tlPubKey1,
-                            VirgilByteArray & tlPubKey2,
-                            VirgilByteArray & fwPubKey1,
-                            VirgilByteArray & fwPubKey2,
-                            VirgilByteArray & trustList) {
+void
+ProvisioningInfo::init(VirgilByteArray &authPubKey1,
+                       VirgilByteArray &authPubKey2,
+                       VirgilByteArray &recPubKey1,
+                       VirgilByteArray &recPubKey2,
+                       VirgilByteArray &tlPubKey1,
+                       VirgilByteArray &tlPubKey2,
+                       VirgilByteArray &fwPubKey1,
+                       VirgilByteArray &fwPubKey2,
+                       VirgilByteArray &trustList) {
     uint32_t tl_size;
     uint8_t *tl_ptr;
     authPubKey1_ = authPubKey1;
@@ -88,96 +81,107 @@ void ProvisioningInfo::init(VirgilByteArray & authPubKey1,
     trustListChunks_.clear();
 
     try {
-        if(trustList.size() < sizeof(trust_list_header_t) + sizeof(trust_list_footer_t)) {
+        if (trustList.size() < sizeof(trust_list_header_t) + sizeof(trust_list_footer_t)) {
             const auto what(std::string("Wrong data in trust list\n"));
             throw std::runtime_error(what);
         }
 
-        memcpy(reinterpret_cast<uint8_t *>(&tlHeader_),trustList.data(),sizeof(trust_list_header_t));
+        memcpy(reinterpret_cast<uint8_t *>(&tlHeader_), trustList.data(), sizeof(trust_list_header_t));
 
-        tl_size = tlHeader_.pub_keys_count * sizeof(trust_list_pub_key_t)
-                  + sizeof(trust_list_header_t)
-                  + sizeof(trust_list_footer_t);
+        tl_size = tlHeader_.pub_keys_count * sizeof(trust_list_pub_key_t) + sizeof(trust_list_header_t) +
+                  sizeof(trust_list_footer_t);
 
-        if(trustList.size() != tlHeader_.tl_size
-                || trustList.size() != tl_size) {
+        if (trustList.size() != tlHeader_.tl_size || trustList.size() != tl_size) {
             const auto what(std::string("Wrong data in trust list\n"));
             throw std::runtime_error(what);
         }
 
         tl_ptr = &trustList[sizeof(trust_list_header_t)];
 
-        for(uint16_t i = 0; i < tlHeader_.pub_keys_count; i ++) {
+        for (uint16_t i = 0; i < tlHeader_.pub_keys_count; i++) {
             trustListChunks_.push_back(*reinterpret_cast<trust_list_pub_key_t *>(tl_ptr));
             tl_ptr += sizeof(trust_list_pub_key_t);
         }
 
-        memcpy(reinterpret_cast<uint8_t *>(&tlFooter_),tl_ptr,sizeof(trust_list_footer_t));
+        memcpy(reinterpret_cast<uint8_t *>(&tlFooter_), tl_ptr, sizeof(trust_list_footer_t));
 
-    } catch(...) {
+    } catch (...) {
         const auto what(std::string("Wrong data in trust list \n"));
         throw std::runtime_error(what);
     }
-
 }
 
-VirgilByteArray ProvisioningInfo::authPubKey1() const {
+VirgilByteArray
+ProvisioningInfo::authPubKey1() const {
     return authPubKey1_;
 }
 
-VirgilByteArray ProvisioningInfo::authPubKey2() const {
+VirgilByteArray
+ProvisioningInfo::authPubKey2() const {
     return authPubKey2_;
 }
 
-VirgilByteArray ProvisioningInfo::recPubKey1() const {
+VirgilByteArray
+ProvisioningInfo::recPubKey1() const {
     return recPubKey1_;
 }
 
-VirgilByteArray ProvisioningInfo::recPubKey2() const {
+VirgilByteArray
+ProvisioningInfo::recPubKey2() const {
     return recPubKey2_;
 }
 
-VirgilByteArray ProvisioningInfo::tlPubKey1() const {
+VirgilByteArray
+ProvisioningInfo::tlPubKey1() const {
     return tlPubKey1_;
 }
 
-VirgilByteArray ProvisioningInfo::tlPubKey2() const {
+VirgilByteArray
+ProvisioningInfo::tlPubKey2() const {
     return tlPubKey2_;
 }
 
-VirgilByteArray ProvisioningInfo::fwPubKey1() const {
+VirgilByteArray
+ProvisioningInfo::fwPubKey1() const {
     return fwPubKey1_;
 }
 
-VirgilByteArray ProvisioningInfo::fwPubKey2() const {
+VirgilByteArray
+ProvisioningInfo::fwPubKey2() const {
     return fwPubKey2_;
 }
 
-VirgilByteArray ProvisioningInfo::tlHeader() const {
-    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char*> (&tlHeader_), sizeof(trust_list_header_t));
+VirgilByteArray
+ProvisioningInfo::tlHeader() const {
+    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char *>(&tlHeader_), sizeof(trust_list_header_t));
 }
 
-VirgilByteArray ProvisioningInfo::tlFooter() const {
-    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char*> (&tlFooter_), sizeof(trust_list_footer_t));
+VirgilByteArray
+ProvisioningInfo::tlFooter() const {
+    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char *>(&tlFooter_), sizeof(trust_list_footer_t));
 }
 
-VirgilByteArray ProvisioningInfo::tlChunk(uint16_t chunkNum) const {
-    if(chunkNum >= tlChunksAmount()) {
+VirgilByteArray
+ProvisioningInfo::tlChunk(uint16_t chunkNum) const {
+    if (chunkNum >= tlChunksAmount()) {
         const auto what(std::string("trust list chunk request error\n"));
         throw std::runtime_error(what);
     }
-    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char*> (&trustListChunks_[chunkNum]),
+    return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(reinterpret_cast<const char *>(&trustListChunks_[chunkNum]),
                                               sizeof(trust_list_pub_key_t));
 }
 
-uint16_t ProvisioningInfo::tlChunksAmount() const{
+uint16_t
+ProvisioningInfo::tlChunksAmount() const {
     return tlHeader_.pub_keys_count;
 }
 
-bool ProvisioningInfo::trustListOnly() const {
+bool
+ProvisioningInfo::trustListOnly() const {
     return trustListOnly_;
 }
 
-bool ProvisioningInfo::createCardOnly() const {
+bool
+ProvisioningInfo::createCardOnly() const {
     return createCardOnly_;
 }

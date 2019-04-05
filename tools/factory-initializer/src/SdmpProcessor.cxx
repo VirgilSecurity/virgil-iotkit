@@ -47,10 +47,10 @@ using virgil::iot::initializer::SdmpProcessor;
 
 const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
 
-SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
+SdmpProcessor::SdmpProcessor(const ProvisioningInfo &provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
-                             std::shared_ptr<SignerInterface> deviceSigner) :
-        deviceInfo_(deviceInfo), deviceSigner_(std::move(deviceSigner)) {
+                             std::shared_ptr<SignerInterface> deviceSigner)
+    : deviceInfo_(deviceInfo), deviceSigner_(std::move(deviceSigner)) {
     // Connect to PLC bus
     if (0 != vs_sdmp_init(vs_hal_netif_plc_sim())) {
         throw std::runtime_error(std::string("Can't start SDMP communication"));
@@ -62,17 +62,23 @@ SdmpProcessor::SdmpProcessor(const ProvisioningInfo & provisioningInfo,
 
     //
     if (provisioningInfo.trustListOnly()) {
-        if (!setTrustList(provisioningInfo)) throw std::runtime_error("Can't set Trust List");
+        if (!setTrustList(provisioningInfo))
+            throw std::runtime_error("Can't set Trust List");
 
         std::cout << "OK: Trust List set successfully. " << std::endl;
     } else {
         if (!provisioningInfo.createCardOnly()) {
-            if (!initDevice()) throw std::runtime_error("Can't initialize device");
-            if (!setKeys(provisioningInfo)) throw std::runtime_error("Can't set keys to device");
-            if (!signDevice()) throw std::runtime_error("Can't sign device");
-            if (!setTrustList(provisioningInfo)) throw std::runtime_error("Can't set Trust List");
+            if (!initDevice())
+                throw std::runtime_error("Can't initialize device");
+            if (!setKeys(provisioningInfo))
+                throw std::runtime_error("Can't set keys to device");
+            if (!signDevice())
+                throw std::runtime_error("Can't sign device");
+            if (!setTrustList(provisioningInfo))
+                throw std::runtime_error("Can't set Trust List");
         }
-        if (!getProvisionInfo()) throw std::runtime_error("Can't get provision info from device");
+        if (!getProvisionInfo())
+            throw std::runtime_error("Can't get provision info from device");
 
         std::cout << "OK: Device initialization done successfully. " << std::endl;
     }
@@ -83,7 +89,8 @@ SdmpProcessor::~SdmpProcessor() {
     vs_sdmp_deinit();
 }
 
-vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
+vs_sdmp_prvs_dnid_list_t
+SdmpProcessor::discoverDevices() {
     vs_sdmp_prvs_dnid_list_t list;
 
     memset(&list, 0, sizeof(list));
@@ -105,10 +112,11 @@ vs_sdmp_prvs_dnid_list_t SdmpProcessor::discoverDevices() {
     return list;
 }
 
-bool SdmpProcessor::initDevice() {
+bool
+SdmpProcessor::initDevice() {
     vs_sdmp_pubkey_t asav_info;
 
-    memset(&asav_info, 0 , sizeof(asav_info));
+    memset(&asav_info, 0, sizeof(asav_info));
 
     if (0 != vs_sdmp_prvs_save_provision(0, &deviceInfo_.mac_addr, &asav_info, kDefaultWaitTimeMs)) {
         return false;
@@ -133,11 +141,14 @@ bool SdmpProcessor::initDevice() {
     return true;
 }
 
-bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) const {
+bool
+SdmpProcessor::setTrustList(const ProvisioningInfo &provisioningInfo) const {
 
     // Set TL header
     std::cout << "Upload TrustList Header" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLH,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_TLH,
                               provisioningInfo.tlHeader().data(),
                               provisioningInfo.tlHeader().size(),
                               kDefaultWaitTimeMs)) {
@@ -145,9 +156,11 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
     }
 
     // Set TL chunks
-    for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount();i++) {
+    for (uint16_t i = 0; i < provisioningInfo.tlChunksAmount(); i++) {
         std::cout << "Upload TrustList Chunk " << std::to_string(i) << std::endl;
-        if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_TLC,
+        if (0 != vs_sdmp_prvs_set(0,
+                                  &deviceInfo_.mac_addr,
+                                  VS_PRVS_TLC,
                                   provisioningInfo.tlChunk(i).data(),
                                   provisioningInfo.tlChunk(i).size(),
                                   kDefaultWaitTimeMs)) {
@@ -157,21 +170,25 @@ bool SdmpProcessor::setTrustList(const ProvisioningInfo & provisioningInfo) cons
 
     // Set TL footer
     std::cout << "Upload TrustList Footer" << std::endl;
-    if (0 != vs_sdmp_prvs_finalize_tl(0, &deviceInfo_.mac_addr,
+    if (0 != vs_sdmp_prvs_finalize_tl(0,
+                                      &deviceInfo_.mac_addr,
                                       provisioningInfo.tlFooter().data(),
-                              provisioningInfo.tlFooter().size(),
-                              kDefaultWaitTimeMs)) {
+                                      provisioningInfo.tlFooter().size(),
+                                      kDefaultWaitTimeMs)) {
         return false;
     }
 
     return true;
 }
 
-bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
+bool
+SdmpProcessor::setKeys(const ProvisioningInfo &provisioningInfo) const {
 
     // Recovery public keys
     std::cout << "Upload Recovery key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBR1,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBR1,
                               provisioningInfo.recPubKey1().data(),
                               provisioningInfo.recPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -179,7 +196,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Recovery key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBR2,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBR2,
                               provisioningInfo.recPubKey2().data(),
                               provisioningInfo.recPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -188,7 +207,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // Auth Public keys
     std::cout << "Upload Auth key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBA1,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBA1,
                               provisioningInfo.authPubKey1().data(),
                               provisioningInfo.authPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -196,7 +217,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Auth key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBA2,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBA2,
                               provisioningInfo.authPubKey2().data(),
                               provisioningInfo.authPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -206,7 +229,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // Firmware public keys
     std::cout << "Upload Firmware key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBF1,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBF1,
                               provisioningInfo.fwPubKey1().data(),
                               provisioningInfo.fwPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -214,7 +239,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload Firmware key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBF2,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBF2,
                               provisioningInfo.fwPubKey2().data(),
                               provisioningInfo.fwPubKey2().size(),
                               kDefaultWaitTimeMs)) {
@@ -224,7 +251,9 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
 
     // TrustList Public keys
     std::cout << "Upload TrustList key 1" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBT1,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBT1,
                               provisioningInfo.tlPubKey1().data(),
                               provisioningInfo.tlPubKey1().size(),
                               kDefaultWaitTimeMs)) {
@@ -232,17 +261,20 @@ bool SdmpProcessor::setKeys(const ProvisioningInfo & provisioningInfo) const {
     }
 
     std::cout << "Upload TrustList key 2" << std::endl;
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_PBT2,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_PBT2,
                               provisioningInfo.tlPubKey2().data(),
                               provisioningInfo.tlPubKey2().size(),
                               kDefaultWaitTimeMs)) {
         return false;
     }
-    
+
     return true;
 }
 
-bool SdmpProcessor::signDevice() const {
+bool
+SdmpProcessor::signDevice() const {
     auto signatureVal = deviceSigner_->sign(devicePublicKeyTiny_);
 
     if (signatureVal.empty()) {
@@ -250,9 +282,7 @@ bool SdmpProcessor::signDevice() const {
         return false;
     }
 
-    if (!deviceSigner_->verify(devicePublicKeyTiny_,
-                               signatureVal,
-                               deviceSigner_->publicKeyFull())) {
+    if (!deviceSigner_->verify(devicePublicKeyTiny_, signatureVal, deviceSigner_->publicKeyFull())) {
         std::cerr << "ERROR: signature is wrong" << std::endl;
         return false;
     }
@@ -269,7 +299,9 @@ bool SdmpProcessor::signDevice() const {
     signature->val_sz = signatureVal.size();
     memcpy(signature->val, signatureVal.data(), signature->val_sz);
 
-    if (0 != vs_sdmp_prvs_set(0, &deviceInfo_.mac_addr, VS_PRVS_SGNP,
+    if (0 != vs_sdmp_prvs_set(0,
+                              &deviceInfo_.mac_addr,
+                              VS_PRVS_SGNP,
                               (uint8_t *)signature,
                               sizeof(vs_sdmp_prvs_signature_t) + signature->val_sz,
                               kDefaultWaitTimeMs)) {
@@ -279,7 +311,8 @@ bool SdmpProcessor::signDevice() const {
     return true;
 }
 
-bool SdmpProcessor::getProvisionInfo() {
+bool
+SdmpProcessor::getProvisionInfo() {
     uint8_t devi_buf[512];
     vs_sdmp_prvs_devi_t *device_info = (vs_sdmp_prvs_devi_t *)devi_buf;
 
@@ -318,47 +351,61 @@ bool SdmpProcessor::getProvisionInfo() {
     return true;
 }
 
-VirgilByteArray SdmpProcessor::deviceID() const {
+VirgilByteArray
+SdmpProcessor::deviceID() const {
     return deviceID_;
 }
 
-VirgilByteArray SdmpProcessor::deviceMacAddr() const {
+VirgilByteArray
+SdmpProcessor::deviceMacAddr() const {
     return deviceMacAddr_;
 }
 
-VirgilByteArray SdmpProcessor::devicePublicKey() const {
+VirgilByteArray
+SdmpProcessor::devicePublicKey() const {
     return devicePublicKey_;
 }
 
-VirgilByteArray SdmpProcessor::devicePublicKeyTiny() const {
+VirgilByteArray
+SdmpProcessor::devicePublicKeyTiny() const {
     return devicePublicKeyTiny_;
 }
 
-VirgilByteArray SdmpProcessor::signerId() const {
+VirgilByteArray
+SdmpProcessor::signerId() const {
     return signerID_;
 }
 
-VirgilByteArray SdmpProcessor::signature() const {
+VirgilByteArray
+SdmpProcessor::signature() const {
     return signature_;
 }
 
-uint32_t SdmpProcessor::manufacturer() const {
+uint32_t
+SdmpProcessor::manufacturer() const {
     return manufacturer_;
 }
 
-uint32_t SdmpProcessor::model() const {
+uint32_t
+SdmpProcessor::model() const {
     return model_;
 }
 
-VirgilByteArray SdmpProcessor::signDataInDevice(const VirgilByteArray & data) const {
+VirgilByteArray
+SdmpProcessor::signDataInDevice(const VirgilByteArray &data) const {
     uint8_t signature[512];
     size_t signature_sz = 0;
 
-    if (0 == vs_sdmp_prvs_sign_data(0, &deviceInfo_.mac_addr, data.data(), data.size(),
-                                    signature, sizeof(signature), &signature_sz,
+    if (0 == vs_sdmp_prvs_sign_data(0,
+                                    &deviceInfo_.mac_addr,
+                                    data.data(),
+                                    data.size(),
+                                    signature,
+                                    sizeof(signature),
+                                    &signature_sz,
                                     kDefaultWaitTimeMs)) {
         return VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(signature, signature_sz);
     }
-    
+
     return VirgilByteArray();
 }

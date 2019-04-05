@@ -40,27 +40,32 @@
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/iot/registrator/CardsServiceInfo.h>
 
+using virgil::crypto::VirgilByteArray;
 using virgil::iot::registrar::CardsServiceInfo;
 using virgil::sdk::crypto::Crypto;
-using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
 namespace iot {
-    namespace registrar {
-        class ParamsInterface {
-        public:
-            virtual ~ParamsInterface() = default;
-            
-            virtual std::string dataFile() const = 0;
-            virtual VirgilByteArray fileDecryptionPrivateKey() const = 0;
-            virtual std::string fileDecryptionPrivateKeyPassword() const = 0;
-            virtual VirgilByteArray fileSenderPublicKey() const = 0;
-            
-            // Info for work with Virgil Cards Service
-            virtual CardsServiceInfo cardsServiceInfo() const = 0;
-        };
-    }
-}
-}
+namespace registrar {
+class ParamsInterface {
+public:
+    virtual ~ParamsInterface() = default;
 
-#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_PARAMSINTERFACE_H
+    virtual std::string
+    dataFile() const = 0;
+    virtual VirgilByteArray
+    fileDecryptionPrivateKey() const = 0;
+    virtual std::string
+    fileDecryptionPrivateKeyPassword() const = 0;
+    virtual VirgilByteArray
+    fileSenderPublicKey() const = 0;
+
+    // Info for work with Virgil Cards Service
+    virtual CardsServiceInfo
+    cardsServiceInfo() const = 0;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_PARAMSINTERFACE_H

@@ -45,22 +45,22 @@ extern "C" {
 #define PUBKEY_MAX_SZ (100)
 
 typedef enum {
-    VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'),	/**< Discover Not Initialized Devices */
-    VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'),	/**< Signature of own public key (by private key VS_PRVS_PBDM)  */
-    VS_PRVS_PBR1 = HTONL_IN_COMPILE_TIME('PBR1'),	/**< Set Recovery Key 1 */
-    VS_PRVS_PBR2 = HTONL_IN_COMPILE_TIME('PBR2'),	/**< Set Recovery Key 2 */
-    VS_PRVS_PBA1 = HTONL_IN_COMPILE_TIME('PBA1'),	/**< Set Auth Key 1 */
-    VS_PRVS_PBA2 = HTONL_IN_COMPILE_TIME('PBA2'),	/**< Set Auth Key 2 */
-    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'),	/**< Set Trust List Key 1 */
-    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'),	/**< Set Trust List 2 */
-    VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'),   /**< Set Firmware Key 1 */
-    VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'),   /**< Set Firmware Key 2 */
-    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),	/**< Set Trust List Header */
-    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),	/**< Set Trust List Chunk */
-    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),	/**< Set Trust List Footer */
-    VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'),	/**< Get DEVice Info */
-    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'),	/**< Action SAVe provision */
-    VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'),	/**< Action SiGN data */
+    VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */
+    VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */
+    VS_PRVS_PBR1 = HTONL_IN_COMPILE_TIME('PBR1'), /**< Set Recovery Key 1 */
+    VS_PRVS_PBR2 = HTONL_IN_COMPILE_TIME('PBR2'), /**< Set Recovery Key 2 */
+    VS_PRVS_PBA1 = HTONL_IN_COMPILE_TIME('PBA1'), /**< Set Auth Key 1 */
+    VS_PRVS_PBA2 = HTONL_IN_COMPILE_TIME('PBA2'), /**< Set Auth Key 2 */
+    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'), /**< Set Trust List Key 1 */
+    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set Trust List 2 */
+    VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'), /**< Set Firmware Key 1 */
+    VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'), /**< Set Firmware Key 2 */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set Trust List Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set Trust List Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set Trust List Footer */
+    VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
+    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
+    VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
 } vs_sdmp_prvs_element_t;
 
 typedef struct {
@@ -103,8 +103,11 @@ typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_pubkey_t *asav_response);
 typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
-typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data, size_t data_sz,
-                                   uint8_t *signature, size_t buf_sz, size_t *signature_sz);
+typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data,
+                                   size_t data_sz,
+                                   uint8_t *signature,
+                                   size_t buf_sz,
+                                   size_t *signature_sz);
 
 typedef struct {
     vs_sdmp_prvs_dnid_t dnid_func;
@@ -132,28 +135,54 @@ int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
 
 int
-vs_sdmp_prvs_save_provision(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_pubkey_t *asav_res, size_t wait_ms);
+vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
+                            const vs_mac_addr_t *mac,
+                            vs_sdmp_pubkey_t *asav_res,
+                            size_t wait_ms);
 
 int
-vs_sdmp_prvs_device_info(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_devi_t *device_info, size_t buf_sz, size_t wait_ms);
+vs_sdmp_prvs_device_info(const vs_netif_t *netif,
+                         const vs_mac_addr_t *mac,
+                         vs_sdmp_prvs_devi_t *device_info,
+                         size_t buf_sz,
+                         size_t wait_ms);
 
 int
-vs_sdmp_prvs_sign_data(const vs_netif_t *netif, const vs_mac_addr_t *mac,
-                       const uint8_t *data, size_t data_sz,
-        uint8_t *signature, size_t buf_sz, size_t *signature_sz,
-        size_t wait_ms);
+vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
+                       const vs_mac_addr_t *mac,
+                       const uint8_t *data,
+                       size_t data_sz,
+                       uint8_t *signature,
+                       size_t buf_sz,
+                       size_t *signature_sz,
+                       size_t wait_ms);
 
 int
-vs_sdmp_prvs_set(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, const uint8_t *data, size_t data_sz, size_t wait_ms);
+vs_sdmp_prvs_set(const vs_netif_t *netif,
+                 const vs_mac_addr_t *mac,
+                 vs_sdmp_prvs_element_t element,
+                 const uint8_t *data,
+                 size_t data_sz,
+                 size_t wait_ms);
 
 int
-vs_sdmp_prvs_get(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_sdmp_prvs_element_t element, uint8_t *data, size_t buf_sz, size_t *data_sz, size_t wait_ms);
+vs_sdmp_prvs_get(const vs_netif_t *netif,
+                 const vs_mac_addr_t *mac,
+                 vs_sdmp_prvs_element_t element,
+                 uint8_t *data,
+                 size_t buf_sz,
+                 size_t *data_sz,
+                 size_t wait_ms);
 
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif, const vs_mac_addr_t *mac, const uint8_t *data, size_t data_sz, size_t wait_ms);
+vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
+                         const vs_mac_addr_t *mac,
+                         const uint8_t *data,
+                         size_t data_sz,
+                         size_t wait_ms);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //KUNLUN_PRVS_H
+#endif // KUNLUN_PRVS_H

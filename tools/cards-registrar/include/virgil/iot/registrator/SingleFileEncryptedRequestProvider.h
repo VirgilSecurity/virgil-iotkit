@@ -47,24 +47,27 @@
 
 namespace virgil {
 namespace iot {
-    namespace registrar {
-        class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
-        public:
-            SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
-                                               const sdk::crypto::keys::PrivateKey &privateKey,
-                                               const sdk::crypto::keys::PublicKey &publicKey,
-                                               const std::string &filename);
+namespace registrar {
+class SingleFileEncryptedRequestProvider : public RequestProviderInterface {
+public:
+    SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
+                                       const sdk::crypto::keys::PrivateKey &privateKey,
+                                       const sdk::crypto::keys::PublicKey &publicKey,
+                                       const std::string &filename);
 
-            std::string getData() override;
-            std::string getSerialNumbers() override;
-            bool hasData() const override;
+    std::string
+    getData() override;
+    std::string
+    getSerialNumbers() override;
+    bool
+    hasData() const override;
 
-        private:
-            std::list <std::string> cardRequests_;
-            std::list <std::string> serialNumbers_;
-        };
-    }
-}
-}
+private:
+    std::list<std::string> cardRequests_;
+    std::list<std::string> serialNumbers_;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H

@@ -38,37 +38,40 @@
 #include <virgil/iot/registrator/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
-using virgil::iot::registrar::ParamsCommadLine;
 using virgil::iot::registrar::Filesystem;
+using virgil::iot::registrar::ParamsCommadLine;
 
 ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
-    
+
     try {
         std::string filePrivateKeyFile;
         std::string filePrivateKeyPassword;
         std::string fileSenderKey;
-        
+
         std::string appID;
         std::string apiKeyID;
         std::string apiPrivateKeyFile;
         std::string iotPrivateKeyFile;
         std::string cardServiceBaseUrl;
-        
+
         VirgilByteArray apiPrivateKey;
         VirgilByteArray iotPrivateKey;
-        
+
         cxxopts::Options options(argv[0], " - Cards registrar for IoT devices");
-        
-        options.add_options()
-        ("d,data", "File with encrypted data", cxxopts::value<std::string>(dataFile_))
-        ("k,file_key", "File with private key to decrypt received data file", cxxopts::value<std::string>(filePrivateKeyFile))
-        ("p,file_key_pass", "Password file with private key to decrypt received data file", cxxopts::value<std::string>(fileDecryptionPrivateKeyPassword_))
-        ("s,file_sender_key", "Public key of sender of data file", cxxopts::value<std::string>(fileSenderKey))
-        ("a,app_id", "Virgil Application ID", cxxopts::value<std::string>(appID))
-        ("t,api_key_id", "Virgil Api key Id", cxxopts::value<std::string>(apiKeyID))
-        ("y,api_key", "Virgil Api private key", cxxopts::value<std::string>(apiPrivateKeyFile))
-        ("i,iot_priv_key", "Private key", cxxopts::value<std::string>(iotPrivateKeyFile))
-        ("b,base_url", "Card service base url", cxxopts::value<std::string>(cardServiceBaseUrl));
+
+        options.add_options()("d,data", "File with encrypted data", cxxopts::value<std::string>(dataFile_))(
+                "k,file_key",
+                "File with private key to decrypt received data file",
+                cxxopts::value<std::string>(filePrivateKeyFile))(
+                "p,file_key_pass",
+                "Password file with private key to decrypt received data file",
+                cxxopts::value<std::string>(fileDecryptionPrivateKeyPassword_))(
+                "s,file_sender_key", "Public key of sender of data file", cxxopts::value<std::string>(fileSenderKey))(
+                "a,app_id", "Virgil Application ID", cxxopts::value<std::string>(appID))(
+                "t,api_key_id", "Virgil Api key Id", cxxopts::value<std::string>(apiKeyID))(
+                "y,api_key", "Virgil Api private key", cxxopts::value<std::string>(apiPrivateKeyFile))(
+                "i,iot_priv_key", "Private key", cxxopts::value<std::string>(iotPrivateKeyFile))(
+                "b,base_url", "Card service base url", cxxopts::value<std::string>(cardServiceBaseUrl));
 
         options.parse(argc, argv);
 
@@ -86,17 +89,17 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         } else {
             throw cxxopts::OptionException("Private key for file decryption doesn't specified.");
         }
-        
+
         if (!fileSenderKey.empty()) {
             fileSenderPublicKey_ = Filesystem::loadFile(fileSenderKey);
         } else {
             throw cxxopts::OptionException("File with public key of data sender doesn't specified.");
         }
-        
+
         if (appID.empty()) {
             throw cxxopts::OptionException("Application ID does't specified.");
         }
-        
+
         if (apiKeyID.empty()) {
             throw cxxopts::OptionException("Api key Id does't specified.");
         }
@@ -117,36 +120,37 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
             throw cxxopts::OptionException("Private key file for sign serial doesn't specified.");
         }
 
-        cardsServiceInfo_ = CardsServiceInfo(appID,
-                                             apiKeyID,
-                                             apiPrivateKey,
-                                             iotPrivateKey,
-                                             cardServiceBaseUrl);
-        
-    } catch (const cxxopts::OptionException& e) {
+        cardsServiceInfo_ = CardsServiceInfo(appID, apiKeyID, apiPrivateKey, iotPrivateKey, cardServiceBaseUrl);
+
+    } catch (const cxxopts::OptionException &e) {
         std::cerr << "error parsing options: " << e.what() << std::endl;
         exit(1);
     }
 }
 
-std::string ParamsCommadLine::dataFile() const {
+std::string
+ParamsCommadLine::dataFile() const {
     return dataFile_;
 }
 
-VirgilByteArray ParamsCommadLine::fileDecryptionPrivateKey() const {
+VirgilByteArray
+ParamsCommadLine::fileDecryptionPrivateKey() const {
     return fileDecryptionPrivateKey_;
 }
 
 
-std::string ParamsCommadLine::fileDecryptionPrivateKeyPassword() const {
+std::string
+ParamsCommadLine::fileDecryptionPrivateKeyPassword() const {
     return fileDecryptionPrivateKeyPassword_;
 }
 
 
-VirgilByteArray ParamsCommadLine::fileSenderPublicKey() const {
+VirgilByteArray
+ParamsCommadLine::fileSenderPublicKey() const {
     return fileSenderPublicKey_;
 }
 
-CardsServiceInfo ParamsCommadLine::cardsServiceInfo() const {
+CardsServiceInfo
+ParamsCommadLine::cardsServiceInfo() const {
     return cardsServiceInfo_;
 }

@@ -40,13 +40,17 @@
 using virgil::iot::initializer::DeviceInfo;
 using virgil::sdk::util::JsonUtils;
 
-DeviceInfo::DeviceInfo(std::string identity, std::string identityType, std::string device, std::string deviceName,
-        std::unordered_map<std::string, std::string> payload)
+DeviceInfo::DeviceInfo(std::string identity,
+                       std::string identityType,
+                       std::string device,
+                       std::string deviceName,
+                       std::unordered_map<std::string, std::string> payload)
     : identity_(std::move(identity)), identityType_(std::move(identityType)), device_(std::move(device)),
       deviceName_(std::move(deviceName)), payload_(std::move(payload)) {
 }
 
-const std::string DeviceInfo::getAllDeviceInfo() const {
+const std::string
+DeviceInfo::getAllDeviceInfo() const {
     std::unordered_map<std::string, std::string> allInfo;
     allInfo["device"] = device_;
     allInfo["device_name"] = deviceName_;

@@ -48,36 +48,37 @@ using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class SdmpDeviceInfoProvider: public DeviceInfoProviderInterface {
-        public:
-            SdmpDeviceInfoProvider(const ProvisioningInfo & provisioningInfo,
-                                   std::shared_ptr<SdmpProcessor> processor);
-            
-            virtual DeviceInfo deviceInfo() final;
-            virtual std::string payloadJson() final;
+namespace initializer {
+class SdmpDeviceInfoProvider : public DeviceInfoProviderInterface {
+public:
+    SdmpDeviceInfoProvider(const ProvisioningInfo &provisioningInfo, std::shared_ptr<SdmpProcessor> processor);
 
-        private:
-            std::unordered_map<std::string, std::string> payload();
-            ProvisioningInfo provisioningInfo_;
-            std::shared_ptr<SdmpProcessor> processor_;
-            
-            static const std::string kIdentityType;
+    virtual DeviceInfo
+    deviceInfo() final;
+    virtual std::string
+    payloadJson() final;
 
-            template< typename T >
-            std::string _hex(T i)
-            {
-                std::stringbuf buf;
-                std::ostream os(&buf);
+private:
+    std::unordered_map<std::string, std::string>
+    payload();
+    ProvisioningInfo provisioningInfo_;
+    std::shared_ptr<SdmpProcessor> processor_;
 
-                os << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2)
-                   << std::hex << i;
+    static const std::string kIdentityType;
 
-                return buf.str().c_str();
-            }
-        };
+    template <typename T>
+    std::string
+    _hex(T i) {
+        std::stringbuf buf;
+        std::ostream os(&buf);
+
+        os << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
+
+        return buf.str().c_str();
     }
-}
-}
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_DEVICE_INITIALIZER_SDMPDEVICEINFOPROVIDER_H
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_SDMPDEVICEINFOPROVIDER_H

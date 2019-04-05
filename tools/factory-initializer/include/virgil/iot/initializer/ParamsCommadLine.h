@@ -43,43 +43,52 @@
 
 
 namespace virgil {
-    namespace iot {
-        namespace initializer {
-            class ParamsCommadLine: public ParamsInterface {
-            public:
-                ParamsCommadLine(int argc, char *argv[]);
-                
-                // Used for encryption of file with requests for Cards registration
-                VirgilByteArray fileEncryptionPrivateKey() const final;
-                std::string fileEncryptionPrivateKeyPassword() const final;
-                VirgilByteArray fileRecipientPublicKey() const final;
-                std::string exportFile() const final;
-                std::string deviceInfoFile() const final;
-                
-                // Info for device provisioning
-                ProvisioningInfo provisioningInfo() const final;
-                
-                // Credantials for signature of public key of device
-                VirgilByteArray deviceSignPrivateKey() const final;
-                std::string deviceSignPrivateKeyPassword() const final;
-                std::string factoryPrivateKey() const final;
-                
-            private:
-                std::string exportFile_;
-                std::string deviceInfoOutput_;
+namespace iot {
+namespace initializer {
+class ParamsCommadLine : public ParamsInterface {
+public:
+    ParamsCommadLine(int argc, char *argv[]);
 
-                VirgilByteArray fileEncryptionPrivateKey_;
-                std::string     fileEncryptionPrivateKeyPassword_;
-                VirgilByteArray fileRecipientPublicKey_;
-                
-                ProvisioningInfo provisioningInfo_;
-                
-                VirgilByteArray deviceSignPrivateKey_;
-                std::string deviceSignPrivateKeyPassword_;
-                std::string factoryPrivateKey_;
-            };
-        }
-    }
-}
+    // Used for encryption of file with requests for Cards registration
+    VirgilByteArray
+    fileEncryptionPrivateKey() const final;
+    std::string
+    fileEncryptionPrivateKeyPassword() const final;
+    VirgilByteArray
+    fileRecipientPublicKey() const final;
+    std::string
+    exportFile() const final;
+    std::string
+    deviceInfoFile() const final;
 
-#endif //VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H
+    // Info for device provisioning
+    ProvisioningInfo
+    provisioningInfo() const final;
+
+    // Credantials for signature of public key of device
+    VirgilByteArray
+    deviceSignPrivateKey() const final;
+    std::string
+    deviceSignPrivateKeyPassword() const final;
+    std::string
+    factoryPrivateKey() const final;
+
+private:
+    std::string exportFile_;
+    std::string deviceInfoOutput_;
+
+    VirgilByteArray fileEncryptionPrivateKey_;
+    std::string fileEncryptionPrivateKeyPassword_;
+    VirgilByteArray fileRecipientPublicKey_;
+
+    ProvisioningInfo provisioningInfo_;
+
+    VirgilByteArray deviceSignPrivateKey_;
+    std::string deviceSignPrivateKeyPassword_;
+    std::string factoryPrivateKey_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H

@@ -48,24 +48,25 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class SingleFileEncryptedPersistenceManager: public PersistenceManagerInterface {
-        public:
-            explicit SingleFileEncryptedPersistenceManager(const std::string &filename,
-                                                           std::shared_ptr<sdk::crypto::Crypto> crypto,
-                                                           sdk::crypto::keys::PrivateKey privateKey,
-                                                           std::vector<sdk::crypto::keys::PublicKey> publicKeys);
+namespace initializer {
+class SingleFileEncryptedPersistenceManager : public PersistenceManagerInterface {
+public:
+    explicit SingleFileEncryptedPersistenceManager(const std::string &filename,
+                                                   std::shared_ptr<sdk::crypto::Crypto> crypto,
+                                                   sdk::crypto::keys::PrivateKey privateKey,
+                                                   std::vector<sdk::crypto::keys::PublicKey> publicKeys);
 
-            void persist(const std::string &data) override;
+    void
+    persist(const std::string &data) override;
 
-        private:
-            std::string filename_;
-            std::shared_ptr<sdk::crypto::Crypto> crypto_;
-            sdk::crypto::keys::PrivateKey privateKey_;
-            std::vector<sdk::crypto::keys::PublicKey> publicKeys_;
-        };
-    }
-}
-}
+private:
+    std::string filename_;
+    std::shared_ptr<sdk::crypto::Crypto> crypto_;
+    sdk::crypto::keys::PrivateKey privateKey_;
+    std::vector<sdk::crypto::keys::PublicKey> publicKeys_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H
+#endif // VIRGIL_IOT_MANUFACTURE_SINGLEFILEENCRYPTEDPERSISTENCEMANAGER_H

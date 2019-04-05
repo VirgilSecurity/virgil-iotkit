@@ -38,11 +38,11 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include <externals/cxxopts.hpp>
 
-using virgil::iot::initializer::ParamsCommadLine;
 using virgil::iot::initializer::Filesystem;
+using virgil::iot::initializer::ParamsCommadLine;
 
 ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
-    
+
     try {
         std::string filePrivateKeyFile;
         std::string filePrivateKeyPassword;
@@ -75,28 +75,35 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         bool createCardOnly = false;
 
         cxxopts::Options options(argv[0], " - Virgil IoT Initializer command line options");
-        
-        options.add_options()
-        ("o,output", "Encrypted output file", cxxopts::value<std::string>(exportFile_))
-        ("i,device_info_output", "Device info output file", cxxopts::value<std::string>(deviceInfoOutput_))
-        ("t,file_transfer_key", "File with private key for secure file transfer", cxxopts::value<std::string>(filePrivateKeyFile))
-        ("a,file_transfer_key_pass", "Password for private key for secure file transfer", cxxopts::value<std::string>(filePrivateKeyPassword))
-        ("r,file_recipient_key", "Public key for recipient of exported data file", cxxopts::value<std::string>(fileRecipientKey))
-        ("u,auth_pub_key_1", "File with 1st auth public key", cxxopts::value<std::string>(fileAuthKey1))
-        ("v,auth_pub_key_2", "File with 2nd auth public key", cxxopts::value<std::string>(fileAuthKey2))
-        ("e,rec_pub_key_1", "File with 1st recovery public key", cxxopts::value<std::string>(fileRecoveryKey1))
-        ("c,rec_pub_key_2", "File with 2nd recovery public key", cxxopts::value<std::string>(fileRecoveryKey2))
-        ("b,tl_pub_key_1", "File with 1st trust list public key", cxxopts::value<std::string>(fileTrustListKey1))
-        ("k,tl_pub_key_2", "File with 2nd trust list public key", cxxopts::value<std::string>(fileTrustListKey2))
-        ("w,fw_pub_key_1", "File with 1st firmware public key", cxxopts::value<std::string>(fileFirmwareKey1))
-        ("x,fw_pub_key_2", "File with 2nd firmware public key", cxxopts::value<std::string>(fileFirmwareKey2))
-        ("f,trust_list", "File with trust list", cxxopts::value<std::string>(fileTrustList))
-        ("d,create_card_only", "Create card request only", cxxopts::value<bool>(createCardOnly))
-        ("y,trust_list_only", "Use Trust List only", cxxopts::value<bool>(trustListOnly))
-        ("z,factory_key", "File with Factory private key", cxxopts::value<std::string>(factoryPrivateKey_));
-        
+
+        options.add_options()("o,output", "Encrypted output file", cxxopts::value<std::string>(exportFile_))(
+                "i,device_info_output", "Device info output file", cxxopts::value<std::string>(deviceInfoOutput_))(
+                "t,file_transfer_key",
+                "File with private key for secure file transfer",
+                cxxopts::value<std::string>(filePrivateKeyFile))("a,file_transfer_key_pass",
+                                                                 "Password for private key for secure file transfer",
+                                                                 cxxopts::value<std::string>(filePrivateKeyPassword))(
+                "r,file_recipient_key",
+                "Public key for recipient of exported data file",
+                cxxopts::value<std::string>(fileRecipientKey))(
+                "u,auth_pub_key_1", "File with 1st auth public key", cxxopts::value<std::string>(fileAuthKey1))(
+                "v,auth_pub_key_2", "File with 2nd auth public key", cxxopts::value<std::string>(fileAuthKey2))(
+                "e,rec_pub_key_1", "File with 1st recovery public key", cxxopts::value<std::string>(fileRecoveryKey1))(
+                "c,rec_pub_key_2", "File with 2nd recovery public key", cxxopts::value<std::string>(fileRecoveryKey2))(
+                "b,tl_pub_key_1",
+                "File with 1st trust list public key",
+                cxxopts::value<std::string>(fileTrustListKey1))("k,tl_pub_key_2",
+                                                                "File with 2nd trust list public key",
+                                                                cxxopts::value<std::string>(fileTrustListKey2))(
+                "w,fw_pub_key_1", "File with 1st firmware public key", cxxopts::value<std::string>(fileFirmwareKey1))(
+                "x,fw_pub_key_2", "File with 2nd firmware public key", cxxopts::value<std::string>(fileFirmwareKey2))(
+                "f,trust_list", "File with trust list", cxxopts::value<std::string>(fileTrustList))(
+                "d,create_card_only", "Create card request only", cxxopts::value<bool>(createCardOnly))(
+                "y,trust_list_only", "Use Trust List only", cxxopts::value<bool>(trustListOnly))(
+                "z,factory_key", "File with Factory private key", cxxopts::value<std::string>(factoryPrivateKey_));
+
         options.parse(argc, argv);
-        
+
         if (options.count("help")) {
             std::cout << options.help() << std::endl;
             exit(0);
@@ -189,46 +196,54 @@ ParamsCommadLine::ParamsCommadLine(int argc, char *argv[]) {
         } else {
             throw cxxopts::OptionException("Device info output file does't specified.");
         }
-        
-    } catch (const cxxopts::OptionException& e) {
+
+    } catch (const cxxopts::OptionException &e) {
         std::cerr << "error parsing options: " << e.what() << std::endl;
         exit(1);
     }
 }
 
-std::string ParamsCommadLine::exportFile() const {
+std::string
+ParamsCommadLine::exportFile() const {
     return exportFile_;
 }
 
-std::string ParamsCommadLine::deviceInfoFile() const {
+std::string
+ParamsCommadLine::deviceInfoFile() const {
     return deviceInfoOutput_;
 }
 
-VirgilByteArray ParamsCommadLine::fileEncryptionPrivateKey() const {
+VirgilByteArray
+ParamsCommadLine::fileEncryptionPrivateKey() const {
     return fileEncryptionPrivateKey_;
 }
 
-std::string ParamsCommadLine::fileEncryptionPrivateKeyPassword() const {
+std::string
+ParamsCommadLine::fileEncryptionPrivateKeyPassword() const {
     return fileEncryptionPrivateKeyPassword_;
 }
 
-VirgilByteArray ParamsCommadLine::fileRecipientPublicKey() const {
+VirgilByteArray
+ParamsCommadLine::fileRecipientPublicKey() const {
     return fileRecipientPublicKey_;
 }
 
-VirgilByteArray ParamsCommadLine::deviceSignPrivateKey() const {
+VirgilByteArray
+ParamsCommadLine::deviceSignPrivateKey() const {
     return deviceSignPrivateKey_;
 }
 
-std::string ParamsCommadLine::deviceSignPrivateKeyPassword() const {
+std::string
+ParamsCommadLine::deviceSignPrivateKeyPassword() const {
     return deviceSignPrivateKeyPassword_;
 }
 
-ProvisioningInfo ParamsCommadLine::provisioningInfo() const {
+ProvisioningInfo
+ParamsCommadLine::provisioningInfo() const {
     return provisioningInfo_;
 }
 
-std::string ParamsCommadLine::factoryPrivateKey() const {
+std::string
+ParamsCommadLine::factoryPrivateKey() const {
     return factoryPrivateKey_;
 }
-

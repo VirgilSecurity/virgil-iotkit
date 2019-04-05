@@ -38,19 +38,22 @@
 #include <virgil/iot/initializer/Filesystem.h>
 #include "virgil/sdk/crypto/Crypto.h"
 
-using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
 using virgil::iot::initializer::Filesystem;
+using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
 using virgil::sdk::crypto::Crypto;
 
-SingleFileEncryptedPersistenceManager::SingleFileEncryptedPersistenceManager(const std::string &filename,
-                                                                             std::shared_ptr<Crypto> crypto,
-                                                                             sdk::crypto::keys::PrivateKey privateKey,
-                                                                             std::vector<sdk::crypto::keys::PublicKey> publicKeys)
-: filename_(std::move(filename)), crypto_(std::move(crypto)), privateKey_(std::move(privateKey)), publicKeys_(std::move(publicKeys)) {
+SingleFileEncryptedPersistenceManager::SingleFileEncryptedPersistenceManager(
+        const std::string &filename,
+        std::shared_ptr<Crypto> crypto,
+        sdk::crypto::keys::PrivateKey privateKey,
+        std::vector<sdk::crypto::keys::PublicKey> publicKeys)
+    : filename_(std::move(filename)), crypto_(std::move(crypto)), privateKey_(std::move(privateKey)),
+      publicKeys_(std::move(publicKeys)) {
 }
 
-void SingleFileEncryptedPersistenceManager::persist(const std::string &data) {
-    
+void
+SingleFileEncryptedPersistenceManager::persist(const std::string &data) {
+
     Filesystem::createBackupFile(filename_);
 
     auto encryptedData = crypto_->signThenEncrypt(VirgilByteArrayUtils::stringToBytes(data), privateKey_, publicKeys_);

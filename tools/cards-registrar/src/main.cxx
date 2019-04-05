@@ -41,29 +41,32 @@
 #include <virgil/iot/registrator/DeviceRegistrar.h>
 #include <virgil/iot/registrator/SingleFileEncryptedRequestProvider.h>
 
-using virgil::sdk::crypto::Crypto;
-using virgil::iot::registrar::VirgilBase64;
+using virgil::iot::registrar::DeviceRegistrar;
 using virgil::iot::registrar::Filesystem;
 using virgil::iot::registrar::ParamsCommadLine;
-using virgil::iot::registrar::DeviceRegistrar;
 using virgil::iot::registrar::SingleFileEncryptedRequestProvider;
+using virgil::iot::registrar::VirgilBase64;
+using virgil::sdk::crypto::Crypto;
 
-int main (int argc, char *argv[]) {
+int
+main(int argc, char *argv[]) {
     Filesystem::init();
-    
+
     // Get parameters
     auto params = std::make_shared<ParamsCommadLine>(argc, argv);
-    
+
     // initialize crypto
     auto crypto = std::make_shared<Crypto>();
-    
+
     // import keys for decryption and verifying
-    auto privateKey = crypto->importPrivateKey(params->fileDecryptionPrivateKey(), params->fileDecryptionPrivateKeyPassword());
+    auto privateKey =
+            crypto->importPrivateKey(params->fileDecryptionPrivateKey(), params->fileDecryptionPrivateKeyPassword());
     auto publicKey = crypto->importPublicKey(params->fileSenderPublicKey());
-    
+
     auto fixedDataFile = Filesystem::fixPath(params->dataFile());
-    
-    auto requestProvider = std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
+
+    auto requestProvider =
+            std::make_shared<SingleFileEncryptedRequestProvider>(crypto, privateKey, publicKey, fixedDataFile);
     DeviceRegistrar registrator(requestProvider, params->cardsServiceInfo(), false);
 
     registrator.registerDevice();
