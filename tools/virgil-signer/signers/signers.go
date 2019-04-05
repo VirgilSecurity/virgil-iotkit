@@ -30,17 +30,17 @@ type Signer struct {
 }
 
 type Header struct {
-    CodeOffset     	uint32
-    CodeLength     	uint32
-    FooterOffset   	uint32
-    FooterLength   	uint32
-    ManufacturerID 	[4]byte
-    DeviceID       	[4]byte
-    FwVersion      	FirmwareVersion
-    Padding        	byte
-    ChunkSize      	uint16
-    FirmwareLength 	uint32
-    AppSize        	uint32
+    CodeOffset         uint32
+    CodeLength         uint32
+    FooterOffset       uint32
+    FooterLength       uint32
+    ManufacturerID     [4]byte
+    DeviceID           [4]byte
+    FwVersion          FirmwareVersion
+    Padding            byte
+    ChunkSize          uint16
+    FirmwareLength     uint32
+    AppSize            uint32
 }
 
 type FirmwareVersion struct {
@@ -54,14 +54,14 @@ type FirmwareVersion struct {
 }
 
 type Footer struct {
-    FirmwareSign 	FooterSignature
-    AuthSign     	FooterSignature
+    FirmwareSign     FooterSignature
+    AuthSign         FooterSignature
 }
 
 type FooterSignature struct {
-    KeyType      	uint8
-    SignerID  		uint16
-    Signature 		[64]byte
+    KeyType          uint8
+    SignerID         uint16
+    Signature        [64]byte
 }
 
 func newFooterSignatureByKey(keyPath string, data *[]byte) (FooterSignature, error) {
@@ -79,7 +79,7 @@ func newFooterSignatureByKey(keyPath string, data *[]byte) (FooterSignature, err
     }
     // get key id
     keyID := s[1]
-    keyIDInt, _ := strconv.ParseUint(keyID, 10, 32)
+    keyIDInt, _ := strconv.ParseUint(keyID, 10, 16)
     // get signature
     signatureBytes, err := signByFileKey(keyPath, data)
     if err != nil {
@@ -135,25 +135,25 @@ func (s *Signer) createFile(filePath string, withFiller bool) error {
         versionParts[i] = uint8(intValue)
     }
     fwVersion := FirmwareVersion{
-        Major: 			versionParts[0],
-        Minor: 			versionParts[1],
-        Patch: 			versionParts[2],
-        DevMilestone: 	versionParts[3],
-        DevBuild: 		versionParts[4],
+        Major:            versionParts[0],
+        Minor:            versionParts[1],
+        Patch:            versionParts[2],
+        DevMilestone:     versionParts[3],
+        DevBuild:         versionParts[4],
     }
     copy(fwVersion.ApplicationType[:], s.ApplicationType)
     copy(fwVersion.BuildTimestamp[:], s.BuildTime)
 
     header := Header{
-        CodeOffset: 	HEADER_SIZE,
-        CodeLength:   	uint32(firmwareLength),
-        FooterOffset: 	uint32(HEADER_SIZE + firmwareLength + fillerLength),
-        FooterLength: 	FOOTER_SIZE,
-        FwVersion: 		fwVersion,
-        Padding: 		0x00,
-        ChunkSize: 		uint16(s.ChunkSize),
-        FirmwareLength: uint32(len(firmwareBytesWithoutSign)),
-        AppSize: 		uint32(s.ProgFileSize),
+        CodeOffset:       HEADER_SIZE,
+        CodeLength:       uint32(firmwareLength),
+        FooterOffset:     uint32(HEADER_SIZE + firmwareLength + fillerLength),
+        FooterLength:     FOOTER_SIZE,
+        FwVersion:        fwVersion,
+        Padding:          0x00,
+        ChunkSize:        uint16(s.ChunkSize),
+        FirmwareLength:   uint32(len(firmwareBytesWithoutSign)),
+        AppSize:          uint32(s.ProgFileSize),
     }
     copy(header.ManufacturerID[:], s.Manufacturer)
     copy(header.DeviceID[:], s.Model)

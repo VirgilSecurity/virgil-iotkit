@@ -79,16 +79,16 @@ func main()  {
             chunkSize, _ := strconv.Atoi(context.Path("chunk-size"))
 
             signer := &signers.Signer{
-                FirmwarePath:		context.Path("input"),
-                FirmwareKeyPath: 	cfg.Section("MAIN").Key("firmware_key_path").String(),
-                AuthKeyPath:		cfg.Section("MAIN").Key("auth_key_path").String(),
-                ProgFileSize:		fileSize,
-                FirmwareVersion:	context.Path("fw-version"),
-                Manufacturer:		context.Path("manufacturer"),
-                Model:				context.Path("model"),
-                ChunkSize:			chunkSize,
-                ApplicationType: 	context.Path("app-type"),
-                BuildTime:			context.Path("build-time"),
+                FirmwarePath:       context.Path("input"),
+                FirmwareKeyPath:    cfg.Section("MAIN").Key("firmware_key_path").String(),
+                AuthKeyPath:        cfg.Section("MAIN").Key("auth_key_path").String(),
+                ProgFileSize:       fileSize,
+                FirmwareVersion:    context.Path("fw-version"),
+                Manufacturer:       context.Path("manufacturer"),
+                Model:              context.Path("model"),
+                ChunkSize:          chunkSize,
+                ApplicationType:    context.Path("app-type"),
+                BuildTime:          context.Path("build-time"),
             }
             fmt.Printf("Signer created: %+v \n", signer)
 
