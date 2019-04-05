@@ -27,6 +27,9 @@ type Signer struct {
     ChunkSize       int
     ApplicationType string
     BuildTime       string
+
+    fillerLength    int
+    firmwareLength  int
 }
 
 type Header struct {
@@ -120,20 +123,46 @@ func (s *Signer) CreateSignedFirmware() error {
 }
 
 func (s *Signer) createFile(filePath string, withFiller bool) error {
-    // Get firmware bytes
+    // Read firmware bytes
     firmwareBytesWithoutSign, err := ioutil.ReadFile(s.FirmwarePath)
     if err != nil {
         return err
     }
-    firmwareLength := len(firmwareBytesWithoutSign)
+    s.firmwareLength = len(firmwareBytesWithoutSign)
+    s.fillerLength = s.ProgFileSize - (HEADER_SIZE + s.firmwareLength + FOOTER_SIZE)
 
-    // Compute filler length
-    var fillerLength = 0
-    if withFiller {
-        fillerLength = s.ProgFileSize - (HEADER_SIZE + firmwareLength + FOOTER_SIZE)
+    // Create buffer
+    buf := new(bytes.Buffer)
+
+    // Write header to buffer
+    if err := s.writeHeader(buf); err != nil {
+        return err
     }
 
-    // Prepare Header
+    // Write FW code to buffer
+    buf.Write(firmwareBytesWithoutSign)
+    fmt.Println("Firmware code is written to buffer")
+
+    // Write filler to buffer
+    if withFiller {
+        s.writeFiller(buf)
+    }
+
+    // Write footer to buffer
+    if err := s.writeFooter(buf); err != nil {
+        return err
+    }
+
+    // Write buffer to file
+    if err := ioutil.WriteFile(filePath, buf.Bytes(), os.ModePerm); err != nil {
+        return err
+    }
+    fmt.Println("File saved to: ", filePath)
+
+    return nil
+}
+
+func (s *Signer) writeHeader(buf *bytes.Buffer) error {
     var versionParts [5]uint8
     for i, val := range strings.Split(s.FirmwareVersion, ".") {
         intValue, _ := strconv.ParseUint(val, 10, 8)
@@ -151,13 +180,13 @@ func (s *Signer) createFile(filePath string, withFiller bool) error {
 
     header := Header{
         CodeOffset:       HEADER_SIZE,
-        CodeLength:       uint32(firmwareLength),
-        FooterOffset:     uint32(HEADER_SIZE + firmwareLength + fillerLength),
+        CodeLength:       uint32(s.firmwareLength),
+        FooterOffset:     uint32(HEADER_SIZE + s.firmwareLength + s.fillerLength),
         FooterLength:     FOOTER_SIZE,
         FwVersion:        fwVersion,
         Padding:          0x00,
         ChunkSize:        uint16(s.ChunkSize),
-        FirmwareLength:   uint32(len(firmwareBytesWithoutSign)),
+        FirmwareLength:   uint32(s.firmwareLength),
         AppSize:          uint32(s.ProgFileSize),
     }
     copy(header.ManufacturerID[:], s.Manufacturer)
@@ -165,29 +194,25 @@ func (s *Signer) createFile(filePath string, withFiller bool) error {
 
     fmt.Printf("Header prepared: %+v \n", &header)
 
-
-    // Write header and FW code with 0xFF section to buffer:
-    buf := new(bytes.Buffer)
-
-    // write header
     if err := binary.Write(buf, binary.BigEndian, header); err != nil {
         return err
     }
     fmt.Println("Header is written to buffer")
+    return nil
+}
 
-    buf.Write(firmwareBytesWithoutSign)
-    fmt.Println("Firmware code is written to buffer")
 
-    if withFiller {
-        fmt.Printf("Writing 0xFF section: %d bytes to %d-bytes buffer\n", fillerLength, len(buf.Bytes()))
-        for i := 0; i < fillerLength; i++ {
-            buf.WriteByte(0xFF)
-        }
+func (s *Signer) writeFiller(buf *bytes.Buffer) {
+    fmt.Printf("Writing 0xFF section: %d bytes to %d-bytes buffer\n", s.fillerLength, len(buf.Bytes()))
+    for i := 0; i < s.fillerLength; i++ {
+        buf.WriteByte(0xFF)
     }
+}
 
-    // Sign data and prepare footer
+func (s *Signer) writeFooter(buf *bytes.Buffer) error {
     dataToSign := buf.Bytes()
     var authSign, firmwareSign FooterSignature
+    var err error
     if authSign, err = newFooterSignatureByKey(s.AuthKeyPath, &dataToSign); err != nil {
         return err
     }
@@ -197,21 +222,12 @@ func (s *Signer) createFile(filePath string, withFiller bool) error {
     footer := Footer{
         AuthSign:       authSign,
         FirmwareSign:   firmwareSign,
-
     }
     fmt.Printf("Footer prepared: %+v \n", &footer)
 
-    // Write footer to buffer
     if err := binary.Write(buf, binary.BigEndian, footer); err != nil {
         return err
     }
     fmt.Println("Footer is written to buffer")
-
-    // Write buffer to file
-    if err := ioutil.WriteFile(filePath, buf.Bytes(), os.ModePerm); err != nil {
-        return err
-    }
-    fmt.Println("File saved to: ", filePath)
-
     return nil
 }
