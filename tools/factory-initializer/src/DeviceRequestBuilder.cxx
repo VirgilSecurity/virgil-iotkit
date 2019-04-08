@@ -40,14 +40,14 @@
 #include <virgil/sdk/cards/CardManager.h>
 #include <virgil/crypto/foundation/VirgilHash.h>
 
+using virgil::crypto::foundation::VirgilHash;
+using virgil::iot::initializer::DeviceInfo;
 using virgil::iot::initializer::DeviceRequestBuilder;
 using virgil::iot::initializer::PublicKeyProviderInterface;
-using virgil::iot::initializer::DeviceInfo;
+using virgil::sdk::cards::ModelSigner;
 using virgil::sdk::client::models::RawCardContent;
 using virgil::sdk::client::models::RawSignature;
-using virgil::sdk::cards::ModelSigner;
 using virgil::sdk::crypto::Crypto;
-using virgil::crypto::foundation::VirgilHash;
 
 DeviceRequestBuilder::DeviceRequestBuilder(std::shared_ptr<Crypto> crypto,
                                            std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider,
@@ -57,7 +57,8 @@ DeviceRequestBuilder::DeviceRequestBuilder(std::shared_ptr<Crypto> crypto,
       publicKeyProvider_(std::move(publicKeyProvider)), signer_(std::move(signer)) {
 }
 
-std::string DeviceRequestBuilder::buildRequest() {
+std::string
+DeviceRequestBuilder::buildRequest() {
     const auto &deviceInfo = deviceInfoProvider_->deviceInfo();
 
     auto cardContent = RawCardContent(deviceInfo.identity(), publicKeyProvider_->publicKey(), time(0));
@@ -76,6 +77,7 @@ std::string DeviceRequestBuilder::buildRequest() {
     return rawCard.exportAsBase64EncodedString();
 }
 
-std::string DeviceRequestBuilder::getDeviceInfo() {
+std::string
+DeviceRequestBuilder::getDeviceInfo() {
     return deviceInfoProvider_->payloadJson();
 }

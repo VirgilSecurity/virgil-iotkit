@@ -47,18 +47,19 @@ using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class SdmpPublicKeyProvider: public PublicKeyProviderInterface {
-        public:
-            SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor);
+namespace initializer {
+class SdmpPublicKeyProvider : public PublicKeyProviderInterface {
+public:
+    SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor);
 
-            VirgilByteArray publicKey() final;
+    VirgilByteArray
+    publicKey() final;
 
-        private:
-            std::shared_ptr<SdmpProcessor> processor_;
-        };
-    }
-}
-}
+private:
+    std::shared_ptr<SdmpProcessor> processor_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H
+#endif // VIRGIL_IOT_MANUFACTURE_SDMPPUBLICKEYPROVIDER_H

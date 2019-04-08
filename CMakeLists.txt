@@ -96,6 +96,22 @@ set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORC
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
 
+
+# ---------------------------------------------------------------------------
+#   Format code
+# ---------------------------------------------------------------------------
+clangformat_folder(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cloud
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/protocols
+        ${CMAKE_CURRENT_SOURCE_DIR}/provision
+        ${CMAKE_CURRENT_SOURCE_DIR}/secbox
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools
+        ${CMAKE_CURRENT_SOURCE_DIR}/update
+)
+
+
 # ---------------------------------------------------------------------------
 #   Tools
 # ---------------------------------------------------------------------------

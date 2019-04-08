@@ -54,41 +54,35 @@
 
 using virgil::iot::initializer::AssemblyLineProcessor;
 using virgil::iot::initializer::DeviceRequestBuilder;
-using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
-using virgil::iot::initializer::ParamsCommadLine;
 using virgil::iot::initializer::Filesystem;
-using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
+using virgil::iot::initializer::ParamsCommadLine;
 using virgil::iot::initializer::SdmpDeviceInfoProvider;
 using virgil::iot::initializer::SdmpSigner;
-using virgil::iot::initializer::DeviceRequestBuilder;
-using virgil::iot::initializer::AssemblyLineProcessor;
+using virgil::iot::initializer::SingleFileEncryptedPersistenceManager;
 using virgil::iot::initializer::VirgilCryptoSigner;
 using virgil::sdk::crypto::Crypto;
 
-int main (int argc, char *argv[]) {
+int
+main(int argc, char *argv[]) {
 
     Filesystem::init();
 
     auto params = std::make_shared<ParamsCommadLine>(argc, argv);
     auto crypto = std::make_shared<Crypto>();
 
-    auto fileTransmitPrivateKey = crypto->importPrivateKey(params->fileEncryptionPrivateKey(),
-                                                           params->fileEncryptionPrivateKeyPassword());
+    auto fileTransmitPrivateKey =
+            crypto->importPrivateKey(params->fileEncryptionPrivateKey(), params->fileEncryptionPrivateKeyPassword());
 
     auto fileRecipientsPublicKeys = std::vector<virgil::sdk::crypto::keys::PublicKey>();
     fileRecipientsPublicKeys.push_back(crypto->importPublicKey(params->fileRecipientPublicKey()));
 
     // Persistence for Virgil Cards Requests
-    auto persistenceManager = SingleFileEncryptedPersistenceManager(params->exportFile(),
-                                                                    crypto,
-                                                                    fileTransmitPrivateKey,
-                                                                    fileRecipientsPublicKeys);
+    auto persistenceManager = SingleFileEncryptedPersistenceManager(
+            params->exportFile(), crypto, fileTransmitPrivateKey, fileRecipientsPublicKeys);
 
     // Persistence for Device Info
-    auto deviceInfoPersistenceManager = SingleFileEncryptedPersistenceManager(params->deviceInfoFile(),
-                                                                              crypto,
-                                                                              fileTransmitPrivateKey,
-                                                                              fileRecipientsPublicKeys);
+    auto deviceInfoPersistenceManager = SingleFileEncryptedPersistenceManager(
+            params->deviceInfoFile(), crypto, fileTransmitPrivateKey, fileRecipientsPublicKeys);
 
     std::shared_ptr<SignerInterface> deviceSigner;
 
@@ -111,25 +105,26 @@ int main (int argc, char *argv[]) {
                 std::cout << ":";
             }
 
-            std::cout << std::setfill ('0') << std::setw(sizeof(uint8_t)*2)
-                      << std::hex << static_cast<int> (devices.elements[i].mac_addr.bytes[j]);
+            std::cout << std::setfill('0') << std::setw(sizeof(uint8_t) * 2) << std::hex
+                      << static_cast<int>(devices.elements[i].mac_addr.bytes[j]);
         }
         std::cout << std::endl;
 
-        auto sdmpProcessor = std::make_shared<SdmpProcessor>(params->provisioningInfo(),
-                                                             devices.elements[i],
-                                                             deviceSigner);
+        auto sdmpProcessor =
+                std::make_shared<SdmpProcessor>(params->provisioningInfo(), devices.elements[i], deviceSigner);
 
         if (!params->provisioningInfo().trustListOnly()) {
-            auto deviceInfoProvider = std::make_shared<SdmpDeviceInfoProvider>(params->provisioningInfo(), sdmpProcessor);
+            auto deviceInfoProvider =
+                    std::make_shared<SdmpDeviceInfoProvider>(params->provisioningInfo(), sdmpProcessor);
             auto publicKeyProvider = std::make_shared<SdmpPublicKeyProvider>(sdmpProcessor);
             auto signer = std::make_shared<SdmpSigner>(sdmpProcessor);
 
             // Get all things needed for creating request
             auto deviceRequestBuilder = DeviceRequestBuilder(crypto, deviceInfoProvider, publicKeyProvider, signer);
 
-//            // Create request and persist to persistence manager
-            AssemblyLineProcessor::processDevice(deviceRequestBuilder, persistenceManager, deviceInfoPersistenceManager);
+            //            // Create request and persist to persistence manager
+            AssemblyLineProcessor::processDevice(
+                    deviceRequestBuilder, persistenceManager, deviceInfoPersistenceManager);
         }
     }
 

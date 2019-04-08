@@ -68,10 +68,3 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/
         ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/virgil/iot/protocols
         )
-
-#
-# Format code
-#
-if (COMMAND add_clangformat)
-    add_clangformat(${SECBOX_LIB})
-endif ()

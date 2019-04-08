@@ -46,21 +46,23 @@ using virgil::iot::registrar::CardsServiceInfo;
 
 namespace virgil {
 namespace iot {
-    namespace registrar {
-        class DeviceRegistrar {
-        public:
-            explicit DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
-                                     const CardsServiceInfo & cardsServiceInfo, bool isAddSerialNumber);
+namespace registrar {
+class DeviceRegistrar {
+public:
+    explicit DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
+                             const CardsServiceInfo &cardsServiceInfo,
+                             bool isAddSerialNumber);
 
-            void registerDevice();
+    void
+    registerDevice();
 
-        private:
-            bool isAddSerialNumber_;
-            std::shared_ptr<RequestProviderInterface> requestProvider_;
-            CardsServiceInfo cardsServiceInfo_;
-        };
-    }
-}
-}
+private:
+    bool isAddSerialNumber_;
+    std::shared_ptr<RequestProviderInterface> requestProvider_;
+    CardsServiceInfo cardsServiceInfo_;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_DEVICE_REGISTRAR_H
+#endif // VIRGIL_IOT_DEVICE_REGISTRAR_H

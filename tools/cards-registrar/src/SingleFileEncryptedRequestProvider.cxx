@@ -39,40 +39,41 @@
 #include <iostream>
 #include <iterator>
 
-using virgil::sdk::crypto::Crypto;
 using virgil::iot::registrar::SingleFileEncryptedRequestProvider;
+using virgil::sdk::crypto::Crypto;
 using namespace virgil::crypto;
 
-SingleFileEncryptedRequestProvider::SingleFileEncryptedRequestProvider(
-        std::shared_ptr<Crypto> crypto, const sdk::crypto::keys::PrivateKey &privateKey,
-        const sdk::crypto::keys::PublicKey &publicKey,  const std::string &filename) {
+SingleFileEncryptedRequestProvider::SingleFileEncryptedRequestProvider(std::shared_ptr<Crypto> crypto,
+                                                                       const sdk::crypto::keys::PrivateKey &privateKey,
+                                                                       const sdk::crypto::keys::PublicKey &publicKey,
+                                                                       const std::string &filename) {
 
-        std::cout << "Txt input file mode" << std::endl;
-        std::ifstream input;
-        input.open(filename, std::fstream::in);
+    std::cout << "Txt input file mode" << std::endl;
+    std::ifstream input;
+    input.open(filename, std::fstream::in);
 
-        std::transform(std::istream_iterator<std::string>(input),
-                       std::istream_iterator<std::string>(),
-                       std::back_inserter(cardRequests_),
-                       [&] (const std::string & line) {
-                           auto data = VirgilBase64::decode(line);
-                           auto decryptedData = crypto->decryptThenVerify(data,
-                                                                          privateKey,
-                                                                          publicKey);
-                           return bytes2str(decryptedData);
-                       });
+    std::transform(std::istream_iterator<std::string>(input),
+                   std::istream_iterator<std::string>(),
+                   std::back_inserter(cardRequests_),
+                   [&](const std::string &line) {
+                       auto data = VirgilBase64::decode(line);
+                       auto decryptedData = crypto->decryptThenVerify(data, privateKey, publicKey);
+                       return bytes2str(decryptedData);
+                   });
 }
 
-std::string SingleFileEncryptedRequestProvider::getData() {
+std::string
+SingleFileEncryptedRequestProvider::getData() {
     const auto res = cardRequests_.front();
     cardRequests_.pop_front();
-    
+
     std::cout << "Input: " << res << std::endl;
-    
+
     return res;
 }
 
-std::string SingleFileEncryptedRequestProvider::getSerialNumbers() {
+std::string
+SingleFileEncryptedRequestProvider::getSerialNumbers() {
     const auto res = serialNumbers_.front();
     serialNumbers_.pop_front();
 
@@ -81,6 +82,7 @@ std::string SingleFileEncryptedRequestProvider::getSerialNumbers() {
     return res;
 }
 
-bool SingleFileEncryptedRequestProvider::hasData() const {
-    return !cardRequests_.empty() ;
+bool
+SingleFileEncryptedRequestProvider::hasData() const {
+    return !cardRequests_.empty();
 }

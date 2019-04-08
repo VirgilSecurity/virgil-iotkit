@@ -39,23 +39,25 @@
 using virgil::iot::initializer::SdmpSigner;
 using virgil::iot::initializer::VirgilByteArray;
 
-SdmpSigner::SdmpSigner(std::shared_ptr<SdmpProcessor> processor) :
-processor_(std::move(processor)) {
-
+SdmpSigner::SdmpSigner(std::shared_ptr<SdmpProcessor> processor) : processor_(std::move(processor)) {
 }
 
-VirgilByteArray SdmpSigner::sign(const VirgilByteArray &data) {
+VirgilByteArray
+SdmpSigner::sign(const VirgilByteArray &data) {
     return processor_->signDataInDevice(data);
 }
 
-uint16_t SdmpSigner::signerId() {
+uint16_t
+SdmpSigner::signerId() {
     return 0;
 }
 
-bool SdmpSigner::verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) {
+bool
+SdmpSigner::verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) {
     return false;
 }
 
-VirgilByteArray SdmpSigner::publicKeyFull() {
+VirgilByteArray
+SdmpSigner::publicKeyFull() {
     return VirgilByteArray();
 }

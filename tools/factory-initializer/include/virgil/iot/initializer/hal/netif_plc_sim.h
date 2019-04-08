@@ -49,4 +49,4 @@ vs_hal_netif_plc_sim();
 }
 #endif
 
-#endif //KUNLUN_NETIF_PLC_SIM_H
+#endif // KUNLUN_NETIF_PLC_SIM_H

@@ -41,15 +41,16 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class PersistenceManagerInterface {
-        public:
-            virtual void persist(const std::string &data) = 0;
+namespace initializer {
+class PersistenceManagerInterface {
+public:
+    virtual void
+    persist(const std::string &data) = 0;
 
-            virtual ~PersistenceManagerInterface() = default;
-        };
-    }
-}
-}
+    virtual ~PersistenceManagerInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
+#endif // VIRGIL_IOT_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H

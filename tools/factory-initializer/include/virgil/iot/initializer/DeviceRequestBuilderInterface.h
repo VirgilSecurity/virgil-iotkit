@@ -43,16 +43,18 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class DeviceRequestBuilderInterface {
-        public:
-            virtual std::string buildRequest() = 0;
-            virtual std::string getDeviceInfo() = 0;
+namespace initializer {
+class DeviceRequestBuilderInterface {
+public:
+    virtual std::string
+    buildRequest() = 0;
+    virtual std::string
+    getDeviceInfo() = 0;
 
-            virtual ~DeviceRequestBuilderInterface() = default;
-        };
-    }
-}
-}
+    virtual ~DeviceRequestBuilderInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H
+#endif // VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDERINTERFACE_H

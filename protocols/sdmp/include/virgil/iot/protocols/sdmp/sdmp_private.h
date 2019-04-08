@@ -43,4 +43,4 @@ _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet);
 vs_sdmp_transaction_id_t
 _sdmp_transaction_id();
 
-#endif //KUNLUN_SDMP_PRIVATE_H
+#endif // KUNLUN_SDMP_PRIVATE_H

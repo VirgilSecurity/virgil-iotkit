@@ -41,17 +41,19 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class DeviceInfoProviderInterface {
-        public:
-            virtual DeviceInfo deviceInfo() = 0;
-            virtual std::string payloadJson() = 0;
+namespace initializer {
+class DeviceInfoProviderInterface {
+public:
+    virtual DeviceInfo
+    deviceInfo() = 0;
+    virtual std::string
+    payloadJson() = 0;
 
-            DeviceInfoProviderInterface() = default;
-            virtual ~DeviceInfoProviderInterface() = default;
-        };
-    }
-}
-}
+    DeviceInfoProviderInterface() = default;
+    virtual ~DeviceInfoProviderInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H

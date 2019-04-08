@@ -40,14 +40,16 @@
 #include <stdbool.h>
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define HTONL_IN_COMPILE_TIME(val)  (uint32_t)(((uint32_t)val & 0xFF)<<24 | ((uint32_t)val & 0xFF00)<<8 | ((uint32_t)val & 0xFF0000)>>8 | ((uint32_t)val & 0xFF000000)>>24)
+#define HTONL_IN_COMPILE_TIME(val)                                                                                     \
+    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
+               ((uint32_t)val & 0xFF000000) >> 24)
 #else
-#define HTONL_IN_COMPILE_TIME(val)  (val)
+#define HTONL_IN_COMPILE_TIME(val) (val)
 #endif
 
 // Macro used to do htons in compile time
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define HTONS_IN_COMPILE_TIME(val)  (uint16_t)(((uint16_t)val & 0xFF)<<8 | ((uint16_t)val & 0xFF00)>>8)
+#define HTONS_IN_COMPILE_TIME(val) (uint16_t)(((uint16_t)val & 0xFF) << 8 | ((uint16_t)val & 0xFF00) >> 8)
 #else
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
@@ -73,25 +75,29 @@ typedef int (*vs_netif_deinit_t)();
 // SDMP Services processor
 typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
                                                    vs_sdmp_element_t element_id,
-                                                   const uint8_t *request, const size_t request_sz,
-                                                   uint8_t *response, const size_t response_buf_sz, size_t *response_sz);
+                                                   const uint8_t *request,
+                                                   const size_t request_sz,
+                                                   uint8_t *response,
+                                                   const size_t response_buf_sz,
+                                                   size_t *response_sz);
 
 typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
                                                     vs_sdmp_element_t element_id,
                                                     bool is_ack,
-                                                    const uint8_t *response, const size_t response_sz);
+                                                    const uint8_t *response,
+                                                    const size_t response_sz);
 
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
 #define ETH_CRC_LEN (4)
-#define ETH_HEADER_LEN (ETH_ADDR_LEN+ETH_ADDR_LEN+ETH_TYPE_LEN)
+#define ETH_HEADER_LEN (ETH_ADDR_LEN + ETH_ADDR_LEN + ETH_TYPE_LEN)
 #define ETH_MIN_LEN (64)
 #define ETH_MTU (1500)
 
 #define VS_ETHERTYPE_VIRGIL (HTONS_IN_COMPILE_TIME(0xABCD))
 
 typedef enum {
-    VS_SDMP_FLAG_ACK  = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001),
     VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
 } vs_sdmp_flags_e;
 
@@ -145,4 +151,4 @@ typedef struct {
 } vs_sdmp_service_t;
 
 
-#endif //KUNLUN_SDMP_STRUCTS_H
+#endif // KUNLUN_SDMP_STRUCTS_H

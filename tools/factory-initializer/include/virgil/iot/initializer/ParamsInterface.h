@@ -40,35 +40,43 @@
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/iot/initializer/ProvisioningInfo.h>
 
+using virgil::crypto::VirgilByteArray;
 using virgil::iot::initializer::ProvisioningInfo;
 using virgil::sdk::crypto::Crypto;
-using virgil::crypto::VirgilByteArray;
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class ParamsInterface {
-        public:
-            virtual ~ParamsInterface() = default;
-            
-            // Used for encryption of file with requests for Cards registration
-            virtual VirgilByteArray fileEncryptionPrivateKey() const = 0;
-            virtual std::string fileEncryptionPrivateKeyPassword() const = 0;
-            virtual VirgilByteArray fileRecipientPublicKey() const = 0;
-            virtual std::string exportFile() const = 0;
-            virtual std::string deviceInfoFile() const = 0;
-            
-            // Info for device provisioning
-            virtual ProvisioningInfo provisioningInfo() const = 0;
-            
-            // Credantials for signature of public key of device
-            virtual VirgilByteArray deviceSignPrivateKey() const = 0;
-            virtual std::string deviceSignPrivateKeyPassword() const = 0;
-            virtual std::string factoryPrivateKey() const = 0;
-            
-        };
-    }
-}
-}
+namespace initializer {
+class ParamsInterface {
+public:
+    virtual ~ParamsInterface() = default;
 
-#endif //VIRGIL_IOT_DEVICE_INITIALIZER_PARAMSINTERFACE_H
+    // Used for encryption of file with requests for Cards registration
+    virtual VirgilByteArray
+    fileEncryptionPrivateKey() const = 0;
+    virtual std::string
+    fileEncryptionPrivateKeyPassword() const = 0;
+    virtual VirgilByteArray
+    fileRecipientPublicKey() const = 0;
+    virtual std::string
+    exportFile() const = 0;
+    virtual std::string
+    deviceInfoFile() const = 0;
+
+    // Info for device provisioning
+    virtual ProvisioningInfo
+    provisioningInfo() const = 0;
+
+    // Credantials for signature of public key of device
+    virtual VirgilByteArray
+    deviceSignPrivateKey() const = 0;
+    virtual std::string
+    deviceSignPrivateKeyPassword() const = 0;
+    virtual std::string
+    factoryPrivateKey() const = 0;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_PARAMSINTERFACE_H

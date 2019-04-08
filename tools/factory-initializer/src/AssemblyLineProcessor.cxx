@@ -39,9 +39,10 @@
 
 using virgil::iot::initializer::AssemblyLineProcessor;
 
-void AssemblyLineProcessor::processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
-                                          PersistenceManagerInterface &persistenceManager,
-                                          PersistenceManagerInterface &deviceInfoPersistenceManager) {
+void
+AssemblyLineProcessor::processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
+                                     PersistenceManagerInterface &persistenceManager,
+                                     PersistenceManagerInterface &deviceInfoPersistenceManager) {
     auto request = deviceRequestBuilder.buildRequest();
     auto deviceInfo = deviceRequestBuilder.getDeviceInfo();
     std::cout << deviceInfo << std::endl;

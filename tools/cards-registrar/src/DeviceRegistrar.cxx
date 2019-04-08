@@ -45,36 +45,38 @@
 #include <virgil/sdk/jwt/providers/GeneratorJwtProvider.h>
 #include <virgil/sdk/util/JsonUtils.h>
 
+using nlohmann::json;
+using virgil::iot::registrar::DeviceRegistrar;
+using virgil::sdk::VirgilByteArray;
+using virgil::sdk::cards::CardManager;
+using virgil::sdk::cards::ModelSigner;
+using virgil::sdk::client::CardClient;
+using virgil::sdk::client::models::RawCardContent;
+using virgil::sdk::client::models::RawSignedModel;
+using virgil::sdk::client::networking::errors::Error;
 using virgil::sdk::crypto::Crypto;
 using virgil::sdk::crypto::keys::KeyPair;
 using virgil::sdk::crypto::keys::PrivateKey;
 using virgil::sdk::crypto::keys::PublicKey;
-using virgil::iot::registrar::DeviceRegistrar;
-using virgil::sdk::client::CardClient;
-using virgil::sdk::client::networking::errors::Error;
-using virgil::sdk::client::models::RawCardContent;
-using virgil::sdk::client::models::RawSignedModel;
-using virgil::sdk::cards::ModelSigner;
-using virgil::sdk::cards::CardManager;
 using virgil::sdk::jwt::Jwt;
 using virgil::sdk::jwt::JwtGenerator;
 using virgil::sdk::util::JsonUtils;
-using nlohmann::json;
-using virgil::sdk::VirgilByteArray;
 
 DeviceRegistrar::DeviceRegistrar(std::shared_ptr<RequestProviderInterface> requestProvider,
-                                 const CardsServiceInfo & cardsServiceInfo,
+                                 const CardsServiceInfo &cardsServiceInfo,
                                  bool isAddSerialNumber)
-: requestProvider_(std::move(requestProvider)), cardsServiceInfo_(std::move(cardsServiceInfo)) {
+    : requestProvider_(std::move(requestProvider)), cardsServiceInfo_(std::move(cardsServiceInfo)) {
     isAddSerialNumber_ = isAddSerialNumber;
 }
 
-void DeviceRegistrar::registerDevice() {
+void
+DeviceRegistrar::registerDevice() {
 
     auto crypto = std::make_shared<Crypto>();
     auto iotPrivateKey = crypto->importPrivateKey(cardsServiceInfo_.iotPrivateKey());
     auto apiPrivateKey = crypto->importPrivateKey(cardsServiceInfo_.apiPrivateKey());
-    auto jwtGenerator = JwtGenerator(apiPrivateKey, cardsServiceInfo_.apiKeyID(), crypto, cardsServiceInfo_.appID(), 5 * 60);
+    auto jwtGenerator =
+            JwtGenerator(apiPrivateKey, cardsServiceInfo_.apiKeyID(), crypto, cardsServiceInfo_.appID(), 5 * 60);
 
     auto cardClient = (isAddSerialNumber_) ? CardClient(cardsServiceInfo_.baseCardServiceUrl()) : CardClient();
 
@@ -91,10 +93,11 @@ void DeviceRegistrar::registerDevice() {
         auto identity = contentSnapshot["identity"];
         auto jwtToken = jwtGenerator.generateToken(identity);
 
-        if(isAddSerialNumber_) {
+        if (isAddSerialNumber_) {
             auto serialNumber = requestProvider_->getSerialNumbers();
             auto signer = ModelSigner(crypto);
-            signer.sign(rawCard,std::string("iot_registrator"),iotPrivateKey,{{"visible_serial_number",serialNumber}});
+            signer.sign(
+                    rawCard, std::string("iot_registrator"), iotPrivateKey, {{"visible_serial_number", serialNumber}});
         } else {
             jwtTokenString = jwtToken.stringRepresentation();
         }
@@ -104,13 +107,12 @@ void DeviceRegistrar::registerDevice() {
             auto publishedRawCard = future.get();
             auto publishedCard = CardManager::parseCard(publishedRawCard, crypto);
 
-            std::cout << "Output: " << publishedCard.identity() << " " << publishedCard.createdAt() << " " << publishedCard.version() << std::endl;
-        }
-        catch (Error& error) {
+            std::cout << "Output: " << publishedCard.identity() << " " << publishedCard.createdAt() << " "
+                      << publishedCard.version() << std::endl;
+        } catch (Error &error) {
             std::cout << error.errorMsg() << std::endl;
             continue;
         }
-
     }
 
     std::cout << "No more data" << std::endl;
