@@ -50,10 +50,10 @@ endfunction()
 function(clangformat_folder)
     if (CLANG_FORMAT_EXECUTABLE)
 
-        set (_format_list "${CMAKE_SOURCE_DIR}/format_list.txt")
+        set (_format_list "${CMAKE_CURRENT_SOURCE_DIR}/format_list.txt")
+        file(REMOVE ${_format_list})
 
         if (NOT TARGET clang-format)
-            file(TOUCH ${_format_list})
             add_custom_target(clang-format)
         endif ()
 
