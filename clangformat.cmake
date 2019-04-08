@@ -50,7 +50,10 @@ endfunction()
 function(clangformat_folder)
     if (CLANG_FORMAT_EXECUTABLE)
 
+        set (_format_list "${CMAKE_SOURCE_DIR}/format_list.txt")
+
         if (NOT TARGET clang-format)
+            file(TOUCH ${_format_list})
             add_custom_target(clang-format)
         endif ()
 
@@ -77,6 +80,8 @@ function(clangformat_folder)
                 if (NOT TARGET ${_source})
                     string(REPLACE "/" "_" _source_file ${_source})
                     get_source_file_property(_clang_loc "${_source}" LOCATION)
+
+                    file(APPEND ${_format_list} "${_source}\n")
 
                     set(_format_file ${CMAKE_CURRENT_BINARY_DIR}/${_dir_name}_${_source_file}.format)
 
