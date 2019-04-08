@@ -48,62 +48,77 @@ using virgil::iot::initializer::ProvisioningInfo;
 using virgil::iot::initializer::SignerInterface;
 
 #if 0
-#define SIGNATURE_SZ      (64)
-#define SALT_SZ           (32)
-#define PUBKEY_TINY_SZ    (64)
+#define SIGNATURE_SZ (64)
+#define SALT_SZ (32)
+#define PUBKEY_TINY_SZ (64)
 #define PUBKEY_TINY_ID_SZ (2)
-#define SERIAL_SIZE       (32)
+#define SERIAL_SIZE (32)
 #endif
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        
-        class SdmpProcessor {
-        public:
-            SdmpProcessor(const ProvisioningInfo & provisioningInfo,
-                          vs_sdmp_prvs_dnid_element_t deviceInfo,
-                          std::shared_ptr<SignerInterface> deviceSigner);
+namespace initializer {
 
-            virtual ~SdmpProcessor();
-            
-            VirgilByteArray deviceID() const;
-            VirgilByteArray deviceMacAddr() const;
-            VirgilByteArray devicePublicKey() const;
-            VirgilByteArray devicePublicKeyTiny() const;
-            VirgilByteArray signerId() const;
-            VirgilByteArray signature() const;
-            uint32_t manufacturer() const;
-            uint32_t model() const;
+class SdmpProcessor {
+public:
+    SdmpProcessor(const ProvisioningInfo &provisioningInfo,
+                  vs_sdmp_prvs_dnid_element_t deviceInfo,
+                  std::shared_ptr<SignerInterface> deviceSigner);
 
-            VirgilByteArray signDataInDevice(const VirgilByteArray & data) const;
+    virtual ~SdmpProcessor();
 
-            static vs_sdmp_prvs_dnid_list_t discoverDevices();
-            
-        private:
-            bool initDevice();
-            bool setTrustList(const ProvisioningInfo & provisioningInfo) const;
-            bool setKeys(const ProvisioningInfo & provisioningInfo) const;
+    VirgilByteArray
+    deviceID() const;
+    VirgilByteArray
+    deviceMacAddr() const;
+    VirgilByteArray
+    devicePublicKey() const;
+    VirgilByteArray
+    devicePublicKeyTiny() const;
+    VirgilByteArray
+    signerId() const;
+    VirgilByteArray
+    signature() const;
+    uint32_t
+    manufacturer() const;
+    uint32_t
+    model() const;
 
-            bool signDevice() const;
-            bool getProvisionInfo();
+    VirgilByteArray
+    signDataInDevice(const VirgilByteArray &data) const;
 
-            vs_sdmp_prvs_dnid_element_t deviceInfo_;
+    static vs_sdmp_prvs_dnid_list_t
+    discoverDevices();
 
-            std::shared_ptr<SignerInterface> deviceSigner_;
-            VirgilByteArray deviceID_;
-            VirgilByteArray devicePublicKey_;
-            VirgilByteArray devicePublicKeyTiny_;
-            VirgilByteArray deviceMacAddr_;
-            VirgilByteArray signerID_;
-            VirgilByteArray signature_;
-            uint32_t manufacturer_;
-            uint32_t model_;
+private:
+    bool
+    initDevice();
+    bool
+    setTrustList(const ProvisioningInfo &provisioningInfo) const;
+    bool
+    setKeys(const ProvisioningInfo &provisioningInfo) const;
 
-            static const size_t kDefaultWaitTimeMs;
-        };
-    }
-}
-}
+    bool
+    signDevice() const;
+    bool
+    getProvisionInfo();
 
-#endif //VIRGIL_IOT_DEVICE_INITIALIZER_SDMPPROCESSOR_H
+    vs_sdmp_prvs_dnid_element_t deviceInfo_;
+
+    std::shared_ptr<SignerInterface> deviceSigner_;
+    VirgilByteArray deviceID_;
+    VirgilByteArray devicePublicKey_;
+    VirgilByteArray devicePublicKeyTiny_;
+    VirgilByteArray deviceMacAddr_;
+    VirgilByteArray signerID_;
+    VirgilByteArray signature_;
+    uint32_t manufacturer_;
+    uint32_t model_;
+
+    static const size_t kDefaultWaitTimeMs;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_SDMPPROCESSOR_H

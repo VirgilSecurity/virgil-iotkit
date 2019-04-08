@@ -46,15 +46,16 @@
 #include <sys/stat.h>
 #include <pwd.h>
 
-using virgil::iot::initializer::Filesystem;
 using virgil::crypto::VirgilByteArrayUtils;
+using virgil::iot::initializer::Filesystem;
 
 std::string Filesystem::currentPath_;
 
 const size_t Filesystem::kFileSizeLimit = 10240;
 const std::string Filesystem::kBackupFileSuffix = ".bak";
 
-VirgilByteArray Filesystem::loadFile(const std::string & filename, const std::string & basePath) {
+VirgilByteArray
+Filesystem::loadFile(const std::string &filename, const std::string &basePath) {
     VirgilByteArray res;
 
     std::string fixedFilename = filename;
@@ -85,17 +86,16 @@ VirgilByteArray Filesystem::loadFile(const std::string & filename, const std::st
         file.seekg(0, std::ios::beg);
 
         if (fileSize > static_cast<std::streampos>(kFileSizeLimit)) {
-            throw std::runtime_error(std::string("File size more than ") + std::to_string(kFileSizeLimit) + " bytes. Current size is " + std::to_string(fileSize) + "bytes.");
+            throw std::runtime_error(std::string("File size more than ") + std::to_string(kFileSizeLimit) +
+                                     " bytes. Current size is " + std::to_string(fileSize) + "bytes.");
         }
 
         // reserve capacity
         res.reserve(fileSize);
 
         // read the data
-        res.insert(res.begin(),
-                   std::istream_iterator<uint8_t>(file),
-                   std::istream_iterator<uint8_t>());
-    } catch (std::runtime_error & e) {
+        res.insert(res.begin(), std::istream_iterator<uint8_t>(file), std::istream_iterator<uint8_t>());
+    } catch (std::runtime_error &e) {
         std::cerr << "ERROR: can't load " << fixedFilename << ". " << e.what() << std::endl;
         throw e;
     }
@@ -103,11 +103,13 @@ VirgilByteArray Filesystem::loadFile(const std::string & filename, const std::st
     return res;
 }
 
-std::string Filesystem::loadTextFile(const std::string & filename, const std::string & basePath) {
+std::string
+Filesystem::loadTextFile(const std::string &filename, const std::string &basePath) {
     return VirgilByteArrayUtils::bytesToString(loadFile(filename, basePath));
 }
 
-std::string Filesystem::home() {
+std::string
+Filesystem::home() {
     struct passwd *pw = getpwuid(getuid());
     const char *homedir = pw->pw_dir;
     if (homedir) {
@@ -116,7 +118,8 @@ std::string Filesystem::home() {
     return "";
 }
 
-std::string Filesystem::fixHomePath(const std::string & path) {
+std::string
+Filesystem::fixHomePath(const std::string &path) {
     if (path.empty() || path.front() == '/') {
         return path;
     }
@@ -128,9 +131,11 @@ std::string Filesystem::fixHomePath(const std::string & path) {
     return path;
 }
 
-std::string Filesystem::fixPath(const std::string & path, const std::string & basePath) {
+std::string
+Filesystem::fixPath(const std::string &path, const std::string &basePath) {
 
-    if (path.empty()) return path;
+    if (path.empty())
+        return path;
 
     std::string res;
 
@@ -154,25 +159,30 @@ std::string Filesystem::fixPath(const std::string & path, const std::string & ba
     return res;
 }
 
-std::string Filesystem::filePath(const std::string & filename) {
-    if (filename.empty()) return "";
+std::string
+Filesystem::filePath(const std::string &filename) {
+    if (filename.empty())
+        return "";
     const auto filenameFixed = Filesystem::fixPath(filename);
     return filenameFixed.substr(0, filenameFixed.find_last_of("/"));
 }
 
-void Filesystem::init() {
+void
+Filesystem::init() {
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd))) {
         currentPath_ = std::string(cwd);
     }
 }
 
-bool Filesystem::fileExists(const std::string & filename, const std::string & basePath) {
+bool
+Filesystem::fileExists(const std::string &filename, const std::string &basePath) {
     struct stat buffer;
-    return (stat (fixPath(filename, basePath).c_str(), &buffer) == 0);
+    return (stat(fixPath(filename, basePath).c_str(), &buffer) == 0);
 }
 
-bool Filesystem::appendToTextFile(const std::string & data, const std::string & filename, const std::string & basePath) {
+bool
+Filesystem::appendToTextFile(const std::string &data, const std::string &filename, const std::string &basePath) {
     std::ofstream output;
     output.open(fixPath(filename, basePath), std::ios_base::app);
 
@@ -182,7 +192,8 @@ bool Filesystem::appendToTextFile(const std::string & data, const std::string & 
     return true;
 }
 
-bool Filesystem::createBackupFile(const std::string & filename, const std::string & basePath) {
+bool
+Filesystem::createBackupFile(const std::string &filename, const std::string &basePath) {
 
     const auto fixedFileName = fixPath(filename, basePath);
     const auto backupFile = fixedFileName + kBackupFileSuffix;
@@ -203,7 +214,7 @@ bool Filesystem::createBackupFile(const std::string & filename, const std::strin
 
         _src.close();
         _dst.close();
-    } catch (const std::runtime_error & e) {
+    } catch (const std::runtime_error &e) {
         std::cout << "Can't create backup file for " << fixedFileName << std::endl;
     }
 

@@ -41,13 +41,13 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        using VirgilByteArray = virgil::crypto::VirgilByteArray;
-        using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
-        using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
-        using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
-    }
-}
-}
+namespace initializer {
+using VirgilByteArray = virgil::crypto::VirgilByteArray;
+using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
+using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
+using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_COMMON_H
+#endif // VIRGIL_IOT_MANUFACTURE_COMMON_H

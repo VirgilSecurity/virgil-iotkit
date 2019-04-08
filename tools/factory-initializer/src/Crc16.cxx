@@ -1,9 +1,10 @@
 
 #include <virgil/iot/initializer/Crc16.h>
 
-uint16_t Crc16::calc(const uint8_t * data, size_t dataSz) {
+uint16_t
+Crc16::calc(const uint8_t *data, size_t dataSz) {
     uint16_t crc = 0;
-    const uint8_t * p = data;
+    const uint8_t *p = data;
 
     while (dataSz--) {
         crc ^= *p++ << 8;

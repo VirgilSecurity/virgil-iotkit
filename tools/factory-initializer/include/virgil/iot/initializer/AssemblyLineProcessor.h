@@ -43,16 +43,17 @@
 #include <virgil/iot/initializer/PersistenceManagerInterface.h>
 
 namespace virgil {
-    namespace iot {
-        namespace initializer {
-            class AssemblyLineProcessor {
-            public:
-                static void processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
-                                          PersistenceManagerInterface &persistenceManager,
-                                          PersistenceManagerInterface &deviceInfoPersistenceManager);
-            };
-        }
-    }
-}
+namespace iot {
+namespace initializer {
+class AssemblyLineProcessor {
+public:
+    static void
+    processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
+                  PersistenceManagerInterface &persistenceManager,
+                  PersistenceManagerInterface &deviceInfoPersistenceManager);
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#endif // VIRGIL_IOT_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H

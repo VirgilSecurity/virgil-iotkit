@@ -41,15 +41,16 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class PublicKeyProviderInterface {
-        public:
-            virtual VirgilByteArray publicKey() = 0;
+namespace initializer {
+class PublicKeyProviderInterface {
+public:
+    virtual VirgilByteArray
+    publicKey() = 0;
 
-            virtual ~PublicKeyProviderInterface() = default;
-        };
-    }
-}
-}
+    virtual ~PublicKeyProviderInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H
+#endif // VIRGIL_IOT_MANUFACTURE_PUBLICKEYPROVIDERINTERFACE_H

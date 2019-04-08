@@ -41,17 +41,20 @@
 
 namespace virgil {
 namespace iot {
-    namespace registrar {
-        class RequestProviderInterface {
-        public:
-            virtual std::string getData() = 0;
-            virtual std::string getSerialNumbers() = 0;
-            virtual bool hasData() const = 0;
+namespace registrar {
+class RequestProviderInterface {
+public:
+    virtual std::string
+    getData() = 0;
+    virtual std::string
+    getSerialNumbers() = 0;
+    virtual bool
+    hasData() const = 0;
 
-            virtual ~RequestProviderInterface() = default;
-        };
-    }
-}
-}
+    virtual ~RequestProviderInterface() = default;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H

@@ -47,21 +47,25 @@ using virgil::iot::initializer::SdmpProcessor;
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class SdmpSigner: public SignerInterface {
-        public:
-            SdmpSigner(std::shared_ptr<SdmpProcessor> processor);
+namespace initializer {
+class SdmpSigner : public SignerInterface {
+public:
+    SdmpSigner(std::shared_ptr<SdmpProcessor> processor);
 
-            VirgilByteArray sign(const VirgilByteArray &data) override;
-            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
-            uint16_t signerId() override;
-            VirgilByteArray publicKeyFull() override;
+    VirgilByteArray
+    sign(const VirgilByteArray &data) override;
+    bool
+    verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+    uint16_t
+    signerId() override;
+    VirgilByteArray
+    publicKeyFull() override;
 
-        private:
-            std::shared_ptr<SdmpProcessor> processor_;
-        };
-    }
-}
-}
+private:
+    std::shared_ptr<SdmpProcessor> processor_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_SDMPCRYPTOSIGNER_H
+#endif // VIRGIL_IOT_MANUFACTURE_SDMPCRYPTOSIGNER_H

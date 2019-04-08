@@ -44,23 +44,26 @@
 
 namespace virgil {
 namespace iot {
-    namespace initializer {
-        class VirgilCryptoSigner: public SignerInterface {
-        public:
-            VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto,
-                               sdk::crypto::keys::PrivateKey privateKey);
+namespace initializer {
+class VirgilCryptoSigner : public SignerInterface {
+public:
+    VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto, sdk::crypto::keys::PrivateKey privateKey);
 
-            VirgilByteArray sign(const VirgilByteArray &data) override;
-            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
-            uint16_t signerId() override;
-            VirgilByteArray publicKeyFull() override;
+    VirgilByteArray
+    sign(const VirgilByteArray &data) override;
+    bool
+    verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+    uint16_t
+    signerId() override;
+    VirgilByteArray
+    publicKeyFull() override;
 
-        private:
-            std::shared_ptr<sdk::crypto::Crypto> crypto_;
-            sdk::crypto::keys::PrivateKey privateKey_;
-        };
-    }
-}
-}
+private:
+    std::shared_ptr<sdk::crypto::Crypto> crypto_;
+    sdk::crypto::keys::PrivateKey privateKey_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#endif // VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H

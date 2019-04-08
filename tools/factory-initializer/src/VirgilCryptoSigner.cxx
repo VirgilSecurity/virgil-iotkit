@@ -39,9 +39,9 @@
 #include "virgil/crypto/VirgilSigner.h"
 #include <virgil/sdk/crypto/Crypto.h>
 
-using virgil::iot::initializer::VirgilCryptoSigner;
-using virgil::iot::initializer::VirgilByteArray;
 using virgil::crypto::VirgilSigner;
+using virgil::iot::initializer::VirgilByteArray;
+using virgil::iot::initializer::VirgilCryptoSigner;
 using virgil::sdk::crypto::Crypto;
 
 VirgilCryptoSigner::VirgilCryptoSigner(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
@@ -49,27 +49,32 @@ VirgilCryptoSigner::VirgilCryptoSigner(std::shared_ptr<virgil::sdk::crypto::Cryp
     : crypto_(std::move(crypto)), privateKey_(std::move(privateKey)) {
 }
 
-VirgilByteArray VirgilCryptoSigner::sign(const VirgilByteArray &data) {
-    auto signer =  VirgilSigner(VirgilHashAlgorithm::SHA256);
+VirgilByteArray
+VirgilCryptoSigner::sign(const VirgilByteArray &data) {
+    auto signer = VirgilSigner(VirgilHashAlgorithm::SHA256);
     auto privateKeyData = crypto_->exportPrivateKey(privateKey_);
     return signer.sign(data, privateKeyData);
 }
 
-bool VirgilCryptoSigner::verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) {
+bool
+VirgilCryptoSigner::verify(const VirgilByteArray &data,
+                           const VirgilByteArray &signature,
+                           const VirgilByteArray &publicKey) {
     auto signer = VirgilSigner(virgil::crypto::foundation::VirgilHash::Algorithm::SHA256);
     return signer.verify(data, signature, publicKey);
 }
 
-uint16_t VirgilCryptoSigner::signerId() {
+uint16_t
+VirgilCryptoSigner::signerId() {
     auto publicKey = crypto_->extractPublicKeyFromPrivateKey(privateKey_);
     auto publicKeyBytes = crypto_->exportPublicKey(publicKey);
-    uint8_t * tinyKey = publicKeyBytes.data() + publicKeyBytes.size() - 64;
+    uint8_t *tinyKey = publicKeyBytes.data() + publicKeyBytes.size() - 64;
 
     return Crc16::calc(tinyKey, 64);
 }
 
-VirgilByteArray VirgilCryptoSigner::publicKeyFull() {
+VirgilByteArray
+VirgilCryptoSigner::publicKeyFull() {
     auto publicKey = crypto_->extractPublicKeyFromPrivateKey(privateKey_);
     return crypto_->exportPublicKey(publicKey);
 }
-

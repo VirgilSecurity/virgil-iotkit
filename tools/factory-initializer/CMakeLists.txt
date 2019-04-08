@@ -75,6 +75,7 @@ else()
     set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_FLAGS "-Wno-delete-non-virtual-dtor")
 endif()
 
+
 target_link_libraries (${PROJECT_NAME} virgil_sdk)
 set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "iot-initializer")
 

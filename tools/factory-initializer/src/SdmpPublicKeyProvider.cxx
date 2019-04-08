@@ -39,11 +39,11 @@
 using virgil::iot::initializer::SdmpPublicKeyProvider;
 using virgil::iot::initializer::VirgilByteArray;
 
-SdmpPublicKeyProvider::SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor) :
-processor_(std::move(processor)) {
-    
+SdmpPublicKeyProvider::SdmpPublicKeyProvider(std::shared_ptr<SdmpProcessor> processor)
+    : processor_(std::move(processor)) {
 }
 
-VirgilByteArray SdmpPublicKeyProvider::publicKey() {
+VirgilByteArray
+SdmpPublicKeyProvider::publicKey() {
     return processor_->devicePublicKey();
 }
