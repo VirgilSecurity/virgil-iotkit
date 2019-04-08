@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
-#define VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H
+#define VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H
 
 #include <memory>
 
@@ -44,30 +44,35 @@
 
 
 namespace virgil {
-    namespace soraa {
-        namespace registrator {
-            class ParamsCommadLine: public ParamsInterface {
-            public:
-                ParamsCommadLine(int argc, char *argv[]);
-                
-                // Used for decryption of file with requests for Cards registration
-                std::string dataFile() const final;
-                VirgilByteArray fileDecryptionPrivateKey() const final;
-                std::string fileDecryptionPrivateKeyPassword() const final;
-                VirgilByteArray fileSenderPublicKey() const final;
-                
-                // Info for work with Virgil Cards Service
-                CardsServiceInfo cardsServiceInfo() const final;
+namespace iot {
+namespace registrar {
+class ParamsCommadLine : public ParamsInterface {
+public:
+    ParamsCommadLine(int argc, char *argv[]);
 
-            private:
-                std::string dataFile_;
-                VirgilByteArray fileDecryptionPrivateKey_;
-                std::string fileDecryptionPrivateKeyPassword_;
-                VirgilByteArray fileSenderPublicKey_;
-                CardsServiceInfo cardsServiceInfo_;
-            };
-        }
-    }
-}
+    // Used for decryption of file with requests for Cards registration
+    std::string
+    dataFile() const final;
+    VirgilByteArray
+    fileDecryptionPrivateKey() const final;
+    std::string
+    fileDecryptionPrivateKeyPassword() const final;
+    VirgilByteArray
+    fileSenderPublicKey() const final;
 
-#endif //VIRGIL_SORAA_MANUFACTURE_PARAMSCOMMANDLINE_H
+    // Info for work with Virgil Cards Service
+    CardsServiceInfo
+    cardsServiceInfo() const final;
+
+private:
+    std::string dataFile_;
+    VirgilByteArray fileDecryptionPrivateKey_;
+    std::string fileDecryptionPrivateKeyPassword_;
+    VirgilByteArray fileSenderPublicKey_;
+    CardsServiceInfo cardsServiceInfo_;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_MANUFACTURE_PARAMSCOMMANDLINE_H

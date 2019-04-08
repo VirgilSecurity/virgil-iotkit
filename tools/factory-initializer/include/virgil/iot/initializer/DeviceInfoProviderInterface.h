@@ -34,24 +34,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
 
 #include <virgil/iot/initializer/DeviceInfo.h>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class DeviceInfoProviderInterface {
-        public:
-            virtual DeviceInfo deviceInfo() = 0;
-            virtual std::string payloadJson() = 0;
+namespace iot {
+namespace initializer {
+class DeviceInfoProviderInterface {
+public:
+    virtual DeviceInfo
+    deviceInfo() = 0;
+    virtual std::string
+    payloadJson() = 0;
 
-            DeviceInfoProviderInterface() = default;
-            virtual ~DeviceInfoProviderInterface() = default;
-        };
-    }
-}
-}
+    DeviceInfoProviderInterface() = default;
+    virtual ~DeviceInfoProviderInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFOPROVIDERINTERFACE_H

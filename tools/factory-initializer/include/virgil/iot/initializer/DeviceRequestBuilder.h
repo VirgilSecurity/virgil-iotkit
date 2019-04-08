@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
-#define VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#define VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H
 
 #include <memory>
 
@@ -46,26 +46,28 @@
 #include <virgil/sdk/crypto/Crypto.h>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class DeviceRequestBuilder: public DeviceRequestBuilderInterface {
-        public:
-            DeviceRequestBuilder(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
-                                 std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider,
-                                 std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider,
-                                 std::shared_ptr<SignerInterface> signer);
+namespace iot {
+namespace initializer {
+class DeviceRequestBuilder : public DeviceRequestBuilderInterface {
+public:
+    DeviceRequestBuilder(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
+                         std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider,
+                         std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider,
+                         std::shared_ptr<SignerInterface> signer);
 
-            std::string buildRequest() override;
-            std::string getDeviceInfo() override;
+    std::string
+    buildRequest() override;
+    std::string
+    getDeviceInfo() override;
 
-        private:
-            std::shared_ptr<virgil::sdk::crypto::Crypto> crypto_;
-            std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider_;
-            std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider_;
-            std::shared_ptr<SignerInterface> signer_;
-        };
-    }
-}
-}
+private:
+    std::shared_ptr<virgil::sdk::crypto::Crypto> crypto_;
+    std::shared_ptr<DeviceInfoProviderInterface> deviceInfoProvider_;
+    std::shared_ptr<PublicKeyProviderInterface> publicKeyProvider_;
+    std::shared_ptr<SignerInterface> signer_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_DEVICEREQUESTBUILDER_H
+#endif // VIRGIL_IOT_MANUFACTURE_DEVICEREQUESTBUILDER_H

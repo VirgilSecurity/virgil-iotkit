@@ -34,177 +34,91 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_SDMPPROCESSOR_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_SDMPPROCESSOR_H
 
 #include <string>
 #include <vector>
 #include <virgil/iot/initializer/ProvisioningInfo.h>
 #include <virgil/iot/initializer/SignerInterface.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
 
-using virgil::soraa::initializer::ProvisioningInfo;
-using virgil::soraa::initializer::SignerInterface;
+using virgil::iot::initializer::ProvisioningInfo;
+using virgil::iot::initializer::SignerInterface;
 
-#define SIGNATURE_SZ      (64)
-#define SALT_SZ           (32)
-#define PUBKEY_TINY_SZ    (64)
+#if 0
+#define SIGNATURE_SZ (64)
+#define SALT_SZ (32)
+#define PUBKEY_TINY_SZ (64)
 #define PUBKEY_TINY_ID_SZ (2)
-#define SERIAL_SIZE       (32)
+#define SERIAL_SIZE (32)
+#endif
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        typedef struct SOneDev {
-            std::string macAddr;
-            DeviceType type;
-        } SOneDev_t;
+namespace iot {
+namespace initializer {
 
-        enum dev_type_t {
-            dev_unknown = 0x00,
-            dev_lamp,
-            dev_snap,
-            dev_gateway,
-            dev_ncm,
-        };
+class SdmpProcessor {
+public:
+    SdmpProcessor(const ProvisioningInfo &provisioningInfo,
+                  vs_sdmp_prvs_dnid_element_t deviceInfo,
+                  std::shared_ptr<SignerInterface> deviceSigner);
 
-        typedef struct __attribute__((__packed__)) {
-            uint8_t mac[6];
-            dev_type_t deviceType;
-            uint8_t reserved[10];
-        } service_PRVS_DNID_t;
+    virtual ~SdmpProcessor();
 
-        typedef struct __attribute__((__packed__)) {
-            uint8_t data_sz;
-            uint8_t device_type;
-            uint8_t data[200];
-        } service_PRVS_data_t;
+    VirgilByteArray
+    deviceID() const;
+    VirgilByteArray
+    deviceMacAddr() const;
+    VirgilByteArray
+    devicePublicKey() const;
+    VirgilByteArray
+    devicePublicKeyTiny() const;
+    VirgilByteArray
+    signerId() const;
+    VirgilByteArray
+    signature() const;
+    uint32_t
+    manufacturer() const;
+    uint32_t
+    model() const;
 
-        typedef struct __attribute__((__packed__)) {
-            uint8_t val[PUBKEY_TINY_ID_SZ];
-        } crypto_public_key_id_t;
+    VirgilByteArray
+    signDataInDevice(const VirgilByteArray &data) const;
 
-        typedef struct __attribute__((__packed__)) {
-            crypto_public_key_id_t signer_id;
-            uint8_t val[SIGNATURE_SZ];
-        } crypto_signature_t;
+    static vs_sdmp_prvs_dnid_list_t
+    discoverDevices();
 
-        typedef struct __attribute__((__packed__)) {
-            uint8_t tiny[PUBKEY_TINY_SZ];
-            uint8_t full_sz;
-            uint8_t full[100];
-        } service_PRVS_own_key_t;
+private:
+    bool
+    initDevice();
+    bool
+    setTrustList(const ProvisioningInfo &provisioningInfo) const;
+    bool
+    setKeys(const ProvisioningInfo &provisioningInfo) const;
 
-        typedef struct __attribute__((__packed__)) {
-            uint32_t manufacturer;
-            uint32_t model;
-            uint8_t mac[6];
-            uint8_t udid_of_device[32];
-            crypto_signature_t signature;
-            service_PRVS_own_key_t own_key;
-        } service_PRVS_provision_info_t;
+    bool
+    signDevice() const;
+    bool
+    getProvisionInfo();
 
-        typedef struct __attribute__((__packed__)) {
-            uint16_t id;
-            uint8_t val_sz;
-            uint8_t val[];
-        } service_PRVS_full_signature_t;
+    vs_sdmp_prvs_dnid_element_t deviceInfo_;
 
-        typedef struct __attribute__((__packed__)) {
-            service_PRVS_provision_info_t info;
-            service_PRVS_full_signature_t signature;
-        } service_PRVS_provision_info_signed_t;
+    std::shared_ptr<SignerInterface> deviceSigner_;
+    VirgilByteArray deviceID_;
+    VirgilByteArray devicePublicKey_;
+    VirgilByteArray devicePublicKeyTiny_;
+    VirgilByteArray deviceMacAddr_;
+    VirgilByteArray signerID_;
+    VirgilByteArray signature_;
+    uint32_t manufacturer_;
+    uint32_t model_;
 
-        typedef struct __attribute__((__packed__)) {
-            service_PRVS_own_key_t key;
-            service_PRVS_full_signature_t signature;
-        } service_PRVS_own_key_signed_t;
-        
-        class SdmpProcessor {
-        public:
-            SdmpProcessor(const ProvisioningInfo & provisioningInfo,
-                          std::string addr,
-                          DeviceType type,
-                          std::shared_ptr<SignerInterface> deviceSigner);
+    static const size_t kDefaultWaitTimeMs;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-            virtual ~SdmpProcessor() = default;
-            
-            VirgilByteArray deviceID() const;
-            VirgilByteArray deviceMacAddr() const;
-            VirgilByteArray devicePublicKey() const;
-            VirgilByteArray devicePublicKeyTiny() const;
-            VirgilByteArray signerId() const;
-            VirgilByteArray signature() const;
-            uint32_t manufacturer() const;
-            uint32_t model() const;
-            DeviceType deviceType() const;
-
-            VirgilByteArray signDataInDevice(const VirgilByteArray & data) const;
-
-            static std::vector<SOneDev_t> discoverDevices();
-            
-        private:
-            std::string createRequest(const std::string & action,
-                                      const std::string & param,
-                                      const std::string & value = "") const;
-
-            static bool isOk(const std::string & netResponse);
-            bool initDevice();
-            bool setTrustList(const ProvisioningInfo & provisioningInfo) const;
-            bool setKeys(const ProvisioningInfo & provisioningInfo) const;
-
-            bool signDevice() const;
-            bool getProvisionInfo();
-
-            std::string addr_;
-            DeviceType deviceType_;
-
-            std::shared_ptr<SignerInterface> deviceSigner_;
-            VirgilByteArray deviceID_;
-            VirgilByteArray devicePublicKey_;
-            VirgilByteArray devicePublicKeyTiny_;
-            VirgilByteArray deviceMacAddr_;
-            VirgilByteArray signerID_;
-            VirgilByteArray signature_;
-            uint32_t manufacturer_;
-            uint32_t model_;
-
-            static const std::string kBaseAddr;
-
-            static const std::string kServiceName;
-            
-            static const std::string kSetData;
-            static const std::string kGetData;
-
-            static const std::string kSetRecKey1;
-            static const std::string kSetRecKey2;
-            static const std::string kSetAuthKey1;
-            static const std::string kSetAuthKey2;
-            static const std::string kSetTLKey1;
-            static const std::string kSetTLKey2;
-            static const std::string kSetFWKey1;
-            static const std::string kSetFWKey2;
-
-            static const std::string kSetTLHeader;
-            static const std::string kSetTLChunks;
-            static const std::string kSetTLFooter;
-
-            static const std::string kSerialNumberParam;
-            static const std::string kModelParam;
-            static const std::string kManufactureParam;
-            static const std::string kPartsCountParam;
-            static const std::string kPartParam;
-            static const std::string kFirmwarePublicKeyParam;
-            static const std::string kFirmwarePublicKeyAlternativeParam;
-            static const std::string kDeviceVerificationPublicKeyParam;
-            static const std::string kDeviceVerificationPublicKeyAlternativeParam;
-            static const std::string kSaveActionParam;
-            static const std::string kDeviceInfoParam;
-            static const std::string kDeviceSignatureParam;
-            static const std::string kSignActionParam;
-            static const std::string kDiscoveryNotInitedDevicesParam;
-        };
-    }
-}
-}
-
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPPROCESSOR_H
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_SDMPPROCESSOR_H

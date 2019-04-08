@@ -34,37 +34,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H
 
 #include <string>
 #include <unordered_map>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class DeviceInfo {
-        public:
-            DeviceInfo() = default;
-            DeviceInfo(std::string identity, std::string identityType, std::string device, std::string deviceName,
-                     std::unordered_map<std::string, std::string> payload);
-            const std::string getAllDeviceInfo() const;
+namespace iot {
+namespace initializer {
+class DeviceInfo {
+public:
+    DeviceInfo() = default;
+    DeviceInfo(std::string identity,
+               std::string identityType,
+               std::string device,
+               std::string deviceName,
+               std::unordered_map<std::string, std::string> payload);
+    const std::string
+    getAllDeviceInfo() const;
 
-            const std::string &identity() const { return identity_; }
-            const std::string &identityType() const { return identityType_; }
-            const std::string &device() const { return device_; }
-            const std::string &deviceName() const { return deviceName_; }
-            const std::unordered_map<std::string, std::string> &payload() const { return payload_; }
-
-        private:
-            std::string identity_;
-            std::string identityType_;
-            std::string device_;
-            std::string deviceName_;
-            std::unordered_map<std::string, std::string> payload_;
-        };
+    const std::string &
+    identity() const {
+        return identity_;
     }
-}
-}
+    const std::string &
+    identityType() const {
+        return identityType_;
+    }
+    const std::string &
+    device() const {
+        return device_;
+    }
+    const std::string &
+    deviceName() const {
+        return deviceName_;
+    }
+    const std::unordered_map<std::string, std::string> &
+    payload() const {
+        return payload_;
+    }
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_DEVICEINFO_H
+private:
+    std::string identity_;
+    std::string identityType_;
+    std::string device_;
+    std::string deviceName_;
+    std::unordered_map<std::string, std::string> payload_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_DEVICEINFO_H

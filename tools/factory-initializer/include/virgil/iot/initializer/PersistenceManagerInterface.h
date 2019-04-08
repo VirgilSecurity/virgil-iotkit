@@ -34,22 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
+#define VIRGIL_IOT_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
 
 #include <string>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class PersistenceManagerInterface {
-        public:
-            virtual void persist(const std::string &data) = 0;
+namespace iot {
+namespace initializer {
+class PersistenceManagerInterface {
+public:
+    virtual void
+    persist(const std::string &data) = 0;
 
-            virtual ~PersistenceManagerInterface() = default;
-        };
-    }
-}
-}
+    virtual ~PersistenceManagerInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H
+#endif // VIRGIL_IOT_MANUFACTURE_PERSISTENCEMANAGERINTERFACE_H

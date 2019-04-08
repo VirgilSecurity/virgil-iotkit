@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
-#define VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#ifndef VIRGIL_IOT_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#define VIRGIL_IOT_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
 
 #include <memory>
 
@@ -43,16 +43,17 @@
 #include <virgil/iot/initializer/PersistenceManagerInterface.h>
 
 namespace virgil {
-    namespace soraa {
-        namespace initializer {
-            class AssemblyLineProcessor {
-            public:
-                static void processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
-                                          PersistenceManagerInterface &persistenceManager,
-                                          PersistenceManagerInterface &deviceInfoPersistenceManager);
-            };
-        }
-    }
-}
+namespace iot {
+namespace initializer {
+class AssemblyLineProcessor {
+public:
+    static void
+    processDevice(DeviceRequestBuilderInterface &deviceRequestBuilder,
+                  PersistenceManagerInterface &persistenceManager,
+                  PersistenceManagerInterface &deviceInfoPersistenceManager);
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H
+#endif // VIRGIL_IOT_MANUFACTURE_ASSEMBLYLINEPROCESSOR_H

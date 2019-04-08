@@ -75,8 +75,8 @@ get_keys_by_prefix "${PUBLIC_KEYS_DIR}" "firmware_"
 FW_1="${KEY_1}"
 FW_2="${KEY_2}"
 
-CARD_REQUESTS_FILE="${WORK_DIR}/soraa_cards_requests.txt"
-INFO_FILE="${WORK_DIR}/soraa_info_output.txt"
+CARD_REQUESTS_FILE="${WORK_DIR}/virgil_iot_cards_requests.txt"
+INFO_FILE="${WORK_DIR}/virgil_iot_info_output.txt"
 
 FACTORY_TRANSFER_PRIVATE_KEY_PATH="${BASE_PATH}/factory-file-transfer/factory-sender-key/private.key"
 FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD_PATH="${BASE_PATH}/factory-file-transfer/factory-sender-key/password.txt"
@@ -102,6 +102,24 @@ echo "REGISTRAR_TRANSFER_PUBLIC_KEY_PATH = ${REGISTRAR_TRANSFER_PUBLIC_KEY_PATH}
 echo "---------------------------"
 
 FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD=$(cat ${FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD_PATH})
+
+echo "---------------------------"
+echo "--factory_key ${FACTORY_KEY}"
+echo "--trust_list ${TRUST_LIST}"
+echo "--rec_pub_key_1 ${RECOVERY_1}"
+echo "--rec_pub_key_2 ${RECOVERY_2}"
+echo "--auth_pub_key_1 ${AUTH_1}"
+echo "--auth_pub_key_2 ${AUTH_2}"
+echo "--tl_pub_key_1 ${TL_1}"
+echo "--tl_pub_key_2 ${TL_2}"
+echo "--fw_pub_key_1 ${FW_1}"
+echo "--fw_pub_key_2 ${FW_2}"
+echo "--output ${CARD_REQUESTS_FILE}"
+echo "--device_info_output ${INFO_FILE}"
+echo "--file_transfer_key ${FACTORY_TRANSFER_PRIVATE_KEY_PATH}"
+echo "--file_transfer_key_pass ${FACTORY_TRANSFER_PRIVATE_KEY_PASSWORD}"
+echo "--file_recipient_key ${REGISTRAR_TRANSFER_PUBLIC_KEY_PATH}"
+echo "---------------------------"
 
 pushd "${SCRIPT_FOLDER}/.."
 

@@ -31,7 +31,7 @@ if [ "${EXEL_MODE}" == "xls" ]; then
                --base_url "${BASE_URL}" \
                --iot_priv_key "${BASE_PATH}/virgil-app/iot-private.key"
 else
-	"${REGISTRAR_APP}" --data "${HOME}/soraa_cards_requests.txt" \
+	"${REGISTRAR_APP}" --data "${HOME}/virgil_iot_cards_requests.txt" \
                --file_key "${BASE_PATH}/factory-file-transfer/registrar-key/private.key" \
                --file_key_pass "${REGISTRAR_PASSWORD}" \
                --file_sender_key "${BASE_PATH}/factory-file-transfer/factory-sender-key/public.key" \

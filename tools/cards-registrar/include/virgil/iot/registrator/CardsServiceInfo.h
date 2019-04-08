@@ -34,45 +34,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H
+#define VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H
 
 #include <string>
 #include <unordered_map>
 #include "Common.h"
 
-using virgil::soraa::registrator::VirgilByteArray;
+using virgil::iot::registrar::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class CardsServiceInfo {
-        public:
-            CardsServiceInfo() = default;
-            CardsServiceInfo(std::string appID,
-                             std::string apiKeyID,
-                             VirgilByteArray apiPrivateKey,
-                             VirgilByteArray iotPrivateKey,
-                             std::string baseCardServiceUrl);
+namespace iot {
+namespace registrar {
+class CardsServiceInfo {
+public:
+    CardsServiceInfo() = default;
+    CardsServiceInfo(std::string appID,
+                     std::string apiKeyID,
+                     VirgilByteArray apiPrivateKey,
+                     VirgilByteArray iotPrivateKey,
+                     std::string baseCardServiceUrl);
 
-            const std::string& appID() const { return appID_; }
-            const std::string& apiKeyID() const { return  apiKeyID_; }
-            const std::string& baseCardServiceUrl() const { return baseCardServiceUrl_; }
-            const VirgilByteArray& apiPrivateKey() const { return apiPrivateKey_; };
-            const VirgilByteArray& iotPrivateKey() const { return iotPrivateKey_; };
-
-            virtual ~CardsServiceInfo() = default;
-
-        private:
-            std::string baseCardServiceUrl_;
-            std::string appID_;
-            std::string apiKeyID_;
-            
-            VirgilByteArray apiPrivateKey_;
-            VirgilByteArray iotPrivateKey_;
-        };
+    const std::string &
+    appID() const {
+        return appID_;
     }
-}
-}
+    const std::string &
+    apiKeyID() const {
+        return apiKeyID_;
+    }
+    const std::string &
+    baseCardServiceUrl() const {
+        return baseCardServiceUrl_;
+    }
+    const VirgilByteArray &
+    apiPrivateKey() const {
+        return apiPrivateKey_;
+    };
+    const VirgilByteArray &
+    iotPrivateKey() const {
+        return iotPrivateKey_;
+    };
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_PROVISIONINGINFO_H
+    virtual ~CardsServiceInfo() = default;
+
+private:
+    std::string baseCardServiceUrl_;
+    std::string appID_;
+    std::string apiKeyID_;
+
+    VirgilByteArray apiPrivateKey_;
+    VirgilByteArray iotPrivateKey_;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_REGISTRAR_PROVISIONINGINFO_H

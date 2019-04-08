@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
-#define VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#ifndef VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#define VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H
 
 #include <memory>
 
@@ -43,24 +43,27 @@
 #include <virgil/sdk/crypto/keys/PrivateKey.h>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class VirgilCryptoSigner: public SignerInterface {
-        public:
-            VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto,
-                               sdk::crypto::keys::PrivateKey privateKey);
+namespace iot {
+namespace initializer {
+class VirgilCryptoSigner : public SignerInterface {
+public:
+    VirgilCryptoSigner(std::shared_ptr<sdk::crypto::Crypto> crypto, sdk::crypto::keys::PrivateKey privateKey);
 
-            VirgilByteArray sign(const VirgilByteArray &data) override;
-            bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
-            uint16_t signerId() override;
-            VirgilByteArray publicKeyFull() override;
+    VirgilByteArray
+    sign(const VirgilByteArray &data) override;
+    bool
+    verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) override;
+    uint16_t
+    signerId() override;
+    VirgilByteArray
+    publicKeyFull() override;
 
-        private:
-            std::shared_ptr<sdk::crypto::Crypto> crypto_;
-            sdk::crypto::keys::PrivateKey privateKey_;
-        };
-    }
-}
-}
+private:
+    std::shared_ptr<sdk::crypto::Crypto> crypto_;
+    sdk::crypto::keys::PrivateKey privateKey_;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_VIRGILCRYPTOSIGNER_H
+#endif // VIRGIL_IOT_MANUFACTURE_VIRGILCRYPTOSIGNER_H

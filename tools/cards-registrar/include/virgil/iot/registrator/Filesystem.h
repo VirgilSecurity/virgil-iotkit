@@ -34,39 +34,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H
 
 #include <string>
 #include "Common.h"
 
-using virgil::soraa::registrator::VirgilByteArray;
+using virgil::iot::registrar::VirgilByteArray;
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class Filesystem {
-        public:
-            static VirgilByteArray loadFile(const std::string & filename, const std::string & basePath = "");
-            static std::string loadTextFile(const std::string & filename, const std::string & basePath = "");
-            static std::string fixPath(const std::string & path, const std::string & basePath = "");
-            static std::string home();
-            static void init();
-            static std::string filePath(const std::string & filename);
-            static bool createBackupFile(const std::string & filename, const std::string & basePath = "");
-            static bool fileExists(const std::string & filename, const std::string & basePath = "");
-            static bool appendToTextFile(const std::string & data, const std::string & filename, const std::string & basePath = "");
-            
-        private:
-            static std::string fixHomePath(const std::string & path);
-            
-            static std::string currentPath_;
-            
-            static const size_t kFileSizeLimit;
-            static const std::string kBackupFileSuffix;
-        };
-    }
-}
-}
+namespace iot {
+namespace registrar {
+class Filesystem {
+public:
+    static VirgilByteArray
+    loadFile(const std::string &filename, const std::string &basePath = "");
+    static std::string
+    loadTextFile(const std::string &filename, const std::string &basePath = "");
+    static std::string
+    fixPath(const std::string &path, const std::string &basePath = "");
+    static std::string
+    home();
+    static void
+    init();
+    static std::string
+    filePath(const std::string &filename);
+    static bool
+    createBackupFile(const std::string &filename, const std::string &basePath = "");
+    static bool
+    fileExists(const std::string &filename, const std::string &basePath = "");
+    static bool
+    appendToTextFile(const std::string &data, const std::string &filename, const std::string &basePath = "");
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_FILESYSTEM_H
+private:
+    static std::string
+    fixHomePath(const std::string &path);
+
+    static std::string currentPath_;
+
+    static const size_t kFileSizeLimit;
+    static const std::string kBackupFileSuffix;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
+
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_FILESYSTEM_H

@@ -34,24 +34,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
 
 #include <string>
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class RequestProviderInterface {
-        public:
-            virtual std::string getData() = 0;
-            virtual std::string getSerialNumbers() = 0;
-            virtual bool hasData() const = 0;
+namespace iot {
+namespace registrar {
+class RequestProviderInterface {
+public:
+    virtual std::string
+    getData() = 0;
+    virtual std::string
+    getSerialNumbers() = 0;
+    virtual bool
+    hasData() const = 0;
 
-            virtual ~RequestProviderInterface() = default;
-        };
-    }
-}
-}
+    virtual ~RequestProviderInterface() = default;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_REQUESTPROVIDERINTERFACE_H
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_REQUESTPROVIDERINTERFACE_H

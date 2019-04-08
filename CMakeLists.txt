@@ -70,10 +70,10 @@ option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 #
 # Features
 #
-option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" OFF)
+option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
 option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
-option(VIRGIL_IOT_PROVISION "Enable 'provision'" OFF)
-option(VIRGIL_IOT_SECBOX "Enable 'security box'" OFF)
+option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
+option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
 
@@ -96,13 +96,45 @@ set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORC
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
 
+
+# ---------------------------------------------------------------------------
+#   Format code
+# ---------------------------------------------------------------------------
+clangformat_folder(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cloud
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/protocols
+        ${CMAKE_CURRENT_SOURCE_DIR}/provision
+        ${CMAKE_CURRENT_SOURCE_DIR}/secbox
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools
+        ${CMAKE_CURRENT_SOURCE_DIR}/update
+)
+
+
 # ---------------------------------------------------------------------------
 #   Tools
 # ---------------------------------------------------------------------------
 
-#
-#   Factory initalizer
-#
 if (NOT MCU_BUILD)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Features
+# ---------------------------------------------------------------------------
+
+#
+#   Protocols
+#
+if (VIRGIL_IOT_PROTOCOLS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/protocols)
+endif()
+
+#
+#   Secbox
+#
+if (VIRGIL_IOT_SECBOX)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
 endif()

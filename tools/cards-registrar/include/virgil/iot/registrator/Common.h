@@ -34,20 +34,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_COMMON_H
-#define VIRGIL_SORAA_MANUFACTURE_COMMON_H
+#ifndef VIRGIL_IOT_MANUFACTURE_COMMON_H
+#define VIRGIL_IOT_MANUFACTURE_COMMON_H
 
 #include <virgil/sdk/Common.h>
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        using VirgilByteArray = virgil::crypto::VirgilByteArray;
-        using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
-        using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
-        using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
-    }
-}
-}
+namespace iot {
+namespace registrar {
+using VirgilByteArray = virgil::crypto::VirgilByteArray;
+using VirgilBase64 = virgil::crypto::foundation::VirgilBase64;
+using VirgilByteArrayUtils = virgil::crypto::VirgilByteArrayUtils;
+using VirgilHashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_COMMON_H
+#endif // VIRGIL_IOT_MANUFACTURE_COMMON_H

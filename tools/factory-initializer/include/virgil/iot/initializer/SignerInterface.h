@@ -34,25 +34,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
-#define VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
+#ifndef VIRGIL_IOT_MANUFACTURE_SIGNERINTERFACE_H
+#define VIRGIL_IOT_MANUFACTURE_SIGNERINTERFACE_H
 
 #include <virgil/iot/initializer/Common.h>
 
 namespace virgil {
-namespace soraa {
-    namespace initializer {
-        class SignerInterface {
-        public:
-            virtual VirgilByteArray sign(const VirgilByteArray &data) = 0;
-            virtual bool verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) = 0;
-            virtual uint16_t signerId() = 0;
-            virtual VirgilByteArray publicKeyFull() = 0;
+namespace iot {
+namespace initializer {
+class SignerInterface {
+public:
+    virtual VirgilByteArray
+    sign(const VirgilByteArray &data) = 0;
+    virtual bool
+    verify(const VirgilByteArray &data, const VirgilByteArray &signature, const VirgilByteArray &publicKey) = 0;
+    virtual uint16_t
+    signerId() = 0;
+    virtual VirgilByteArray
+    publicKeyFull() = 0;
 
-            virtual ~SignerInterface() = default;
-        };
-    }
-}
-}
+    virtual ~SignerInterface() = default;
+};
+} // namespace initializer
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_SORAA_MANUFACTURE_SIGNERINTERFACE_H
+#endif // VIRGIL_IOT_MANUFACTURE_SIGNERINTERFACE_H

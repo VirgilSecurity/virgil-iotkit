@@ -13,7 +13,7 @@ set -euo pipefail
 if test $# -ne 1; then
     echo "Invalid number of arguments"
     echo "Usage: $0 <credentials>"
-    echo "Example: $0 soraa-production"
+    echo "Example: $0 iot-production"
     exit 1
 fi
 
@@ -33,7 +33,7 @@ pushd ${script_dir}
 current_credentials=current-credentials
 rm -f ${current_credentials}
 ln -s ${1} ${current_credentials}
-tar cf ${initializer_arc} ${current_credentials} scripts -C ${BUILD_DIR} soraa-device-initializer
+tar cf ${initializer_arc} ${current_credentials} scripts -C ${BUILD_DIR} iot-device-initializer
 rm -f ${current_credentials}
 tar rf ${initializer_arc} -C ${src_root}/crypto/credentials \
     --exclude=${1}'/key_storage/private*' \

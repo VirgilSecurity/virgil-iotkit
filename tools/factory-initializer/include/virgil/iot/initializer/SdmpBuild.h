@@ -34,23 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H
-#define VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H
-
-#if defined(USE_SDMP)
+#ifndef VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H
+#define VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H
 
 #include <virgil/iot/initializer/SdmpSigner.h>
 #include <virgil/iot/initializer/SdmpDeviceInfoProvider.h>
 #include <virgil/iot/initializer/SdmpPublicKeyProvider.h>
 #include <virgil/iot/initializer/SdmpProcessor.h>
-#include <virgil/iot/initializer/AtmelCryptoSigner.h>
 
-using virgil::soraa::initializer::SdmpSigner;
-using virgil::soraa::initializer::SdmpDeviceInfoProvider;
-using virgil::soraa::initializer::SdmpPublicKeyProvider;
-using virgil::soraa::initializer::SdmpProcessor;
-using virgil::soraa::initializer::AtmelCryptoSigner;
+using virgil::iot::initializer::SdmpDeviceInfoProvider;
+using virgil::iot::initializer::SdmpProcessor;
+using virgil::iot::initializer::SdmpPublicKeyProvider;
+using virgil::iot::initializer::SdmpSigner;
 
-#endif //USE_SDMP
-
-#endif //VIRGIL_DEMO_SORAA_LAMP_INITIALIZER_SDMPBUILD_H
+#endif // VIRGIL_IOT_DEVICE_INITIALIZER_SDMPBUILD_H

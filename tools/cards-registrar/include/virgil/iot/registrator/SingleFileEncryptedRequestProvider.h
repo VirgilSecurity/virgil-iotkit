@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
-#define VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#ifndef VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#define VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
 
 #include <fstream>
 #include <memory>
@@ -46,25 +46,28 @@
 #include <virgil/iot/registrator/RequestProviderInterface.h>
 
 namespace virgil {
-namespace soraa {
-    namespace registrator {
-        class SingleFileEncryptedRequestProvider: public RequestProviderInterface {
-        public:
-            SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
-                                               const sdk::crypto::keys::PrivateKey &privateKey,
-                                               const sdk::crypto::keys::PublicKey &publicKey,
-                                               const std::string &filename);
+namespace iot {
+namespace registrar {
+class SingleFileEncryptedRequestProvider : public RequestProviderInterface {
+public:
+    SingleFileEncryptedRequestProvider(std::shared_ptr<virgil::sdk::crypto::Crypto> crypto,
+                                       const sdk::crypto::keys::PrivateKey &privateKey,
+                                       const sdk::crypto::keys::PublicKey &publicKey,
+                                       const std::string &filename);
 
-            std::string getData() override;
-            std::string getSerialNumbers() override;
-            bool hasData() const override;
+    std::string
+    getData() override;
+    std::string
+    getSerialNumbers() override;
+    bool
+    hasData() const override;
 
-        private:
-            std::list <std::string> cardRequests_;
-            std::list <std::string> serialNumbers_;
-        };
-    }
-}
-}
+private:
+    std::list<std::string> cardRequests_;
+    std::list<std::string> serialNumbers_;
+};
+} // namespace registrar
+} // namespace iot
+} // namespace virgil
 
-#endif //VIRGIL_DEMO_SORAA_LAMP_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H
+#endif // VIRGIL_IOT_DEVICE_REGISTRATOR_SINGLEFILEENCRYPTEDREQUESTPROVIDER_H

@@ -43,18 +43,14 @@ set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Link with shared library if defined
-set (USE_SDMP ON CACHE BOOL "Build for real usage. Use OFF to build test app.")
 add_subdirectory (${PROJECT_SOURCE_DIR}/../../ext/virgil-sdk-cpp virgil-sdk-cpp)
 
-#set (PLATFORM "osx" CACHE STRING "Platform type" FORCE)
-#set (ENABLE_TESTING OFF CACHE BOOL "Build test app" FORCE)
-#set (CRYPTO_MBEDTLS OFF CACHE BOOL "Build MBEDTLS crypto" FORCE)
-#set (CRYPTO_ATMEL ON CACHE BOOL "Build ATECC508A-based crypto" FORCE)
-#add_subdirectory (${PROJECT_SOURCE_DIR}/../../sdmp/SDMPKit/crypto crypto)
-#set_target_properties (virgil_mcu_crypto_mac PROPERTIES LINKER_LANGUAGE CXX)
-
-file (GLOB_RECURSE SRC_LIST_SRC "src/*.cxx")
-set (SRC_LIST ${SRC_LIST_BIN} ${SRC_LIST_SRC})
+file (GLOB_RECURSE SRC_LIST_CXX_SRC "src/*.cxx")
+file (GLOB_RECURSE SRC_LIST_C_SRC "src/*.c")
+set (SRC_LIST
+        ${SRC_LIST_CXX_SRC}
+        ${SRC_LIST_C_SRC}
+        )
 
 file (GLOB_RECURSE HEADER_LIST "include/*.h")
 
@@ -64,21 +60,26 @@ message (STATUS "PROJECT_SOURCE_DIR: " ${PROJECT_SOURCE_DIR})
 message (STATUS "Source list: " ${SRC_LIST})
 
 include_directories (${PROJECT_SOURCE_DIR}/include)
-include_directories (${PROJECT_SOURCE_DIR}/../../sdmp/SDMPKit/crypto/include)
 include_directories (${PROJECT_SOURCE_DIR}/cmake-build-debug/depends/virgil_crypto/build/src/virgil_crypto-depends/lib/include)
-
-# Add definitions
-if (USE_SDMP)
-    message (STATUS "Build SDMP code")
-    add_definitions(-DUSE_SDMP)
-else()
-    message (STATUS "Build test code")
-endif ()
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
+#
+#   -Wall -Werror
+#   TODO: Pay attention to -Wno-delete-non-virtual-dtor !
+#
+if (APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar -Wno-delete-non-virtual-dtor")
+else()
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+    set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_FLAGS "-Wno-delete-non-virtual-dtor")
+endif()
+
+
 target_link_libraries (${PROJECT_NAME} virgil_sdk)
 set_target_properties (${PROJECT_NAME} PROPERTIES OUTPUT_NAME "iot-initializer")
+
+find_package (Threads)
 
 if (APPLE)
     find_library (IOKIT_LIBRARY IOKit)
@@ -88,7 +89,7 @@ if (APPLE)
     target_link_libraries (${PROJECT_NAME} ${CORE_FOUNDATION_LIBRARY})
 	add_definitions(-DFACTORY_INITIALIZER)
 else()
-#    find_library (UDEV_LIBRARY udev)
-#    target_link_libraries (${PROJECT_NAME} ${UDEV_LIBRARY} m)
     target_link_libraries (${PROJECT_NAME} m)
 endif()
+
+target_link_libraries (${PROJECT_NAME} sdmp ${CMAKE_THREAD_LIBS_INIT})
