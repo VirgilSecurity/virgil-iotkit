@@ -14,13 +14,13 @@ var (
     crypto = virgil_crypto_go.NewVirgilCrypto()
 )
 
-func signByFileKey(keyFilePath string, data *[]byte) ([]byte, error) {
+func signByFileKey(keyFilePath string, data []byte) ([]byte, error) {
     fmt.Printf("Signing data by %s key\n", keyFilePath)
     keyFileBytes, err := ioutil.ReadFile(keyFilePath)
     if err != nil {
         return []byte{}, err
     }
-    fmt.Println("Bytes from key file are read")
+    fmt.Println("Bytes from key file were read")
 
     privateKey, err := crypto.ImportPrivateKey(keyFileBytes, "")
     if err != nil {
@@ -28,26 +28,24 @@ func signByFileKey(keyFilePath string, data *[]byte) ([]byte, error) {
     }
     fmt.Println("Private key imported")
 
-    signature, err := crypto.Sign(*data, privateKey)
+    signature, err := crypto.Sign(data, privateKey)
     if err != nil {
         return []byte{}, err
     }
     fmt.Println("Data signed by crypto")
 
-    signatureBytes, err := extractSignatureBytes(&signature)
+    signatureBytes, err := extractSignatureBytes(signature)
     if err != nil {
         return []byte{}, err
-    } else {
-        fmt.Println("Signature bytes from sign are extracted")
-        return signatureBytes, nil
     }
-
+    fmt.Println("Signature bytes from sign are extracted")
+    return signatureBytes, nil
 }
 
-func extractSignatureBytes(signatureBytes *[]byte) ([]byte, error) {
+func extractSignatureBytes(signatureBytes []byte) ([]byte, error) {
 
     sign := &Signature{}
-    if _, err := asn1.Unmarshal(*signatureBytes, sign); err != nil {
+    if _, err := asn1.Unmarshal(signatureBytes, sign); err != nil {
         return []byte{}, err
     }
 

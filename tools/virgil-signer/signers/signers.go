@@ -67,7 +67,7 @@ type FooterSignature struct {
     Signature        [64]byte
 }
 
-func newFooterSignatureByKey(keyPath string, data *[]byte) (FooterSignature, error) {
+func newFooterSignatureByKey(keyPath string, data []byte) (FooterSignature, error) {
     // example of name: auth_20559_auth_2.key
     _, file := filepath.Split(keyPath)
     s := strings.Split(file, "_")
@@ -213,10 +213,10 @@ func (s *Signer) writeFooter(buf *bytes.Buffer) error {
     dataToSign := buf.Bytes()
     var authSign, firmwareSign FooterSignature
     var err error
-    if authSign, err = newFooterSignatureByKey(s.AuthKeyPath, &dataToSign); err != nil {
+    if authSign, err = newFooterSignatureByKey(s.AuthKeyPath, dataToSign); err != nil {
         return err
     }
-    if firmwareSign, err = newFooterSignatureByKey(s.FirmwareKeyPath, &dataToSign); err != nil {
+    if firmwareSign, err = newFooterSignatureByKey(s.FirmwareKeyPath, dataToSign); err != nil {
         return err
     }
     footer := Footer{
