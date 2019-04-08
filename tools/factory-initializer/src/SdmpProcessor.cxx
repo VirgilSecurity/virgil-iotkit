@@ -45,7 +45,7 @@
 
 using virgil::iot::initializer::SdmpProcessor;
 
-const size_t SdmpProcessor::kDefaultWaitTimeMs = 150;
+const size_t SdmpProcessor::kDefaultWaitTimeMs = 200;
 
 SdmpProcessor::SdmpProcessor(const ProvisioningInfo &provisioningInfo,
                              vs_sdmp_prvs_dnid_element_t deviceInfo,
@@ -174,7 +174,7 @@ SdmpProcessor::setTrustList(const ProvisioningInfo &provisioningInfo) const {
                                       &deviceInfo_.mac_addr,
                                       provisioningInfo.tlFooter().data(),
                                       provisioningInfo.tlFooter().size(),
-                                      kDefaultWaitTimeMs)) {
+                                      kDefaultWaitTimeMs * 5)) {
         return false;
     }
 
