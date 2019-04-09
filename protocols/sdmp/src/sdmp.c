@@ -297,8 +297,7 @@ _sdmp_transaction_id() {
 }
 
 /******************************************************************************/
-int
-_sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
+int _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
 
     VS_ASSERT(packet);
 
