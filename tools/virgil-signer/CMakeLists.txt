@@ -35,19 +35,7 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
-
-set (VIRGIL_SIGNER virgil-signer)
-
-#
-#   Source code
-#
-set(SIGNER_SRC
-        main.go
-        signers/signature.go
-        signers/signers.go
-        )
-
 #
 #   Virgil Signer
 #
-add_go_executable(${VIRGIL_SIGNER} ${SIGNER_SRC})
+add_go_executable(virgil-firmware-signer)
