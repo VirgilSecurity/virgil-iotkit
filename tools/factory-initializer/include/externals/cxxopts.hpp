@@ -191,7 +191,7 @@ namespace cxxopts
   T
   toLocalString(T&& t)
   {
-    return t;
+    return std::move(t);
   }
 
   inline
