@@ -34,6 +34,16 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+# ---------------------------------------------------------------------------
+#   Enable Golang
+# ---------------------------------------------------------------------------
+include(cmake/golang.cmake)
+include(cmake/flags.cmake)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# ---------------------------------------------------------------------------
+#   Project
+# ---------------------------------------------------------------------------
 project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
 
 
