@@ -65,8 +65,8 @@ function(clangformat_folder)
                     ${_folder}/*.h
                     )
 
-            file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_SOURCE_DIR} ${_folder})
-            string(REPLACE "/" "_" _dir_name ${_rel_path})
+            file(RELATIVE_PATH _rel_path .. ${_folder})
+            string(REPLACE "." "_" _dir_name ${_rel_path})
 
             foreach (_source ${_clang_sources})
 
@@ -75,7 +75,7 @@ function(clangformat_folder)
                 string(REGEX REPLACE ">" "" _source "${_source}")
 
                 if (NOT TARGET ${_source})
-                    string(REPLACE "/" "_" _source_file ${_source})
+                    string(REPLACE "." "_" _source_file ${_source})
                     get_source_file_property(_clang_loc "${_source}" LOCATION)
 
                     set(_format_file ${CMAKE_CURRENT_BINARY_DIR}/${_dir_name}_${_source_file}.format)
@@ -91,11 +91,11 @@ function(clangformat_folder)
             endforeach ()
         endforeach ()
 
-        if(CMAKE_SOURCE_DIR STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+        if(CMAKE_SOURCE_DIR STREQUAL ..)
             set(_pwd "main")
         else()
-            file(RELATIVE_PATH _rel_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-            string(REPLACE "/" "_" _pwd ${_rel_path})
+            file(RELATIVE_PATH _rel_path ${CMAKE_SOURCE_DIR} ..)
+            string(REPLACE "." "_" _pwd ${_rel_path})
         endif()
 
         if (_sources)
