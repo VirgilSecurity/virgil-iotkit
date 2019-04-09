@@ -44,7 +44,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # ---------------------------------------------------------------------------
 #   Project
 # ---------------------------------------------------------------------------
-project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C Go)
+project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
