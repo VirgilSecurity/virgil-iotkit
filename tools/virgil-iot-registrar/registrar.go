@@ -56,10 +56,11 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 		return err
 	}
 	defer f.Close()
-	getRequest, _ := r.requestProvider(f)
+	getRequest, err := r.requestProvider(f)
 	if err != nil {
 		return err
 	}
+
 	requestNumber := 1
 	for  {
 		decryptedRequest, err := getRequest()
@@ -78,9 +79,9 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 	return nil
 }
 
-func (cardsInfo *CardsServiceInfo) registerCard(decryptedRequest string) error {
+func (cardsService *CardsServiceInfo) registerCard(decryptedRequest string) error {
 	// import api private key
-	apiPrivateKey, err := crypto.ImportPrivateKey(cardsInfo.apiPrivateKey, "")
+	apiPrivateKey, err := crypto.ImportPrivateKey(cardsService.apiPrivateKey, "")
 	if err != nil {
 		return err
 	}
@@ -97,14 +98,14 @@ func (cardsInfo *CardsServiceInfo) registerCard(decryptedRequest string) error {
 	}
 
 	// Generate JWT token
-	jwtGenerator := sdk.NewJwtGenerator(apiPrivateKey, cardsInfo.apiKeyID, tokenSigner, cardsInfo.appID, time.Minute*5)
+	ttl := time.Minute*5
+	jwtGenerator := sdk.NewJwtGenerator(apiPrivateKey, cardsService.apiKeyID, tokenSigner, cardsService.appID, ttl)
 	identity := rawCardContent.Identity
 	jwtToken, err := jwtGenerator.GenerateToken(identity, nil)
 	jwtString := jwtToken.String()
 
 	// Publish card
-	cardsClient := sdk.NewCardsClient(cardsInfo.cardServiceBaseUrl)
-	publishedCard, err := cardsClient.PublishCard(rawSignedModel, jwtString)
+	publishedCard, err := cardsService.cardsClient.PublishCard(rawSignedModel, jwtString)
 	if err != nil {
 		return fmt.Errorf("publish card error: %s", err)
 	}

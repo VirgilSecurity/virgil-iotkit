@@ -42,6 +42,7 @@ import (
 	"path/filepath"
 
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/sdk"
 )
 
 var version = "0.1.0"
@@ -50,7 +51,7 @@ type CardsServiceInfo struct {
 	appID               string
 	apiKeyID            string
 	apiPrivateKey       []byte
-	cardServiceBaseUrl  string
+	cardsClient         *sdk.CardClient
 }
 
 type CardsRegistrar struct {
@@ -123,57 +124,61 @@ func main()  {
 func registrarFunc(context *cli.Context) error {
 
 	var param string
-	var err   error
 
 	// Fill CardsRegistrar struct
 	registrar := new(CardsRegistrar)
-
+    // data
 	if param = context.String("data"); param == "" {
 		return cli.Exit("Data file does't specified.", 1)
 	}
 	registrar.dataFile = filepath.Clean(param)
-
+    // file_key
 	if param = context.String("file_key"); param == "" {
 		return cli.Exit("Private key for file decryption doesn't specified.", 1)
 	}
-	if registrar.filePrivateKey, err = getKeyFileBytes(param); err != nil {
+	filePrivateKeyKeyBytes, err := getKeyFileBytes(param)
+	if err != nil {
 		return err
 	}
-
+	registrar.filePrivateKey = filePrivateKeyKeyBytes
+    // file_sender_key
 	if param = context.String("file_sender_key"); param == "" {
 		return cli.Exit("File with public key of data sender doesn't specified.", 1)
 	}
-	if registrar.filePublicSenderKey, err = getKeyFileBytes(param); err != nil {
+	filePublicSenderKeyBytes, err := getKeyFileBytes(param)
+	if err != nil {
 		return err
 	}
-
+	registrar.filePublicSenderKey = filePublicSenderKeyBytes
+	// file_key_pass
 	registrar.filePrivateKeyPass = context.String("file_key_pass")
 
 	// Fill CardsServiceInfo struct
 	cardsService := new(CardsServiceInfo)
-
+    // app_id
 	if param = context.String("app_id"); param == "" {
 		return cli.Exit("Application ID does't specified.", 1)
 	}
 	cardsService.appID = param
-
+    // api_key_id
 	if param = context.String("api_key_id"); param == "" {
 		return cli.Exit("Api key Id does't specified.", 1)
 	}
 	cardsService.apiKeyID = param
-
+    // base_url
 	if param = context.String("base_url"); param == "" {
 		return cli.Exit("Card service base url does't specified.", 1)
 	}
-	cardsService.cardServiceBaseUrl = param
-
-
+	cardsService.cardsClient = sdk.NewCardsClient(param)
+    // api_key
 	if param = context.String("api_key"); param == "" {
 		return cli.Exit("Api private key file doesn't specified.", 1)
 	}
-	if cardsService.apiPrivateKey, err = getKeyFileBytes(param); err != nil {
+	apiPrivateKeyBytes, err := getKeyFileBytes(param)
+	if err != nil {
 		return err
 	}
+	cardsService.apiPrivateKey = apiPrivateKeyBytes
 
 	return registrar.processRequests(cardsService)
 }
