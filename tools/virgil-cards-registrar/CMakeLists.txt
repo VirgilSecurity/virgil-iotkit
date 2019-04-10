@@ -34,22 +34,8 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
 #
-#   Factory initalizer
+#   Virgil Cards Registrar
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/factory-initializer)
-
-#
-#   Registrar
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cards-registrar)
-
-#
-#   Registrar (Go)
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-cards-registrar)
-
-#
-#   Signer
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
+add_go_executable(virgil-cards-registrar)
