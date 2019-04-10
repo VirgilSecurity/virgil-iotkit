@@ -34,8 +34,8 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
+project(virgil-iot-registrar VERSION 0.1.0 LANGUAGES Go)
 #
 #   Virgil Cards Registrar
 #
-add_go_executable(virgil-cards-registrar)
+add_go_executable(virgil-iot-registrar)

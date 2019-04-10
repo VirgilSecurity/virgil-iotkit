@@ -105,7 +105,7 @@ func main()  {
 	}
 
 	app := &cli.App{
-		Name:    "virgil-cards-registrar",
+		Name:    "virgil-iot-registrar",
 		Usage:   "Virgil Security utility for registration of Cards at Virgil IoT Cloud.",
 		Version: version,
 		Flags:   flags,
