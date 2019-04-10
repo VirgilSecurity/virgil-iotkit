@@ -20,6 +20,7 @@ case "${1}" in
     echo "Runs clang-format on source files"
     ;;
   * )
+    export PATH=/usr/local/bin:${PATH}
     for file in `git diff-index --cached --name-only HEAD` ; do
       format_file "$(pwd)/${file}"
     done
