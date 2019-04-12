@@ -98,10 +98,13 @@ func (cardsService *CardsServiceInfo) registerCard(decryptedRequest string) erro
 	}
 
 	// Generate JWT token
-	ttl := time.Minute*5
+	ttl := time.Minute * 5
 	jwtGenerator := sdk.NewJwtGenerator(apiPrivateKey, cardsService.apiKeyID, tokenSigner, cardsService.appID, ttl)
 	identity := rawCardContent.Identity
 	jwtToken, err := jwtGenerator.GenerateToken(identity, nil)
+	if err != nil {
+		return fmt.Errorf("jwtToken generation error: %s", err)
+	}
 	jwtString := jwtToken.String()
 
 	// Publish card
