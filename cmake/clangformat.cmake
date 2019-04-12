@@ -70,6 +70,9 @@ function(clangformat_folder)
 
             file(RELATIVE_PATH _rel_path ${CMAKE_CURRENT_SOURCE_DIR} ${_folder})
             string(REPLACE "." "_" _dir_name ${_rel_path})
+            string(REPLACE "/" "_" _dir_name ${_dir_name})
+
+            file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/*.format)
 
             foreach (_source ${_clang_sources})
 
@@ -78,7 +81,8 @@ function(clangformat_folder)
                 string(REGEX REPLACE ">" "" _source "${_source}")
 
                 if (NOT TARGET ${_source})
-                    string(REPLACE "." "_" _source_file ${_source})
+                    file(RELATIVE_PATH _source_file ${CMAKE_CURRENT_SOURCE_DIR} ${_source})
+                    string(REPLACE "/" "_" _source_file ${_source_file})
                     get_source_file_property(_clang_loc "${_source}" LOCATION)
 
                     file(APPEND ${_format_list} "${_source}\n")
