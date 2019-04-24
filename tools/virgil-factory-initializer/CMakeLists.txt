@@ -34,22 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Factory initalizer
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/factory-initializer)
+project(virgil-factory-initializer VERSION 0.1.0 LANGUAGES Go C)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/c_libs)
 
 #
-#   Factory initalizer (Go)
+#   Virgil Factory Initializer
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-factory-initializer)
-
-#
-#   Registrar
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-registrar)
-
-#
-#   Signer
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
+add_go_executable(virgil-factory-initializer netif_plc_sim) # depends on sdmp and netif_plc_sim
