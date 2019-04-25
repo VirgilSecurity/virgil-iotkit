@@ -38,6 +38,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -64,10 +65,10 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 	for requestNumber := 1; ; requestNumber++ {
 		decryptedRequest, err := getRequest()
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
 			return err
-		}
-		if decryptedRequest == "" {
-			break
 		}
 		fmt.Println("\nProcessing request number", requestNumber)
 		fmt.Println("Input: ", decryptedRequest)
@@ -146,7 +147,7 @@ func (r *CardsRegistrar) requestProvider(f *os.File) (func() (string, error), er
 	return func() (string, error) {
 		line, err := reader.ReadString('\n')
 		if err != nil {
-			return "", nil  // return empty line to determine the end of the file
+			return "", err
 		}
 		data, err := base64.StdEncoding.DecodeString(line)
 		if err != nil {
