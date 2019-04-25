@@ -38,6 +38,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -61,18 +62,19 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 		return err
 	}
 
-	requestNumber := 1
-	for  {
+	for requestNumber := 1; ; requestNumber++ {
 		decryptedRequest, err := getRequest()
 		if err != nil {
-			break
+			if err == io.EOF {
+				break
+			}
+			return err
 		}
 		fmt.Println("\nProcessing request number", requestNumber)
 		fmt.Println("Input: ", decryptedRequest)
 		if err := cardsService.registerCard(decryptedRequest); err != nil {
 			return err
 		}
-		requestNumber++
 	}
 	fmt.Println("OK: card requests processing done successfully")
 
