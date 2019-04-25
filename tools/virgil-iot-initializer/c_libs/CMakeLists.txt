@@ -34,11 +34,30 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-factory-initializer VERSION 0.1.0 LANGUAGES Go C)
+project(netif_plc_sim VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/c_libs)
+set(NETIF_PLC_SIM
+        src/hal/netif_plc_sim.c
+        )
+add_library(${PROJECT_NAME}
+        ${NETIF_PLC_SIM}
+        )
+target_link_libraries (${PROJECT_NAME} sdmp)
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
 
-#
-#   Virgil Factory Initializer
-#
-add_go_executable(virgil-factory-initializer netif_plc_sim) # depends on sdmp and netif_plc_sim
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+
+# TODO: remove workaround with copying libs
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/protocols/sdmp/libsdmp.a"
+        ${INITIALIZER_LIB_DIR}/libsdmp.a
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/tools/virgil-iot-initializer/c_libs/libnetif_plc_sim.a"
+        ${INITIALIZER_LIB_DIR}/libnetif_plc_sim.a
+        )
