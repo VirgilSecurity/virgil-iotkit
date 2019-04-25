@@ -61,10 +61,12 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 		return err
 	}
 
-	requestNumber := 1
-	for  {
+	for requestNumber := 1; ; requestNumber++ {
 		decryptedRequest, err := getRequest()
 		if err != nil {
+			return err
+		}
+		if decryptedRequest == "" {
 			break
 		}
 		fmt.Println("\nProcessing request number", requestNumber)
@@ -72,7 +74,6 @@ func (r *CardsRegistrar) processRequests(cardsService *CardsServiceInfo) error {
 		if err := cardsService.registerCard(decryptedRequest); err != nil {
 			return err
 		}
-		requestNumber++
 	}
 	fmt.Println("OK: card requests processing done successfully")
 
@@ -145,7 +146,7 @@ func (r *CardsRegistrar) requestProvider(f *os.File) (func() (string, error), er
 	return func() (string, error) {
 		line, err := reader.ReadString('\n')
 		if err != nil {
-			return "", err
+			return "", nil  // return empty line to determine the end of the file
 		}
 		data, err := base64.StdEncoding.DecodeString(line)
 		if err != nil {
