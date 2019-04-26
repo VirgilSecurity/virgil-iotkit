@@ -56,16 +56,11 @@ type SignerInterface interface {
 }
 
 type VirgilCryptoSigner struct {
-	PrivateKey []byte
-	PrivateKeyPassword string
+	PrivateKey VirgilPrivateKeyInterface
 }
 
 func (s *VirgilCryptoSigner) Sign(data []byte) ([]byte, error){
-	key, err := crypto.ImportPrivateKey(s.PrivateKey, s.PrivateKeyPassword)
-	if err != nil {
-		return nil, fmt.Errorf("failed import private key: %v", err)
-	}
-	signature, err := crypto.Sign(data, key)
+	signature, err := crypto.Sign(data, s.PrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign data: %v", err)
 	}
@@ -95,11 +90,7 @@ func (s *VirgilCryptoSigner) SignerId() (uint16, error) {
 }
 
 func (s *VirgilCryptoSigner) PublicKeyFull() ([]byte, error) {
-	privateKey, err := crypto.ImportPrivateKey(s.PrivateKey, s.PrivateKeyPassword)
-	if err != nil {
-		return nil, fmt.Errorf("failed import private key: %v", err)
-	}
-	publicKey, err := crypto.ExtractPublicKey(privateKey)
+	publicKey, err := crypto.ExtractPublicKey(s.PrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract public key: %v", err)
 	}

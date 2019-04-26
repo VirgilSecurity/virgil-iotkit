@@ -41,6 +41,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"../common"
+
 	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
@@ -51,8 +53,9 @@ var (
 )
 
 type PersistenceManager struct {
-	FileName         string
-	Initializer      *FactoryInitializer
+	FileName             string
+	EncryptionPrivateKey common.VirgilPrivateKeyInterface
+	RecipientPublicKey   common.VirgilPublicKeyInterface
 }
 
 func (p PersistenceManager) Persist(data string) error {
@@ -64,20 +67,8 @@ func (p PersistenceManager) Persist(data string) error {
 		return err
 	}
 
-	// Import keys
-	privateKey, err := crypto.ImportPrivateKey(
-		p.Initializer.FileEncryptionPrivateKey, p.Initializer.FileEncryptionPrivateKeyPassword)
-	if err != nil {
-		return fmt.Errorf("failed import private key: %v", err)
-	}
-
-	recipientPublicKey, err := crypto.ImportPublicKey(p.Initializer.FileRecipientPublicKey)
-	if err != nil {
-		return fmt.Errorf("failed import public key: %v", err)
-	}
-
 	// Encrypt data
-	encryptedData, err := crypto.SignThenEncrypt(([]byte)(data), privateKey, recipientPublicKey)
+	encryptedData, err := crypto.SignThenEncrypt(([]byte)(data), p.EncryptionPrivateKey, p.RecipientPublicKey)
 	if err != nil {
 		return fmt.Errorf("failed to SignThenEncrypt: %v", err)
 	}

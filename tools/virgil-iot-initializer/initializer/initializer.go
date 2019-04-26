@@ -136,23 +136,45 @@ func New(context *cli.Context) (*FactoryInitializer, error) {
 }
 
 func (initializer *FactoryInitializer) InitializeDevices() error {
-	sdmpProcessor := &sdmp.Processor{
-		ProvisioningInfo: initializer.ProvisioningInfo,
+	// Import keys
+	deviceSignerPrivateKey, err := crypto.ImportPrivateKey(
+		initializer.DeviceSignPrivateKey, initializer.DeviceSignPrivateKeyPassword)
+	if err != nil {
+		return fmt.Errorf("failed to import device signer private key: %v", err)
 	}
 
-	deviceSigner := &common.VirgilCryptoSigner{
-		PrivateKey:          initializer.DeviceSignPrivateKey,
-		PrivateKeyPassword:  initializer.DeviceSignPrivateKeyPassword,
+	fileEncryptionPrivateKey, err := crypto.ImportPrivateKey(
+		initializer.FileEncryptionPrivateKey, initializer.FileEncryptionPrivateKeyPassword)
+	if err != nil {
+		return fmt.Errorf("failed to import file encryption private key: %v", err)
 	}
 
+	fileRecipientPublicKey, err := crypto.ImportPublicKey(initializer.FileRecipientPublicKey)
+	if err != nil {
+		return fmt.Errorf("failed to import file recipient public key: %v", err)
+	}
+
+	// Prepare persistent managers
 	deviceInfoPersistenceManager := PersistenceManager{
-		FileName:    initializer.DeviceInfoFile,
-		Initializer: initializer,
+		FileName:             initializer.DeviceInfoFile,
+		EncryptionPrivateKey: fileEncryptionPrivateKey,
+		RecipientPublicKey:   fileRecipientPublicKey,
 	}
 
 	requestsPersistenceManager := PersistenceManager{
-		FileName:    initializer.OutputFile,
-		Initializer: initializer,
+		FileName:             initializer.OutputFile,
+		EncryptionPrivateKey: fileEncryptionPrivateKey,
+		RecipientPublicKey:   fileRecipientPublicKey,
+	}
+
+	// Prepare device signer
+	deviceSigner := &common.VirgilCryptoSigner{
+		PrivateKey: deviceSignerPrivateKey,
+	}
+
+	// Prepare SDMP processor
+	sdmpProcessor := &sdmp.Processor{
+		ProvisioningInfo: initializer.ProvisioningInfo,
 	}
 
 	// Connect to PLC bus
@@ -162,7 +184,7 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
 	defer sdmpProcessor.DisconnectFromPLCBus()
 
 	// Discover uninitialized devices
-	err := sdmpProcessor.DiscoverDevices()
+	err = sdmpProcessor.DiscoverDevices()
 	if err != nil {
 		return err
 	}
