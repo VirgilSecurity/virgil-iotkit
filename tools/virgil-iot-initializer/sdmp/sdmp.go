@@ -323,7 +323,6 @@ func (p *DeviceProcessor) SignDevice() error {
     if err != nil {
         return err
     }
-    fmt.Println(C.VS_PRVS_SGNP, len(uploadBytes), signatureStruct.ValSz, uploadBytes)
 
     // Upload signature to device
     if err := p.uploadData(C.VS_PRVS_SGNP, uploadBytes, "Device signature"); err != nil {
