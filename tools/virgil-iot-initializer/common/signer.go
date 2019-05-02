@@ -37,6 +37,7 @@ package common
 import (
 	"fmt"
 
+	"gopkg.in/virgil.v5/cryptoapi"
 	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
@@ -56,7 +57,7 @@ type SignerInterface interface {
 }
 
 type VirgilCryptoSigner struct {
-	PrivateKey VirgilPrivateKeyInterface
+	PrivateKey cryptoapi.PrivateKey
 }
 
 func (s *VirgilCryptoSigner) Sign(data []byte) ([]byte, error){

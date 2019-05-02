@@ -41,8 +41,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"../common"
-
+	"gopkg.in/virgil.v5/cryptoapi"
 	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
@@ -54,8 +53,8 @@ var (
 
 type PersistenceManager struct {
 	FileName             string
-	EncryptionPrivateKey common.VirgilPrivateKeyInterface
-	RecipientPublicKey   common.VirgilPublicKeyInterface
+	EncryptionPrivateKey cryptoapi.PrivateKey
+	RecipientPublicKey   cryptoapi.PublicKey
 }
 
 func (p PersistenceManager) Persist(data string) error {
