@@ -73,6 +73,7 @@ type cardsServiceInfo struct {
 
 func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	var param string
+	var err error
 
 	registrar := new(cardsRegistrar)
 	// data
@@ -84,21 +85,24 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	if param = context.String("file_key"); param == "" {
 		return nil, cli.Exit("Private key for file decryption doesn't specified.", 1)
 	}
-	if err := setPrivateKey(param, context.String("file_key_pass"), &registrar.filePrivateKey); err != nil {
+	registrar.filePrivateKey, err = importPrivateKey(param, context.String("file_key_pass"))
+	if err != nil {
 		return nil, err
 	}
 	// file_sender_key
 	if param = context.String("file_sender_key"); param == "" {
 		return nil, cli.Exit("File with public key of data sender doesn't specified.", 1)
 	}
-	if err := setPublicKey(param, &registrar.filePublicSenderKey); err != nil {
+	registrar.filePublicSenderKey, err = importPublicKey(param)
+	if err != nil {
 		return nil, err
 	}
 	// iot_priv_key
 	if param = context.String("iot_priv_key"); param == "" {
 		return nil, cli.Exit("File with private key of IoT registrar doesn't specified.", 1)
 	}
-	if err := setPrivateKey(param, context.String("iot_priv_key_pass"), &registrar.iotPrivateKey); err != nil {
+	registrar.iotPrivateKey, err = importPrivateKey(param, context.String("iot_priv_key_pass"))
+	if err != nil {
 		return nil, err
 	}
 
@@ -123,7 +127,8 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	if param = context.String("api_key"); param == "" {
 		return nil, cli.Exit("Api private key file doesn't specified.", 1)
 	}
-	if err := setPrivateKey(param, "", &cardsService.apiPrivateKey); err != nil {
+	cardsService.apiPrivateKey, err = importPrivateKey(param, "")
+	if err != nil {
 		return nil, err
 	}
 
@@ -238,32 +243,30 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 	return nil
 }
 
-func setPrivateKey(keyPath string, keyPass string, setToField *cryptoapi.PrivateKey) error {
+func importPrivateKey(keyPath string, keyPass string) (cryptoapi.PrivateKey, error) {
 	keyBytes, err := getKeyFileBytes(keyPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	key, err := crypto.ImportPrivateKey(keyBytes, keyPass)
 	if err != nil {
-		return fmt.Errorf("failed to import private key %s: %v", keyPath, err)
+		return nil, fmt.Errorf("failed to import private key %s: %v", keyPath, err)
 	}
-	*setToField = key
 
-	return nil
+	return key, nil
 }
 
-func setPublicKey(keyPath string, setToField *cryptoapi.PublicKey) error {
+func importPublicKey(keyPath string) (cryptoapi.PublicKey, error) {
 	keyBytes, err := getKeyFileBytes(keyPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	key, err := crypto.ImportPublicKey(keyBytes)
 	if err != nil {
-		return fmt.Errorf("failed to import public key %s: %v", keyPath, err)
+		return nil, fmt.Errorf("failed to import public key %s: %v", keyPath, err)
 	}
-	*setToField = key
 
-	return nil
+	return key, nil
 }
 
 
