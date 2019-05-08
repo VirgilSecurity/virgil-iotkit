@@ -38,7 +38,12 @@ import (
     "bytes"
     "encoding/binary"
     "fmt"
+
+    "../common"
 )
+
+// TODO: use BigEndian instead of common.SystemEndian after correct serialization support from C side
+// Otherwise there could be problems if device/initializer are using different byte order
 
 type Go_vs_sdmp_pubkey_t struct  {
     PubKey   [PUBKEY_MAX_SZ]uint8
@@ -54,19 +59,16 @@ type Go_vs_sdmp_prvs_signature_t struct {
 func (g *Go_vs_sdmp_prvs_signature_t) fromBytes(b []byte) error {
     buf := bytes.NewBuffer(b)
 
-    if err := binary.Read(buf, binary.LittleEndian, &g.Id); err != nil {
-        return fmt.Errorf("failed to read Id: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.Id); err != nil {
+        return fmt.Errorf("failed to deserialize signature Id: %v", err)
     }
-    if err := binary.Read(buf, binary.LittleEndian, &g.ValSz); err != nil {
-        return fmt.Errorf("failed to read ValSz: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.ValSz); err != nil {
+        return fmt.Errorf("failed to deserialize signature ValSz: %v", err)
     }
-    // signature value
+    // Rest of buffer contains signature value
     rest := buf.Bytes()
-    valBuf := new(bytes.Buffer)
-    if err := binary.Write(valBuf, binary.LittleEndian, rest[:g.ValSz]); err != nil {
-        return fmt.Errorf("failed to write Signature: %v", err)
-    }
-    g.Val = valBuf.Bytes()
+    valueBytes := rest[:g.ValSz]
+    g.Val = valueBytes
 
     return nil
 }
@@ -74,14 +76,16 @@ func (g *Go_vs_sdmp_prvs_signature_t) fromBytes(b []byte) error {
 func (g *Go_vs_sdmp_prvs_signature_t) toBytes() ([]byte, error) {
     buf := new(bytes.Buffer)
 
-    if err := binary.Write(buf, binary.BigEndian, g.Id); err != nil {
-        return nil, fmt.Errorf("failed to serialize Id: %v", err)
+    if err := binary.Write(buf, common.SystemEndian, g.Id); err != nil {
+        return nil, fmt.Errorf("failed to serialize signature Id: %v", err)
     }
-    if err := binary.Write(buf, binary.BigEndian, g.ValSz); err != nil {
-        return nil, fmt.Errorf("failed to serialize ValSz: %v", err)
+    if err := binary.Write(buf, common.SystemEndian, g.ValSz); err != nil {
+        return nil, fmt.Errorf("failed to serialize signature ValSz: %v", err)
     }
-    if err := binary.Write(buf, binary.BigEndian, g.Val); err != nil {
-        return nil, fmt.Errorf("failed to serialize Val: %v", err)
+    // Write signature value
+    _, err := buf.Write(g.Val)
+    if err != nil {
+        return nil, fmt.Errorf("failed to serialize signature Val: %v", err)
     }
 
     return buf.Bytes(), nil
@@ -99,20 +103,20 @@ type Go_vs_sdmp_prvs_devi_t struct {
 
 func (g *Go_vs_sdmp_prvs_devi_t) fromBytes(b []byte) error {
     buf := bytes.NewBuffer(b)
-    if err := binary.Read(buf, binary.LittleEndian, &g.Manufacturer); err != nil {
-        return fmt.Errorf("failed to read Manufacturer: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.Manufacturer); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t Manufacturer: %v", err)
     }
-    if err := binary.Read(buf, binary.LittleEndian, &g.Model); err != nil {
-        return fmt.Errorf("failed to read Model: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.Model); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t Model: %v", err)
     }
-    if err := binary.Read(buf, binary.LittleEndian, &g.MacAddress); err != nil {
-        return fmt.Errorf("failed to read MacAddress: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.MacAddress); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t MacAddress: %v", err)
     }
-    if err := binary.Read(buf, binary.LittleEndian, &g.UdidOfDevice); err != nil {
-        return fmt.Errorf("failed to read UdidOfDevice: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.UdidOfDevice); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t UdidOfDevice: %v", err)
     }
-    if err := binary.Read(buf, binary.LittleEndian, &g.OwnKey); err != nil {
-        return fmt.Errorf("failed to read OwnKey: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.OwnKey); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t OwnKey: %v", err)
     }
     signature := Go_vs_sdmp_prvs_signature_t{}
     if err := signature.fromBytes(buf.Bytes()); err != nil {
