@@ -50,6 +50,14 @@ type Go_vs_sdmp_pubkey_t struct  {
     PubKeySz uint8
 }
 
+func (g *Go_vs_sdmp_pubkey_t) fromBytes(b []byte) error {
+    buf := bytes.NewBuffer(b)
+    if err := binary.Read(buf, common.SystemEndian, g); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_pubkey_t: %v", err)
+    }
+    return nil
+}
+
 type Go_vs_sdmp_prvs_signature_t struct {
     Id    uint16
     ValSz uint8

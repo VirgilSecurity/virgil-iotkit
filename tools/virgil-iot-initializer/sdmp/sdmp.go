@@ -213,18 +213,22 @@ func (p *DeviceProcessor) SetTrustList() error {
 }
 
 func (p *DeviceProcessor) InitDevice() error {
-    var asav_info C.vs_sdmp_pubkey_t
-    var pubKey [PUBKEY_MAX_SZ]C.uchar
+    const bufSize = 512
+    var asavInfoBuf [bufSize]uint8
+    asavInfoPtr := (*C.vs_sdmp_pubkey_t)(unsafe.Pointer(&asavInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, &asav_info, DEFAULT_WAIT_TIME_MS) {
+    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, DEFAULT_WAIT_TIME_MS) {
         return fmt.Errorf("InitDevice: vs_sdmp_prvs_save_provision error")
     }
 
-    pubKey = asav_info.pubkey
-    pubkeyPtr := unsafe.Pointer(&pubKey[0])
-    // TODO: recheck whether it should be first or last 64 bytes. Currently implemented like in C++
-    p.DevicePublicKeyTiny = C.GoBytes(pubkeyPtr, C.int(64))
+    pubKeyT := Go_vs_sdmp_pubkey_t{}
+    if err := pubKeyT.fromBytes(asavInfoBuf[:]); err != nil {
+        return err
+    }
+
+    tinyOffset := len(pubKeyT.PubKey) - 64
+    p.DevicePublicKeyTiny = pubKeyT.PubKey[tinyOffset:]
     return nil
 }
 
