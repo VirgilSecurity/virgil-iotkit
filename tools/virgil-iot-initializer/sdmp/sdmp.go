@@ -44,6 +44,7 @@ package sdmp
 import "C"
 import (
     "bytes"
+    "crypto/sha256"
     "encoding/base64"
     "encoding/binary"
     "fmt"
@@ -367,17 +368,20 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
 
 func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     const signatureBufSize = 512
-    var signature [signatureBufSize]uint8
+    var signatureBuf [signatureBufSize]uint8
     signature_sz := C.size_t(0)
 
+    // Calculate hash - device does not calculate hash, only signs data
+    dataHash := sha256.Sum256(data)
+
     mac := p.deviceInfo.mac_addr
-    signaturePtr := (*C.uchar)(unsafe.Pointer(&signature[0]))
-    dataPtr := (*C.uchar)(unsafe.Pointer(&data[0]))
+    signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
+    dataPtr := (*C.uchar)(unsafe.Pointer(&dataHash[0]))
 
     signRes := C.vs_sdmp_prvs_sign_data(nil,
                                         &mac,
                                         dataPtr,
-                                        C.ulong(len(data)),
+                                        C.ulong(len(dataHash)),
                                         signaturePtr,
                                         C.ulong(signatureBufSize),
                                         &signature_sz,
@@ -386,5 +390,12 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
         return nil, fmt.Errorf("failed to sign data in device")
     }
 
-    return signature[:signature_sz], nil
+    signature := signatureBuf[:signature_sz]
+
+    // Verify signature on full data
+    if err := p.DeviceSigner.Verify(data, signature, p.DevicePublicKey); err != nil {
+      return nil, fmt.Errorf("failed to verify signature of data signed inside device: %v", err)
+    }
+
+    return signature, nil
 }

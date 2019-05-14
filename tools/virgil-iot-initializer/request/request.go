@@ -35,7 +35,6 @@
 package request
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -97,8 +96,7 @@ func (b Builder) BuildRequest() (string, error) {
 		return "", fmt.Errorf("failed to get device info: %v", err)
 	}
 	combinedSnapshot := append(rawCard.ContentSnapshot, extraContent...)
-	dataHash := sha256.Sum256(combinedSnapshot)
-	signature, err := b.Signer.Sign(dataHash[:])
+	signature, err := b.Signer.Sign(combinedSnapshot)
 	if err != nil {
 		return "", err
 	}
