@@ -144,7 +144,7 @@ vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, size_t lin
     char *cur_pos;
     size_t pos;
     bool res;
-    const uint8_t *data_ptr = data_buf;
+    const unsigned char *data_ptr = data_buf;
 
     VS_ASSERT(cur_filename);
     VS_ASSERT(prefix);
