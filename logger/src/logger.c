@@ -71,7 +71,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     char time_buf[TIME_STR_SIZE];
     va_list args1;
     va_list args2;
-    size_t str_size;
+    int str_size;
     const char *level_str = NULL;
     char *output_str = NULL;
     char *cur_pos = NULL;
