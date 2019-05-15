@@ -110,9 +110,6 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         is_local_buf = false;
     }
 
-    if(!output_str)
-        return false;
-
     va_end(args1);
 
     cur_pos = output_str;
