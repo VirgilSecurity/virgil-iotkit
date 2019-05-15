@@ -96,10 +96,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     str_size = vsnprintf(NULL, 0, format, args1) /* format ... */;
 
-    if(str_size < 0){
-        VS_ASSERT(false);
-        return false;
-    }
+    VS_ASSERT(str_size > 0);
 
     str_size += TIME_STR_SIZE /* cur_time_buf */ + 3+strlen(level_str) /* " [level_str]" */ +
                3+strlen(cur_filename) + /*" [cur_filename:" */ + 8 /* "line_num] " */ + 1 /* '\0' */;
