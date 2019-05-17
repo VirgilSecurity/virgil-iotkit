@@ -126,7 +126,7 @@ clangformat_folder(
 #   Tools
 # ---------------------------------------------------------------------------
 
-if (NOT MCU_BUILD)
+if (NOT GO_DISABLE)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
 endif()
 
