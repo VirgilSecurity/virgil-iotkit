@@ -271,12 +271,16 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
                                  const uint8_t *response,
                                  const size_t response_sz) {
 
+    VS_ASSERT(_prvs_impl.stop_wait_func);
+
     switch (element_id) {
     case VS_PRVS_DNID:
         return _prvs_dnid_process_response(netif, response, response_sz);
 
     default: {
         _last_res = is_ack ? 0 : -1;
+        _prvs_impl.stop_wait_func();
+
         if (response_sz && response_sz < PRVS_BUF_SZ) {
             _last_data_sz = response_sz;
             memcpy(_last_data, response, response_sz);
@@ -337,6 +341,8 @@ _send_request(const vs_netif_t *netif,
 int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms) {
 
+    VS_ASSERT(_prvs_impl.wait_func);
+
     // Set storage for DNID request
     _prvs_dnid_list = list;
     memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
@@ -347,7 +353,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     }
 
     // Wait request
-    usleep(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms * 1000);
 
     return 0;
 }
@@ -379,6 +385,8 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
                  size_t data_sz,
                  size_t wait_ms) {
 
+    VS_ASSERT(_prvs_impl.wait_func);
+
     _reset_last_result();
 
     // Send request
@@ -387,8 +395,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     }
 
     // Wait request
-    // TODO: Fix wait here
-    usleep(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms * 1000);
 
     return _last_res;
 }
@@ -403,6 +410,8 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
                  size_t *data_sz,
                  size_t wait_ms) {
 
+    VS_ASSERT(_prvs_impl.wait_func);
+
     _reset_last_result();
 
     // Send request
@@ -411,8 +420,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
     }
 
     // Wait request
-    // TODO: Fix wait here
-    usleep(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms * 1000);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
@@ -446,6 +454,9 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        size_t buf_sz,
                        size_t *signature_sz,
                        size_t wait_ms) {
+
+    VS_ASSERT(_prvs_impl.wait_func);
+
     _reset_last_result();
 
     // Send request
@@ -454,8 +465,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     }
 
     // Wait request
-    // TODO: Fix wait here
-    usleep(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms * 1000);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
