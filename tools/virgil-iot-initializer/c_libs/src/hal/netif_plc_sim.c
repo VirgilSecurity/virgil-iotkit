@@ -41,6 +41,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <errno.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -65,16 +66,15 @@ _plc_receive_processor(void *sock_desc) {
     while (1) {
         memset(received_data, 0, PLC_RX_BUF_SZ);
         recv_sz = recv(_plc_sock, received_data, PLC_RX_BUF_SZ, 0);
-        if (recv_sz < 0) {
+
+        if (recv_sz > 0) {
+            // Pass received data to upper level via callback
+            _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t *)received_data, recv_sz);
+
+        } else if (0 == recv_sz || (-1 == recv_sz && errno != EAGAIN && errno != ETIMEDOUT)) {
+            printf("TCP socket disconnect res = %d (%d)\n", (int)recv_sz, errno);
             break;
         }
-
-        if (!recv_sz) {
-            continue;
-        }
-
-        // Pass received data to upper level via callback
-        _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t *)received_data, recv_sz);
     }
 
     return NULL;
