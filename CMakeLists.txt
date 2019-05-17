@@ -84,6 +84,7 @@ option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
 option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
+option(VIRGIL_IOT_LOGGER "Enable 'logger'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
 
@@ -116,6 +117,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/protocols
         ${CMAKE_CURRENT_SOURCE_DIR}/provision
         ${CMAKE_CURRENT_SOURCE_DIR}/secbox
+        ${CMAKE_CURRENT_SOURCE_DIR}/logger
         ${CMAKE_CURRENT_SOURCE_DIR}/tests
         ${CMAKE_CURRENT_SOURCE_DIR}/tools
         ${CMAKE_CURRENT_SOURCE_DIR}/update
@@ -147,4 +149,11 @@ endif()
 #
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
+endif()
+
+#
+#   Logger
+#
+if (VIRGIL_IOT_LOGGER)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 endif()
