@@ -40,9 +40,6 @@ typedef enum {
     VS_LOGLEV_DEBUG = 0xFE,
 } vs_log_level_t;
 
-// HAL interface
-bool vs_logger_print_hal(const char *buf); // Output ASCIIZ string
-
 // Functions
 
 // Initialize logging level

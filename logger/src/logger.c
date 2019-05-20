@@ -4,9 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 
 #include <logger.h>
-#include <hal/macro.h>
+#include <logger_hal.h>
+
+#define ASSERT assert
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 
@@ -38,7 +41,7 @@ vs_logger_get_loglev(void){
 bool
 vs_logger_is_loglev(vs_log_level_t level){
 
-            VS_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
+    ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
 
     return level <= _log_level;
 }
@@ -58,8 +61,29 @@ _get_level_str(vs_log_level_t log_level){
     case VS_LOGLEV_TRACE : return "TRACE";
     case VS_LOGLEV_DEBUG : return "DEBUG";
 
-    default : VS_ASSERT(false && "Unsupported logging level"); return "";
+    default : ASSERT(false && "Unsupported logging level"); return "";
     }
+}
+
+/******************************************************************************/
+static char *
+_get_string_buffer(char *stack_buf, size_t stack_buf_size, size_t str_size, bool *is_stack_buf){
+    char *output_buffer = NULL;
+
+    // String fits the stack buffer
+    if(str_size <= stack_buf_size){
+        output_buffer = stack_buf;
+        *is_stack_buf = true;
+
+    // String needs dynamically allocated buffer
+    } else {
+        output_buffer = malloc(str_size);
+        ASSERT(output_buffer);
+        *is_stack_buf = false;
+    }
+
+    return output_buffer;
+
 }
 
 /******************************************************************************/
@@ -82,8 +106,8 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     if(!vs_logger_is_loglev(level))
         return true;
 
-            VS_ASSERT(cur_filename);
-            VS_ASSERT(format);
+    ASSERT(cur_filename);
+    ASSERT(format);
 
     level_str = _get_level_str(level);
 
@@ -95,19 +119,12 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     str_size = vsnprintf(NULL, 0, format, args1) /* format ... */;
 
-            VS_ASSERT(str_size > 0);
+    ASSERT(str_size > 0);
 
     str_size += TIME_STR_SIZE /* cur_time_buf */ + 3+strlen(level_str) /* " [level_str]" */ +
                 3+strlen(cur_filename) + /*" [cur_filename:" */ + 8 /* "line_num] " */ + 1 /* '\0' */;
 
-    if(str_size <= sizeof(local_buf)){
-        output_str = local_buf;
-        is_local_buf = true;
-    } else {
-        output_str = malloc(str_size);
-                VS_ASSERT(output_str);
-        is_local_buf = false;
-    }
+    output_str = _get_string_buffer(local_buf, sizeof(local_buf), str_size, &is_local_buf);
 
     va_end(args1);
 
@@ -119,7 +136,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         sprintf(cur_pos, "\n");
         res = vs_logger_print_hal(output_str);
     } else {
-                VS_ASSERT(false);
+        ASSERT(false);
     }
 
     va_end(args2);
@@ -139,9 +156,9 @@ vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, size_t lin
     bool res;
     const unsigned char *data_ptr = data_buf;
 
-            VS_ASSERT(cur_filename);
-            VS_ASSERT(prefix);
-            VS_ASSERT(data_buf && data_size);
+    ASSERT(cur_filename);
+    ASSERT(prefix);
+    ASSERT(data_buf && data_size);
 
     if(!vs_logger_is_loglev(level))
         return true;
@@ -149,7 +166,7 @@ vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, size_t lin
     buf = malloc(data_size * 3 /* "FE " */ + 1);
 
     if(!buf){
-                VS_ASSERT(false);
+        ASSERT(false);
         return false;
     }
 
