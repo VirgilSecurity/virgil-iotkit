@@ -57,7 +57,7 @@ import (
 
 
 const (
-    DEFAULT_WAIT_TIME_MS = 200
+    DEFAULT_TIMEOUT_MS   = 2000
     ETH_ADDR_LEN         = int(C.ETH_ADDR_LEN)
     PUBKEY_MAX_SZ        = int(C.PUBKEY_MAX_SZ)
 )
@@ -136,7 +136,7 @@ func (p *DeviceProcessor) Process() error {
 func (p *Processor) DiscoverDevices() error {
     list := C.vs_sdmp_prvs_dnid_list_t{}
 
-    if 0 != C.vs_sdmp_prvs_uninitialized_devices(nil, &list, DEFAULT_WAIT_TIME_MS* 10) {
+    if 0 != C.vs_sdmp_prvs_uninitialized_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
     }
 
@@ -209,7 +209,7 @@ func (p *DeviceProcessor) SetTrustList() error {
                                        &mac,
                                        dataPtr,
                                        C.ulong(len(footerBytes)),
-                                       DEFAULT_WAIT_TIME_MS* 5) {
+                                       DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set TrustList footer")
     }
 
@@ -224,7 +224,7 @@ func (p *DeviceProcessor) InitDevice() error {
     asavInfoPtr := (*C.vs_sdmp_pubkey_t)(unsafe.Pointer(&asavInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, DEFAULT_WAIT_TIME_MS) {
+    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("InitDevice: vs_sdmp_prvs_save_provision error")
     }
 
@@ -249,7 +249,7 @@ func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []by
                                element,
                                dataPtr,
                                C.ulong(len(data)),
-                               DEFAULT_WAIT_TIME_MS) {
+                               DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set %s on device (vs_sdmp_prvs_set)", name)
     }
     return nil
@@ -353,7 +353,7 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
                                        &mac,
                                        deviceInfoPtr,
                                        C.size_t(bufSize),
-                                       DEFAULT_WAIT_TIME_MS) {
+                                       DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to get device info (vs_sdmp_prvs_device_info)")
     }
 
@@ -395,7 +395,7 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
                                         signaturePtr,
                                         C.ulong(signatureBufSize),
                                         &signature_sz,
-                                        DEFAULT_WAIT_TIME_MS)
+                                        DEFAULT_TIMEOUT_MS)
     if signRes != 0 {
         return nil, fmt.Errorf("failed to sign data in device")
     }

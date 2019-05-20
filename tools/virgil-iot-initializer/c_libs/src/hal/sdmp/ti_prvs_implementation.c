@@ -33,38 +33,65 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <pthread.h>
+#include <errno.h>
+#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
+#include <stdio.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 
 // For the simplest implementation of os_event
+static int _wait_flag = 0;
 static pthread_mutex_t _wait_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 
 /******************************************************************************/
 static int
 vs_prvs_stop_wait_func(void) {
+    printf("!!! vs_prvs_stop_wait_func\n");
     pthread_mutex_lock(&_wait_mutex);
     pthread_cond_signal(&_wait_cond);
     pthread_mutex_unlock(&_wait_mutex);
     return 0;
 }
 
+long long
+current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);                                         // get current time
+    long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
+}
 /******************************************************************************/
 static int
 vs_prvs_wait_func(size_t wait_ms) {
     struct timespec time_to_wait;
     struct timeval now;
 
+    _wait_flag = 0;
+    pthread_mutex_init(&_wait_mutex, NULL);
+    pthread_cond_init(&_wait_cond, NULL);
+
+    printf("[%llu]>>> vs_prvs_wait_func\n", current_timestamp());
+
     gettimeofday(&now, NULL);
 
     time_to_wait.tv_sec = now.tv_sec + wait_ms / 1000UL;
-    time_to_wait.tv_nsec = (now.tv_usec + 1000UL * (wait_ms % 1000)) * 1000UL;
+    time_to_wait.tv_nsec = (now.tv_usec + 1000UL * (wait_ms % 1000UL)) * 1000UL;
 
     pthread_mutex_lock(&_wait_mutex);
-    pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait);
+
+    if (0 != pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait)) {
+        printf("%s\n", strerror(errno));
+    }
     pthread_mutex_unlock(&_wait_mutex);
+
+    pthread_cond_destroy(&_wait_cond);
+    pthread_mutex_destroy(&_wait_mutex);
+
+    printf("[%llu]<<< vs_prvs_wait_func\n", current_timestamp());
     return 0;
 }
 

@@ -353,7 +353,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms);
+    usleep(wait_ms * 1000);
 
     return 0;
 }
