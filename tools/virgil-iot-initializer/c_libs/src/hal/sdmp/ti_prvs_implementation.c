@@ -49,7 +49,6 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 /******************************************************************************/
 static int
 vs_prvs_stop_wait_func(void) {
-    printf("!!! vs_prvs_stop_wait_func\n");
     pthread_mutex_lock(&_wait_mutex);
     pthread_cond_signal(&_wait_cond);
     pthread_mutex_unlock(&_wait_mutex);
@@ -74,7 +73,6 @@ vs_prvs_wait_func(size_t wait_ms) {
     pthread_mutex_init(&_wait_mutex, NULL);
     pthread_cond_init(&_wait_cond, NULL);
 
-    printf("[%llu]>>> vs_prvs_wait_func\n", current_timestamp());
 
     gettimeofday(&now, NULL);
 
@@ -91,7 +89,6 @@ vs_prvs_wait_func(size_t wait_ms) {
     pthread_cond_destroy(&_wait_cond);
     pthread_mutex_destroy(&_wait_mutex);
 
-    printf("[%llu]<<< vs_prvs_wait_func\n", current_timestamp());
     return 0;
 }
 
