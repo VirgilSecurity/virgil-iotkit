@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/initializer/hal/netif_plc_sim.h>
+#include <virgil/iot/initializer/hal/ti_netif_plc_sim.h>
 
 #include <unistd.h>
 #include <string.h>
@@ -72,7 +72,7 @@ _plc_receive_processor(void *sock_desc) {
             _netif_plc_rx_cb_sim(vs_hal_netif_plc_sim(), (uint8_t *)received_data, recv_sz);
 
         } else if (0 == recv_sz || (-1 == recv_sz && errno != EAGAIN && errno != ETIMEDOUT)) {
-            printf("TCP socket disconnect res = %d (%d)\n", (int)recv_sz, errno);
+            printf("TCP socket disconnect res = %d (%s) %d\n", (int)recv_sz, strerror(errno), _plc_sock);
             break;
         }
     }
@@ -132,6 +132,7 @@ _plc_deinit_sim() {
     shutdown(_plc_sock, SHUT_RDWR);
 #endif
     close(_plc_sock);
+    _plc_sock = -1;
     pthread_join(receive_thread, NULL);
     return 0;
 }

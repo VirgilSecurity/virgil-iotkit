@@ -39,7 +39,8 @@ package sdmp
 #cgo LDFLAGS: -L${SRCDIR}/../lib -lsdmp -lnetif_plc_sim
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
-#include <virgil/iot/initializer/hal/netif_plc_sim.h>
+#include <virgil/iot/initializer/hal/ti_netif_plc_sim.h>
+#include <virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h>
 */
 import "C"
 import (
@@ -155,10 +156,15 @@ func (p Processor ) ConnectToPLCBus() error {
         return fmt.Errorf("can't register SDMP:PRVS service")
     }
 
+    if 0 != C.vs_sdmp_prvs_configure_hal(C.vs_prvs_impl()) {
+        return fmt.Errorf("can't configure SDMP:PRVS HAL")
+    }
+
     return nil
 }
 
 func (p Processor) DisconnectFromPLCBus(){
+    fmt.Printf("DisconnectFromPLCBus\n")
     C.vs_sdmp_deinit()
 }
 

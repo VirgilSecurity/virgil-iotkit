@@ -353,7 +353,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms);
 
     return 0;
 }
@@ -395,7 +395,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms);
 
     return _last_res;
 }
@@ -420,7 +420,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
@@ -465,7 +465,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms * 1000);
+    _prvs_impl.wait_func(wait_ms);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
