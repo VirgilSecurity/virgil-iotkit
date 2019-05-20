@@ -2,21 +2,8 @@
 #define SECBOX_H
 #include <stdint.h>
 
-typedef enum {
-    VS_SECBOX_ELEMENT_MIN = 0,
-    VS_SECBOX_ELEMENT_PBR,
-    VS_SECBOX_ELEMENT_PBA,
-    VS_SECBOX_ELEMENT_PBT,
-    VS_SECBOX_ELEMENT_PBF,
-    VS_SECBOX_ELEMENT_TLH,
-    VS_SECBOX_ELEMENT_TLC,
-    VS_SECBOX_ELEMENT_TLF,
-    VS_SECBOX_ELEMENT_SGN,
-    VS_SECBOX_ELEMENT_MAX,
-} vs_secbox_element_e;
-
 typedef struct vs_secbox_element_info_s {
-    vs_secbox_element_e id;
+    size_t id;
     size_t index;
 } vs_secbox_element_info_t;
 
