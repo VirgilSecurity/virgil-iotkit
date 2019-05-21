@@ -12,11 +12,18 @@
 #define ASSERT assert
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
+static bool _use_heap_buffer = false;
+static size_t _max_buf_size = 0;
 
 /******************************************************************************/
 bool
-vs_logger_init(vs_log_level_t log_level){
+vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size){
     vs_logger_set_loglev(log_level);
+
+    _use_heap_buffer = use_heap_buffer;
+    _max_buf_size = max_buf_size;
+    if(!max_buf_size)
+        return false;
 
     return true;
 }
@@ -66,42 +73,23 @@ _get_level_str(vs_log_level_t log_level){
 }
 
 /******************************************************************************/
-static char *
-_get_string_buffer(char *stack_buf, size_t stack_buf_size, size_t str_size, bool *is_stack_buf){
-    char *output_buffer = NULL;
-
-    // String fits the stack buffer
-    if(str_size <= stack_buf_size){
-        output_buffer = stack_buf;
-        *is_stack_buf = true;
-
-    // String needs dynamically allocated buffer
-    } else {
-        output_buffer = malloc(str_size);
-        ASSERT(output_buffer);
-        *is_stack_buf = false;
-    }
-
-    return output_buffer;
-
-}
-
-/******************************************************************************/
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...){
     time_t time_tmp;
     static const size_t TIME_STR_SIZE = 26;
     char time_buf[TIME_STR_SIZE];
+    static const char *CUTTED_STR = "...\n";
+    static const size_t CUTTED_STR_SIZE = 4;
     va_list args1;
     va_list args2;
     int str_size;
     const char *level_str = NULL;
     char *output_str = NULL;
     char *cur_pos = NULL;
-    char local_buf[256];
-    bool is_local_buf;
-    int errnum;
+    size_t stack_buf_size = 0;
+    int snprintf_res;
     bool res = false;
+    bool cutted_str = false;
 
     if(!vs_logger_is_loglev(level))
         return true;
@@ -111,40 +99,74 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     level_str = _get_level_str(level);
 
+    // Make time string
     time(&time_tmp);
     strftime(time_buf, TIME_STR_SIZE, "%Y-%m-%d %H:%M:%S:", localtime(&time_tmp));
 
+    // Calculate full string size
     va_start(args1, format);
     va_copy(args2, args1);
 
     str_size = vsnprintf(NULL, 0, format, args1) /* format ... */;
 
+    va_end(args1);
+
     ASSERT(str_size > 0);
 
     str_size += TIME_STR_SIZE /* cur_time_buf */ + 3+strlen(level_str) /* " [level_str]" */ +
-                3+strlen(cur_filename) + /*" [cur_filename:" */ + 8 /* "line_num] " */ + 1 /* '\0' */;
+                3+strlen(cur_filename) + /*" [cur_filename:" */ + 8 /* "line_num] " */ + 2 /* "\n" */;
 
-    output_str = _get_string_buffer(local_buf, sizeof(local_buf), str_size, &is_local_buf);
+    if(str_size > _max_buf_size)
+        str_size = _max_buf_size;
 
-    va_end(args1);
+    // Allocate heap or stack vuffer
+    if(!_use_heap_buffer) {
+        stack_buf_size = str_size;
+    }
 
+    char stack_buf[stack_buf_size];
+    output_str = stack_buf;
+
+    if(_use_heap_buffer){
+        output_str = malloc(str_size);
+    }
+
+    // Make full string
     cur_pos = output_str;
-    cur_pos += sprintf(cur_pos, "%s [%s] [%s:%d] ", time_buf, level_str, cur_filename, (int)line_num);
-    errnum = vsprintf(cur_pos, format, args2);
-    if(errnum >= 0){
-        cur_pos += errnum;
-        sprintf(cur_pos, "\n");
-        res = vs_logger_print_hal(output_str);
+    snprintf_res = snprintf(cur_pos, str_size, "%s [%s] [%s:%d] ", time_buf, level_str, cur_filename, (int)line_num);
+    if(snprintf_res >= 0 && snprintf_res < str_size){
+        cur_pos += snprintf_res;
+        str_size -= snprintf_res;
     } else {
-        ASSERT(false);
+        cutted_str = true;
+    }
+
+    if(!cutted_str) {
+        snprintf_res = vsnprintf(cur_pos, str_size, format, args2);
+
+        if (snprintf_res >= 0 && snprintf_res < str_size) {
+            cur_pos += snprintf_res;
+            strcpy(cur_pos, "\n");
+        } else {
+            cutted_str = true;
+        }
     }
 
     va_end(args2);
 
-    if(!is_local_buf)
+    // Cut string if necessary
+    if(cutted_str) {
+        cur_pos += str_size;
+        strcpy(cur_pos - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
+    }
+
+    // Output string
+    res = vs_logger_print_hal(output_str);
+
+    if(_use_heap_buffer)
         free(output_str);
 
-    return res;
+    return res && !cutted_str;
 }
 
 /******************************************************************************/

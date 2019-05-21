@@ -44,9 +44,11 @@ typedef enum {
 
 // Initialize logging level
 // - log_level : logging logging level to be initialized
+// - use_dynamic_buffer : use dynamic memory to allocate buffer, instead stack memory
+// - max_buf_size : maximum buffer size, in bytes
 // Return true if successful
 bool
-vs_logger_init(vs_log_level_t log_level);
+vs_logger_init(vs_log_level_t log_level, bool use_dynamic_buffer, size_t max_buf_size);
 
 // Set current logging level
 // - new_level : new logging level to be initialized
@@ -69,7 +71,7 @@ vs_logger_is_loglev(vs_log_level_t level);
 // - cur_filename : source code file name
 // - line_num : source code line number
 // - log_format, ... : printf like string
-// Return true if there were no errors
+// Return true if there were no errors and string has not been cutted
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *log_format, ...);
 
