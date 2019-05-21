@@ -7,7 +7,7 @@
 #include <assert.h>
 
 #include <logger.h>
-#include <logger_hal.h>
+#include <private/logger_implement.h>
 
 #define ASSERT assert
 
