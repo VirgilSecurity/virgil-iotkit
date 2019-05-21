@@ -44,11 +44,11 @@ typedef enum {
 
 // Initialize logging level
 // - log_level : logging logging level to be initialized
-// - use_dynamic_buffer : use dynamic memory to allocate buffer, instead stack memory
+// - use_heap_buffer : use heap memory to allocate buffer, instead stack memory
 // - max_buf_size : maximum buffer size, in bytes
 // Return true if successful
 bool
-vs_logger_init(vs_log_level_t log_level, bool use_dynamic_buffer, size_t max_buf_size);
+vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size);
 
 // Set current logging level
 // - new_level : new logging level to be initialized
