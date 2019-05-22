@@ -4,26 +4,20 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "vs_tl_structs.h"
+#include "vs_trust_list.h"
 
 size_t
 get_tl_default_base_addr_impl(size_t storage_type);
 bool
-write_tl_header_file_impl(tl_context_t *ctx, const trust_list_header_t *tl_header);
+write_tl_part_to_file_impl(tl_context_t *ctx, vs_tl_element_info_t element_info, const uint8_t *data, size_t size);
 bool
-read_tl_header_file_impl(tl_context_t *ctx, trust_list_header_t *tl_header);
+read_tl_part_from_file_impl(tl_context_t *ctx,
+                            vs_tl_element_info_t element_info,
+                            uint8_t *data,
+                            size_t buf_sz,
+                            size_t *data_sz);
 bool
-remove_tl_header_file_impl(tl_context_t *ctx);
-bool
-write_tl_key_file_impl(tl_context_t *ctx, size_t key_id, const trust_list_pub_key_t *key);
-bool
-read_tl_key_file_impl(tl_context_t *ctx, size_t key_id, trust_list_pub_key_t *key);
-bool
-remove_tl_key_file_impl(tl_context_t *ctx, tl_key_handle handle);
-bool
-write_tl_footer_file_impl(tl_context_t *ctx, const trust_list_footer_t *footer);
-bool
-read_tl_footer_file_impl(tl_context_t *ctx, trust_list_footer_t *footer);
-bool
-remove_tl_footer_file_impl(tl_context_t *ctx);
+remove_tl_part_file_impl(tl_context_t *ctx, vs_tl_element_info_t element_info);
+
 
 #endif // TL_FILES_H

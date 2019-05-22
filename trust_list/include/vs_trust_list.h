@@ -2,7 +2,6 @@
 #ifndef TRUST_LIST_H
 #define TRUST_LIST_H
 
-
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
     VS_TL_ELEMENT_TLH,
