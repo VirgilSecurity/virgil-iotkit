@@ -11,6 +11,8 @@
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+#define VS_LOGGER_DEFAULT_BUF_SIZE 256
+
 // Helpers
 #define VS_LOG(LGLVL,     FRMT, ...) vs_logger_message((LGLVL),       __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
 #define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message_hex((LGLVL),   __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
@@ -46,7 +48,7 @@ typedef enum {
 // Initialize logging level
 // - log_level : logging logging level to be initialized
 // - use_heap_buffer : use heap memory to allocate buffer, instead stack memory
-// - max_buf_size : maximum buffer size, in bytes
+// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if needed
 // Return true if successful
 bool
 vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size);
@@ -72,7 +74,8 @@ vs_logger_is_loglev(vs_log_level_t level);
 // - cur_filename : source code file name
 // - line_num : source code line number
 // - log_format, ... : printf like string
-// Return true if there were no errors and string has not been cutted
+// Return true if there were no errors and string has not been cut
+// You can pass cur_filename = NULL and line_num = 0 to make output shorter
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *log_format, ...);
 
