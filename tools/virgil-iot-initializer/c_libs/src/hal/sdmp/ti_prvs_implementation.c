@@ -49,41 +49,73 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 /******************************************************************************/
 static int
 vs_prvs_stop_wait_func(void) {
-    pthread_mutex_lock(&_wait_mutex);
-    pthread_cond_signal(&_wait_cond);
-    pthread_mutex_unlock(&_wait_mutex);
+    if (0 != pthread_mutex_lock(&_wait_mutex)) {
+        //        fprintf(stderr, "pthread_mutex_lock 1 %s %d\n", strerror(errno), errno);
+    }
+
+    if (0 != pthread_cond_signal(&_wait_cond)) {
+        fprintf(stderr, "pthread_cond_signal %s\n", strerror(errno));
+    }
+
+    _wait_flag = 1;
+
+    if (0 != pthread_mutex_unlock(&_wait_mutex)) {
+        fprintf(stderr, "pthread_mutex_unlock 1 %s\n", strerror(errno));
+    }
+
     return 0;
 }
 
-long long
-current_timestamp() {
-    struct timeval te;
-    gettimeofday(&te, NULL);                                         // get current time
-    long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds
-    // printf("milliseconds: %lld\n", milliseconds);
-    return milliseconds;
+/******************************************************************************/
+static bool
+_is_greater_timespec(struct timespec a, struct timespec b) {
+    if (a.tv_sec == b.tv_sec) {
+        return a.tv_nsec > b.tv_nsec;
+    }
+
+    return a.tv_sec > b.tv_sec;
 }
+
 /******************************************************************************/
 static int
 vs_prvs_wait_func(size_t wait_ms) {
     struct timespec time_to_wait;
+    struct timespec ts_now;
     struct timeval now;
 
     _wait_flag = 0;
-    pthread_mutex_init(&_wait_mutex, NULL);
-    pthread_cond_init(&_wait_cond, NULL);
+    if (0 != pthread_mutex_init(&_wait_mutex, NULL)) {
+        fprintf(stderr, "pthread_mutex_init %s\n", strerror(errno));
+    }
 
+    if (0 != pthread_cond_init(&_wait_cond, NULL)) {
+        fprintf(stderr, "pthread_cond_init %s\n", strerror(errno));
+    }
 
     gettimeofday(&now, NULL);
 
     time_to_wait.tv_sec = now.tv_sec + wait_ms / 1000UL;
     time_to_wait.tv_nsec = (now.tv_usec + 1000UL * (wait_ms % 1000UL)) * 1000UL;
 
-    pthread_mutex_lock(&_wait_mutex);
+    //    fprintf(stderr, "pthread_cond_timedwait ts_now(%lld.%.9ld)  time_to_wait(%lld.%.9ld)\n", (long
+    //    long)now.tv_sec, now.tv_usec * 1000UL, (long long)time_to_wait.tv_sec, time_to_wait.tv_nsec);
 
-    if (0 != pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait)) {
-        printf("%s\n", strerror(errno));
+    if (0 != pthread_mutex_lock(&_wait_mutex)) {
+        fprintf(stderr, "pthread_mutex_lock %s\n", strerror(errno));
     }
+
+    do {
+        if (0 != pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait)) {
+            fprintf(stderr, "pthread_cond_timedwait %s _wait_flag = %d\n", strerror(errno), _wait_flag);
+        }
+        gettimeofday(&now, NULL);
+        ts_now.tv_sec = now.tv_sec;
+        ts_now.tv_nsec = now.tv_usec * 1000UL;
+        //        fprintf(stderr, "ts_now(%lld.%.9ld) > time_to_wait(%lld.%.9ld) : %s\n", (long long)ts_now.tv_sec,
+        //        ts_now.tv_nsec, (long long)time_to_wait.tv_sec, time_to_wait.tv_nsec, _is_greater_timespec(ts_now,
+        //        time_to_wait) ? "YES" : "NO");
+    } while (!_wait_flag && !_is_greater_timespec(ts_now, time_to_wait));
+
     pthread_mutex_unlock(&_wait_mutex);
 
     pthread_cond_destroy(&_wait_cond);

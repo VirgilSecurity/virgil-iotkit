@@ -39,6 +39,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
+
+#include <sys/time.h>
 
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
@@ -49,7 +52,7 @@ static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 
 // Last result
 #define PRVS_BUF_SZ (1024)
-static int _last_res = -1;
+static volatile int _last_res = -1;
 static size_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
@@ -279,12 +282,14 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
 
     default: {
         _last_res = is_ack ? 0 : -1;
-        _prvs_impl.stop_wait_func();
 
         if (response_sz && response_sz < PRVS_BUF_SZ) {
             _last_data_sz = response_sz;
             memcpy(_last_data, response, response_sz);
         }
+
+        _prvs_impl.stop_wait_func();
+
         return 0;
     }
     }
@@ -377,6 +382,15 @@ _reset_last_result() {
 }
 
 /******************************************************************************/
+// static long long
+// current_timestamp() {
+//    struct timeval te;
+//    gettimeofday(&te, NULL);                                         // get current time
+//    long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds
+//    // printf("milliseconds: %lld\n", milliseconds);
+//    return milliseconds;
+//}
+
 int
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
@@ -387,6 +401,8 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 
     VS_ASSERT(_prvs_impl.wait_func);
 
+    //    fprintf(stderr, "[%lld] >>>>>>> A !!! SET wait: %d ms\n", current_timestamp(), (int)wait_ms);
+
     _reset_last_result();
 
     // Send request
@@ -396,6 +412,8 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 
     // Wait request
     _prvs_impl.wait_func(wait_ms);
+
+    //    fprintf(stderr, "[%lld] >>>>>>> C !!! SET: %s\n", current_timestamp(), 0 == _last_res ? "OK" : "ERROR");
 
     return _last_res;
 }
