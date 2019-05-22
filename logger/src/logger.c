@@ -130,11 +130,12 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     if (str_size > _max_buf_size)
         str_size = _max_buf_size;
 
-    // Allocate heap or stack vuffer
+    // Allocate heap or stack buffer
     if (!_use_heap_buffer) {
         stack_buf_size = str_size;
     }
 
+    // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[stack_buf_size];
     output_str = stack_buf;
 
@@ -144,6 +145,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     // Make full string
     cur_pos = output_str;
+    // TODO : snprintf - since C99
     snprintf_res = snprintf(cur_pos, str_size, "%s [%s] [%s:%d] ", time_buf, level_str, cur_filename, (int)line_num);
     if (snprintf_res >= 0 && snprintf_res < str_size) {
         cur_pos += snprintf_res;
@@ -153,6 +155,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     }
 
     if (!cutted_str) {
+        // TODO : vsnprintf - since C99
         snprintf_res = vsnprintf(cur_pos, str_size, format, args2);
 
         if (snprintf_res >= 0 && snprintf_res < str_size) {
