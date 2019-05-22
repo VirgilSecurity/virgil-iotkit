@@ -36,32 +36,27 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(logger VERSION 0.1.0 LANGUAGES C)
 
-set(LOGGER_LIB logger)
-
-#
-#   Source code
-#
-set(LOGGER_SRC
-        src/logger.c
-        )
-
 #
 #   SecBox library
 #
-add_library(${LOGGER_LIB}
-        ${LOGGER_SRC}
+add_library(logger
+        src/logger.c
         )
 
-#
-#   -Wall -Werror
-#
-set_target_properties(${LOGGER_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_compile_options(logger
+        PRIVATE -Wall -Werror -Wno-multichar)
 
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/logger
+target_include_directories(logger
         PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         )
