@@ -1,6 +1,9 @@
-//
-// Created by Oleksandr Nemchenko on 2019-05-17.
-//
+/*
+ *   Copyright (C) 2015-2019 Virgil Security Inc.
+ *
+ *   Logger library
+ *
+ */
 
 #ifndef AP_SECURITY_SDK_LOGGER_H
 #define AP_SECURITY_SDK_LOGGER_H
@@ -11,25 +14,26 @@
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+// Default buffer size
 #define VS_LOGGER_DEFAULT_BUF_SIZE 256
 
 // Helpers
-#define VS_LOG(LGLVL,     FRMT, ...) vs_logger_message((LGLVL),       __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message_hex((LGLVL),   __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
+#define VS_LOG(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
-#define VS_LOG_INFO(FRMT, ...)      vs_logger_message(VS_LOGLEV_INFO,     __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_FATAL(FRMT, ...)     vs_logger_message(VS_LOGLEV_FATAL,    __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_ALERT(FRMT, ...)     vs_logger_message(VS_LOGLEV_ALERT,    __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_CRITICAL(FRMT, ...)  vs_logger_message(VS_LOGLEV_CRITICAL, __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_ERROR(FRMT, ...)     vs_logger_message(VS_LOGLEV_ERROR,    __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_WARNING(FRMT, ...)   vs_logger_message(VS_LOGLEV_WARNING,  __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_NOTICE(FRMT, ...)    vs_logger_message(VS_LOGLEV_NOTICE,   __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_TRACE(FRMT, ...)     vs_logger_message(VS_LOGLEV_TRACE,    __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
-#define VS_LOG_DEBUG(FRMT, ...)     vs_logger_message(VS_LOGLEV_DEBUG,    __FILENAME__, __LINE__, (FRMT), ## __VA_ARGS__)
+#define VS_LOG_INFO(FRMT, ...) vs_logger_message(VS_LOGLEV_INFO, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_FATAL(FRMT, ...) vs_logger_message(VS_LOGLEV_FATAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_ALERT(FRMT, ...) vs_logger_message(VS_LOGLEV_ALERT, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_CRITICAL(FRMT, ...) vs_logger_message(VS_LOGLEV_CRITICAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_ERROR(FRMT, ...) vs_logger_message(VS_LOGLEV_ERROR, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_WARNING(FRMT, ...) vs_logger_message(VS_LOGLEV_WARNING, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_NOTICE(FRMT, ...) vs_logger_message(VS_LOGLEV_NOTICE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_TRACE(FRMT, ...) vs_logger_message(VS_LOGLEV_TRACE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_DEBUG(FRMT, ...) vs_logger_message(VS_LOGLEV_DEBUG, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
 // Logging levels
 typedef enum {
-    VS_LOGLEV_UNKNOWN = 0xFF,  // Errorneous logging level
+    VS_LOGLEV_UNKNOWN = 0xFF, // Errorneous logging level
 
     VS_LOGLEV_INFO = 0x00,
     VS_LOGLEV_FATAL = 0x10,
@@ -48,7 +52,7 @@ typedef enum {
 // Initialize logging level
 // - log_level : logging logging level to be initialized
 // - use_heap_buffer : use heap memory to allocate buffer, instead stack memory
-// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if needed
+// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if you are not sure
 // Return true if successful
 bool
 vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size);
@@ -89,6 +93,11 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 // - log_format, ... : printf like string
 // Return true if there were no errors
 bool
-vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *prefix, const void *data_buf, const size_t data_size);
+vs_logger_message_hex(vs_log_level_t level,
+                      const char *cur_filename,
+                      size_t line_num,
+                      const char *prefix,
+                      const void *data_buf,
+                      const size_t data_size);
 
 #endif // AP_SECURITY_SDK_LOGGER_H
