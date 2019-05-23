@@ -46,7 +46,10 @@ add_library(logger
 #
 #   Set additional compiler flags
 #
-if (DEFINED CFLAGS_PLATFORM)
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("No CFLAGS_PLATFORM")
+else()
+    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 target_compile_options(logger
