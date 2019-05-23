@@ -1,6 +1,9 @@
-//
-// Created by Oleksandr Nemchenko on 2019-05-17.
-//
+/*
+ *   Copyright (C) 2015-2019 Virgil Security Inc.
+ *
+ *   Logger library
+ *
+ */
 
 #ifndef AP_SECURITY_SDK_LOGGER_H
 #define AP_SECURITY_SDK_LOGGER_H
@@ -11,6 +14,7 @@
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+// Default buffer size
 #define VS_LOGGER_DEFAULT_BUF_SIZE 256
 
 // Helpers
@@ -48,7 +52,7 @@ typedef enum {
 // Initialize logging level
 // - log_level : logging logging level to be initialized
 // - use_heap_buffer : use heap memory to allocate buffer, instead stack memory
-// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if needed
+// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if you are not sure
 // Return true if successful
 bool
 vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size);

@@ -1,3 +1,10 @@
+/*
+ *   Copyright (C) 2015-2019 Virgil Security Inc.
+ *
+ *   Logger library implementation
+ *
+ */
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,8 +16,8 @@
 #include <logger.h>
 #include <logger_implement.h>
 
-#define ASSERT assert
 #define EOL "\r\n"
+#define VS_ASSERT assert
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static bool _use_heap_buffer = false;
@@ -50,7 +57,7 @@ vs_logger_get_loglev(void) {
 bool
 vs_logger_is_loglev(vs_log_level_t level) {
 
-    ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
+    VS_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
 
     return level <= _log_level;
 }
@@ -80,9 +87,27 @@ _get_level_str(vs_log_level_t log_level) {
         return "DEBUG";
 
     default:
-        ASSERT(false && "Unsupported logging level");
+        VS_ASSERT(false && "Unsupported logging level");
         return "";
     }
+}
+
+// Output current time
+/*********************************************************/
+static bool
+_output_time(void){
+    return true;
+
+#if 0
+    time_t time_tmp;
+    static const size_t TIME_STR_SIZE = 26; // "%Y-%m-%d %H:%M:%S:"
+    char time_buf[TIME_STR_SIZE];
+
+    time(&time_tmp);
+    strftime(time_buf, TIME_STR_SIZE, "%Y-%m-%d %H:%M:%S:", localtime(&time_tmp));
+
+    return vs_logger_implement(time_buf);
+#endif
 }
 
 /******************************************************************************/
@@ -96,7 +121,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     level_str = _get_level_str(level);
 
     // Output time string
-    if (!vs_logger_output_time()) {
+    if (!_output_time()) {
         return false;
     }
 
@@ -108,7 +133,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
         str_size = snprintf(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
     }
 
-    ASSERT(str_size > 0 && str_size <= _max_buf_size);
+    VS_ASSERT(str_size > 0 && str_size <= _max_buf_size);
 
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
@@ -121,7 +146,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     if (snprintf_res < 0) {
-        ASSERT(false);
+        VS_ASSERT(false);
         return false;
     }
 
@@ -149,8 +174,8 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         return true;
     }
 
-    ASSERT(cur_filename);
-    ASSERT(format);
+    VS_ASSERT(cur_filename);
+    VS_ASSERT(format);
 
     if (!_output_preface(level, cur_filename, line_num)) {
         return false;
@@ -164,7 +189,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     va_end(args1);
 
-    ASSERT(str_size > 0);
+    VS_ASSERT(str_size > 0);
 
     if (str_size > _max_buf_size) {
         str_size = _max_buf_size;
@@ -190,7 +215,6 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     if (snprintf_res >= 0 && snprintf_res >= str_size) {
         strcpy(output_str + snprintf_res + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
-
         cutted_str = true;
     } else if (snprintf_res < 0) {
         res = false;
@@ -228,8 +252,8 @@ vs_logger_message_hex(vs_log_level_t level,
     size_t pos;
     bool res;
 
-    ASSERT(prefix);
-    ASSERT(data_buf && data_size);
+    VS_ASSERT(prefix);
+    VS_ASSERT(data_buf && data_size);
 
     if (!vs_logger_is_loglev(level)) {
         return true;

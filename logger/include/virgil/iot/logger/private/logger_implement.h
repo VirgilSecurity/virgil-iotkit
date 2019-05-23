@@ -1,6 +1,9 @@
-//
-// Created by Oleksandr Nemchenko on 2019-05-17.
-//
+/*
+ *   Copyright (C) 2015-2019 Virgil Security Inc.
+ *
+ *   Logger library HAL interface
+ *
+ */
 
 #ifndef AP_SECURITY_SDK_LOGGER_HAL_H
 #define AP_SECURITY_SDK_LOGGER_HAL_H
@@ -10,9 +13,8 @@
  */
 
 // Output ASCIIZ string
+// buf - null terminated ASCII string to be output
+// return true if successful
 bool vs_logger_implement(const char *buf);
-
-// Output current time
-bool vs_logger_output_time(void);
 
 #endif // AP_SECURITY_SDK_LOGGER_HAL_H
