@@ -52,8 +52,15 @@ else()
     message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
+
 target_compile_options(logger
         PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+
+#
+#   Compile definitions
+#
+target_compile_definitions(logger
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>")
 
 #
 #   Common include directories

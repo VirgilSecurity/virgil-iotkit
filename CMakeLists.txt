@@ -74,6 +74,11 @@ file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 # ---------------------------------------------------------------------------
 
 #
+#   Target platform
+#
+option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)
+
+#
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
@@ -87,6 +92,7 @@ option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+
 
 
 # ---------------------------------------------------------------------------

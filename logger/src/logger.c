@@ -109,7 +109,7 @@ _output_time(void) {
 }
 
 /******************************************************************************/
-#if !defined(__i686__) && !defined(__x86_64__)
+#if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
 #endif
@@ -226,7 +226,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     return res && !cutted_str;
 }
-#if !defined(__i686__) && !defined(__x86_64__)
+#if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic pop
 #endif
 /******************************************************************************/
