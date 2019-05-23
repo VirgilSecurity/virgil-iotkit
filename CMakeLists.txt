@@ -137,7 +137,10 @@ endif()
 #   Features
 # ---------------------------------------------------------------------------
 
-target_link_libraries(logger)
+#
+#   Logger
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 
 #
 #   Protocols
