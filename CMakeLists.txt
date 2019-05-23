@@ -137,6 +137,8 @@ endif()
 #   Features
 # ---------------------------------------------------------------------------
 
+target_link_libraries(logger)
+
 #
 #   Protocols
 #
@@ -150,3 +152,4 @@ endif()
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
 endif()
+
