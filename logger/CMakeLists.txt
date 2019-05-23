@@ -43,8 +43,14 @@ add_library(logger
         src/logger.c
         )
 
+#
+#   Set additional compiler flags
+#
+if (DEFINED CFLAGS_PLATFORM)
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
 target_compile_options(logger
-        PRIVATE -Wall -Werror -Wno-multichar)
+        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
 
 #
 #   Common include directories

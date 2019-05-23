@@ -17,18 +17,16 @@
 #include <logger_implement.h>
 
 #define EOL "\r\n"
-#define VS_ASSERT assert
+#define VS_ASSERT(...)
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
-static bool _use_heap_buffer = false;
 static size_t _max_buf_size = 0;
 
 /******************************************************************************/
 bool
-vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size) {
+vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
     vs_logger_set_loglev(log_level);
 
-    _use_heap_buffer = use_heap_buffer;
     _max_buf_size = max_buf_size;
     if (!max_buf_size) {
         return false;
@@ -111,6 +109,10 @@ _output_time(void) {
 }
 
 /******************************************************************************/
+#if !defined(__i686__) && !defined(__x86_64__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
 static bool
 _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
     int str_size;
@@ -164,8 +166,6 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     va_list args1;
     va_list args2;
     int str_size;
-    char *output_str = NULL;
-    size_t stack_buf_size = 0;
     int snprintf_res;
     bool res = true;
     bool cutted_str = false;
@@ -195,26 +195,18 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         str_size = _max_buf_size;
     }
 
-    // Allocate heap or stack buffer
-    if (!_use_heap_buffer) {
-        stack_buf_size = str_size;
-    }
+    // Allocate stack buffer
 
     // TODO : VAL, variable not at the function begin - since C99
-    char stack_buf[stack_buf_size];
-    output_str = stack_buf;
-
-    if (_use_heap_buffer) {
-        output_str = malloc(str_size);
-    }
+    char stack_buf[str_size];
 
     // Make full string
 
     // TODO : vsnprintf - since C99
-    snprintf_res = vsnprintf(output_str, str_size, format, args2);
+    snprintf_res = vsnprintf(stack_buf, str_size, format, args2);
 
     if (snprintf_res >= 0 && snprintf_res >= str_size) {
-        strcpy(output_str + snprintf_res + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
+        strcpy(stack_buf + snprintf_res + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
         cutted_str = true;
     } else if (snprintf_res < 0) {
         res = false;
@@ -224,7 +216,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     // Output string
     if (res) {
-        res &= vs_logger_implement(output_str);
+        res &= vs_logger_implement(stack_buf);
     }
 
     // EOL
@@ -232,13 +224,11 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         res &= vs_logger_implement(EOL);
     }
 
-    if (_use_heap_buffer) {
-        free(output_str);
-    }
-
     return res && !cutted_str;
 }
-
+#if !defined(__i686__) && !defined(__x86_64__)
+#pragma GCC diagnostic pop
+#endif
 /******************************************************************************/
 bool
 vs_logger_message_hex(vs_log_level_t level,
