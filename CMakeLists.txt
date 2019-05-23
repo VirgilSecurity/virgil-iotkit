@@ -121,6 +121,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/tests
         ${CMAKE_CURRENT_SOURCE_DIR}/tools
         ${CMAKE_CURRENT_SOURCE_DIR}/update
+        ${CMAKE_CURRENT_SOURCE_DIR}/logger
 )
 
 
@@ -140,6 +141,7 @@ endif()
 #
 #   Logger
 #
+# TODO: Add Option to disable Logger
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 
 #

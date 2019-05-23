@@ -43,8 +43,6 @@ add_library(logger
         src/logger.c
         )
 
-clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
 target_compile_options(logger
         PRIVATE -Wall -Werror -Wno-multichar)
 
