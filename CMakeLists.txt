@@ -37,9 +37,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 # ---------------------------------------------------------------------------
 #   Enable Golang
 # ---------------------------------------------------------------------------
-include(cmake/golang.cmake)
-include(cmake/flags.cmake)
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+if (NOT GO_DISABLE)
+    include(cmake/golang.cmake)
+    include(cmake/flags.cmake)
+    set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+endif()
 
 # ---------------------------------------------------------------------------
 #   Project
@@ -72,6 +74,11 @@ file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 # ---------------------------------------------------------------------------
 
 #
+#   Target platform
+#
+option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)
+
+#
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
@@ -85,6 +92,7 @@ option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+
 
 
 # ---------------------------------------------------------------------------
@@ -119,6 +127,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/tests
         ${CMAKE_CURRENT_SOURCE_DIR}/tools
         ${CMAKE_CURRENT_SOURCE_DIR}/update
+        ${CMAKE_CURRENT_SOURCE_DIR}/logger
 )
 
 
@@ -126,7 +135,7 @@ clangformat_folder(
 #   Tools
 # ---------------------------------------------------------------------------
 
-if (NOT MCU_BUILD)
+if (NOT GO_DISABLE)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
 endif()
 
@@ -134,6 +143,12 @@ endif()
 # ---------------------------------------------------------------------------
 #   Features
 # ---------------------------------------------------------------------------
+
+#
+#   Logger
+#
+# TODO: Add Option to disable Logger
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 
 #
 #   Protocols
@@ -148,3 +163,4 @@ endif()
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
 endif()
+

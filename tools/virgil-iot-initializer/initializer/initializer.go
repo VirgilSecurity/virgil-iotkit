@@ -193,7 +193,6 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
 	for i := 0; i < sdmpProcessor.DeviceCount; i++ {
 		deviceProcessor := sdmpProcessor.NewDeviceProcessor(i, deviceSigner)
 		if err:= deviceProcessor.Process(); err != nil {
-			fmt.Printf("ERROR: Process\n")
 			return err
 		}
 
@@ -207,24 +206,20 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
 			// Save device info
 			deviceInfo, err := requestBuilder.GetDeviceInfo()
 			if err != nil {
-				fmt.Printf("ERROR: GetDeviceInfo\n")
 				return err
 			}
-			//fmt.Printf("Device info: %s\n", deviceInfo)
+			fmt.Printf("Device info: %s\n", deviceInfo)
 			if err := deviceInfoPersistenceManager.Persist((string)(deviceInfo)); err != nil {
-				fmt.Printf("ERROR: Persist 1\n")
 				return err
 			}
 
 			// Save card request
 			cardRequest, err := requestBuilder.BuildRequest()
 			if err != nil {
-				fmt.Printf("ERROR: BuildRequest\n")
 				return err
 			}
-			//fmt.Println("Card request:", cardRequest)
+			fmt.Println("Card request:", cardRequest)
 			if err := requestsPersistenceManager.Persist(cardRequest); err != nil {
-				fmt.Printf("ERROR: Persist 2\n")
 				return err
 			}
 		}

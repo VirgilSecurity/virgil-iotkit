@@ -382,15 +382,6 @@ _reset_last_result() {
 }
 
 /******************************************************************************/
-// static long long
-// current_timestamp() {
-//    struct timeval te;
-//    gettimeofday(&te, NULL);                                         // get current time
-//    long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate milliseconds
-//    // printf("milliseconds: %lld\n", milliseconds);
-//    return milliseconds;
-//}
-
 int
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
@@ -401,8 +392,6 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 
     VS_ASSERT(_prvs_impl.wait_func);
 
-    //    fprintf(stderr, "[%lld] >>>>>>> A !!! SET wait: %d ms\n", current_timestamp(), (int)wait_ms);
-
     _reset_last_result();
 
     // Send request
@@ -412,8 +401,6 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 
     // Wait request
     _prvs_impl.wait_func(wait_ms);
-
-    //    fprintf(stderr, "[%lld] >>>>>>> C !!! SET: %s\n", current_timestamp(), 0 == _last_res ? "OK" : "ERROR");
 
     return _last_res;
 }

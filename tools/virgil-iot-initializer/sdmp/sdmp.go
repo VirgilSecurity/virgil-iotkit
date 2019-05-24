@@ -46,7 +46,6 @@ import "C"
 import (
     "bytes"
     "crypto/sha256"
-    //"encoding/base64"
     "encoding/binary"
     "fmt"
     "strings"
@@ -87,7 +86,7 @@ type DeviceProcessor struct {
 func (p *Processor) NewDeviceProcessor(i int, deviceSigner common.SignerInterface) *DeviceProcessor {
     device := p.devicesList.elements[i]
 
-    //fmt.Println("Device type:", device.device_type)
+    fmt.Println("Device type:", device.device_type)
     var macParts []string
     for part:=0; part < ETH_ADDR_LEN; part++ {
         hex := fmt.Sprintf("%02x", device.mac_addr.bytes[part])
@@ -113,24 +112,19 @@ func (p *DeviceProcessor) Process() error {
     } else {
         if !p.ProvisioningInfo.CardOnly {
             if err := p.InitDevice(); err != nil {
-                fmt.Printf("ERROR: InitDevice %s\n", err.Error())
                 return err
             }
             if err := p.SetKeys(); err != nil {
-                fmt.Printf("ERROR: SetKeys %s\n", err.Error())
                 return err
             }
             if err := p.SignDevice(); err != nil {
-                fmt.Printf("ERROR: SignDevice %s\n", err.Error())
                 return err
             }
             if err := p.SetTrustList(); err != nil {
-                fmt.Printf("ERROR: SetTrustList %s\n", err.Error())
                 return err
             }
         }
         if err := p.GetProvisionInfo(); err != nil {
-            fmt.Printf("ERROR: GetProvisionInfo %s\n", err.Error())
             return err
         }
     }
@@ -206,7 +200,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer); err != nil {
         return fmt.Errorf("failed to write TrustList footer to buffer")
     }
-    // fmt.Println("Upload TrustList Footer")
+    fmt.Println("Upload TrustList Footer")
     mac := p.deviceInfo.mac_addr
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
@@ -214,12 +208,11 @@ func (p *DeviceProcessor) SetTrustList() error {
                                        &mac,
                                        dataPtr,
                                        C.ulong(len(footerBytes)),
-                                       DEFAULT_TIMEOUT_MS) {
-                                           println("failed to set TrustList footer")
-        //return fmt.Errorf("failed to set TrustList footer")
+                                       DEFAULT_WAIT_TIME_MS* 5) {
+        return fmt.Errorf("failed to set TrustList footer")
     }
 
-    //fmt.Println("OK: Trust List set successfully.")
+    fmt.Println("OK: Trust List set successfully.")
 
     return nil
 }
@@ -246,7 +239,7 @@ func (p *DeviceProcessor) InitDevice() error {
 
 // Calls vs_sdmp_prvs_set
 func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []byte, name string) error {
-    //fmt.Println("Upload", name)
+    fmt.Println("Upload", name)
 
     mac := p.deviceInfo.mac_addr
     dataPtr := (*C.uchar)(unsafe.Pointer(&data[0]))
@@ -326,10 +319,10 @@ func (p *DeviceProcessor) SignDevice() error {
         return err
     }
 
-    //fmt.Println("Signer ID:", signerId)
-    //fmt.Println("Signer public key (full):", base64.StdEncoding.EncodeToString(pubKeyFull))
-    //fmt.Println("Device public key (tiny):", base64.StdEncoding.EncodeToString(p.DevicePublicKeyTiny))
-    //fmt.Println("Signature:", base64.StdEncoding.EncodeToString(signature))
+    fmt.Println("Signer ID:", signerId)
+    fmt.Println("Signer public key (full):", base64.StdEncoding.EncodeToString(pubKeyFull))
+    fmt.Println("Device public key (tiny):", base64.StdEncoding.EncodeToString(p.DevicePublicKeyTiny))
+    fmt.Println("Signature:", base64.StdEncoding.EncodeToString(signature))
 
     signatureStruct := Go_vs_sdmp_prvs_signature_t{
         Id:    signerId,

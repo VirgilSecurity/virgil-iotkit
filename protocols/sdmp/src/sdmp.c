@@ -96,10 +96,6 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
 
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
-
-                //                fprintf(stderr, "      >>>>>>> B !!! SET: %s\n", packet->header.flags &
-                //                VS_SDMP_FLAG_ACK ? "OK" : "ERROR");
-
                 _sdmp_services[i]->response_process(netif,
                                                     packet->header.element_id,
                                                     !!(packet->header.flags & VS_SDMP_FLAG_ACK),
@@ -119,21 +115,11 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
                     // Send response
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
-                    //                    printf("process %c%c%c%c OK\n",
-                    //                           ((char *)&packet->header.element_id)[0],
-                    //                           ((char *)&packet->header.element_id)[1],
-                    //                           ((char *)&packet->header.element_id)[2],
-                    //                           ((char *)&packet->header.element_id)[3]);
                 } else {
                     // Send response with error code
                     // TODO: Fill structure with error code here
                     response_packet->header.flags |= VS_SDMP_FLAG_NACK;
                     response_packet->header.content_size = 0;
-                    printf("process %c%c%c%c ERROR\n",
-                           ((char *)&packet->header.element_id)[0],
-                           ((char *)&packet->header.element_id)[1],
-                           ((char *)&packet->header.element_id)[2],
-                           ((char *)&packet->header.element_id)[3]);
                 }
             }
         }
@@ -167,8 +153,6 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
     size_t copy_bytes;
 
     const vs_sdmp_packet_t *packet = 0;
-
-    //    fprintf(stderr, "> %d\n", (int)data_sz);
 
     while (LEFT_INCOMING) {
 
@@ -220,7 +204,6 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) 
         }
 
         if (packet) {
-            //            fprintf(stderr, "> packet %d\n", (int)packet_sz);
             _process_packet(netif, packet);
             packet = 0;
             packet_buf_filled = 0;
