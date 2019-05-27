@@ -64,12 +64,7 @@ target_compile_options(logger
 #   Config path
 #
 
-if(NOT VIRGIL_IOT_CONFIG_H_DIRECTORY)
-    message("[logger] path to the virgil-iot-sdk-config.h : default")
-    set(VIRGIL_IOT_CONFIG_H_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.." CACHE STRING "Directory with the virgil-iot-sdk configuration file")
-else()
-    message("[logger] path to the virgil-iot-sdk-config.h : ${VIRGIL_IOT_CONFIG_H_DIRECTORY}")
-endif()
+VS_set_config_path("logger" "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 target_compile_definitions(logger
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"

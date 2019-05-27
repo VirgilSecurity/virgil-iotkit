@@ -77,12 +77,16 @@ file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 #   Config path
 #
 
-if(NOT VIRGIL_IOT_CONFIG_H_DIRECTORY)
-    message("[virgil-iot-sdk] path to the virgil-iot-sdk-config.h : default")
-    set(VIRGIL_IOT_CONFIG_H_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "Directory with the virgil-iot-sdk configuration file")
-else()
-    message("[virgil-iot-sdk] path to the virgil-iot-sdk-config.h : ${VIRGIL_IOT_CONFIG_H_DIRECTORY}")
-endif()
+function (set_config_path MODULE DEFAULT_PATH)
+    if(NOT VIRGIL_IOT_CONFIG_H_DIRECTORY)
+        message("[${MODULE}] path to the virgil-iot-sdk-config.h : default")
+        set(VIRGIL_IOT_CONFIG_H_DIRECTORY ${DEFAULT_PATH} CACHE STRING "Directory with the virgil-iot-sdk configuration file")
+    else()
+        message("[${MODULE}] path to the virgil-iot-sdk-config.h : ${DEFAULT_PATH}")
+    endif()
+endfunction()
+
+VS_set_config_path("virgil-iot-sdk" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #
 #   Target platform
