@@ -35,6 +35,13 @@
 #ifndef VIRGIL_IOT_SDK_CONFIG_H
 #define VIRGIL_IOT_SDK_CONFIG_H
 
+/********************
+ **
+ **   General config
+ **
+ ********************
+ */
+
 /*
  * VIRGIL_IOT_CONFIG_H_DIRECTORY
  * Directory containing virgil-iot-sdk-config.h file.
@@ -42,8 +49,15 @@
  * If it is not specified, default one will be used.
  */
 
+/********************
+ **
+ **   Standart Library calls
+ **
+ ********************
+ */
+
 /*
- * VS_IOT_ASSERT(CONDITION)
+ * VS_IOT_ASSERT
  * Enable and setup this macros if you would like to compile assertions
  * CONDITION : condition that must be true
  * MESSAGE : output ASCIIZ-string with arguments to be output in case of false condition
@@ -52,12 +66,81 @@
 #include <assert.h>
 #define VS_IOT_ASSERT(CONDITION, MESSAGE, ...) assert(CONDITION)
 
-/********************
- **
- ** Logger
- **
+/*
+ * VS_IOT_SNPRINTF
+ * Loads the data from the given locations, converts them to character string equivalents and writes the results to
+ * a variety of sinks.
+ * Normally this is snprintf function from standard C library
+ * BUFFER : pointer to a character string to write to.
+ * BUFFER_SIZE : up to BUFFER_SIZE - 1 characters may be written, plus the null terminator.
+ * FORMAT : pointer to a null-terminated character string specifying how to interpret the data.
+ * ... : arguments containing the data to print.
  */
 
+#include <stdio.h>
+#define VS_IOT_SNPRINTF(BUFFER, BUFFER_SIZE, FORMAT, ...) snprintf((BUFFER), (BUFFER_SIZE), (FORMAT), ## __VA_ARGS__ )
+
+/*
+ * VS_IOT_SPRINTF
+ * Loads the data from the given locations, converts them to character string equivalents and writes the results to
+ * a variety of sinks.
+ * Normally this is snprintf function from standard C library
+ * BUFFER : pointer to a character string to write to.
+ * FORMAT : pointer to a null-terminated character string specifying how to interpret the data.
+ * ... : arguments containing the data to print.
+ */
+
+#include <stdio.h>
+#define VS_IOT_SPRINTF(BUFFER, FORMAT, ...) sprintf((BUFFER), (FORMAT), ## __VA_ARGS__ )
+
+/*
+ * VS_IOT_STRCPY
+ * Copies the null-terminated byte string pointed to by SOURCE, including the null terminator, to the character array
+ * whose first element is pointed to by DESTINATION.
+ * Normally this is strcpy function from standard C library
+ * DESTINATION : pointer to the character array to write to.
+ * SOURCE : pointer to the null-terminated byte string to copy from.
+ */
+
+#include <string.h>
+#define VS_IOT_STRCPY(DESTINATION, SOURCE) strcpy((DESTINATION), (SOURCE))
+
+/*
+ * VS_IOT_VSNPRINTF
+ * Loads the data from the locations, defined by vlist, converts them to character string equivalents and writes
+ * the results to a variety of sinks.
+ * Normally this is vsnprintf function from standard C library
+ * BUFFER : pointer to a character string to write to.
+ * BUFFER_SIZE : up to BUFFER_SIZE - 1 characters may be written, plus the null terminator.
+ * FORMAT : pointer to a null-terminated character string specifying how to interpret the data.
+ * VLIST : variable argument list containing the data to print.
+ */
+
+#include <stdio.h>
+#define VS_IOT_VSNPRINTF(BUFFER, BUFFER_SIZE, FORMAT, VLIST) vsnprintf((BUFFER), (BUFFER_SIZE), (FORMAT), (VLIST))
+
+/********************
+ **
+ **   Logger
+ **
+ ********************
+ */
+
+
+/*
+ * VS_IOT_LOGGER_HEX_FORMAT
+ * Output format for each byte.
+ * Used to output data in hex format by VS_IOT_SPRINTF call.
+ */
+
+#define VS_IOT_LOGGER_HEX_FORMAT    "%02X"
+
+/*
+ * VS_IOT_LOGGER_HEX_BUFFER_SIZE
+ * VS_IOT_LOGGER_HEX_FORMAT data buffer size without null terminator
+ */
+
+#define VS_IOT_LOGGER_HEX_BUFFER_SIZE 2
 /*
  * VS_IOT_LOGGER_EOL
  * ASCIIZ string placed at the end of the output string
@@ -65,5 +148,14 @@
  */
 
 #define VS_IOT_LOGGER_EOL "\n"
+
+/*
+ * VS_IOT_LOGGER_OUTPUT_TIME_FUNCTION_IMPLEMENTATION
+ * Function implementation to generate current time directly to the output buffer, i. e. by using
+ * vs_logger_implement call.
+ * Must return true in case of success or false.
+ */
+
+#define VS_IOT_LOGGER_OUTPUT_TIME_FUNCTION_IMPLEMENTATION   return true;
 
 #endif // VIRGIL_IOT_SDK_CONFIG_H
