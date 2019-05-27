@@ -36,14 +36,10 @@
 #define VIRGIL_IOT_SDK_CONFIG_H
 
 /*
- * VS_IOT_CONFIG_H
- * Config file path to substitute
- * This path is #define constant,
- * i. e. -DVS_IOT_CONFIG_H ${CMAKE_BINARY_PATH}/config.h
- */
-
-/*
- * Assertions
+ * VIRGIL_IOT_CONFIG_H_DIRECTORY
+ * Path to the virgil-iot-sdk-config.h file.
+ * Used as target_include_directories( ... PRIVATE $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_H_DIRECTORY}> ).
+ * If it is not specified, default one will be used.
  */
 
 /*
