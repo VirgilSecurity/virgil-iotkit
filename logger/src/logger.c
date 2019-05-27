@@ -5,19 +5,16 @@
  *
  */
 
+#include <virgil-iot-sdk-config.h>
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #include <logger.h>
 #include <logger_implement.h>
-
-#define EOL "\r\n"
-#define VS_ASSERT(...)
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static size_t _max_buf_size = 0;
@@ -55,7 +52,7 @@ vs_logger_get_loglev(void) {
 bool
 vs_logger_is_loglev(vs_log_level_t level) {
 
-    VS_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
+    VS_IOT_ASSERT(_log_level != VS_LOGLEV_UNKNOWN, "Incorrect logging level");
 
     return level <= _log_level;
 }
@@ -85,7 +82,7 @@ _get_level_str(vs_log_level_t log_level) {
         return "DEBUG";
 
     default:
-        VS_ASSERT(false && "Unsupported logging level");
+        VS_IOT_ASSERT(false, "Unsupported logging level");
         return "";
     }
 }
@@ -135,7 +132,8 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
         str_size = snprintf(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
     }
 
-    VS_ASSERT(str_size > 0 && str_size <= _max_buf_size);
+    VS_IOT_ASSERT(str_size > 0, "Incorrect snprintf result : %d", str_size);
+    VS_IOT_ASSERT(str_size <= _max_buf_size, "str_size %ld is bigger maximum size %ld", str_size, _max_buf_size);
 
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
@@ -148,7 +146,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     if (snprintf_res < 0) {
-        VS_ASSERT(false);
+        VS_IOT_ASSERT(false, "Incorrect snprintf result : %d", snprintf_res);
         return false;
     }
 
@@ -174,8 +172,8 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         return true;
     }
 
-    VS_ASSERT(cur_filename);
-    VS_ASSERT(format);
+    VS_IOT_ASSERT(cur_filename, "filename is not specified");
+    VS_IOT_ASSERT(format, "No string to output");
 
     if (!_output_preface(level, cur_filename, line_num)) {
         return false;
@@ -189,7 +187,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     va_end(args1);
 
-    VS_ASSERT(str_size > 0);
+    VS_IOT_ASSERT(str_size > 0, "Incorrect vsnprintf result : %d", str_size);
 
     if (str_size > _max_buf_size) {
         str_size = _max_buf_size;
@@ -221,7 +219,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     // EOL
     if (res) {
-        res &= vs_logger_implement(EOL);
+        res &= vs_logger_implement(VS_IOT_LOGGER_EOL);
     }
 
     return res && !cutted_str;
@@ -242,8 +240,9 @@ vs_logger_message_hex(vs_log_level_t level,
     size_t pos;
     bool res;
 
-    VS_ASSERT(prefix);
-    VS_ASSERT(data_buf && data_size);
+    VS_IOT_ASSERT(prefix, "prefix is NULL");
+    VS_IOT_ASSERT(data_buf, "data is NULL");
+    VS_IOT_ASSERT(data_size, "data_size is zero");
 
     if (!vs_logger_is_loglev(level)) {
         return true;
@@ -264,7 +263,7 @@ vs_logger_message_hex(vs_log_level_t level,
     }
 
     if (res) {
-        res = vs_logger_implement(EOL);
+        res = vs_logger_implement(VS_IOT_LOGGER_EOL);
     }
 
     return res;

@@ -74,6 +74,17 @@ file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 # ---------------------------------------------------------------------------
 
 #
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_H_DIRECTORY)
+    message("[virgil-iot-sdk] path to the virgil-iot-sdk-config.h : default")
+    set(VIRGIL_IOT_CONFIG_H_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "Directory with the virgil-iot-sdk configuration file")
+else()
+    message("[virgil-iot-sdk] path to the virgil-iot-sdk-config.h : ${VIRGIL_IOT_CONFIG_H_DIRECTORY}")
+endif()
+
+#
 #   Target platform
 #
 option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)

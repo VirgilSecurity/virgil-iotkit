@@ -59,8 +59,21 @@ target_compile_options(logger
 #
 #   Compile definitions
 #
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_H_DIRECTORY)
+    message("[logger] path to the virgil-iot-sdk-config.h : default")
+    set(VIRGIL_IOT_CONFIG_H_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.." CACHE STRING "Directory with the virgil-iot-sdk configuration file")
+else()
+    message("[logger] path to the virgil-iot-sdk-config.h : ${VIRGIL_IOT_CONFIG_H_DIRECTORY}")
+endif()
+
 target_compile_definitions(logger
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>")
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+    )
 
 #
 #   Common include directories
@@ -69,6 +82,7 @@ target_include_directories(logger
         PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_H_DIRECTORY}>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
