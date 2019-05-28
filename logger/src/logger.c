@@ -236,12 +236,10 @@ vs_logger_message_hex(vs_log_level_t level,
 
     res = VS_IOT_LOGGER_OUTPUT(prefix);
 
-    if (res) {
-        cur_byte = (unsigned char *)data_buf;
-        for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
-            VS_IOT_SPRINTF(buf, VS_IOT_LOGGER_HEX_FORMAT, *cur_byte);
-            res = VS_IOT_LOGGER_OUTPUT(buf);
-        }
+    cur_byte = (unsigned char *)data_buf;
+    for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
+        VS_IOT_SPRINTF(buf, VS_IOT_LOGGER_HEX_FORMAT, *cur_byte);
+        res = VS_IOT_LOGGER_OUTPUT(buf);
     }
 
     if (res) {
