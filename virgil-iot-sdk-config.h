@@ -61,6 +61,7 @@
  * Enable and setup this macros if you would like to compile assertions
  * CONDITION : condition that must be true
  * MESSAGE : output ASCIIZ-string with arguments to be output in case of false condition
+ * ... : arguments containing the data to output for "assert failed" message.
  */
 
 #include <assert.h>
