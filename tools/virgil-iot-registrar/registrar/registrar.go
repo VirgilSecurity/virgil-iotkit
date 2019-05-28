@@ -151,7 +151,7 @@ func (r *cardsRegistrar) ProcessRequests() error {
 	}
 
 	var cardsProcessingErrors []string // holds errors occurred during cards processing
-    var processError error
+	var processError error
 
 	for requestNumber := 1; ; requestNumber++ {
 		// Reset previous error
