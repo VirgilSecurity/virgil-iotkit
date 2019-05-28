@@ -11,7 +11,6 @@
 #include <stdbool.h>
 
 #include <logger.h>
-#include <logger_implement.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static size_t _max_buf_size = 0;
@@ -84,13 +83,6 @@ _get_level_str(vs_log_level_t log_level) {
     }
 }
 
-// Output current time
-/*********************************************************/
-static bool
-_output_time(void) {
-    VS_IOT_LOGGER_OUTPUT_TIME_FUNCTION_IMPLEMENTATION
-}
-
 /******************************************************************************/
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
@@ -108,7 +100,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     level_str = _get_level_str(level);
 
     // Output time string
-    if (!_output_time()) {
+    if (!VS_IOT_LOGGER_OUTPUT_TIME) {
         return false;
     }
 
@@ -139,7 +131,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     // Output string
-    res = vs_logger_implement(stack_buf);
+    res = VS_IOT_LOGGER_OUTPUT(stack_buf);
 
     return res;
 }
@@ -202,12 +194,12 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     // Output string
     if (res) {
-        res &= vs_logger_implement(stack_buf);
+        res &= VS_IOT_LOGGER_OUTPUT(stack_buf);
     }
 
     // EOL
     if (res) {
-        res &= vs_logger_implement(VS_IOT_LOGGER_EOL);
+        res &= VS_IOT_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
     }
 
     return res && !cutted_str;
@@ -242,18 +234,18 @@ vs_logger_message_hex(vs_log_level_t level,
         return false;
     }
 
-    res = vs_logger_implement(prefix);
+    res = VS_IOT_LOGGER_OUTPUT(prefix);
 
     if (res) {
         cur_byte = (unsigned char *)data_buf;
         for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
             VS_IOT_SPRINTF(buf, VS_IOT_LOGGER_HEX_FORMAT, *cur_byte);
-            res = vs_logger_implement(buf);
+            res = VS_IOT_LOGGER_OUTPUT(buf);
         }
     }
 
     if (res) {
-        res = vs_logger_implement(VS_IOT_LOGGER_EOL);
+        res = VS_IOT_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
     }
 
     return res;

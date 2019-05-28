@@ -51,7 +51,7 @@
 
 /********************
  **
- **   Standart Library calls
+ **   Standard Library calls
  **
  ********************
  */
@@ -126,6 +126,19 @@
  ********************
  */
 
+/*
+ * VS_IOT_LOGGER_OUTPUT
+ * Sends string to the output.
+ * Function call as described below assumed :
+ *   bool vs_logger_implement(const char *buf);
+ * Receives pointer to the ASCIIZ string.
+ * Returns true in case of success or false in any error occur.
+ */
+
+#include <stdbool.h>
+bool vs_logger_implement(const char *buf);
+
+#define VS_IOT_LOGGER_OUTPUT(STRING)    vs_logger_implement(STRING)
 
 /*
  * VS_IOT_LOGGER_HEX_FORMAT
@@ -141,6 +154,7 @@
  */
 
 #define VS_IOT_LOGGER_HEX_BUFFER_SIZE 2
+
 /*
  * VS_IOT_LOGGER_EOL
  * ASCIIZ string placed at the end of the output string
@@ -150,12 +164,12 @@
 #define VS_IOT_LOGGER_EOL "\n"
 
 /*
- * VS_IOT_LOGGER_OUTPUT_TIME_FUNCTION_IMPLEMENTATION
- * Function implementation to generate current time directly to the output buffer, i. e. by using
+ * VS_IOT_LOGGER_OUTPUT_TIME
+ * Function call to generate current time directly to the output buffer, i. e. by using
  * vs_logger_implement call.
- * Must return true in case of success or false.
+ * Must return true in case of success or false if any error occurs.
  */
 
-#define VS_IOT_LOGGER_OUTPUT_TIME_FUNCTION_IMPLEMENTATION   return true;
+#define VS_IOT_LOGGER_OUTPUT_TIME   true
 
 #endif // VIRGIL_IOT_SDK_CONFIG_H

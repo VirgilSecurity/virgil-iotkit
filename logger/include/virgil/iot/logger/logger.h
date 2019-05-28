@@ -53,22 +53,26 @@ typedef enum {
 // - log_level : logging logging level to be initialized
 // - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if you are not sure
 // Return true if successful
+
 bool
 vs_logger_init(vs_log_level_t log_level, size_t max_buf_size);
 
 // Set current logging level
 // - new_level : new logging level to be initialized
 // Return previous logging level
+
 vs_log_level_t
 vs_logger_set_loglev(vs_log_level_t new_level);
 
 // Get current logging level
 // Return VS_LOGLEV_UNKNOWN if any error
+
 vs_log_level_t
 vs_logger_get_loglev(void);
 
 // Check that specified logging level is enabled
 // Return true if specified logging level is enabled and there are now any error
+
 bool
 vs_logger_is_loglev(vs_log_level_t level);
 
@@ -79,6 +83,7 @@ vs_logger_is_loglev(vs_log_level_t level);
 // - log_format, ... : printf like string
 // Return true if there were no errors and string has not been cut
 // You can pass cur_filename = NULL and line_num = 0 to make output shorter
+
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *log_format, ...);
 
@@ -91,6 +96,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 // - date_size : data sequence size
 // - log_format, ... : printf like string
 // Return true if there were no errors
+
 bool
 vs_logger_message_hex(vs_log_level_t level,
                       const char *cur_filename,
