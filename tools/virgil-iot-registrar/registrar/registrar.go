@@ -41,8 +41,10 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"gopkg.in/virgil.v5/cryptoapi"
@@ -148,22 +150,40 @@ func (r *cardsRegistrar) ProcessRequests() error {
 		return err
 	}
 
+	var cardsProcessingErrors []string // holds errors occurred during cards processing
+    var processError error
+
 	for requestNumber := 1; ; requestNumber++ {
+		// Reset previous error
+		processError = nil
+
+		// Get and decrypt request from file
 		decryptedRequest, err := getRequest()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
-			return err
+			processError = err
+		} else {
+			// Request is decrypted, now try to register card
+			fmt.Println("\nProcessing request number", requestNumber)
+			fmt.Println("Input: ", decryptedRequest)
+			processError = r.registerCard(decryptedRequest)
 		}
-		fmt.Println("\nProcessing request number", requestNumber)
-		fmt.Println("Input: ", decryptedRequest)
-		if err := r.registerCard(decryptedRequest); err != nil {
-			return err
+
+		if processError != nil {
+			errorText := fmt.Sprintf(
+				"%s line#%d: %s", filepath.Base(r.dataFile), requestNumber - 1, processError.Error())
+			log.Println(errorText)
+			cardsProcessingErrors = append(cardsProcessingErrors, errorText)
 		}
 	}
-	fmt.Println("OK: card requests processing done successfully")
 
+	if len(cardsProcessingErrors) > 0 {
+		log.Println("FAILED: Errors occurred during cards requests processing")
+		return fmt.Errorf(strings.Join(cardsProcessingErrors, "\n"))
+	}
+	fmt.Println("OK: cards requests processing done successfully")
 	return nil
 }
 
