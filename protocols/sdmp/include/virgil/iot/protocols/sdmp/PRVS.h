@@ -103,8 +103,8 @@ typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_pubkey_t *asav_response);
 typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
-typedef int (*vs_sdmp_prvs_stop_wait_t)(void);
-typedef int (*vs_sdmp_prvs_wait_t)(size_t wait_ms);
+typedef int (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
+typedef int (*vs_sdmp_prvs_wait_t)(size_t wait_ms, int *condition, int idle);
 typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data,
                                    size_t data_sz,
                                    uint8_t *signature,

@@ -46,6 +46,7 @@ import "C"
 import (
     "bytes"
     "crypto/sha256"
+    "encoding/base64"
     "encoding/binary"
     "fmt"
     "strings"
@@ -56,7 +57,7 @@ import (
 
 
 const (
-    DEFAULT_TIMEOUT_MS   = 2000
+    DEFAULT_TIMEOUT_MS   = 3000
     ETH_ADDR_LEN         = int(C.ETH_ADDR_LEN)
     PUBKEY_MAX_SZ        = int(C.PUBKEY_MAX_SZ)
 )
@@ -208,7 +209,7 @@ func (p *DeviceProcessor) SetTrustList() error {
                                        &mac,
                                        dataPtr,
                                        C.ulong(len(footerBytes)),
-                                       DEFAULT_WAIT_TIME_MS* 5) {
+                                       DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set TrustList footer")
     }
 

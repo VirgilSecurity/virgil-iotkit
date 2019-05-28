@@ -50,9 +50,13 @@ static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;
 // External functions for access to upper level implementations
 static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 
+#define RES_UNKNOWN (-2)
+#define RES_NEGATIVE (-1)
+#define RES_OK (0)
+
 // Last result
 #define PRVS_BUF_SZ (1024)
-static volatile int _last_res = -1;
+static int _last_res = RES_UNKNOWN;
 static size_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
@@ -281,14 +285,12 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
         return _prvs_dnid_process_response(netif, response, response_sz);
 
     default: {
-        _last_res = is_ack ? 0 : -1;
-
         if (response_sz && response_sz < PRVS_BUF_SZ) {
             _last_data_sz = response_sz;
             memcpy(_last_data, response, response_sz);
         }
 
-        _prvs_impl.stop_wait_func();
+        _prvs_impl.stop_wait_func(&_last_res, is_ack ? RES_OK : RES_NEGATIVE);
 
         return 0;
     }
@@ -377,7 +379,7 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif,
 /******************************************************************************/
 static void
 _reset_last_result() {
-    _last_res = -1;
+    _last_res = RES_UNKNOWN;
     _last_data_sz = 0;
 }
 
@@ -400,7 +402,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms);
+    _prvs_impl.wait_func(wait_ms, &_last_res, RES_UNKNOWN);
 
     return _last_res;
 }
@@ -425,7 +427,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms);
+    _prvs_impl.wait_func(wait_ms, &_last_res, RES_UNKNOWN);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
@@ -470,7 +472,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     }
 
     // Wait request
-    _prvs_impl.wait_func(wait_ms);
+    _prvs_impl.wait_func(wait_ms, &_last_res, RES_UNKNOWN);
 
     // Pass data
     if (0 == _last_res && _last_data_sz <= buf_sz) {
