@@ -59,8 +59,20 @@ target_compile_options(logger
 #
 #   Compile definitions
 #
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[logger] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[logger] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
 target_compile_definitions(logger
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>")
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+    )
 
 #
 #   Common include directories
@@ -69,6 +81,7 @@ target_include_directories(logger
         PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
