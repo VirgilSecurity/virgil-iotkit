@@ -49,7 +49,7 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 static int
 vs_prvs_stop_wait_func(int *condition, int expect) {
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
-        // fprintf(stderr, "pthread_mutex_lock 1 %s %d\n", strerror(errno), errno);
+        fprintf(stderr, "pthread_mutex_lock 1 %s %d\n", strerror(errno), errno);
     }
 
     *condition = expect;
@@ -96,10 +96,7 @@ vs_prvs_wait_func(size_t wait_ms, int *condition, int idle) {
     }
 
     do {
-        if (0 != pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait)) {
-            fprintf(stderr, "pthread_cond_timedwait %s condition = %d\n", strerror(errno), *condition);
-        }
-
+        pthread_cond_timedwait(&_wait_cond, &_wait_mutex, &time_to_wait);
         clock_gettime(CLOCK_REALTIME, &ts_now);
     } while (*condition == idle && !_is_greater_timespec(ts_now, time_to_wait));
 
