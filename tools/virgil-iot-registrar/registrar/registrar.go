@@ -41,8 +41,10 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"gopkg.in/virgil.v5/cryptoapi"
@@ -62,6 +64,10 @@ type cardsRegistrar struct {
 	filePublicSenderKey  cryptoapi.PublicKey   // public key of file sender to verify signature
 	iotPrivateKey        cryptoapi.PrivateKey  // private key for adding IoT Registrar signature to card request
 	cardService          *cardsServiceInfo
+	failedRequestsFile   string
+
+	processingErrors     []string
+	failedRequests       []string
 }
 
 type cardsServiceInfo struct {
@@ -81,6 +87,10 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 		return nil, cli.Exit("Data file does't specified.", 1)
 	}
 	registrar.dataFile = filepath.Clean(param)
+
+	// file for requests which failed to be registered
+	registrar.failedRequestsFile = filepath.Join(filepath.Dir(registrar.dataFile), "card_requests_failed.txt")
+
 	// file_key
 	if param = context.String("file_key"); param == "" {
 		return nil, cli.Exit("Private key for file decryption doesn't specified.", 1)
@@ -149,25 +159,58 @@ func (r *cardsRegistrar) ProcessRequests() error {
 	}
 
 	for requestNumber := 1; ; requestNumber++ {
-		decryptedRequest, err := getRequest()
+		lineNumber := requestNumber - 1
+
+		// Get encrypted request line from file
+		encryptedRequest, err := getRequest()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
-			return err
+			return err // failed to read line from file - exit immediately
 		}
+
+		// Decrypt then verify request
 		fmt.Println("\nProcessing request number", requestNumber)
+		decryptedRequest, err := r.decryptThenVerifyRequest(encryptedRequest)
+		if err != nil {
+			r.processError(err, lineNumber)
+			r.failedRequests = append(r.failedRequests, encryptedRequest)
+			continue
+		}
 		fmt.Println("Input: ", decryptedRequest)
+
+		// Register card
 		if err := r.registerCard(decryptedRequest); err != nil {
-			return err
+			r.processError(err, lineNumber)
+			r.failedRequests = append(r.failedRequests, encryptedRequest)
+			continue
 		}
 	}
-	fmt.Println("OK: card requests processing done successfully")
 
+	// Process errors
+	if len(r.processingErrors) > 0 {
+		log.Println("FAILED: Errors occurred during cards requests processing")
+		if err := r.saveFailedRequests(); err != nil {
+			log.Println("Failed to save failed requests to file")
+		} else {
+			log.Println("Failed requests have been saved to file:", r.failedRequestsFile)
+		}
+		return fmt.Errorf(strings.Join(r.processingErrors, "\n"))
+	}
+	fmt.Println("OK: cards requests processing done successfully")
 	return nil
 }
 
-// get and decrypt each card request from file line by line
+// log error to stderr and save it`s text for further usage
+func (r *cardsRegistrar) processError(err error, line int) {
+	errorText := fmt.Sprintf(
+		"%s line#%d: %s", filepath.Base(r.dataFile), line, err.Error())
+	log.Println(errorText)
+	r.processingErrors = append(r.processingErrors, errorText)
+}
+
+// get each card request from file line by line
 func (r *cardsRegistrar) requestProvider(f *os.File) (func() (string, error), error) {
 	reader := bufio.NewReader(f)
 
@@ -177,16 +220,20 @@ func (r *cardsRegistrar) requestProvider(f *os.File) (func() (string, error), er
 		if err != nil {
 			return "", err
 		}
-		data, err := base64.StdEncoding.DecodeString(line)
-		if err != nil {
-			return "", fmt.Errorf("b64 decode error: %s, line: %s", err, line)
-		}
-		decryptedData, err := crypto.DecryptThenVerify(data, r.filePrivateKey, r.filePublicSenderKey)
-		if err != nil {
-			return "", fmt.Errorf("DecryptThenVerify error: %s", err)
-		}
-		return string(decryptedData), nil
+		return line, nil
 	}, nil
+}
+
+func (r *cardsRegistrar) decryptThenVerifyRequest(request string) (string, error) {
+	data, err := base64.StdEncoding.DecodeString(request)
+	if err != nil {
+		return "", fmt.Errorf("b64 decode error: %s, line: %s", err, request)
+	}
+	decryptedData, err := crypto.DecryptThenVerify(data, r.filePrivateKey, r.filePublicSenderKey)
+	if err != nil {
+		return "", fmt.Errorf("DecryptThenVerify error: %s", err)
+	}
+	return string(decryptedData), nil
 }
 
 func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
@@ -239,6 +286,24 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 	}
 	fmt.Printf("Card registered. identity: %s, createdAt: %d, version: %s\n",
 		rawCardResponse.Identity, rawCardResponse.CreatedAt, rawCardResponse.Version)
+
+	return nil
+}
+
+func (r *cardsRegistrar) saveFailedRequests() error {
+	// Create file
+	var file, err = os.Create(r.failedRequestsFile)
+	if err != nil {
+		return fmt.Errorf("failed to create file for failed requests: %v", err)
+	}
+	defer file.Close()
+
+	// Write failed requests (encrypted) to file
+	for _, request := range r.failedRequests {
+		if _, err := fmt.Fprint(file, request); err != nil {
+			return fmt.Errorf("failed to write failed request to file: %v", err)
+		}
+	}
 
 	return nil
 }
