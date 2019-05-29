@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#include <stdlib-config.h>
+//#include <logger-config.h>
+
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 // Default buffer size

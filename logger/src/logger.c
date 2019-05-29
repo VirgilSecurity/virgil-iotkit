@@ -5,12 +5,14 @@
  *
  */
 
-#include <virgil-iot-sdk-config.h>
+#include <stdlib-config.h>
+#include <logger-config.h>
 
 #include <stdarg.h>
 #include <stdbool.h>
 
 #include <logger.h>
+#include <logger_hal.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static size_t _max_buf_size = 0;
@@ -48,7 +50,7 @@ vs_logger_get_loglev(void) {
 bool
 vs_logger_is_loglev(vs_log_level_t level) {
 
-    VS_IOT_ASSERT(_log_level != VS_LOGLEV_UNKNOWN, "Incorrect logging level");
+    VS_IOT_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
 
     return level <= _log_level;
 }
@@ -78,7 +80,7 @@ _get_level_str(vs_log_level_t log_level) {
         return "DEBUG";
 
     default:
-        VS_IOT_ASSERT(false, "Unsupported logging level");
+        VS_IOT_ASSERT(0 && "Unsupported logging level");
         return "";
     }
 }
@@ -100,9 +102,11 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     level_str = _get_level_str(level);
 
     // Output time string
-    if (!VS_IOT_LOGGER_OUTPUT_TIME) {
+#if VS_IOT_LOGGER_OUTPUT_TIME
+    if (!vs_logger_current_time_hal()) {
         return false;
     }
+#endif // VS_IOT_LOGGER_OUTPUT_TIME
 
     // Calculate preface string size
     // TODO : snprintf - since C99
@@ -112,8 +116,8 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
         str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
     }
 
-    VS_IOT_ASSERT(str_size > 0, "Incorrect snprintf result : %d", str_size);
-    VS_IOT_ASSERT(str_size <= _max_buf_size, "str_size %ld is bigger maximum size %ld", str_size, _max_buf_size);
+    VS_IOT_ASSERT(str_size > 0);
+    VS_IOT_ASSERT(str_size <= _max_buf_size);
 
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
@@ -126,12 +130,12 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     if (snprintf_res < 0) {
-        VS_IOT_ASSERT(false, "Incorrect snprintf result : %d", snprintf_res);
+        VS_IOT_ASSERT(0 && "snprintf call error");
         return false;
     }
 
     // Output string
-    res = VS_IOT_LOGGER_OUTPUT(stack_buf);
+    res = vs_logger_output_hal(stack_buf);
 
     return res;
 }
@@ -152,8 +156,8 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         return true;
     }
 
-    VS_IOT_ASSERT(cur_filename, "filename is not specified");
-    VS_IOT_ASSERT(format, "No string to output");
+    VS_IOT_ASSERT(cur_filename);
+    VS_IOT_ASSERT(format);
 
     if (!_output_preface(level, cur_filename, line_num)) {
         return false;
@@ -167,7 +171,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     va_end(args1);
 
-    VS_IOT_ASSERT(str_size > 0, "Incorrect vsnprintf result : %d", str_size);
+    VS_IOT_ASSERT(str_size > 0);
 
     if (str_size > _max_buf_size) {
         str_size = _max_buf_size;
@@ -194,12 +198,12 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     // Output string
     if (res) {
-        res &= VS_IOT_LOGGER_OUTPUT(stack_buf);
+        res &= vs_logger_output_hal(stack_buf);
     }
 
     // EOL
     if (res) {
-        res &= VS_IOT_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
+        res &= vs_logger_output_hal(VS_IOT_LOGGER_EOL);
     }
 
     return res && !cutted_str;
@@ -217,14 +221,15 @@ vs_logger_message_hex(vs_log_level_t level,
                       const char *prefix,
                       const void *data_buf,
                       const size_t data_size) {
-    char buf[VS_IOT_LOGGER_HEX_BUFFER_SIZE + 1];
+    static const char *HEX_FORMAT = "%02X";
+    char buf[3];  // HEX_FORMAT output
     unsigned char *cur_byte;
     size_t pos;
     bool res;
 
-    VS_IOT_ASSERT(prefix, "prefix is NULL");
-    VS_IOT_ASSERT(data_buf, "data is NULL");
-    VS_IOT_ASSERT(data_size, "data_size is zero");
+    VS_IOT_ASSERT(prefix);
+    VS_IOT_ASSERT(data_buf);
+    VS_IOT_ASSERT(data_size);
 
     if (!vs_logger_is_loglev(level)) {
         return true;
@@ -234,16 +239,16 @@ vs_logger_message_hex(vs_log_level_t level,
         return false;
     }
 
-    res = VS_IOT_LOGGER_OUTPUT(prefix);
+    res = vs_logger_output_hal(prefix);
 
     cur_byte = (unsigned char *)data_buf;
     for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
-        VS_IOT_SPRINTF(buf, VS_IOT_LOGGER_HEX_FORMAT, *cur_byte);
-        res = VS_IOT_LOGGER_OUTPUT(buf);
+        VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte);
+        res = vs_logger_output_hal(buf);
     }
 
     if (res) {
-        res = VS_IOT_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
+        res = vs_logger_output_hal(VS_IOT_LOGGER_EOL);
     }
 
     return res;
