@@ -291,14 +291,6 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 }
 
 func (r *cardsRegistrar) saveFailedRequests() error {
-	// Remove previous file if exists
-	var _, stat = os.Stat(r.failedRequestsFile)
-	if os.IsExist(stat) {
-		if err := os.Remove(r.failedRequestsFile); err != nil {
-			return fmt.Errorf("failed to remove previous file with failed requests: %v", err)
-		}
-	}
-
 	// Create file
 	var file, err = os.Create(r.failedRequestsFile)
 	if err != nil {
