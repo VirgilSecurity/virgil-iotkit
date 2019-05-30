@@ -36,32 +36,54 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(logger VERSION 0.1.0 LANGUAGES C)
 
-set(LOGGER_LIB logger)
-
 #
-#   Source code
+#   Logger library
 #
-set(LOGGER_SRC
+add_library(logger
         src/logger.c
         )
 
 #
-#   SecBox library
+#   Set additional compiler flags
 #
-add_library(${LOGGER_LIB}
-        ${LOGGER_SRC}
-        )
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("No CFLAGS_PLATFORM")
+else()
+    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(logger
+        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
 
 #
-#   -Wall -Werror
+#   Compile definitions
 #
-set_target_properties(${LOGGER_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[logger] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[logger] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+target_compile_definitions(logger
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+    )
 
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/logger
+target_include_directories(logger
         PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         )

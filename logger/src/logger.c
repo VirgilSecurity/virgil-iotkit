@@ -1,36 +1,65 @@
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#include <stdlib-config.h>
+#include <logger-config.h>
+
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <assert.h>
 
 #include <logger.h>
-#include <private/logger_implement.h>
-
-#define ASSERT assert
+#include <logger_hal.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
-static bool _use_heap_buffer = false;
 static size_t _max_buf_size = 0;
 
 /******************************************************************************/
 bool
-vs_logger_init(vs_log_level_t log_level, bool use_heap_buffer, size_t max_buf_size){
+vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
     vs_logger_set_loglev(log_level);
 
-    _use_heap_buffer = use_heap_buffer;
     _max_buf_size = max_buf_size;
-    if(!max_buf_size)
+    if (!max_buf_size) {
         return false;
+    }
 
     return true;
 }
 
 /******************************************************************************/
 vs_log_level_t
-vs_logger_set_loglev(vs_log_level_t new_level){
+vs_logger_set_loglev(vs_log_level_t new_level) {
     vs_log_level_t prev_level = _log_level;
 
     _log_level = new_level;
@@ -40,166 +69,214 @@ vs_logger_set_loglev(vs_log_level_t new_level){
 
 /******************************************************************************/
 vs_log_level_t
-vs_logger_get_loglev(void){
+vs_logger_get_loglev(void) {
     return _log_level;
 }
 
 /******************************************************************************/
 bool
-vs_logger_is_loglev(vs_log_level_t level){
+vs_logger_is_loglev(vs_log_level_t level) {
 
-    ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
+    VS_IOT_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
 
     return level <= _log_level;
 }
 
 /******************************************************************************/
 static const char *
-_get_level_str(vs_log_level_t log_level){
+_get_level_str(vs_log_level_t log_level) {
 
-    switch(log_level){
-    case VS_LOGLEV_INFO : return "INFO";
-    case VS_LOGLEV_FATAL : return "FATAL";
-    case VS_LOGLEV_ALERT : return "ALERT";
-    case VS_LOGLEV_CRITICAL : return "CRITICAL";
-    case VS_LOGLEV_ERROR : return "ERROR";
-    case VS_LOGLEV_WARNING : return "WARNING";
-    case VS_LOGLEV_NOTICE : return "NOTICE";
-    case VS_LOGLEV_TRACE : return "TRACE";
-    case VS_LOGLEV_DEBUG : return "DEBUG";
+    switch (log_level) {
+    case VS_LOGLEV_INFO:
+        return "INFO";
+    case VS_LOGLEV_FATAL:
+        return "FATAL";
+    case VS_LOGLEV_ALERT:
+        return "ALERT";
+    case VS_LOGLEV_CRITICAL:
+        return "CRITICAL";
+    case VS_LOGLEV_ERROR:
+        return "ERROR";
+    case VS_LOGLEV_WARNING:
+        return "WARNING";
+    case VS_LOGLEV_NOTICE:
+        return "NOTICE";
+    case VS_LOGLEV_TRACE:
+        return "TRACE";
+    case VS_LOGLEV_DEBUG:
+        return "DEBUG";
 
-    default : ASSERT(false && "Unsupported logging level"); return "";
+    default:
+        VS_IOT_ASSERT(0 && "Unsupported logging level");
+        return "";
     }
 }
 
 /******************************************************************************/
-bool
-vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...){
-    time_t time_tmp;
-    static const size_t TIME_STR_SIZE = 26;
-    char time_buf[TIME_STR_SIZE];
-    static const char *CUTTED_STR = "...\n";
-    static const size_t CUTTED_STR_SIZE = 4;
-    va_list args1;
-    va_list args2;
+
+#if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
+
+static bool
+_output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
     int str_size;
     const char *level_str = NULL;
-    char *output_str = NULL;
-    char *cur_pos = NULL;
-    size_t stack_buf_size = 0;
     int snprintf_res;
     bool res = false;
-    bool cutted_str = false;
-
-    if(!vs_logger_is_loglev(level))
-        return true;
-
-    ASSERT(cur_filename);
-    ASSERT(format);
 
     level_str = _get_level_str(level);
 
-    // Make time string
-    time(&time_tmp);
-    strftime(time_buf, TIME_STR_SIZE, "%Y-%m-%d %H:%M:%S:", localtime(&time_tmp));
+    // Output time string
+#if VS_IOT_LOGGER_OUTPUT_TIME
+    if (!vs_logger_current_time_hal()) {
+        return false;
+    }
+#endif // VS_IOT_LOGGER_OUTPUT_TIME
 
-    // Calculate full string size
+    // Calculate preface string size
+    // TODO : snprintf - since C99
+    if (!cur_filename || !line_num) {
+        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] ", level_str) + 1;
+    } else {
+        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
+    }
+
+    VS_IOT_ASSERT(str_size > 0);
+    VS_IOT_ASSERT(str_size <= _max_buf_size);
+
+    // TODO : VAL, variable not at the function begin - since C99
+    char stack_buf[str_size];
+
+    // TODO : snprintf - since C99
+    if (!cur_filename || !line_num) {
+        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, " [%s] ", level_str);
+    } else {
+        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num);
+    }
+
+    if (snprintf_res < 0) {
+        VS_IOT_ASSERT(0 && "snprintf call error");
+        return false;
+    }
+
+    // Output string
+    res = vs_logger_output_hal(stack_buf);
+
+    return res;
+}
+
+/******************************************************************************/
+bool
+vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
+    static const char *CUTTED_STR = "...";
+    static const size_t CUTTED_STR_SIZE = 3;
+    va_list args1;
+    va_list args2;
+    int str_size;
+    int snprintf_res;
+    bool res = true;
+    bool cutted_str = false;
+
+    if (!vs_logger_is_loglev(level)) {
+        return true;
+    }
+
+    VS_IOT_ASSERT(cur_filename);
+    VS_IOT_ASSERT(format);
+
+    if (!_output_preface(level, cur_filename, line_num)) {
+        return false;
+    }
+
+    // Calculate string size
     va_start(args1, format);
     va_copy(args2, args1);
 
-    str_size = vsnprintf(NULL, 0, format, args1) /* format ... */;
+    str_size = VS_IOT_VSNPRINTF(NULL, 0, format, args1) /* format ... */ + 1;
 
     va_end(args1);
 
-    ASSERT(str_size > 0);
+    VS_IOT_ASSERT(str_size > 0);
 
-    str_size += TIME_STR_SIZE /* cur_time_buf */ + 3+strlen(level_str) /* " [level_str]" */ +
-                3+strlen(cur_filename) + /*" [cur_filename:" */ + 8 /* "line_num] " */ + 2 /* "\n" */;
-
-    if(str_size > _max_buf_size)
+    if (str_size > _max_buf_size) {
         str_size = _max_buf_size;
-
-    // Allocate heap or stack vuffer
-    if(!_use_heap_buffer) {
-        stack_buf_size = str_size;
     }
 
-    char stack_buf[stack_buf_size];
-    output_str = stack_buf;
+    // Allocate stack buffer
 
-    if(_use_heap_buffer){
-        output_str = malloc(str_size);
-    }
+    // TODO : VAL, variable not at the function begin - since C99
+    char stack_buf[str_size];
 
     // Make full string
-    cur_pos = output_str;
-    snprintf_res = snprintf(cur_pos, str_size, "%s [%s] [%s:%d] ", time_buf, level_str, cur_filename, (int)line_num);
-    if(snprintf_res >= 0 && snprintf_res < str_size){
-        cur_pos += snprintf_res;
-        str_size -= snprintf_res;
-    } else {
+
+    // TODO : vsnprintf - since C99
+    snprintf_res = VS_IOT_VSNPRINTF(stack_buf, str_size, format, args2);
+
+    if (snprintf_res >= 0 && snprintf_res >= str_size) {
+        VS_IOT_STRCPY(stack_buf + snprintf_res + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
         cutted_str = true;
-    }
-
-    if(!cutted_str) {
-        snprintf_res = vsnprintf(cur_pos, str_size, format, args2);
-
-        if (snprintf_res >= 0 && snprintf_res < str_size) {
-            cur_pos += snprintf_res;
-            strcpy(cur_pos, "\n");
-        } else {
-            cutted_str = true;
-        }
+    } else if (snprintf_res < 0) {
+        res = false;
     }
 
     va_end(args2);
 
-    // Cut string if necessary
-    if(cutted_str) {
-        cur_pos += str_size;
-        strcpy(cur_pos - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
+    // Output string
+    if (res) {
+        res &= vs_logger_output_hal(stack_buf);
     }
 
-    // Output string
-    res = vs_logger_print_hal(output_str);
-
-    if(_use_heap_buffer)
-        free(output_str);
+    // EOL
+    if (res) {
+        res &= vs_logger_output_hal(VS_IOT_LOGGER_EOL);
+    }
 
     return res && !cutted_str;
 }
 
+#if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
+#pragma GCC diagnostic pop
+#endif
+
 /******************************************************************************/
 bool
-vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *prefix, const void *data_buf, const size_t data_size){
-    char *buf = NULL;
-    char *cur_pos;
+vs_logger_message_hex(vs_log_level_t level,
+                      const char *cur_filename,
+                      size_t line_num,
+                      const char *prefix,
+                      const void *data_buf,
+                      const size_t data_size) {
+    static const char *HEX_FORMAT = "%02X";
+    char buf[3]; // HEX_FORMAT output
+    unsigned char *cur_byte;
     size_t pos;
     bool res;
-    const unsigned char *data_ptr = data_buf;
 
-    ASSERT(cur_filename);
-    ASSERT(prefix);
-    ASSERT(data_buf && data_size);
+    VS_IOT_ASSERT(prefix);
+    VS_IOT_ASSERT(data_buf);
+    VS_IOT_ASSERT(data_size);
 
-    if(!vs_logger_is_loglev(level))
+    if (!vs_logger_is_loglev(level)) {
         return true;
+    }
 
-    buf = malloc(data_size * 3 /* "FE " */ + 1);
-
-    if(!buf){
-        ASSERT(false);
+    if (!_output_preface(level, cur_filename, line_num)) {
         return false;
     }
 
-    cur_pos = buf;
-    for(pos = 0; pos < data_size; ++pos, ++data_ptr){
-        cur_pos += sprintf(cur_pos, "%02X ", *data_ptr);
+    res = vs_logger_output_hal(prefix);
+
+    cur_byte = (unsigned char *)data_buf;
+    for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
+        VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte);
+        res = vs_logger_output_hal(buf);
     }
 
-    res = vs_logger_message(level, cur_filename, line_num, "%s : %s", prefix, buf);
-
-    free(buf);
+    if (res) {
+        res = vs_logger_output_hal(VS_IOT_LOGGER_EOL);
+    }
 
     return res;
 }

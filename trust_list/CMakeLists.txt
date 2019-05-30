@@ -47,7 +47,7 @@ set(TRUST_LIST_SRC
         )
 
 #
-#   SecBox library
+#   Trust List library
 #
 add_library(${TRUST_LIST_LIB}
         ${TRUST_LIST_SRC}
@@ -59,15 +59,29 @@ add_library(${TRUST_LIST_LIB}
 set_target_properties(${TRUST_LIST_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
 
 #
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[trust_list] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[trust_list] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+target_compile_definitions(${PROJECT_NAME}
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        )
+
+#
 #   Common include directories
 #
 add_dependencies(${PROJECT_NAME} common)
 
 target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../secbox/include/virgil/iot/secbox
-        ${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/common/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/foundation/include
+        PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/trust_list
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../secbox/include/virgil/iot/secbox
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/common/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/foundation/include
         )
 

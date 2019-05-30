@@ -34,53 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(sdmp VERSION 0.1.0 LANGUAGES C)
+project(virgil-iot-initializer VERSION 0.1.0 LANGUAGES Go C)
 
-set(SDMP_LIB sdmp)
-
-
-#
-#   Source code
-#
-set(SDMP_SRC
-        src/sdmp.c
-        src/services/PRVS.c
-        )
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/c_libs)
 
 #
-#   SDMP library
+#   Virgil IoT Initializer
 #
-add_library(${SDMP_LIB}
-        ${SDMP_SRC}
-        )
-
-#
-#   -Wall -Werror
-#
-set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
-
-#
-#   Common include directories
-#
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
-        )
-
-#
-#   Link libraries
-#
-#target_link_libraries (${SIM_LIB}
-#        ed25519_sp
-#        mbedcrypto_sp
-#        kunlun_sodium
-#        iotelic)
-
-#
-# Format code
-#
-if(COMMAND add_clangformat)
-    add_clangformat(${SDMP_LIB})
-endif()
+# TODO: remove workaround with copying libs
+add_go_executable(virgil-iot-initializer netif_plc_sim)

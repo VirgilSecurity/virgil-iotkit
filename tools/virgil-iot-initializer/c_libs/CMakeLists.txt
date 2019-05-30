@@ -34,53 +34,34 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(sdmp VERSION 0.1.0 LANGUAGES C)
+project(netif_plc_sim VERSION 0.1.0 LANGUAGES C)
 
-set(SDMP_LIB sdmp)
-
-
-#
-#   Source code
-#
-set(SDMP_SRC
-        src/sdmp.c
-        src/services/PRVS.c
+set(NETIF_PLC_SIM
+        src/hal/ti_netif_plc_sim.c
+        src/hal/sdmp/ti_prvs_implementation.c
         )
 
-#
-#   SDMP library
-#
-add_library(${SDMP_LIB}
-        ${SDMP_SRC}
+add_library(${PROJECT_NAME}
+        ${NETIF_PLC_SIM}
         )
 
-#
-#   -Wall -Werror
-#
-set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+target_link_libraries (${PROJECT_NAME} sdmp)
 
-#
-#   Common include directories
-#
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
         )
 
-#
-#   Link libraries
-#
-#target_link_libraries (${SIM_LIB}
-#        ed25519_sp
-#        mbedcrypto_sp
-#        kunlun_sodium
-#        iotelic)
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
 
-#
-# Format code
-#
-if(COMMAND add_clangformat)
-    add_clangformat(${SDMP_LIB})
-endif()
+# TODO: remove workaround with copying libs
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/protocols/sdmp/libsdmp.a"
+        ${INITIALIZER_LIB_DIR}/libsdmp.a
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/tools/virgil-iot-initializer/c_libs/libnetif_plc_sim.a"
+        ${INITIALIZER_LIB_DIR}/libnetif_plc_sim.a
+        )
