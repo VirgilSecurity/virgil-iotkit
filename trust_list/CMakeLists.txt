@@ -54,9 +54,17 @@ add_library(${TRUST_LIST_LIB}
         )
 
 #
-#   -Wall -Werror
+#   Set additional compiler flags
 #
-set_target_properties(${TRUST_LIST_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("No CFLAGS_PLATFORM")
+else()
+    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(logger
+        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
 
 #
 #   Config path
@@ -79,9 +87,14 @@ add_dependencies(${PROJECT_NAME} common)
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/trust_list
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../secbox/include/virgil/iot/secbox
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/common/include
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../crypto/library/foundation/include
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list
+        ${CMAKE_CURRENT_LIST_DIR}/../secbox/include/virgil/iot/secbox
+        ${CMAKE_CURRENT_LIST_DIR}/../crypto/library/common/include
+        ${CMAKE_CURRENT_LIST_DIR}/../crypto/library/foundation/include
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         )
 

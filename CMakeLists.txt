@@ -156,6 +156,18 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
+#   Logger
+#
+# TODO: Add Option to disable Logger
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
+
+#
+#   Trust list
+#
+# TODO: Add Option to disable trust_list
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
+
+#
 #   Protocols
 #
 if (VIRGIL_IOT_PROTOCOLS)

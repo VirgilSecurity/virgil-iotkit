@@ -2,6 +2,7 @@
 #define TL_STRUCTS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define TL_STORAGE_SIZE (10 * 4096)
 

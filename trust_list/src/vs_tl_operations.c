@@ -35,8 +35,8 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include "vs_tl_structs.h"
-#include "trust_list_hal.h"
+#include <vs_tl_structs.h>
+#include <private/trust_list_hal.h>
 #include "private/vs_tl_operations.h"
 #include "secbox.h"
 
