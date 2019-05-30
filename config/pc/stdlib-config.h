@@ -32,17 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef AP_SECURITY_SDK_LOGGER_HAL_H
-#define AP_SECURITY_SDK_LOGGER_HAL_H
+#ifndef VIRGIL_IOT_SDK_CONFIG_H
+#define VIRGIL_IOT_SDK_CONFIG_H
 
-/*
- * HAL interface
- */
 
-// Output ASCIIZ string
-// buf - null terminated ASCII string to be output
-// return true if successful
-bool
-vs_logger_implement(const char *buf);
 
-#endif // AP_SECURITY_SDK_LOGGER_HAL_H
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+
+#define VS_IOT_ASSERT    assert
+#define VS_IOT_CALLOC    calloc
+#define VS_IOT_FREE      free
+#define VS_IOT_MALLOC    malloc
+#define VS_IOT_SNPRINTF  snprintf
+#define VS_IOT_SPRINTF   sprintf
+#define VS_IOT_STRCPY    strcpy
+#define VS_IOT_VSNPRINTF vsnprintf
+
+
+
+#endif // VIRGIL_IOT_SDK_CONFIG_H

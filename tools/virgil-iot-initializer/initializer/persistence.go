@@ -98,7 +98,7 @@ func (p PersistenceManager) createBackupFile() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(destinationFile, input, os.ModeAppend)
+	err = ioutil.WriteFile(destinationFile, input, os.ModeAppend | 0644)
 	if err != nil {
 		return err
 	}

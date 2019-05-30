@@ -32,17 +32,31 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef AP_SECURITY_SDK_LOGGER_HAL_H
-#define AP_SECURITY_SDK_LOGGER_HAL_H
+#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <time.h>
 
 /*
- * HAL interface
+ * Send string to the output.
+ * buffer - pointer to the ASCIIZ string. Must not be NULL.
+ * Returns true in case of success or false in any error occur
  */
 
-// Output ASCIIZ string
-// buf - null terminated ASCII string to be output
-// return true if successful
 bool
-vs_logger_implement(const char *buf);
+vs_logger_output_hal(const char *buffer);
 
-#endif // AP_SECURITY_SDK_LOGGER_HAL_H
+/*
+ * Generate current time directly to the output buffer, i. e. by using
+ * vs_logger_output_hal.
+ * Must return true in case of success or false.
+ */
+
+#if VS_IOT_LOGGER_OUTPUT_TIME
+    bool
+    vs_logger_current_time_hal(void);
+#endif  // VS_IOT_LOGGER_OUTPUT_TIME
+
+#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_

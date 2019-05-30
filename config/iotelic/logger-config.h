@@ -32,17 +32,27 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef AP_SECURITY_SDK_LOGGER_HAL_H
-#define AP_SECURITY_SDK_LOGGER_HAL_H
+#ifndef VIRGIL_IOT_SDK_AP_CONFIG_H
+#define VIRGIL_IOT_SDK_AP_CONFIG_H
+
+
 
 /*
- * HAL interface
+ * VS_IOT_LOGGER_EOL
+ * ASCIIZ string placed at the end of the output string.
+ * Normally this is "\n".
  */
 
-// Output ASCIIZ string
-// buf - null terminated ASCII string to be output
-// return true if successful
-bool
-vs_logger_implement(const char *buf);
+#define VS_IOT_LOGGER_EOL "\n"
 
-#endif // AP_SECURITY_SDK_LOGGER_HAL_H
+/*
+ * VS_IOT_LOGGER_OUTPUT_TIME
+ * Enables current time output at the beginning of log string.
+ * Requires vs_logger_current_time_hal function implementation.
+ */
+
+#define VS_IOT_LOGGER_OUTPUT_TIME   0
+
+
+
+#endif // VIRGIL_IOT_SDK_AP_CONFIG_H

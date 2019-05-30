@@ -1,9 +1,36 @@
-/*
- *   Copyright (C) 2015-2019 Virgil Security Inc.
- *
- *   Logger library
- *
- */
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #ifndef AP_SECURITY_SDK_LOGGER_H
 #define AP_SECURITY_SDK_LOGGER_H
@@ -11,6 +38,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
+//#include <stdlib-config.h>
+//#include <logger-config.h>
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -53,22 +83,26 @@ typedef enum {
 // - log_level : logging logging level to be initialized
 // - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if you are not sure
 // Return true if successful
+
 bool
 vs_logger_init(vs_log_level_t log_level, size_t max_buf_size);
 
 // Set current logging level
 // - new_level : new logging level to be initialized
 // Return previous logging level
+
 vs_log_level_t
 vs_logger_set_loglev(vs_log_level_t new_level);
 
 // Get current logging level
 // Return VS_LOGLEV_UNKNOWN if any error
+
 vs_log_level_t
 vs_logger_get_loglev(void);
 
 // Check that specified logging level is enabled
 // Return true if specified logging level is enabled and there are now any error
+
 bool
 vs_logger_is_loglev(vs_log_level_t level);
 
@@ -79,6 +113,7 @@ vs_logger_is_loglev(vs_log_level_t level);
 // - log_format, ... : printf like string
 // Return true if there were no errors and string has not been cut
 // You can pass cur_filename = NULL and line_num = 0 to make output shorter
+
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *log_format, ...);
 
@@ -91,6 +126,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 // - date_size : data sequence size
 // - log_format, ... : printf like string
 // Return true if there were no errors
+
 bool
 vs_logger_message_hex(vs_log_level_t level,
                       const char *cur_filename,

@@ -32,17 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef AP_SECURITY_SDK_LOGGER_HAL_H
-#define AP_SECURITY_SDK_LOGGER_HAL_H
+#ifndef KUNLUN_HAL_PRVS_IMPLEMENTATION_H
+#define KUNLUN_HAL_PRVS_IMPLEMENTATION_H
 
-/*
- * HAL interface
- */
+#include <virgil/iot/protocols/sdmp/PRVS.h>
 
-// Output ASCIIZ string
-// buf - null terminated ASCII string to be output
-// return true if successful
-bool
-vs_logger_implement(const char *buf);
+vs_sdmp_prvs_impl_t
+vs_prvs_impl();
 
-#endif // AP_SECURITY_SDK_LOGGER_HAL_H
+#endif // KUNLUN_HAL_PRVS_IMPLEMENTATION_H
