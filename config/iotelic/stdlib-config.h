@@ -32,8 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_CONFIG_H
-#define VIRGIL_IOT_SDK_CONFIG_H
+#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+
+
 
 #include <assert.h>
 #include <stdio.h>
@@ -50,5 +52,4 @@
 
 
 
-
-#endif // VIRGIL_IOT_SDK_CONFIG_H
+#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
