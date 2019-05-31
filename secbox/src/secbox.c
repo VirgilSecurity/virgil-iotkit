@@ -10,8 +10,11 @@ static const vs_secbox_hal_impl_t *_hal_mpl = NULL;
 /******************************************************************************/
 int
 vs_secbox_configure_hal(const vs_secbox_hal_impl_t *impl) {
+    VS_ASSERT(impl);
+    VS_ASSERT(impl->init);
+
     _hal_mpl = impl;
-    return 0;
+    return impl->init();
 }
 
 /******************************************************************************/

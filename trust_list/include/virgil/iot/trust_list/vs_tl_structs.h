@@ -20,15 +20,12 @@ typedef enum {
     TL_ERROR_GENERAL = -1,
     TL_ERROR_PARAMS = -2,
     TL_ERROR_SMALL_BUFFER = -3,
-    TL_ERROR_FLASH_ERASE = -4,
-    TL_ERROR_FLASH_WRITE = -5,
-    TL_ERROR_FLASH_READ = -6,
-    TL_ERROR_OTP_SLOT = -7,
+    TL_ERROR_WRITE = -4,
+    TL_ERROR_READ = -5,
 } TL_RESULT;
 
 typedef struct __attribute__((__packed__)) {
     size_t storage_type;
-    size_t addr;
 } tl_storage_ctx_t;
 
 typedef struct __attribute__((__packed__)) {
