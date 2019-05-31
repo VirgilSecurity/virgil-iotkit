@@ -18,25 +18,25 @@ func signByFileKey(keyFilePath string, data []byte) ([]byte, error) {
     fmt.Printf("Signing data by %s key\n", keyFilePath)
     keyFileBytes, err := ioutil.ReadFile(keyFilePath)
     if err != nil {
-        return []byte{}, err
+        return nil, err
     }
     fmt.Println("Bytes from key file were read")
 
     privateKey, err := crypto.ImportPrivateKey(keyFileBytes, "")
     if err != nil {
-        return []byte{}, err
+        return nil, err
     }
     fmt.Println("Private key imported")
 
     signature, err := crypto.Sign(data, privateKey)
     if err != nil {
-        return []byte{}, err
+        return nil, err
     }
     fmt.Println("Data signed by crypto")
 
     signatureBytes, err := extractSignatureBytes(signature)
     if err != nil {
-        return []byte{}, err
+        return nil, err
     }
     fmt.Println("Signature bytes from sign are extracted")
     return signatureBytes, nil
@@ -46,12 +46,12 @@ func extractSignatureBytes(signatureBytes []byte) ([]byte, error) {
 
     sign := &Signature{}
     if _, err := asn1.Unmarshal(signatureBytes, sign); err != nil {
-        return []byte{}, err
+        return nil, err
     }
 
     innerSignatures := &InnerSignature{}
     if _, err := asn1.Unmarshal(sign.Sign, innerSignatures); err != nil {
-        return []byte{}, err
+        return nil, err
     }
 
     rBytes := innerSignatures.R.Bytes()
