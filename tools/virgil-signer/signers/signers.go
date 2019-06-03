@@ -54,7 +54,7 @@ type FirmwareVersion struct {
     Major           uint8
     Minor           uint8
     Patch           uint8
-    DevMilestone    uint8
+    DevMilestone    byte
     DevBuild        uint8
     BuildTimestamp  [12]byte
 }
@@ -130,7 +130,7 @@ func (s *Signer) createProgFile(filePath string) (*ProgFile, error) {
     fmt.Println("\nStart creation of _Prog file")
     firmwareBytesWithoutSign, err := ioutil.ReadFile(s.FirmwarePath)
     if err != nil {
-        return &ProgFile{}, err
+        return nil, err
     }
 
     progFile := new(ProgFile)
@@ -147,16 +147,16 @@ func (s *Signer) createProgFile(filePath string) (*ProgFile, error) {
 
     // Create and write footer, buffer contains firmware code + 0xFF section
     if err := progFile.newFooter(progBuf.Bytes(), s); err != nil {
-        return &ProgFile{}, err
+        return nil, err
     }
     if err := binary.Write(progBuf, binary.BigEndian, progFile.footer); err != nil {
-        return &ProgFile{}, err
+        return nil, err
     }
     fmt.Println("Footer is written to buffer")
 
     // Save buffer to file
     if err := saveBufferToFile(progBuf, filePath); err != nil {
-        return &ProgFile{}, err
+        return nil, err
     }
 
     return progFile, nil
@@ -199,18 +199,43 @@ func saveBufferToFile(buf *bytes.Buffer, filePath string) error {
     return nil
 }
 
+func stringToUint8(s string) (uint8, error) {
+    intValue, err := strconv.ParseUint(s, 10, 8)
+    if err != nil {
+        return 0, fmt.Errorf("can`t convert %s string to int: %s", s, err)
+    }
+    return uint8(intValue), nil
+}
+
 func (s *Signer) writeHeader(buf *bytes.Buffer, p *ProgFile) error {
-    var versionParts [5]uint8
-    for i, val := range strings.Split(s.FirmwareVersion, ".") {
-        intValue, _ := strconv.ParseUint(val, 10, 8)
-        versionParts[i] = uint8(intValue)
+    versionParts := strings.Split(s.FirmwareVersion, ".")
+    if len(versionParts) > 5 {
+        return fmt.Errorf("version parts amount is > 5: %s", versionParts)
+    }
+
+    major, err := stringToUint8(versionParts[0])
+    if err != nil {
+        return err
+    }
+    minor, err := stringToUint8(versionParts[1])
+    if err != nil {
+        return err
+    }
+    patch, err := stringToUint8(versionParts[2])
+    if err != nil {
+        return err
+    }
+    devMilestone := []byte(versionParts[3])[0]
+    devBuild, err := stringToUint8(versionParts[4])
+    if err != nil {
+        return err
     }
     fwVersion := FirmwareVersion{
-        Major:            versionParts[0],
-        Minor:            versionParts[1],
-        Patch:            versionParts[2],
-        DevMilestone:     versionParts[3],
-        DevBuild:         versionParts[4],
+        Major:            major,
+        Minor:            minor,
+        Patch:            patch,
+        DevMilestone:     devMilestone,
+        DevBuild:         devBuild,
     }
     copy(fwVersion.ApplicationType[:], s.ApplicationType)
     copy(fwVersion.BuildTimestamp[:], s.BuildTime)
@@ -220,7 +245,7 @@ func (s *Signer) writeHeader(buf *bytes.Buffer, p *ProgFile) error {
     header := Header{
         CodeOffset:       HEADER_SIZE,
         CodeLength:       uint32(fwLength),
-        FooterOffset:     uint32(HEADER_SIZE + fwLength + p.fillerLength),
+        FooterOffset:     uint32(HEADER_SIZE + fwLength),
         FooterLength:     FOOTER_SIZE,
         FwVersion:        fwVersion,
         Padding:          0x00,
