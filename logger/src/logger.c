@@ -119,10 +119,10 @@ _get_level_str(vs_log_level_t log_level) {
 #pragma GCC diagnostic ignored "-Wstack-usage="
 #endif
 static size_t
-_strlen(const char* str) {
+_strlen(const char *str) {
     size_t len = 0;
-    if(str) {
-        for (; *str; ++str){
+    if (str) {
+        for (; *str; ++str) {
             len++;
         }
     }
@@ -151,7 +151,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     if (!cur_filename || !line_num) {
         str_size = _strlen(" [] ") + _strlen(level_str) + 1;
     } else {
-        // 
+        //
         str_size = _strlen(" [] [:]") + _strlen(level_str) + _strlen(cur_filename) + 24 + 1;
     }
 
@@ -186,7 +186,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     static const size_t CUTTED_STR_SIZE = 3;
     va_list args1;
     va_list args2;
-    int str_size;
+    int str_size = _max_buf_size;
     int snprintf_res;
     bool res = true;
     bool cutted_str = false;
@@ -206,7 +206,9 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     va_start(args1, format);
     va_copy(args2, args1);
 
+#if 0
     str_size = VS_IOT_VSNPRINTF(NULL, 0, format, args1) /* format ... */ + 1;
+#endif
 
     va_end(args1);
 
