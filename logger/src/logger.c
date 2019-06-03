@@ -118,10 +118,21 @@ _get_level_str(vs_log_level_t log_level) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
 #endif
+static size_t
+_strlen(const char* str) {
+    size_t len = 0;
+    if(str) {
+        for (; *str; ++str){
+            len++;
+        }
+    }
+    return len;
+}
 
+/******************************************************************************/
 static bool
 _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
-    int str_size;
+    size_t str_size;
     const char *level_str = NULL;
     int snprintf_res;
     bool res = false;
@@ -138,9 +149,10 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     // Calculate preface string size
     // TODO : snprintf - since C99
     if (!cur_filename || !line_num) {
-        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] ", level_str) + 1;
+        str_size = _strlen(" [] ") + _strlen(level_str) + 1;
     } else {
-        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
+        // 
+        str_size = _strlen(" [] [:]") + _strlen(level_str) + _strlen(cur_filename) + 24 + 1;
     }
 
     VS_IOT_ASSERT(str_size > 0);
