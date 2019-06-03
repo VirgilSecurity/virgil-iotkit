@@ -32,34 +32,82 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <sdmp_structs.h>
+#include <stdlib-config.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <private/test_netif.h>
+
+/**********************************************************
+static int
+test_netif_rx_cb(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz){
+    return 0;
+}
+*/
+
+netif_state_t netif_state;
+vs_mac_addr_t mac_addr_client_call;
+vs_mac_addr_t mac_addr_server_call;
+bool is_client_call;
+
+static vs_netif_t *test_netif = NULL;
+static vs_netif_rx_cb_t callback_rx_cb;
 
 /**********************************************************/
 static int
-test_netif_rx_cb_t(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz){
+test_netif_tx(const uint8_t *data, const size_t data_sz){
+    int ret_code;
+
+    is_client_call = !is_client_call;
+
+    ret_code = callback_rx_cb(test_netif, data, data_sz);
+
+    netif_state.sent = 1;
+
+    return ret_code;
+}
+
+/**********************************************************/
+static int
+test_netif_mac_addr(struct vs_mac_addr_t *mac_addr){
+    VS_IOT_ASSERT(mac_addr);
+
+    *mac_addr = is_client_call ? mac_addr_client_call : mac_addr_server_call;
+
+    netif_state.mac_addr_set_up = 1;
+
     return 0;
 }
 
 /**********************************************************/
 static int
-test_netif_tx_t(const uint8_t *data, const size_t data_sz){
+test_netif_init(const vs_netif_rx_cb_t rx_cb){
+    VS_IOT_ASSERT(rx_cb);
+
+    callback_rx_cb = rx_cb;
+
+    netif_state.initialized = 1;
+
     return 0;
 }
 
 /**********************************************************/
 static int
-test_netif_mac_t(struct vs_mac_addr_t *mac_addr){
+test_netif_deinit(){
+    netif_state.deinitialized = 1;
     return 0;
 }
 
 /**********************************************************/
-static int
-test_netif_init_t(const vs_netif_rx_cb_t rx_cb){
-    return 0;
-}
+void prepare_test_netif(vs_netif_t *netif){
+    VS_IOT_ASSERT(netif);
 
-/**********************************************************/
-static int
-test_netif_deinit_t(){
-    return 0;
+    test_netif = netif;
+
+    netif->user_data = (void*)&netif_state;
+
+    netif->tx = test_netif_tx;
+    netif->mac_addr = test_netif_mac_addr;
+    netif->init = test_netif_init;
+    netif->deinit = test_netif_deinit;
+
+    netif_state.membuf = 0;
 }

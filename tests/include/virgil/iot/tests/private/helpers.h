@@ -63,15 +63,9 @@ extern int failed_sdk_tests;
         VS_LOG_INFO(" ELEMENT : %s ", NAME);                                                                           \
     } while (0);
 
-#define VS_CHECK_GOTO(OPERATION, DESCRIPTION)                                                                          \
-    if ((OPERATION) != vscf_status_SUCCESS) {                                                                          \
-        VS_LOG_ERROR(DESCRIPTION);                                                                                     \
-        goto terminate;                                                                                                \
-    }
-
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION)                                                                        \
+#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
     if (!(OPERATION)) {                                                                                                \
-        VS_LOG_ERROR(DESCRIPTION);                                                                                     \
+        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                                     \
         goto terminate;                                                                                                \
     }
 

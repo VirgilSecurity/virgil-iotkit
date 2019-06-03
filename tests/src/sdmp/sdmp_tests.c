@@ -33,8 +33,84 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <helpers.h>
+#include <test_netif.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp.h>
+
+static vs_netif_t test_netif;
+
+/**********************************************************/
+static bool test_sdmp_init(void) {
+
+    netif_state.membuf = 0;
+
+    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
+    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+
+    return true;
+
+    terminate:
+
+    return false;
+}
+
+/**********************************************************/
+static bool test_sdmp_send(void) {
+
+    netif_state.membuf = 0;
+
+    SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
+    NETIF_OP_CHECK_GOTO(netif_state.sent);
+
+    return true;
+
+    terminate:
+
+    return false;
+}
+
+/**********************************************************/
+static bool test_sdmp_deinit(void) {
+
+    netif_state.membuf = 0;
+
+    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
+    NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
+
+    return true;
+
+    terminate:
+
+    return false;
+}
+
+/**********************************************************/
+static bool test_sdmp_mac_addr(void) {
+
+    vs_mac_addr_t mac_addr;
+    netif_state.membuf = 0;
+
+    SDMP_CHECK_GOTO(vs_sdmp_mac_addr(0, &mac_addr), "vs_sdmp_mac_addr call");
+    NETIF_OP_CHECK_GOTO(netif_state.mac_addr_set_up);
+
+    return true;
+
+    terminate:
+
+    return false;
+}
 
 /**********************************************************/
 void sdmp_tests(void){
+
     START_TEST("SDMP");
+
+    prepare_test_netif(&test_netif);
+
+    TEST_CASE_OK("Initialization", test_sdmp_init());
+    TEST_CASE_OK("Send", test_sdmp_send());
+    TEST_CASE_OK("Mac address", test_sdmp_mac_addr());
+    TEST_CASE_OK("Deinitialization", test_sdmp_deinit());
+
+    terminate: ;
 }

@@ -42,7 +42,10 @@ project(virgil-iot-sdk-tests VERSION 0.1.0 LANGUAGES C)
 
 add_library(virgil-iot-sdk-tests
         src/tests.c
+        src/sdmp/prvs_tests.c
         src/sdmp/sdmp_tests.c
+        src/sdmp/test_prvs.c
+        src/sdmp/test_netif.c
         )
 
 #
@@ -83,7 +86,7 @@ target_include_directories(virgil-iot-sdk-tests
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include/virgil/iot/logger>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include/virgil/iot/protocols/sdmp>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
