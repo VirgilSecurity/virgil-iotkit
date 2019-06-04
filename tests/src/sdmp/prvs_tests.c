@@ -58,7 +58,7 @@ test_prvs_register(void) {
 
     return true;
 
-    terminate:
+terminate:
 
     return false;
 }
@@ -151,8 +151,9 @@ test_device_info(void) {
     serv_resp->own_key.pubkey_sz = 255;
     serv_resp->signature.val_sz = 255;
 
-    SDMP_CHECK_ERROR_GOTO(vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
-                    "vs_sdmp_prvs_device_info call");
+    SDMP_CHECK_ERROR_GOTO(
+            vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
+            "vs_sdmp_prvs_device_info call");
 
     serv_resp->own_key.pubkey_sz = sizeof(pubkey_raw);
     serv_resp->signature.val_sz = sizeof(response_buf) - sizeof(vs_sdmp_prvs_devi_t);
@@ -168,9 +169,8 @@ test_device_info(void) {
     buf1 = dev_resp->own_key.pubkey;
     buf2 = serv_resp->own_key.pubkey;
     size = dev_resp->own_key.pubkey_sz;
-    BOOL_CHECK_GOTO(
-            dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz && !VS_IOT_MEMCMP(buf1, buf2, size),
-            "Incorrect own_key");
+    BOOL_CHECK_GOTO(dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz && !VS_IOT_MEMCMP(buf1, buf2, size),
+                    "Incorrect own_key");
 
     BOOL_CHECK_GOTO(
             dev_resp->signature.val_sz == serv_resp->signature.val_sz &&
@@ -251,7 +251,7 @@ test_set(bool use_fake_mac_addr) {
 
     data_sz = sizeof(data);
 
-    if(!use_fake_mac_addr) {
+    if (!use_fake_mac_addr) {
         SDMP_CHECK_GOTO(vs_sdmp_prvs_set(&test_netif, &mac_addr_server, elem, data, data_sz, wait_msec),
                         "vs_sdmp_prvs_set call");
         PRVS_OP_CHECK_GOTO(prvs_call.save_data);
@@ -260,12 +260,12 @@ test_set(bool use_fake_mac_addr) {
                         "Incorrect set request data");
     } else {
         SDMP_CHECK_ERROR_GOTO(vs_sdmp_prvs_set(&test_netif, &mac_addr_fake_server, elem, data, data_sz, wait_msec),
-                        "vs_sdmp_prvs_set call");
+                              "vs_sdmp_prvs_set call");
     }
 
     result = true;
 
-    terminate:
+terminate:
 
     VS_IOT_FREE(server_request.save_data.data);
 
