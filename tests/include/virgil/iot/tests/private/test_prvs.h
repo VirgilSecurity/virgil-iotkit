@@ -46,17 +46,12 @@ typedef struct {
         struct {
             unsigned dnid : 1;
             unsigned save_data : 1;
-            unsigned load_data : 1;
             unsigned device_info : 1;
             unsigned finalize_storage : 1;
-            unsigned start_save : 1;
-            unsigned save_tl_part : 1;
             unsigned finalize_tl : 1;
-            unsigned sign_data : 1;
             unsigned stop_wait : 1;
+            unsigned sign_data : 1;
             unsigned wait : 1;
-            unsigned request : 1;
-            unsigned response : 1;
         };
     };
 } prvs_call_t;
@@ -106,68 +101,14 @@ typedef union {
 
 } make_server_response_t;
 
-/*
-typedef union {
-
-    struct {
-        vs_sdmp_prvs_element_t element_id;
-        uint8_t *data;
-        size_t data_sz;
-    } save_data;
-        struct {
-            vs_sdmp_prvs_devi_t *device_info;
-            size_t buf_sz;
-        } data_device_info;
-
-        struct {
-            vs_sdmp_pubkey_t *asav_response;
-        } data_finalize_storage;
-
-        struct {
-            uint8_t *data;
-            size_t data_sz;
-        } data_start_save_tl;
-
-        struct {
-            uint8_t *data;
-            size_t data_sz;
-        } data_save_tl_part;
-
-        struct {
-            uint8_t *data;
-            size_t data_sz;
-        } data_finalize_tl;
-
-        struct {
-            uint8_t *data;
-            size_t data_sz;
-            uint8_t *signature;
-            size_t buf_sz;
-            size_t *signature_sz;
-        } data_sign_data;
-    };
-*/
-
 extern prvs_call_t prvs_call;
 extern server_request_t server_request;
 extern make_server_response_t make_server_response;
 
-void prepare_prvs_service(vs_sdmp_service_t *prvs_service);
-vs_sdmp_prvs_impl_t make_prvs_implementation(void);
+vs_sdmp_prvs_impl_t
+make_prvs_implementation(void);
 
-#define PRVS_OP_CHECK_GOTO(OPERATION) BOOL_CHECK_GOTO((OPERATION) != 0, "prvs operation " # OPERATION " has not been called");
-
-#define PRVS_ALLOC_AND_COPY(DST_BUF, DST_SIZE, SRC_BUF, SRC_SIZE)   do { \
-        VS_IOT_ASSERT(SRC_BUF); \
-        if (SRC_SIZE) {   \
-            (DST_BUF) = VS_IOT_MALLOC(SRC_BUF); \
-            VS_IOT_ASSERT(DST_BUF); \
-            VS_IOT_MEMCPY((DST_BUF), (SRC_BUF), (SRC_SIZE));    \
-            (DST_SIZE) = (SRC_SIZE);    \
-        } else {    \
-            DST_BUF = NULL; \
-            DST_SIZE = 0;   \
-        }   \
-        } while(0)
+#define PRVS_OP_CHECK_GOTO(OPERATION)                                                                                  \
+    BOOL_CHECK_GOTO((OPERATION) != 0, "prvs operation " #OPERATION " has not been called");
 
 #endif // VIRGIL_IOT_SDK_TESTS_PRVS_H_
