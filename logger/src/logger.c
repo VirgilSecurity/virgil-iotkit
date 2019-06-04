@@ -120,6 +120,10 @@ _get_level_str(vs_log_level_t log_level) {
     }
 }
 
+#define VS_LOGGER_OUTPUT(STR) if(res){ \
+    res = vs_logger_output_hal(STR); \
+    }
+
 /******************************************************************************/
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
@@ -129,10 +133,10 @@ _get_level_str(vs_log_level_t log_level) {
 
 static bool
 _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
-    int str_size;
+    int str_size = 0;
     const char *level_str = NULL;
-    int snprintf_res;
-    bool res = false;
+    int snprintf_res = 0;
+    bool res = true;
 
     level_str = _get_level_str(level);
 
@@ -143,12 +147,21 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 #endif // VS_IOT_LOGGER_OUTPUT_TIME
 
+    // Output level and file
+    VS_LOGGER_OUTPUT(" [")
+    VS_LOGGER_OUTPUT(level_str)
+    VS_LOGGER_OUTPUT("] ")
+
+    if (cur_filename && line_num) {
+        VS_LOGGER_OUTPUT(" [");
+        VS_LOGGER_OUTPUT(cur_filename);
+        VS_LOGGER_OUTPUT(":");
+    }
+
     // Calculate preface string size
     // TODO : snprintf - since C99
-    if (!cur_filename || !line_num) {
-        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] ", level_str) + 1;
-    } else {
-        str_size = VS_IOT_SNPRINTF(NULL, 0, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num) + 1;
+    if (cur_filename && line_num) {
+        str_size = VS_IOT_SNPRINTF(NULL, 0, "%d] ", (int)line_num) + 1;
     }
 
     VS_IOT_ASSERT(str_size > 0);
@@ -158,10 +171,8 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     char stack_buf[str_size];
 
     // TODO : snprintf - since C99
-    if (!cur_filename || !line_num) {
-        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, " [%s] ", level_str);
-    } else {
-        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, " [%s] [%s:%d] ", level_str, cur_filename, (int)line_num);
+    if (cur_filename && line_num) {
+        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, "%d] ", (int)line_num);
     }
 
     if (snprintf_res < 0) {
@@ -170,7 +181,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     // Output string
-    res = vs_logger_output_hal(stack_buf);
+    VS_LOGGER_OUTPUT(stack_buf);
 
     return res;
 }
@@ -231,22 +242,25 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     va_end(args2);
 
-    // Output string
-    if (res) {
-        res &= vs_logger_output_hal(stack_buf);
+    if(!res){
+        goto terminate;
     }
+
+    // Output string
+    VS_LOGGER_OUTPUT(stack_buf);
 
     // EOL
-    if (res) {
-        res &= vs_logger_output_hal(VS_IOT_LOGGER_EOL);
-    }
+    VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
 
+    terminate:
     return res && !cutted_str;
 }
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic pop
 #endif
+
+#undef VS_LOGGER_OUTPUT
 
 /******************************************************************************/
 bool
