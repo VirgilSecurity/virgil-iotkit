@@ -38,15 +38,15 @@
 #include <stdbool.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-typedef union{
-   uint8_t membuf;
+typedef union {
+    uint8_t membuf;
 
-   struct {
-       unsigned initialized : 1;
-       unsigned deinitialized : 1;
-       unsigned mac_addr_set_up : 1;
-       unsigned sent : 1;
-   };
+    struct {
+        unsigned initialized : 1;
+        unsigned deinitialized : 1;
+        unsigned mac_addr_set_up : 1;
+        unsigned sent : 1;
+    };
 } netif_state_t;
 
 extern netif_state_t netif_state;
@@ -54,23 +54,30 @@ extern vs_mac_addr_t mac_addr_client_call;
 extern vs_mac_addr_t mac_addr_server_call;
 extern bool is_client_call;
 
-void prepare_test_netif(vs_netif_t *netif);
+void
+prepare_test_netif(vs_netif_t *netif);
 
-#define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION)                                                                          \
-    if ((OPERATION) != 0) {                                                                          \
+#define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION)                                                                        \
+    if ((OPERATION) != 0) {                                                                                            \
         VS_LOG_ERROR(DESCRIPTION);                                                                                     \
         goto terminate;                                                                                                \
     }
 
-#define MAC_ADDR_CHECK_GOTO(CURRENT, WAITED)                                                                          \
-    if (memcmp((CURRENT).bytes, (WAITED).bytes, sizeof (vs_mac_addr_t))) {                                                                          \
-        VS_LOG_ERROR("Current MAC address is incorrect");                                                                                     \
+#define SDMP_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION)                                                                        \
+    if ((OPERATION) == 0) {                                                                                            \
+        VS_LOG_ERROR(DESCRIPTION);                                                                                     \
         goto terminate;                                                                                                \
     }
 
-#define NETIF_OP_CHECK_GOTO(OPERATION)                                                                          \
-    if ((OPERATION) == 0) {                                                                          \
-        VS_LOG_ERROR("netif operation " # OPERATION " has not been called");                                                                                     \
+#define MAC_ADDR_CHECK_GOTO(CURRENT, WAITED)                                                                           \
+    if (memcmp((CURRENT).bytes, (WAITED).bytes, sizeof(vs_mac_addr_t))) {                                              \
+        VS_LOG_ERROR("Current MAC address is incorrect");                                                              \
+        goto terminate;                                                                                                \
+    }
+
+#define NETIF_OP_CHECK_GOTO(OPERATION)                                                                                 \
+    if ((OPERATION) == 0) {                                                                                            \
+        VS_LOG_ERROR("netif operation " #OPERATION " has not been called");                                            \
         goto terminate;                                                                                                \
     }
 

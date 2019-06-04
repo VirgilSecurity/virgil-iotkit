@@ -63,9 +63,9 @@ extern int failed_sdk_tests;
         VS_LOG_INFO(" ELEMENT : %s ", NAME);                                                                           \
     } while (0);
 
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
+#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
     if (!(OPERATION)) {                                                                                                \
-        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                                     \
+        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
         goto terminate;                                                                                                \
     }
 
@@ -77,7 +77,7 @@ extern int failed_sdk_tests;
 #define RESULT_ERROR                                                                                                   \
     do {                                                                                                               \
         VS_LOG_ERROR(" TEST ERROR ");                                                                                  \
-        failed_sdk_tests++;                                                                                          \
+        failed_sdk_tests++;                                                                                            \
         goto terminate;                                                                                                \
     } while (0);
 

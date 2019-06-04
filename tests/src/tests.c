@@ -36,11 +36,14 @@
 
 int failed_sdk_tests = 0;
 
-void sdmp_tests(void);
-void prvs_tests(void);
+void
+sdmp_tests(void);
+void
+prvs_tests(void);
 
 /**********************************************************/
-size_t virgil_iot_sdk_tests(void){
+size_t
+virgil_iot_sdk_tests(void) {
     failed_sdk_tests = 0;
 
     sdmp_tests();

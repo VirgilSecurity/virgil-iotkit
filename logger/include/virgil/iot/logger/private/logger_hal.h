@@ -55,8 +55,8 @@ vs_logger_output_hal(const char *buffer);
  */
 
 #if VS_IOT_LOGGER_OUTPUT_TIME
-    bool
-    vs_logger_current_time_hal(void);
-#endif  // VS_IOT_LOGGER_OUTPUT_TIME
+bool
+vs_logger_current_time_hal(void);
+#endif // VS_IOT_LOGGER_OUTPUT_TIME
 
 #endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_

@@ -35,6 +35,7 @@
 #ifndef VIRGIL_IOT_SDK_TESTS_H
 #define VIRGIL_IOT_SDK_TESTS_H
 
-size_t virgil_iot_sdk_tests(void);
+size_t
+virgil_iot_sdk_tests(void);
 
 #endif // VIRGIL_IOT_SDK_TESTS_H

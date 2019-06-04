@@ -53,7 +53,7 @@ static vs_netif_rx_cb_t callback_rx_cb;
 
 /**********************************************************/
 static int
-test_netif_tx(const uint8_t *data, const size_t data_sz){
+test_netif_tx(const uint8_t *data, const size_t data_sz) {
     int ret_code;
 
     is_client_call = !is_client_call;
@@ -67,7 +67,7 @@ test_netif_tx(const uint8_t *data, const size_t data_sz){
 
 /**********************************************************/
 static int
-test_netif_mac_addr(struct vs_mac_addr_t *mac_addr){
+test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
     *mac_addr = is_client_call ? mac_addr_client_call : mac_addr_server_call;
@@ -79,7 +79,7 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr){
 
 /**********************************************************/
 static int
-test_netif_init(const vs_netif_rx_cb_t rx_cb){
+test_netif_init(const vs_netif_rx_cb_t rx_cb) {
     VS_IOT_ASSERT(rx_cb);
 
     callback_rx_cb = rx_cb;
@@ -91,18 +91,19 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb){
 
 /**********************************************************/
 static int
-test_netif_deinit(){
+test_netif_deinit() {
     netif_state.deinitialized = 1;
     return 0;
 }
 
 /**********************************************************/
-void prepare_test_netif(vs_netif_t *netif){
+void
+prepare_test_netif(vs_netif_t *netif) {
     VS_IOT_ASSERT(netif);
 
     test_netif = netif;
 
-    netif->user_data = (void*)&netif_state;
+    netif->user_data = (void *)&netif_state;
 
     netif->tx = test_netif_tx;
     netif->mac_addr = test_netif_mac_addr;
