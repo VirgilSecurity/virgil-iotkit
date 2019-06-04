@@ -132,6 +132,9 @@ test_device_info(void) {
     vs_sdmp_prvs_devi_t *serv_resp = (vs_sdmp_prvs_devi_t *)server_buf;
     static const uint8_t pubkey_raw[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     size_t pos;
+    size_t size;
+    const uint8_t *buf1;
+    const uint8_t *buf2;
 
     prvs_call.call = 0;
     is_client_call = true;
@@ -162,10 +165,13 @@ test_device_info(void) {
     BOOL_CHECK_GOTO(sizeof(response_buf) != server_request.finalize_storage.buf_sz,
                     "Incorrect request received by server");
 
+    buf1 = dev_resp->own_key.pubkey;
+    buf2 = serv_resp->own_key.pubkey;
+    size = dev_resp->own_key.pubkey_sz;
     BOOL_CHECK_GOTO(
-            dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz &&
-                    !VS_IOT_MEMCMP(dev_resp->own_key.pubkey, serv_resp->own_key.pubkey, dev_resp->own_key.pubkey_sz),
+            dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz && !VS_IOT_MEMCMP(buf1, buf2, size),
             "Incorrect own_key");
+
     BOOL_CHECK_GOTO(
             dev_resp->signature.val_sz == serv_resp->signature.val_sz &&
                     !VS_IOT_MEMCMP(dev_resp->signature.val, serv_resp->signature.val, dev_resp->signature.val_sz),
