@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <helpers.h>
+#include <stdlib.h>
 
 int failed_sdk_tests = 0;
 
