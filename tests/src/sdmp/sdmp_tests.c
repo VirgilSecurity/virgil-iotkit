@@ -40,22 +40,30 @@
 static vs_netif_t test_netif;
 
 /**********************************************************/
-static bool test_sdmp_init(void) {
+static bool
+test_sdmp_init_deinit(void) {
 
     netif_state.membuf = 0;
 
     SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
     NETIF_OP_CHECK_GOTO(netif_state.initialized);
 
+    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
+    NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
+
+    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
+    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+
     return true;
 
-    terminate:
+terminate:
 
     return false;
 }
 
 /**********************************************************/
-static bool test_sdmp_send(void) {
+static bool
+test_sdmp_send(void) {
 
     netif_state.membuf = 0;
 
@@ -64,28 +72,14 @@ static bool test_sdmp_send(void) {
 
     return true;
 
-    terminate:
+terminate:
 
     return false;
 }
 
 /**********************************************************/
-static bool test_sdmp_deinit(void) {
-
-    netif_state.membuf = 0;
-
-    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
-    NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
-
-    return true;
-
-    terminate:
-
-    return false;
-}
-
-/**********************************************************/
-static bool test_sdmp_mac_addr(void) {
+static bool
+test_sdmp_mac_addr(void) {
 
     vs_mac_addr_t mac_addr;
     netif_state.membuf = 0;
@@ -95,22 +89,27 @@ static bool test_sdmp_mac_addr(void) {
 
     return true;
 
-    terminate:
+terminate:
 
     return false;
 }
 
 /**********************************************************/
-void sdmp_tests(void){
+void
+sdmp_tests(void) {
 
     START_TEST("SDMP");
 
     prepare_test_netif(&test_netif);
 
-    TEST_CASE_OK("Initialization", test_sdmp_init());
+    TEST_CASE_OK("Initialization / deinitialization", test_sdmp_init_deinit());
     TEST_CASE_OK("Send", test_sdmp_send());
     TEST_CASE_OK("Mac address", test_sdmp_mac_addr());
-    TEST_CASE_OK("Deinitialization", test_sdmp_deinit());
 
-    terminate: ;
+    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
+
+    // Call for possible crashes and memory leaks
+    SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
+
+terminate:;
 }
