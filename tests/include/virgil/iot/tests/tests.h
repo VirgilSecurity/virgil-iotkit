@@ -32,17 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef AP_SECURITY_SDK_LOGGER_HAL_H
-#define AP_SECURITY_SDK_LOGGER_HAL_H
+#ifndef VIRGIL_IOT_SDK_TESTS_H
+#define VIRGIL_IOT_SDK_TESTS_H
 
-/*
- * HAL interface
- */
+size_t
+virgil_iot_sdk_tests(void);
 
-// Output ASCIIZ string
-// buf - null terminated ASCII string to be output
-// return true if successful
-bool
-vs_logger_implement(const char *buf);
-
-#endif // AP_SECURITY_SDK_LOGGER_HAL_H
+#endif // VIRGIL_IOT_SDK_TESTS_H
