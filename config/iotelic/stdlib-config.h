@@ -50,6 +50,7 @@
 #define VS_IOT_SNPRINTF  snprintf
 #define VS_IOT_SPRINTF   sprintf
 #define VS_IOT_STRCPY    strcpy
+#define VS_IOT_STRRCHR   strrchr
 #define VS_IOT_VSNPRINTF vsnprintf
 
 

@@ -35,10 +35,18 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include <stdarg.h>
 #include <stdbool.h>
 
 #include <logger.h>
+
+
+
+#ifdef VS_IOT_LOGGER_ENABLE
+
+
+
+#include <stdarg.h>
+
 #include <logger_hal.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
@@ -280,3 +288,71 @@ vs_logger_message_hex(vs_log_level_t level,
 
     return res;
 }
+
+
+
+#else // VS_IOT_LOGGER_ENABLE
+
+
+
+/******************************************************************************/
+bool
+vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
+    (void) log_level;
+    (void) max_buf_size;
+
+    return true;
+}
+
+/******************************************************************************/
+vs_log_level_t
+vs_logger_set_loglev(vs_log_level_t new_level) {
+    (void) new_level;
+
+    return VS_LOGLEV_NO_LOGGER;
+}
+
+/******************************************************************************/
+vs_log_level_t
+vs_logger_get_loglev(void) {
+    return VS_LOGLEV_NO_LOGGER;
+}
+
+/******************************************************************************/
+bool
+vs_logger_is_loglev(vs_log_level_t level) {
+    return level == VS_LOGLEV_NO_LOGGER;
+}
+
+/******************************************************************************/
+bool
+vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
+    (void) level;
+    (void) cur_filename;
+    (void) line_num;
+    (void) format;
+
+    return true;
+}
+
+/******************************************************************************/
+bool
+vs_logger_message_hex(vs_log_level_t level,
+                      const char *cur_filename,
+                      size_t line_num,
+                      const char *prefix,
+                      const void *data_buf,
+                      const size_t data_size) {
+    (void) level;
+    (void) cur_filename;
+    (void) line_num;
+    (void) prefix;
+    (void) data_buf;
+    (void) data_size;
+
+    return true;
+}
+
+
+
+#endif // VS_IOT_LOGGER_ENABLE

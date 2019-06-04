@@ -38,6 +38,14 @@
 
 
 /*
+ * VS_IOT_LOGGER_ENABLE
+ * Enables logger library.
+ * Logger macroses will be empty if it is disabled.
+ */
+
+#define VS_IOT_LOGGER_ENABLE
+
+/*
  * VS_IOT_LOGGER_EOL
  * ASCIIZ string placed at the end of the output string.
  * Normally this is "\n".

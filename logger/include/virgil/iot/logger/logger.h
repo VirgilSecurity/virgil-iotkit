@@ -39,8 +39,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#include <stdlib-config.h>
-//#include <logger-config.h>
+#include <stdlib-config.h>
+#include <logger-config.h>
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -64,6 +64,7 @@
 // Logging levels
 typedef enum {
     VS_LOGLEV_UNKNOWN = 0xFF, // Errorneous logging level
+    VS_LOGLEV_NO_LOGGER = 0xFE, // Logging is disabled
 
     VS_LOGLEV_INFO = 0x00,
     VS_LOGLEV_FATAL = 0x10,
@@ -74,7 +75,7 @@ typedef enum {
     VS_LOGLEV_NOTICE = 0x60,
     VS_LOGLEV_TRACE = 0x70,
 
-    VS_LOGLEV_DEBUG = 0xFE,
+    VS_LOGLEV_DEBUG = 0xFD,
 } vs_log_level_t;
 
 // Functions
