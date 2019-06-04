@@ -43,7 +43,7 @@
  * Logger macroses will be empty if it is disabled.
  */
 
-//#define VS_IOT_LOGGER_ENABLE
+#define VS_IOT_LOGGER_ENABLE
 
 /*
  * VS_IOT_LOGGER_EOL
