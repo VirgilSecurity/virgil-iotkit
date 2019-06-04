@@ -156,11 +156,9 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
         VS_LOGGER_OUTPUT(" [");
         VS_LOGGER_OUTPUT(cur_filename);
         VS_LOGGER_OUTPUT(":");
-    }
 
-    // Calculate preface string size
-    // TODO : snprintf - since C99
-    if (cur_filename && line_num) {
+        // Calculate preface string size
+        // TODO : snprintf - since C99
         str_size = VS_IOT_SNPRINTF(NULL, 0, "%d] ", (int)line_num) + 1;
     }
 
@@ -187,6 +185,36 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
 }
 
 /******************************************************************************/
+static bool
+_no_format(const char *format, bool *output_result) {
+    const char *cur_pos;
+
+    VS_IOT_ASSERT(output_result);
+
+    for (cur_pos = format; *cur_pos != '\0'; ++cur_pos) {
+        if (*cur_pos != '%') {
+            continue;
+        }
+
+        if (cur_pos[1] == '\0') {
+            break;
+        }
+
+        // "%"
+        if (cur_pos[1] != '%') {
+            return false;
+        }
+
+        ++cur_pos;
+    }
+
+    // There are no arguments, so no need to call sprintf call
+    *output_result &= vs_logger_output_hal(format);
+    *output_result &= vs_logger_output_hal(VS_IOT_LOGGER_EOL);
+    return true;
+}
+
+/******************************************************************************/
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
     static const char *CUTTED_STR = "...";
@@ -207,6 +235,11 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     if (!_output_preface(level, cur_filename, line_num)) {
         return false;
+    }
+
+    // Omit arguments if there are no single "%"
+    if(_no_format(format, &res)) {
+        return res;
     }
 
     // Calculate string size
