@@ -33,3 +33,62 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(virgil-iot-sdk-tests VERSION 0.1.0 LANGUAGES C)
+
+#
+#  Tests library
+#
+
+add_library(virgil-iot-sdk-tests
+        src/tests.c
+        src/sdmp/prvs_tests.c
+        src/sdmp/sdmp_tests.c
+        src/sdmp/test_prvs.c
+        src/sdmp/test_netif.c
+        )
+
+#
+#   Set additional compiler flags
+#
+
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("No CFLAGS_PLATFORM")
+else()
+    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(virgil-iot-sdk-tests
+        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+
+target_compile_definitions(virgil-iot-sdk-tests
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        )
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[virgil-iot-sdk-tests] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[virgil-iot-sdk-tests] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+#
+#   Common include directories
+#
+
+target_include_directories(virgil-iot-sdk-tests
+        PRIVATE
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        )

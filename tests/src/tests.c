@@ -32,26 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#include <helpers.h>
 
+int failed_sdk_tests = 0;
 
+void
+sdmp_tests(void);
+void
+prvs_tests(void);
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+/**********************************************************/
+size_t
+virgil_iot_sdk_tests(void) {
+    failed_sdk_tests = 0;
 
-#define VS_IOT_ASSERT    assert
-#define VS_IOT_CALLOC    calloc
-#define VS_IOT_FREE      free
-#define VS_IOT_MALLOC    malloc
-#define VS_IOT_MEMCMP    memcmp
-#define VS_IOT_MEMCPY    memcpy
-#define VS_IOT_SNPRINTF  snprintf
-#define VS_IOT_SPRINTF   sprintf
-#define VS_IOT_STRCPY    strcpy
-#define VS_IOT_VSNPRINTF vsnprintf
+    sdmp_tests();
+    prvs_tests();
 
-
-
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+    return failed_sdk_tests;
+}
