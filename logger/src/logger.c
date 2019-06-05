@@ -39,11 +39,16 @@
 
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <logger.h>
 #include <logger_hal.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
+#ifndef VS_IOT_LOGGER_STATIC_BUFFER
 static size_t _max_buf_size = 0;
+#endif  // VS_IOT_LOGGER_STATIC_BUFFER
+
+//#define VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
 
 /******************************************************************************/
 bool
@@ -51,10 +56,19 @@ vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
 
     vs_logger_set_loglev(log_level);
 
+#ifdef VS_IOT_LOGGER_STATIC_BUFFER
+
+    (void) max_buf_size;
+
+#else   // VS_IOT_LOGGER_STATIC_BUFFER
+
     _max_buf_size = max_buf_size;
+
     if (!max_buf_size) {
         return false;
     }
+
+#endif // VS_IOT_LOGGER_STATIC_BUFFER
 
     return true;
 }
@@ -138,9 +152,11 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
 
     // Output time string
 #if VS_IOT_LOGGER_OUTPUT_TIME
+
     if (!vs_logger_current_time_hal()) {
         return false;
     }
+
 #endif // VS_IOT_LOGGER_OUTPUT_TIME
 
     // Output level and file
@@ -159,7 +175,12 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
     }
 
     VS_IOT_ASSERT(str_size > 0);
+
+#if VS_IOT_LOGGER_OUTPUT_TIME
+
     VS_IOT_ASSERT(str_size <= _max_buf_size);
+
+#endif // VS_IOT_LOGGER_OUTPUT_TIME
 
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
@@ -179,6 +200,8 @@ _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num)
 
     return res;
 }
+
+#ifdef VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
 
 /******************************************************************************/
 static bool
@@ -210,17 +233,23 @@ _no_format(const char *format, bool *output_result) {
     return true;
 }
 
+#endif  // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+
 /******************************************************************************/
 bool
 vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
     static const char *CUTTED_STR = "...";
     static const size_t CUTTED_STR_SIZE = 3;
     va_list args1;
-    va_list args2;
     int str_size;
     int snprintf_res;
     bool res = true;
     bool cutted_str = false;
+#ifdef VS_IOT_LOGGER_STATIC_BUFFER
+    static char stack_buf[VS_IOT_LOGGER_STATIC_BUFFER];
+#else   // VS_IOT_LOGGER_STATIC_BUFFER
+    va_list args2;
+#endif  // VS_IOT_LOGGER_STATIC_BUFFER
 
     if (!vs_logger_is_loglev(level)) {
         return true;
@@ -233,18 +262,29 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         return false;
     }
 
+#ifdef VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+
     // Omit arguments if there are no single "%"
     if (_no_format(format, &res)) {
         return res;
     }
 
-    // Calculate string size
+#endif  // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+
     va_start(args1, format);
+
+#ifdef VS_IOT_LOGGER_STATIC_BUFFER
+
+    str_size = VS_IOT_LOGGER_STATIC_BUFFER;
+
+#else // VS_IOT_LOGGER_STATIC_BUFFER
+
+    // Calculate string size
     va_copy(args2, args1);
 
-    str_size = VS_IOT_VSNPRINTF(NULL, 0, format, args1) /* format ... */ + 1;
+    str_size = VS_IOT_VSNPRINTF(NULL, 0, format, args2) /* format ... */ + 1;
 
-    va_end(args1);
+    va_end(args2);
 
     VS_IOT_ASSERT(str_size > 0);
 
@@ -257,19 +297,21 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
 
+#endif  // VS_IOT_LOGGER_STATIC_BUFFER
+
     // Make full string
 
     // TODO : vsnprintf - since C99
-    snprintf_res = VS_IOT_VSNPRINTF(stack_buf, str_size, format, args2);
+    snprintf_res = VS_IOT_VSNPRINTF(stack_buf, str_size, format, args1);
 
-    if (snprintf_res >= 0 && snprintf_res >= str_size) {
-        VS_IOT_STRCPY(stack_buf + snprintf_res + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
+    if (snprintf_res >= str_size) {
+        VS_IOT_STRCPY(stack_buf + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
         cutted_str = true;
     } else if (snprintf_res < 0) {
         res = false;
     }
 
-    va_end(args2);
+    va_end(args1);
 
     if (!res) {
         goto terminate;

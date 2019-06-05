@@ -46,6 +46,14 @@
 #define VS_IOT_LOGGER_ENABLE
 
 /*
+ * VS_IOT_LOGGER_STATIC_BUFFER
+ * Defines static buffer and its size for output process.
+ * This can be done for single thread mode only.
+ */
+
+//#define VS_IOT_LOGGER_STATIC_BUFFER 512
+
+/*
  * VS_IOT_LOGGER_ONE_FUNCTION
  * Sends string directly to the function defined by this macros.
  * Send EOL after string output.
