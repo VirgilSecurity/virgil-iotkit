@@ -46,6 +46,14 @@
 #define VS_IOT_LOGGER_ENABLE
 
 /*
+ * VS_IOT_LOGGER_ONE_FUNCTION
+ * Sends string directly to the function defined by this macros.
+ * Send EOL after string output.
+ */
+
+//#define VS_IOT_LOGGER_ONE_FUNCTION(LEVEL, CUR_FILE, CUR_LINE, FORMAT, ...)
+
+/*
  * VS_IOT_LOGGER_EOL
  * ASCIIZ string placed at the end of the output string.
  * Normally this is "\n".

@@ -35,18 +35,11 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include <stdbool.h>
-
-#include <logger.h>
-
-
-
-#ifdef VS_IOT_LOGGER_ENABLE
-
-
+#if defined(VS_IOT_LOGGER_ENABLE) && !defined(VS_IOT_LOGGER_ONE_FUNCTION)
 
 #include <stdarg.h>
-
+#include <stdbool.h>
+#include <logger.h>
 #include <logger_hal.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
@@ -55,6 +48,7 @@ static size_t _max_buf_size = 0;
 /******************************************************************************/
 bool
 vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
+
     vs_logger_set_loglev(log_level);
 
     _max_buf_size = max_buf_size;
@@ -78,6 +72,7 @@ vs_logger_set_loglev(vs_log_level_t new_level) {
 /******************************************************************************/
 vs_log_level_t
 vs_logger_get_loglev(void) {
+
     return _log_level;
 }
 
@@ -120,17 +115,18 @@ _get_level_str(vs_log_level_t log_level) {
     }
 }
 
-#define VS_LOGGER_OUTPUT(STR) if(res){ \
-    res = vs_logger_output_hal(STR); \
-    }
-
 /******************************************************************************/
+#define VS_LOGGER_OUTPUT(STR)                                                                                          \
+    if (res) {                                                                                                         \
+        res = vs_logger_output_hal(STR);                                                                               \
+    }
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
 #endif
 
+/******************************************************************************/
 static bool
 _output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
     int str_size = 0;
@@ -238,7 +234,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     }
 
     // Omit arguments if there are no single "%"
-    if(_no_format(format, &res)) {
+    if (_no_format(format, &res)) {
         return res;
     }
 
@@ -275,7 +271,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
 
     va_end(args2);
 
-    if(!res){
+    if (!res) {
         goto terminate;
     }
 
@@ -285,15 +281,13 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     // EOL
     VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
 
-    terminate:
+terminate:
     return res && !cutted_str;
 }
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic pop
 #endif
-
-#undef VS_LOGGER_OUTPUT
 
 /******************************************************************************/
 bool
@@ -336,70 +330,4 @@ vs_logger_message_hex(vs_log_level_t level,
     return res;
 }
 
-
-
-#else // VS_IOT_LOGGER_ENABLE
-
-
-
-/******************************************************************************/
-bool
-vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
-    (void) log_level;
-    (void) max_buf_size;
-
-    return true;
-}
-
-/******************************************************************************/
-vs_log_level_t
-vs_logger_set_loglev(vs_log_level_t new_level) {
-    (void) new_level;
-
-    return VS_LOGLEV_NO_LOGGER;
-}
-
-/******************************************************************************/
-vs_log_level_t
-vs_logger_get_loglev(void) {
-    return VS_LOGLEV_NO_LOGGER;
-}
-
-/******************************************************************************/
-bool
-vs_logger_is_loglev(vs_log_level_t level) {
-    return level == VS_LOGLEV_NO_LOGGER;
-}
-
-/******************************************************************************/
-bool
-vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
-    (void) level;
-    (void) cur_filename;
-    (void) line_num;
-    (void) format;
-
-    return true;
-}
-
-/******************************************************************************/
-bool
-vs_logger_message_hex(vs_log_level_t level,
-                      const char *cur_filename,
-                      size_t line_num,
-                      const char *prefix,
-                      const void *data_buf,
-                      const size_t data_size) {
-    (void) level;
-    (void) cur_filename;
-    (void) line_num;
-    (void) prefix;
-    (void) data_buf;
-    (void) data_size;
-
-    return true;
-}
-
-
-
-#endif // VS_IOT_LOGGER_ENABLE
+#endif // #if defined(VS_IOT_LOGGER_ENABLE) && !defined(VS_IOT_LOGGER_ONE_FUNCTION)

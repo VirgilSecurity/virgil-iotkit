@@ -37,6 +37,9 @@
 
 
 
+#include <stdarg.h>
+#include <stdio.h>
+
 /*
  * VS_IOT_LOGGER_ENABLE
  * Enables logger library.
@@ -44,6 +47,14 @@
  */
 
 #define VS_IOT_LOGGER_ENABLE
+
+/*
+ * VS_IOT_LOGGER_ONE_FUNCTION
+ * Sends string directly to the function defined by this macros.
+ * Send EOL after string output.
+ */
+
+//#define VS_IOT_LOGGER_ONE_FUNCTION(LEVEL, CUR_FILE, CUR_LINE, FORMAT, ...)
 
 /*
  * VS_IOT_LOGGER_EOL

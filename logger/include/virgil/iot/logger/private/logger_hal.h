@@ -36,8 +36,6 @@
 #define VIRGIL_IOT_SDK_LOGGER_HAL_H_
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <time.h>
 
 /*
  * Send string to the output.
