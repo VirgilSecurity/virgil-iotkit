@@ -38,6 +38,7 @@
 #include <logger-config.h>
 #include <stdint.h>
 
-char *utoa_fast_div(uint32_t value, char *buffer);
+char *
+utoa_fast_div(uint32_t value, char *buffer);
 
 #endif // VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_

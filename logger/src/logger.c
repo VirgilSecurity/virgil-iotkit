@@ -53,7 +53,7 @@ static bool _last_res = true;
 
 /******************************************************************************/
 bool
-vs_logger_last_result(void){
+vs_logger_last_result(void) {
     return _last_res;
 }
 
@@ -120,19 +120,23 @@ _get_level_str(vs_log_level_t log_level) {
 }
 
 /******************************************************************************/
-#define VS_LOGGER_OUTPUT(STR) do{ if(!vs_logger_output_hal(STR)) goto terminate; } while(0)
+#define VS_LOGGER_OUTPUT(STR)                                                                                          \
+    do {                                                                                                               \
+        if (!vs_logger_output_hal(STR))                                                                                \
+            goto terminate;                                                                                            \
+    } while (0)
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
-#endif  // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
+#endif // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 
 /******************************************************************************/
 static bool
 _output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_num) {
     const char *level_str = NULL;
     bool res = true;
-    char buf[11];   // for line number less than 9'000'000'000
+    char buf[11]; // for line number less than 9'000'000'000
 
     level_str = _get_level_str(level);
 
@@ -158,7 +162,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_nu
         VS_LOGGER_OUTPUT("] ");
     }
 
-    terminate:
+terminate:
 
     _last_res = res;
     return res;
@@ -203,8 +207,8 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
     bool res = false;
 #if VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
     static
-#endif  // VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
-    char stack_buf[VS_IOT_LOGGER_MAX_BUFFER_SIZE];
+#endif // VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
+            char stack_buf[VS_IOT_LOGGER_MAX_BUFFER_SIZE];
 
     _last_res = true;
 
@@ -261,7 +265,7 @@ terminate:
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic pop
-#endif  // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
+#endif // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 
 /******************************************************************************/
 void
@@ -296,16 +300,16 @@ vs_logger_message_hex(vs_log_level_t level,
 
     cur_byte = (unsigned char *)data_buf;
     for (pos = 0; pos < data_size; ++pos, ++cur_byte) {
-        if(VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) < 0 )
+        if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) < 0)
 
-        VS_LOGGER_OUTPUT(buf);
+            VS_LOGGER_OUTPUT(buf);
     }
 
     VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
 
     res = true;
 
-    terminate:
+terminate:
 
     _last_res = res;
 
@@ -313,4 +317,3 @@ vs_logger_message_hex(vs_log_level_t level,
 }
 
 #endif // VS_IOT_LOGGER_USE_LIBRARY == 1
-

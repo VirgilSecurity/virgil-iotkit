@@ -38,15 +38,14 @@
 #include <stdlib-config.h>
 
 /******************************************************************************/
-typedef struct
-{
+typedef struct {
     uint32_t quot;
     uint8_t rem;
 } divmod10_t;
 
 /******************************************************************************/
-static divmod10_t divmodu10(uint32_t n)
-{
+static divmod10_t
+divmodu10(uint32_t n) {
     divmod10_t res;
     uint32_t qq;
 
@@ -62,8 +61,7 @@ static divmod10_t divmodu10(uint32_t n)
 
     res.rem = (uint8_t)(n - ((res.quot << 1) + (qq & ~7ul)));
 
-    if(res.rem > 9)
-    {
+    if (res.rem > 9) {
         res.rem -= 10;
         res.quot++;
     }
@@ -71,18 +69,16 @@ static divmod10_t divmodu10(uint32_t n)
 }
 
 /******************************************************************************/
-char *utoa_fast_div(uint32_t value, char *buffer)
-{
+char *
+utoa_fast_div(uint32_t value, char *buffer) {
     VS_IOT_ASSERT(buffer);
 
     buffer += 11;
     *--buffer = 0;
-    do
-    {
+    do {
         divmod10_t res = divmodu10(value);
         *--buffer = res.rem + '0';
         value = res.quot;
-    }
-    while (value != 0);
+    } while (value != 0);
     return buffer;
 }

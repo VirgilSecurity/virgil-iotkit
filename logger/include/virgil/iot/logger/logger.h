@@ -36,6 +36,7 @@
 #define AP_SECURITY_SDK_LOGGER_H
 
 #include <logger-config.h>
+#include <stdarg.h>
 #include <string.h>
 
 // Logging levels
@@ -149,52 +150,66 @@ vs_logger_message_hex(vs_log_level_t level,
 
 #elif VS_IOT_LOGGER_USE_LIBRARY != 1 && defined(VS_IOT_LOGGER_FUNCTION)
 
-#define vs_logger_last_result()         true
-#define vs_logger_init(log_level)       (void) log_level;
-#define vs_logger_set_loglev(log_level) (void) log_level;
-#define vs_logger_get_loglev()          VS_LOGLEV_NO_LOGGER
-#define vs_logger_is_loglev(level)      ((level) == VS_LOGLEV_NO_LOGGER)
+#define vs_logger_last_result() true
+#define vs_logger_init(log_level) (void)log_level;
+#define vs_logger_set_loglev(log_level) (void)log_level;
+#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER
+#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)
 
-#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)   do {\
-        (void) level;   \
-        (void) cur_filename;    \
-        (void) line_num;    \
-        (void) prefix;  \
-        (void) data_buf;    \
-        (void) data_size;   \
-    } \
-    while(0)
+#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)                              \
+    do {                                                                                                               \
+        (void)level;                                                                                                   \
+        (void)cur_filename;                                                                                            \
+        (void)line_num;                                                                                                \
+        (void)prefix;                                                                                                  \
+        (void)data_buf;                                                                                                \
+        (void)data_size;                                                                                               \
+    } while (0)
 
-#define vs_logger_message(level, cur_filename, line_num, log_format, ...) do {\
-        (void) level;   \
-        (void) cur_filename;    \
-        (void) line_num;    \
-        VS_IOT_LOGGER_FUNCTION(log_format, ## __VA_ARGS__ ); \
-        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL); \
-    } \
-    while(0)
+#define vs_logger_message(level, cur_filename, line_num, log_format, ...)                                              \
+    do {                                                                                                               \
+        (void)level;                                                                                                   \
+        (void)cur_filename;                                                                                            \
+        (void)line_num;                                                                                                \
+        VS_IOT_LOGGER_FUNCTION(log_format, ##__VA_ARGS__);                                                             \
+        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                                                                     \
+    } while (0)
 
-#else   // VS_IOT_LOGGER_USE_LIBRARY != 1 && !defined(VS_IOT_LOGGER_FUNCTION)
+#else // VS_IOT_LOGGER_USE_LIBRARY != 1 && !defined(VS_IOT_LOGGER_FUNCTION)
 
-#define vs_logger_last_result()         true
-#define vs_logger_init(log_level)       (void) log_level;
-#define vs_logger_set_loglev(log_level) (void) log_level;
-#define vs_logger_get_loglev()          VS_LOGLEV_NO_LOGGER
-#define vs_logger_is_loglev(level)      ((level) == VS_LOGLEV_NO_LOGGER)
+#include "macro_va_args.h"
 
-#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)   do {\
-        (void) level;   \
-        (void) cur_filename;    \
-        (void) line_num;    \
-        (void) prefix;  \
-        (void) data_buf;    \
-        (void) data_size;   \
-    } \
-    while(0)
+#define vs_logger_last_result() true
+#define vs_logger_init(log_level) (void)log_level;
+#define vs_logger_set_loglev(log_level) (void)log_level;
+#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER
+#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)
 
-#define vs_logger_message(level, cur_filename, line_num, log_format, ...) do { (void) level; (void) cur_filename; (void) line_num;    \
-        (void) log_format;  \
-    } while(0)
+#define VS_IOT_LOGGER_VOID(a) (void)a;
+
+#undef VS_LOG
+#undef VS_LOG_HEX
+#undef VS_LOG_INFO
+#undef VS_LOG_FATAL
+#undef VS_LOG_ALERT
+#undef VS_LOG_CRITICAL
+#undef VS_LOG_ERROR
+#undef VS_LOG_WARNING
+#undef VS_LOG_NOTICE
+#undef VS_LOG_TRACE
+#undef VS_LOG_DEBUG
+
+#define VS_LOG(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_HEX(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_INFO(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_FATAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_ALERT(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_CRITICAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_ERROR(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_WARNING(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_NOTICE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_TRACE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_DEBUG(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 
 #endif // VS_IOT_LOGGER_USE_LIBRARY == 1
 
