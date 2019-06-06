@@ -32,29 +32,57 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
-#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+// (c) http://we.easyelectronics.ru/Soft/preobrazuem-v-stroku-chast-1-celye-chisla.html
 
-#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib-config.h>
 
-/*
- * Send string to the output.
- * buffer - pointer to the ASCIIZ string. Must not be NULL.
- * Returns true in case of success or false in any error occur
- */
+/******************************************************************************/
+typedef struct
+{
+    uint32_t quot;
+    uint8_t rem;
+} divmod10_t;
 
-bool
-vs_logger_output_hal(const char *buffer);
+/******************************************************************************/
+static divmod10_t divmodu10(uint32_t n)
+{
+    divmod10_t res;
+    uint32_t qq;
 
-/*
- * Generate current time directly to the output buffer, i. e. by using
- * vs_logger_output_hal.
- * Must return true in case of success or false.
- */
+    res.quot = n >> 1;
+    res.quot += res.quot >> 1;
+    res.quot += res.quot >> 4;
+    res.quot += res.quot >> 8;
+    res.quot += res.quot >> 16;
 
-#if VS_IOT_LOGGER_OUTPUT_TIME == 1
-bool
-vs_logger_current_time_hal(void);
-#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+    qq = res.quot;
 
-#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_
+    res.quot >>= 3;
+
+    res.rem = (uint8_t)(n - ((res.quot << 1) + (qq & ~7ul)));
+
+    if(res.rem > 9)
+    {
+        res.rem -= 10;
+        res.quot++;
+    }
+    return res;
+}
+
+/******************************************************************************/
+char *utoa_fast_div(uint32_t value, char *buffer)
+{
+    VS_IOT_ASSERT(buffer);
+
+    buffer += 11;
+    *--buffer = 0;
+    do
+    {
+        divmod10_t res = divmodu10(value);
+        *--buffer = res.rem + '0';
+        value = res.quot;
+    }
+    while (value != 0);
+    return buffer;
+}

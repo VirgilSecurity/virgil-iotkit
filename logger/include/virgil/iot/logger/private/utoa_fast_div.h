@@ -32,29 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
-#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#ifndef VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
+#define VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
 
-#include <stdbool.h>
+#include <logger-config.h>
+#include <stdint.h>
 
-/*
- * Send string to the output.
- * buffer - pointer to the ASCIIZ string. Must not be NULL.
- * Returns true in case of success or false in any error occur
- */
+char *utoa_fast_div(uint32_t value, char *buffer);
 
-bool
-vs_logger_output_hal(const char *buffer);
-
-/*
- * Generate current time directly to the output buffer, i. e. by using
- * vs_logger_output_hal.
- * Must return true in case of success or false.
- */
-
-#if VS_IOT_LOGGER_OUTPUT_TIME == 1
-bool
-vs_logger_current_time_hal(void);
-#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
-
-#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#endif // VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_

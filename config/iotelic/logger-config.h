@@ -43,23 +43,40 @@
  * Logger macroses will be empty if it is disabled.
  */
 
-#define VS_IOT_LOGGER_ENABLE
+#define VS_IOT_LOGGER_ENABLE 0
+
+#if VS_IOT_LOGGER_ENABLE == 1
 
 /*
- * VS_IOT_LOGGER_STATIC_BUFFER
- * Defines static buffer and its size for output process.
+ * VS_IOT_LOGGER_MAX_BUFFER_SIZE
+ * Defines maximum internal char buffer for output purposes.
+ */
+
+#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 1024
+
+/*
+ * VS_IOT_LOGGER_USE_STATIC_BUFFER
+ * Enables static buffer usage instead of stack one.
  * This can be done for single thread mode only.
  */
 
-//#define VS_IOT_LOGGER_STATIC_BUFFER 512
+#define VS_IOT_LOGGER_USE_STATIC_BUFFER 1
 
 /*
- * VS_IOT_LOGGER_ONE_FUNCTION
- * Sends string directly to the function defined by this macros.
- * Send EOL after string output.
+ * VS_IOT_LOGGER_USE_LIBRARY
+ * Enables logger library usage instead of printf-like function call.
  */
 
-//#define VS_IOT_LOGGER_ONE_FUNCTION(LEVEL, CUR_FILE, CUR_LINE, FORMAT, ...)
+#define VS_IOT_LOGGER_USE_LIBRARY 0
+
+/*
+ * VS_IOT_LOGGER_FUNCTION
+ * Sends string directly to the printf-like function defined by this macros.
+ * Used when VS_IOT_LOGGER_USE_LIBRARY == 0
+ */
+
+#include <stdio.h>
+#define VS_IOT_LOGGER_FUNCTION printf
 
 /*
  * VS_IOT_LOGGER_EOL
@@ -76,6 +93,8 @@
  */
 
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
+
+#endif  // #if VS_IOT_LOGGER_ENABLE == 1
 
 
 

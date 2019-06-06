@@ -32,45 +32,35 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdlib-config.h>
 #include <logger-config.h>
 
-#if defined(VS_IOT_LOGGER_ENABLE) && !defined(VS_IOT_LOGGER_ONE_FUNCTION)
+#if VS_IOT_LOGGER_USE_LIBRARY == 1
 
+#include <stdlib-config.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <logger.h>
 #include <logger_hal.h>
+#include <utoa_fast_div.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
-#ifndef VS_IOT_LOGGER_STATIC_BUFFER
-static size_t _max_buf_size = 0;
-#endif // VS_IOT_LOGGER_STATIC_BUFFER
+static bool _last_res = true;
 
-//#define VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+// Output directly string without single '%' in the string
+#define VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL 1
 
 /******************************************************************************/
 bool
-vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
+vs_logger_last_result(void){
+    return _last_res;
+}
 
+/******************************************************************************/
+void
+vs_logger_init(vs_log_level_t log_level) {
     vs_logger_set_loglev(log_level);
-
-#ifdef VS_IOT_LOGGER_STATIC_BUFFER
-
-    (void)max_buf_size;
-
-#else // VS_IOT_LOGGER_STATIC_BUFFER
-
-    _max_buf_size = max_buf_size;
-
-    if (!max_buf_size) {
-        return false;
-    }
-
-#endif // VS_IOT_LOGGER_STATIC_BUFFER
-
-    return true;
 }
 
 /******************************************************************************/
@@ -130,10 +120,7 @@ _get_level_str(vs_log_level_t log_level) {
 }
 
 /******************************************************************************/
-#define VS_LOGGER_OUTPUT(STR)                                                                                          \
-    if (res) {                                                                                                         \
-        res = vs_logger_output_hal(STR);                                                                               \
-    }
+#define VS_LOGGER_OUTPUT(STR) do{ if(!vs_logger_output_hal(STR)) goto terminate; } while(0)
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic push
@@ -142,73 +129,47 @@ _get_level_str(vs_log_level_t log_level) {
 
 /******************************************************************************/
 static bool
-_output_preface(vs_log_level_t level, const char *cur_filename, size_t line_num) {
-    int str_size = 0;
+_output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_num) {
     const char *level_str = NULL;
-    int snprintf_res = 0;
     bool res = true;
+    char buf[11];   // for line number less than 9'000'000'000
 
     level_str = _get_level_str(level);
 
-    // Output time string
-#if VS_IOT_LOGGER_OUTPUT_TIME
+#if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
+    // Output time string
     if (!vs_logger_current_time_hal()) {
         return false;
     }
 
-#endif // VS_IOT_LOGGER_OUTPUT_TIME
+#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
     // Output level and file
-    VS_LOGGER_OUTPUT(" [")
-    VS_LOGGER_OUTPUT(level_str)
-    VS_LOGGER_OUTPUT("] ")
+    VS_LOGGER_OUTPUT(" [");
+    VS_LOGGER_OUTPUT(level_str);
+    VS_LOGGER_OUTPUT("] ");
 
     if (cur_filename && line_num) {
         VS_LOGGER_OUTPUT(" [");
         VS_LOGGER_OUTPUT(cur_filename);
         VS_LOGGER_OUTPUT(":");
-
-        // Calculate preface string size
-        // TODO : snprintf - since C99
-        str_size = VS_IOT_SNPRINTF(NULL, 0, "%d] ", (int)line_num) + 1;
+        VS_LOGGER_OUTPUT(utoa_fast_div((uint32_t)line_num, buf));
+        VS_LOGGER_OUTPUT("] ");
     }
 
-    VS_IOT_ASSERT(str_size > 0);
+    terminate:
 
-#if VS_IOT_LOGGER_OUTPUT_TIME
-
-    VS_IOT_ASSERT(str_size <= _max_buf_size);
-
-#endif // VS_IOT_LOGGER_OUTPUT_TIME
-
-    // TODO : VAL, variable not at the function begin - since C99
-    char stack_buf[str_size];
-
-    // TODO : snprintf - since C99
-    if (cur_filename && line_num) {
-        snprintf_res = VS_IOT_SNPRINTF(stack_buf, str_size, "%d] ", (int)line_num);
-    }
-
-    if (snprintf_res < 0) {
-        VS_IOT_ASSERT(0 && "snprintf call error");
-        return false;
-    }
-
-    // Output string
-    VS_LOGGER_OUTPUT(stack_buf);
-
+    _last_res = res;
     return res;
 }
 
-#ifdef VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#if VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
 /******************************************************************************/
 static bool
-_no_format(const char *format, bool *output_result) {
+_no_format(const char *format) {
     const char *cur_pos;
-
-    VS_IOT_ASSERT(output_result);
 
     for (cur_pos = format; *cur_pos != '\0'; ++cur_pos) {
         if (*cur_pos != '%') {
@@ -227,94 +188,60 @@ _no_format(const char *format, bool *output_result) {
         ++cur_pos;
     }
 
-    // There are no arguments, so no need to call sprintf call
-    *output_result &= vs_logger_output_hal(format);
-    *output_result &= vs_logger_output_hal(VS_IOT_LOGGER_EOL);
     return true;
 }
 
-#endif // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#endif // VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
 /******************************************************************************/
-bool
-vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_num, const char *format, ...) {
+void
+vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *format, ...) {
     static const char *CUTTED_STR = "...";
     static const size_t CUTTED_STR_SIZE = 3;
     va_list args1;
-    int str_size;
     int snprintf_res;
-    bool res = true;
-    bool cutted_str = false;
-#ifdef VS_IOT_LOGGER_STATIC_BUFFER
-    static char stack_buf[VS_IOT_LOGGER_STATIC_BUFFER];
-#else  // VS_IOT_LOGGER_STATIC_BUFFER
-    va_list args2;
-#endif // VS_IOT_LOGGER_STATIC_BUFFER
+    bool res = false;
+#if VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
+    static
+#endif  // VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
+    char stack_buf[VS_IOT_LOGGER_MAX_BUFFER_SIZE];
+
+    _last_res = true;
 
     if (!vs_logger_is_loglev(level)) {
-        return true;
+        goto terminate;
     }
 
     VS_IOT_ASSERT(cur_filename);
     VS_IOT_ASSERT(format);
 
     if (!_output_preface(level, cur_filename, line_num)) {
-        return false;
+        goto terminate;
     }
 
-#ifdef VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#if VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
     // Omit arguments if there are no single "%"
-    if (_no_format(format, &res)) {
-        return res;
+    if (_no_format(format)) {
+        VS_LOGGER_OUTPUT(format);
+        VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
+        res = true;
+        goto terminate;
     }
 
-#endif // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#endif // VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL
 
     va_start(args1, format);
 
-#ifdef VS_IOT_LOGGER_STATIC_BUFFER
-
-    str_size = VS_IOT_LOGGER_STATIC_BUFFER;
-
-#else // VS_IOT_LOGGER_STATIC_BUFFER
-
-    // Calculate string size
-    va_copy(args2, args1);
-
-    str_size = VS_IOT_VSNPRINTF(NULL, 0, format, args2) /* format ... */ + 1;
-
-    va_end(args2);
-
-    VS_IOT_ASSERT(str_size > 0);
-
-    if (str_size > _max_buf_size) {
-        str_size = _max_buf_size;
-    }
-
-    // Allocate stack buffer
-
-    // TODO : VAL, variable not at the function begin - since C99
-    char stack_buf[str_size];
-
-#endif // VS_IOT_LOGGER_STATIC_BUFFER
-
-    // Make full string
-
     // TODO : vsnprintf - since C99
-    snprintf_res = VS_IOT_VSNPRINTF(stack_buf, str_size, format, args1);
-
-    if (snprintf_res >= str_size) {
-        VS_IOT_STRCPY(stack_buf + str_size - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
-        cutted_str = true;
-    } else if (snprintf_res < 0) {
-        res = false;
-    }
+    snprintf_res = VS_IOT_VSNPRINTF(stack_buf, VS_IOT_LOGGER_MAX_BUFFER_SIZE, format, args1);
 
     va_end(args1);
 
-    if (!res) {
+    if (snprintf_res < 0) {
         goto terminate;
+    } else if (snprintf_res >= VS_IOT_LOGGER_MAX_BUFFER_SIZE) {
+        VS_IOT_STRCPY(stack_buf + VS_IOT_LOGGER_MAX_BUFFER_SIZE - (CUTTED_STR_SIZE + 1 /* '\0' */), CUTTED_STR);
     }
 
     // Output string
@@ -323,8 +250,13 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     // EOL
     VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
 
+    res = true;
+
 terminate:
-    return res && !cutted_str;
+
+    _last_res = res;
+
+    return;
 }
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
@@ -332,10 +264,10 @@ terminate:
 #endif
 
 /******************************************************************************/
-bool
+void
 vs_logger_message_hex(vs_log_level_t level,
                       const char *cur_filename,
-                      size_t line_num,
+                      uint32_t line_num,
                       const char *prefix,
                       const void *data_buf,
                       const size_t data_size) {
@@ -343,33 +275,42 @@ vs_logger_message_hex(vs_log_level_t level,
     char buf[3]; // HEX_FORMAT output
     unsigned char *cur_byte;
     size_t pos;
-    bool res;
+    bool res = false;
+
+    _last_res = true;
 
     VS_IOT_ASSERT(prefix);
     VS_IOT_ASSERT(data_buf);
     VS_IOT_ASSERT(data_size);
 
     if (!vs_logger_is_loglev(level)) {
-        return true;
+        _last_res = false;
+        return;
     }
 
     if (!_output_preface(level, cur_filename, line_num)) {
-        return false;
+        return;
     }
 
-    res = vs_logger_output_hal(prefix);
+    VS_LOGGER_OUTPUT(prefix);
 
     cur_byte = (unsigned char *)data_buf;
-    for (pos = 0; pos < data_size && res; ++pos, ++cur_byte) {
-        VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte);
-        res = vs_logger_output_hal(buf);
+    for (pos = 0; pos < data_size; ++pos, ++cur_byte) {
+        if(VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) < 0 )
+
+        VS_LOGGER_OUTPUT(buf);
     }
 
-    if (res) {
-        res = vs_logger_output_hal(VS_IOT_LOGGER_EOL);
-    }
+    VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
 
-    return res;
+    res = true;
+
+    terminate:
+
+    _last_res = res;
+
+    return;
 }
 
-#endif // #if defined(VS_IOT_LOGGER_ENABLE) && !defined(VS_IOT_LOGGER_ONE_FUNCTION)
+#endif // VS_IOT_LOGGER_USE_LIBRARY == 1
+
