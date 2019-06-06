@@ -34,6 +34,7 @@
 
 #include <stdlib-config.h>
 #include <logger-config.h>
+#include <trust_list-config.h>
 
 #include <vs_tl_structs.h>
 #include <vs_trust_list.h>
@@ -332,7 +333,7 @@ load_tl_header(size_t storage_type, trust_list_header_t *header) {
         return TL_ERROR_GENERAL;
     }
 
-    if (0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(trust_list_header_t), &readed_sz)) {
+    if (0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(trust_list_header_t))) {
         return TL_OK;
     }
 
@@ -370,8 +371,7 @@ load_tl_footer(size_t storage_type, trust_list_footer_t *footer) {
         return TL_ERROR_GENERAL;
     }
 
-    size_t readed_sz;
-    if (0 == vs_secbox_load( &el, (uint8_t *)footer, sizeof(trust_list_footer_t), &readed_sz)) {
+    if (0 == vs_secbox_load( &el, (uint8_t *)footer, sizeof(trust_list_footer_t))) {
         return TL_OK;
     }
     return TL_ERROR_READ;
@@ -405,7 +405,6 @@ save_tl_key(size_t storage_type, const trust_list_pub_key_t *key) {
 int
 load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key) {
     tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    size_t readed_sz;
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
 
     if (NULL == tl_ctx) {
@@ -416,7 +415,7 @@ load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key
         return TL_ERROR_GENERAL;
     }
 
-    if (0 == vs_secbox_load(&el, (uint8_t *)key, sizeof(trust_list_pub_key_t), &readed_sz)) {
+    if (0 == vs_secbox_load(&el, (uint8_t *)key, sizeof(trust_list_pub_key_t))) {
         return TL_OK;
     }
 

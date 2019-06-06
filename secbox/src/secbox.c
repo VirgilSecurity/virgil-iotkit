@@ -29,11 +29,11 @@ vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *in_data, s
 
 /******************************************************************************/
 int
-vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t buf_sz, size_t *out_sz) {
+vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t data_sz) {
     VS_ASSERT(_hal_mpl);
     VS_ASSERT(_hal_mpl->load);
 
-    return _hal_mpl->load(element_info, out_data, buf_sz, out_sz);
+    return _hal_mpl->load(element_info, out_data, data_sz);
 }
 
 /******************************************************************************/
