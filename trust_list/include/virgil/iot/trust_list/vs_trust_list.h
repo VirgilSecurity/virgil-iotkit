@@ -2,6 +2,8 @@
 #ifndef TRUST_LIST_H
 #define TRUST_LIST_H
 
+#include <stdint.h>
+
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
     VS_TL_ELEMENT_TLH,

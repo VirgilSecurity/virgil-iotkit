@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TL_STORAGE_SIZE (10 * 4096)
-
 #define PUBKEY_TINY_SZ (64)
 #define PUBKEY_TINY_ID_SZ (2)
 #define SIGNATURE_SZ (64)

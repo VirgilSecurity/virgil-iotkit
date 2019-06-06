@@ -35,5 +35,14 @@
 #ifndef VIRGIL_IOT_SDK_TL_CONFIG_H
 #define VIRGIL_IOT_SDK_TL_CONFIG_H
 
+/*
+ * TL_STORAGE_SIZE
+ * Maximum size of trust list used.
+ * Please note that library uses three type of storage,
+ * so you need have at least TL_STORAGE_SIZE * 3 memory size
+ * (excluding filesystem)
+ */
+
+#define TL_STORAGE_SIZE (10 * 4096)
 
 #endif // VIRGIL_IOT_SDK_TL_CONFIG_H
