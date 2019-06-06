@@ -46,7 +46,7 @@
 
 // Helpers
 #define VS_LOG(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
-#define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
 #define VS_LOG_INFO(FRMT, ...) vs_logger_message(VS_LOGLEV_INFO, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 #define VS_LOG_FATAL(FRMT, ...) vs_logger_message(VS_LOGLEV_FATAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)

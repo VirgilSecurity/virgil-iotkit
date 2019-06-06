@@ -46,7 +46,7 @@
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 #ifndef VS_IOT_LOGGER_STATIC_BUFFER
 static size_t _max_buf_size = 0;
-#endif  // VS_IOT_LOGGER_STATIC_BUFFER
+#endif // VS_IOT_LOGGER_STATIC_BUFFER
 
 //#define VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
 
@@ -58,9 +58,9 @@ vs_logger_init(vs_log_level_t log_level, size_t max_buf_size) {
 
 #ifdef VS_IOT_LOGGER_STATIC_BUFFER
 
-    (void) max_buf_size;
+    (void)max_buf_size;
 
-#else   // VS_IOT_LOGGER_STATIC_BUFFER
+#else // VS_IOT_LOGGER_STATIC_BUFFER
 
     _max_buf_size = max_buf_size;
 
@@ -233,7 +233,7 @@ _no_format(const char *format, bool *output_result) {
     return true;
 }
 
-#endif  // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#endif // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
 
 /******************************************************************************/
 bool
@@ -247,9 +247,9 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     bool cutted_str = false;
 #ifdef VS_IOT_LOGGER_STATIC_BUFFER
     static char stack_buf[VS_IOT_LOGGER_STATIC_BUFFER];
-#else   // VS_IOT_LOGGER_STATIC_BUFFER
+#else  // VS_IOT_LOGGER_STATIC_BUFFER
     va_list args2;
-#endif  // VS_IOT_LOGGER_STATIC_BUFFER
+#endif // VS_IOT_LOGGER_STATIC_BUFFER
 
     if (!vs_logger_is_loglev(level)) {
         return true;
@@ -269,7 +269,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
         return res;
     }
 
-#endif  // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
+#endif // VS_IOT_LOGGER_OPTIMIZE_SNPRINTF
 
     va_start(args1, format);
 
@@ -297,7 +297,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, size_t line_nu
     // TODO : VAL, variable not at the function begin - since C99
     char stack_buf[str_size];
 
-#endif  // VS_IOT_LOGGER_STATIC_BUFFER
+#endif // VS_IOT_LOGGER_STATIC_BUFFER
 
     // Make full string
 

@@ -37,9 +37,6 @@
 
 
 
-#include <stdarg.h>
-#include <stdio.h>
-
 /*
  * VS_IOT_LOGGER_ENABLE
  * Enables logger library.
