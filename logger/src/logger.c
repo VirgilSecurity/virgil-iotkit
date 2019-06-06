@@ -125,7 +125,7 @@ _get_level_str(vs_log_level_t log_level) {
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
-#endif
+#endif  // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 
 /******************************************************************************/
 static bool
@@ -143,7 +143,7 @@ _output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_nu
         return false;
     }
 
-#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+#endif // VS_IOT_LOGGER_OUTPUT_TIME == 1
 
     // Output level and file
     VS_LOGGER_OUTPUT(" [");
@@ -229,7 +229,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
         goto terminate;
     }
 
-#endif // VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL
+#endif // VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
     va_start(args1, format);
 
@@ -261,7 +261,7 @@ terminate:
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 #pragma GCC diagnostic pop
-#endif
+#endif  // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 
 /******************************************************************************/
 void

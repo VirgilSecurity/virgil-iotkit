@@ -43,7 +43,7 @@
  * Logger macroses will be empty if it is disabled.
  */
 
-#define VS_IOT_LOGGER_ENABLE 0
+#define VS_IOT_LOGGER_ENABLE 1
 
 #if VS_IOT_LOGGER_ENABLE == 1
 
@@ -67,7 +67,7 @@
  * Enables logger library usage instead of printf-like function call.
  */
 
-#define VS_IOT_LOGGER_USE_LIBRARY 0
+#define VS_IOT_LOGGER_USE_LIBRARY 1
 
 /*
  * VS_IOT_LOGGER_FUNCTION
