@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_AP_CONFIG_H
-#define VIRGIL_IOT_SDK_AP_CONFIG_H
+#ifndef VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#define VIRGIL_IOT_SDK_LOGGER_CONFIG_H
 
 
 
@@ -55,4 +55,4 @@
 
 
 
-#endif // VIRGIL_IOT_SDK_AP_CONFIG_H
+#endif // VIRGIL_IOT_SDK_LOGGER_CONFIG_H

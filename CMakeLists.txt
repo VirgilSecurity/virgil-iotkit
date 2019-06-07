@@ -180,3 +180,8 @@ endif()
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
 endif()
+
+#
+#   Tests
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
