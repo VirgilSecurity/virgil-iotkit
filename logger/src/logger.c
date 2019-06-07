@@ -32,7 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#define VS_IOT_LOGGER_EXCLUDE_EXTERNAL_HEADERS 1
 #include <logger-config.h>
+#undef VS_IOT_LOGGER_EXCLUDE_EXTERNAL_HEADERS
 
 #if VS_IOT_LOGGER_USE_LIBRARY == 1
 

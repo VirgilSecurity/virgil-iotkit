@@ -32,73 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_CONFIG_H
-#define VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
 
 
 
-/*
- * VS_IOT_LOGGER_ENABLE
- * Enables logger library.
- * Logger macroses will be empty if it is disabled.
- */
-
-#define VS_IOT_LOGGER_ENABLE 1
-
-#if VS_IOT_LOGGER_ENABLE
-
-/*
- * VS_IOT_LOGGER_MAX_BUFFER_SIZE
- * Defines maximum internal char buffer for output purposes.
- */
-
-#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 256
-
-/*
- * VS_IOT_LOGGER_USE_STATIC_BUFFER
- * Enables static buffer usage instead of stack one.
- * This can be done for single thread mode only.
- */
-
-#define VS_IOT_LOGGER_USE_STATIC_BUFFER 0
-
-/*
- * VS_IOT_LOGGER_USE_LIBRARY
- * Enables logger library usage with logger level, file name and line number.
- * If it is disabled, VS_IOT_LOGGER_FUNCTION function will be called.
- */
-
-#define VS_IOT_LOGGER_USE_LIBRARY 1
-
-/*
- * VS_IOT_LOGGER_FUNCTION
- * Sends string directly to the printf-like function defined by this macros.
- * Used when VS_IOT_LOGGER_USE_LIBRARY == 0
- */
-
+#include <assert.h>
 #include <stdio.h>
-#define VS_IOT_LOGGER_FUNCTION printf
+#include <string.h>
 
-/*
- * VS_IOT_LOGGER_EOL
- * ASCIIZ string placed at the end of the output string.
- * Normally this is "\n".
- */
-
-#define VS_IOT_LOGGER_EOL "\n"
-
-/*
- * VS_IOT_LOGGER_OUTPUT_TIME
- * Enables current time output at the beginning of log string.
- * Requires vs_logger_current_time_hal function implementation.
- */
-
-#define VS_IOT_LOGGER_OUTPUT_TIME   0
-
-#else  // VS_IOT_LOGGER_ENABLE
-#define VS_IOT_LOGGER_USE_LIBRARY 0
-#endif  // VS_IOT_LOGGER_ENABLE
+#define VS_IOT_ASSERT(...)
+#define VS_IOT_CALLOC    calloc
+#define VS_IOT_FREE      free
+#define VS_IOT_MALLOC    malloc
+#define VS_IOT_MEMCMP    memcmp
+#define VS_IOT_MEMCPY    memcpy
+#define VS_IOT_SNPRINTF  snprintf
+#define VS_IOT_SPRINTF   sprintf
+#define VS_IOT_STRCPY    strcpy
+#define VS_IOT_VSNPRINTF vsnprintf
 
 
 
-#endif // VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H

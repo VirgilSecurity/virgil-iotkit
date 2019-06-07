@@ -52,7 +52,7 @@
  * Defines maximum internal char buffer for output purposes.
  */
 
-#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 1024
+#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 256
 
 /*
  * VS_IOT_LOGGER_USE_STATIC_BUFFER
