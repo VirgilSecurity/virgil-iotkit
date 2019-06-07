@@ -91,7 +91,7 @@ vs_logger_is_loglev(vs_log_level_t level) {
 
 /******************************************************************************/
 static const char *
-_get_level_str(vs_log_level_t log_level) {
+vs_logger_get_level_str(vs_log_level_t log_level) {
 
     switch (log_level) {
     case VS_LOGLEV_INFO:
@@ -133,12 +133,12 @@ _get_level_str(vs_log_level_t log_level) {
 
 /******************************************************************************/
 static bool
-_output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_num) {
+vs_logger_output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_num) {
     const char *level_str = NULL;
     bool res = true;
     char buf[11]; // for line number less than 9'000'000'000
 
-    level_str = _get_level_str(level);
+    level_str = vs_logger_get_level_str(level);
 
 #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
@@ -172,7 +172,7 @@ terminate:
 
 /******************************************************************************/
 static bool
-_no_format(const char *format) {
+vs_logger_no_format(const char *format) {
     const char *cur_pos;
 
     for (cur_pos = format; *cur_pos != '\0'; ++cur_pos) {
@@ -219,14 +219,14 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
     VS_IOT_ASSERT(cur_filename);
     VS_IOT_ASSERT(format);
 
-    if (!_output_preface(level, cur_filename, line_num)) {
+    if (!vs_logger_output_preface(level, cur_filename, line_num)) {
         goto terminate;
     }
 
 #if VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
     // Omit arguments if there are no single "%"
-    if (_no_format(format)) {
+    if (vs_logger_no_format(format)) {
         VS_LOGGER_OUTPUT(format);
         VS_LOGGER_OUTPUT(VS_IOT_LOGGER_EOL);
         res = true;
@@ -292,7 +292,7 @@ vs_logger_message_hex(vs_log_level_t level,
         return;
     }
 
-    if (!_output_preface(level, cur_filename, line_num)) {
+    if (!vs_logger_output_preface(level, cur_filename, line_num)) {
         return;
     }
 

@@ -45,7 +45,7 @@
 
 #define VS_IOT_LOGGER_ENABLE 1
 
-#if VS_IOT_LOGGER_ENABLE == 1
+#if VS_IOT_LOGGER_ENABLE
 
 /*
  * VS_IOT_LOGGER_MAX_BUFFER_SIZE
@@ -60,11 +60,12 @@
  * This can be done for single thread mode only.
  */
 
-#define VS_IOT_LOGGER_USE_STATIC_BUFFER 1
+#define VS_IOT_LOGGER_USE_STATIC_BUFFER 0
 
 /*
  * VS_IOT_LOGGER_USE_LIBRARY
- * Enables logger library usage instead of printf-like function call.
+ * Enables logger library usage with logger level, file name and line number.
+ * If it is disabled, VS_IOT_LOGGER_FUNCTION function will be called.
  */
 
 #define VS_IOT_LOGGER_USE_LIBRARY 1
@@ -94,11 +95,9 @@
 
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
 
-#else  // VS_IOT_LOGGER_ENABLE == 1
-
+#else  // VS_IOT_LOGGER_ENABLE
 #define VS_IOT_LOGGER_USE_LIBRARY 0
-
-#endif  // VS_IOT_LOGGER_ENABLE == 1
+#endif  // VS_IOT_LOGGER_ENABLE
 
 
 

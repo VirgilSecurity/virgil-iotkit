@@ -58,15 +58,15 @@ extern bool is_client_call;
 void
 prepare_test_netif(vs_netif_t *netif);
 
-#define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION)                                                                        \
+#define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
     if ((OPERATION) != 0) {                                                                                            \
-        VS_LOG_ERROR(DESCRIPTION);                                                                                     \
+        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
     }
 
-#define SDMP_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION)                                                                  \
+#define SDMP_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)                                                             \
     if ((OPERATION) == 0) {                                                                                            \
-        VS_LOG_ERROR(DESCRIPTION);                                                                                     \
+        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
     }
 

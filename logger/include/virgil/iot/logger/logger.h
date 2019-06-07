@@ -64,7 +64,8 @@ typedef enum {
 #define VS_LOG_SET_LOGLEVEL(LOGLEV_VALUE) vs_logger_set_loglev(LOGLEV_VALUE)
 
 #define VS_LOG(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
-#define VS_LOG_HEX(LGLVL, FRMT, ...) vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
+    vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
 
 #define VS_LOG_INFO(FRMT, ...) vs_logger_message(VS_LOGLEV_INFO, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 #define VS_LOG_FATAL(FRMT, ...) vs_logger_message(VS_LOGLEV_FATAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
@@ -76,7 +77,7 @@ typedef enum {
 #define VS_LOG_TRACE(FRMT, ...) vs_logger_message(VS_LOGLEV_TRACE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 #define VS_LOG_DEBUG(FRMT, ...) vs_logger_message(VS_LOGLEV_DEBUG, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
-#if VS_IOT_LOGGER_USE_LIBRARY == 1
+#if VS_IOT_LOGGER_USE_LIBRARY
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -171,7 +172,7 @@ vs_logger_message_hex(vs_log_level_t level,
         (void)level;                                                                                                   \
         (void)cur_filename;                                                                                            \
         (void)line_num;                                                                                                \
-        VS_IOT_LOGGER_FUNCTION(log_format, ##__VA_ARGS__);                                                             \
+        VS_IOT_LOGGER_FUNCTION((log_format), ##__VA_ARGS__);                                                           \
         VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                                                                     \
     } while (0)
 
@@ -200,7 +201,7 @@ vs_logger_message_hex(vs_log_level_t level,
 #undef VS_LOG_DEBUG
 
 #define VS_LOG(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
-#define VS_LOG_HEX(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
+#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE) VS_IOT_MAP(VS_IOT_LOGGER_VOID, PREFIX, BUF, SIZE)
 #define VS_LOG_INFO(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 #define VS_LOG_FATAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 #define VS_LOG_ALERT(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
@@ -211,6 +212,6 @@ vs_logger_message_hex(vs_log_level_t level,
 #define VS_LOG_TRACE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 #define VS_LOG_DEBUG(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 
-#endif // VS_IOT_LOGGER_USE_LIBRARY == 1
+#endif // VS_IOT_LOGGER_USE_LIBRARY
 
 #endif // AP_SECURITY_SDK_LOGGER_H

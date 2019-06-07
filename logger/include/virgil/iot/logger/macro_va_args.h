@@ -49,7 +49,7 @@
 #define VS_IOT_EVAL8(...) VS_IOT_EVAL7(VS_IOT_EVAL7(VS_IOT_EVAL7(__VA_ARGS__)))
 #define VS_IOT_EVAL9(...) VS_IOT_EVAL8(VS_IOT_EVAL8(VS_IOT_EVAL8(__VA_ARGS__)))
 */
-#define VS_IOT_EVAL(...)  VS_IOT_EVAL4(VS_IOT_EVAL4(VS_IOT_EVAL4(__VA_ARGS__)))
+#define VS_IOT_EVAL(...) VS_IOT_EVAL4(VS_IOT_EVAL4(VS_IOT_EVAL4(__VA_ARGS__)))
 
 #define VS_IOT_MAP_END(...)
 #define VS_IOT_MAP_OUT
@@ -60,13 +60,13 @@
 #define VS_IOT_MAP_GET_END(...) VS_IOT_MAP_GET_END1
 #define VS_IOT_MAP_NEXT0(test, next, ...) next VS_IOT_MAP_OUT
 #define VS_IOT_MAP_NEXT1(test, next) VS_IOT_MAP_NEXT0(test, next, 0)
-#define VS_IOT_MAP_NEXT(test, next)  VS_IOT_MAP_NEXT1(VS_IOT_MAP_GET_END test, next)
+#define VS_IOT_MAP_NEXT(test, next) VS_IOT_MAP_NEXT1(VS_IOT_MAP_GET_END test, next)
 
 #define VS_IOT_MAP0(f, x, peek, ...) f(x) VS_IOT_MAP_NEXT(peek, VS_IOT_MAP1)(f, peek, __VA_ARGS__)
 #define VS_IOT_MAP1(f, x, peek, ...) f(x) VS_IOT_MAP_NEXT(peek, VS_IOT_MAP0)(f, peek, __VA_ARGS__)
 
 #define VS_IOT_MAP_LIST_NEXT1(test, next) VS_IOT_MAP_NEXT0(test, VS_IOT_MAP_COMMA next, 0)
-#define VS_IOT_MAP_LIST_NEXT(test, next)  VS_IOT_MAP_LIST_NEXT1(VS_IOT_MAP_GET_END test, next)
+#define VS_IOT_MAP_LIST_NEXT(test, next) VS_IOT_MAP_LIST_NEXT1(VS_IOT_MAP_GET_END test, next)
 
 #define VS_IOT_MAP_LIST0(f, x, peek, ...) f(x) VS_IOT_MAP_LIST_NEXT(peek, VS_IOT_MAP_LIST1)(f, peek, __VA_ARGS__)
 #define VS_IOT_MAP_LIST1(f, x, peek, ...) f(x) VS_IOT_MAP_LIST_NEXT(peek, VS_IOT_MAP_LIST0)(f, peek, __VA_ARGS__)
