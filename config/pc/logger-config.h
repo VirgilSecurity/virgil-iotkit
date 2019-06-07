@@ -43,7 +43,7 @@
  * Logger macroses will be empty if it is disabled.
  */
 
-#define VS_IOT_LOGGER_ENABLE 0
+#define VS_IOT_LOGGER_ENABLE 1
 
 #if VS_IOT_LOGGER_ENABLE == 1
 
@@ -94,7 +94,11 @@
 
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
 
-#endif  // #if VS_IOT_LOGGER_ENABLE == 1
+#else  // VS_IOT_LOGGER_ENABLE == 1
+
+#define VS_IOT_LOGGER_USE_LIBRARY 0
+
+#endif  // VS_IOT_LOGGER_ENABLE == 1
 
 
 
