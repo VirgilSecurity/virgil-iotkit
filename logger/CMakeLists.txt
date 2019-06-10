@@ -41,6 +41,7 @@ project(logger VERSION 0.1.0 LANGUAGES C)
 #
 add_library(logger
         src/logger.c
+        src/utoa_fast_div.c
         )
 
 #

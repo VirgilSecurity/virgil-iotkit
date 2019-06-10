@@ -32,29 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
-#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
 
-#include <stdbool.h>
 
-/*
- * Send string to the output.
- * buffer - pointer to the ASCIIZ string. Must not be NULL.
- * Returns true in case of success or false in any error occur
- */
 
-bool
-vs_logger_output_hal(const char *buffer);
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
-/*
- * Generate current time directly to the output buffer, i. e. by using
- * vs_logger_output_hal.
- * Must return true in case of success or false.
- */
+#define VS_IOT_ASSERT(...)
+#define VS_IOT_CALLOC    calloc
+#define VS_IOT_FREE      free
+#define VS_IOT_MALLOC    malloc
+#define VS_IOT_MEMCMP    memcmp
+#define VS_IOT_MEMCPY    memcpy
+#define VS_IOT_SNPRINTF  snprintf
+#define VS_IOT_SPRINTF   sprintf
+#define VS_IOT_STRCPY    strcpy
+#define VS_IOT_VSNPRINTF vsnprintf
 
-#if VS_IOT_LOGGER_OUTPUT_TIME == 1
-bool
-vs_logger_current_time_hal(void);
-#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
-#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_
+
+#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
