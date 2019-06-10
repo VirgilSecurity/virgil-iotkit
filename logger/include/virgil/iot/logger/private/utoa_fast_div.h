@@ -32,27 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_CONFIG_H
-#define VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#ifndef VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
+#define VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
 
+#include <logger-config.h>
+#include <stdint.h>
 
+char *
+utoa_fast_div(uint32_t value, char *buffer);
 
-/*
- * VS_IOT_LOGGER_EOL
- * ASCIIZ string placed at the end of the output string.
- * Normally this is "\n".
- */
-
-#define VS_IOT_LOGGER_EOL "\n"
-
-/*
- * VS_IOT_LOGGER_OUTPUT_TIME
- * Enables current time output at the beginning of log string.
- * Requires vs_logger_current_time_hal function implementation.
- */
-
-#define VS_IOT_LOGGER_OUTPUT_TIME   0
-
-
-
-#endif // VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#endif // VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_

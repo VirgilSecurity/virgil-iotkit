@@ -88,7 +88,7 @@ test_uninitialized_devices(void) {
 
     PRVS_OP_CHECK_GOTO(prvs_call.dnid);
     BOOL_CHECK_GOTO(
-            dnid_list.count == 1, "Incorrect dnid list size %d while it must be equal to %d", dnid_list.count, 1);
+            dnid_list.count == 1, "Incorrect dnid list size %lu while it must be equal to %d", dnid_list.count, 1);
     MAC_ADDR_CHECK_GOTO(dnid_list.elements[0].mac_addr, mac_addr_server);
 
     return true;

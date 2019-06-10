@@ -32,29 +32,81 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
-#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#ifndef VIRGIL_IOT_SDK_LOGGER_CONFIG_H
+#define VIRGIL_IOT_SDK_LOGGER_CONFIG_H
 
-#include <stdbool.h>
 
-/*
- * Send string to the output.
- * buffer - pointer to the ASCIIZ string. Must not be NULL.
- * Returns true in case of success or false in any error occur
- */
-
-bool
-vs_logger_output_hal(const char *buffer);
 
 /*
- * Generate current time directly to the output buffer, i. e. by using
- * vs_logger_output_hal.
- * Must return true in case of success or false.
+ * VS_IOT_LOGGER_ENABLE
+ * Enables logger library.
+ * Logger macroses will be empty if it is disabled.
  */
 
-#if VS_IOT_LOGGER_OUTPUT_TIME == 1
-bool
-vs_logger_current_time_hal(void);
-#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+#define VS_IOT_LOGGER_ENABLE 1
 
-#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#if VS_IOT_LOGGER_ENABLE
+
+/*
+ * VS_IOT_LOGGER_MAX_BUFFER_SIZE
+ * Defines maximum internal char buffer for output purposes.
+ */
+
+#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 256
+
+/*
+ * VS_IOT_LOGGER_USE_STATIC_BUFFER
+ * Enables static buffer usage instead of stack one.
+ * This can be done for single thread mode only.
+ */
+
+#define VS_IOT_LOGGER_USE_STATIC_BUFFER 0
+
+/*
+ * VS_IOT_LOGGER_USE_LIBRARY
+ * Enables logger library usage with logger level, file name and line number.
+ * If it is disabled, VS_IOT_LOGGER_FUNCTION function will be called.
+ */
+
+#define VS_IOT_LOGGER_USE_LIBRARY 1
+
+/*
+ * VS_IOT_LOGGER_FUNCTION
+ * Sends string directly to the printf-like function defined by this macros.
+ * Used when VS_IOT_LOGGER_USE_LIBRARY == 0
+ */
+
+#if !VS_IOT_LOGGER_USE_LIBRARY && !VS_IOT_LOGGER_EXCLUDE_EXTERNAL_HEADERS
+
+/*
+ * Here you can include any additional headers
+ */
+
+#include <stdio.h>
+
+#define VS_IOT_LOGGER_FUNCTION printf
+#endif // VS_IOT_LOGGER_USE_LIBRARY
+
+/*
+ * VS_IOT_LOGGER_EOL
+ * ASCIIZ string placed at the end of the output string.
+ * Normally this is "\n".
+ */
+
+#define VS_IOT_LOGGER_EOL "\n"
+
+/*
+ * VS_IOT_LOGGER_OUTPUT_TIME
+ * Enables current time output at the beginning of log string.
+ * Requires vs_logger_current_time_hal function implementation.
+ */
+
+#define VS_IOT_LOGGER_OUTPUT_TIME   0
+
+#else  // VS_IOT_LOGGER_ENABLE
+#define VS_IOT_LOGGER_USE_LIBRARY 0
+#endif  // VS_IOT_LOGGER_ENABLE
+
+
+
+#endif // VIRGIL_IOT_SDK_LOGGER_CONFIG_H
