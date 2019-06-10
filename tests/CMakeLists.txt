@@ -85,7 +85,7 @@ target_include_directories(virgil-iot-sdk-tests
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
 
         INTERFACE

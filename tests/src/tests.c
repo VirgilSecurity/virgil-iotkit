@@ -35,20 +35,21 @@
 #include <helpers.h>
 #include <stdlib.h>
 
-int failed_sdk_tests = 0;
+size_t failed_test_result;
 
 void
 sdmp_tests(void);
+
 void
 prvs_tests(void);
 
 /**********************************************************/
 size_t
 virgil_iot_sdk_tests(void) {
-    failed_sdk_tests = 0;
+    failed_test_result = 0;
 
     sdmp_tests();
     prvs_tests();
 
-    return failed_sdk_tests;
+    return failed_test_result;
 }
