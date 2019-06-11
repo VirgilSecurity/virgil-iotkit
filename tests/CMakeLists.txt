@@ -55,7 +55,8 @@ add_library(virgil-iot-sdk-tests
 
 target_link_libraries(virgil-iot-sdk-tests
         foundation
-        secbox)
+        secbox
+        sdmp)
 
 #
 #   Set additional compiler flags

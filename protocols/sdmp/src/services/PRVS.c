@@ -38,10 +38,9 @@
 #include "hal/macro.h"
 #include <stdbool.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdio.h>
 
-#include <sys/time.h>
+#include <global-hal.h>
 
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
@@ -359,7 +358,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     }
 
     // Wait request
-    usleep(wait_ms * 1000);
+    VS_IOT_MSLEEP(wait_ms);
 
     return 0;
 }
