@@ -68,7 +68,7 @@ target_include_directories(${PROJECT_NAME}
 
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../config
         )
 
 #

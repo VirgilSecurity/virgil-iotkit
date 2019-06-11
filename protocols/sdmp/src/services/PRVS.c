@@ -358,7 +358,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     }
 
     // Wait request
-    VS_IOT_MSLEEP(wait_ms);
+    vs_global_hal_msleep(wait_ms);
 
     return 0;
 }

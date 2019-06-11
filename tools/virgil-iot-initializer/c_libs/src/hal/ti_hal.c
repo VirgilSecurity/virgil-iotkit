@@ -32,14 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
-
-
-
 #include <unistd.h>
-#define VS_IOT_MSLEEP(MSEC)  usleep(1000 * (MSEC))
 
-
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+void
+vs_global_hal_msleep(size_t msec){
+    usleep(msec * 1000);
+}

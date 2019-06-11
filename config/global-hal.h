@@ -35,11 +35,10 @@
 #ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
 #define VIRGIL_IOT_SDK_GLOBAL_HAB_H
 
+#include <stdint.h>
 
-//uint32_t os_delay(uint32_t millisec);
-//#define VS_IOT_MSLEEP(MSEC)     os_delay(MSEC)
-#define VS_IOT_MSLEEP(...)
-
+void
+vs_global_hal_msleep(size_t msec);
 
 
 #endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
