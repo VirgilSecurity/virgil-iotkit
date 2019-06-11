@@ -139,6 +139,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/update
         ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
         ${CMAKE_CURRENT_SOURCE_DIR}/logger
+        ${CMAKE_CURRENT_SOURCE_DIR}/hsm
 )
 
 
@@ -166,6 +167,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 #
 # TODO: Add Option to disable trust_list
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
+
+#
+#   HSM
+#
+# TODO: Add Option to disable hsm
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
 
 #
 #   Protocols
