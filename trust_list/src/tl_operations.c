@@ -41,11 +41,11 @@
 #include "private/tl_operations.h"
 #include "secbox.h"
 
-static tl_context_t _tl_static_ctx;
+static vs_tl_context_t _tl_static_ctx;
 
-static tl_context_t _tl_dynamic_ctx;
+static vs_tl_context_t _tl_dynamic_ctx;
 
-static tl_context_t _tl_tmp_ctx;
+static vs_tl_context_t _tl_tmp_ctx;
 
 /******************************************************************************/
 // static bool
@@ -123,10 +123,10 @@ static tl_context_t _tl_tmp_ctx;
 
 /******************************************************************************/
 static bool
-_verify_tl(tl_context_t *tl_ctx) {
-    trust_list_header_t header;
-    trust_list_pub_key_t key;
-    trust_list_footer_t footer;
+_verify_tl(vs_tl_context_t *tl_ctx) {
+    vs_tl_header_t header;
+    vs_tl_pubkey_t key;
+    vs_tl_footer_t footer;
     uint16_t i;
 
 
@@ -135,13 +135,12 @@ _verify_tl(tl_context_t *tl_ctx) {
     //    vsc_buffer_t hash;
     //
     tl_ctx->ready = true;
-    if (TL_OK != load_tl_header(tl_ctx->storage.storage_type, &header)) {
+    if (TL_OK != vs_tl_header_load(tl_ctx->storage.storage_type, &header)) {
         tl_ctx->ready = false;
         return false;
     }
 
-    uint32_t tl_size = header.pub_keys_count * sizeof(trust_list_pub_key_t) + sizeof(trust_list_header_t) +
-                       sizeof(trust_list_footer_t);
+    uint32_t tl_size = header.pub_keys_count * sizeof(vs_tl_pubkey_t) + sizeof(vs_tl_header_t) + sizeof(vs_tl_footer_t);
 
     if (header.tl_size > TL_STORAGE_SIZE || header.tl_size != tl_size) {
         tl_ctx->ready = false;
@@ -156,7 +155,7 @@ _verify_tl(tl_context_t *tl_ctx) {
     //
     for (i = 0; i < header.pub_keys_count; ++i) {
 
-        if (TL_OK != load_tl_key(tl_ctx->storage.storage_type, i, &key)) {
+        if (TL_OK != vs_tl_key_load(tl_ctx->storage.storage_type, i, &key)) {
             tl_ctx->ready = false;
             return false;
         }
@@ -165,7 +164,7 @@ _verify_tl(tl_context_t *tl_ctx) {
     //
     //    vscf_sha256_finish(&hash_ctx, &hash);
     //
-    bool res = (TL_OK == load_tl_footer(tl_ctx->storage.storage_type, &footer) /*&&
+    bool res = (TL_OK == vs_tl_footer_load(tl_ctx->storage.storage_type, &footer) /*&&
                     _verify_tl_signatures(&hash, vscf_sha256_alg_id(&hash_ctx), &footer.auth_sign,
                     vscf_alg_id_SECP256R1)*/);
     if (!res) {
@@ -179,7 +178,7 @@ _verify_tl(tl_context_t *tl_ctx) {
 
 /******************************************************************************/
 static void
-_init_tl_ctx(size_t storage_type, tl_context_t *ctx) {
+_init_tl_ctx(size_t storage_type, vs_tl_context_t *ctx) {
     if (!ctx)
         return;
 
@@ -189,7 +188,7 @@ _init_tl_ctx(size_t storage_type, tl_context_t *ctx) {
 }
 
 /******************************************************************************/
-static tl_context_t *
+static vs_tl_context_t *
 _get_tl_ctx(size_t storage_type) {
     switch (storage_type) {
     case TL_STORAGE_TYPE_STATIC:
@@ -206,32 +205,32 @@ _get_tl_ctx(size_t storage_type) {
 
 /******************************************************************************/
 static int
-_copy_tl_file(tl_context_t *dst, tl_context_t *src) {
-    trust_list_header_t header;
-    trust_list_pub_key_t key;
-    trust_list_footer_t footer;
+_copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
+    vs_tl_header_t header;
+    vs_tl_pubkey_t key;
+    vs_tl_footer_t footer;
     uint16_t i;
 
     if (!src->ready) {
         return TL_ERROR_GENERAL;
     }
 
-    if (TL_OK != load_tl_header(src->storage.storage_type, &header) ||
-        TL_OK != save_tl_header(dst->storage.storage_type, &header)) {
+    if (TL_OK != vs_tl_header_load(src->storage.storage_type, &header) ||
+        TL_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
         dst->ready = false;
         return TL_ERROR_WRITE;
     }
 
     for (i = 0; i < header.pub_keys_count; ++i) {
-        if (TL_OK != load_tl_key(src->storage.storage_type, i, &key) ||
-            TL_OK != save_tl_key(dst->storage.storage_type, &key)) {
+        if (TL_OK != vs_tl_key_load(src->storage.storage_type, i, &key) ||
+            TL_OK != vs_tl_key_save(dst->storage.storage_type, &key)) {
             dst->ready = false;
             return TL_ERROR_WRITE;
         }
     }
 
-    if (TL_OK != load_tl_footer(src->storage.storage_type, &footer) ||
-        TL_OK != save_tl_footer(dst->storage.storage_type, &footer)) {
+    if (TL_OK != vs_tl_footer_load(src->storage.storage_type, &footer) ||
+        TL_OK != vs_tl_footer_save(dst->storage.storage_type, &footer)) {
         dst->ready = false;
         return TL_ERROR_WRITE;
     }
@@ -245,7 +244,7 @@ _copy_tl_file(tl_context_t *dst, tl_context_t *src) {
 
 /******************************************************************************/
 bool
-verify_hl_key_sign(const uint8_t *key_to_check, size_t key_size) {
+vs_tl_verify_hl_key(const uint8_t *key_to_check, size_t key_size) {
 
     //    size_t read_sz;
     //
@@ -278,7 +277,7 @@ verify_hl_key_sign(const uint8_t *key_to_check, size_t key_size) {
 
 /******************************************************************************/
 void
-init_tl_storage() {
+vs_tl_storage_init() {
 
     _init_tl_ctx(TL_STORAGE_TYPE_DYNAMIC, &_tl_dynamic_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, &_tl_static_ctx);
@@ -292,16 +291,16 @@ init_tl_storage() {
 }
 /******************************************************************************/
 int
-save_tl_header(size_t storage_type, const trust_list_header_t *header) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     if (!header || NULL == tl_ctx) {
         return TL_ERROR_PARAMS;
     }
 
-    uint32_t tl_size = header->pub_keys_count * sizeof(trust_list_pub_key_t) + sizeof(trust_list_header_t) +
-                       sizeof(trust_list_footer_t);
+    uint32_t tl_size =
+            header->pub_keys_count * sizeof(vs_tl_pubkey_t) + sizeof(vs_tl_header_t) + sizeof(vs_tl_footer_t);
 
     if (header->tl_size > TL_STORAGE_SIZE || header->tl_size != tl_size) {
         return TL_ERROR_SMALL_BUFFER;
@@ -311,7 +310,7 @@ save_tl_header(size_t storage_type, const trust_list_header_t *header) {
     tl_ctx->keys_qty.keys_count = 0;
     tl_ctx->keys_qty.keys_amount = header->pub_keys_count;
 
-    if (0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(trust_list_header_t))) {
+    if (0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t))) {
         return TL_OK;
     }
 
@@ -320,8 +319,8 @@ save_tl_header(size_t storage_type, const trust_list_header_t *header) {
 
 /******************************************************************************/
 int
-load_tl_header(size_t storage_type, trust_list_header_t *header) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     size_t readed_sz;
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
@@ -333,7 +332,7 @@ load_tl_header(size_t storage_type, trust_list_header_t *header) {
         return TL_ERROR_GENERAL;
     }
 
-    if (0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(trust_list_header_t))) {
+    if (0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(vs_tl_header_t))) {
         return TL_OK;
     }
 
@@ -342,15 +341,15 @@ load_tl_header(size_t storage_type, trust_list_header_t *header) {
 
 /******************************************************************************/
 int
-save_tl_footer(size_t storage_type, const trust_list_footer_t *footer) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_footer_save(size_t storage_type, const vs_tl_footer_t *footer) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
 
     if (NULL == tl_ctx || tl_ctx->keys_qty.keys_amount != tl_ctx->keys_qty.keys_count) {
         return TL_ERROR_PARAMS;
     }
 
-    if (0 == vs_secbox_save(&el, (uint8_t *)footer, sizeof(trust_list_footer_t))) {
+    if (0 == vs_secbox_save(&el, (uint8_t *)footer, sizeof(vs_tl_footer_t))) {
         return TL_OK;
     }
 
@@ -359,8 +358,8 @@ save_tl_footer(size_t storage_type, const trust_list_footer_t *footer) {
 
 /******************************************************************************/
 int
-load_tl_footer(size_t storage_type, trust_list_footer_t *footer) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_footer_load(size_t storage_type, vs_tl_footer_t *footer) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
 
     if (NULL == tl_ctx) {
@@ -371,7 +370,7 @@ load_tl_footer(size_t storage_type, trust_list_footer_t *footer) {
         return TL_ERROR_GENERAL;
     }
 
-    if (0 == vs_secbox_load( &el, (uint8_t *)footer, sizeof(trust_list_footer_t))) {
+    if (0 == vs_secbox_load(&el, (uint8_t *)footer, sizeof(vs_tl_footer_t))) {
         return TL_OK;
     }
     return TL_ERROR_READ;
@@ -379,8 +378,8 @@ load_tl_footer(size_t storage_type, trust_list_footer_t *footer) {
 
 /******************************************************************************/
 int
-save_tl_key(size_t storage_type, const trust_list_pub_key_t *key) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_key_save(size_t storage_type, const vs_tl_pubkey_t *key) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLC, 0};
 
     if (NULL == tl_ctx) {
@@ -393,7 +392,7 @@ save_tl_key(size_t storage_type, const trust_list_pub_key_t *key) {
     }
 
     el.index = tl_ctx->keys_qty.keys_count;
-    if (0 != vs_secbox_save(&el, (uint8_t *)key, sizeof(trust_list_pub_key_t))) {
+    if (0 != vs_secbox_save(&el, (uint8_t *)key, sizeof(vs_tl_pubkey_t))) {
         return TL_ERROR_WRITE;
     }
 
@@ -403,8 +402,8 @@ save_tl_key(size_t storage_type, const trust_list_pub_key_t *key) {
 
 /******************************************************************************/
 int
-load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, vs_tl_pubkey_t *key) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
 
     if (NULL == tl_ctx) {
@@ -415,7 +414,7 @@ load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key
         return TL_ERROR_GENERAL;
     }
 
-    if (0 == vs_secbox_load(&el, (uint8_t *)key, sizeof(trust_list_pub_key_t))) {
+    if (0 == vs_secbox_load(&el, (uint8_t *)key, sizeof(vs_tl_pubkey_t))) {
         return TL_OK;
     }
 
@@ -424,11 +423,11 @@ load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key
 
 /******************************************************************************/
 int
-invalidate_tl(size_t storage_type) {
-    trust_list_header_t header;
+vs_tl_invalidate(size_t storage_type) {
+    vs_tl_header_t header;
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 
     if (NULL == tl_ctx) {
         return TL_ERROR_PARAMS;
@@ -437,7 +436,7 @@ invalidate_tl(size_t storage_type) {
     tl_ctx->keys_qty.keys_count = 0;
     tl_ctx->keys_qty.keys_amount = 0;
 
-    if (TL_OK != load_tl_header(storage_type, &header) || (0 != vs_secbox_del(&el))) {
+    if (TL_OK != vs_tl_header_load(storage_type, &header) || (0 != vs_secbox_del(&el))) {
         return TL_OK;
     }
 
@@ -460,15 +459,15 @@ invalidate_tl(size_t storage_type) {
 
 /******************************************************************************/
 int
-apply_tmp_tl_to(size_t storage_type) {
-    tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_apply_tmp_to(size_t storage_type) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 
     if (NULL == tl_ctx) {
         return TL_ERROR_PARAMS;
     }
 
     if (_verify_tl(&_tl_tmp_ctx)) {
-        if (TL_OK != invalidate_tl(storage_type)) {
+        if (TL_OK != vs_tl_invalidate(storage_type)) {
             return TL_ERROR_GENERAL;
         }
 

@@ -2,25 +2,25 @@
 #define TL_OPERATIONS_H
 
 void
-init_tl_storage();
+vs_tl_storage_init();
 bool
-verify_hl_key_sign(const uint8_t *key_to_check, size_t key_size);
+vs_tl_verify_hl_key(const uint8_t *key_to_check, size_t key_size);
 int
-invalidate_tl(size_t storage_type);
+vs_tl_invalidate(size_t storage_type);
 int
-save_tl_header(size_t storage_type, const trust_list_header_t *header);
+vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header);
 int
-load_tl_header(size_t storage_type, trust_list_header_t *header);
+vs_tl_header_load(size_t storage_type, vs_tl_header_t *header);
 int
-save_tl_footer(size_t storage_type, const trust_list_footer_t *footer);
+vs_tl_footer_save(size_t storage_type, const vs_tl_footer_t *footer);
 int
-apply_tmp_tl_to(size_t storage_type);
+vs_tl_apply_tmp_to(size_t storage_type);
 int
-load_tl_footer(size_t storage_type, trust_list_footer_t *footer);
+vs_tl_footer_load(size_t storage_type, vs_tl_footer_t *footer);
 int
-save_tl_key(size_t storage_type, const trust_list_pub_key_t *key);
+vs_tl_key_save(size_t storage_type, const vs_tl_pubkey_t *key);
 int
-load_tl_key(size_t storage_type, tl_key_handle handle, trust_list_pub_key_t *key);
+vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, vs_tl_pubkey_t *key);
 
 
 #endif // TL_OPERATIONS_H

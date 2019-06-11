@@ -43,7 +43,7 @@
 /******************************************************************************/
 void
 vs_tl_init_storage() {
-    init_tl_storage();
+    vs_tl_storage_init();
 }
 
 /******************************************************************************/
@@ -58,27 +58,27 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
-        if (sizeof(trust_list_header_t) == data_sz) {
-            res = save_tl_header(TL_STORAGE_TYPE_TMP, (trust_list_header_t *)in_data);
+        if (sizeof(vs_tl_header_t) == data_sz) {
+            res = vs_tl_header_save(TL_STORAGE_TYPE_TMP, (vs_tl_header_t *)in_data);
         }
         break;
     case VS_TL_ELEMENT_TLF:
 
-        if (sizeof(trust_list_footer_t) == data_sz) {
-            res = save_tl_footer(TL_STORAGE_TYPE_TMP, (trust_list_footer_t *)in_data);
+        if (sizeof(vs_tl_footer_t) == data_sz) {
+            res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, (vs_tl_footer_t *)in_data);
 
             if (TL_OK == res) {
-                res = apply_tmp_tl_to(TL_STORAGE_TYPE_STATIC);
+                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
                 if (TL_OK == res) {
-                    res = apply_tmp_tl_to(TL_STORAGE_TYPE_DYNAMIC);
+                    res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
                 }
             }
         }
-        invalidate_tl(TL_STORAGE_TYPE_TMP);
+        vs_tl_invalidate(TL_STORAGE_TYPE_TMP);
         break;
     case VS_TL_ELEMENT_TLC:
-        if (sizeof(trust_list_pub_key_t) == data_sz) {
-            res = save_tl_key(TL_STORAGE_TYPE_TMP, (trust_list_pub_key_t *)in_data);
+        if (sizeof(vs_tl_pubkey_t) == data_sz) {
+            res = vs_tl_key_save(TL_STORAGE_TYPE_TMP, (vs_tl_pubkey_t *)in_data);
         }
         break;
     default:
@@ -101,23 +101,23 @@ vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, size_t bu
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
 
-        if (buf_sz >= sizeof(trust_list_header_t)) {
-            *out_sz = sizeof(trust_list_header_t);
-            res = load_tl_header(TL_STORAGE_TYPE_STATIC, (trust_list_header_t *)out_data);
+        if (buf_sz >= sizeof(vs_tl_header_t)) {
+            *out_sz = sizeof(vs_tl_header_t);
+            res = vs_tl_header_load(TL_STORAGE_TYPE_STATIC, (vs_tl_header_t *)out_data);
         }
         break;
     case VS_TL_ELEMENT_TLF:
 
-        if (buf_sz >= sizeof(trust_list_footer_t)) {
-            *out_sz = sizeof(trust_list_footer_t);
-            res = load_tl_footer(TL_STORAGE_TYPE_STATIC, (trust_list_footer_t *)out_data);
+        if (buf_sz >= sizeof(vs_tl_footer_t)) {
+            *out_sz = sizeof(vs_tl_footer_t);
+            res = vs_tl_footer_load(TL_STORAGE_TYPE_STATIC, (vs_tl_footer_t *)out_data);
         }
         break;
     case VS_TL_ELEMENT_TLC:
 
-        if (buf_sz >= sizeof(trust_list_pub_key_t)) {
-            *out_sz = sizeof(trust_list_pub_key_t);
-            res = load_tl_key(TL_STORAGE_TYPE_STATIC, element_info->index, (trust_list_pub_key_t *)out_data);
+        if (buf_sz >= sizeof(vs_tl_pubkey_t)) {
+            *out_sz = sizeof(vs_tl_pubkey_t);
+            res = vs_tl_key_load(TL_STORAGE_TYPE_STATIC, element_info->index, (vs_tl_pubkey_t *)out_data);
         }
         break;
     default:
