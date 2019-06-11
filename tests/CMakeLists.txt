@@ -46,7 +46,16 @@ add_library(virgil-iot-sdk-tests
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
         src/sdmp/test_netif.c
+        src/crypto/ecdsa.c
+        src/crypto/hash.c
+        src/crypto/hmac.c
+        src/crypto/kdf.c
+        src/crypto/keypair.c
         )
+
+target_link_libraries(virgil-iot-sdk-tests
+        foundation
+        secbox)
 
 #
 #   Set additional compiler flags

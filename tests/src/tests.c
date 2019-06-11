@@ -39,9 +39,30 @@ size_t failed_test_result;
 
 void
 sdmp_tests(void);
-
 void
 prvs_tests(void);
+
+void
+test_hash(void);
+void
+test_hmac(void);
+void
+test_kdf2(void);
+void
+test_ecdsa(void);
+void
+test_keypair(void);
+
+/**********************************************************/
+static void
+crypto_tests(void) {
+    test_hash();
+    test_hmac();
+    test_kdf2();
+    test_kdf2();
+    test_ecdsa();
+    test_keypair();
+}
 
 /**********************************************************/
 size_t
@@ -50,6 +71,8 @@ virgil_iot_sdk_tests(void) {
 
     sdmp_tests();
     prvs_tests();
+
+    crypto_tests();
 
     return failed_test_result;
 }
