@@ -74,11 +74,8 @@ target_include_directories(${PROJECT_NAME}
 #
 #   Link libraries
 #
-#target_link_libraries (${SIM_LIB}
-#        ed25519_sp
-#        mbedcrypto_sp
-#        kunlun_sodium
-#        iotelic)
+target_link_libraries (${PROJECT_NAME}
+        logger)
 
 #
 # Format code

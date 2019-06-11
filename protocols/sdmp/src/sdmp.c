@@ -34,6 +34,7 @@
 
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
+#include <virgil/iot/logger/logger.h>
 #include "hal/macro.h"
 
 #include <stdio.h>

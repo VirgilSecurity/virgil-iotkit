@@ -35,6 +35,7 @@
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/logger/logger.h>
 #include "hal/macro.h"
 #include <stdbool.h>
 #include <string.h>
@@ -262,7 +263,8 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {}
+    default: {
+    }
     }
 
     return -1;
