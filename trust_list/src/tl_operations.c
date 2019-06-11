@@ -36,9 +36,9 @@
 #include <logger-config.h>
 #include <trust_list-config.h>
 
-#include <vs_tl_structs.h>
-#include <vs_trust_list.h>
-#include "private/vs_tl_operations.h"
+#include <tl_structs.h>
+#include <trust_list.h>
+#include "private/tl_operations.h"
 #include "secbox.h"
 
 static tl_context_t _tl_static_ctx;

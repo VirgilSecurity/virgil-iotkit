@@ -42,8 +42,8 @@ set(TRUST_LIST_LIB trust_list)
 #   Source code
 #
 set(TRUST_LIST_SRC
-        src/vs_tl_operations.c
-        src/vs_trust_list.c
+        src/tl_operations.c
+        src/trust_list.c
         )
 
 #
