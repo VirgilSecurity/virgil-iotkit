@@ -82,6 +82,7 @@ target_include_directories(logger
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>

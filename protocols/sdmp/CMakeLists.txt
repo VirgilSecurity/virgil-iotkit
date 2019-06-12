@@ -65,6 +65,7 @@ set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-m
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
