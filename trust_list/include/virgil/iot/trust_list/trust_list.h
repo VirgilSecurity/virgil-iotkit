@@ -18,7 +18,7 @@ typedef struct vs_tl_element_info_s {
 } vs_tl_element_info_t;
 
 void
-vs_tl_init_storage();
+vs_tl_init_storage(void);
 
 int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size_t data_sz);
