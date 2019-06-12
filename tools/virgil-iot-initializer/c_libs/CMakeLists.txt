@@ -38,6 +38,7 @@ project(netif_plc_sim VERSION 0.1.0 LANGUAGES C)
 
 set(NETIF_PLC_SIM
         src/hal/ti_netif_plc_sim.c
+        src/hal/ti_hal.c
         src/hal/sdmp/ti_prvs_implementation.c
         )
 
@@ -59,9 +60,9 @@ set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/protocols/sdmp/libsdmp.a"
+        "${CMAKE_BINARY_DIR}/ap/security-sdk/protocols/sdmp/libsdmp.a"
         ${INITIALIZER_LIB_DIR}/libsdmp.a
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/cmake-build-debug/ap/security-sdk/tools/virgil-iot-initializer/c_libs/libnetif_plc_sim.a"
+        "${CMAKE_BINARY_DIR}/ap/security-sdk/tools/virgil-iot-initializer/c_libs/libnetif_plc_sim.a"
         ${INITIALIZER_LIB_DIR}/libnetif_plc_sim.a
         )

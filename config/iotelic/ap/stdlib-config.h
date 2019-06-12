@@ -41,16 +41,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <os_mem_api.h>
+
 #define VS_IOT_ASSERT(...)
-#define VS_IOT_CALLOC    calloc
-#define VS_IOT_FREE      free
-#define VS_IOT_MALLOC    malloc
-#define VS_IOT_MEMCMP    memcmp
-#define VS_IOT_MEMCPY    memcpy
-#define VS_IOT_SNPRINTF  snprintf
-#define VS_IOT_SPRINTF   sprintf
-#define VS_IOT_STRCPY    strcpy
-#define VS_IOT_VSNPRINTF vsnprintf
+#define VS_IOT_CALLOC(NUM, SZ)  os_mem_malloc(0, (NUM) * (SZ))
+#define VS_IOT_FREE             os_mem_free
+#define VS_IOT_MALLOC(...)      os_mem_malloc(0, __VA_ARGS__)
+#define VS_IOT_MEMCMP           os_mem_cmp
+#define VS_IOT_MEMCPY           os_mem_cpy
+#define VS_IOT_SNPRINTF         snprintf
+#define VS_IOT_SPRINTF          sprintf
+#define VS_IOT_STRCPY           strcpy
+#define VS_IOT_VSNPRINTF        vsnprintf
 
 
 

@@ -36,13 +36,6 @@
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <private/test_netif.h>
 
-/**********************************************************
-static int
-test_netif_rx_cb(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz){
-    return 0;
-}
-*/
-
 netif_state_t netif_state;
 vs_mac_addr_t mac_addr_client_call;
 vs_mac_addr_t mac_addr_server_call;

@@ -89,6 +89,11 @@ endif()
 option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)
 
 #
+#   Additional HAL include paths
+#
+message(STATUS "[VIRGIL_IOT_SDK_HAL_INC_PATH] Additional paths to HAL : ${VIRGIL_IOT_SDK_HAL_INC_PATH}")
+
+#
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)

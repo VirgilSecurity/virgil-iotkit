@@ -36,9 +36,9 @@
 #define VIRGIL_IOT_SDK_TESTS_HELPERS_H_
 
 #include <stdbool.h>
-#include <logger.h>
+#include <virgil/iot/logger/logger.h>
 
-extern int failed_sdk_tests;
+extern size_t failed_test_result;
 
 #define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
     if (!(CONDITION)) {                                                                                                \
@@ -46,11 +46,49 @@ extern int failed_sdk_tests;
         return (RETCODE);                                                                                              \
     }
 
-#define CHECK_RET_BOOL(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
+
+#define VSCF_CHECK_RET(OPERATION, MESSAGE, ...)                                                                        \
+    BOOL_CHECK_RET(vscf_status_SUCCESS == (OPERATION), MESSAGE, ##__VA_ARGS__)
+
+#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
+    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+                   #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
+                   (int)(SIZE))
+
+
+#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+    if (!(OPERATION)) {                                                                                                \
+        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
+        goto terminate;                                                                                                \
+    }
+
+#define VSCF_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+    BOOL_CHECK_GOTO(vscf_status_SUCCESS == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
+
 
 #define RESULT_BUF_SIZE 1024
 
 #define BORDER VS_LOG_INFO("------------------------------------------------------");
+
+#define START_TESTS                                                                                                    \
+    do {                                                                                                               \
+        BORDER;                                                                                                        \
+        VS_LOG_INFO("[TESTS-BEGIN]");                                                                                  \
+    } while (0);
+
+#define FINISH_TESTS                                                                                                   \
+    do {                                                                                                               \
+        BORDER;                                                                                                        \
+        VS_LOG_INFO("[TESTS-END]");                                                                                    \
+        if (failed_test_result == 0) {                                                                                 \
+            VS_LOG_INFO("Test have been finished successfully");                                                       \
+        } else if (failed_test_result == 1) {                                                                          \
+            VS_LOG_INFO("1 test has been failed");                                                                     \
+        } else if (failed_test_result >= 1) {                                                                          \
+            VS_LOG_INFO("%lu tests have been failed", failed_test_result);                                             \
+        }                                                                                                              \
+    } while (0);
 
 #define START_TEST(NAME)                                                                                               \
     do {                                                                                                               \
@@ -60,24 +98,18 @@ extern int failed_sdk_tests;
 
 #define START_ELEMENT(NAME)                                                                                            \
     do {                                                                                                               \
-        VS_LOG_INFO(" ELEMENT : %s ", NAME);                                                                           \
+        VS_LOG_INFO(" TEST CASE : %s ", NAME);                                                                         \
     } while (0);
-
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
-    if (!(OPERATION)) {                                                                                                \
-        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
-        goto terminate;                                                                                                \
-    }
 
 #define RESULT_OK                                                                                                      \
     do {                                                                                                               \
-        VS_LOG_INFO(" TEST OK ");                                                                                      \
+        VS_LOG_INFO("[TEST-SUCCESS]");                                                                                 \
     } while (0);
 
 #define RESULT_ERROR                                                                                                   \
     do {                                                                                                               \
-        VS_LOG_ERROR(" TEST ERROR ");                                                                                  \
-        failed_sdk_tests++;                                                                                            \
+        VS_LOG_ERROR("[TEST-FAILURE]");                                                                                \
+        failed_test_result++;                                                                                          \
         goto terminate;                                                                                                \
     } while (0);
 
@@ -94,9 +126,5 @@ extern int failed_sdk_tests;
 #define TEST_CASE_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true == (TEST_ELEMENT));
 
 #define TEST_CASE_NOT_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true != (TEST_ELEMENT));
-
-#define TEST_CASES_NOT_OK(NAME, TEST_ELEMENTS) TEST_CASE(NAME, (TEST_ELEMENTS));
-
-#define TEST_CASE_ERROR(NAME, TEST_ELEMENT) TEST_CASE(NAME, true != (TEST_ELEMENT));
 
 #endif // VIRGIL_IOT_SDK_TESTS_HELPERS_H_

@@ -37,7 +37,7 @@
 
 #include <stdbool.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <logger.h>
+#include <virgil/iot/logger/logger.h>
 
 typedef union {
     uint8_t membuf;

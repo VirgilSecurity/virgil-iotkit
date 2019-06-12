@@ -46,7 +46,17 @@ add_library(virgil-iot-sdk-tests
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
         src/sdmp/test_netif.c
+        src/crypto/ecdsa.c
+        src/crypto/hash.c
+        src/crypto/hmac.c
+        src/crypto/kdf.c
+        src/crypto/keypair.c
         )
+
+target_link_libraries(virgil-iot-sdk-tests
+        foundation
+        secbox
+        sdmp)
 
 #
 #   Set additional compiler flags
@@ -79,14 +89,14 @@ endif()
 #
 #   Common include directories
 #
-
 target_include_directories(virgil-iot-sdk-tests
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
