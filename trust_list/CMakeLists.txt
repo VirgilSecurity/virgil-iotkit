@@ -93,6 +93,9 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/../crypto/library/foundation/include
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
+        PUBLIC
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>

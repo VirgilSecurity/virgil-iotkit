@@ -42,7 +42,7 @@
 
 /******************************************************************************/
 void
-vs_tl_init_storage() {
+vs_tl_init_storage(void) {
     vs_tl_storage_init();
 }
 
