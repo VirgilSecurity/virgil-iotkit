@@ -54,7 +54,6 @@ add_library(virgil-iot-sdk-tests
         )
 
 target_link_libraries(virgil-iot-sdk-tests
-        foundation
         secbox
         sdmp)
 

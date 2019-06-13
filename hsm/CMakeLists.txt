@@ -82,12 +82,9 @@ target_compile_definitions(${PROJECT_NAME}
 #
 #   Common include directories
 #
-add_dependencies(${PROJECT_NAME} common)
-
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/library/common/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         INTERFACE

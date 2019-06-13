@@ -1,6 +1,7 @@
 
 #include <helpers.h>
 
+#if 0
 #include <virgil/crypto/foundation/vscf_iotelic_kdf2.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
@@ -41,10 +42,11 @@ _test_kdf2_step(vscf_impl_t *sha_impl, vsc_data_t correct_result) {
 
     return correct && incorrect;
 }
-
+#endif
 /******************************************************************************/
 void
 test_kdf2(void) {
+#if 0
     static const char key_raw[] = "Test data for kdf2";
     static const char another_key_raw[] = "Another test data for kdf2";
 
@@ -90,4 +92,6 @@ test_kdf2(void) {
                                  vsc_data(sha512_result_raw, sizeof(sha512_result_raw))));
 
 terminate:;
+#endif
+
 }

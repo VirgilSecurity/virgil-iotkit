@@ -1,6 +1,7 @@
 
 #include <helpers.h>
 
+#if 0
 #include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
@@ -70,10 +71,12 @@ static const uint8_t correct_result_sha_512_raw[] = {
 static const vs_test_data_t sha512_test_data = {.correct_result_raw = correct_result_sha_512_raw,
                                                 .correct_result_size = sizeof(correct_result_sha_512_raw),
                                                 .funct = vscf_iotelic_sha512_hash};
+#endif
 
 /******************************************************************************/
 void
 test_hash(void) {
+#if 0
     START_TEST("HASH tests");
 
     TEST_CASE_OK("SHA256 pass", _test_sha_pass(&sha256_test_data));
@@ -81,4 +84,5 @@ test_hash(void) {
     TEST_CASE_OK("SHA512 pass", _test_sha_pass(&sha512_test_data));
 
 terminate:;
+#endif
 }

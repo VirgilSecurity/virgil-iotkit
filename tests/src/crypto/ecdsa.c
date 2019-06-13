@@ -1,5 +1,5 @@
 #include <helpers.h>
-
+/*
 #include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
@@ -8,12 +8,12 @@
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <iotelic_slots.h>
 
-/******************************************************************************/
+******************************************************************************
 static bool
 _test_sign_verify_pass(KEYSTORAGE_SLOT slot, vscf_alg_id_t hash_alg, vscf_alg_id_t keygen_alg) {
     static const char *input_data_raw = "Test data";
     vsc_data_t input_data;
-    uint8_t hash_buf[/*RESULT_BUF_SIZE*/ 100];
+    uint8_t hash_buf[/ * RESULT_BUF_SIZE * / 100];
     vsc_buffer_t hash;
     vscf_iotelic_private_key_t *ctx_prvkey = NULL;
     vscf_iotelic_public_key_t *ctx_pubkey = NULL;
@@ -72,13 +72,14 @@ terminate:
 
     return success;
 }
+*/
 
 /******************************************************************************/
 void
 test_ecdsa(void) {
+#if 0
 #define TEST_SIGN_VERIFY_PASS(SLOT, HASH, KEY)                                                                         \
     TEST_CASE_OK("slot " #SLOT ", hash " #HASH ", key " #KEY, _test_sign_verify_pass(SLOT, HASH, KEY));
-
     START_TEST("ECDSA Sign/Verify tests");
 
     TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_1, vscf_alg_id_SHA256, vscf_alg_id_SECP256R1);
@@ -103,8 +104,8 @@ test_ecdsa(void) {
     TEST_SIGN_VERIFY_PASS(
             KEY_SLOT_STD_OTP_0, vscf_alg_id_SHA256, vscf_alg_id_CURVE25519 /*KEYPAIR_RSA_4096 */ /*, SIGN_COMMON */);
 #endif
-
 terminate:;
 
 #undef TEST_SIGN_VERIFY_PASS
+#endif
 }

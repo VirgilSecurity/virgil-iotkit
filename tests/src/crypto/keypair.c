@@ -1,5 +1,6 @@
 #include <helpers.h>
 
+#if 0
 #include <virgil/crypto/foundation/vscf_iotelic_private_key.h>
 #include <virgil/crypto/foundation/vscf_iotelic_public_key.h>
 #include <iotelic_slots.h>
@@ -60,10 +61,11 @@ _test_key_get_ED25519_pass() {
 
     return (res == 0);
 }
-
+#endif
 /******************************************************************************/
 void
 test_keypair(void) {
+#if 0
     START_TEST("Keypair tests");
 
     TEST_CASE_OK("Key slot MTP 1, secp256r1", _test_create_key(KEY_SLOT_STD_MTP_1, vscf_alg_id_SECP256R1));
@@ -77,4 +79,5 @@ test_keypair(void) {
     TEST_CASE_NOT_OK("Create RSA keypair fail", _test_create_fail(KEY_SLOT_STD_MTP_0, vscf_alg_id_RSA))
 #endif
 terminate:;
+#endif
 }

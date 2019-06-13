@@ -1,6 +1,6 @@
 
 #include <helpers.h>
-
+#if 0
 #include <virgil/crypto/foundation/vscf_iotelic_hmac.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
 #include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
@@ -41,10 +41,11 @@ test_hmac_step(vscf_impl_t *sha_impl, vsc_data_t correct_result) {
 
     return correct && incorrect;
 }
-
+#endif
 /******************************************************************************/
 void
 test_hmac(void) {
+#if 0
     static const uint8_t another_raw[] = {};
 
     uint8_t key_raw[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -71,7 +72,6 @@ test_hmac(void) {
                                    0xa7, 0xc6, 0x14, 0x6d, 0x02, 0x37, 0x9e, 0xb2, 0x29, 0xa0, 0x27, 0xde, 0x37,
                                    0x21, 0xd2, 0x88, 0xac, 0x81, 0x63, 0x17, 0xe9, 0x13, 0x37, 0xb7, 0x4e, 0xde,
                                    0xf1, 0x7a, 0xb5, 0x97, 0xbc, 0x27, 0x0d, 0x23, 0x9a, 0xb8, 0xc8, 0x36};
-
     key = vsc_data(key_raw, sizeof(key_raw));
     input = vsc_data(input_raw, sizeof(input_raw));
     another_input = vsc_data(another_raw, sizeof(another_raw));
@@ -87,6 +87,7 @@ test_hmac(void) {
     TEST_CASE_OK("SHA-512 usage",
                  test_hmac_step(vscf_iotelic_sha512_impl(vscf_iotelic_sha512_new()),
                                 vsc_data(sha512_result_raw, sizeof(sha512_result_raw))));
-
 terminate:;
+#endif
+
 }
