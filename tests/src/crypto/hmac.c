@@ -89,5 +89,4 @@ test_hmac(void) {
                                 vsc_data(sha512_result_raw, sizeof(sha512_result_raw))));
 terminate:;
 #endif
-
 }

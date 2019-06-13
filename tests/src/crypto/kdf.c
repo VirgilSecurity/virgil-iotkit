@@ -93,5 +93,4 @@ test_kdf2(void) {
 
 terminate:;
 #endif
-
 }
