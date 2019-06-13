@@ -48,4 +48,4 @@ vs_hsm_slot_save(vs_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
 int
 vs_hsm_slot_load(vs_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, size_t *out_sz);
 
-#endif //VS_HSM_API_H
+#endif // VS_HSM_API_H

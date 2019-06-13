@@ -35,4 +35,4 @@
 #ifndef VS_HSM_NONE_H
 #define VS_HSM_NONE_H
 
-#endif //VS_HSM_NONE_H
+#endif // VS_HSM_NONE_H
