@@ -61,10 +61,10 @@ typedef enum {
 } vs_hsm_keypair_type_e;
 
 typedef enum {
-    HASH_SHA_INVALID = -1,
-    HASH_SHA_256 = 0,
-    HASH_SHA_384,
-    HASH_SHA_512,
+    VS_HASH_SHA_INVALID = -1,
+    VS_HASH_SHA_256 = 0,
+    VS_HASH_SHA_384,
+    VS_HASH_SHA_512,
 } vs_hsm_hash_type;
 
 #endif // VS_HSM_STRUCTS_H
