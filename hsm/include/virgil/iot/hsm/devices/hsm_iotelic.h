@@ -87,4 +87,4 @@ typedef enum {
     VS_KEY_SLOT_TMP_MAX
 } vs_iot_hsm_slot_e;
 
-#endif //VS_IOTELIC_HSM_H
+#endif // VS_IOTELIC_HSM_H

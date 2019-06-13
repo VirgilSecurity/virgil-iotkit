@@ -35,4 +35,4 @@
 #ifndef VS_HSM_CUSTOM_H
 #define VS_HSM_CUSTOM_H
 
-#endif //VS_HSM_CUSTOM_H
+#endif // VS_HSM_CUSTOM_H

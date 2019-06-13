@@ -35,4 +35,4 @@
 #ifndef VS_HSM_ATECC_608A_H
 #define VS_HSM_ATECC_608A_H
 
-#endif //VS_HSM_ATECC_608A_H
+#endif // VS_HSM_ATECC_608A_H
