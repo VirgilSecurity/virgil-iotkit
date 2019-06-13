@@ -7,7 +7,7 @@
 
 /******************************************************************************/
 static bool
-_test_create_fail(KEYSTORAGE_SLOT key_slot, vscf_alg_id_t keypair_type) {
+_test_create_fail(vs_iot_hsm_slot_e key_slot, vscf_alg_id_t keypair_type) {
 
     bool success = true;
     vscf_iotelic_private_key_t *ctx_prvkey = NULL;
@@ -25,7 +25,7 @@ terminate:
 
 /******************************************************************************/
 static bool
-_test_create_key(KEYSTORAGE_SLOT key_slot, vscf_alg_id_t keypair_type) {
+_test_create_key(vs_iot_hsm_slot_e key_slot, vscf_alg_id_t keypair_type) {
 
     bool success = false;
     vscf_iotelic_private_key_t *ctx_prvkey = NULL;

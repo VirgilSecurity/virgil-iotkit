@@ -52,6 +52,6 @@ typedef enum {
     KEY_SLOT_STD_TMP_MAX,
     KEY_SLOT_EXT_TMP_0,
     KEY_SLOT_TMP_MAX
-} KEYSTORAGE_SLOT;
+} vs_iot_hsm_slot_e;
 
 #endif // iotelic_keystorage_slots_H

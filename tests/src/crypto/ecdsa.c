@@ -10,7 +10,7 @@
 
 ******************************************************************************
 static bool
-_test_sign_verify_pass(KEYSTORAGE_SLOT slot, vscf_alg_id_t hash_alg, vscf_alg_id_t keygen_alg) {
+_test_sign_verify_pass(vs_iot_hsm_slot_e slot, vscf_alg_id_t hash_alg, vscf_alg_id_t keygen_alg) {
     static const char *input_data_raw = "Test data";
     vsc_data_t input_data;
     uint8_t hash_buf[/ * RESULT_BUF_SIZE * / 100];
