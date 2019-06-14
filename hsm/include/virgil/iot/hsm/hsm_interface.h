@@ -58,7 +58,7 @@ int
 vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
 int
 vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
-                          uint8_t **buf,
+                          uint8_t *buf,
                           uint16_t buf_sz,
                           uint16_t *key_sz,
                           vs_hsm_keypair_type_e *keypair_type);
