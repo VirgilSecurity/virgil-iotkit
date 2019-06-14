@@ -40,6 +40,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define VS_IOT_ASSERT    assert
 #define VS_IOT_CALLOC    calloc

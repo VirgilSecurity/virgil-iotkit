@@ -32,35 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_INTERFACE_API_H
-#define VS_HSM_INTERFACE_API_H
+#ifndef VS_HSM_ERRORS_API_H
+#define VS_HSM_ERRORS_API_H
 
-#include <stdint.h>
-#include <stddef.h>
+typedef enum {
+    VS_HSM_ERR_OK,
+    VS_HSM_ERR_INVAL,      // invalid parameters
+    VS_HSM_ERR_NOMEM,      // out of memory
+    VS_HSM_ERR_NOSUPP,     // not supported
+    VS_HSM_ERR_NOSEC_WL,   // not secure due to white list
+    VS_HSM_ERR_NOT_EXIST,  // not exist
+    VS_HSM_ERR_AGAIN,      // again
+    VS_HSM_ERR_NOT_READY,  // device not ready
+    VS_HSM_ERR_EXIST,      // already exist
+    VS_HSM_ERR_BUSY,       // busy
+    VS_HSM_ERR_PENDING,    // pending
+    VS_HSM_ERR_FAIL,       // failed
+    VS_HSM_ERR_NOSEC_BL,   // not secure due to black list
+    VS_HSM_ERR_CRC_LEN     // calc crc but len < 0
+} vs_hsm_err_code_e;
 
-#include <virgil/iot/hsm/hsm_structs.h>
-#include <virgil/iot/hsm/hsm_errors.h>
-
-int
-vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);
-int
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
-
-int
-vs_hsm_hash_create(vs_hsm_hash_type hash_type,
-                   const uint8_t *data,
-                   uint16_t data_sz,
-                   uint8_t *hash,
-                   uint16_t hash_buf_sz,
-                   uint16_t *hash_sz);
-
-int
-vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
-int
-vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
-                          uint8_t **buf,
-                          uint16_t buf_sz,
-                          uint16_t *key_sz,
-                          vs_hsm_keypair_type_e *keypair_type);
-
-#endif // VS_HSM_INTERFACE_API_H
+#endif // VS_HSM_ERRORS_API_H

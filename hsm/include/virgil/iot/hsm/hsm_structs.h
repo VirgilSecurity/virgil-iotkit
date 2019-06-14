@@ -32,8 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_STRUCTS_H
-#define VS_HSM_STRUCTS_H
+#ifndef VS_HSM_STRUCTURES_API_H
+#define VS_HSM_STRUCTURES_API_H
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -42,7 +43,6 @@
 #include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
 #include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
 #include <virgil/iot/hsm/devices/hsm_iotelic.h>
-
 
 typedef enum {
     VS_KEYPAIR_INVALID = -1,
@@ -67,4 +67,4 @@ typedef enum {
     VS_HASH_SHA_512,
 } vs_hsm_hash_type;
 
-#endif // VS_HSM_STRUCTS_H
+#endif // VS_HSM_STRUCTURES_API_H
