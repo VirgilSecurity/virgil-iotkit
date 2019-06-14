@@ -45,29 +45,28 @@
 #include <stdint.h>
 
 #define SHA256_DIGEST_SIZE (32)
-#define SHA256_BLOCK_SIZE  (64)
+#define SHA256_BLOCK_SIZE (64)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-	uint32_t total_msg_size;                //!< Total number of message bytes processed
-	uint32_t block_size;                    //!< Number of bytes in current block
-	uint8_t block[SHA256_BLOCK_SIZE * 2];   //!< Unprocessed message storage
-	uint32_t hash[8];                       //!< Hash state
+    uint32_t total_msg_size;              //!< Total number of message bytes processed
+    uint32_t block_size;                  //!< Number of bytes in current block
+    uint8_t block[SHA256_BLOCK_SIZE * 2]; //!< Unprocessed message storage
+    uint32_t hash[8];                     //!< Hash state
 } vs_hsm_sw_sha256_ctx;
 
 void
-vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx* ctx);
+vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx);
 void
-vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx* ctx, const uint8_t* message, uint32_t len);
+vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
 void
-vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx * ctx, uint8_t digest[SHA256_DIGEST_SIZE]);
+vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif // HSM_SW_SHA2_ROUTINES_H
-

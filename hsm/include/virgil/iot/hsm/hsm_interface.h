@@ -65,12 +65,12 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
 
 int
 vs_hsm_hmac(vs_hsm_hash_type hash_type,
-     const uint8_t *key,
-     uint16_t key_sz,
-     const uint8_t *input,
-     uint16_t input_sz,
-     uint8_t *output,
-     uint16_t output_buf_sz,
-     uint16_t *output_sz);
+            const uint8_t *key,
+            uint16_t key_sz,
+            const uint8_t *input,
+            uint16_t input_sz,
+            uint8_t *output,
+            uint16_t output_buf_sz,
+            uint16_t *output_sz);
 
 #endif // VS_HSM_INTERFACE_API_H
