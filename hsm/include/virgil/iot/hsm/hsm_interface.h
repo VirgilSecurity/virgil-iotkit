@@ -62,5 +62,22 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
                           uint16_t buf_sz,
                           uint16_t *key_sz,
                           vs_hsm_keypair_type_e *keypair_type);
+int
+vs_hsm_ecdsa_sign(vs_iot_hsm_slot_e key_slot,
+                  vs_hsm_hash_type hash_type,
+                  const uint8_t *hash,
+                  uint8_t *signature,
+                  uint16_t signature_buf_sz,
+                  uint16_t *signature_sz,
+                  vs_hsm_sign_type sign_type);
+int
+vs_hsm_ecdsa_verify(vs_hsm_keypair_type_e keypair_type,
+                    const uint8_t *public_key,
+                    uint16_t public_key_sz,
+                    vs_hsm_hash_type hash_type,
+                    const uint8_t *hash,
+                    const uint8_t *signature,
+                    uint16_t signature_sz,
+                    vs_hsm_sign_type sign_type);
 
 #endif // VS_HSM_INTERFACE_API_H
