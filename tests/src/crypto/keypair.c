@@ -1,5 +1,4 @@
 #include <helpers.h>
-#include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <stdlib-config.h>
 

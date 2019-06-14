@@ -39,6 +39,7 @@
 #include <stddef.h>
 
 #include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm_errors.h>
 
 int
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);

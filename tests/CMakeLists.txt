@@ -57,7 +57,6 @@ target_link_libraries(virgil-iot-sdk-tests
         hsm
         secbox
         sdmp
-        hsm
         )
 
 #
