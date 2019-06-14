@@ -1,6 +1,7 @@
 
 #include <helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 
 
 static const char *test_data = "Data for hash creation ...";
@@ -25,7 +26,7 @@ static const uint8_t correct_result_sha_512_raw[] = {
 static bool
 _test_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
     static uint8_t result_buf[64];
-    static uint8_t another_result_buf[RESULT_BUF_SIZE];
+    static uint8_t another_result_buf[64];
     uint16_t result_sz;
 
     if (vs_hsm_hash_create(
@@ -48,6 +49,39 @@ _test_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, si
 }
 
 /******************************************************************************/
+static bool
+_test_partial_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
+
+    switch (hash_type) {
+    case VS_HASH_SHA_256: {
+        vs_hsm_sw_sha256_ctx ctx;
+        static uint8_t result_buf[32];
+        static uint8_t another_result_buf[32];
+
+        vs_hsm_sw_sha256_init(&ctx);
+        vs_hsm_sw_sha256_update(&ctx, (uint8_t *)test_data, strlen(test_data));
+        vs_hsm_sw_sha256_final(&ctx, result_buf);
+
+        if (0 != memcmp(correct_result_raw, result_buf, sizeof(result_buf))) {
+            return false;
+        }
+
+        vs_hsm_sw_sha256_init(&ctx);
+        vs_hsm_sw_sha256_update(&ctx, (uint8_t *)another_test_data, strlen(another_test_data));
+        vs_hsm_sw_sha256_final(&ctx, another_result_buf);
+
+        if (0 == memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf))) {
+            return false;
+        }
+    } break;
+    default:
+        return false;
+    }
+
+    return true;
+}
+
+/******************************************************************************/
 void
 test_hash(void) {
 
@@ -59,6 +93,9 @@ test_hash(void) {
                  _test_sha_pass(VS_HASH_SHA_384, correct_result_sha_384_raw, sizeof(correct_result_sha_384_raw)));
     TEST_CASE_OK("SHA512 pass",
                  _test_sha_pass(VS_HASH_SHA_512, correct_result_sha_512_raw, sizeof(correct_result_sha_512_raw)));
+    TEST_CASE_OK(
+            "SHA256 partial calculating pass",
+            _test_partial_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
 
 terminate:;
 }

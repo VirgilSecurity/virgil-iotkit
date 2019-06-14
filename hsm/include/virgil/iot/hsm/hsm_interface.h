@@ -47,11 +47,11 @@
 int
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
 int
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, int16_t *out_sz);
+vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, uint16_t *out_sz);
 int
 vs_hsm_hash_create(vs_hsm_hash_type hash_type,
             const uint8_t *data,
-            size_t data_sz,
+            uint16_t data_sz,
             uint8_t *hash,
             size_t hash_buf_sz,
             uint16_t *hash_sz);

@@ -42,7 +42,7 @@ set(HSM_LIB hsm)
 #   Source code
 #
 set(HSM_SRC
-        src/hsm_interface.c
+        src/hsm_sha2_routines.c
         )
 
 #
