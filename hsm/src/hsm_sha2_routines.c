@@ -40,9 +40,10 @@
  */
 
 #include <string.h>
+#include <stdlib-config.h>
 #include "virgil/iot/hsm/hsm_sw_sha2_routines.h"
 
-#define rotate_right(value, places) ((value >> places) | (value << (32 - places)))
+#define ROTATE_RIGHT(value, places) ((value >> places) | (value << (32 - places)))
 
 /**
  * \brief Processes whole blocks (64 bytes) of data.
@@ -55,6 +56,14 @@ static void
 _sw_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *blocks, uint32_t block_count){
 	int i = 0;
 	uint32_t block = 0;
+
+    uint32_t w_index;
+    uint32_t word_value;
+    uint32_t s0, s1;
+    uint32_t t1, t2;
+    uint32_t maj, ch;
+    uint32_t rotate_register[8];
+    const uint8_t* cur_msg_block;
 
 	union {
 		uint32_t w_word[SHA256_BLOCK_SIZE];
@@ -72,17 +81,13 @@ _sw_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *blocks, uint32_t bl
 		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 	};
 
+	VS_IOT_ASSERT(blocks);
+
 	// Loop through all the blocks to process
 	for (block = 0; block < block_count; block++) {
-		uint32_t w_index;
-		uint32_t word_value;
-		uint32_t s0, s1;
-		uint32_t t1, t2;
-		uint32_t maj, ch;
-		uint32_t rotate_register[8];
-		const uint8_t* cur_msg_block = &blocks[block * SHA256_BLOCK_SIZE];
+        cur_msg_block = &blocks[block * SHA256_BLOCK_SIZE];
 
-		// Swap word bytes
+	    // Swap word bytes
 		for (i = 0; i < SHA256_BLOCK_SIZE; i += 4) {
 			w_union.w_byte[i + 3] = cur_msg_block[i + 0];
 			w_union.w_byte[i + 2] = cur_msg_block[i + 1];
@@ -94,10 +99,10 @@ _sw_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *blocks, uint32_t bl
 		while (w_index < SHA256_BLOCK_SIZE) {
 			// right rotate for 32-bit variable in C: (value >> places) | (value << 32 - places)
 			word_value = w_union.w_word[w_index - 15];
-			s0 = rotate_right(word_value, 7) ^ rotate_right(word_value, 18) ^ (word_value >> 3);
+			s0 = ROTATE_RIGHT(word_value, 7) ^ ROTATE_RIGHT(word_value, 18) ^ (word_value >> 3);
 
 			word_value = w_union.w_word[w_index - 2];
-			s1 = rotate_right(word_value, 17) ^ rotate_right(word_value, 19) ^ (word_value >> 10);
+			s1 = ROTATE_RIGHT(word_value, 17) ^ ROTATE_RIGHT(word_value, 19) ^ (word_value >> 10);
 
 			w_union.w_word[w_index] = w_union.w_word[w_index - 16] + s0 + w_union.w_word[w_index - 7] + s1;
 
@@ -109,16 +114,16 @@ _sw_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *blocks, uint32_t bl
 
 		// hash calculation loop
 		for (i = 0; i < SHA256_BLOCK_SIZE; i++) {
-			s0 = rotate_right(rotate_register[0], 2)
-			     ^ rotate_right(rotate_register[0], 13)
-			     ^ rotate_right(rotate_register[0], 22);
+			s0 = ROTATE_RIGHT(rotate_register[0], 2)
+			     ^ ROTATE_RIGHT(rotate_register[0], 13)
+			     ^ ROTATE_RIGHT(rotate_register[0], 22);
 			maj = (rotate_register[0] & rotate_register[1])
 			      ^ (rotate_register[0] & rotate_register[2])
 			      ^ (rotate_register[1] & rotate_register[2]);
 			t2 = s0 + maj;
-			s1 = rotate_right(rotate_register[4], 6)
-			     ^ rotate_right(rotate_register[4], 11)
-			     ^ rotate_right(rotate_register[4], 25);
+			s1 = ROTATE_RIGHT(rotate_register[4], 6)
+			     ^ ROTATE_RIGHT(rotate_register[4], 11)
+			     ^ ROTATE_RIGHT(rotate_register[4], 25);
 			ch = (rotate_register[4] & rotate_register[5])
 			     ^ (~rotate_register[4] & rotate_register[6]);
 			t1 = rotate_register[7] + s1 + ch + k[i] + w_union.w_word[i];
@@ -148,6 +153,7 @@ vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx* ctx) {
 	};
 	int i;
 
+    VS_IOT_ASSERT(ctx);
 	memset(ctx, 0, sizeof(*ctx));
 	memcpy(ctx->hash, hash_init, 8 * sizeof(uint32_t));
 }
@@ -159,6 +165,8 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx* ctx, const uint8_t* msg, uint32_t 
 	uint32_t rem_size = SHA256_BLOCK_SIZE - ctx->block_size;
 	uint32_t copy_size = msg_size > rem_size ? rem_size : msg_size;
 
+    VS_IOT_ASSERT(ctx);
+    VS_IOT_ASSERT(msg);
 	// Copy data into current block
 	memcpy(&ctx->block[ctx->block_size], msg, copy_size);
 
@@ -189,6 +197,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx* ctx, uint8_t digest[SHA256_DIGEST_S
 	uint32_t msg_size_bits;
 	uint32_t pad_zero_count;
 
+    VS_IOT_ASSERT(ctx);
 	// Calculate the total message size in bits
 	ctx->total_msg_size += ctx->block_size;
 	msg_size_bits = ctx->total_msg_size * 8;
