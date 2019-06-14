@@ -42,7 +42,7 @@ set(HSM_LIB hsm)
 #   Source code
 #
 set(HSM_SRC
-        src/hsm.c
+        src/hsm_sha2_routines.c
         )
 
 #
@@ -86,6 +86,7 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

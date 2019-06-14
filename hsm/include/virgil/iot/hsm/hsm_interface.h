@@ -32,4 +32,28 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/hsm/hsm.h>
+#ifndef VS_HSM_API_H
+#define VS_HSM_API_H
+#include <stdint.h>
+#include <stddef.h>
+
+#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/devices/hsm_none.h>
+#include <virgil/iot/hsm/devices/hsm_custom.h>
+#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
+#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
+#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+
+int
+vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);
+int
+vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
+int
+vs_hsm_hash_create(vs_hsm_hash_type hash_type,
+            const uint8_t *data,
+            uint16_t data_sz,
+            uint8_t *hash,
+            uint16_t hash_buf_sz,
+            uint16_t *hash_sz);
+
+#endif // VS_HSM_API_H

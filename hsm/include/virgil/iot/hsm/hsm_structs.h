@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_API_H
-#define VS_HSM_API_H
+#ifndef VS_HSM_STRUCTS_H
+#define VS_HSM_STRUCTS_H
 #include <stdint.h>
 #include <stddef.h>
 
@@ -60,9 +60,11 @@ typedef enum {
     VS_KEYPAIR_MAX
 } vs_hsm_keypair_type_e;
 
-int
-vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
-int
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, int16_t *out_sz);
+typedef enum {
+    VS_HASH_SHA_INVALID = -1,
+    VS_HASH_SHA_256 = 0,
+    VS_HASH_SHA_384,
+    VS_HASH_SHA_512,
+} vs_hsm_hash_type;
 
-#endif // VS_HSM_API_H
+#endif // VS_HSM_STRUCTS_H
