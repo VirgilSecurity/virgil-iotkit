@@ -32,27 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#ifndef VS_HSM_INTERFACE_API_H
+#define VS_HSM_INTERFACE_API_H
 
+#include <stdint.h>
+#include <stddef.h>
 
+#include <virgil/iot/hsm/hsm_structs.h>
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+int
+vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
+int
+vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, uint16_t *out_sz);
 
-#define VS_IOT_ASSERT    assert
-#define VS_IOT_CALLOC    calloc
-#define VS_IOT_FREE      free
-#define VS_IOT_MALLOC    malloc
-#define VS_IOT_MEMCMP    memcmp
-#define VS_IOT_MEMCPY    memcpy
-#define VS_IOT_SNPRINTF  snprintf
-#define VS_IOT_SPRINTF   sprintf
-#define VS_IOT_STRCPY    strcpy
-#define VS_IOT_VSNPRINTF vsnprintf
+int
+vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
+                   uint8_t **buf,
+                   uint16_t buf_sz,
+                   uint16_t *key_sz,
+                   vs_hsm_keypair_type_e *keypair_type);
 
-
-
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#endif // VS_HSM_INTERFACE_API_H
