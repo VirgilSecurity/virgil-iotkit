@@ -77,4 +77,11 @@ typedef enum {
     VS_HSM_ERR_CRC_LEN     // calc crc but len < 0
 } vs_hsm_err_code_e;
 
+typedef enum {
+    VS_HASH_SHA_INVALID = -1,
+    VS_HASH_SHA_256 = 0,
+    VS_HASH_SHA_384,
+    VS_HASH_SHA_512,
+} vs_hsm_hash_type;
+
 #endif // VS_HSM_STRUCTURES_API_H

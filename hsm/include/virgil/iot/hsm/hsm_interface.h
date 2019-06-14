@@ -41,17 +41,25 @@
 #include <virgil/iot/hsm/hsm_structs.h>
 
 int
-vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
+vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);
 int
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, uint16_t *out_sz);
+vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
+
+int
+vs_hsm_hash_create(vs_hsm_hash_type hash_type,
+                   const uint8_t *data,
+                   uint16_t data_sz,
+                   uint8_t *hash,
+                   uint16_t hash_buf_sz,
+                   uint16_t *hash_sz);
 
 int
 vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
 int
 vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
-                   uint8_t **buf,
-                   uint16_t buf_sz,
-                   uint16_t *key_sz,
-                   vs_hsm_keypair_type_e *keypair_type);
+                          uint8_t **buf,
+                          uint16_t buf_sz,
+                          uint16_t *key_sz,
+                          vs_hsm_keypair_type_e *keypair_type);
 
 #endif // VS_HSM_INTERFACE_API_H
