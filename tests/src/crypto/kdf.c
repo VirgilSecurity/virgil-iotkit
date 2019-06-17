@@ -24,7 +24,7 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
                                 result_len),
                      "ERROR while execute kdf");
 
-    BOOL_CHECK_RET(0 != memcmp(another_key_raw, correct_result, result_len), "Hash is constant");
+    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "Hash is constant");
     return true;
 }
 
