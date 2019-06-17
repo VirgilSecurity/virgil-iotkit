@@ -67,9 +67,4 @@ typedef enum {
     VS_HASH_SHA_512,
 } vs_hsm_hash_type;
 
-typedef enum {
-    SIGN_COMMON = 0,
-    SIGN_PSS = 1,
-} vs_hsm_sign_type;
-
 #endif // VS_HSM_STRUCTURES_API_H

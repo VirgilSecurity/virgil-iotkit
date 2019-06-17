@@ -29,20 +29,26 @@ _test_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, si
     static uint8_t another_result_buf[64];
     uint16_t result_sz;
 
-    BOOL_CHECK_RET (0 == vs_hsm_hash_create(
-                hash_type, (uint8_t *)test_data, strlen(test_data), result_buf, sizeof(result_buf), &result_sz), "Error execute hash op");
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)test_data,
+                                                       strlen(test_data),
+                                                       result_buf,
+                                                       sizeof(result_buf),
+                                                       &result_sz),
+                   "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result")
 
     MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz);
 
-    BOOL_CHECK_RET (0 == vs_hsm_hash_create(hash_type,
-                                       (uint8_t *)another_test_data,
-                                       strlen(another_test_data),
-                                       another_result_buf,
-                                       sizeof(another_result_buf),
-                                       &result_sz), "Error execute hash op");
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)another_test_data,
+                                                       strlen(another_test_data),
+                                                       another_result_buf,
+                                                       sizeof(another_result_buf),
+                                                       &result_sz),
+                   "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
-    BOOL_CHECK_RET( 0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");
+    BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");
 
     return true;
 }
@@ -67,7 +73,8 @@ _test_partial_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result
         vs_hsm_sw_sha256_update(&ctx, (uint8_t *)another_test_data, strlen(another_test_data));
         vs_hsm_sw_sha256_final(&ctx, another_result_buf);
 
-        BOOL_CHECK_RET( 0 != memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf)), "Hash is constant");
+        BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf)),
+                       "Hash is constant");
     } break;
     default:
         return false;

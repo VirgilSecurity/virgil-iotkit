@@ -77,7 +77,7 @@ static vs_tl_context_t _tl_tmp_ctx;
 //                                          (size_t)hash_size(hash_type),
 //                                          mbedtls_sign,
 //                                          mbedtls_sign_sz,
-//                                          SIGN_COMMON);
+//                                          VS_SIGN_COMMON);
 //}
 
 /******************************************************************************/
