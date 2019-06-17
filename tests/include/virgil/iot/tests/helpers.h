@@ -48,8 +48,7 @@ extern size_t failed_test_result;
 
 #define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
 
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...)                                                                        \
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
+#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 #define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
     BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
@@ -63,7 +62,7 @@ extern size_t failed_test_result;
         goto terminate;                                                                                                \
     }
 
-#define VS_HSM_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+#define VS_HSM_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                 \
     BOOL_CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
 
 
