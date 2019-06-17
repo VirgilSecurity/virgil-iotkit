@@ -14,7 +14,7 @@ static uint8_t input_raw[] = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x
 
 /******************************************************************************/
 static bool
-_test_hmac_case(vs_hsm_hash_type hash_type, const uint8_t *correct, uint16_t correct_sz) {
+_test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t correct_sz) {
     uint8_t buf[128];
     uint16_t sz;
 

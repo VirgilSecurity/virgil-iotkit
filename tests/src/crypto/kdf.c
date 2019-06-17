@@ -1,55 +1,36 @@
 
 #include <helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 
-#if 0
-#include <virgil/crypto/foundation/vscf_iotelic_kdf2.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-static vsc_data_t key;
-static vsc_data_t another_key;
+static const char key_raw[] = "Test data for kdf2";
+static const char another_key_raw[] = "Another test data for kdf2";
 
 /******************************************************************************/
 static bool
-_test_kdf2_step(vscf_impl_t *sha_impl, vsc_data_t correct_result) {
-    vsc_buffer_t result;
-    vsc_buffer_t another_result;
-    vscf_iotelic_kdf2_t *kdf2_ctx = vscf_iotelic_kdf2_new();
-    bool correct;
-    bool incorrect;
-    static uint8_t result_buf[RESULT_BUF_SIZE];
-    static uint8_t another_result_buf[RESULT_BUF_SIZE];
+_test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uint16_t result_len) {
+    uint8_t result_buf[result_len];
+    uint8_t another_result_buf[result_len];
 
-    vsc_buffer_init(&result);
-    vsc_buffer_init(&another_result);
+    VS_HSM_CHECK_RET(vs_hsm_kdf(KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len),
+                     "ERROR while execute kdf");
 
-    vsc_buffer_use(&result, result_buf, correct_result.len);
-    vsc_buffer_use(&another_result, another_result_buf, correct_result.len);
+    MEMCMP_CHECK_RET(result_buf, correct_result, result_len);
 
-    vscf_iotelic_kdf2_take_hash(kdf2_ctx, sha_impl);
+    VS_HSM_CHECK_RET(vs_hsm_kdf(KDF_2,
+                                hash_type,
+                                (uint8_t *)another_key_raw,
+                                strlen(another_key_raw),
+                                another_result_buf,
+                                result_len),
+                     "ERROR while execute kdf");
 
-    vscf_iotelic_kdf2_derive(kdf2_ctx, key, correct_result.len, &result);
-    correct = vsc_data_equal(correct_result, vsc_buffer_data(&result));
-
-    vscf_iotelic_kdf2_derive(kdf2_ctx, another_key, correct_result.len, &another_result);
-    incorrect = !vsc_data_equal(correct_result, vsc_buffer_data(&another_result));
-
-    vsc_buffer_cleanup(&result);
-    vsc_buffer_cleanup(&another_result);
-    vscf_iotelic_kdf2_delete(kdf2_ctx);
-
-    return correct && incorrect;
+    BOOL_CHECK_RET(0 != memcmp(another_key_raw, correct_result, result_len), "Hash is constant");
+    return true;
 }
-#endif
+
 /******************************************************************************/
 void
 test_kdf2(void) {
-#if 0
-    static const char key_raw[] = "Test data for kdf2";
-    static const char another_key_raw[] = "Another test data for kdf2";
-
     static const uint8_t sha256_result_raw[] = {
             0x85, 0xc0, 0x97, 0xf6, 0x09, 0xfb, 0x8c, 0x9b, 0xe6, 0xc4, 0xfa, 0xf1, 0x10, 0xde, 0xb6, 0xcf,
             0x9a, 0xda, 0xb0, 0xe4, 0x8a, 0x34, 0x50, 0xad, 0x96, 0xcc, 0xb0, 0x7a, 0xd1, 0x78, 0xed, 0xcc,
@@ -74,23 +55,11 @@ test_kdf2(void) {
             0x2c, 0xab, 0xc7, 0x95, 0x1e, 0xb0, 0x6c, 0x39, 0x6b, 0x5b, 0xda, 0x0d, 0x42, 0x17, 0xab, 0x03,
             0x51, 0xc8, 0x15, 0x48, 0x68, 0x9c, 0xbc, 0x23, 0x91, 0xe6, 0x8a, 0xf2, 0x2c, 0xb2, 0x96, 0xc2};
 
-    key = vsc_data_from_str(key_raw, strlen(key_raw));
-    another_key = vsc_data_from_str(another_key_raw, strlen(another_key_raw));
-
     START_TEST("KDF2 tests");
 
-    TEST_CASE_OK("SHA-256 usage",
-                 _test_kdf2_step(vscf_iotelic_sha256_impl(vscf_iotelic_sha256_new()),
-                                 vsc_data(sha256_result_raw, sizeof(sha256_result_raw))));
-
-    TEST_CASE_OK("SHA-384 usage",
-                 _test_kdf2_step(vscf_iotelic_sha384_impl(vscf_iotelic_sha384_new()),
-                                 vsc_data(sha384_result_raw, sizeof(sha384_result_raw))));
-
-    TEST_CASE_OK("SHA-512 usage",
-                 _test_kdf2_step(vscf_iotelic_sha512_impl(vscf_iotelic_sha512_new()),
-                                 vsc_data(sha512_result_raw, sizeof(sha512_result_raw))));
+    TEST_CASE_OK("SHA-256 usage", _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
+    TEST_CASE_OK("SHA-384 usage", _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
+    TEST_CASE_OK("SHA-512 usage", _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
 
 terminate:;
-#endif
 }

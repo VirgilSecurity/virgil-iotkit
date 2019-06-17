@@ -3,7 +3,7 @@
 
 /*******************************************************************************/
 static bool
-_test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type hash_alg, vs_hsm_keypair_type_e keypair_type) {
+_test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_hsm_keypair_type_e keypair_type) {
     static const char *input_data_raw = "Test data";
     uint16_t result_sz;
     uint8_t hash_buf[64];
