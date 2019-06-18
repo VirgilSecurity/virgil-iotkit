@@ -57,7 +57,7 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vscf_alg_id_t hash_alg, vscf_alg_
     VSCF_CHECK_GOTO(vscf_iotelic_public_key_import_from_slot_id(ctx_pubkey, slot),
                     "ERROR while importing public key from slot");
 
-    BOOL_CHECK_GOTO(
+    CHECK_GOTO(
             vscf_iotelic_public_key_verify_hash(ctx_pubkey, vsc_buffer_data(&hash), hash_alg, vsc_buffer_data(&sign)),
             "ERROR while verifying hash");
 

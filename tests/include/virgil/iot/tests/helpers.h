@@ -51,19 +51,19 @@ extern size_t failed_test_result;
 #define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 #define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
-    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                               \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
 
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
     if (!(OPERATION)) {                                                                                                \
         VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
         goto terminate;                                                                                                \
     }
 
 #define VS_HSM_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                 \
-    BOOL_CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
+    CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
 
 
 #define RESULT_BUF_SIZE 1024
