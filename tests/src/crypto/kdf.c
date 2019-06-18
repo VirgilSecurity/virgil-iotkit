@@ -5,6 +5,13 @@
 static const char key_raw[] = "Test data for kdf2";
 static const char another_key_raw[] = "Another test data for kdf2";
 
+static const char *hkdf_input = "Test input";
+static const char *another_hkdf_input = "Another test input";
+static const char *hkdf_salt = "Test salt";
+static const char *another_hkdf_salt = "Another test salt";
+static const char *hkdf_info = "Test info";
+static const char *another_hkdf_info = "Another test info";
+
 /******************************************************************************/
 static bool
 _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uint16_t result_len) {
@@ -24,7 +31,71 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
                                 result_len),
                      "ERROR while execute kdf");
 
-    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "Hash is constant");
+    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "Hkdf is constant");
+    return true;
+}
+
+/******************************************************************************/
+static bool
+_test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uint16_t result_len) {
+    uint8_t result_buf[result_len];
+    memset(result_buf, 0, result_len);
+
+    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
+                                 (uint8_t *)hkdf_input,
+                                 strlen(hkdf_input),
+                                 (uint8_t *)hkdf_salt,
+                                 strlen(hkdf_salt),
+                                 (uint8_t *)hkdf_info,
+                                 strlen(hkdf_info),
+                                 result_buf,
+                                 result_len),
+                     "ERROR while execute hkdf");
+
+    MEMCMP_CHECK_RET(result_buf, correct_result, result_len);
+
+    memset(result_buf, 0, result_len);
+    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
+                                 (uint8_t *)hkdf_input,
+                                 strlen(hkdf_input),
+                                 (uint8_t *)another_hkdf_salt,
+                                 strlen(another_hkdf_salt),
+                                 (uint8_t *)hkdf_info,
+                                 strlen(hkdf_info),
+                                 result_buf,
+                                 result_len),
+                     "ERROR while execute hkdf");
+
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other salt");
+
+    memset(result_buf, 0, result_len);
+    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
+                                 (uint8_t *)another_hkdf_input,
+                                 strlen(another_hkdf_input),
+                                 (uint8_t *)hkdf_salt,
+                                 strlen(hkdf_salt),
+                                 (uint8_t *)hkdf_info,
+                                 strlen(hkdf_info),
+                                 result_buf,
+                                 result_len),
+                     "ERROR while execute hkdf");
+
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other input");
+
+    memset(result_buf, 0, result_len);
+    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
+                                 (uint8_t *)hkdf_input,
+                                 strlen(hkdf_input),
+                                 (uint8_t *)hkdf_salt,
+                                 strlen(hkdf_salt),
+                                 (uint8_t *)another_hkdf_info,
+                                 strlen(another_hkdf_info),
+                                 result_buf,
+                                 result_len),
+                     "ERROR while execute hkdf");
+
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other info");
+
     return true;
 }
 
@@ -55,11 +126,25 @@ test_kdf2(void) {
             0x2c, 0xab, 0xc7, 0x95, 0x1e, 0xb0, 0x6c, 0x39, 0x6b, 0x5b, 0xda, 0x0d, 0x42, 0x17, 0xab, 0x03,
             0x51, 0xc8, 0x15, 0x48, 0x68, 0x9c, 0xbc, 0x23, 0x91, 0xe6, 0x8a, 0xf2, 0x2c, 0xb2, 0x96, 0xc2};
 
+    static const uint8_t hkdf384_result_raw[] = {
+            0x8c, 0xf1, 0x41, 0x94, 0x81, 0x14, 0x74, 0xd0, 0xe7, 0x62, 0x6c, 0x86, 0x2f, 0xf8, 0xb1, 0x31,
+            0x5c, 0xe8, 0xc4, 0xb9, 0x68, 0xb6, 0x80, 0x27, 0xc1, 0xb7, 0xdd, 0xfd, 0x5b, 0x94, 0xe9, 0x15,
+            0x13, 0x9d, 0x3e, 0x86, 0xf1, 0xd6, 0xac, 0xf6, 0xa2, 0xc1, 0x93, 0xa2, 0x6c, 0x4c, 0x2f, 0xb0,
+            0xd7, 0xd8, 0x6a, 0xb3, 0x76, 0xc8, 0x25, 0x29, 0x8f, 0x87, 0x58, 0xb7, 0x43, 0xa9, 0xde, 0x8b,
+            0x1d, 0xd1, 0x9e, 0x51, 0xa2, 0x09, 0x26, 0xe2, 0x8f, 0xb7, 0x94, 0x52, 0x43, 0x77, 0x5c, 0x28,
+            0x9a, 0x43, 0x43, 0x03, 0x14, 0xa5, 0x6a, 0x3d, 0x38, 0x03, 0x26, 0xe8, 0xd9, 0xe5, 0xfe, 0x34,
+            0xab, 0xb2, 0x6e, 0x4f, 0x71, 0x0e, 0x9f, 0xd9, 0x7a, 0x34, 0xd8, 0x3d, 0x8f, 0xf0, 0xde, 0xe4,
+            0xf9, 0x2a, 0x2d, 0xa4, 0x3b, 0x80, 0x51, 0x95, 0x00, 0xcd, 0xef, 0xbf, 0x35, 0x7c, 0x63, 0x53};
+
     START_TEST("KDF2 tests");
 
     TEST_CASE_OK("SHA-256 usage", _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
     TEST_CASE_OK("SHA-384 usage", _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
     TEST_CASE_OK("SHA-512 usage", _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
+
+    START_TEST("HKDF tests");
+
+    TEST_CASE_OK("SHA-384 usage", _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
 
 terminate:;
 }
