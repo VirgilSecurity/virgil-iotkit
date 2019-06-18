@@ -14,13 +14,13 @@
 #define TL_STORAGE_TYPE_TMP 2
 
 typedef enum {
-    TL_OK = 0,
-    TL_ERROR_GENERAL = -1,
-    TL_ERROR_PARAMS = -2,
-    TL_ERROR_SMALL_BUFFER = -3,
-    TL_ERROR_WRITE = -4,
-    TL_ERROR_READ = -5,
-} TL_RESULT;
+    VS_TL_OK = 0,
+    VS_TL_ERROR_GENERAL = -1,
+    VS_TL_ERROR_PARAMS = -2,
+    VS_TL_ERROR_SMALL_BUFFER = -3,
+    VS_TL_ERROR_WRITE = -4,
+    VS_TL_ERROR_READ = -5,
+} vs_tl_result_e;
 
 typedef struct __attribute__((__packed__)) {
     size_t storage_type;
