@@ -87,7 +87,7 @@ extern size_t failed_test_result;
             VS_LOG_INFO("Test have been finished successfully");                                                       \
         } else if (failed_test_result == 1) {                                                                          \
             VS_LOG_INFO("1 test has been failed");                                                                     \
-        } else if (failed_test_result >= 1) {                                                                          \
+        } else if (failed_test_result > 1) {                                                                           \
             VS_LOG_INFO("%lu tests have been failed", failed_test_result);                                             \
         }                                                                                                              \
     } while (0);

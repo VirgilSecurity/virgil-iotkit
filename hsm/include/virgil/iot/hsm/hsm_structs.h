@@ -46,17 +46,19 @@
 
 typedef enum {
     VS_KEYPAIR_INVALID = -1,
-    VS_KEYPAIR_EC_SECP192R1 = 1, ///< 192-bits NIST curve
-    VS_KEYPAIR_EC_SECP224R1,     ///< 224-bits NIST curve
-    VS_KEYPAIR_EC_SECP256R1,     ///< 256-bits NIST curve
-    VS_KEYPAIR_EC_SECP384R1,     ///< 384-bits NIST curve
-    VS_KEYPAIR_EC_SECP521R1,     ///< 521-bits NIST curve
-    VS_KEYPAIR_EC_SECP192K1,     ///< 192-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP224K1,     ///< 224-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP256K1,     ///< 256-bits "Koblitz" curve
-    VS_KEYPAIR_EC_CURVE25519,    ///< Curve25519
-    VS_KEYPAIR_EC_ED25519,       ///< Ed25519
-    VS_KEYPAIR_RSA_2048,         ///< RSA 2048 bit (not recommended)
+    VS_KEYPAIR_EC_SECP_MIN = 1,
+    VS_KEYPAIR_EC_SECP192R1 = VS_KEYPAIR_EC_SECP_MIN, ///< 192-bits NIST curve
+    VS_KEYPAIR_EC_SECP224R1,                          ///< 224-bits NIST curve
+    VS_KEYPAIR_EC_SECP256R1,                          ///< 256-bits NIST curve
+    VS_KEYPAIR_EC_SECP384R1,                          ///< 384-bits NIST curve
+    VS_KEYPAIR_EC_SECP521R1,                          ///< 521-bits NIST curve
+    VS_KEYPAIR_EC_SECP192K1,                          ///< 192-bits "Koblitz" curve
+    VS_KEYPAIR_EC_SECP224K1,                          ///< 224-bits "Koblitz" curve
+    VS_KEYPAIR_EC_SECP256K1,                          ///< 256-bits "Koblitz" curve
+    VS_KEYPAIR_EC_SECP_MAX = VS_KEYPAIR_EC_SECP256K1,
+    VS_KEYPAIR_EC_CURVE25519, ///< Curve25519
+    VS_KEYPAIR_EC_ED25519,    ///< Ed25519
+    VS_KEYPAIR_RSA_2048,      ///< RSA 2048 bit (not recommended)
     VS_KEYPAIR_MAX
 } vs_hsm_keypair_type_e;
 
