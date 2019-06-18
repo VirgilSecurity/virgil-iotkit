@@ -302,7 +302,7 @@ vs_logger_message_hex(vs_log_level_t level,
 
     cur_byte = (unsigned char *)data_buf;
     for (pos = 0; pos < data_size; ++pos, ++cur_byte) {
-        if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) < 0)
+        if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) > 0)
 
             VS_LOGGER_OUTPUT(buf);
     }

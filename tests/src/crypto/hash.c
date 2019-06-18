@@ -24,28 +24,28 @@ static const uint8_t correct_result_sha_512_raw[] = {
 
 /******************************************************************************/
 static bool
-_test_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
-    static uint8_t result_buf[64];
-    static uint8_t another_result_buf[64];
+_test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
+    static uint8_t result_buf[HASH_MAX_BUF_SIZE];
+    static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
 
-    BOOL_CHECK_RET(0 == vs_hsm_hash_create(hash_type,
-                                           (uint8_t *)test_data,
-                                           strlen(test_data),
-                                           result_buf,
-                                           sizeof(result_buf),
-                                           &result_sz),
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)test_data,
+                                                       strlen(test_data),
+                                                       result_buf,
+                                                       sizeof(result_buf),
+                                                       &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result")
 
     MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz);
 
-    BOOL_CHECK_RET(0 == vs_hsm_hash_create(hash_type,
-                                           (uint8_t *)another_test_data,
-                                           strlen(another_test_data),
-                                           another_result_buf,
-                                           sizeof(another_result_buf),
-                                           &result_sz),
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)another_test_data,
+                                                       strlen(another_test_data),
+                                                       another_result_buf,
+                                                       sizeof(another_result_buf),
+                                                       &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
     BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");
@@ -55,13 +55,13 @@ _test_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, si
 
 /******************************************************************************/
 static bool
-_test_partial_sha_pass(vs_hsm_hash_type hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
+_test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
 
     switch (hash_type) {
     case VS_HASH_SHA_256: {
         vs_hsm_sw_sha256_ctx ctx;
-        static uint8_t result_buf[32];
-        static uint8_t another_result_buf[32];
+        static uint8_t result_buf[SHA256_SIZE];
+        static uint8_t another_result_buf[SHA256_SIZE];
 
         vs_hsm_sw_sha256_init(&ctx);
         vs_hsm_sw_sha256_update(&ctx, (uint8_t *)test_data, strlen(test_data));

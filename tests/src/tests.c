@@ -61,7 +61,6 @@ crypto_tests(void) {
     test_hash();
     test_hmac();
     test_kdf2();
-    test_kdf2();
     test_ecdsa();
     test_keypair();
     test_aes();
