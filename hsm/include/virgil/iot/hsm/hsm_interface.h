@@ -74,33 +74,45 @@ vs_hsm_hmac(vs_hsm_hash_type hash_type,
             uint16_t *output_sz);
 
 int
-vs_hsm_aes_crypt( vs_iot_aes_type_e aes_type,
-               vs_hsm_cipher_id_e cipher,
-               const unsigned char *key,
-               unsigned int keybits,
-               size_t length,
-               const uint8_t *iv,
-               size_t iv_len,
-               const uint8_t *add,
-               size_t add_len,
-               const uint8_t *input,
-               uint8_t *output,
-               size_t tag_len,
-               uint8_t *tag);
+vs_hsm_aes_crypt(vs_iot_aes_type_e aes_type,
+                 const uint8_t *key,
+                 uint16_t key_bitlen,
+                 const uint8_t *iv,
+                 uint16_t iv_len,
+                 const uint8_t *add,
+                 uint16_t add_len,
+                 uint16_t buf_len,
+                 const uint8_t *input,
+                 uint8_t *output,
+                 uint8_t *tag,
+                 uint16_t tag_len);
 
 int
-vs_hsm_aes_decrypt( vs_iot_aes_type_e aes_type,
-                 vs_hsm_cipher_id_e cipher,
-                 const unsigned char *key,
-                 unsigned int keybits,
-                 size_t length,
-                 const uint8_t *iv,
-                 size_t iv_len,
-                 const uint8_t *add,
-                 size_t add_len,
-                 const uint8_t *tag,
-                 size_t tag_len,
-                 const uint8_t *input,
-                 uint8_t *output);
+vs_hsm_aes_decrypt(vs_iot_aes_type_e aes_type,
+                   const uint8_t *key,
+                   uint16_t key_bitlen,
+                   const uint8_t *iv,
+                   uint16_t iv_len,
+                   const uint8_t *add,
+                   uint16_t add_len,
+                   uint16_t buf_len,
+                   const uint8_t *input,
+                   uint8_t *output,
+                   uint8_t *tag,
+                   uint16_t tag_len);
+
+int
+vs_hsm_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
+                        const uint8_t *key,
+                        uint16_t key_bitlen,
+                        const uint8_t *iv,
+                        uint16_t iv_len,
+                        const uint8_t *add,
+                        uint16_t add_len,
+                        uint16_t buf_len,
+                        const uint8_t *input,
+                        uint8_t *output,
+                        const uint8_t *tag,
+                        uint16_t tag_len);
 
 #endif // VS_HSM_INTERFACE_API_H
