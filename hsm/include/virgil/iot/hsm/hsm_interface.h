@@ -96,4 +96,14 @@ vs_hsm_kdf(vs_hsm_kdf_type_e kdf_type,
            uint8_t *output,
            uint16_t output_sz);
 
+int
+vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
+            const uint8_t *input,
+            uint16_t input_sz,
+            const uint8_t *salt,
+            uint16_t salt_sz,
+            const uint8_t *info,
+            uint16_t info_sz,
+            uint8_t *output,
+            uint16_t output_sz);
 #endif // VS_HSM_INTERFACE_API_H
