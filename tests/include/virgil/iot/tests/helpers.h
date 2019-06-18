@@ -66,7 +66,10 @@ extern size_t failed_test_result;
     BOOL_CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
 
 
-#define RESULT_BUF_SIZE 1024
+#define RESULT_BUF_SIZE (1024)
+#define HASH_MAX_BUF_SIZE (64)
+#define SHA256_SIZE (32)
+#define PUBKEY_MAX_BUF_SIZE (256)
 
 #define BORDER VS_LOG_INFO("------------------------------------------------------");
 

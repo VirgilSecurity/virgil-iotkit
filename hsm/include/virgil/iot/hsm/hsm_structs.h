@@ -68,8 +68,8 @@ typedef enum {
 } vs_hsm_hash_type_e;
 
 typedef enum {
-    KDF_INVALID = -1,
-    KDF_2 = 0,
+    VS_KDF_INVALID = -1,
+    VS_KDF_2 = 0,
 } vs_hsm_kdf_type_e;
 
 #endif // VS_HSM_STRUCTURES_API_H

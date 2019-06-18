@@ -6,7 +6,7 @@ typedef struct {
     vs_iot_hsm_slot_e slot;
     vs_hsm_keypair_type_e keypair_type;
     const char *descr;
-    uint8_t buf[256];
+    uint8_t buf[PUBKEY_MAX_BUF_SIZE];
     uint16_t key_sz;
     uint16_t expected_size;
 } _test_case_t;
