@@ -18,12 +18,12 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
     uint8_t result_buf[result_len];
     uint8_t another_result_buf[result_len];
 
-    VS_HSM_CHECK_RET(vs_hsm_kdf(KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len),
+    VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len),
                      "ERROR while execute kdf");
 
     MEMCMP_CHECK_RET(result_buf, correct_result, result_len);
 
-    VS_HSM_CHECK_RET(vs_hsm_kdf(KDF_2,
+    VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2,
                                 hash_type,
                                 (uint8_t *)another_key_raw,
                                 strlen(another_key_raw),

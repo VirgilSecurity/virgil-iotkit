@@ -25,8 +25,8 @@ static const uint8_t correct_result_sha_512_raw[] = {
 /******************************************************************************/
 static bool
 _test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
-    static uint8_t result_buf[64];
-    static uint8_t another_result_buf[64];
+    static uint8_t result_buf[HASH_MAX_BUF_SIZE];
+    static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
 
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
@@ -60,8 +60,8 @@ _test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_resu
     switch (hash_type) {
     case VS_HASH_SHA_256: {
         vs_hsm_sw_sha256_ctx ctx;
-        static uint8_t result_buf[32];
-        static uint8_t another_result_buf[32];
+        static uint8_t result_buf[SHA256_SIZE];
+        static uint8_t another_result_buf[SHA256_SIZE];
 
         vs_hsm_sw_sha256_init(&ctx);
         vs_hsm_sw_sha256_update(&ctx, (uint8_t *)test_data, strlen(test_data));

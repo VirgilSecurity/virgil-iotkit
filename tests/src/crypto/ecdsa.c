@@ -6,8 +6,8 @@ static bool
 _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_hsm_keypair_type_e keypair_type) {
     static const char *input_data_raw = "Test data";
     uint16_t result_sz;
-    uint8_t hash_buf[64];
-    uint8_t pubkey[256];
+    uint8_t hash_buf[HASH_MAX_BUF_SIZE];
+    uint8_t pubkey[PUBKEY_MAX_BUF_SIZE];
     uint16_t pubkey_sz;
     vs_hsm_keypair_type_e pubkey_type;
     uint8_t sign_buf[RESULT_BUF_SIZE];
