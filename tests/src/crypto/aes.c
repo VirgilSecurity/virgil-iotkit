@@ -33,49 +33,23 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <helpers.h>
-#include <stdlib.h>
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <stdlib-config.h>
 
-size_t failed_test_result;
-
-void
-sdmp_tests(void);
-void
-prvs_tests(void);
-
-void
-test_hash(void);
-void
-test_hmac(void);
-void
-test_kdf2(void);
-void
-test_ecdsa(void);
-void
-test_keypair(void);
-void
-test_aes(void);
-
-/**********************************************************/
+/******************************************************************************/
 static void
-crypto_tests(void) {
-    test_hash();
-    test_hmac();
-    test_kdf2();
-    test_kdf2();
-    test_ecdsa();
-    test_keypair();
-    test_aes();
+test_aes_cases(vs_iot_aes_type_e aes_type) {
+
+    TEST_CASE_OK("crypt", vs_hsm_aes_crypt(aes_type, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+    TEST_CASE_OK("decrypt", vs_hsm_aes_crypt(aes_type, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+
+    terminate:;
 }
 
-/**********************************************************/
-size_t
-virgil_iot_sdk_tests(void) {
-    failed_test_result = 0;
+/******************************************************************************/
+void
+test_aes(void) {
 
-    sdmp_tests();
-    prvs_tests();
-
-    crypto_tests();
-
-    return failed_test_result;
+    START_TEST("AES GCM tests");
+    test_aes_cases(VS_AES_GCM);
 }

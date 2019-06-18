@@ -67,4 +67,19 @@ typedef enum {
     VS_HASH_SHA_512,
 } vs_hsm_hash_type;
 
+typedef enum {
+    VS_CIPHER_ID_NONE = 0,
+    VS_CIPHER_ID_NULL,
+    VS_CIPHER_ID_AES,
+    VS_CIPHER_ID_DES,
+    VS_CIPHER_ID_3DES,
+    VS_CIPHER_ID_CAMELLIA,
+    VS_CIPHER_ID_BLOWFISH,
+    VS_CIPHER_ID_ARC4,
+} vs_hsm_cipher_id_e;
+
+typedef enum {
+    VS_AES_GCM
+} vs_iot_aes_type_e;
+
 #endif // VS_HSM_STRUCTURES_API_H
