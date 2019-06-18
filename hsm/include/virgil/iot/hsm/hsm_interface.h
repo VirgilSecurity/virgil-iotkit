@@ -47,7 +47,7 @@ int
 vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
 
 int
-vs_hsm_hash_create(vs_hsm_hash_type hash_type,
+vs_hsm_hash_create(vs_hsm_hash_type_e hash_type,
                    const uint8_t *data,
                    uint16_t data_sz,
                    uint8_t *hash,
@@ -62,9 +62,24 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
                           uint16_t buf_sz,
                           uint16_t *key_sz,
                           vs_hsm_keypair_type_e *keypair_type);
+int
+vs_hsm_ecdsa_sign(vs_iot_hsm_slot_e key_slot,
+                  vs_hsm_hash_type_e hash_type,
+                  const uint8_t *hash,
+                  uint8_t *signature,
+                  uint16_t signature_buf_sz,
+                  uint16_t *signature_sz);
+int
+vs_hsm_ecdsa_verify(vs_hsm_keypair_type_e keypair_type,
+                    const uint8_t *public_key,
+                    uint16_t public_key_sz,
+                    vs_hsm_hash_type_e hash_type,
+                    const uint8_t *hash,
+                    const uint8_t *signature,
+                    uint16_t signature_sz);
 
 int
-vs_hsm_hmac(vs_hsm_hash_type hash_type,
+vs_hsm_hmac(vs_hsm_hash_type_e hash_type,
             const uint8_t *key,
             uint16_t key_sz,
             const uint8_t *input,
@@ -73,4 +88,22 @@ vs_hsm_hmac(vs_hsm_hash_type hash_type,
             uint16_t output_buf_sz,
             uint16_t *output_sz);
 
+int
+vs_hsm_kdf(vs_hsm_kdf_type_e kdf_type,
+           vs_hsm_hash_type_e hash_type,
+           const uint8_t *input,
+           uint16_t input_sz,
+           uint8_t *output,
+           uint16_t output_sz);
+
+int
+vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
+            const uint8_t *input,
+            uint16_t input_sz,
+            const uint8_t *salt,
+            uint16_t salt_sz,
+            const uint8_t *info,
+            uint16_t info_sz,
+            uint8_t *output,
+            uint16_t output_sz);
 #endif // VS_HSM_INTERFACE_API_H

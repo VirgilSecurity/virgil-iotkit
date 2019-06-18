@@ -1,111 +1,83 @@
 #include <helpers.h>
-/*
-#include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
-#include <virgil/crypto/foundation/vscf_iotelic_private_key.h>
-#include <virgil/crypto/foundation/vscf_iotelic_public_key.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <iotelic_slots.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 
-******************************************************************************
+/*******************************************************************************/
 static bool
-_test_sign_verify_pass(vs_iot_hsm_slot_e slot, vscf_alg_id_t hash_alg, vscf_alg_id_t keygen_alg) {
+_test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_hsm_keypair_type_e keypair_type) {
     static const char *input_data_raw = "Test data";
-    vsc_data_t input_data;
-    uint8_t hash_buf[/ * RESULT_BUF_SIZE * / 100];
-    vsc_buffer_t hash;
-    vscf_iotelic_private_key_t *ctx_prvkey = NULL;
-    vscf_iotelic_public_key_t *ctx_pubkey = NULL;
+    uint16_t result_sz;
+    uint8_t hash_buf[64];
+    uint8_t pubkey[256];
+    uint16_t pubkey_sz;
+    vs_hsm_keypair_type_e pubkey_type;
     uint8_t sign_buf[RESULT_BUF_SIZE];
-    vsc_buffer_t sign;
-    bool success = false;
+    uint16_t signature_sz;
 
-    vsc_buffer_init(&hash);
-    vsc_buffer_init(&sign);
+    VS_HSM_CHECK_RET(vs_hsm_keypair_create(slot, keypair_type), "ERROR while generating keypair");
+    VS_HSM_CHECK_RET(vs_hsm_hash_create(hash_alg,
+                                        (uint8_t *)input_data_raw,
+                                        strlen(input_data_raw),
+                                        hash_buf,
+                                        sizeof(hash_buf),
+                                        &result_sz),
+                     "ERROR while creating hash");
 
-    input_data = vsc_data((const byte *)input_data_raw, strlen(input_data_raw));
-    vsc_buffer_use(&hash, hash_buf, sizeof(hash_buf));
-    vsc_buffer_use(&sign, sign_buf, sizeof(sign_buf));
+    VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, sizeof(sign_buf), &signature_sz),
+                     "ERROR while signing hash");
 
-    ctx_prvkey = vscf_iotelic_private_key_new();
+    VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
+                     "ERROR while importing public key from slot");
 
-    VSCF_CHECK_GOTO(vscf_iotelic_private_key_generate_key(ctx_prvkey, slot, keygen_alg),
-                    "ERROR while generating keypair");
+    VS_HSM_CHECK_RET(vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
+                     "ERROR while verifying hash");
 
-    switch (hash_alg) {
-    case vscf_alg_id_SHA256:
-        vscf_iotelic_sha256_hash(input_data, &hash);
-        break;
-    case vscf_alg_id_SHA384:
-        vscf_iotelic_sha384_hash(input_data, &hash);
-        break;
-    case vscf_alg_id_SHA512:
-        vscf_iotelic_sha512_hash(input_data, &hash);
-        break;
-
-    default:
-        VS_LOG_ERROR("Unsupported hash mode");
-        goto terminate;
-    }
-
-    VSCF_CHECK_GOTO(vscf_iotelic_private_key_sign_hash(ctx_prvkey, vsc_buffer_data(&hash), hash_alg, &sign),
-                    "ERROR while signing hash");
-
-    ctx_pubkey = vscf_iotelic_public_key_new();
-
-    VSCF_CHECK_GOTO(vscf_iotelic_public_key_import_from_slot_id(ctx_pubkey, slot),
-                    "ERROR while importing public key from slot");
-
-    BOOL_CHECK_GOTO(
-            vscf_iotelic_public_key_verify_hash(ctx_pubkey, vsc_buffer_data(&hash), hash_alg, vsc_buffer_data(&sign)),
-            "ERROR while verifying hash");
-
-    success = true;
-
-terminate:
-
-    vscf_iotelic_private_key_delete(ctx_prvkey);
-    vscf_iotelic_public_key_delete(ctx_pubkey);
-    vsc_buffer_cleanup(&hash);
-    vsc_buffer_cleanup(&sign);
-
-    return success;
+    return true;
 }
-*/
+
 
 /******************************************************************************/
 void
 test_ecdsa(void) {
-#if 0
 #define TEST_SIGN_VERIFY_PASS(SLOT, HASH, KEY)                                                                         \
     TEST_CASE_OK("slot " #SLOT ", hash " #HASH ", key " #KEY, _test_sign_verify_pass(SLOT, HASH, KEY));
     START_TEST("ECDSA Sign/Verify tests");
 
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_1, vscf_alg_id_SHA256, vscf_alg_id_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_8, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP192R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_9, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP192K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_10, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP224R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_11, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP224K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_12, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_13, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP256K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_14, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP384R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP521R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_256, VS_KEYPAIR_EC_ED25519);
 
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_2, vscf_alg_id_SHA384, vscf_alg_id_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_8, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP192R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_9, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP192K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_10, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP224R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_11, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP224K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_12, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_13, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP256K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_14, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP384R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_384, VS_KEYPAIR_EC_SECP521R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_384, VS_KEYPAIR_EC_ED25519);
 
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_6, vscf_alg_id_SHA512, vscf_alg_id_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_8, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP192R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_9, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP192K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_10, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP224R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_11, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP224K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_12, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP256R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_13, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP256K1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_14, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP384R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP521R1);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_ED25519);
 
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_4, vscf_alg_id_SHA256, vscf_alg_id_ED25519);
-
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_5, vscf_alg_id_SHA384, vscf_alg_id_ED25519);
-
-    TEST_SIGN_VERIFY_PASS(KEY_SLOT_STD_MTP_6, vscf_alg_id_SHA512, vscf_alg_id_ED25519);
-
-#if 0
-    TEST_SIGN_VERIFY_PASS(
-            KEY_SLOT_STD_OTP_2, vscf_alg_id_SHA384, vscf_alg_id_CURVE25519 /*KEYPAIR_RSA_2048 */ /*, SIGN_PSS */);
-
-    TEST_SIGN_VERIFY_PASS(
-            KEY_SLOT_STD_OTP_3, vscf_alg_id_SHA512, vscf_alg_id_CURVE25519 /*KEYPAIR_RSA_3072 */ /*, SIGN_COMMON */);
-
-    TEST_SIGN_VERIFY_PASS(
-            KEY_SLOT_STD_OTP_0, vscf_alg_id_SHA256, vscf_alg_id_CURVE25519 /*KEYPAIR_RSA_4096 */ /*, SIGN_COMMON */);
+#if USE_RSA
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_256, VS_KEYPAIR_RSA_2048);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_384, VS_KEYPAIR_RSA_2048);
+    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_RSA_2048);
 #endif
 terminate:;
 
 #undef TEST_SIGN_VERIFY_PASS
-#endif
 }
