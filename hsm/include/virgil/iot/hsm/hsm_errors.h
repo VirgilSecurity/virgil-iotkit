@@ -50,7 +50,8 @@ typedef enum {
     VS_HSM_ERR_FAIL,      // failed
     VS_HSM_ERR_NOSEC_BL,  // not secure due to black list
     VS_HSM_ERR_CRC_LEN,   // calc crc but len < 0
-    VS_HSM_ERROR_VERIFY   // verifying of signature error
+    VS_HSM_ERROR_VERIFY,  // verifying of signature error
+    VS_HSM_ERR_CRYPTO     // cryptographic operation error
 } vs_hsm_err_code_e;
 
 #endif // VS_HSM_ERRORS_API_H

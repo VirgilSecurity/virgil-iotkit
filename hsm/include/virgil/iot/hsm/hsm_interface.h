@@ -106,4 +106,8 @@ vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
             uint16_t info_sz,
             uint8_t *output,
             uint16_t output_sz);
+
+int
+vs_hsm_random(uint8_t *output, uint16_t output_sz);
+
 #endif // VS_HSM_INTERFACE_API_H
