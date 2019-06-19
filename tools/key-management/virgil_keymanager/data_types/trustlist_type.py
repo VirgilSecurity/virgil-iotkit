@@ -96,7 +96,7 @@ class Footer:
         return self.__bytes
 
     def __len__(self):
-        return 1 + sum(len(signature) for signature in self.signatures)
+        return len(bytes(self))
 
 
 class PubKeyStructure:

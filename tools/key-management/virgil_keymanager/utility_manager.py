@@ -13,7 +13,7 @@ from virgil_keymanager import consts
 from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
 from virgil_keymanager.core_utils.helpers import b64_to_bytes
 
-from virgil_keymanager.core_utils import DonglesCache, DongleChooser, DeviceDevMode
+from virgil_keymanager.core_utils import DonglesCache, DongleChooser
 from virgil_keymanager.core_utils.virgil_bridge import VirgilBridge
 from virgil_keymanager.external_utils.printer_controller import PrinterController
 from virgil_keymanager.generators.trustlist import TrustListGenerator
@@ -35,17 +35,16 @@ class UtilityManager(object):
         self._context = util_context
         self.__ui = self._context.ui
         self.__logger = self._context.logger
-        self.__dev_mode = "dev" if self._context.dev_mode == "dev" else None
         self.__key_storage_path = os.path.join(self._context.storage_path, "key_storage")
         self.__atmel = self._context.atmel
         self.__printer_controller = PrinterController(self.__ui)
-        self.__upper_level_keys_count = 2 if not self.__dev_mode else 1
+        self.__upper_level_keys_count = 2
         self.__virgil_request_path = os.path.join(self.__key_storage_path, "virgil_requests")
         self._virgil_exporter_keys = None
         self.__dongles_cache = DonglesCache(self._context.disable_cache)
         self._utility_list = dict()
         self.__check_db_path()
-        self.__logger.info("app started in {} mode".format(self._context.dev_mode))
+        self.__logger.info("app started in main mode")
 
         # storage plugs
         self.__logger.info("key storage initialization")
@@ -152,7 +151,7 @@ class UtilityManager(object):
 
         storage_path = os.path.join(self.__key_storage_path, "db", name)
         with db_init_logs():
-            if self.__dev_mode or self._context.no_dongles:
+            if self._context.no_dongles:
                 if name == "TrustListVersions":  # TODO: find better way for storage selection
                     return TLVersionTinyDBStorage(storage_path)
                 return DBStorage(storage_path)
@@ -258,7 +257,7 @@ class UtilityManager(object):
                     if os.path.exists(path):
                         shutil.rmtree(path)
                 dongle_directory = os.path.join(
-                    os.getenv("HOME"), "DONGLES_{}".format("dev" if self.__dev_mode else "main")
+                    os.getenv("HOME"), "DONGLES_{}".format("main")
                 )
                 self.__logger.debug("Use DONGLES directory: {}".format(dongle_directory))
                 if os.path.exists(dongle_directory):
@@ -284,11 +283,6 @@ class UtilityManager(object):
             self.__logger.info("TrustList Service Key {} generation (Initial Generation stage)".format(key_number))
             self.__ui.print_message("\nTrustList Service Key {}:".format(key_number))
             self.__generate_trust_list_service_key(suppress_db_warning=supress_db_warning)
-
-        # for signing db's
-        if self.__dev_mode:
-            self.__recovery_private_keys.resign(suppress_db_warning=supress_db_warning)
-            self.__auth_private_keys.resign(suppress_db_warning=supress_db_warning)
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Firmware Key {} generation (Initial Generation stage)".format(key_number))
@@ -462,8 +456,7 @@ class UtilityManager(object):
         tl = self.__trust_list_generator.generate(
             signer_keys,
             tl_version,
-            trust_type_choice == "Dev",  # if trustlist type is dev
-            trust_type_choice == "Dev"   # if trustlist type is dev include internal keys
+            trust_type_choice == "Dev"
         )
         self.__ui.print_message("Generation finished")
         self.__ui.print_message("Storing to file...")
@@ -524,14 +517,13 @@ class UtilityManager(object):
         }
         self.__upper_level_pub_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
         key_info["key"] = recovery_key.private_key
-        if self.__dev_mode or self._context.no_dongles:
+        if self._context.no_dongles:
             self.__recovery_private_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
         self.__create_card_request(key=recovery_key)
-        if not self.__dev_mode:
-            if self._context.dongles_mode == "dongles":
-                self.__dongle_unplug_and_mark(recovery_key.device_serial, "recovery")
-            if not self._context.printer_disable:
-                self.__printer_controller.send_to_printer(key_info)
+        if self._context.dongles_mode == "dongles":
+            self.__dongle_unplug_and_mark(recovery_key.device_serial, "recovery")
+        if not self._context.printer_disable:
+            self.__printer_controller.send_to_printer(key_info)
         self.__ui.print_message("Generation finished")
         self.__logger.info("Recovery Key id: [{id}] comment: [{comment}] generation completed".format(
             id=key_id,
@@ -580,15 +572,14 @@ class UtilityManager(object):
         }
         self.__upper_level_pub_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
         key_info["key"] = key.private_key
-        if self.__dev_mode or self._context.no_dongles:
+        if self._context.no_dongles:
             private_keys_db = self.__keys_type_to_storage_map[key_type][0]
             private_keys_db.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
         self.__create_card_request(key)
-        if not self.__dev_mode:
-            if self._context.dongles_mode == "dongles":
-                self.__dongle_unplug_and_mark(key.device_serial, key_type)
-            if not self._context.printer_disable:
-                self.__printer_controller.send_to_printer(key_info)
+        if self._context.dongles_mode == "dongles":
+            self.__dongle_unplug_and_mark(key.device_serial, key_type)
+        if not self._context.printer_disable:
+            self.__printer_controller.send_to_printer(key_info)
         self.__ui.print_message("Generation finished")
         self.__logger.info("{key_name} Key id: [{id}] comment: [{comment}] generation completed".format(
             key_name=name,
@@ -644,9 +635,10 @@ class UtilityManager(object):
         del key_info["public_key"]
         self.__trust_list_pub_keys.save(str(key_id), key_info)
         self.__create_card_request(key=factory_key)
-        if not self.__dev_mode:
-            if self._context.dongles_mode == "dongles":
-                self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
+
+        if self._context.dongles_mode == "dongles":
+            self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
+
         self.__ui.print_message("Generation finished")
         self.__logger.info(
             "Factory Key id: [{key_id}] signature limit: [{signature_limit}] comment: [{comment}]"
@@ -684,9 +676,8 @@ class UtilityManager(object):
         ):
             self.__logger.error("Factory Key generation failed")
             sys.exit("Factory Key generation failed")
-        if not self.__dev_mode:
-            if self._context.dongles_mode == "dongles":
-                self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
+        if self._context.dongles_mode == "dongles":
+            self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
         key_id = factory_key.key_id
         self.__ui.print_message("Generation finished")
         self.__logger.info(
@@ -801,19 +792,6 @@ class UtilityManager(object):
             key_id=key_id
         ))
         self.__ui.print_message("Key added")
-
-    def __create_requests_dev_mode_enable(self):
-        self.__logger.info("DevMode Enable requests creation started")
-        self.__ui.print_message("Create DevMode Enable requests...")
-        ddm_enabler = DeviceDevMode(
-            self.__ui,
-            self.__upper_level_pub_keys,
-            os.path.join(self._context.device_dev_mode_list_path, "device_list"),
-            os.path.join(self._context.device_dev_mode_list_path, "enabled_device_list")
-        )
-        ddm_enabler.enable()
-        self.__logger.info("DevMode Enable requests created")
-        self.__ui.print_message("DevMode Enable requests created")
 
     def __revive_key(self, key_type):
 
@@ -954,10 +932,10 @@ class UtilityManager(object):
             if key_type == "factory":
                 if key in self.__factory_priv_keys.get_keys():
                     self.__factory_priv_keys.delete_key(key)
-            if self.__dev_mode and key_type == "recovery":
+            if self._context.no_dongles and key_type == "recovery":
                 if key in self.__recovery_private_keys.get_keys():
                     self.__recovery_private_keys.delete_key(key)
-            if self.__dev_mode and key_type == "auth":
+            if self._context.no_dongles and key_type == "auth":
                 if key in self.__auth_private_keys.get_keys():
                     self.__auth_private_keys.delete_key(key)
 
@@ -1155,9 +1133,6 @@ class UtilityManager(object):
         sys.exit(0)
 
     def run_utility(self):
-        if self.__dev_mode:
-            self.__logger.info("DevMode enabled")
-            self.__ui.print_message("WARNING! DEV MODE ENABLED!")
         choice = self.__ui.choose_from_list(self.__utility_list, 'Please enter option number: ')
         cleaned_utility_list = list(filter(lambda x: x != ["---"], self.__utility_list))
         if self._context.skip_confirm:
@@ -1313,17 +1288,10 @@ class UtilityManager(object):
                 ["Import TrustList to db", self.__import_trust_list_to_db],
                 ["---"]
             ])
-            if self.__dev_mode or self._context.no_dongles:
+            if self._context.no_dongles:
                 self._utility_list.append(
                     ["Export Private Keys", self.__get_all_private_keys]
                 )
-            if self.__dev_mode:
-                self._utility_list.extend([
-                    ["Export Internal Private Keys", self.__get_internal_private_keys],
-                    ["---"],
-                    ["Create requests for DevMode Enabling", self.__create_requests_dev_mode_enable],
-                    ["---"]
-                ])
             else:
                 self._utility_list.extend([
                     ["Export Internal Private Keys", self.__get_internal_private_keys],

@@ -182,7 +182,7 @@ class SignedByteStorage(Storage):
     def _check_required_keys(self, db_values):
         for db_row in db_values:
             if "type" in db_row.keys() and db_row["type"] == self._required_key_type:
-                    return True
+                return True
 
     def _get_file_size(self):
         self._handle.seek(0, os.SEEK_END)

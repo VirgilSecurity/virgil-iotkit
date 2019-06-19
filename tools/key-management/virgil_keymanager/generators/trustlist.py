@@ -29,12 +29,11 @@ class TrustListGenerator(object):
         self,
         signer_keys,
         tl_version,
-        dev_mode=False,
-        include_internal_keys=False
+        generate_dev_tl=False
     ):
         raw_keys_dict = self.__storage.get_all_data()
 
-        if include_internal_keys:
+        if generate_dev_tl:
             keys_dict = raw_keys_dict
         else:
             keys_dict = self.__sieve_internal_keys(raw_keys_dict)
@@ -48,7 +47,7 @@ class TrustListGenerator(object):
         # choice = self._ui.choose_from_list(choose_dict, "Please input number of type: ", "Trust List Types: ")
         # tl_type = choose_dict[choice][1]
 
-        if dev_mode:
+        if generate_dev_tl:
             tl_type = consts.TrustListType.DEV
         else:
             tl_type = consts.TrustListType.RELEASE

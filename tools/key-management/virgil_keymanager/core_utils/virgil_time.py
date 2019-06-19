@@ -5,7 +5,7 @@ from virgil_keymanager.consts import TIME_OFFSET
 
 def date_to_timestamp(year: int, month: int, day: int) -> int:
     """
-    Get timestamp with offset (to be stored in 32 bytes)
+    Get timestamp with offset (to be stored in uint32)
     """
     ts = datetime(year, month, day, tzinfo=timezone.utc).timestamp()
     return int(ts - TIME_OFFSET)

@@ -1,14 +1,9 @@
 import os
 
-import collections
 import logging
-import sys
-
-import psutil
 
 from virgil_keymanager.core import Core
 from virgil_keymanager.external_entrypoints.key_signer import KeySigner
-from .external_entrypoints.bulb_devmode import BulbDevMode
 from .external_entrypoints.db_converter import DbConverter
 
 
@@ -28,14 +23,6 @@ def converter_main():
     db_converter = DbConverter()
     try:
         db_converter.run()
-    except KeyboardInterrupt:
-        pass
-
-
-def bulb_devmode_main():
-    try:
-        bulb_dev_mode = BulbDevMode()
-        bulb_dev_mode.run()
     except KeyboardInterrupt:
         pass
 

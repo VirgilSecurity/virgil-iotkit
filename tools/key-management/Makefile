@@ -21,15 +21,9 @@ define clean_nuitka_build
 	@if [ -d ./db_converter.build ]; then \
 		rm -r ./db_converter.build; \
 	fi
-	@if [ -d ./bulb_devmode.build ]; then \
-		rm -rf ./bulb_devmode.build; \
-	fi
 
 	@if [ -d ./db_converter.dist ]; then \
 		rm -rf ./db_converter.dist; \
-	fi
-	@if [ -d ./bulb_devmode.dist ]; then \
-		rm -rf ./bulb_devmode.dist; \
 	fi
 endef
 
@@ -46,10 +40,6 @@ build_nuitka:
 build_nuitka_converter:
 	nuitka --standalone --python-version=3.5 ./db_converter.py
 	rsync --ignore-existing ./db_converter.dist/* ./virgil-keymanager.dist/
-
-build_nuitka_buld_devmode:
-	nuitka --standalone --python-version=3.5 ./bulb_devmode.py
-	rsync --ignore-existing ./bulb_devmode.dist/* ./virgil-keymanager.dist/
 
 wheel:
 	${PYTHON3} setup.py bdist_wheel --universal
