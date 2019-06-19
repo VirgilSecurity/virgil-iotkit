@@ -74,7 +74,7 @@ endif()
 #
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/../../provision/include/
+        ${CMAKE_CURRENT_LIST_DIR}/../../provision/include
         ${CMAKE_CURRENT_LIST_DIR}/include
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"

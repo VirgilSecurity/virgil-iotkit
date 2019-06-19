@@ -37,7 +37,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(provision VERSION 0.1.0 LANGUAGES C)
 
 #
-#   Logger library
+#   Provision library
 #
 add_library(provision
         src/provision.c
@@ -73,6 +73,6 @@ target_compile_definitions(provision
 #
 target_include_directories(provision
         PUBLIC
-        $<INSTALL_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
         )
