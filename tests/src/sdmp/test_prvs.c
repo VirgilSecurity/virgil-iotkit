@@ -74,10 +74,9 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz) {
 
     server_request.finalize_storage.buf_sz = buf_sz;
 
-    *device_info = *make_server_response.device_info;
-    VS_IOT_MEMCPY(device_info->signature.val,
-                  make_server_response.device_info->signature.val,
-                  make_server_response.device_info->signature.val_sz);
+    VS_IOT_MEMCPY(device_info,
+                  make_server_response.device_info,
+                  sizeof(vs_sdmp_prvs_devi_t) + make_server_response.device_info->data_sz);
 
     prvs_call.device_info = 1;
 
@@ -86,12 +85,12 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz) {
 
 /**********************************************************/
 static int
-prvs_finalize_storage(vs_sdmp_pubkey_t *asav_response) {
+prvs_finalize_storage(vs_pubkey_t *asav_response, size_t *resp_sz) {
     VS_IOT_ASSERT(asav_response);
 
     prvs_call.finalize_storage = 1;
-
-    *asav_response = make_server_response.finalize_storage.asav_response;
+    *resp_sz = make_server_response.finalize_storage.size;
+    memcpy(asav_response, &make_server_response.finalize_storage.asav_response, *resp_sz);
 
     return 0;
 }
@@ -136,7 +135,7 @@ prvs_wait(size_t wait_ms, int *condition, int idle) {
 
 /**********************************************************/
 static int
-sign_data(const uint8_t *data, size_t data_sz, uint8_t *signature, size_t buf_sz, size_t *signature_sz) {
+sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     VS_IOT_ASSERT(buf_sz >= make_server_response.sign_data.signature_sz);
 
     if (!(server_request.sign_data.data = VS_IOT_MALLOC(data_sz))) {

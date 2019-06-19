@@ -77,41 +77,35 @@ typedef struct {
 } vs_sdmp_prvs_dnid_list_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint16_t id;
-    uint8_t val_sz;
-    uint8_t val[];
-} vs_sdmp_prvs_signature_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t pubkey[PUBKEY_MAX_SZ];
-    uint8_t pubkey_sz;
-} vs_sdmp_pubkey_t;
-
-typedef struct __attribute__((__packed__)) {
     uint32_t manufacturer;
     uint32_t model;
     vs_mac_addr_t mac;
     uint8_t udid_of_device[32];
+    uint16_t data_sz;
 
-    vs_sdmp_pubkey_t own_key;
-    vs_sdmp_prvs_signature_t signature;
+    uint8_t data[]; // vs_pubkey_t own_key + vs_sign_t signature
 } vs_sdmp_prvs_devi_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t hash_type; // vs_hsm_hash_type_e
+    uint8_t data[];
+} vs_sdmp_prvs_asav_req_t;
 
 typedef int (*vs_sdmp_prvs_dnid_t)();
 typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_load_data_t)();
 typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz);
-typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_pubkey_t *asav_response);
+typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, size_t *resp_sz);
 typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
 typedef int (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 typedef int (*vs_sdmp_prvs_wait_t)(size_t wait_ms, int *condition, int idle);
 typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data,
-                                   size_t data_sz,
+                                   uint16_t data_sz,
                                    uint8_t *signature,
-                                   size_t buf_sz,
-                                   size_t *signature_sz);
+                                   uint16_t buf_sz,
+                                   uint16_t *signature_sz);
 
 typedef struct {
     vs_sdmp_prvs_dnid_t dnid_func;
@@ -143,7 +137,8 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
 int
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
                             const vs_mac_addr_t *mac,
-                            vs_sdmp_pubkey_t *asav_res,
+                            uint8_t *asav_res,
+                            uint16_t buf_sz,
                             size_t wait_ms);
 
 int

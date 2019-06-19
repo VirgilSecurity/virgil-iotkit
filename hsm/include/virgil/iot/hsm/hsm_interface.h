@@ -45,6 +45,8 @@ int
 vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
 int
 vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
 
 int
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);

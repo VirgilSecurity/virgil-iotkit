@@ -92,3 +92,18 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
         return -VS_HSM_ERR_INVAL;
     }
 }
+
+/******************************************************************************/
+int
+vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
+    switch (hash_type) {
+    case VS_HASH_SHA_256:
+        return 32;
+    case VS_HASH_SHA_384:
+        return 48;
+    case VS_HASH_SHA_512:
+        return 64;
+    default:
+        return -1;
+    }
+}
