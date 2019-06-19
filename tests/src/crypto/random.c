@@ -157,7 +157,7 @@ _frequency_2bytes_diff(uint8_t *sequence) {
     size_t cur_value;
     int cur_diff;
     size_t pos;
-    size_t limit = 10; // e-3
+    size_t limit = 30; // e-3
     size_t max_amount = 0;
     int8_t max_amount_pos = 0;
 
