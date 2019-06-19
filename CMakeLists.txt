@@ -178,6 +178,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
 
 #
+#   Provision
+#
+# TODO: Add Option to disable hsm
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/provision)
+
+#
 #   Protocols
 #
 if (VIRGIL_IOT_PROTOCOLS)

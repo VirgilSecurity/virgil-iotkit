@@ -76,7 +76,8 @@ target_include_directories(${PROJECT_NAME}
 #   Link libraries
 #
 target_link_libraries (${PROJECT_NAME}
-        logger)
+        logger
+        provision)
 
 #
 # Format code
