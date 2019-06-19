@@ -51,10 +51,10 @@ int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size_t data_sz) {
     if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return TL_ERROR_PARAMS;
+        return VS_TL_ERROR_PARAMS;
     }
 
-    int res = TL_ERROR_GENERAL;
+    int res = VS_TL_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
@@ -67,9 +67,9 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size
         if (sizeof(vs_tl_footer_t) == data_sz) {
             res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, (vs_tl_footer_t *)in_data);
 
-            if (TL_OK == res) {
+            if (VS_TL_OK == res) {
                 res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
-                if (TL_OK == res) {
+                if (VS_TL_OK == res) {
                     res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
                 }
             }
@@ -93,10 +93,10 @@ int
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, size_t buf_sz, size_t *out_sz) {
     if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return TL_ERROR_PARAMS;
+        return VS_TL_ERROR_PARAMS;
     }
 
-    int res = TL_ERROR_GENERAL;
+    int res = VS_TL_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:

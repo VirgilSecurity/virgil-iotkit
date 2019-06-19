@@ -42,6 +42,11 @@
 #include <virgil/iot/hsm/hsm_errors.h>
 
 int
+vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+
+int
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);
 int
 vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);

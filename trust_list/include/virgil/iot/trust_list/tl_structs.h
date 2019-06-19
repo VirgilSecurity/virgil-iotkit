@@ -14,24 +14,24 @@
 #define TL_STORAGE_TYPE_TMP 2
 
 typedef enum {
-    TL_OK = 0,
-    TL_ERROR_GENERAL = -1,
-    TL_ERROR_PARAMS = -2,
-    TL_ERROR_SMALL_BUFFER = -3,
-    TL_ERROR_WRITE = -4,
-    TL_ERROR_READ = -5,
-} TL_RESULT;
+    VS_TL_OK = 0,
+    VS_TL_ERROR_GENERAL = -1,
+    VS_TL_ERROR_PARAMS = -2,
+    VS_TL_ERROR_SMALL_BUFFER = -3,
+    VS_TL_ERROR_WRITE = -4,
+    VS_TL_ERROR_READ = -5,
+} vs_tl_result_e;
 
-typedef struct __attribute__((__packed__)) {
+typedef struct {
     size_t storage_type;
 } vs_tl_storage_ctx_t;
 
-typedef struct __attribute__((__packed__)) {
+typedef struct {
     uint16_t keys_amount;
     uint16_t keys_count;
 } tl_keys_qty_t;
 
-typedef struct __attribute__((__packed__)) {
+typedef struct {
     bool ready;
     vs_tl_storage_ctx_t storage;
     tl_keys_qty_t keys_qty;
@@ -85,5 +85,6 @@ typedef struct __attribute__((__packed__)) {
     vs_crypto_hl_public_key_t public_key;
     vs_crypto_signature_t sign;
 } vs_crypto_signed_hl_public_key_t;
+
 
 #endif // TL_STRUCTS_H
