@@ -56,7 +56,7 @@ test_aes_cases(vs_iot_aes_type_e aes_type) {
     static const uint16_t key_bitsz = sizeof(key) * 8;
 
     VS_HSM_CHECK_RET(
-            vs_hsm_aes_crypt(aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz),
+            vs_hsm_aes_encrypt(aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz),
             "Unable to encrypt data");
     VS_HSM_CHECK_RET(
             vs_hsm_aes_decrypt(
