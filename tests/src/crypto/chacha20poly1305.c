@@ -51,13 +51,13 @@ _test_chacha20poly1305()
                                                   m, MLEN, ad, ADLEN,
                                                   NULL, nonce, firstkey);
 
-    BOOL_CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt(m2, &m2len, NULL, c, CLEN,
+    CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt(m2, &m2len, NULL, c, CLEN,
                                              ad, ADLEN,
                                              nonce, firstkey) == 0,
                                                      "crypto_aead_chacha20poly1305_decrypt() failed");
 
     memset(m2, 0, m2len);
-    BOOL_CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt_detached(m2, NULL,
+    CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt_detached(m2, NULL,
                                                       c, MLEN, mac,
                                                       ad, ADLEN,
                                                       nonce, firstkey) == 0,
@@ -75,10 +75,10 @@ _test_chacha20poly1305()
 
     crypto_aead_chacha20poly1305_encrypt(c, &found_clen, m, MLEN,
                                          NULL, 0U, NULL, nonce, firstkey);
-    BOOL_CHECK_GOTO (found_clen == CLEN,
+    CHECK_GOTO (found_clen == CLEN,
         "found_clen is not properly set (adlen=0)");
 
-    BOOL_CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt(m2, &m2len, NULL, c, CLEN,
+    CHECK_GOTO (crypto_aead_chacha20poly1305_decrypt(m2, &m2len, NULL, c, CLEN,
                                              NULL, 0U, nonce, firstkey) == 0,
         "crypto_aead_chacha20poly1305_decrypt() failed (adlen=0)");
 
@@ -167,15 +167,15 @@ _test_x_chacha20poly1305()
                                                         m, MLEN,
                                                         ad, ADLEN,
                                                         NULL, nonce, firstkey);
-    BOOL_CHECK_GOTO (found_maclen == crypto_aead_xchacha20poly1305_ietf_abytes(),
+    CHECK_GOTO (found_maclen == crypto_aead_xchacha20poly1305_ietf_abytes(),
         "found_maclen is not properly set");
 
-    BOOL_CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(m2, &m2len, NULL, c, CLEN, ad,
+    CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(m2, &m2len, NULL, c, CLEN, ad,
                                                    ADLEN, nonce, firstkey) == 0,
         "crypto_aead_xchacha20poly1305_ietf_decrypt() failed");
 
     memset(m2, 0, m2len);
-    BOOL_CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt_detached(m2, NULL,
+    CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt_detached(m2, NULL,
                                                             c, MLEN, mac,
                                                             ad, ADLEN,
                                                             nonce, firstkey) == 0,
@@ -195,7 +195,7 @@ _test_x_chacha20poly1305()
     crypto_aead_xchacha20poly1305_ietf_encrypt(c, &found_clen, m, MLEN,
                                                NULL, 0U, NULL, nonce, firstkey);
     if (found_clen != CLEN)  return false;
-    BOOL_CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(m2, &m2len, NULL, c, CLEN,
+    CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(m2, &m2len, NULL, c, CLEN,
                                                    NULL, 0U, nonce, firstkey) == 0,
                                                            "crypto_aead_xchacha20poly1305_ietf_decrypt() failed (adlen=0)");
 
@@ -222,7 +222,7 @@ _test_x_chacha20poly1305()
     crypto_aead_xchacha20poly1305_ietf_encrypt(c, &found_clen, c, MLEN,
                                                NULL, 0U, NULL, nonce, firstkey);
     if (found_clen != CLEN)  return false;
-    BOOL_CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(c, &m2len, NULL, c, CLEN,
+    CHECK_GOTO (crypto_aead_xchacha20poly1305_ietf_decrypt(c, &m2len, NULL, c, CLEN,
                                                    NULL, 0U, nonce, firstkey) == 0,
                                                            "crypto_aead_xchacha20poly1305_ietf_decrypt() failed (adlen=0)");
     if (m2len != MLEN)  return false;

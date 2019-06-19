@@ -54,16 +54,19 @@ void
 test_keypair(void);
 void
 test_random(void);
+void
+test_aes(void);
 
 /**********************************************************/
 static void
 crypto_tests(void) {
-    //    test_hash();
-    //    test_hmac();
-    //    test_kdf2();
-    //    test_ecdsa();
-    //    test_keypair();
+    test_hash();
+    test_hmac();
+    test_kdf2();
+    test_ecdsa();
+    test_keypair();
     test_random();
+    test_aes();
 }
 
 /**********************************************************/
@@ -71,8 +74,8 @@ size_t
 virgil_iot_sdk_tests(void) {
     failed_test_result = 0;
 
-    //    sdmp_tests();
-    //    prvs_tests();
+    sdmp_tests();
+    prvs_tests();
 
     crypto_tests();
 

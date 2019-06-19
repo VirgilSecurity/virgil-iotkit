@@ -96,10 +96,11 @@ _frequency_bits(uint8_t *sequence) {
     }
 
     difference = bit_zero > bit_one ? bit_zero - bit_one : bit_one - bit_zero;
-    difference *= 1000;  // e-3
+    difference *= 1000; // e-3
     difference /= SEQUENCE_SIZE * 8;
-    BOOL_CHECK_RET(difference < limit, "Bits frequency count : amount difference %de-3 is bigger that %de-3",
-                 difference,
+    BOOL_CHECK_RET(difference < limit,
+                   "Bits frequency count : amount difference %de-3 is bigger that %de-3",
+                   difference,
                    limit);
 
 
@@ -119,12 +120,12 @@ _frequency_bytes(uint8_t *sequence) {
     size_t pos;
     size_t max_amount = 0;
     uint8_t max_amount_pos = 0;
-    size_t limit = 8;   // e-3
+    size_t limit = 8; // e-3
 
     for (pos = 0; pos < SEQUENCE_SIZE; ++pos) {
         cur_value = ++byte[*sequence];
 
-        if(cur_value > max_amount){
+        if (cur_value > max_amount) {
             max_amount = cur_value;
             max_amount_pos = *sequence;
         }
@@ -132,13 +133,13 @@ _frequency_bytes(uint8_t *sequence) {
         ++sequence;
     }
 
-    max_amount *= 1000;  // e-3
+    max_amount *= 1000; // e-3
     max_amount /= SEQUENCE_SIZE;
 
     BOOL_CHECK_RET(max_amount < limit,
-                       "Bytes frequency count : amount difference %de-3 for byte '%d' is bigger that %de-3",
+                   "Bytes frequency count : amount difference %de-3 for byte '%d' is bigger that %de-3",
                    max_amount,
-                       (uint8_t)max_amount_pos,
+                   (uint8_t)max_amount_pos,
                    limit);
 
     return true;
@@ -156,7 +157,7 @@ _frequency_2bytes_diff(uint8_t *sequence) {
     size_t cur_value;
     int cur_diff;
     size_t pos;
-    size_t limit = 10;  // e-3
+    size_t limit = 10; // e-3
     size_t max_amount = 0;
     int8_t max_amount_pos = 0;
 
@@ -164,7 +165,7 @@ _frequency_2bytes_diff(uint8_t *sequence) {
         cur_diff = (int)sequence[0] - sequence[-1];
         cur_value = ++diff[256 + cur_diff];
 
-        if(cur_value > max_amount){
+        if (cur_value > max_amount) {
             max_amount = cur_value;
             max_amount_pos = cur_diff;
         }
@@ -172,14 +173,14 @@ _frequency_2bytes_diff(uint8_t *sequence) {
         ++sequence;
     }
 
-    max_amount *= 1000;  // e-3
+    max_amount *= 1000; // e-3
     max_amount /= SEQUENCE_SIZE;
 
-            BOOL_CHECK_RET(max_amount < limit,
-                           "Nearby bytes difference : amount %de-3 for difference '%d' is bigger that %de-3",
-                           max_amount,
-                           max_amount_pos,
-                           limit);
+    BOOL_CHECK_RET(max_amount < limit,
+                   "Nearby bytes difference : amount %de-3 for difference '%d' is bigger that %de-3",
+                   max_amount,
+                   max_amount_pos,
+                   limit);
 
     return true;
 }

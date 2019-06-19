@@ -108,7 +108,6 @@ extern make_server_response_t make_server_response;
 vs_sdmp_prvs_impl_t
 make_prvs_implementation(void);
 
-#define PRVS_OP_CHECK_GOTO(OPERATION)                                                                                  \
-    BOOL_CHECK_GOTO((OPERATION) != 0, "prvs operation " #OPERATION " has not been called");
+#define PRVS_OP_CHECK_GOTO(OPERATION) CHECK_GOTO((OPERATION) != 0, "prvs operation " #OPERATION " has not been called");
 
 #endif // VIRGIL_IOT_SDK_TESTS_PRVS_H_
