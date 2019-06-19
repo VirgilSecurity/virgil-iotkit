@@ -56,14 +56,14 @@ extern size_t failed_test_result;
                    (int)(SIZE))
 
 
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
     if (!(OPERATION)) {                                                                                                \
         VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
         goto terminate;                                                                                                \
     }
 
 #define VS_HSM_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                 \
-    BOOL_CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
+    CHECK_GOTO(VS_HSM_ERR_OK == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
 
 
 #define RESULT_BUF_SIZE (1024)

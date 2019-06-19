@@ -52,6 +52,8 @@ void
 test_ecdsa(void);
 void
 test_keypair(void);
+void
+test_aes(void);
 
 /**********************************************************/
 static void
@@ -61,6 +63,7 @@ crypto_tests(void) {
     test_kdf2();
     test_ecdsa();
     test_keypair();
+    test_aes();
 }
 
 /**********************************************************/

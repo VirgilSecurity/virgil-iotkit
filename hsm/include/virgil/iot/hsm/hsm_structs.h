@@ -74,4 +74,6 @@ typedef enum {
     VS_KDF_2 = 0,
 } vs_hsm_kdf_type_e;
 
+typedef enum { VS_AES_GCM } vs_iot_aes_type_e;
+
 #endif // VS_HSM_STRUCTURES_API_H

@@ -113,4 +113,47 @@ vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
             uint16_t info_sz,
             uint8_t *output,
             uint16_t output_sz);
+
+int
+vs_hsm_aes_encrypt(vs_iot_aes_type_e aes_type,
+                   const uint8_t *key,
+                   uint16_t key_bitlen,
+                   const uint8_t *iv,
+                   uint16_t iv_len,
+                   const uint8_t *add,
+                   uint16_t add_len,
+                   uint16_t buf_len,
+                   const uint8_t *input,
+                   uint8_t *output,
+                   uint8_t *tag,
+                   uint16_t tag_len);
+
+int
+vs_hsm_aes_decrypt(vs_iot_aes_type_e aes_type,
+                   const uint8_t *key,
+                   uint16_t key_bitlen,
+                   const uint8_t *iv,
+                   uint16_t iv_len,
+                   const uint8_t *add,
+                   uint16_t add_len,
+                   uint16_t buf_len,
+                   const uint8_t *input,
+                   uint8_t *output,
+                   uint8_t *tag,
+                   uint16_t tag_len);
+
+int
+vs_hsm_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
+                        const uint8_t *key,
+                        uint16_t key_bitlen,
+                        const uint8_t *iv,
+                        uint16_t iv_len,
+                        const uint8_t *add,
+                        uint16_t add_len,
+                        uint16_t buf_len,
+                        const uint8_t *input,
+                        uint8_t *output,
+                        const uint8_t *tag,
+                        uint16_t tag_len);
+
 #endif // VS_HSM_INTERFACE_API_H
