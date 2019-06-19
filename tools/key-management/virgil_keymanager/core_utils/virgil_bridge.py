@@ -39,7 +39,7 @@ class VirgilBridge:
         identity = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
 
         # Prepare card content snapshot
-        created_at = datetime.utcnow().timestamp()
+        created_at = int(datetime.utcnow().timestamp())
         card_content = RawCardContent(
             identity=identity,
             public_key=public_key,
@@ -77,8 +77,8 @@ class VirgilBridge:
         public_key = self.__tiny_key_to_virgil(public_key)
         public_key = crypto.import_public_key(public_key)
 
-        exported_virgil_card = self.__create_virgil_card_model(public_key)
-        if not exported_virgil_card:
+        exported_virgil_card_b64 = self.__create_virgil_card_model(public_key)
+        if not exported_virgil_card_b64:
             return
 
         imported_private_key = crypto.import_private_key(
@@ -90,7 +90,7 @@ class VirgilBridge:
         )
 
         crypted_signed_exported_request = crypto.sign_then_encrypt(
-            b64_to_bytes(exported_virgil_card),
+            exported_virgil_card_b64.encode('utf-8'),
             imported_private_key,
             imported_public_key
         )
