@@ -48,11 +48,31 @@ key_type_str_to_num_map = {
     VSKeyTypeS.AUTH_INTERNAL:     VSKeyTypeE.AUTH_INTERNAL
 }
 
-# TODO: find sizes in crypto?
 signature_sizes = {
-    VirgilKeyPair.Type_EC_SECP256R1: 64
+    VirgilKeyPair.Type_RSA_2048: 256,
+    VirgilKeyPair.Type_EC_SECP192R1: 48,
+    VirgilKeyPair.Type_EC_SECP192K1: 48,
+    VirgilKeyPair.Type_EC_SECP224R1: 56,
+    VirgilKeyPair.Type_EC_SECP224K1: 56,
+    VirgilKeyPair.Type_EC_SECP256R1: 64,
+    VirgilKeyPair.Type_EC_SECP256K1: 64,
+    VirgilKeyPair.Type_EC_SECP384R1: 96,
+    VirgilKeyPair.Type_EC_SECP521R1: 132,
+    VirgilKeyPair.Type_FAST_EC_ED25519: 64
 }
 
 pub_keys_sizes = {
+    # VirgilKeyPair.Type_RSA_2048: 256,
+    # VirgilKeyPair.Type_EC_SECP192R1: 49,
+    # VirgilKeyPair.Type_EC_SECP192K1: 49,
+    # VirgilKeyPair.Type_EC_SECP224R1: 57,
+    # VirgilKeyPair.Type_EC_SECP224K1: 57,
+    # VirgilKeyPair.Type_EC_SECP256R1: 65,
+    # VirgilKeyPair.Type_EC_SECP256K1: 65,
+    # VirgilKeyPair.Type_EC_SECP384R1: 97,
+    # VirgilKeyPair.Type_EC_SECP521R1: 133,
+    # VirgilKeyPair.Type_EC_CURVE25519: 32,
+    # VirgilKeyPair.Type_FAST_EC_ED25519: 32
+    # TODO: 64 is because key is trimmed. Use values above after converters implementation
     VirgilKeyPair.Type_EC_SECP256R1: 64
 }
