@@ -184,8 +184,9 @@ test_random(void) {
     START_TEST("Random tests");
 
     TEST_CASE_OK("Generate random sequence", _generate_random(sequence));
-    TEST_CASE_OK("Frequency tests",
-                 _frequency_bits(sequence) && _frequency_bytes(sequence) && _frequency_2bytes_diff(sequence));
+    TEST_CASE_OK("\"Bits frequency\" test", _frequency_bits(sequence));
+    TEST_CASE_OK("\"Bytes frequency\" test", _frequency_bytes(sequence));
+    TEST_CASE_OK("\"Nearby bytes differences frequency\" test", _frequency_2bytes_diff(sequence));
 
 terminate:;
 }
