@@ -1,205 +1,254 @@
-from enum import IntEnum
-from PyCRC.CRCCCITT import CRCCCITT
-import base64
-
 import io
+from typing import List
+
+from virgil_keymanager import consts
+from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
+from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 
 
-class TrustList(object):
+class Header:
+    """
+    type Header struct {
+        WholeTLSize      uint32
+        Version          uint16
+        PubKeysCount     uint16
+        SignaturesCount  uint8
+    }
+    """
+    SIZE = 4 + 2 + 2 + 1  # see structure in class doc-string
 
-    class TrustListType(IntEnum):
-        RELEASE = 0
-        BETA = 1
-        ALPHA = 2
-        DEV = 3
+    def __init__(self, whole_tl_size: int, version: int, pub_keys_count: int, signatures_count: int):
+        self._whole_tl_size = whole_tl_size
+        self._version = version
+        self._pub_keys_count = pub_keys_count
+        self._signatures_count = signatures_count
 
-    class KeyType(IntEnum):
-        FIRMWARE_SERVICE_PUB_KEY = 1
-        SAMS_PUB_KEY = 2
-        FACTORY_PUB_KEY = 3
-        FIRMWARE_INTERNAL_PUB_KEY = 8
-        AUTH_INTERNAL_PUB_KEY = 9
+        self.__bytes = None
 
-    class Header(object):
-
-        def __init__(self, whole_tl_size, version, pub_key_count):
-            self.whole_tl_size = whole_tl_size  # type: int  # Bytes size of header+body+footer
-            self.version = version  # type: int  # Incremented value stored at this machine
-            self.pub_key_count = pub_key_count  # type: int
-            self.reserved_place = bytearray(24)  # type: bytearray
-
-        def __bytes__(self):
-            # type: () -> bytes
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self.whole_tl_size.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self.version.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.pub_key_count.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.reserved_place)
-            return bytes(byte_buffer.getvalue())
+            byte_buffer.write(self._whole_tl_size.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(self._version.to_bytes(2, byteorder='little', signed=False))
+            byte_buffer.write(self._pub_keys_count.to_bytes(2, byteorder='little', signed=False))
+            byte_buffer.write(self._signatures_count.to_bytes(1, byteorder='little', signed=False))
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
 
-    class Footer(object):
+    def __len__(self):
+        return len(bytes(self))
 
-        def __init__(self, auth_key_id, auth_signature, tl_service_id, tl_sevice_sign, tl_type):
-            self.auth_key_id = int(auth_key_id)  # type: int
-            self.auth_signature = bytearray(auth_signature)  # type: bytearray
-            self.tl_service_id = int(tl_service_id)  # type: int
-            self.tl_service_sign = bytearray(tl_sevice_sign)  # type: bytearray
-            self.tl_type = tl_type  # type: TrustList.TrustListType
-            self.reserved_place = bytearray(32)  # type: bytearray
 
-        def __bytes__(self):
-            # type: () -> bytes
+class Signature:
+    """
+    type Signature struct {
+        SignerType       uint8
+        ECType           uint8
+        Hash_type        uint8
+        Sign             [SignSize]byte
+        SignerPublicKey  []byte
+    }
+    """
+    def __init__(self, signer_type: int, ec_type: int, hash_type: int, sign: bytearray, signer_pub_key: bytearray):
+        self._signer_type = signer_type
+        self._ec_type = ec_type
+        self._hash_type = hash_type
+        self._sign = sign
+        self._signer_pub_key = signer_pub_key
+
+        self.__bytes = None
+
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self.auth_key_id.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.auth_signature)
-            byte_buffer.write(self.tl_service_id.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.tl_service_sign)
-            byte_buffer.write(bytes([self.tl_type]))
-            byte_buffer.write(self.reserved_place)
-            return bytes(byte_buffer.getvalue())
+            byte_buffer.write(self._signer_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._hash_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._sign)
+            byte_buffer.write(self._signer_pub_key)
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
 
-    class PubKeyStructure(object):
+    def __len__(self):
+        return len(bytes(self))
 
-        def __init__(self, pub_key, pub_key_type):
-            self._key_id = None  # type: int
-            self.__key_type = pub_key_type  # type: TrustList.PubKeyStructure.KeyType
-            self.__pub_key = base64.b64decode(pub_key)  # type: bytearray
-            self.__reserved_place = bytearray(28)  # type: bytearray
 
-        def __bytes__(self):
-            # type: () -> bytes
+class Footer:
+    """
+    type Footer struct {
+        TLType        uint8
+        Signatures    [SignaturesCount]Signature
+    }
+    """
+    def __init__(self, tl_type: int, signatures: List[Signature]):
+        self.tl_type = tl_type
+        self.signatures = signatures
+
+        self.__bytes = None
+
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self.__pub_key)
-            byte_buffer.write(self.__key_id.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.__key_type.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self.__reserved_place)
+            byte_buffer.write(self.tl_type.to_bytes(1, byteorder='little', signed=False))
+            for signature in self.signatures:
+                byte_buffer.write(bytes(signature))
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
 
-            return bytes(byte_buffer.getvalue())
+    def __len__(self):
+        return 1 + sum(len(signature) for signature in self.signatures)
 
-        @property
-        def __key_id(self):
-            return CRCCCITT().calculate(self.__pub_key)
 
-    def __init__(self, pub_key_dict, tl_type, tl_version, custom_keys_structure_block=None):
-        self.__pub_key_dict = pub_key_dict
-        self.__tl_type = tl_type  # type: TrustList.TrustListType
-        self.__tl_version = tl_version  # type: int
-        self.__custom_keys_structure_block = custom_keys_structure_block
+class PubKeyStructure:
+    """
+    type PubKeyStructure struct {
+        StartDate       uint32
+        ExpirationDate  uint32
+        KeyType         uint16
+        ECType          uint16
+        PubKey          [PublicKeySize]byte
+    }
+    """
+    def __init__(self, start_date: int, expiration_date: int, key_type: int, ec_type: int, pub_key: bytearray):
+        self._start_date = start_date
+        self._expiration_date = expiration_date
+        self._key_type = key_type
+        self._ec_type = ec_type
+        self._pub_key = pub_key
 
-        self._auth_key_id = 0  # type: int  # unsigned 2 byte int
-        self._auth_key_signature = bytearray(64)
+        self.__bytes = None
 
-        self._tl_service_key_id = 0  # type: int
-        self._tl_service_key_signature = bytearray(64)
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
+            byte_buffer = io.BytesIO()
+            byte_buffer.write(self._start_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(self._expiration_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(self._key_type.to_bytes(2, byteorder='little', signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(2, byteorder='little', signed=False))
+            byte_buffer.write(self._pub_key)
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
 
-        self._header = None  # type: TrustList.Header
-        self._footer = None  # type: TrustList.Footer
-        self._body = None  # type: List(TrustList.PubKeyStructure)
+    def __len__(self):
+        return 2 + 2 + 4 + 4 + len(self._pub_key)  # see structure in class doc-string
 
-    def __bytes__(self):
-        # type: () -> bytes
-        byte_buffer = io.BytesIO()
-        byte_buffer.write(bytes(self.header))
-        byte_buffer.write(bytes(self.__get_body_bytes()))
-        byte_buffer.write(bytes(self.__footer))
-        return bytes(byte_buffer.getvalue())
 
-    def __get_body_bytes(self):
-        byte_buffer = io.BytesIO()
-        if self.__custom_keys_structure_block:
-            byte_buffer.write(self.__custom_keys_structure_block)
-        for pub_key in self.body:
-            byte_buffer.write(bytes(pub_key))
-        return bytes(byte_buffer.getvalue())
+class Body:
+    def __init__(self, pub_keys: List[PubKeyStructure]):
+        self.pub_keys = pub_keys
 
-    def get_bytes_for_sign(self):
-        byte_buffer = io.BytesIO()
-        byte_buffer.write(bytes(self.header))
-        byte_buffer.write(bytes(self.__get_body_bytes()))
-        return bytes(byte_buffer.getvalue())
+        self.__bytes = None
+
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
+            byte_buffer = io.BytesIO()
+            for pub_key in self.pub_keys:
+                byte_buffer.write(bytes(pub_key))
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
+
+    def __len__(self):
+        return len(bytes(self))
+
+
+class TrustList:
+    def __init__(self,
+                 pub_keys_dict: dict,
+                 signer_keys: List[KeyGeneratorInterface],
+                 tl_type: consts.TrustListType,
+                 tl_version: int
+                 ):
+        self._pub_keys_dict = pub_keys_dict
+        self._signer_keys = signer_keys
+        self._tl_type = tl_type
+        self._tl_version = tl_version
+
+        self._header = None  # type: Header
+        self._body = None    # type: Body
+        self._footer = None  # type: Footer
+
+        self.__bytes = None
+
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
+            byte_buffer = io.BytesIO()
+            byte_buffer.write(bytes(self.header))
+            byte_buffer.write(bytes(self.body))
+            byte_buffer.write(bytes(self.footer))
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
+
+    def __len__(self):
+        return len(self.header) + len(self.body) + len(self.footer)
 
     @property
-    def body(self):
-        if not self._body:
-            self._body = []
-            for pub_key_id in self.__pub_key_dict.keys():
-                key_type = 0
+    def header(self) -> Header:
+        if self._header is None:
+            # Calculate expected footer size
+            tl_type_sz = 1  # TLType field size
+            # Size of all signatures (only) inside Signatures[]
+            signatures_only_sz = sum(consts.signature_sizes[signer_key.ec_type] for signer_key in self._signer_keys)
+            # Size of all signer pub keys inside Signatures[]
+            signatures_pub_keys_sz = sum(consts.pub_keys_sizes[signer_key.ec_type] for signer_key in self._signer_keys)
+            # Size of all other info inside Signatures[] = (SignerType + ECType + Hash_type) * keys count
+            signatures_meta_sz = (1 + 1 + 1) * len(self._signer_keys)
 
-                if self.__pub_key_dict[pub_key_id]["type"] == "firmware":
-                    key_type = TrustList.KeyType.FIRMWARE_SERVICE_PUB_KEY
-                if self.__pub_key_dict[pub_key_id]["type"] == "cloud":
-                    key_type = TrustList.KeyType.SAMS_PUB_KEY
-                if self.__pub_key_dict[pub_key_id]["type"] == "factory":
-                    key_type = TrustList.KeyType.FACTORY_PUB_KEY
-                if self.__pub_key_dict[pub_key_id]["type"] == "auth_internal":
-                    key_type = TrustList.KeyType.AUTH_INTERNAL_PUB_KEY
-                if self.__pub_key_dict[pub_key_id]["type"] == "firmware_internal":
-                    key_type = TrustList.KeyType.FIRMWARE_INTERNAL_PUB_KEY
+            footer_size = tl_type_sz + signatures_only_sz + signatures_pub_keys_sz + signatures_meta_sz
 
-                if key_type:
-                    key_structure = TrustList.PubKeyStructure(self.__pub_key_dict[pub_key_id]["key"], key_type)
-                    self._body.append(key_structure)
-
-        return self._body
-
-    @property
-    def header(self):
-        if not self._header:
-            if self.__custom_keys_structure_block:
-                whole_tl_size = len(self.body) * 96 + 32 + 165 + len(self.__custom_keys_structure_block) # KeyN * sizeofKey (96) + sizeofHeader (32) + sizeofFooter (165) + size of custom key structure block
-            else:
-                whole_tl_size = len(self.body) * 96 + 32 + 165  # KeyN * sizeofKey (96) + sizeofHeader (32) + sizeofFooter (165)
-            if self.__custom_keys_structure_block:
-                keys_count = int(len(self.body) + (len(self.__custom_keys_structure_block) / 96))
-            else:
-                keys_count = len(self.body)
-            self._header = TrustList.Header(
-                whole_tl_size,
-                self.__tl_version,
-                keys_count,
+            # Prepare header
+            self._header = Header(
+                whole_tl_size=Header.SIZE + len(self.body) + footer_size,
+                version=self._tl_version,
+                pub_keys_count=len(self._pub_keys_dict),
+                signatures_count=len(self._signer_keys)
             )
         return self._header
 
     @property
-    def auth_key_id(self):
-        return self._auth_key_id
-
-    @auth_key_id.setter
-    def auth_key_id(self, key_id):
-        self._auth_key_id = int(key_id)
-
-    @property
-    def auth_key_signature(self):
-        return self._auth_key_signature
-
-    @auth_key_signature.setter
-    def auth_key_signature(self, signature):
-        self._auth_key_signature = base64.b64decode(signature)
-
-    @property
-    def tl_service_key_signature(self):
-        return self._tl_service_key_signature
-
-    @tl_service_key_signature.setter
-    def tl_service_key_signature(self, signature):
-        self._tl_service_key_signature = base64.b64decode(signature)
+    def body(self) -> Body:
+        if self._body is None:
+            keys = []
+            for pub_key_id, key_data in self._pub_keys_dict.items():
+                key_type_str = consts.VSKeyTypeS(key_data["type"])
+                start_date = int(key_data["start_date"])
+                expiration_date = int(key_data["expiration_date"])
+                ec_type = int(key_data["ec_type"])
+                key = PubKeyStructure(
+                    start_date=start_date,
+                    expiration_date=expiration_date,
+                    key_type=consts.key_type_str_to_num_map[key_type_str],
+                    ec_type=ec_type,
+                    pub_key=b64_to_bytes(key_data["key"])
+                )
+                keys.append(key)
+            self._body = Body(keys)
+        return self._body
 
     @property
-    def tl_service_key_id(self):
-        return self._tl_service_key_id
+    def footer(self) -> Footer:
+        if self._footer is None:
+            # Get signatures
+            signatures = []
+            data_to_sign = to_b64(bytes(self.header) + bytes(self.body))
 
-    @tl_service_key_id.setter
-    def tl_service_key_id(self, key_id):
-        self._tl_service_key_id = int(key_id)
+            for key in self._signer_keys:
+                # Sign data
+                signature = key.sign(data_to_sign, long_sign=False)
 
-    @property
-    def __footer(self):
-        if not self._footer:
-            self._footer = TrustList.Footer(
-                self.auth_key_id,
-                self.auth_key_signature,
-                self.tl_service_key_id,
-                self.tl_service_key_signature,
-                self.__tl_type
+                # Add signature to signatures list
+                signer_type_str = consts.VSKeyTypeS(key.key_type)
+                s = Signature(
+                    signer_type=consts.key_type_str_to_num_map[signer_type_str],
+                    ec_type=key.ec_type,
+                    hash_type=key.hash_type,
+                    sign=b64_to_bytes(signature),
+                    signer_pub_key=b64_to_bytes(key.public_key)
+                )
+                signatures.append(s)
+
+            # Finalize footer
+            self._footer = Footer(
+                tl_type=self._tl_type,
+                signatures=signatures
             )
         return self._footer

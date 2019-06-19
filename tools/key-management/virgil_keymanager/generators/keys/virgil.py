@@ -3,18 +3,27 @@ from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
 
+from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils import VirgilSignExtractor
 from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
-class VirgilKeyGenerator:
+class VirgilKeyGenerator(KeyGeneratorInterface):
     """
     Represents key pair entity for virgil_crypto lib usage only (without dongles/emulator)
     """
-    def __init__(self, key_type, private_key=None, public_key=None):
+
+    def __init__(self,
+                 key_type,
+                 private_key=None,
+                 public_key=None,
+                 ec_type=VirgilKeyPair.Type_EC_SECP256R1,
+                 hash_type=HashAlgorithm.SHA256):
         self._crypto = VirgilCrypto()
-        self._crypto.signature_hash_algorithm = HashAlgorithm.SHA256
+        self._crypto.signature_hash_algorithm = hash_type
+        self.__hash_type = hash_type
         self.__key_type = key_type
+        self.__ec_type = ec_type
         self.__public_key = None if not private_key else b64_to_bytes(public_key)
         self.__private_key = None if not private_key else b64_to_bytes(private_key)
         self.__key_id = None
@@ -28,7 +37,7 @@ class VirgilKeyGenerator:
             self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-64:]
 
         if self.__private_key is None:
-            virgil_key_pair = VirgilKeyPair.generate(VirgilKeyPair.Type_EC_SECP256R1)
+            virgil_key_pair = VirgilKeyPair.generate(self.ec_type)
             self.__private_key = VirgilKeyPair.privateKeyToDER(virgil_key_pair.privateKey())
             self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-64:]
 
@@ -36,6 +45,14 @@ class VirgilKeyGenerator:
             self.__signature = signer_key.sign(self.public_key)
 
         return self
+
+    @property
+    def ec_type(self):
+        return self.__ec_type
+
+    @property
+    def hash_type(self):
+        return self.__hash_type
 
     @property
     def private_key(self):

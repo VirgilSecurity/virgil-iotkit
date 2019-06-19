@@ -4,21 +4,19 @@ import io
 import os
 import shutil
 import sys
-from io import BytesIO
 from contextlib import contextmanager
 
 from PyCRC.CRCCCITT import CRCCCITT
 from prettytable import PrettyTable
 
-from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
-from virgil_keymanager.data_types import TrustList
-from virgil_sdk.cryptography import VirgilCrypto
-from virgil_sdk.cryptography.hashes import HashAlgorithm
+from virgil_keymanager import consts
+from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
+from virgil_keymanager.core_utils.helpers import b64_to_bytes
 
-from virgil_keymanager.core_utils import VirgilSignExtractor, DonglesCache, DongleChooser, DeviceDevMode
+from virgil_keymanager.core_utils import DonglesCache, DongleChooser, DeviceDevMode
 from virgil_keymanager.core_utils.virgil_bridge import VirgilBridge
 from virgil_keymanager.external_utils.printer_controller import PrinterController
-from virgil_keymanager.generators import TrustListGenerator
+from virgil_keymanager.generators.trustlist import TrustListGenerator
 from virgil_keymanager.generators.keys.atmel import AtmelKeyGenerator
 from virgil_keymanager.generators.keys.virgil import VirgilKeyGenerator
 from virgil_keymanager.storage import FileKeyStorage
@@ -68,9 +66,6 @@ class UtilityManager(object):
         self.__factory_priv_keys = self.__init_storage(
             "FactoryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
-        self.__cloud_private_keys = self.__init_storage(
-            "CloudPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
         self.__trust_list_version_db = self.__init_storage(
             "TrustListVersions", storage_class=TLVersionTinyDBStorage, storage_type=SignedByteStorage
         )
@@ -116,6 +111,35 @@ class UtilityManager(object):
             self.key_chooser = self.__db_key_chooser
         else:
             self.key_chooser = self.__dongle_key_chooser
+
+    def __choose_dates_for_key(self, necessary: bool) -> (int, int):
+        user_confirmed = False
+        start_date = 0
+        expiration_date = 0
+        if necessary is False:
+            user_confirmed = self.__ui.get_user_input(
+                "Add start and expiration date for key? [y/n]: ",
+                input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
+                input_checker_msg="Allowed answers [y/n]. Please try again: ",
+                empty_allow=False
+            ).upper()
+
+        if necessary or (user_confirmed is True):
+            self.__ui.print_message("Please choose start date for key")
+            start_date = self.__ui.get_date()
+            start_date = date_to_timestamp(*start_date)
+            enter_expiration = self.__ui.get_user_input(
+                "Enter expiration date? [y/n]: ",
+                input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
+                input_checker_msg="Allowed answers [y/n]. Please try again: ",
+                empty_allow=False
+            ).upper()
+            if enter_expiration == "Y":
+                self.__ui.print_message("Please choose expiration date for key")
+                expiration_date = self.__ui.get_date()
+                expiration_date = date_to_timestamp(*expiration_date)
+
+        return start_date, expiration_date
 
     def __init_storage(self, name, storage_class, storage_type, no_upper_level_db=False):
 
@@ -274,9 +298,6 @@ class UtilityManager(object):
         self.__logger.info("Factory Key generation (Initial Generation stage)")
         self.__ui.print_message("\nFactory Key:")
         self.__generate_factory_key()
-        self.__logger.info("Cloud Key generation (Initial Generation stage)")
-        self.__ui.print_message("\nCloud Key:")
-        self.__generate_cloud_key()
         self.__logger.info("initial generation stage completed")
 
     def __generate_provision(self):
@@ -436,41 +457,11 @@ class UtilityManager(object):
             return
 
         self.__logger.info("TrustList version: {} ".format(tl_version))
-        # Search Release trust list for extending DevMode devices
-        release_trust_list_keys_block = None
-        if self.__dev_mode:
-            if os.path.exists(self._context.release_trust_list_folder):
-                folder_content = os.listdir(self._context.release_trust_list_folder)
-                first_trust_list_file = None
-                if folder_content:
-                    for entity in folder_content:
-                        if "TrustList_" in entity and ".tl" in entity:
-                            first_trust_list_file = entity
-                            break
-                    if first_trust_list_file:
-                        release_trust_list_file = open(
-                            os.path.join(self._context.release_trust_list_folder, first_trust_list_file),
-                            "rb"
-                        )
-                        release_trust_list_file.seek(6)
-                        pub_keys_count = int.from_bytes(
-                            release_trust_list_file.read(2),
-                            byteorder='little',
-                            signed=False
-                        )
-                        release_trust_list_file.seek(32)
-                        release_trust_list_keys_block = release_trust_list_file.read(96 * pub_keys_count)
-            else:
-                self.__ui.print_warning("Release TrustList file not found at {}".format(
-                    self._context.release_trust_list_folder
-                ))
-                self.__ui.print_warning("TrustList will be generated only from Dev Keys")
 
+        signer_keys = [auth_key, tl_key]
         tl = self.__trust_list_generator.generate(
-            auth_key,
-            tl_key,
+            signer_keys,
             tl_version,
-            release_trust_list_keys_block,
             trust_type_choice == "Dev",  # if trustlist type is dev
             trust_type_choice == "Dev"   # if trustlist type is dev include internal keys
         )
@@ -632,10 +623,18 @@ class UtilityManager(object):
         if not factory_key.generate(signature_limit=signature_limit, rec_pub_keys=rec_pub_keys):
             self.__logger.error("Factory Key generation failed")
             sys.exit("Factory Key generation failed")
+
+        # Choose start/expiration dates
+        start_date, expiration_date = self.__choose_dates_for_key(necessary=True)
+
         key_id = factory_key.key_id
+        ec_type = factory_key.ec_type
         factory_name = self.__ui.get_user_input("Enter factory name: ", empty_allow=False)
         key_info = {
             "type": "factory",
+            "ec_type": ec_type,
+            "start_date": start_date,
+            "expiration_date": expiration_date,
             "comment": factory_name,
             "key": factory_key.private_key,
             "public_key": factory_key.public_key
@@ -651,10 +650,12 @@ class UtilityManager(object):
         self.__ui.print_message("Generation finished")
         self.__logger.info(
             "Factory Key id: [{key_id}] signature limit: [{signature_limit}] comment: [{comment}]"
-            " generation completed".format(
+            " start date: [{start_date}] expiration_date: [{expiration_date}] generation completed".format(
                 key_id=key_id,
                 signature_limit=signature_limit or "unlimited",
-                comment=factory_name
+                comment=factory_name,
+                start_date=start_date,
+                expiration_date=expiration_date
             ))
 
     def __re_generate_factory_key(self):
@@ -725,16 +726,19 @@ class UtilityManager(object):
     def __generate_auth_key(self, suppress_db_warning=False):
         self.__generate_upper_level_signable_key("auth", "Auth", suppress_db_warning)
 
-    def __generate_auth_internal_key(self):
-        self.__logger.info("AuthInternal Key generation started")
-        self.__ui.print_message("\nGenerating AuthInternal Key...")
+    def __generate_internal_key(self, key_type, name_for_log):
+        self.__logger.info("%s Key generation started" % name_for_log)
+        self.__ui.print_message("\nGenerating %s Key..." % name_for_log)
 
-        key_pair = VirgilKeyGenerator("auth_internal").generate()
+        key_pair = VirgilKeyGenerator(key_type).generate()
         public_key = key_pair.public_key
         key_id = key_pair.key_id
-        comment = self.__ui.get_user_input("Enter comment for AuthInternal Key: ")
+        comment = self.__ui.get_user_input("Enter comment for %s Key: " % name_for_log)
         key_info = {
             "type": key_pair.key_type,
+            "ec_type": key_pair.ec_type,
+            "start_date": 0,
+            "expiration_date": 0,
             "comment": comment,
             "key": public_key
         }
@@ -743,10 +747,17 @@ class UtilityManager(object):
         self.__internal_private_keys.save(str(key_id), key_info)
         self.__create_card_request(key_pair)
         self.__ui.print_message("Generation finished")
-        self.__logger.info("AuthInternal Key id: [{id}] comment: [{comment}] generation completed".format(
+        self.__logger.info("{name} Key id: [{id}] comment: [{comment}] generation completed".format(
+            name=name_for_log,
             id=key_id,
             comment=comment
         ))
+
+    def __generate_auth_internal_key(self):
+        self.__generate_internal_key("auth_internal", "AuthInternal")
+
+    def __generate_firmware_internal_key(self):
+        self.__generate_internal_key("firmware_internal", "FirmwareInternal")
 
     def __revive_auth_key(self):
         self.__revive_key("auth")
@@ -760,84 +771,14 @@ class UtilityManager(object):
     def __generate_firmware_key(self, suppress_db_warning=False):
         self.__generate_upper_level_signable_key("firmware", "Firmware", suppress_db_warning)
 
-    def __generate_firmware_internal_key(self):
-        self.__logger.info("FirmwareInternal Key generation started")
-        self.__ui.print_message("\nGenerating FirmwareInternal Key...")
-        key_pair = VirgilKeyGenerator("firmware_internal").generate()
-        public_key = key_pair.public_key
-        key_id = key_pair.key_id
-        comment = self.__ui.get_user_input("Enter comment for FirmwareInternal Key: ")
-        key_info = {
-            "type": key_pair.key_type,
-            "comment": comment,
-            "key": public_key
-        }
-        self.__trust_list_pub_keys.save(str(key_id), key_info)
-        key_info["key"] = key_pair.private_key
-        self.__internal_private_keys.save(str(key_id), key_info)
-        self.__create_card_request(key_pair)
-        self.__ui.print_message("Generation finished")
-        self.__logger.info("FirmwareInternal Key id: [{id}] comment: [{comment}] generation completed".format(
-            id=key_id,
-            comment=comment
-        ))
-
     def __revive_firmware_key(self):
         self.__revive_key("firmware")
-
-    def __generate_cloud_key(self):
-        self.__logger.info("Cloud Key generation started")
-        self.__ui.print_message("\nGenerating Cloud Key...")
-        key_pair = VirgilKeyGenerator("cloud").generate()
-        public_key = key_pair.public_key
-        key_id = key_pair.key_id
-        comment = self.__ui.get_user_input("Enter comment for Cloud Key: ")
-        key_info = {
-            "type": key_pair.key_type,
-            "comment": comment,
-            "key": public_key
-        }
-        self.__trust_list_pub_keys.save(str(key_id), key_info)
-        key_info["key"] = key_pair.private_key
-        self.__cloud_private_keys.save(str(key_id), key_info)
-        self.__create_card_request(key_pair)
-        self.__ui.print_message("Generation finished")
-        self.__logger.info("Cloud Key id: [{id}] comment: [{comment}] generation completed".format(
-            id=key_id,
-            comment=comment
-        ))
-
-    def __delete_cloud_key(self):
-        self.__logger.info("Cloud Key deleting started")
-        self.__ui.print_message("Deleting Cloud Key...")
-        trust_list_pub_keys = self.__trust_list_pub_keys.get_all_data()
-        cloud_keys_info = list()
-        for tl_list_key in trust_list_pub_keys:
-            if trust_list_pub_keys[tl_list_key]["type"] == "cloud":
-                cloud_keys_info.append(
-                    ["comment: {}".format(trust_list_pub_keys[tl_list_key]["comment"]), tl_list_key]
-                )
-        if not cloud_keys_info:
-            self.__logger.info("No Cloud Keys were found")
-            self.__ui.print_warning("No Cloud Keys were found. Nothing to delete")
-            return
-        user_choice = self.__ui.choose_from_list(
-            cloud_keys_info,
-            "Please choose Cloud Key to delete: ",
-            "Cloud Keys: "
-        )
-        self.__trust_list_pub_keys.delete_key(cloud_keys_info[user_choice][1])
-        if cloud_keys_info[user_choice][1] in self.__cloud_private_keys.get_keys():
-            self.__cloud_private_keys.delete_key(cloud_keys_info[user_choice][1])
-        self.__logger.info("Cloud Key id: [{}] was deleted".format(cloud_keys_info[user_choice][1]))
-        self.__ui.print_message("Cloud Key deleted")
 
     def __manual_add_public_key(self):
         self.__logger.info("Adding Public Key to db")
         self.__ui.print_message("Manual adding Public Key to db...")
         key_type_list = [
             ["factory", self.__trust_list_pub_keys],
-            ["cloud", self.__trust_list_pub_keys],
         ]
 
         type_choice = self.__ui.choose_from_list(key_type_list, "Please choose Key type: ", "Key types:")
@@ -860,64 +801,6 @@ class UtilityManager(object):
             key_id=key_id
         ))
         self.__ui.print_message("Key added")
-
-    def __sign_dev_credentials(self):
-        self.__logger.info("DevMode Enable requests signing started")
-        self.__ui.print_message("Signing DevMode Enable requests...")
-        if not os.path.exists(self._context.device_dev_mode_list_path):
-            self.__logger.error("Can't find enable_device_list at {} to sign".format(
-                self._context.device_dev_mode_list_path
-            ))
-            sys.exit("Can't find enable_device_list at {} to sign".format(self._context.device_dev_mode_list_path))
-        dev_ids = open(os.path.join(self._context.device_dev_mode_list_path, "enabled_device_list")).readlines()
-
-        cloud_keys = list(self.__cloud_private_keys.get_keys())
-        if len(cloud_keys) > 0:
-            cloud_key_for_sign = self.__cloud_private_keys.get_value(cloud_keys[0])
-            cloud_key_for_sign_id = cloud_keys[0]
-        else:
-            self.__logger.warning("No Cloud Keys were found")
-            self.__ui.print_error("Can't find any Cloud Keys!")
-            return
-
-        tl_key_for_sign = self.key_chooser(
-            "tl_service",
-            stage="Signing dev credentials",
-            greeting_msg="Please choose TrustList Service Key for signing: "
-        )
-        if not tl_key_for_sign:
-            return
-
-        signed_dev_ids = list()
-        for dev_id in dev_ids:
-            byte_buffer = BytesIO()
-
-            dev_id = dev_id.rstrip()
-            crypto = VirgilCrypto()
-            crypto.signature_hash_algorithm = HashAlgorithm.SHA256
-            cloud_sign_pyasn1 = crypto.sign(base64.b64decode(dev_id), crypto.import_private_key(
-                base64.b64decode(cloud_key_for_sign["key"])
-            ))
-            cloud_sign = VirgilSignExtractor.extract_sign(cloud_sign_pyasn1)
-
-            tl_svc_sign = tl_key_for_sign.sign(dev_id)
-
-            byte_buffer.write(b64_to_bytes(dev_id))
-            byte_buffer.write(int(cloud_key_for_sign_id).to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(bytes(cloud_sign))
-            byte_buffer.write(tl_key_for_sign.key_id.to_bytes(
-                2, byteorder='little', signed=False
-            ))
-            byte_buffer.write(b64_to_bytes(tl_svc_sign))
-
-            signed_dev_ids.append(
-                to_b64(byte_buffer.getvalue())
-            )
-
-        with open(os.path.join(self._context.device_dev_mode_list_path, "signed_device_list"), "w") as f:
-            f.writelines("\n".join(signed_dev_ids))
-        self.__ui.print_message("Signing finished")
-        self.__logger.info("Signing DevMode Enable requests completed")
 
     def __create_requests_dev_mode_enable(self):
         self.__logger.info("DevMode Enable requests creation started")
@@ -1032,10 +915,12 @@ class UtilityManager(object):
         del pt
 
         self.__ui.print_message("\nTrustList Service Keys: ")
-        pt = PrettyTable(["Key Id", "Type", "Comment", "Key"])
+        pt = PrettyTable(["Key Id", "Type", "EC type", "Comment", "Start Date", "Expiration Date", "Key"])
         for key in self.__trust_list_pub_keys.get_keys():
             row = self.__trust_list_pub_keys.get_value(key)
-            pt.add_row([key, row["type"], row["comment"], row["key"]])
+            pt.add_row(
+                [key, row["type"], row["ec_type"], row["comment"], row["start_date"], row["expiration_date"], row["key"]]
+            )
         self.__ui.print_message(pt.get_string())
         self.__logger.debug("\nTrustList Service Keys: \n{}".format(pt.get_string()))
         del pt
@@ -1224,11 +1109,10 @@ class UtilityManager(object):
             self.__logger.debug("Finded TrustList have {} key(s)".format(pub_keys_count))
             trust_list_file.seek(32)
             key_type_names = {
-                int(TrustList.KeyType.FACTORY_PUB_KEY): "factory",
-                int(TrustList.KeyType.SAMS_PUB_KEY): "cloud",
-                int(TrustList.KeyType.FIRMWARE_SERVICE_PUB_KEY): "firmware",
-                int(TrustList.KeyType.FIRMWARE_INTERNAL_PUB_KEY): "firmware_internal",
-                int(TrustList.KeyType.AUTH_INTERNAL_PUB_KEY): "auth_internal"
+                int(consts.VSKeyTypeE.FACTORY): "factory",
+                int(consts.VSKeyTypeE.FIRMWARE): "firmware",
+                int(consts.VSKeyTypeE.FIRMWARE_INTERNAL): "firmware_internal",
+                int(consts.VSKeyTypeE.AUTH): "auth_internal"
             }
             while pub_keys_count > 0:
                 key_data = trust_list_file.read(96)
@@ -1396,7 +1280,7 @@ class UtilityManager(object):
         if not self._utility_list:
             self._utility_list = []
             self._utility_list.extend([
-                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory, 1 Cloud)"
+                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory)"
                     .format(self.__upper_level_keys_count), self.__generate_initial_keys],
                 ["---"],
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
@@ -1414,9 +1298,6 @@ class UtilityManager(object):
                 ["Create a new Factory dongle from the existing Key", self.__re_generate_factory_key],
                 ["Delete Factory Key", self.__delete_factory_key],
                 ["---"],
-                ["Generate Cloud Key", self.__generate_cloud_key],
-                ["Delete Cloud Key", self.__delete_cloud_key],
-                ["---"],
                 ["Generate Firmware Key ({})".format(self.__upper_level_keys_count), self.__generate_firmware_by_count],
                 ["Generate FirmwareInternal Key", self.__generate_firmware_internal_key],
                 ["Revive the Firmware Key from the RestorePaper", self.__revive_firmware_key],
@@ -1426,7 +1307,7 @@ class UtilityManager(object):
                 ["Create a provision for SDMPD and Sandbox", self.__generate_provision],
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
-                ["Add Public Key to db (Factory, Cloud)", self.__manual_add_public_key],
+                ["Add Public Key to db (Factory)", self.__manual_add_public_key],
                 ["Get upper level Public Keys", self.__get_upper_level_pub_keys],
                 ["Restore UpperLevelKeys db from dongles", self.__restore_upper_level_db_from_keys],
                 ["Import TrustList to db", self.__import_trust_list_to_db],
@@ -1445,8 +1326,6 @@ class UtilityManager(object):
                 ])
             else:
                 self._utility_list.extend([
-                    ["Signing DevMode Enable requests", self.__sign_dev_credentials],
-                    ["---"],
                     ["Export Internal Private Keys", self.__get_internal_private_keys],
                     ["---"]
                 ])
@@ -1530,7 +1409,6 @@ class UtilityManager(object):
         self.__get_private_keys(self.__auth_private_keys)
         self.__get_private_keys(self.__recovery_private_keys)
         self.__get_private_keys(self.__trust_list_service_private_keys)
-        self.__get_private_keys(self.__cloud_private_keys)
         self.__get_private_keys(self.__internal_private_keys)
         self.__ui.print_message("Export finished")
 
