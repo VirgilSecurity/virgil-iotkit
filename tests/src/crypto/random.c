@@ -76,8 +76,8 @@ _frequency_bits(uint8_t *sequence) {
     size_t pos;
     size_t bit;
     uint8_t cur_byte;
-    float difference;
-    float diff_treshold = 0.05;
+    size_t difference;
+    size_t limit = 30; // e-3
 
     for (pos = 0; pos < SEQUENCE_SIZE; ++pos) {
         cur_byte = *sequence;
@@ -96,11 +96,12 @@ _frequency_bits(uint8_t *sequence) {
     }
 
     difference = bit_zero > bit_one ? bit_zero - bit_one : bit_one - bit_zero;
+    difference *= 1000;  // e-3
     difference /= SEQUENCE_SIZE * 8;
-    BOOL_CHECK_RET(difference < diff_treshold,
-                   "Bits frequency count : amount difference %.2f is bigger than threshold %.2f",
-                   difference,
-                   diff_treshold);
+    BOOL_CHECK_RET(difference < limit, "Bits frequency count : amount difference %de-3 is bigger that %de-3",
+                 difference,
+                   limit);
+
 
     return true;
 }
@@ -114,26 +115,31 @@ _frequency_bits(uint8_t *sequence) {
 static bool
 _frequency_bytes(uint8_t *sequence) {
     size_t byte[256] = {0};
-    static const size_t elements = sizeof(byte) / sizeof(byte[0]);
+    size_t cur_value;
     size_t pos;
-    float difference;
-    float diff_treshold = 2;
+    size_t max_amount = 0;
+    uint8_t max_amount_pos = 0;
+    size_t limit = 8;   // e-3
 
     for (pos = 0; pos < SEQUENCE_SIZE; ++pos) {
-        ++byte[*sequence];
+        cur_value = ++byte[*sequence];
+
+        if(cur_value > max_amount){
+            max_amount = cur_value;
+            max_amount_pos = *sequence;
+        }
+
         ++sequence;
     }
 
-    for (pos = 0; pos < sizeof(byte) / sizeof(byte[0]); ++pos) {
-        difference = byte[pos];
-        difference /= SEQUENCE_SIZE;
-        difference *= elements;
-        BOOL_CHECK_RET(difference < diff_treshold,
-                       "Bytes frequency count : amount difference %.5f for byte = %d is bigger than threshold %.5f",
-                       difference,
-                       (uint8_t)pos,
-                       diff_treshold);
-    }
+    max_amount *= 1000;  // e-3
+    max_amount /= SEQUENCE_SIZE;
+
+    BOOL_CHECK_RET(max_amount < limit,
+                       "Bytes frequency count : amount difference %de-3 for byte '%d' is bigger that %de-3",
+                   max_amount,
+                       (uint8_t)max_amount_pos,
+                   limit);
 
     return true;
 }
@@ -147,31 +153,33 @@ _frequency_bytes(uint8_t *sequence) {
 static bool
 _frequency_2bytes_diff(uint8_t *sequence) {
     size_t diff[2 * 256] = {0};
-    static const size_t elements = sizeof(diff) / sizeof(diff[0]);
+    size_t cur_value;
     int cur_diff;
     size_t pos;
-    float diff_treshold = 3;
-    float difference;
+    size_t limit = 10;  // e-3
+    size_t max_amount = 0;
+    int8_t max_amount_pos = 0;
 
     for (pos = 1; pos < SEQUENCE_SIZE; ++pos) {
         cur_diff = (int)sequence[0] - sequence[-1];
-        ++diff[256 + cur_diff];
+        cur_value = ++diff[256 + cur_diff];
+
+        if(cur_value > max_amount){
+            max_amount = cur_value;
+            max_amount_pos = cur_diff;
+        }
+
         ++sequence;
     }
 
-    for (pos = 0; pos < sizeof(diff) / sizeof(diff[0]); ++pos) {
-        difference = diff[pos];
-        difference /= SEQUENCE_SIZE;
-        difference *= elements;
-        if (difference >= diff_treshold) {
-            cur_diff = pos - 256;
-            BOOL_CHECK_RET(difference < diff_treshold,
-                           "Nearby bytes difference : amount %.5f for difference %d is bigger than threshold %.5f",
-                           difference,
-                           cur_diff,
-                           diff_treshold);
-        }
-    }
+    max_amount *= 1000;  // e-3
+    max_amount /= SEQUENCE_SIZE;
+
+            BOOL_CHECK_RET(max_amount < limit,
+                           "Nearby bytes difference : amount %de-3 for difference '%d' is bigger that %de-3",
+                           max_amount,
+                           max_amount_pos,
+                           limit);
 
     return true;
 }
@@ -184,8 +192,9 @@ test_random(void) {
     START_TEST("Random tests");
 
     TEST_CASE_OK("Generate random sequence", _generate_random(sequence));
-    TEST_CASE_OK("Frequency tests",
-                 _frequency_bits(sequence) && _frequency_bytes(sequence) && _frequency_2bytes_diff(sequence));
+    TEST_CASE_OK("\"Bits frequency\" test", _frequency_bits(sequence));
+    TEST_CASE_OK("\"Bytes frequency\" test", _frequency_bytes(sequence));
+    TEST_CASE_OK("\"Nearby bytes differences frequency\" test", _frequency_2bytes_diff(sequence));
 
 terminate:;
 }
