@@ -1,10 +1,12 @@
 #ifndef TL_OPERATIONS_H
 #define TL_OPERATIONS_H
 
+#include <virgil/iot/hsm/hsm_structs.h>
+
 void
 vs_tl_storage_init();
 bool
-vs_tl_verify_hl_key(const uint8_t *key_to_check, size_t key_size);
+vs_tl_verify_hl_key(const uint8_t *key_to_check, vs_hsm_keypair_type_e key_type, vs_hsm_hash_type_e hash_type);
 int
 vs_tl_invalidate(size_t storage_type);
 int

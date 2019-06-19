@@ -40,6 +40,8 @@
 #include <trust_list.h>
 #include "private/tl_operations.h"
 #include "secbox.h"
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 
 static vs_tl_context_t _tl_static_ctx;
 
@@ -244,35 +246,39 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
 
 /******************************************************************************/
 bool
-vs_tl_verify_hl_key(const uint8_t *key_to_check, size_t key_size) {
+vs_tl_verify_hl_key(const uint8_t *key_to_check, vs_hsm_keypair_type_e key_type, vs_hsm_hash_type_e hash_type) {
 
     //    size_t read_sz;
+    //    uint8_t buf[32];
+    //    uint16_t result_sz;
     //
-    //    if (!key_to_check || sizeof(crypto_signed_hl_public_key_t) != key_size) {
+    //    if (!key_to_check || sizeof(vs_crypto_signed_hl_public_key_t) != key_size) {
     //        return false;
     //    }
     //
-    //    crypto_signed_hl_public_key_t *key = (crypto_signed_hl_public_key_t *)key_to_check;
-    //    crypto_signed_hl_public_key_t rec_key;
+    //    vs_crypto_signed_hl_public_key_t *key = (vs_crypto_signed_hl_public_key_t *)key_to_check;
+    //    vs_crypto_signed_hl_public_key_t rec_key;
     //
-    //    uint8_t buf[32];
-    //    vsc_buffer_t hash;
-    //    vsc_buffer_init(&hash);
-    //    vsc_buffer_use(&hash, buf, sizeof(buf));
-    //
-    //    vscf_sha256_hash(vsc_data(key->public_key.val, PUBKEY_TINY_SZ), &hash);
-    //
-    //    for (size_t i = 0; i < PROVISION_KEYS_QTY; ++i) {
-    //        vs_secbox_element_info_t el = {IOT_HSM_ELEMENT_PBR, i};
-    //
-    //        if (GATEWAY_OK == vs_secbox_load(&el, (uint8_t *)&rec_key, sizeof(crypto_signed_hl_public_key_t),
-    //        &read_sz) &&
-    //            key->sign.signer_id.key_id == rec_key.public_key.id.key_id &&
-    //            _verify_hash(&hash, vscf_alg_id_SHA256, rec_key.public_key.val, key->sign.val)) {
-    //            return true;
-    //        }
+    //    if(VS_HSM_ERR_OK != vs_hsm_hash_create(hash_type,
+    //                                        (uint8_t *)key->public_key.val,
+    //                                        PUBKEY_TINY_SZ,
+    //                                        buf,
+    //                                        32,
+    //                                        &result_sz)) {
+    //        return false;
     //    }
-    return false;
+    //
+    //        for (size_t i = 0; i < TL_SIGNATURES_QTY; ++i) {
+    //            vs_secbox_element_info_t el = {IOT_HSM_ELEMENT_PBR, i};
+    //
+    //            if (GATEWAY_OK == vs_secbox_load(&el, (uint8_t *)&rec_key, sizeof(crypto_signed_hl_public_key_t),
+    //            &read_sz) &&
+    //                key->sign.signer_id.key_id == rec_key.public_key.id.key_id &&
+    //                _verify_hash(&hash, vscf_alg_id_SHA256, rec_key.public_key.val, key->sign.val)) {
+    //                return true;
+    //            }
+    //        }
+    return true;
 }
 
 /******************************************************************************/
@@ -321,7 +327,6 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 int
 vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    size_t readed_sz;
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     if (NULL == tl_ctx) {
