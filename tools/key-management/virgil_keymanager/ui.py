@@ -143,7 +143,7 @@ class UI(object):
             year = self.get_user_input(
                 "Enter year (yyyy): ",
                 input_checker_callback=lambda i: i.isdigit() and (int(i) in range(2015, 2151)),
-                input_checker_msg="Only integer value FROM 2015 to 2150 is allowed. Please try again: ",
+                input_checker_msg="Only integer value from 2015 to 2150 is allowed. Please try again: ",
                 empty_allow=False
             )
             month = self.get_user_input(

@@ -519,7 +519,7 @@ class UtilityManager(object):
         key_info["key"] = recovery_key.private_key
         if self._context.no_dongles:
             self.__recovery_private_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        self.__create_card_request(key=recovery_key)
+        self.__create_card_request(recovery_key, {"sample info": "key info"})
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(recovery_key.device_serial, "recovery")
         if not self._context.printer_disable:
@@ -575,7 +575,7 @@ class UtilityManager(object):
         if self._context.no_dongles:
             private_keys_db = self.__keys_type_to_storage_map[key_type][0]
             private_keys_db.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        self.__create_card_request(key)
+        self.__create_card_request(key, key_info={"sample info": "key info"})
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(key.device_serial, key_type)
         if not self._context.printer_disable:
@@ -634,7 +634,7 @@ class UtilityManager(object):
         key_info["key"] = key_info["public_key"]
         del key_info["public_key"]
         self.__trust_list_pub_keys.save(str(key_id), key_info)
-        self.__create_card_request(key=factory_key)
+        self.__create_card_request(factory_key, {"sample info": "key info"})
 
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
@@ -736,7 +736,7 @@ class UtilityManager(object):
         self.__trust_list_pub_keys.save(str(key_id), key_info)
         key_info["key"] = key_pair.private_key
         self.__internal_private_keys.save(str(key_id), key_info)
-        self.__create_card_request(key_pair)
+        self.__create_card_request(key_pair, {"sample info": "key info"})
         self.__ui.print_message("Generation finished")
         self.__logger.info("{name} Key id: [{id}] comment: [{comment}] generation completed".format(
             name=name_for_log,
@@ -1164,8 +1164,8 @@ class UtilityManager(object):
                     pub_keys[1] = key["key"]
         return pub_keys
 
-    def __create_card_request(self, key):
-        virgil = VirgilBridge(key, self.__virgil_exporter_keys, self.__ui)
+    def __create_card_request(self, key, key_info):
+        virgil = VirgilBridge(key, key_info, self.__virgil_exporter_keys, self.__ui)
         card_request = virgil.export_virgil_card_model()
         if not card_request:
             self.__ui.print_error("Virgil Card creation request failure!")

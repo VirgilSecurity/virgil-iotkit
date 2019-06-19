@@ -57,7 +57,7 @@ clean_dist:
 venv:
 	@if [ ! -d "$(VENV)" ]; then \
 		echo ">>>Creating venv at $(VENV)"; \
-		python3.5 -m venv $(VENV); \
+		python3 -m venv $(VENV); \
 		. $(VENV)/bin/activate; \
 		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; \
 		python get-pip.py; \
