@@ -120,7 +120,7 @@ _frequency_bytes(uint8_t *sequence) {
     size_t pos;
     size_t max_amount = 0;
     uint8_t max_amount_pos = 0;
-    size_t limit = 8; // e-3
+    size_t limit = 30; // e-3
 
     for (pos = 0; pos < SEQUENCE_SIZE; ++pos) {
         cur_value = ++byte[*sequence];
