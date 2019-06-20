@@ -138,13 +138,17 @@ test_kdf2(void) {
 
     START_TEST("KDF2 tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256), _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384), _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512), _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
 
     START_TEST("HKDF tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384), _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
 
 terminate:;
 }

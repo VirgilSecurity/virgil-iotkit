@@ -48,9 +48,12 @@ test_hmac(void) {
 
     START_TEST("HMAC test");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256), _test_hmac_case(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384), _test_hmac_case(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512), _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_hmac_case(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_hmac_case(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
 
 terminate:;
 }

@@ -60,8 +60,9 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
 
     // Create key pair for Alice
-    VS_HSM_CHECK_RET(
-            vs_hsm_keypair_create(alice_slot, keypair_type), "Can't create keypair %s for Alice", vs_hsm_keypair_type_descr(keypair_type));
+    VS_HSM_CHECK_RET(vs_hsm_keypair_create(alice_slot, keypair_type),
+                     "Can't create keypair %s for Alice",
+                     vs_hsm_keypair_type_descr(keypair_type));
 
     VS_HSM_CHECK_RET(
             vs_hsm_keypair_get_pubkey(
@@ -74,39 +75,47 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
     }
 
     // Create key pair for Bob
-    VS_HSM_CHECK_RET(
-            vs_hsm_keypair_create(bob_slot, keypair_type), "Can't create keypair %s for Bob", vs_hsm_keypair_type_descr(keypair_type));
+    VS_HSM_CHECK_RET(vs_hsm_keypair_create(bob_slot, keypair_type),
+                     "Can't create keypair %s for Bob",
+                     vs_hsm_keypair_type_descr(keypair_type));
 
     VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(
                              bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
-                     "Can't load public key from slot %s for Bob", vs_iot_hsm_slot_descr(bob_slot));
+                     "Can't load public key from slot %s for Bob",
+                     vs_iot_hsm_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
-    VS_HSM_CHECK_RET( vs_hsm_ecdh(alice_slot,
+    VS_HSM_CHECK_RET(vs_hsm_ecdh(alice_slot,
                                  bob_keypair_type,
                                  bob_public_key,
                                  bob_public_key_sz,
                                  shared_secret_1,
                                  sizeof(shared_secret_1),
-                                 &shared_secret_sz_1), "Can't process ECDH (slot %s, keypair type %s) for Alice", vs_iot_hsm_slot_descr(alice_slot), vs_hsm_keypair_type_descr(bob_keypair_type));
+                                 &shared_secret_sz_1),
+                     "Can't process ECDH (slot %s, keypair type %s) for Alice",
+                     vs_iot_hsm_slot_descr(alice_slot),
+                     vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
-    if(VS_HSM_ERR_OK != vs_hsm_ecdh(bob_slot,
-                                 alice_keypair_type,
-                                 alice_public_key,
-                                 alice_public_key_sz,
-                                 shared_secret_2,
-                                 sizeof(shared_secret_2),
-                                 &shared_secret_sz_2)){
-        if(!corrupt_key) {
-            BOOL_CHECK_RET(false, "Can't process ECDH (slot %s, keypair type %s) for Bob", vs_iot_hsm_slot_descr(bob_slot), vs_hsm_keypair_type_descr(alice_keypair_type));
+    if (VS_HSM_ERR_OK != vs_hsm_ecdh(bob_slot,
+                                     alice_keypair_type,
+                                     alice_public_key,
+                                     alice_public_key_sz,
+                                     shared_secret_2,
+                                     sizeof(shared_secret_2),
+                                     &shared_secret_sz_2)) {
+        if (!corrupt_key) {
+            BOOL_CHECK_RET(false,
+                           "Can't process ECDH (slot %s, keypair type %s) for Bob",
+                           vs_iot_hsm_slot_descr(bob_slot),
+                           vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
         return false;
     }
 
     // Compare shared secrets
-    if(shared_secret_sz_1 != shared_secret_sz_2) {
+    if (shared_secret_sz_1 != shared_secret_sz_2) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Shared secret sizes are not equal");
         }
@@ -114,7 +123,7 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
         return false;
     }
 
-    if(memcmp(shared_secret_1, shared_secret_2, shared_secret_sz_1) != 0){
+    if (memcmp(shared_secret_1, shared_secret_2, shared_secret_sz_1) != 0) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Shared secret sequences are not equal");
         }
@@ -132,23 +141,23 @@ test_ecdh(void) {
 
     START_TEST("ECDH tests");
 
-#define TEST_ECDH_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                                         \
-    VS_IOT_STRCPY(descr, "Key ");    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot "); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE)); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot "); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB)); \
+#define TEST_ECDH_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                                   \
+    VS_IOT_STRCPY(descr, "Key ");                                                                                      \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");                                                    \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE));                                    \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");                                                      \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB));                                      \
     TEST_CASE_OK(descr, _test_ecdh_pass(KEY, false, SLOT_ALICE, SLOT_BOB));
 
-#define TEST_ECDH_NOT_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                                         \
-    VS_IOT_STRCPY(descr, "Key ");    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice slot "); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE)); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob slot "); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB)); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");  \
+#define TEST_ECDH_NOT_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                               \
+    VS_IOT_STRCPY(descr, "Key ");                                                                                      \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice slot ");                                                      \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE));                                    \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob slot ");                                                        \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB));                                      \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");                                                   \
     TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, true, SLOT_ALICE, SLOT_BOB));
 
     TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
@@ -163,5 +172,4 @@ terminate:;
 
 #undef TEST_ECDH_OK_PASS
 #undef TEST_ECDH_NOT_OK_PASS
-
 }

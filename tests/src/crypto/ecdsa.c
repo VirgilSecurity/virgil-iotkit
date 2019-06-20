@@ -39,12 +39,12 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
 void
 test_ecdsa(void) {
 #define TEST_SIGN_VERIFY_PASS(SLOT, HASH, KEY)                                                                         \
-    VS_IOT_STRCPY(descr, "slot ");    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT)); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", hash "); \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(HASH));    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");  \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));    \
+    VS_IOT_STRCPY(descr, "slot ");                                                                                     \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT));                                          \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", hash ");                                                            \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(HASH));                                         \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");                                                    \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
     TEST_CASE_OK(descr, _test_sign_verify_pass(SLOT, HASH, KEY));
 
     char descr[256];

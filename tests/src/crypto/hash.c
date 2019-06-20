@@ -89,9 +89,12 @@ test_hash(void) {
 
     START_TEST("HASH tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256), _test_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384), _test_sha_pass(VS_HASH_SHA_384, correct_result_sha_384_raw, sizeof(correct_result_sha_384_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512), _test_sha_pass(VS_HASH_SHA_512, correct_result_sha_512_raw, sizeof(correct_result_sha_512_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_sha_pass(VS_HASH_SHA_384, correct_result_sha_384_raw, sizeof(correct_result_sha_384_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_sha_pass(VS_HASH_SHA_512, correct_result_sha_512_raw, sizeof(correct_result_sha_512_raw)));
     TEST_CASE_OK(
             "SHA256 partial calculating pass",
             _test_partial_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
