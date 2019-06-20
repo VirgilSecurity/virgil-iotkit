@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 from contextlib import contextmanager
+from typing import Union, Optional
 
 from PyCRC.CRCCCITT import CRCCCITT
 from prettytable import PrettyTable
@@ -84,11 +85,13 @@ class UtilityManager(object):
         )
 
         self.__keys_type_to_storage_map = {
-            "auth": (self.__auth_private_keys, self.__upper_level_pub_keys),
-            "firmware": (self.__firmware_priv_keys, self.__upper_level_pub_keys),
-            "recovery": (self.__recovery_private_keys, self.__upper_level_pub_keys),
-            "tl_service": (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
-            "factory": (self.__factory_priv_keys, self.__trust_list_pub_keys)
+            consts.VSKeyTypeS.AUTH:              (self.__auth_private_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.FIRMWARE:          (self.__firmware_priv_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.RECOVERY:          (self.__recovery_private_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
+            consts.VSKeyTypeS.AUTH_INTERNAL:     (self.__internal_private_keys, self.__trust_list_pub_keys),
+            consts.VSKeyTypeS.FIRMWARE_INTERNAL: (self.__internal_private_keys, self.__trust_list_pub_keys)
         }
         self.__dongle_chooser = DongleChooser(
             self.__ui,
@@ -136,7 +139,7 @@ class UtilityManager(object):
                 empty_allow=False
             ).upper()
 
-        if necessary or (user_confirmed is True):
+        if necessary or (user_confirmed == "Y"):
             self.__ui.print_message("Please choose start date for key")
             start_date = self.__ui.get_date()
             start_date = date_to_timestamp(*start_date)
@@ -183,7 +186,7 @@ class UtilityManager(object):
         if is_new_key:
             dongle_serial = self.__dongle_chooser.choose_atmel_device("empty", **kwargs)
         else:
-            dongle_serial = self.__dongle_chooser.choose_atmel_device(key_type, **kwargs)
+            dongle_serial = self.__dongle_chooser.choose_atmel_device(key_type.value, **kwargs)
         if not dongle_serial:
             self.__ui.print_warning("Operation stopped by user")
             self.__logger.info("Dongle has not been chosen ({})".format(stage))
@@ -192,25 +195,24 @@ class UtilityManager(object):
 
     def __db_key_chooser(self, key_type, stage, is_new_key=False, **kwargs):
         if is_new_key:
-            return VirgilKeyGenerator(key_type)
+            return VirgilKeyGenerator(key_type.value)
 
         greeting_msg = kwargs.get("greeting_msg", "Please choose private key: ")
         suppress_db_warning = kwargs.get("suppress_db_warning", False)
 
         # filter keys from db by type
-        private_keys_db = self.__keys_type_to_storage_map[key_type][0]
-        public_keys_db = self.__keys_type_to_storage_map[key_type][1]
+        private_keys_db, public_keys_db = self.__keys_type_to_storage_map[key_type]
 
         private_keys = private_keys_db.get_all_data(suppress_db_warning=suppress_db_warning)
         public_keys = public_keys_db.get_all_data(suppress_db_warning=suppress_db_warning)
 
-        filtered_private_keys = {key_id: info for key_id, info in private_keys.items() if info["type"] == key_type}
-        filtered_public_keys = {key_id: info for key_id, info in public_keys.items() if info["type"] == key_type}
+        filtered_private_keys = {key_id: info for key_id, info in private_keys.items() if info["type"] == key_type.value}
+        filtered_public_keys = {key_id: info for key_id, info in public_keys.items() if info["type"] == key_type.value}
 
         if not len(filtered_private_keys):
             self.__ui.print_message(
                 "Cannot find key with type [{}] inside {}. "
-                "Please generate it.".format(key_type, os.path.basename(private_keys_db.storage_path))
+                "Please generate it.".format(key_type.value, os.path.basename(private_keys_db.storage_path))
             )
             self.__logger.info("Private key has not been selected ({})".format(stage))
             return
@@ -235,7 +237,7 @@ class UtilityManager(object):
         key_id = ids[user_choose]
 
         return VirgilKeyGenerator(
-            key_type,
+            key_type.value,
             private_key=filtered_private_keys[key_id]["key"],
             public_key=filtered_public_keys[key_id]["key"]
         )
@@ -285,17 +287,17 @@ class UtilityManager(object):
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Recovery Key {} generation (Initial Generation stage)".format(key_number))
             self.__ui.print_message("\nRecovery Key {}:".format(key_number))
-            self.__generate_recovery_key(suppress_db_warning=supress_db_warning)
+            self.__generate_recovery_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Auth Key {} generation (Initial Generation stage)".format(key_number))
             self.__ui.print_message("\nAuth Key {}:".format(key_number))
-            self.__generate_auth_key(suppress_db_warning=supress_db_warning)
+            self.__generate_auth_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("TrustList Service Key {} generation (Initial Generation stage)".format(key_number))
             self.__ui.print_message("\nTrustList Service Key {}:".format(key_number))
-            self.__generate_trust_list_service_key(suppress_db_warning=supress_db_warning)
+            self.__generate_trust_list_service_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Firmware Key {} generation (Initial Generation stage)".format(key_number))
@@ -306,51 +308,6 @@ class UtilityManager(object):
         self.__ui.print_message("\nFactory Key:")
         self.__generate_factory_key()
         self.__logger.info("initial generation stage completed")
-
-    def __generate_provision(self):
-        self.__logger.info("provision SDMPD and sandbox generation started")
-        self.__ui.print_message("Generating provision...")
-        subfolder = "sdmpd_provision"
-        sdmpd_prov_folder = os.path.join(self.__key_storage_path, subfolder)
-        self.__logger.debug("Usign SDMPD provision folder: {}".format(sdmpd_prov_folder))
-
-        # recreate folder
-        if os.path.exists(sdmpd_prov_folder):
-            self.__logger.info("provision folder deleted")
-            shutil.rmtree(sdmpd_prov_folder)
-        os.makedirs(sdmpd_prov_folder)
-        self.__logger.info("provision folder created")
-
-        # general actions
-        file_storage = FileKeyStorage(sdmpd_prov_folder)
-        self.__logger.info("UpperLevelPublicKeys dumping (provision and sandbox generation stage)")
-        self.__dump_upper_level_pub_keys(subfolder)
-        self.__logger.info("UpperLevelPublicKeys dump completed")
-        self.__logger.info("TrustList generating (provision and sandbox generation stage)")
-        self.__generate_trust_list(file_storage)
-        self.__logger.info("TrustList generation completed")
-        self.__logger.info("generating SDMPD Key")
-        key_pair = self.__generate_sdmpd_key()
-
-        factory_key = self.key_chooser(
-            "factory",
-            stage="Generate provision, Factory Key choosing stage",
-            greeting_msg="Please choose Factory Key for signing: "
-        )
-        if not factory_key:
-            return
-
-        key_to_be_signed = key_pair.public_key
-        sign_result = factory_key.sign(key_to_be_signed)
-        signature = b64_to_bytes(sign_result)
-        factory_key_id = factory_key.key_id
-
-        self.__logger.info("Factory signature and key pair dumping")
-        file_storage.save(signature, "signature_" + str(factory_key_id))
-        file_storage.save(b64_to_bytes(key_pair.private_key), "device_priv_" + str(factory_key_id))
-        file_storage.save(b64_to_bytes(key_pair.public_key), "device_pub_" + str(factory_key_id))
-        self.__logger.info("Factory signature and key pair dump completed")
-        self.__ui.print_message("Generation provision done")
 
     def __dump_upper_level_pub_keys(self, filename="pubkeys"):
         self.__logger.info("UpperLevelPublic Keys dumping")
@@ -449,14 +406,14 @@ class UtilityManager(object):
             self.__trust_list_version_db.save("release_version", tl_version)
 
         auth_key = self.key_chooser(
-            "auth",
+            consts.VSKeyTypeS.AUTH,
             stage="TrustList generation, Auth Key choosing",
             greeting_msg="Please choose Auth Key for TrustList signing: "
         )
         if not auth_key:
             return
         tl_key = self.key_chooser(
-            "tl_service",
+            consts.VSKeyTypeS.TRUSTLIST,
             stage="TrustList generation, TrustList Service Key choosing",
             greeting_msg="Please choose TrustList Service Key for TrustList signing: "
         )
@@ -484,187 +441,14 @@ class UtilityManager(object):
         self.__ui.print_message("TrustList generated and stored")
         self.__logger.info("TrustList generation completed")
 
-    def __generate_recovery_key(self, suppress_db_warning=False):
-        self.__logger.info("Recovery Key generation started")
-        self.__ui.print_message("Generating Recovery Key...")
-        upper_keys = self.__upper_level_pub_keys.get_all_data(suppress_db_warning=suppress_db_warning)
-        upper_keys_value = upper_keys.values()
-        recovery_keys = list(filter(lambda x: x if x["type"] == "recovery" else None, upper_keys_value))
-
-        recovery_key = self.key_chooser(
-            "recovery", stage="Recovery Key generation", is_new_key=True, suppress_db_warning=suppress_db_warning
-        )
-        if not recovery_key:
-            return
-
-        if not recovery_key.generate():
-            self.__ui.print_message("Recovery Key generation failed")
-            self.__logger.error("Recovery Key generation failed")
-            return
-
-        public_key = recovery_key.public_key
-        key_id = recovery_key.key_id
-
-        comment = 0
-        if len(recovery_keys) == 0:
-            comment = 1
-        elif len(recovery_keys) == 1:
-            rec_comment = recovery_keys[0]["comment"]
-            if rec_comment == 1:
-                comment = 2
-            elif rec_comment == 2:
-                comment = 1
-        elif len(recovery_keys) > 1:
-            self.__logger.error("third Recovery Key generation attempt")
-            sys.exit("You try to generate the third Recovery Key, it's a very bad situation!")
-        else:
-            self.__logger.error("unexpected error in Recovery Key comment")
-            sys.exit("Something went wrong with the Recovery Key comment setup")
-
-        key_info = {
-            "type": "recovery",
-            "comment": comment,
-            "key": public_key
-        }
-        self.__upper_level_pub_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        key_info["key"] = recovery_key.private_key
-        if self._context.no_dongles:
-            self.__recovery_private_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-            self.__card_requests_handler.create_and_save_request_for_key(recovery_key, {"sample info": "key info"})
-        if self._context.dongles_mode == "dongles":
-            self.__dongle_unplug_and_mark(recovery_key.device_serial, "recovery")
-        if not self._context.printer_disable:
-            self.__printer_controller.send_to_printer(key_info)
-        self.__ui.print_message("Generation finished")
-        self.__logger.info("Recovery Key id: [{id}] comment: [{comment}] generation completed".format(
-            id=key_id,
-            comment=comment
-        ))
-
-    def __generate_upper_level_signable_key(self, key_type, name, suppress_db_warning):
-        """
-        Generate auth, trust list service or firmware key, which are signed by recovery key
-        """
-        self.__logger.info("{} Key generation started".format(name))
-        self.__ui.print_message("Generating {} Key...".format(name))
-        key = self.key_chooser(
-            key_type, stage="{} generation".format(name), is_new_key=True, suppress_db_warning=suppress_db_warning
-        )
-        if not key:
-            return
-
-        rec_pub_keys = self.__get_recovery_pub_keys(suppress_db_warning=suppress_db_warning)
-        rec_key_for_sign = self.key_chooser(
-            "recovery",
-            stage="{} Key generation, Recovery key for signing selection".format(name),
-            greeting_msg="Please choose Recovery Key for signing: ",
-            suppress_db_warning=suppress_db_warning
-        )
-        if not rec_key_for_sign:
-            return
-
-        if not key.generate(rec_pub_keys=rec_pub_keys, signer_key=rec_key_for_sign):
-            self.__logger.info("{} Key generation failed".format(name))
-            self.__ui.print_message("{} Key generation failed".format(name))
-            return
-
-        # getting sign
-        sign = key.signature
-
-        signer_key_id = rec_key_for_sign.key_id
-        key_id = key.key_id
-        comment = self.__ui.get_user_input("Enter comment for {} Key: ".format(name))
-        key_info = {
-            "type": key.key_type,
-            "comment": comment,
-            "key": key.public_key,
-            "signature": sign,
-            "signer_key_id": signer_key_id
-        }
-        self.__upper_level_pub_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        key_info["key"] = key.private_key
-        if self._context.no_dongles:
-            private_keys_db = self.__keys_type_to_storage_map[key_type][0]
-            private_keys_db.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        self.__card_requests_handler.create_and_save_request_for_key(key, key_info={"sample info": "key info"})
-        if self._context.dongles_mode == "dongles":
-            self.__dongle_unplug_and_mark(key.device_serial, key_type)
-        if not self._context.printer_disable:
-            self.__printer_controller.send_to_printer(key_info)
-        self.__ui.print_message("Generation finished")
-        self.__logger.info("{key_name} Key id: [{id}] comment: [{comment}] generation completed".format(
-            key_name=name,
-            id=key_id,
-            comment=comment
-        ))
-
     def __revive_recovery_key(self):
         self.__logger.info("Recovery Key revival started")
         self.__revive_key("recovery")
 
-    def __generate_sdmpd_key(self):
-        self.__ui.print_message("\nGenerating SDMPD Key...")
-        key_pair = VirgilKeyGenerator("sdmpd").generate()
-        self.__ui.print_message("Generation finished")
-        self.__ui.print_message("Auth and TL Service dongles can be unplugged")
-        return key_pair
-
-    def __generate_factory_key(self):
-        self.__logger.info("Factory Key generation started")
-        self.__ui.print_message("\nGenerating Factory Key...")
-        factory_key = self.key_chooser("factory", is_new_key=True, stage="Factory Key generation")
-        if not factory_key:
-            return
-        signature_limit = self.__ui.get_user_input(
-            "Enter the signature limit number from 1 to 4294967295 [4294967295]: ",
-            input_checker_callback=self.__ui.InputCheckers.signature_input_check,
-            input_checker_msg="Only the number in range from 1 to 4294967295 is allowed. Please try again: ",
-            empty_allow=True
-        )
-        rec_pub_keys = self.__get_recovery_pub_keys()
-        if not factory_key.generate(signature_limit=signature_limit, rec_pub_keys=rec_pub_keys):
-            self.__logger.error("Factory Key generation failed")
-            sys.exit("Factory Key generation failed")
-
-        # Choose start/expiration dates
-        start_date, expiration_date = self.__choose_dates_for_key(necessary=True)
-
-        key_id = factory_key.key_id
-        ec_type = factory_key.ec_type
-        factory_name = self.__ui.get_user_input("Enter factory name: ", empty_allow=False)
-        key_info = {
-            "type": "factory",
-            "ec_type": ec_type,
-            "start_date": start_date,
-            "expiration_date": expiration_date,
-            "comment": factory_name,
-            "key": factory_key.private_key,
-            "public_key": factory_key.public_key
-        }
-        self.__factory_priv_keys.save(str(key_id), key_info)
-        key_info["key"] = key_info["public_key"]
-        del key_info["public_key"]
-        self.__trust_list_pub_keys.save(str(key_id), key_info)
-        self.__card_requests_handler.create_and_save_request_for_key(factory_key, {"sample info": "key info"})
-
-        if self._context.dongles_mode == "dongles":
-            self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
-
-        self.__ui.print_message("Generation finished")
-        self.__logger.info(
-            "Factory Key id: [{key_id}] signature limit: [{signature_limit}] comment: [{comment}]"
-            " start date: [{start_date}] expiration_date: [{expiration_date}] generation completed".format(
-                key_id=key_id,
-                signature_limit=signature_limit or "unlimited",
-                comment=factory_name,
-                start_date=start_date,
-                expiration_date=expiration_date
-            ))
-
     def __re_generate_factory_key(self):
         self.__logger.info("re-generation of Factory Key dongle from the existing key")
         self.__ui.print_message("Creating Factory dongle from the existing Key...")
-        factory_key = self.key_chooser("factory", is_new_key=True, stage="re-generation of Factory Key")
+        factory_key = self.key_chooser(consts.VSKeyTypeS.FACTORY, is_new_key=True, stage="re-generation of Factory Key")
         factory_private_keys = list(
             map(lambda x: ["factory: {}".format(x["comment"]), x], self.__factory_priv_keys.get_values())
         )
@@ -725,53 +509,218 @@ class UtilityManager(object):
         key_id = factory_keys_info[user_choice][1]
         self.__logger.info("Factory Key with id: [{}] deleted".format(key_id))
 
-    def __generate_auth_key(self, suppress_db_warning=False):
-        self.__generate_upper_level_signable_key("auth", "Auth", suppress_db_warning)
-
-    def __generate_internal_key(self, key_type, name_for_log):
+    def __generate_key(
+            self,
+            key_type: consts.VSKeyTypeS,
+            name_for_log: str,
+            sign_by_recovery_key: bool,
+            add_signature_limit: bool,
+            start_date_required: bool,
+            print_to_paper: bool,
+            stored_on_dongle: bool,
+            extra_card_content: Union[dict, None],
+            allowed_count: Optional[int] = None
+    ):
         self.__logger.info("%s Key generation started" % name_for_log)
         self.__ui.print_message("\nGenerating %s Key..." % name_for_log)
 
-        key_pair = VirgilKeyGenerator(key_type).generate()
-        public_key = key_pair.public_key
-        key_id = key_pair.key_id
+        private_keys_db, public_keys_db = self.__keys_type_to_storage_map[key_type]
+        if allowed_count is not None:
+            existing_keys = list(filter(lambda x: x["type"] == key_type.value, public_keys_db.get_all_data().values()))
+            attempt_number = len(existing_keys) + 1
+            if attempt_number > allowed_count:
+                self.__logger.error("%s Key generation attempt number %s" % (name_for_log, attempt_number) )
+                sys.exit("You try to generate the %s Key #%s,"
+                         " while maximum allowed count is %s" % (name_for_log, attempt_number, allowed_count))
+
+        # Prepare generator
+        key = self.key_chooser(
+            key_type, stage="{} generation".format(name_for_log), is_new_key=True, suppress_db_warning=False
+        )
+        if not key:
+            return
+
+        # Sign by recovery key
+        if key_type != consts.VSKeyTypeS.RECOVERY:
+            rec_pub_keys = self.__get_recovery_pub_keys()
+        else:
+            rec_pub_keys = {}
+
+        rec_key_for_sign = None
+        if sign_by_recovery_key:
+            rec_key_for_sign = self.key_chooser(
+                consts.VSKeyTypeS.RECOVERY,
+                stage="{} Key generation, Recovery key for signing selection".format(name_for_log),
+                greeting_msg="Please choose Recovery Key for signing: ",
+                suppress_db_warning=False
+            )
+            if not rec_key_for_sign:
+                return
+
+        # Signature limit
+        signature_limit = None
+        if add_signature_limit:
+            signature_limit = self.__ui.get_user_input(
+                "Enter the signature limit number from 1 to 4294967295 [4294967295]: ",
+                input_checker_callback=self.__ui.InputCheckers.signature_input_check,
+                input_checker_msg="Only the number in range from 1 to 4294967295 is allowed. Please try again: ",
+                empty_allow=True
+            )
+
+        # Generate
+        if not key.generate(rec_pub_keys=rec_pub_keys, signature_limit=signature_limit, signer_key=rec_key_for_sign):
+            self.__logger.info("{} Key generation failed".format(name_for_log))
+            self.__ui.print_message("{} Key generation failed".format(name_for_log))
+            return
+
+        # Get start/expiration date
+        start_date, expiration_date = self.__choose_dates_for_key(necessary=start_date_required)
+
+        # Enter comment
         comment = self.__ui.get_user_input("Enter comment for %s Key: " % name_for_log)
+
+        # Save to db / dongle
+        # - prepare key info to be saved
         key_info = {
-            "type": key_pair.key_type,
-            "ec_type": key_pair.ec_type,
-            "start_date": 0,
-            "expiration_date": 0,
+            "type": key_type.value,
+            "ec_type": key.ec_type,
+            "start_date": start_date,
+            "expiration_date": expiration_date,
             "comment": comment,
-            "key": public_key
+            "key": key.public_key
         }
-        self.__trust_list_pub_keys.save(str(key_id), key_info)
-        key_info["key"] = key_pair.private_key
-        self.__internal_private_keys.save(str(key_id), key_info)
-        self.__card_requests_handler.create_and_save_request_for_key(key_pair, {"sample info": "key info"})
+        if sign_by_recovery_key:
+            key_info["signature"] = key.signature
+            key_info["signer_key_id"] = rec_key_for_sign.key_id
+
+        # - public
+        public_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
+
+        # - private
+        key_info["key"] = key.private_key
+        if self._context.no_dongles:
+            private_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
+
+        if stored_on_dongle and self._context.dongles_mode == "dongles":
+            self.__dongle_unplug_and_mark(key.device_serial, key_type)
+
+        # Print to paper
+        if print_to_paper:
+            if not self._context.printer_disable:
+                self.__printer_controller.send_to_printer(key_info)
+
+        # Create card request
+        card_content = dict()
+        card_content["start_date"] = start_date
+        card_content["expiration_date"] = expiration_date
+        card_content["comment"] = comment
+        card_content["ec_type"] = key.ec_type
+        card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
+        if sign_by_recovery_key:
+            card_content["signature"] = key.signature
+            card_content["signer_public_key"] = rec_key_for_sign.public_key
+        if extra_card_content:
+            card_content.update(extra_card_content)
+        self.__card_requests_handler.create_and_save_request_for_key(key, key_info=card_content)
+
+        # Finish
         self.__ui.print_message("Generation finished")
-        self.__logger.info("{name} Key id: [{id}] comment: [{comment}] generation completed".format(
-            name=name_for_log,
-            id=key_id,
+        self.__logger.info("{key_name} Key id: [{id}] comment: [{comment}] generation completed".format(
+            key_name=name_for_log,
+            id=key.key_id,
             comment=comment
         ))
 
+    def __generate_auth_key(self):
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.AUTH,
+            name_for_log="Auth",
+            sign_by_recovery_key=True,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=True,
+            stored_on_dongle=True,
+            extra_card_content=None
+        )
+
     def __generate_auth_internal_key(self):
-        self.__generate_internal_key("auth_internal", "AuthInternal")
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.AUTH_INTERNAL,
+            name_for_log="AuthInternal",
+            sign_by_recovery_key=False,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=False,
+            stored_on_dongle=False,
+            extra_card_content=None
+        )
 
     def __generate_firmware_internal_key(self):
-        self.__generate_internal_key("firmware_internal", "FirmwareInternal")
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.FIRMWARE_INTERNAL,
+            name_for_log="FirmwareInternal",
+            sign_by_recovery_key=False,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=False,
+            stored_on_dongle=False,
+            extra_card_content=None
+        )
+
+    def __generate_trust_list_service_key(self):
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.TRUSTLIST,
+            name_for_log="TrustList Service",
+            sign_by_recovery_key=True,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=True,
+            stored_on_dongle=True,
+            extra_card_content=None
+        )
+
+    def __generate_firmware_key(self):
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.FIRMWARE,
+            name_for_log="Firmware",
+            sign_by_recovery_key=True,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=True,
+            stored_on_dongle=True,
+            extra_card_content=None
+        )
+
+    def __generate_factory_key(self):
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.FACTORY,
+            name_for_log="Factory",
+            sign_by_recovery_key=False,
+            add_signature_limit=True,
+            start_date_required=True,
+            print_to_paper=False,
+            stored_on_dongle=True,
+            extra_card_content=None
+        )
+
+    def __generate_recovery_key(self):
+        self.__generate_key(
+            key_type=consts.VSKeyTypeS.RECOVERY,
+            name_for_log="Recovery",
+            sign_by_recovery_key=False,
+            add_signature_limit=False,
+            start_date_required=False,
+            print_to_paper=True,
+            stored_on_dongle=True,
+            extra_card_content=None,
+            allowed_count=2
+        )
 
     def __revive_auth_key(self):
         self.__revive_key("auth")
 
-    def __generate_trust_list_service_key(self, suppress_db_warning=False):
-        self.__generate_upper_level_signable_key("tl_service", "TrustList Service", suppress_db_warning)
-
     def __revive_tl_service_key(self):
         self.__revive_key("tl_service")
-
-    def __generate_firmware_key(self, suppress_db_warning=False):
-        self.__generate_upper_level_signable_key("firmware", "Firmware", suppress_db_warning)
 
     def __revive_firmware_key(self):
         self.__revive_key("firmware")
@@ -848,7 +797,7 @@ class UtilityManager(object):
             revive_result = key_to_revive.generate(private_key_base64=private_key_base64)
         else:
             rec_pub_keys = self.__get_recovery_pub_keys()
-            rec_key_for_sign = self.key_chooser("recovery", stage="Reviving [{}] key, select signer".format(key_type))
+            rec_key_for_sign = self.key_chooser(consts.VSKeyTypeS.RECOVERY, stage="Reviving [{}] key, select signer".format(key_type))
             if key_type in ("auth", "tl_service", "firmware"):
                 revive_result = key_to_revive.generate(
                     rec_pub_keys=rec_pub_keys,
@@ -916,56 +865,56 @@ class UtilityManager(object):
         self.__logger.info("Printing Public Keys from db's completed")
 
     def __generate_recovery_by_count(self):
-        self.__generate_keys_by_count("recovery")
+        self.__generate_keys_by_count(consts.VSKeyTypeS.RECOVERY)
 
     def __generate_auth_by_count(self):
-        self.__generate_keys_by_count("auth")
+        self.__generate_keys_by_count(consts.VSKeyTypeS.AUTH)
 
     def __generate_tl_key_by_count(self):
-        self.__generate_keys_by_count("tl_service")
+        self.__generate_keys_by_count(consts.VSKeyTypeS.TRUSTLIST)
 
     def __generate_firmware_by_count(self):
-        self.__generate_keys_by_count("firmware")
+        self.__generate_keys_by_count(consts.VSKeyTypeS.FIRMWARE)
 
     def __generate_keys_by_count(self, key_type):
         upper_level_keys = self.__upper_level_pub_keys.get_all_data()
         key_type_keys_info = dict()
         for key in upper_level_keys.keys():
-            if upper_level_keys[key]["type"] == key_type:
+            if upper_level_keys[key]["type"] == key_type.value:
                 key_type_keys_info[key] = upper_level_keys[key]
 
         # clean old keys
         for key in key_type_keys_info.keys():
             self.__upper_level_pub_keys.delete_key(key)
-            if key_type == "tl_service":
+            if key_type == consts.VSKeyTypeS.TRUSTLIST:
                 if key in self.__trust_list_service_private_keys.get_keys():
                     self.__trust_list_service_private_keys.delete_key(key)
-            if key_type == "factory":
+            if key_type == consts.VSKeyTypeS.FACTORY:
                 if key in self.__factory_priv_keys.get_keys():
                     self.__factory_priv_keys.delete_key(key)
-            if self._context.no_dongles and key_type == "recovery":
+            if self._context.no_dongles and key_type == consts.VSKeyTypeS.RECOVERY:
                 if key in self.__recovery_private_keys.get_keys():
                     self.__recovery_private_keys.delete_key(key)
-            if self._context.no_dongles and key_type == "auth":
+            if self._context.no_dongles and key_type == consts.VSKeyTypeS.AUTH:
                 if key in self.__auth_private_keys.get_keys():
                     self.__auth_private_keys.delete_key(key)
 
         # clean cache
         self.__dongles_cache.drop()
 
-        if key_type == "recovery":
+        if key_type == consts.VSKeyTypeS.RECOVERY:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Recovery Key {}:".format(key_number))
                 self.__generate_recovery_key()
-        if key_type == "auth":
+        if key_type == consts.VSKeyTypeS.AUTH:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Auth Key {}:".format(key_number))
                 self.__generate_auth_key()
-        if key_type == "tl_service":
+        if key_type == consts.VSKeyTypeS.TRUSTLIST:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate TrustList Service Key {}:".format(key_number))
                 self.__generate_trust_list_service_key()
-        if key_type == "firmware":
+        if key_type == consts.VSKeyTypeS.FIRMWARE:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Firmware Key {}:".format(key_number))
                 self.__generate_firmware_key()
@@ -976,24 +925,25 @@ class UtilityManager(object):
 
         # get key type
         key_type_list = [
-            ["recovery"],
-            ["auth"],
-            ["firmware"],
-            ["tl_service"]
+            [consts.VSKeyTypeS.RECOVERY.value],
+            [consts.VSKeyTypeS.AUTH.value],
+            [consts.VSKeyTypeS.FIRMWARE.value],
+            [consts.VSKeyTypeS.TRUSTLIST.value]
         ]
         type_choice = self.__ui.choose_from_list(key_type_list, "Please choose Key type: ", "Key types:")
 
         # get chosen device serial, and start build real db record, from device info map
+        chosen_type = consts.VSKeyTypeS(key_type_list[type_choice][0])
         choosed_device = self.key_chooser(
-            key_type_list[type_choice][0],
+            chosen_type,
             stage="UpperLevelPubKeys db restoration",
             hw_info=True,
             suppress_db_warning=True
         )
         rec_key_for_sign = 0
-        if key_type_list[type_choice][0] in ["auth", "tl_service", "firmware"]:
+        if chosen_type in [consts.VSKeyTypeS.AUTH, consts.VSKeyTypeS.TRUSTLIST, consts.VSKeyTypeS.FIRMWARE]:
             rec_key_for_sign = self.key_chooser(
-                "recovery",
+                consts.VSKeyTypeS.RECOVERY,
                 stage="UpperLevelPubKeys db restoration",
                 greeting_msg="Please choose Recovery Key for signing {}:".format(key_type_list[type_choice][0])
             )
@@ -1015,7 +965,7 @@ class UtilityManager(object):
 
         if choosed_device in device_info_map.keys():
             db_row = device_info_map[choosed_device]
-            if key_type_list[type_choice][0] == "recovery":
+            if chosen_type == consts.VSKeyTypeS.RECOVERY:
                 db_row["comment"] = self.__ui.get_user_input(
                     "Enter comment for {} Key: ".format(key_type_list[type_choice][0]),
                     input_checker_callback=self.__ui.InputCheckers.check_recovery_key_comment,
@@ -1046,7 +996,7 @@ class UtilityManager(object):
             signer_id = CRCCCITT().calculate(base64.b64decode(ops_status[1]))
             db_row["signer_key_id"] = signer_id
             del ops_status
-            if key_type_list[type_choice][0] == "recovery":
+            if chosen_type == consts.VSKeyTypeS.RECOVERY:
                 self.__upper_level_pub_keys.save(key_id, db_row, suppress_db_warning=True)
             else:
                 self.__upper_level_pub_keys.save(key_id, db_row)
@@ -1060,6 +1010,7 @@ class UtilityManager(object):
         ))
         self.__ui.print_message("Key restored")
 
+    # TODO: update for new TL
     def __import_trust_list_to_db(self):
         trust_list_folder = os.path.join(self.__key_storage_path, "trust_lists")
         if os.path.exists(trust_list_folder):
@@ -1165,17 +1116,11 @@ class UtilityManager(object):
     # ############### Utility Functions ################ #
 
     def __get_recovery_pub_keys(self, suppress_db_warning=False):
-        pub_keys = [None] * 2
-        upper_keys = list(self.__upper_level_pub_keys.get_all_data(suppress_db_warning=suppress_db_warning).values())
-        for key in upper_keys:
-            if key["type"] == "recovery":
-                if str(key["comment"]) == '1':
-                    pub_keys[0] = key["key"]
-                if str(key["comment"]) == '2':
-                    pub_keys[1] = key["key"]
-        return pub_keys
+        all_keys = self.__upper_level_pub_keys.get_all_data(suppress_db_warning=suppress_db_warning).values()
+        recovery_pub_keys = list(filter(lambda x: x["type"] == consts.VSKeyTypeS.RECOVERY, all_keys))
+        return recovery_pub_keys
 
-    def __dongle_unplug_and_mark(self, device_serial, key_type):
+    def __dongle_unplug_and_mark(self, device_serial, key_type: consts.VSKeyTypeS):
 
         if self._context.no_dongles:
             return
@@ -1205,7 +1150,7 @@ class UtilityManager(object):
 
         self.__ui.print_message(
             "Please unplug the dongle with [{key_type}] Key and label it"
-            "After the dongle was labeled, you may continue".format(key_type=key_type)
+            "After the dongle was labeled, you may continue".format(key_type=key_type.value)
         )
         dongle_unplugged(device_serial)
         user_choice_continue = self.__ui.get_user_input(
@@ -1278,8 +1223,6 @@ class UtilityManager(object):
                 ["Revive the Firmware Key from the RestorePaper", self.__revive_firmware_key],
                 ["---"],
                 ["Generate TrustList", self.__generate_trust_list],
-                ["---"],
-                ["Create a provision for SDMPD and Sandbox", self.__generate_provision],
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
