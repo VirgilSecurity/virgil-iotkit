@@ -115,6 +115,9 @@ vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
             uint16_t output_sz);
 
 int
+vs_hsm_random(uint8_t *output, uint16_t output_sz);
+
+int
 vs_hsm_aes_encrypt(vs_iot_aes_type_e aes_type,
                    const uint8_t *key,
                    uint16_t key_bitlen,

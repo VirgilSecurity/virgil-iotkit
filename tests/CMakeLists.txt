@@ -52,6 +52,7 @@ add_library(virgil-iot-sdk-tests
         src/crypto/hmac.c
         src/crypto/kdf.c
         src/crypto/keypair.c
+        src/crypto/random.c
         )
 
 target_link_libraries(virgil-iot-sdk-tests
