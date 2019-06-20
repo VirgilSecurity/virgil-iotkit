@@ -14,7 +14,7 @@ from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
 from virgil_keymanager.core_utils.helpers import b64_to_bytes
 
 from virgil_keymanager.core_utils import DonglesCache, DongleChooser
-from virgil_keymanager.core_utils.virgil_bridge import VirgilBridge
+from virgil_keymanager.core_utils.card_requests import CardRequestsHandler
 from virgil_keymanager.external_utils.printer_controller import PrinterController
 from virgil_keymanager.generators.trustlist import TrustListGenerator
 from virgil_keymanager.generators.keys.atmel import AtmelKeyGenerator
@@ -111,7 +111,20 @@ class UtilityManager(object):
         else:
             self.key_chooser = self.__dongle_key_chooser
 
+        # card requests handler
+        self.__card_requests_handler = CardRequestsHandler(
+            self.__ui,
+            self.__logger,
+            self.__virgil_exporter_keys,
+            path_to_requests_file=os.path.join(self.__virgil_request_path, "card_creation_requests.vr")
+        )
+
     def __choose_dates_for_key(self, necessary: bool) -> (int, int):
+        """
+        Ask user to enter start/expiration dates for keys
+        :param necessary: if False - user can skip specifying dates
+        :return:          two timestamps, calculated with offset (see date_to_timestamp)
+        """
         user_confirmed = False
         start_date = 0
         expiration_date = 0
@@ -311,7 +324,7 @@ class UtilityManager(object):
         # general actions
         file_storage = FileKeyStorage(sdmpd_prov_folder)
         self.__logger.info("UpperLevelPublicKeys dumping (provision and sandbox generation stage)")
-        self.__get_upper_level_pub_keys(subfolder)
+        self.__dump_upper_level_pub_keys(subfolder)
         self.__logger.info("UpperLevelPublicKeys dump completed")
         self.__logger.info("TrustList generating (provision and sandbox generation stage)")
         self.__generate_trust_list(file_storage)
@@ -339,7 +352,7 @@ class UtilityManager(object):
         self.__logger.info("Factory signature and key pair dump completed")
         self.__ui.print_message("Generation provision done")
 
-    def __get_upper_level_pub_keys(self, filename="pubkeys"):
+    def __dump_upper_level_pub_keys(self, filename="pubkeys"):
         self.__logger.info("UpperLevelPublic Keys dumping")
         self.__ui.print_message("Dumping upper level Public Keys")
         pubkey_dir = os.path.join(self.__key_storage_path, filename)
@@ -466,9 +479,7 @@ class UtilityManager(object):
             else:
                 trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "release")
             storage = FileKeyStorage(trust_list_storage_path)
-            storage.save(tl, "TrustList")
-        else:
-            storage.save(tl, "TrustList")
+        storage.save(tl, "TrustList")
         self.__ui.print_message("File stored")
         self.__ui.print_message("TrustList generated and stored")
         self.__logger.info("TrustList generation completed")
@@ -519,7 +530,7 @@ class UtilityManager(object):
         key_info["key"] = recovery_key.private_key
         if self._context.no_dongles:
             self.__recovery_private_keys.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        self.__create_card_request(recovery_key, {"sample info": "key info"})
+            self.__card_requests_handler.create_and_save_request_for_key(recovery_key, {"sample info": "key info"})
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(recovery_key.device_serial, "recovery")
         if not self._context.printer_disable:
@@ -575,7 +586,7 @@ class UtilityManager(object):
         if self._context.no_dongles:
             private_keys_db = self.__keys_type_to_storage_map[key_type][0]
             private_keys_db.save(str(key_id), key_info, suppress_db_warning=suppress_db_warning)
-        self.__create_card_request(key, key_info={"sample info": "key info"})
+        self.__card_requests_handler.create_and_save_request_for_key(key, key_info={"sample info": "key info"})
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(key.device_serial, key_type)
         if not self._context.printer_disable:
@@ -634,7 +645,7 @@ class UtilityManager(object):
         key_info["key"] = key_info["public_key"]
         del key_info["public_key"]
         self.__trust_list_pub_keys.save(str(key_id), key_info)
-        self.__create_card_request(factory_key, {"sample info": "key info"})
+        self.__card_requests_handler.create_and_save_request_for_key(factory_key, {"sample info": "key info"})
 
         if self._context.dongles_mode == "dongles":
             self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
@@ -736,7 +747,7 @@ class UtilityManager(object):
         self.__trust_list_pub_keys.save(str(key_id), key_info)
         key_info["key"] = key_pair.private_key
         self.__internal_private_keys.save(str(key_id), key_info)
-        self.__create_card_request(key_pair, {"sample info": "key info"})
+        self.__card_requests_handler.create_and_save_request_for_key(key_pair, {"sample info": "key info"})
         self.__ui.print_message("Generation finished")
         self.__logger.info("{name} Key id: [{id}] comment: [{comment}] generation completed".format(
             name=name_for_log,
@@ -1164,17 +1175,6 @@ class UtilityManager(object):
                     pub_keys[1] = key["key"]
         return pub_keys
 
-    def __create_card_request(self, key, key_info):
-        virgil = VirgilBridge(key, key_info, self.__virgil_exporter_keys, self.__ui)
-        card_request = virgil.export_virgil_card_model()
-        if not card_request:
-            self.__ui.print_error("Virgil Card creation request failure!")
-            return
-        if not os.path.exists(self.__virgil_request_path):
-            os.makedirs(self.__virgil_request_path)
-        with open(os.path.join(self.__virgil_request_path, "card_creation_requests.vr"), "a") as f:
-            f.write(card_request + "\n")
-
     def __dongle_unplug_and_mark(self, device_serial, key_type):
 
         if self._context.no_dongles:
@@ -1283,7 +1283,7 @@ class UtilityManager(object):
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
-                ["Get upper level Public Keys", self.__get_upper_level_pub_keys],
+                ["Dump upper level Public Keys", self.__dump_upper_level_pub_keys],
                 ["Restore UpperLevelKeys db from dongles", self.__restore_upper_level_db_from_keys],
                 ["Import TrustList to db", self.__import_trust_list_to_db],
                 ["---"]
