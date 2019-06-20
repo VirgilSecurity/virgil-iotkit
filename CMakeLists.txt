@@ -143,6 +143,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
         ${CMAKE_CURRENT_SOURCE_DIR}/logger
         ${CMAKE_CURRENT_SOURCE_DIR}/hsm
+        ${CMAKE_CURRENT_SOURCE_DIR}/converters
 )
 
 
@@ -170,6 +171,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 #
 # TODO: Add Option to disable trust_list
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
+
+#
+#   Converters
+#
+# TODO: Add Option to disable converters
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
 
 #
 #   HSM
