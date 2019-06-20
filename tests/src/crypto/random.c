@@ -36,7 +36,7 @@
 #include <virgil/iot/hsm/hsm_interface.h>
 
 #if IOTELIC_MCU_BUILD
-#define SEQUENCE_SIZE 256
+#define SEQUENCE_SIZE 1024
 #else // IOTELIC_MCU_BUILD
 #define SEQUENCE_SIZE 16384
 #endif // IOTELIC_MCU_BUILD
