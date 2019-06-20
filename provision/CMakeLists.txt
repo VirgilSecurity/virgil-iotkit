@@ -64,14 +64,14 @@ target_compile_options(provision
 #   Config path
 #
 
-target_compile_definitions(provision
+target_compile_definitions(${PROJECT_NAME}
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
 #
 #   Common include directories
 #
-target_include_directories(provision
+target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
