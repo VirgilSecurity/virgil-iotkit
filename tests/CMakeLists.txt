@@ -47,6 +47,7 @@ add_library(virgil-iot-sdk-tests
         src/sdmp/test_prvs.c
         src/sdmp/test_netif.c
         src/crypto/aes.c
+        src/crypto/ecdh.c
         src/crypto/ecdsa.c
         src/crypto/hash.c
         src/crypto/hmac.c

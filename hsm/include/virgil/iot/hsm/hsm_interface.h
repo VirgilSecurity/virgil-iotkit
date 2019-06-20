@@ -152,4 +152,13 @@ vs_hsm_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                         const uint8_t *tag,
                         uint16_t tag_len);
 
+int
+vs_hsm_ecdh(vs_iot_hsm_slot_e slot,
+            vs_hsm_keypair_type_e keypair_type,
+            const uint8_t *public_key,
+            uint16_t public_key_sz,
+            uint8_t *shared_secret,
+            uint16_t buf_sz,
+            uint16_t *shared_secret_sz);
+
 #endif // VS_HSM_INTERFACE_API_H
