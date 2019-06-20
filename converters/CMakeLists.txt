@@ -42,8 +42,8 @@ set(CONV_LIB converters)
 #   Source code
 #
 set(CONV_SRC
-        src/converters_mbedtls.c
-        src/asn1.c
+        src/crypto_format_converters.c
+        src/simple_asn1.c
         )
 
 # Include and build external libraries
@@ -96,6 +96,8 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
@@ -104,4 +106,8 @@ target_include_directories(${PROJECT_NAME}
         $<INSTALL_INTERFACE:include>
         )
 
-target_link_libraries (${PROJECT_NAME} PUBLIC mbedtls::mbedcrypto mbedtls::ed25519)
+target_link_libraries (${PROJECT_NAME}
+        PUBLIC
+        mbedtls::mbedcrypto
+        mbedtls::ed25519
+        )

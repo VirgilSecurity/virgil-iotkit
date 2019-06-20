@@ -56,7 +56,8 @@ void
 test_random(void);
 void
 test_aes(void);
-
+void
+test_converters(void);
 /**********************************************************/
 static void
 crypto_tests(void) {
@@ -67,6 +68,9 @@ crypto_tests(void) {
     test_keypair();
     test_random();
     test_aes();
+#if !VIRGIL_IOT_MCU_BUILD
+    test_converters();
+#endif
 }
 
 /**********************************************************/

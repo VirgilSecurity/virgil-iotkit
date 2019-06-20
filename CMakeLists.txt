@@ -175,9 +175,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 #
 #   Converters
 #
-# TODO: Add Option to disable converters
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
-
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+endif()
 #
 #   HSM
 #

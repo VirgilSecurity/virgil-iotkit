@@ -71,7 +71,7 @@ static vs_tl_context_t _tl_tmp_ctx;
 //    if (!tiny_nist256_sign_to_virgil((uint8_t *)signature, full_signature, &full_signature_sz))
 //        return false;
 //
-//    return virgil_sign_to_mbedtls(full_signature, full_signature_sz, &mbedtls_sign, &mbedtls_sign_sz) &&
+//    return vs_converters_virgil_sign_to_mbedtls(full_signature, full_signature_sz, &mbedtls_sign, &mbedtls_sign_sz) &&
 //           ecdsa_verify_with_internal_key(full_public_key,
 //                                          full_public_key_sz,
 //                                          hash_type,

@@ -35,16 +35,16 @@
  */
 
 /**
- * @file asn1.c
+ * @file simple_asn1.c
  * @brief Extremely simplified work with ASN.1
  */
 
-#include <virgil/iot/converters/asn1.h>
+#include <virgil/iot/converters/simple_asn1.h>
 #include <string.h>
 
 /******************************************************************************/
 bool
-asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data) {
+vs_converters_asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data) {
     if (element != data[*pos] || (2 + *pos) >= sz)
         return false;
 
@@ -58,7 +58,7 @@ asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data) {
 
 /******************************************************************************/
 bool
-asn1_skip(uint8_t element, int *pos, const int sz, const uint8_t *data) {
+vs_converters_asn1_skip(uint8_t element, int *pos, const int sz, const uint8_t *data) {
     size_t element_sz, sz_bytes;
     if (element != data[*pos])
         return false;
@@ -80,12 +80,12 @@ asn1_skip(uint8_t element, int *pos, const int sz, const uint8_t *data) {
 
 /******************************************************************************/
 bool
-asn1_get_array(uint8_t element,
-               int *pos,
-               const int sz,
-               const uint8_t *data,
-               const uint8_t **array,
-               size_t *array_size) {
+vs_converters_asn1_get_array(uint8_t element,
+                             int *pos,
+                             const int sz,
+                             const uint8_t *data,
+                             const uint8_t **array,
+                             size_t *array_size) {
     size_t element_sz;
     if (element == data[*pos]) {
         element_sz = data[1 + *pos];
@@ -101,13 +101,13 @@ asn1_get_array(uint8_t element,
 
 /******************************************************************************/
 bool
-asn1_put_array(uint8_t element,
-               int *pos,
-               uint8_t *data,
-               const uint8_t *array,
-               size_t array_size,
-               size_t *res_size,
-               size_t *total_sz) {
+vs_converters_asn1_put_array(uint8_t element,
+                             int *pos,
+                             uint8_t *data,
+                             const uint8_t *array,
+                             size_t array_size,
+                             size_t *res_size,
+                             size_t *total_sz) {
     int prefix_sz = 2;
     uint8_t *w;
 
@@ -139,7 +139,12 @@ asn1_put_array(uint8_t element,
 
 /******************************************************************************/
 bool
-asn1_put_header(uint8_t element, int *pos, uint8_t *data, size_t data_size, size_t *res_size, size_t *total_sz) {
+vs_converters_asn1_put_header(uint8_t element,
+                              int *pos,
+                              uint8_t *data,
+                              size_t data_size,
+                              size_t *res_size,
+                              size_t *total_sz) {
     uint8_t *w;
     *res_size = data_size < 0x80 ? 2 : 4;
 
@@ -164,7 +169,7 @@ asn1_put_header(uint8_t element, int *pos, uint8_t *data, size_t data_size, size
 
 /******************************************************************************/
 bool
-asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *total_sz) {
+vs_converters_asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *total_sz) {
     uint8_t *w;
 
     *res_size = 3;
@@ -185,7 +190,12 @@ asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *t
 
 /******************************************************************************/
 bool
-asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size, size_t *res_size, size_t *total_sz) {
+vs_converters_asn1_put_raw(int *pos,
+                           uint8_t *data,
+                           const uint8_t *raw_data,
+                           size_t data_size,
+                           size_t *res_size,
+                           size_t *total_sz) {
     uint8_t *w;
 
     *res_size = data_size;
@@ -204,7 +214,7 @@ asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size,
 
 /******************************************************************************/
 size_t
-asn1_get_size(int pos, const uint8_t *data) {
+vs_converters_asn1_get_size(int pos, const uint8_t *data) {
     size_t i, cnt = 0, res = 0;
 
     if (data[1 + pos] > 0x80) {

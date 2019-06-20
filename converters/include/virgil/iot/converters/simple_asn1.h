@@ -39,8 +39,8 @@
  * @brief Extremely simplified work with ASN.1
  */
 
-#ifndef asn1_h
-#define asn1_h
+#ifndef VS_SIMPLE_ASN1_H
+#define VS_SIMPLE_ASN1_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -61,40 +61,60 @@ extern "C" {
 #endif
 
 bool
-asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data);
+vs_converters_asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data);
 
 bool
-asn1_skip(uint8_t element, int *pos, const int sz, const uint8_t *data);
+vs_converters_asn1_skip(uint8_t element, int *pos, const int sz, const uint8_t *data);
 
 bool
-asn1_get_array(uint8_t element, int *pos, const int sz, const uint8_t *data, const uint8_t **array, size_t *array_size);
+vs_converters_asn1_get_array(uint8_t element,
+                             int *pos,
+                             const int sz,
+                             const uint8_t *data,
+                             const uint8_t **array,
+                             size_t *array_size);
 
 bool
-asn1_put_array(uint8_t element,
-               int *pos,
-               uint8_t *data,
-               const uint8_t *array,
-               size_t array_size,
-               size_t *res_size,
-               size_t *total_sz);
+vs_converters_asn1_put_array(uint8_t element,
+                             int *pos,
+                             uint8_t *data,
+                             const uint8_t *array,
+                             size_t array_size,
+                             size_t *res_size,
+                             size_t *total_sz);
 
 bool
-asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size, size_t *res_size, size_t *total_sz);
+vs_converters_asn1_put_raw(int *pos,
+                           uint8_t *data,
+                           const uint8_t *raw_data,
+                           size_t data_size,
+                           size_t *res_size,
+                           size_t *total_sz);
 
 bool
-asn1_put_header(uint8_t element, int *pos, uint8_t *data, size_t data_size, size_t *res_size, size_t *total_sz);
+vs_converters_asn1_put_header(uint8_t element,
+                              int *pos,
+                              uint8_t *data,
+                              size_t data_size,
+                              size_t *res_size,
+                              size_t *total_sz);
 
 bool
-asn1_put_header(uint8_t element, int *pos, uint8_t *data, size_t data_size, size_t *res_size, size_t *total_sz);
+vs_converters_asn1_put_header(uint8_t element,
+                              int *pos,
+                              uint8_t *data,
+                              size_t data_size,
+                              size_t *res_size,
+                              size_t *total_sz);
 
 bool
-asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *total_sz);
+vs_converters_asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *total_sz);
 
 size_t
-asn1_get_size(int pos, const uint8_t *data);
+vs_converters_asn1_get_size(int pos, const uint8_t *data);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* asn1_h */
+#endif // VS_SIMPLE_ASN1_H
