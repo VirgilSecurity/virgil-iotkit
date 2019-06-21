@@ -40,7 +40,6 @@
 
 #include <stdio.h>
 
-#include "virgil/iot/converters/private/simple_asn1.h"
 #include "virgil/iot/converters/private/macros.h"
 #include "virgil/iot/converters/crypto_format_converters.h"
 #include <virgil/iot/hsm/hsm_structs.h>

@@ -43,9 +43,7 @@ set(CONV_LIB converters)
 #
 set(CONV_SRC
         src/signature_converters.c
-        src/cryptogram_converters.c
         src/pubkey_converters.c
-        src/simple_asn1.c
         )
 
 # Include and build external libraries

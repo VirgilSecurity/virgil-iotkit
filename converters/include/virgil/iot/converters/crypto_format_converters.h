@@ -82,49 +82,6 @@ vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
                                  size_t buf_sz,
                                  uint16_t *virgil_sign_sz);
 
-bool
-vs_converters_virgil_cryptogram_create_mbedtls(const uint8_t *recipient_id,
-                                               size_t recipient_id_sz,
-                                               const uint8_t *encrypted_key,
-                                               size_t encrypted_key_sz,
-                                               const uint8_t *encrypted_data,
-                                               size_t encrypted_data_sz,
-                                               const uint8_t *iv_data,
-                                               uint8_t *cryptogram,
-                                               size_t buf_sz,
-                                               size_t *cryptogram_sz);
-
-bool
-vs_converters_low_level_cryptogram_create_mbedtls(const uint8_t *public_key,
-                                                  size_t public_key_sz,
-                                                  const uint8_t *encrypted_data,
-                                                  size_t encrypted_data_sz,
-                                                  const uint8_t *hmac,
-                                                  const uint8_t *iv_data,
-                                                  uint8_t *cryptogram,
-                                                  size_t buf_sz,
-                                                  size_t *cryptogram_sz);
-
-bool
-vs_converters_virgil_cryptogram_parse_mbedtls(const uint8_t *virgil_encrypted_data,
-                                              size_t virgil_encrypted_data_sz,
-                                              const uint8_t *recipient_id,
-                                              size_t recipient_id_sz,
-                                              uint8_t **iv,
-                                              uint8_t **encrypted_key,
-                                              size_t *encrypted_key_sz,
-                                              uint8_t **encrypted_data,
-                                              size_t *encrypted_data_sz);
-
-bool
-vs_converters_mbedtls_cryptogram_parse_low_level(const uint8_t *cryptogram,
-                                                 size_t cryptogram_sz,
-                                                 uint8_t **public_key,
-                                                 uint8_t **iv,
-                                                 uint8_t **hmac,
-                                                 uint8_t **encrypted_data,
-                                                 size_t *encrypted_data_sz);
-
 #ifdef __cplusplus
 }
 #endif
