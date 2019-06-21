@@ -85,7 +85,7 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
 /**********************************************************/
 static int
-prvs_finalize_storage(vs_pubkey_t *asav_response, size_t *resp_sz) {
+prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     VS_IOT_ASSERT(asav_response);
 
     prvs_call.finalize_storage = 1;
