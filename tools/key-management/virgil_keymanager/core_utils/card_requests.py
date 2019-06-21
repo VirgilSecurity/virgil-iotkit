@@ -1,7 +1,5 @@
 import json
 import os
-import string
-import random
 import sys
 from datetime import datetime
 
@@ -15,11 +13,12 @@ from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
 class CardRequestsHandler:
-    def __init__(self, ui, logger, exporter_keys, path_to_requests_file):
+    def __init__(self, ui, logger, exporter_keys, path_to_requests_file, identity):
         self._ui = ui
         self._logger = logger
         self._crypto = VirgilCrypto()
         self._path_to_requests_file = path_to_requests_file
+        self._identity = identity
 
         # Prepare keys for requests encryption
         self._request_encrypt_private_key = self._crypto.import_private_key(
@@ -36,13 +35,10 @@ class CardRequestsHandler:
         public_key = tiny_key_to_virgil(public_key)
         public_key = self._crypto.import_public_key(public_key)
 
-        # Generate card identity
-        identity = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(64))
-
         # Prepare card content snapshot
         created_at = int(datetime.utcnow().timestamp())
         card_content = RawCardContent(
-            identity=identity,
+            identity=self._identity,
             public_key=public_key,
             created_at=created_at
         )

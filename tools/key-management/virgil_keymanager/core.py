@@ -31,7 +31,9 @@ class UtilContext:
         self.storage_path = config_["MAIN"]["storage_path"]
         self.secure_transfer_keys_path = config_["MAIN"]["secure_transfer_keys_path"]
         self.secure_transfer_password = config_["MAIN"]["secure_transfer_keys_passwd"]
-        self.release_trust_list_folder = config_["MAIN"]["release_trust_list_folder"]
+
+        self.virgil_app_id = config_["CARDS"]["virgil_app_id"]
+        self.factory_info_json = config_["CARDS"]["factory_info_json"]
 
 
 class Core(object):
@@ -83,8 +85,11 @@ class Core(object):
                 "dongles_cli_path",
                 "dongles_cli_emulator_path",
                 "secure_transfer_keys_path",
-                "secure_transfer_keys_passwd",
-                "release_trust_list_folder"
+                "secure_transfer_keys_passwd"
+            ],
+            "CARDS": [
+                "virgil_app_id",
+                "factory_info_json"
             ]
         }
         config.check_content(required_content)

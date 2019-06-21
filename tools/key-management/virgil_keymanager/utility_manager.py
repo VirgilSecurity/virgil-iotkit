@@ -1,6 +1,7 @@
 import base64
 import copy
 import io
+import json
 import os
 import shutil
 import sys
@@ -119,7 +120,8 @@ class UtilityManager(object):
             self.__ui,
             self.__logger,
             self.__virgil_exporter_keys,
-            path_to_requests_file=os.path.join(self.__virgil_request_path, "card_creation_requests.vr")
+            path_to_requests_file=os.path.join(self.__virgil_request_path, "card_creation_requests.vr"),
+            identity=self._context.virgil_app_id
         )
 
     def __choose_dates_for_key(self, necessary: bool) -> (int, int):
@@ -692,6 +694,8 @@ class UtilityManager(object):
         )
 
     def __generate_factory_key(self):
+        with open(self._context.factory_info_json, 'r') as f:
+            factory_info = json.load(f)
         self.__generate_key(
             key_type=consts.VSKeyTypeS.FACTORY,
             name_for_log="Factory",
@@ -700,7 +704,7 @@ class UtilityManager(object):
             start_date_required=True,
             print_to_paper=False,
             stored_on_dongle=True,
-            extra_card_content=None
+            extra_card_content=factory_info
         )
 
     def __generate_recovery_key(self):
