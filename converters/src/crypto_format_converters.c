@@ -204,18 +204,24 @@ terminate:
 /*******************************************************************************/
 static int
 _mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
-                        unsigned char *signature,
-                        size_t signature_sz,
-                        size_t *raw_sz) {
+                        uint8_t *mbedtls_sign,
+                        uint16_t mbedtls_sign_sz,
+                        uint8_t *raw_sign,
+                        uint16_t buf_sz,
+                        uint16_t *raw_sz) {
     int res = 0, mbedtls_res = 0;
-    unsigned char *p = (unsigned char *)signature;
-    const unsigned char *end = signature + signature_sz;
+    unsigned char *p = (unsigned char *)mbedtls_sign;
+    const unsigned char *end = mbedtls_sign + mbedtls_sign_sz;
     size_t len;
     mbedtls_mpi r, s;
     const int component_sz = _coord_sz(keypair_type);
 
     NOT_ZERO(raw_sz);
-    NOT_ZERO(signature_sz);
+    NOT_ZERO(mbedtls_sign);
+
+    if (buf_sz < component_sz * 2) {
+        return -1;
+    }
 
     mbedtls_mpi_init(&r);
     mbedtls_mpi_init(&s);
@@ -231,8 +237,8 @@ _mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
     MBEDTLS_CHECK(mbedtls_asn1_get_mpi(&p, end, &s), -1);
 
     // Save r, s to buffer
-    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&r, signature, component_sz), -1);
-    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&s, &signature[component_sz], component_sz), -1);
+    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&r, raw_sign, component_sz), -1);
+    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&s, &raw_sign[component_sz], component_sz), -1);
 
     *raw_sz = component_sz * 2;
 
@@ -246,19 +252,27 @@ terminate:
 /******************************************************************************/
 static int
 _mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
-                     unsigned char *signature,
-                     size_t signature_sz,
-                     size_t *raw_sz) {
+                     uint8_t *mbedtls_sign,
+                     uint16_t mbedtls_sign_sz,
+                     uint8_t *raw_sign,
+                     uint16_t buf_sz,
+                     uint16_t *raw_sz) {
     NOT_ZERO(raw_sz);
-    NOT_ZERO(signature);
-    NOT_ZERO(signature_sz);
+    NOT_ZERO(mbedtls_sign);
+    NOT_ZERO(mbedtls_sign_sz);
+    NOT_ZERO(raw_sign);
+    NOT_ZERO(raw_sz);
 
     if (keypair_type >= VS_KEYPAIR_EC_SECP_MIN && keypair_type <= VS_KEYPAIR_EC_SECP_MAX) {
-        return _mbedtls_sign_to_raw_ec(keypair_type, signature, signature_sz, raw_sz);
+        return _mbedtls_sign_to_raw_ec(keypair_type, mbedtls_sign, mbedtls_sign_sz, raw_sign, buf_sz, raw_sz);
     }
 
-    *raw_sz = signature_sz;
+    if (mbedtls_sign_sz > buf_sz) {
+        return -1;
+    }
 
+    memcpy(raw_sign, mbedtls_sign, mbedtls_sign_sz);
+    *raw_sz = mbedtls_sign_sz;
     return 0;
 }
 
@@ -337,54 +351,41 @@ vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
                                  size_t virgil_sign_sz,
                                  uint8_t *sign,
                                  uint16_t buf_sz,
-                                 size_t *sign_sz) {
+                                 uint16_t *sign_sz) {
     const uint8_t *p = NULL;
     size_t result_sz;
-    bool res = false;
-    int mbedtls_res;
 
     VS_IOT_ASSERT(virgil_sign);
     VS_IOT_ASSERT(sign);
 
-    CHECK_BOOL_GOTO(_virgil_sign_to_mbedtls(virgil_sign, virgil_sign_sz, &p, &result_sz), false);
+    if (!_virgil_sign_to_mbedtls(virgil_sign, virgil_sign_sz, &p, &result_sz) ||
+        0 > _mbedtls_sign_to_raw(keypair_type, (uint8_t *)p, result_sz, sign, buf_sz, sign_sz)) {
+        return false;
+    }
 
-    MBEDTLS_CHECK(_mbedtls_sign_to_raw(keypair_type, (uint8_t *)p, result_sz, &result_sz), -1);
-
-    CHECK_BOOL_GOTO(result_sz > buf_sz, -1);
-
-    memmove(sign, p, result_sz);
-    *sign_sz = result_sz;
-
-terminate:
-
-    return res;
+    return true;
 }
 
 /******************************************************************************/
 bool
 vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
                                  vs_hsm_hash_type_e hash_type,
-                                 uint8_t *raw_sign,
+                                 const uint8_t *raw_sign,
                                  size_t raw_sign_sz,
                                  uint8_t *virgil_sign,
                                  size_t buf_sz,
                                  uint16_t *virgil_sign_sz) {
     size_t result_sz;
-    bool res = false;
-    int mbedtls_res;
 
     VS_IOT_ASSERT(virgil_sign);
     VS_IOT_ASSERT(raw_sign);
     VS_IOT_ASSERT(virgil_sign_sz);
 
-    MBEDTLS_CHECK(_raw_sign_to_mbedtls(keypair_type, raw_sign, raw_sign_sz, virgil_sign, buf_sz, &result_sz), -1);
-
-    CHECK_BOOL_GOTO(_mbedtls_sign_to_virgil(hash_type, virgil_sign, result_sz, virgil_sign, buf_sz, virgil_sign_sz),
-                    false);
-
-terminate:
-
-    return res;
+    if (0 > _raw_sign_to_mbedtls(keypair_type, raw_sign, raw_sign_sz, virgil_sign, buf_sz, &result_sz) ||
+        !_mbedtls_sign_to_virgil(hash_type, virgil_sign, result_sz, virgil_sign, buf_sz, virgil_sign_sz)) {
+        return false;
+    }
+    return true;
 }
 
 /******************************************************************************/

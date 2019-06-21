@@ -60,12 +60,12 @@ vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
                                  size_t virgil_sign_sz,
                                  uint8_t *sign,
                                  uint16_t buf_sz,
-                                 size_t *sign_sz);
+                                 uint16_t *sign_sz);
 
 bool
 vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
                                  vs_hsm_hash_type_e hash_type,
-                                 uint8_t *raw_sign,
+                                 const uint8_t *raw_sign,
                                  size_t raw_sign_sz,
                                  uint8_t *virgil_sign,
                                  size_t buf_sz,
