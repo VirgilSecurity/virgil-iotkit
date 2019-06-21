@@ -2,7 +2,7 @@
 #include <helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
-
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 static const char *test_data = "Data for hash creation ...";
 static const char *another_test_data = "Another data for hash creation ...";

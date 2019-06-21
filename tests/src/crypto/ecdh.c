@@ -35,7 +35,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <helpers.h>
+#include <private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 /******************************************************************************/
 static bool
