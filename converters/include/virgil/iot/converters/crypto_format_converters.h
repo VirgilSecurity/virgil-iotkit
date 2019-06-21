@@ -47,13 +47,24 @@
 #include <stdlib.h>
 #include <virgil/iot/hsm/hsm_structs.h>
 
-#define VIRGIL_PUBLIC_KEY_MAX_SIZE 100
-#define VIRGIL_SIGNATURE_MAX_SIZE 128
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+bool
+vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
+                            const uint8_t *public_key,
+                            uint16_t public_key_sz,
+                            uint8_t *pubkey_raw,
+                            uint16_t buf_sz,
+                            uint16_t *pubkey_raw_sz);
+bool
+vs_converters_pubkey_to_virgil(vs_hsm_keypair_type_e keypair_type,
+                               const uint8_t *public_key_in,
+                               uint16_t public_key_in_sz,
+                               uint8_t *public_key_out,
+                               uint16_t buf_sz,
+                               uint16_t *public_key_out_sz);
 bool
 vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
                                  const uint8_t *virgil_sign,

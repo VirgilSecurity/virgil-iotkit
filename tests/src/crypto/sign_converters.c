@@ -148,12 +148,12 @@ _test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
 
 /******************************************************************************/
 void
-test_converters(void) {
+test_sign_converters(void) {
 #define TEST_CONVERTERS_SIGN_PASS(HASH, KEY, VIRGIL_SIGN, VIRGIL_SIGN_SZ, RAW_SIGN, RAW_SIGN_SZ)                       \
     TEST_CASE_OK("hash " #HASH ", key " #KEY,                                                                          \
                  _test_case_converters_sign_pass(HASH, KEY, VIRGIL_SIGN, VIRGIL_SIGN_SZ, RAW_SIGN, RAW_SIGN_SZ))
 
-    START_TEST("crypto format converters");
+    START_TEST("sirnatures converters");
     TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
                               VS_KEYPAIR_EC_SECP192R1,
                               virgil_SHA256_SECP192R1_sign,

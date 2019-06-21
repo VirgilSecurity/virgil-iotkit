@@ -42,7 +42,9 @@ set(CONV_LIB converters)
 #   Source code
 #
 set(CONV_SRC
-        src/crypto_format_converters.c
+        src/signature_converters.c
+        src/cryptogram_converters.c
+        src/pubkey_converters.c
         src/simple_asn1.c
         )
 

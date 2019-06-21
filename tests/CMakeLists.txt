@@ -66,7 +66,8 @@ target_link_libraries(virgil-iot-sdk-tests
 if (NOT VIRGIL_IOT_MCU_BUILD)
     target_sources(virgil-iot-sdk-tests
             PRIVATE
-            src/crypto/converters.c
+            src/crypto/sign_converters.c
+            src/crypto/pubkeys_converters.c
             )
     target_link_libraries(virgil-iot-sdk-tests
             converters

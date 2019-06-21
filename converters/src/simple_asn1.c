@@ -39,7 +39,7 @@
  * @brief Extremely simplified work with ASN.1
  */
 
-#include <virgil/iot/converters/simple_asn1.h>
+#include <virgil/iot/converters/private/simple_asn1.h>
 #include <string.h>
 
 /******************************************************************************/
