@@ -35,7 +35,7 @@
 #include <helpers.h>
 #include <stdlib.h>
 
-size_t failed_test_result;
+uint16_t failed_test_result;
 
 void
 sdmp_tests(void);
@@ -80,7 +80,7 @@ crypto_tests(void) {
 }
 
 /**********************************************************/
-size_t
+uint16_t
 virgil_iot_sdk_tests(void) {
     failed_test_result = 0;
 

@@ -3,13 +3,13 @@
 #include <stdint.h>
 
 typedef struct vs_secbox_element_info_s {
-    size_t storage_type;
-    size_t id;
-    size_t index;
+    uint16_t storage_type;
+    uint16_t id;
+    uint16_t index;
 } vs_secbox_element_info_t;
 
-typedef int (*vs_secbox_save_hal_t)(vs_secbox_element_info_t *element_info, const uint8_t *in_data, size_t data_sz);
-typedef int (*vs_secbox_load_hal_t)(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t data_sz);
+typedef int (*vs_secbox_save_hal_t)(vs_secbox_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
+typedef int (*vs_secbox_load_hal_t)(vs_secbox_element_info_t *element_info, uint8_t *out_data, uint16_t data_sz);
 typedef int (*vs_secbox_del_hal_t)(vs_secbox_element_info_t *element_info);
 typedef int (*vs_secbox_init_hal_t)(void);
 
@@ -24,10 +24,10 @@ int
 vs_secbox_configure_hal(const vs_secbox_hal_impl_t *impl);
 
 int
-vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *data, size_t data_sz);
+vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *data, uint16_t data_sz);
 
 int
-vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t data_sz);
+vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, uint16_t data_sz);
 
 int
 vs_secbox_del(vs_secbox_element_info_t *element_info);

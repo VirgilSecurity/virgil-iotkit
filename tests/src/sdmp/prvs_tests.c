@@ -46,7 +46,7 @@
 
 static vs_netif_t test_netif;
 static vs_sdmp_prvs_dnid_list_t dnid_list;
-static const size_t wait_msec = 0;
+static const uint32_t wait_msec = 0;
 
 static const vs_mac_addr_t mac_addr_server = {.bytes = {0xF2, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6}};
 static const vs_mac_addr_t mac_addr_fake_server = {.bytes = {0xE2, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6}};
@@ -142,8 +142,9 @@ test_device_info(void) {
     vs_sign_t *serv_sign;
     static const uint8_t pubkey_raw[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     static const uint8_t sign_raw[] = {20, 19, 18, 17, 16, 15, 14, 13, 12, 11};
-    size_t pos;
-    size_t size;
+    uint16_t pos;
+    uint16_t size;
+
     const uint8_t *buf1;
     const uint8_t *buf2;
 
@@ -199,7 +200,7 @@ test_sign_data(void) {
     static const uint8_t data[] = {"Some data to be signed"};
     static uint8_t serv_sign[] = {"Signature example"};
     uint8_t signature[128];
-    size_t signature_sz = sizeof(signature);
+    uint16_t signature_sz = sizeof(signature);
     bool res = false;
 
     prvs_call.call = 0;
@@ -246,7 +247,7 @@ static bool
 test_set(bool use_fake_mac_addr) {
     static const vs_sdmp_prvs_element_t elem = VS_PRVS_PBR1;
     static const uint8_t data[] = "Some data";
-    size_t data_sz;
+    uint16_t data_sz;
     bool result = false;
 
     prvs_call.call = 0;
