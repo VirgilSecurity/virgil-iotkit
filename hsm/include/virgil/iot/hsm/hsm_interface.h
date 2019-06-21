@@ -41,13 +41,6 @@
 #include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/hsm/hsm_errors.h>
 
-const char *
-vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
-const char *
-vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
-const char *
-vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e type);
-
 int
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *in_data, uint16_t data_sz);
 int

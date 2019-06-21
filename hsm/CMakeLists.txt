@@ -43,6 +43,7 @@ set(HSM_LIB hsm)
 #
 set(HSM_SRC
         src/hsm_sha2_routines.c
+        src/hsm_helpers.c
         )
 
 #

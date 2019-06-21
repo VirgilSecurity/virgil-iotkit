@@ -1,6 +1,7 @@
 
 #include <helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 static const char key_raw[] = "Test data for kdf2";
 static const char another_key_raw[] = "Another test data for kdf2";
