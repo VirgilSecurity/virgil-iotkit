@@ -203,7 +203,7 @@ vs_logger_no_format(const char *format) {
 void
 vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *format, ...) {
     static const char *CUTTED_STR = "...";
-    static const int CUTTED_STR_SIZE = 3;
+    static const size_t CUTTED_STR_SIZE = 3;
     va_list args1;
     int snprintf_res;
     bool res = false;
