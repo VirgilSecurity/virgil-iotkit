@@ -32,27 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#ifndef VS_HSM_HELPERS_H_
+#define VS_HSM_HELPERS_H_
 
+#include <virgil/iot/hsm/hsm_structs.h>
 
+int
+vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+const char *
+vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 
-#define VS_IOT_ASSERT(...)
-#define VS_IOT_CALLOC    calloc
-#define VS_IOT_FREE      free
-#define VS_IOT_MALLOC    malloc
-#define VS_IOT_MEMCMP    memcmp
-#define VS_IOT_MEMCPY    memcpy
-#define VS_IOT_SNPRINTF  snprintf
-#define VS_IOT_SPRINTF   sprintf
-#define VS_IOT_STRCPY    strcpy
-#define VS_IOT_STRLEN    strlen
-#define VS_IOT_VSNPRINTF vsnprintf
+const char *
+vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
 
-
-
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#endif // VS_HSM_HELPERS_H_

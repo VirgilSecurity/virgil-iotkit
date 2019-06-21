@@ -33,8 +33,10 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib-config.h>
 #include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 /******************************************************************************/
 int
@@ -105,5 +107,53 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
         return 64;
     default:
         return -1;
+    }
+}
+
+/******************************************************************************/
+const char *
+vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type) {
+    switch (type) {
+    case VS_KEYPAIR_EC_SECP192R1:
+        return "192-bits NIST";
+    case VS_KEYPAIR_EC_SECP224R1:
+        return "224-bits NIST";
+    case VS_KEYPAIR_EC_SECP256R1:
+        return "256-bits NIST";
+    case VS_KEYPAIR_EC_SECP384R1:
+        return "384-bits NIST";
+    case VS_KEYPAIR_EC_SECP521R1:
+        return "521-bits NIST";
+    case VS_KEYPAIR_EC_SECP192K1:
+        return "192-bits \"Koblitz\"";
+    case VS_KEYPAIR_EC_SECP224K1:
+        return "224-bits \"Koblitz\"";
+    case VS_KEYPAIR_EC_SECP256K1:
+        return "256-bits \"Koblitz\"";
+    case VS_KEYPAIR_EC_CURVE25519:
+        return "Curve 25519";
+    case VS_KEYPAIR_EC_ED25519:
+        return "Ed 25519";
+    case VS_KEYPAIR_RSA_2048:
+        return "RSA 2048 bit";
+    default:
+        VS_IOT_ASSERT(false && "Unsupported keypair type");
+        return "";
+    }
+}
+
+/******************************************************************************/
+const char *
+vs_hsm_hash_type_descr(vs_hsm_hash_type_e type) {
+    switch (type) {
+    case VS_HASH_SHA_256:
+        return "SHA 256";
+    case VS_HASH_SHA_384:
+        return "SHA 384";
+    case VS_HASH_SHA_512:
+        return "SHA 512";
+    default:
+        VS_IOT_ASSERT(false && "Unsupported hash type");
+        return "";
     }
 }

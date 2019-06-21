@@ -51,6 +51,8 @@ test_kdf2(void);
 void
 test_ecdsa(void);
 void
+test_ecdh(void);
+void
 test_keypair(void);
 void
 test_random(void);
@@ -65,6 +67,7 @@ crypto_tests(void) {
     test_hmac();
     test_kdf2();
     test_ecdsa();
+    test_ecdh();
     test_keypair();
     test_random();
     test_aes();
