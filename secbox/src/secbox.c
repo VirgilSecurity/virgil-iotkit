@@ -19,7 +19,7 @@ vs_secbox_configure_hal(const vs_secbox_hal_impl_t *impl) {
 
 /******************************************************************************/
 int
-vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *in_data, size_t data_sz) {
+vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
     VS_ASSERT(_hal_mpl);
     VS_ASSERT(_hal_mpl->save);
     VS_ASSERT(element_info);
@@ -29,7 +29,7 @@ vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *in_data, s
 
 /******************************************************************************/
 int
-vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, size_t data_sz) {
+vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, uint16_t data_sz) {
     VS_ASSERT(_hal_mpl);
     VS_ASSERT(_hal_mpl->load);
 

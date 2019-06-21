@@ -208,7 +208,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     if 0 != C.vs_sdmp_prvs_finalize_tl(nil,
                                        &mac,
                                        dataPtr,
-                                       C.ulong(len(footerBytes)),
+                                       C.uint16_t(len(footerBytes)),
                                        DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set TrustList footer")
     }
@@ -248,7 +248,7 @@ func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []by
                                &mac,
                                element,
                                dataPtr,
-                               C.ulong(len(data)),
+                               C.uint16_t(len(data)),
                                DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set %s on device (vs_sdmp_prvs_set)", name)
     }
@@ -352,7 +352,7 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
     if 0 != C.vs_sdmp_prvs_device_info(nil,
                                        &mac,
                                        deviceInfoPtr,
-                                       C.size_t(bufSize),
+                                       C.uint16_t(bufSize),
                                        DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to get device info (vs_sdmp_prvs_device_info)")
     }
@@ -379,7 +379,7 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
 func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     const signatureBufSize = 512
     var signatureBuf [signatureBufSize]uint8
-    signature_sz := C.size_t(0)
+    signature_sz := C.uint16_t(0)
 
     // Calculate hash - device does not calculate hash, only signs data
     dataHash := sha256.Sum256(data)
@@ -391,9 +391,9 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     signRes := C.vs_sdmp_prvs_sign_data(nil,
                                         &mac,
                                         dataPtr,
-                                        C.ulong(len(dataHash)),
+                                        C.uint16_t(len(dataHash)),
                                         signaturePtr,
-                                        C.ulong(signatureBufSize),
+                                        C.uint16_t(signatureBufSize),
                                         &signature_sz,
                                         DEFAULT_TIMEOUT_MS)
     if signRes != 0 {

@@ -203,7 +203,7 @@ vs_logger_no_format(const char *format) {
 void
 vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *format, ...) {
     static const char *CUTTED_STR = "...";
-    static const size_t CUTTED_STR_SIZE = 3;
+    static const int CUTTED_STR_SIZE = 3;
     va_list args1;
     int snprintf_res;
     bool res = false;
@@ -276,11 +276,11 @@ vs_logger_message_hex(vs_log_level_t level,
                       uint32_t line_num,
                       const char *prefix,
                       const void *data_buf,
-                      const size_t data_size) {
+                      const uint16_t data_size) {
     static const char *HEX_FORMAT = "%02X";
     char buf[3]; // HEX_FORMAT output
     unsigned char *cur_byte;
-    size_t pos;
+    uint16_t pos;
     bool res = false;
 
     _last_res = true;

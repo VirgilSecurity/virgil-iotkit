@@ -71,7 +71,7 @@ typedef struct {
 
 typedef struct {
     vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
-    size_t count;
+    uint16_t count;
 } vs_sdmp_prvs_dnid_list_t;
 
 typedef struct __attribute__((__packed__)) {
@@ -96,20 +96,20 @@ typedef struct __attribute__((__packed__)) {
 } vs_sdmp_prvs_devi_t;
 
 typedef int (*vs_sdmp_prvs_dnid_t)();
-typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, uint16_t data_sz);
 typedef int (*vs_sdmp_prvs_load_data_t)();
-typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz);
+typedef int (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
 typedef int (*vs_sdmp_prvs_finalize_storage_t)(vs_sdmp_pubkey_t *asav_response);
-typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, size_t data_sz);
-typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, size_t data_sz);
-typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, size_t data_sz);
+typedef int (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, uint16_t data_sz);
+typedef int (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, uint16_t data_sz);
+typedef int (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, uint16_t data_sz);
 typedef int (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
-typedef int (*vs_sdmp_prvs_wait_t)(size_t wait_ms, int *condition, int idle);
+typedef int (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
 typedef int (*vs_sdmp_sign_data_t)(const uint8_t *data,
-                                   size_t data_sz,
+                                   uint16_t data_sz,
                                    uint8_t *signature,
-                                   size_t buf_sz,
-                                   size_t *signature_sz);
+                                   uint16_t buf_sz,
+                                   uint16_t *signature_sz);
 
 typedef struct {
     vs_sdmp_prvs_dnid_t dnid_func;
@@ -136,54 +136,54 @@ vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl);
 
 // Commands
 int
-vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, size_t wait_ms);
+vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
                             const vs_mac_addr_t *mac,
                             vs_sdmp_pubkey_t *asav_res,
-                            size_t wait_ms);
+                            uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_device_info(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          vs_sdmp_prvs_devi_t *device_info,
-                         size_t buf_sz,
-                         size_t wait_ms);
+                         uint16_t buf_sz,
+                         uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        const vs_mac_addr_t *mac,
                        const uint8_t *data,
-                       size_t data_sz,
+                       uint16_t data_sz,
                        uint8_t *signature,
-                       size_t buf_sz,
-                       size_t *signature_sz,
-                       size_t wait_ms);
+                       uint16_t buf_sz,
+                       uint16_t *signature_sz,
+                       uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_t element,
                  const uint8_t *data,
-                 size_t data_sz,
-                 size_t wait_ms);
+                 uint16_t data_sz,
+                 uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_get(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_t element,
                  uint8_t *data,
-                 size_t buf_sz,
-                 size_t *data_sz,
-                 size_t wait_ms);
+                 uint16_t buf_sz,
+                 uint16_t *data_sz,
+                 uint32_t wait_ms);
 
 int
 vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          const uint8_t *data,
-                         size_t data_sz,
-                         size_t wait_ms);
+                         uint16_t data_sz,
+                         uint32_t wait_ms);
 
 #ifdef __cplusplus
 }

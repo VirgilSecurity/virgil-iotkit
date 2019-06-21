@@ -38,7 +38,7 @@
 #include <stdbool.h>
 #include <virgil/iot/logger/logger.h>
 
-extern size_t failed_test_result;
+extern uint16_t failed_test_result;
 
 #define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
     if (!(CONDITION)) {                                                                                                \

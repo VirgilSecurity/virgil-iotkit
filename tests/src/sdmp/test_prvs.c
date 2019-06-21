@@ -53,7 +53,7 @@ prvs_dnid() {
 
 /**********************************************************/
 static int
-prvs_save_data(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t data_sz) {
+prvs_save_data(vs_sdmp_prvs_element_t element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
     server_request.save_data.data_sz = data_sz;
@@ -70,7 +70,7 @@ prvs_save_data(vs_sdmp_prvs_element_t element_id, const uint8_t *data, size_t da
 
 /**********************************************************/
 static int
-prvs_device_info(vs_sdmp_prvs_devi_t *device_info, size_t buf_sz) {
+prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     server_request.finalize_storage.buf_sz = buf_sz;
 
@@ -98,7 +98,7 @@ prvs_finalize_storage(vs_sdmp_pubkey_t *asav_response) {
 
 /**********************************************************/
 static int
-prvs_finalize_tl(const uint8_t *data, size_t data_sz) {
+prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 
     server_request.finalize_tl.data_sz = data_sz;
     if (!(server_request.finalize_tl.data = VS_IOT_MALLOC(data_sz))) {
@@ -127,7 +127,7 @@ prvs_stop_wait(int *condition, int expect) {
 
 /**********************************************************/
 static int
-prvs_wait(size_t wait_ms, int *condition, int idle) {
+prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 
     prvs_call.wait = 1;
 
@@ -136,7 +136,7 @@ prvs_wait(size_t wait_ms, int *condition, int idle) {
 
 /**********************************************************/
 static int
-sign_data(const uint8_t *data, size_t data_sz, uint8_t *signature, size_t buf_sz, size_t *signature_sz) {
+sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     VS_IOT_ASSERT(buf_sz >= make_server_response.sign_data.signature_sz);
 
     if (!(server_request.sign_data.data = VS_IOT_MALLOC(data_sz))) {

@@ -59,24 +59,24 @@ typedef struct {
 typedef union {
 
     struct {
-        size_t buf_sz;
+        uint16_t buf_sz;
     } finalize_storage;
 
     struct {
         uint8_t *data;
-        size_t data_sz;
-        size_t buf_sz;
+        uint16_t data_sz;
+        uint16_t buf_sz;
     } sign_data;
 
     struct {
         vs_sdmp_prvs_element_t element_id;
         uint8_t *data;
-        size_t data_sz;
+        uint16_t data_sz;
     } save_data;
 
     struct {
         uint8_t *data;
-        size_t data_sz;
+        uint16_t data_sz;
     } finalize_tl;
 
 } server_request_t;
@@ -90,13 +90,13 @@ typedef union {
 
     struct {
         uint8_t *signature;
-        size_t signature_sz;
+        uint16_t signature_sz;
     } sign_data;
 
     struct {
         vs_sdmp_prvs_element_t element_id;
         uint8_t *data;
-        size_t data_sz;
+        uint16_t data_sz;
     } save_data;
 
 } make_server_response_t;
