@@ -89,11 +89,10 @@ test_keypair(void) {
     for (pos = 0; pos < cases_amount; ++pos) {
         _test_case_t *test_case = &test_cases[pos];
 
-        VS_IOT_STRCPY(buf, "Keypair type \"");
+        VS_IOT_STRCPY(buf, "Keypair type ");
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_hsm_keypair_type_descr(test_case->keypair_type));
-        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), "\", slot \"");
+        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), ", slot ");
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_iot_hsm_slot_descr(test_case->slot));
-        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), "\"");
 
         TEST_CASE_OK(buf, _test_keypair_generate(test_case));
     }
