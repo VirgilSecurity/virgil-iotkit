@@ -1,6 +1,8 @@
 from enum import IntEnum, Enum
 
 from virgil_crypto import VirgilKeyPair
+from virgil_crypto.hashes import HashAlgorithm
+
 
 TIME_OFFSET = 1420070400  # 01/01/2015 @ 12:00am (UTC)
 
@@ -35,6 +37,12 @@ class VSKeyTypeS(Enum):
     FIRMWARE_INTERNAL = "firmware_internal"
     AUTH_INTERNAL = "auth_internal"
 
+
+hash_type_vs_to_hsm_map = {
+    HashAlgorithm.SHA256: 0,
+    HashAlgorithm.SHA384: 1,
+    HashAlgorithm.SHA512: 2
+}
 
 key_type_str_to_num_map = {
     VSKeyTypeS.RECOVERY:          VSKeyTypeE.RECOVERY,

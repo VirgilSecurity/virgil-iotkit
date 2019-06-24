@@ -21,6 +21,7 @@ from virgil_keymanager.external_utils.printer_controller import PrinterControlle
 from virgil_keymanager.generators.trustlist import TrustListGenerator
 from virgil_keymanager.generators.keys.atmel import AtmelKeyGenerator
 from virgil_keymanager.generators.keys.virgil import VirgilKeyGenerator
+from virgil_keymanager.data_types.trustlist_type import Signature, PubKeyStructure
 from virgil_keymanager.storage import FileKeyStorage
 from virgil_keymanager.storage.db_storage import DBStorage
 from virgil_keymanager.storage.keys_tinydb_storage import KeysTinyDBStorage
@@ -47,12 +48,6 @@ class UtilityManager(object):
         self._utility_list = dict()
         self.__check_db_path()
         self.__logger.info("app started in main mode")
-
-        # storage plugs
-        self.__logger.info("key storage initialization")
-        self.__logger.debug("keystorage at {}".format(self.__key_storage_path))
-        self.__file_storage = FileKeyStorage(self.__key_storage_path)
-        self.__logger.info("initialization successful")
 
         # Main db's plugs
         self.__upper_level_pub_keys = self.__init_storage(
@@ -321,19 +316,17 @@ class UtilityManager(object):
         storage = self.__upper_level_pub_keys
         for key_id in storage.get_keys():
             key_data = storage.get_value(key_id)
-            if key_data["type"] == "recovery":
+            if key_data["type"] == consts.VSKeyTypeS.RECOVERY.value:
                 self.__save_key(
-                    key_id,
-                    key_data["key"],
-                    os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub")
+                    key_data=key_data,
+                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
                 )
             else:
+                signer_key_data = storage.get_value(key_data["signer_key_id"])
                 self.__save_key(
-                    key_id,
-                    key_data["key"],
-                    os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
-                    signer_key_id=key_data["signer_key_id"],
-                    signature=key_data["signature"]
+                    key_data=key_data,
+                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
+                    signer_key_data=signer_key_data
                 )
         self.__ui.print_message("Keys dump finished")
         self.__logger.info("UpperLevelPublicKeys dumping completed")
@@ -594,6 +587,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             key_info["signature"] = key.signature
             key_info["signer_key_id"] = rec_key_for_sign.key_id
+            key_info["signer_hash_type"] = rec_key_for_sign.hash_type
 
         # - public
         public_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
@@ -621,6 +615,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             card_content["signature"] = key.signature
             card_content["signer_public_key"] = rec_key_for_sign.public_key
+            card_content["signer_hash_type"] = rec_key_for_sign.hash_type
         if extra_card_content:
             card_content.update(extra_card_content)
         self.__card_requests_handler.create_and_save_request_for_key(key, key_info=card_content)
@@ -847,17 +842,17 @@ class UtilityManager(object):
         self.__logger.info("Printing Public Keys from db's started")
         self.__ui.print_message("Printing Public Keys from db's...")
         self.__ui.print_message("\nUpper level Keys: ")
-        pt = PrettyTable(["Key Id", "Type", "Comment", "Signed by", "Key"])
+        pt = PrettyTable(["Key Id", "Type", "Comment", "Signed by", "Start", "Expire", "Key"])
         for key in self.__upper_level_pub_keys.get_keys():
             row = self.__upper_level_pub_keys.get_value(key)
             signer_id = row.get("signer_key_id", "")
-            pt.add_row([key, row["type"], row["comment"], signer_id, row["key"]])
+            pt.add_row([key, row["type"], row["comment"], signer_id, row["start_date"], row["expiration_date"], row["key"]])
         self.__ui.print_message(pt.get_string())
         self.__logger.debug("\nUpper level Keys: \n{}".format(pt.get_string()))
         del pt
 
         self.__ui.print_message("\nTrustList Service Keys: ")
-        pt = PrettyTable(["Key Id", "Type", "EC type", "Comment", "Start Date", "Expiration Date", "Key"])
+        pt = PrettyTable(["Key Id", "Type", "EC type", "Comment", "Start", "Expire", "Key"])
         for key in self.__trust_list_pub_keys.get_keys():
             row = self.__trust_list_pub_keys.get_value(key)
             pt.add_row(
@@ -1284,16 +1279,34 @@ class UtilityManager(object):
 
         self.__ui.print_message("Signature updated")
 
-    def __save_key(self, key_id, key, file_path, signer_key_id=None, signature=None):
+    def __save_key(self, key_data: dict, file_path: str, signer_key_data: Optional[dict]=None):
         byte_buffer = io.BytesIO()
-        byte_buffer.write(int(key_id).to_bytes(2, byteorder='little', signed=False))
-        byte_buffer.write(base64.b64decode(key))
-        if signer_key_id and signature:
-            byte_buffer.write(int(signer_key_id).to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(b64_to_bytes(signature))
-        else:
-            byte_buffer.write(bytes(66))
-        open(file_path, "wb").write(bytes(byte_buffer.getvalue()))
+
+        # Write public key
+        pub_key_type_str = consts.VSKeyTypeS(key_data["type"])
+        pub_key = PubKeyStructure(
+            start_date=int(key_data["start_date"]),
+            expiration_date=int(key_data["expiration_date"]),
+            key_type=consts.key_type_str_to_num_map[pub_key_type_str],
+            ec_type=int(key_data["ec_type"]),
+            pub_key=b64_to_bytes(key_data["key"])
+        )
+        byte_buffer.write(bytes(pub_key))
+
+        # Write signature data
+        if signer_key_data:
+            signer_key_type_str = consts.VSKeyTypeS(signer_key_data["type"])
+            signature = Signature(
+                signer_type=int(consts.key_type_str_to_num_map[signer_key_type_str]),
+                ec_type=int(signer_key_data["ec_type"]),
+                hash_type=int(key_data["signer_hash_type"]),
+                sign=b64_to_bytes(key_data["signature"]),
+                signer_pub_key=b64_to_bytes(signer_key_data["key"])
+            )
+            byte_buffer.write(bytes(signature))
+
+        with open(file_path, "wb") as f:
+            f.write(byte_buffer.getvalue())
 
     def __save_private_key(self, key, file_path):
         byte_buffer = io.BytesIO()

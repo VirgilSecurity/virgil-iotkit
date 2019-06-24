@@ -2,6 +2,7 @@ from PyCRC.CRCCCITT import CRCCCITT
 
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
+from virgil_keymanager import consts
 
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils import VirgilSignExtractor
@@ -21,7 +22,7 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
                  hash_type=HashAlgorithm.SHA256):
         self._crypto = VirgilCrypto()
         self._crypto.signature_hash_algorithm = hash_type
-        self.__hash_type = hash_type
+        self.__hash_type = consts.hash_type_vs_to_hsm_map[hash_type]
         self.__key_type = key_type
         self.__ec_type = ec_type
         self.__public_key = None if not private_key else b64_to_bytes(public_key)

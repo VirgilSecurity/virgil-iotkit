@@ -4,6 +4,7 @@ from random import randint
 from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
+from virgil_keymanager import consts
 
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
@@ -25,7 +26,7 @@ class AtmelKeyGenerator(KeyGeneratorInterface):
         self._key_type = key_type
         self._logger = self._context.logger
         self._ec_type = ec_type
-        self._hash_type = hash_type
+        self._hash_type = consts.hash_type_vs_to_hsm_map[hash_type]
 
         self._private_key = None
         self.device_serial = device_serial
