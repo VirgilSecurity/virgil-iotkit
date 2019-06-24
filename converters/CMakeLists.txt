@@ -60,6 +60,7 @@ virgil_find_package (MbedTLS 2.4)
 #   Converters library
 #
 add_library(${CONV_LIB}
+        SHARED
         ${CONV_SRC}
         )
 
