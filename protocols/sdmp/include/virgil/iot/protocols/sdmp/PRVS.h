@@ -89,7 +89,7 @@ typedef struct __attribute__((__packed__)) {
 typedef struct __attribute__((__packed__)) {
     uint8_t hash_type; // vs_hsm_hash_type_e
     uint8_t data[];
-} vs_sdmp_prvs_asav_req_t;
+} vs_sdmp_prvs_sgnp_req_t;
 
 typedef int (*vs_sdmp_prvs_dnid_t)();
 typedef int (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_t element_id, const uint8_t *data, uint16_t data_sz);
