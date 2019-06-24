@@ -36,6 +36,8 @@
 #define {{ .HeaderTag }}
 
 #include <netinet/in.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 {{ range $Index,$StructDatas := .StructsList}}
 
 /******************************************************************************/

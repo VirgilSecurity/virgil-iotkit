@@ -137,6 +137,9 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
         return -1;
     }
 
+    // Normalize byte order
+    vs_sdmp_prvs_devi_t_decode(devi_response);
+
     *response_sz = sizeof(vs_sdmp_prvs_devi_t) + devi_response->signature.val_sz;
 
     return 0;
@@ -339,6 +342,9 @@ _send_request(const vs_netif_t *netif,
         memcpy(packet->content, data, data_sz);
     }
     _sdmp_fill_header(mac, packet);
+
+    // Normalize byte order
+    vs_sdmp_packet_t_encode(packet);
 
     // Send request
     return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);

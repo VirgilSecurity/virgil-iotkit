@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <{{ .DstHFile }}>
+#include <virgil/iot/protocols/sdmp/generated/{{ .DstHFile }}>
 
 {{ range $Index,$StructDatas := .StructsList}}
 
@@ -48,7 +48,7 @@ void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }}
 // Converting decode function for ({{$StructDatas.StructName}})
 void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data) {
 {{- range $DataIndex,$StructItem  := $StructDatas.StructData}}
-  src_data->{{$StructItem}} = htohs(src_data->{{$StructItem}});
+  src_data->{{$StructItem}} = ntohs(src_data->{{$StructItem}});
 {{- end}}
 }
 

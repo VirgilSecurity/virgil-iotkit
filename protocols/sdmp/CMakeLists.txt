@@ -45,6 +45,7 @@ set(SDMP_LIB sdmp)
 set(SDMP_SRC
         src/sdmp.c
         src/services/PRVS.c
+        src/generated/sdmp_cvt.c
         )
 
 #
