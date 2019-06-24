@@ -37,36 +37,6 @@
 
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_header_t)
-void  vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-  src_data->content_size = htons(src_data->content_size);
-  src_data->flags = htons(src_data->flags);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_sdmp_header_t)
-void vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-  src_data->content_size = htohs(src_data->content_size);
-  src_data->flags = htohs(src_data->flags);
-}
-
-/******************************************************************************/
-// Converting encode function for (vs_sdmp_packet_t)
-void  vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data) {
-  src_data->eth_header.type = htons(src_data->eth_header.type);
-  src_data->header.flags = htons(src_data->header.flags);
-  src_data->header.content_size = htons(src_data->header.content_size);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_sdmp_packet_t)
-void vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
-  src_data->eth_header.type = htohs(src_data->eth_header.type);
-  src_data->header.flags = htohs(src_data->header.flags);
-  src_data->header.content_size = htohs(src_data->header.content_size);
-}
-
-/******************************************************************************/
 // Converting encode function for (vs_sdmp_prvs_signature_t)
 void  vs_sdmp_prvs_signature_t_encode(vs_sdmp_prvs_signature_t *src_data) {
   src_data->id = htons(src_data->id);
@@ -81,15 +51,15 @@ void vs_sdmp_prvs_signature_t_decode(vs_sdmp_prvs_signature_t *src_data) {
 /******************************************************************************/
 // Converting encode function for (vs_sdmp_prvs_devi_t)
 void  vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-  src_data->model = htons(src_data->model);
   src_data->signature.id = htons(src_data->signature.id);
+  src_data->model = htons(src_data->model);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_prvs_devi_t)
 void vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-  src_data->model = htohs(src_data->model);
   src_data->signature.id = htohs(src_data->signature.id);
+  src_data->model = htohs(src_data->model);
 }
 
 /******************************************************************************/
@@ -102,4 +72,34 @@ void  vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data) {
 // Converting decode function for (vs_ethernet_header_t)
 void vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
   src_data->type = htohs(src_data->type);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_header_t)
+void  vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
+  src_data->flags = htons(src_data->flags);
+  src_data->content_size = htons(src_data->content_size);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_header_t)
+void vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
+  src_data->flags = htohs(src_data->flags);
+  src_data->content_size = htohs(src_data->content_size);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_packet_t)
+void  vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data) {
+  src_data->header.flags = htons(src_data->header.flags);
+  src_data->header.content_size = htons(src_data->header.content_size);
+  src_data->eth_header.type = htons(src_data->eth_header.type);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_packet_t)
+void vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
+  src_data->header.flags = htohs(src_data->header.flags);
+  src_data->header.content_size = htohs(src_data->header.content_size);
+  src_data->eth_header.type = htohs(src_data->eth_header.type);
 }

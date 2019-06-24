@@ -47,16 +47,14 @@ add_go_executable(sdmp-codgen)
 #
 
 set (SDMP_SRC_TYPES
-        -i ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp_structs.h
-        -i ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/PRVS.h
+        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp_structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/PRVS.h
         )
 
 add_custom_command(TARGET sdmp-codgen POST_BUILD
-    COMMAND ${CMAKE_BINARY_DIR}/ap/security-sdk/tools/sdmp-codgen/sdmp-codgen -d ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/tools/sdmp-codgen/tmpl 
-                                                                               ${SDMP_SRC_TYPES} 
-                                                                              -oc ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/src/generated/sdmp_cvt.c 
-                                                                              -oh ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+    COMMAND ${sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl 
+                                                  ${SDMP_SRC_TYPES} 
+                                                  -oc ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/src/generated/sdmp_cvt.c 
+                                                  -oh ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
     COMMENT "Generate SDMP convert function"
 )
-

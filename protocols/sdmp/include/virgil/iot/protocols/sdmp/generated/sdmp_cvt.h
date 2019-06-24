@@ -39,16 +39,6 @@
 
 
 /******************************************************************************/
-// Converting functions for (vs_sdmp_header_t)
-void vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data );
-void vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data );
-
-/******************************************************************************/
-// Converting functions for (vs_sdmp_packet_t)
-void vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data );
-void vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data );
-
-/******************************************************************************/
 // Converting functions for (vs_sdmp_prvs_signature_t)
 void vs_sdmp_prvs_signature_t_encode(vs_sdmp_prvs_signature_t *src_data );
 void vs_sdmp_prvs_signature_t_decode(vs_sdmp_prvs_signature_t *src_data );
@@ -62,5 +52,15 @@ void vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data );
 // Converting functions for (vs_ethernet_header_t)
 void vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data );
 void vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data );
+
+/******************************************************************************/
+// Converting functions for (vs_sdmp_header_t)
+void vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data );
+void vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data );
+
+/******************************************************************************/
+// Converting functions for (vs_sdmp_packet_t)
+void vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data );
+void vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data );
 
 #endif //SDMP_CVT_H

@@ -46,8 +46,11 @@ endif()
 # ---------------------------------------------------------------------------
 #   Project
 # ---------------------------------------------------------------------------
-project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
-
+if (GO_DISABLE)
+    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
+else()
+    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C Go)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Helper modules

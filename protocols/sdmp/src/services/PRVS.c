@@ -36,6 +36,7 @@
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include "hal/macro.h"
 #include <stdbool.h>
 #include <string.h>
@@ -59,7 +60,6 @@ static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 static int _last_res = RES_UNKNOWN;
 static size_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
-
 /******************************************************************************/
 int
 vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
