@@ -34,22 +34,29 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Factory initalizer
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-initializer)
+project(sdmp-codgen VERSION 0.1.0 LANGUAGES Go)
 
 #
-#   Registrar
+#   SDMP convert code generator
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-registrar)
+add_go_executable(sdmp-codgen)
+
 
 #
-#   Signer
+# POST EXEC Generate convert code
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
 
-#
-#   SDMP convert function generator
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sdmp-codgen)
+set (SDMP_SRC_TYPES
+        -i ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp_structs.h
+        -i ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/PRVS.h
+        )
+
+add_custom_command(TARGET sdmp-codgen POST_BUILD
+    COMMAND ${CMAKE_BINARY_DIR}/ap/security-sdk/tools/sdmp-codgen/sdmp-codgen -d ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/tools/sdmp-codgen/tmpl 
+                                                                               ${SDMP_SRC_TYPES} 
+                                                                              -oc ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/src/generated/sdmp_cvt.c 
+                                                                              -oh ${CMAKE_HOME_DIRECTORY}/ap/security-sdk/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+    COMMENT "Generate SDMP convert function"
+)
+
