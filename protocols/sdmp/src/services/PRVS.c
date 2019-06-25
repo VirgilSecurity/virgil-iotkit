@@ -266,7 +266,8 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {}
+    default: {
+    }
     }
 
     return -1;
@@ -342,9 +343,6 @@ _send_request(const vs_netif_t *netif,
         memcpy(packet->content, data, data_sz);
     }
     _sdmp_fill_header(mac, packet);
-
-    // Normalize byte order
-    vs_sdmp_packet_t_encode(packet);
 
     // Send request
     return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
