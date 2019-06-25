@@ -109,5 +109,5 @@ pub_keys_sizes = {
     # VirgilKeyPair.Type_EC_CURVE25519: 32,
     # VirgilKeyPair.Type_FAST_EC_ED25519: 32
     # TODO: 64 is because key is trimmed. Use values above after converters implementation
-    VirgilKeyPair.Type_EC_SECP256R1: 64
+    VirgilKeyPair.Type_EC_SECP256R1: 65
 }

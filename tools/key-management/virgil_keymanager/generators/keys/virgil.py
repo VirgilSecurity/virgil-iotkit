@@ -35,12 +35,12 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
         # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
-            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-64:]
+            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-65:]
 
         if self.__private_key is None:
             virgil_key_pair = VirgilKeyPair.generate(self.ec_type)
             self.__private_key = VirgilKeyPair.privateKeyToDER(virgil_key_pair.privateKey())
-            self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-64:]
+            self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-65:]
 
         if signer_key:
             self.__signature = signer_key.sign(self.public_key)
