@@ -138,7 +138,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
     }
 
     // Normalize byte order
-    vs_sdmp_prvs_devi_t_decode(devi_response);
+    vs_sdmp_prvs_devi_t_encode(devi_response);
 
     *response_sz = sizeof(vs_sdmp_prvs_devi_t) + devi_response->signature.val_sz;
 
@@ -266,7 +266,8 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {}
+    default: {
+    }
     }
 
     return -1;
@@ -378,7 +379,11 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif,
                          size_t buf_sz,
                          size_t wait_ms) {
     size_t sz;
-    return vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms);
+    if (0 == vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms)) {
+        vs_sdmp_prvs_devi_t_decode(device_info);
+        return 0;
+    }
+    return -1;
 }
 
 /******************************************************************************/
