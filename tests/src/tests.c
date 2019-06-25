@@ -72,7 +72,7 @@ virgil_iot_sdk_tests(void) {
     sdmp_tests();
     prvs_tests();
 
-    crypto_tests();
+//    crypto_tests();
 
     return failed_test_result;
 }

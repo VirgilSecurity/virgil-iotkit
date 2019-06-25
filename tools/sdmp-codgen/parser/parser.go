@@ -70,15 +70,19 @@ func GetStructrures(InputFiles []string) (AllStructs map[string]map[string]strin
 					break
 				}
 
-				// Parse struct data lina and fill struct data array
+				// Parse struct data lines and fill struct data array
 				BodyReader := bufio.NewScanner(strings.NewReader(strings.TrimRight(strings.TrimLeft(RLine, " "), "}")))
 				for BodyReader.Scan() {
 					FieldsStructLine := strings.SplitN(strings.TrimLeft(strings.TrimRight(BodyReader.Text(), ";"), " "), " ", 2)
 					if len(FieldsStructLine) > 1 {
 						fmt.Printf("###===------TYPE: [%s] NAME:[%s] \n", FieldsStructLine[0], FieldsStructLine[1])
-						StructData[FieldsStructLine[0]] = FieldsStructLine[1]
+						StructData[FieldsStructLine[1]] = FieldsStructLine[0]
 					}
 				}
+
+				fmt.Println("=== STR NAME ===")
+				fmt.Println(StructData)
+				fmt.Println("=== END STR NAME ===")
 
 				// Reading Struct Name
 				RLine, err = FileReader.ReadString(';') // reading struct name

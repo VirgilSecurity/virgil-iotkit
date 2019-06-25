@@ -40,7 +40,11 @@
 // Converting encode function for ({{$StructDatas.StructName}})
 void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data) {
 {{- range $DataIndex,$StructItem  := $StructDatas.StructData}}
-  src_data->{{$StructItem}} = htons(src_data->{{$StructItem}});
+  {{- if $StructItem.TypeCascade }}
+  {{$StructItem.TypeName}}{{ $.EncPref }}(&src_data->{{$StructItem.VarName}});
+   {{- else }}
+  src_data->{{$StructItem.VarName}} = htons(src_data->{{$StructItem.VarName}});
+  {{- end }}
 {{- end}}
 }
 
@@ -48,7 +52,11 @@ void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }}
 // Converting decode function for ({{$StructDatas.StructName}})
 void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data) {
 {{- range $DataIndex,$StructItem  := $StructDatas.StructData}}
-  src_data->{{$StructItem}} = ntohs(src_data->{{$StructItem}});
+  {{- if $StructItem.TypeCascade }}
+  {{$StructItem.TypeName}}{{ $.DecPref }}(&src_data->{{$StructItem.VarName}});
+   {{- else }}
+  src_data->{{$StructItem.VarName}} = ntohs(src_data->{{$StructItem.VarName}});
+  {{- end }}  
 {{- end}}
 }
 

@@ -53,26 +53,25 @@ func CreateFile(FileName string) *os.File {
 	return NewFile
 }
 
+
 //********************************************************************************************************************
-func GetCascadeData(StructsList map[string]map[string]string, StructName string, Prefix string) (ConvertedStrings []string) {
-	fmt.Printf("###=== SEARCH:[%s] PREFIX:[%s]\n", StructName, Prefix)
+func GetCascadeData(StructsList map[string]map[string]string, StructName string) (ConvertedStrings []types.StructPrep_t) {
+	fmt.Printf("###=== SEARCH:[%s] \n", StructName)
 	// Search strycture by name
 	if StructData, ok := StructsList[StructName]; ok {
-		for DataType, DataName := range StructData {
+		for DataName, DataType := range StructData {
 			// Check base types
 			if parser.CheckEqualType(DataType, ConvertTypes) {
-				fmt.Printf("###===--- APPEND BASE[%s] <= BASE TYPE\n", Prefix+DataName)
-				ConvertedStrings = append(ConvertedStrings, Prefix+DataName)
+				fmt.Printf("###===--- APPEND BASE[%s] <= BASE TYPE\n", DataName)
+				ConvertedStrings = append(ConvertedStrings, types.StructPrep_t{false, DataName,DataType})
 				continue
 			}
 			// Check cascade types
-			TmpDataList := GetCascadeData(StructsList, DataType, Prefix+DataName+".")
+			TmpDataList := GetCascadeData(StructsList, DataType)
 			if len(TmpDataList) > 0 {
-				for _, TmpData := range TmpDataList {
-					fmt.Printf("###===--- APPEND CASCADE [%s] <= CASCADE\n", TmpData)
-					ConvertedStrings = append(ConvertedStrings, TmpData)
+					fmt.Printf("###===--- APPEND CASCADE [%s] <= CASCADE\n", DataName)
+					ConvertedStrings = append(ConvertedStrings, types.StructPrep_t{true, DataName,DataType})
 				}
-			}
 		}
 	}
 	return ConvertedStrings
@@ -85,7 +84,7 @@ func CreateFinalData(StructsList map[string]map[string]string) (FinData types.St
 	fmt.Print("### PREPARING FINAL DATA \n")
 	for SrcStructName, _ := range StructsList {
 		fmt.Printf("###=== Struct: [%s]\n", SrcStructName)
-		TmpDt := GetCascadeData(StructsList, SrcStructName, "")
+		TmpDt := GetCascadeData(StructsList, SrcStructName)
 		if len(TmpDt) > 0 {
 			StructData.StructName = ""
 			StructData.StructData = nil
