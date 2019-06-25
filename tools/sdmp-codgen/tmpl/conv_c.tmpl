@@ -43,7 +43,11 @@ void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }}
   {{- if $StructItem.TypeCascade }}
   {{$StructItem.TypeName}}{{ $.EncPref }}(&src_data->{{$StructItem.VarName}});
    {{- else }}
-  src_data->{{$StructItem.VarName}} = htons(src_data->{{$StructItem.VarName}});
+     {{- if eq $StructItem.TypeName "uint16_t"}}
+  src_data->{{$StructItem.VarName}} = htons(src_data->{{$StructItem.VarName}});     
+     {{- else }}
+  src_data->{{$StructItem.VarName}} = htonl(src_data->{{$StructItem.VarName}});
+     {{- end }}
   {{- end }}
 {{- end}}
 }
@@ -55,7 +59,11 @@ void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} 
   {{- if $StructItem.TypeCascade }}
   {{$StructItem.TypeName}}{{ $.DecPref }}(&src_data->{{$StructItem.VarName}});
    {{- else }}
-  src_data->{{$StructItem.VarName}} = ntohs(src_data->{{$StructItem.VarName}});
+     {{- if eq $StructItem.TypeName "uint16_t"}}   
+  src_data->{{$StructItem.VarName}} = ntohs(src_data->{{$StructItem.VarName}});     
+     {{- else }}
+  src_data->{{$StructItem.VarName}} = ntohl(src_data->{{$StructItem.VarName}});
+     {{- end }}  
   {{- end }}  
 {{- end}}
 }

@@ -36,35 +36,21 @@
 
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_prvs_signature_t)
-void
-vs_sdmp_prvs_signature_t_encode(vs_sdmp_prvs_signature_t *src_data) {
-    src_data->id = htons(src_data->id);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_sdmp_prvs_signature_t)
-void
-vs_sdmp_prvs_signature_t_decode(vs_sdmp_prvs_signature_t *src_data) {
-    src_data->id = ntohs(src_data->id);
-}
-
-/******************************************************************************/
 // Converting encode function for (vs_sdmp_prvs_devi_t)
 void
 vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-    vs_sdmp_prvs_signature_t_encode(&src_data->signature);
     src_data->manufacturer = htonl(src_data->manufacturer);
     src_data->model = htonl(src_data->model);
+    vs_sdmp_prvs_signature_t_encode(&src_data->signature);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_prvs_devi_t)
 void
 vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-    vs_sdmp_prvs_signature_t_decode(&src_data->signature);
     src_data->manufacturer = ntohl(src_data->manufacturer);
     src_data->model = ntohl(src_data->model);
+    vs_sdmp_prvs_signature_t_decode(&src_data->signature);
 }
 
 /******************************************************************************/
@@ -85,7 +71,7 @@ vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
 // Converting encode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-    src_data->flags = htons(src_data->flags);
+    src_data->flags = htonl(src_data->flags);
     src_data->padding = htons(src_data->padding);
     src_data->content_size = htons(src_data->content_size);
 }
@@ -94,7 +80,7 @@ vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
 // Converting decode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-    src_data->flags = ntohs(src_data->flags);
+    src_data->flags = ntohl(src_data->flags);
     src_data->padding = ntohs(src_data->padding);
     src_data->content_size = ntohs(src_data->content_size);
 }
@@ -113,4 +99,18 @@ void
 vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
     vs_ethernet_header_t_decode(&src_data->eth_header);
     vs_sdmp_header_t_decode(&src_data->header);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_prvs_signature_t)
+void
+vs_sdmp_prvs_signature_t_encode(vs_sdmp_prvs_signature_t *src_data) {
+    src_data->id = htons(src_data->id);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_prvs_signature_t)
+void
+vs_sdmp_prvs_signature_t_decode(vs_sdmp_prvs_signature_t *src_data) {
+    src_data->id = ntohs(src_data->id);
 }
