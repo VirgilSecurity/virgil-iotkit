@@ -88,10 +88,11 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list
         ${CMAKE_CURRENT_LIST_DIR}/../secbox/include/virgil/iot/secbox
         ${CMAKE_CURRENT_LIST_DIR}/../hsm/include
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         PUBLIC
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        ${CMAKE_CURRENT_LIST_DIR}/../provision/include
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
