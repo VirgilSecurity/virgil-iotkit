@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from virgil_keymanager.consts import ec_type_vs_to_hsm_map
+
 
 class KeyGeneratorInterface(ABC):
 
@@ -11,6 +13,13 @@ class KeyGeneratorInterface(ABC):
     @abstractmethod
     def ec_type(self):
         pass
+
+    @property
+    def ec_type_hsm(self) -> int:
+        t = ec_type_vs_to_hsm_map.get(self.ec_type, None)
+        if t is None:
+            raise ValueError("Can`t find HSM EC key type for %s Virgil type" % self.ec_type)
+        return t.value
 
     @property
     @abstractmethod

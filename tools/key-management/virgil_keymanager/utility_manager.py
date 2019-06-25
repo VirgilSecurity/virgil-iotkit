@@ -578,7 +578,7 @@ class UtilityManager(object):
         # - prepare key info to be saved
         key_info = {
             "type": key_type.value,
-            "ec_type": key.ec_type,
+            "ec_type": key.ec_type_hsm,
             "start_date": start_date,
             "expiration_date": expiration_date,
             "comment": comment,
@@ -610,7 +610,7 @@ class UtilityManager(object):
         card_content["start_date"] = start_date
         card_content["expiration_date"] = expiration_date
         card_content["comment"] = comment
-        card_content["ec_type"] = key.ec_type
+        card_content["ec_type"] = key.ec_type_hsm
         card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
         if sign_by_recovery_key:
             card_content["signature"] = key.signature

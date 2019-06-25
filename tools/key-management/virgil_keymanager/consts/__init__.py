@@ -14,6 +14,20 @@ class TrustListType(IntEnum):
     DEV = 3
 
 
+class VsEcTypeE(IntEnum):
+    VS_KEYPAIR_EC_SECP192R1 = 1
+    VS_KEYPAIR_EC_SECP224R1 = 2
+    VS_KEYPAIR_EC_SECP256R1 = 3
+    VS_KEYPAIR_EC_SECP384R1 = 4
+    VS_KEYPAIR_EC_SECP521R1 = 5
+    VS_KEYPAIR_EC_SECP192K1 = 6
+    VS_KEYPAIR_EC_SECP224K1 = 7
+    VS_KEYPAIR_EC_SECP256K1 = 8
+    VS_KEYPAIR_EC_CURVE25519 = 9
+    VS_KEYPAIR_EC_ED25519 = 10
+    VS_KEYPAIR_RSA_2048 = 11
+
+
 class VSKeyTypeE(IntEnum):
     RECOVERY = 0
     AUTH = 1
@@ -42,6 +56,19 @@ hash_type_vs_to_hsm_map = {
     HashAlgorithm.SHA256: 0,
     HashAlgorithm.SHA384: 1,
     HashAlgorithm.SHA512: 2
+}
+
+ec_type_vs_to_hsm_map = {
+    VirgilKeyPair.Type_RSA_2048:        VsEcTypeE.VS_KEYPAIR_RSA_2048,
+    VirgilKeyPair.Type_EC_SECP192R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP192R1,
+    VirgilKeyPair.Type_EC_SECP192K1:    VsEcTypeE.VS_KEYPAIR_EC_SECP192K1,
+    VirgilKeyPair.Type_EC_SECP224R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP224R1,
+    VirgilKeyPair.Type_EC_SECP224K1:    VsEcTypeE.VS_KEYPAIR_EC_SECP224K1,
+    VirgilKeyPair.Type_EC_SECP256R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP256R1,
+    VirgilKeyPair.Type_EC_SECP256K1:    VsEcTypeE.VS_KEYPAIR_EC_SECP256K1,
+    VirgilKeyPair.Type_EC_SECP384R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP384R1,
+    VirgilKeyPair.Type_EC_SECP521R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP521R1,
+    VirgilKeyPair.Type_FAST_EC_ED25519: VsEcTypeE.VS_KEYPAIR_EC_ED25519
 }
 
 key_type_str_to_num_map = {

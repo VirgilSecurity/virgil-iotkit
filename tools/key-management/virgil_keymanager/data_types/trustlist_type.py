@@ -104,8 +104,8 @@ class PubKeyStructure:
     type PubKeyStructure struct {
         StartDate       uint32
         ExpirationDate  uint32
-        KeyType         uint16
-        ECType          uint16
+        KeyType         uint8
+        ECType          uint8
         PubKey          [PublicKeySize]byte
     }
     """
@@ -123,14 +123,14 @@ class PubKeyStructure:
             byte_buffer = io.BytesIO()
             byte_buffer.write(self._start_date.to_bytes(4, byteorder='little', signed=False))
             byte_buffer.write(self._expiration_date.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self._key_type.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self._ec_type.to_bytes(2, byteorder='little', signed=False))
+            byte_buffer.write(self._key_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='little', signed=False))
             byte_buffer.write(self._pub_key)
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes
 
     def __len__(self):
-        return 2 + 2 + 4 + 4 + len(self._pub_key)  # see structure in class doc-string
+        return 4 + 4 + 1 + 1 + len(self._pub_key)  # see structure in class doc-string
 
 
 class Body:
@@ -217,7 +217,7 @@ class TrustList:
                     start_date=start_date,
                     expiration_date=expiration_date,
                     key_type=consts.key_type_str_to_num_map[key_type_str],
-                    ec_type=ec_type,
+                    ec_type=consts.VsEcTypeE(ec_type),
                     pub_key=b64_to_bytes(key_data["key"])
                 )
                 keys.append(key)
@@ -239,7 +239,7 @@ class TrustList:
                 signer_type_str = consts.VSKeyTypeS(key.key_type)
                 s = Signature(
                     signer_type=consts.key_type_str_to_num_map[signer_type_str],
-                    ec_type=key.ec_type,
+                    ec_type=key.ec_type_hsm,
                     hash_type=key.hash_type,
                     sign=b64_to_bytes(signature),
                     signer_pub_key=b64_to_bytes(key.public_key)
