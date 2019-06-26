@@ -229,18 +229,20 @@ class TrustList:
         if self._footer is None:
             # Get signatures
             signatures = []
-            data_to_sign = to_b64(bytes(self.header) + bytes(self.body))
+
+            # Data to sign: header + body + tl_type from footer
+            tl_type_bytes = self._tl_type.to_bytes(1, byteorder='little', signed=False)
+            data_to_sign = to_b64(bytes(self.header) + bytes(self.body) + tl_type_bytes)
 
             for key in self._signer_keys:
                 # Sign data
                 signature = key.sign(data_to_sign, long_sign=False)
 
                 # Add signature to signatures list
-                signer_type_str = consts.VSKeyTypeS(key.key_type)
                 s = Signature(
-                    signer_type=consts.key_type_str_to_num_map[signer_type_str],
+                    signer_type=key.key_type_hsm,
                     ec_type=key.ec_type_hsm,
-                    hash_type=key.hash_type,
+                    hash_type=key.hash_type_hsm,
                     sign=b64_to_bytes(signature),
                     signer_pub_key=b64_to_bytes(key.public_key)
                 )

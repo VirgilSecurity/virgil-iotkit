@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-from virgil_keymanager.consts import ec_type_vs_to_hsm_map
+from virgil_keymanager import consts
 
 
 class KeyGeneratorInterface(ABC):
 
     @abstractmethod
-    def generate(self, *, signature_limit, rec_pub_keys, signer_key, private_key_base64):
+    def generate(self, *, signature_limit, rec_pub_keys, signer_key, private_key_base64, start_date, expire_date):
         pass
 
     @property
@@ -16,7 +16,7 @@ class KeyGeneratorInterface(ABC):
 
     @property
     def ec_type_hsm(self) -> int:
-        t = ec_type_vs_to_hsm_map.get(self.ec_type, None)
+        t = consts.ec_type_vs_to_hsm_map.get(self.ec_type, None)
         if t is None:
             raise ValueError("Can`t find HSM EC key type for %s Virgil type" % self.ec_type)
         return t.value
@@ -25,6 +25,13 @@ class KeyGeneratorInterface(ABC):
     @abstractmethod
     def hash_type(self):
         pass
+
+    @property
+    def hash_type_hsm(self):
+        t = consts.hash_type_vs_to_hsm_map.get(self.hash_type, None)
+        if t is None:
+            raise ValueError("Can`t find HSM hash type for %s Virgil hash type" % self.hash_type)
+        return t
 
     @property
     @abstractmethod
@@ -50,6 +57,14 @@ class KeyGeneratorInterface(ABC):
     @abstractmethod
     def key_type(self):
         pass
+
+    @property
+    def key_type_hsm(self) -> int:
+        vs_type = consts.VSKeyTypeS(self.key_type)
+        t = consts.key_type_str_to_num_map.get(vs_type, None)
+        if t is None:
+            raise ValueError("Can`t find HSM key type for %s Virgil key type" % self.key_type)
+        return t.value
 
     @abstractmethod
     def sign(self, data, long_sign):

@@ -1,8 +1,10 @@
+import io
+from typing import Optional
+
 from PyCRC.CRCCCITT import CRCCCITT
 
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
-from virgil_keymanager import consts
 
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils import VirgilSignExtractor
@@ -15,14 +17,14 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
     """
 
     def __init__(self,
-                 key_type,
+                 key_type: str,
                  private_key=None,
                  public_key=None,
                  ec_type=VirgilKeyPair.Type_EC_SECP256R1,
                  hash_type=HashAlgorithm.SHA256):
         self._crypto = VirgilCrypto()
         self._crypto.signature_hash_algorithm = hash_type
-        self.__hash_type = consts.hash_type_vs_to_hsm_map[hash_type]
+        self.__hash_type = hash_type
         self.__key_type = key_type
         self.__ec_type = ec_type
         self.__public_key = None if not private_key else b64_to_bytes(public_key)
@@ -31,7 +33,27 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
         self.__signature = None
         self.device_serial = None
 
-    def generate(self, *, signature_limit=None, rec_pub_keys=None, signer_key=None, private_key_base64=None):
+    def generate(self,
+                 *,
+                 signature_limit=None,
+                 rec_pub_keys=None,
+                 signer_key: Optional[KeyGeneratorInterface]=None,
+                 private_key_base64: Optional[str]=None,
+                 start_date: Optional[int]=0,
+                 expire_date: Optional[int]=0):
+        def make_signature():
+            byte_buffer = io.BytesIO()
+
+            # vs_pubkey_dated_t
+            byte_buffer.write(start_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(expire_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(b64_to_bytes(self.public_key))
+
+            bytes_to_sign = byte_buffer.getvalue()
+            return signer_key.sign(to_b64(bytes_to_sign), long_sign=False)
+
         # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
@@ -43,7 +65,7 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-65:]
 
         if signer_key:
-            self.__signature = signer_key.sign(self.public_key)
+            self.__signature = make_signature()
 
         return self
 

@@ -1,10 +1,10 @@
 import sys
 from random import randint
+from typing import Optional
 
 from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
-from virgil_keymanager import consts
 
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
@@ -26,7 +26,7 @@ class AtmelKeyGenerator(KeyGeneratorInterface):
         self._key_type = key_type
         self._logger = self._context.logger
         self._ec_type = ec_type
-        self._hash_type = consts.hash_type_vs_to_hsm_map[hash_type]
+        self._hash_type = hash_type
 
         self._private_key = None
         self.device_serial = device_serial
@@ -132,7 +132,13 @@ class AtmelKeyGenerator(KeyGeneratorInterface):
             sys.exit(ops_status[1])
         return ops_status[1]
 
-    def generate(self, *, signature_limit=None, rec_pub_keys=None, signer_key=None, private_key_base64=None):
+    def generate(self, *,
+                 signature_limit=None,
+                 rec_pub_keys=None,
+                 signer_key: Optional[KeyGeneratorInterface] = None,
+                 private_key_base64: Optional[str] = None,
+                 start_date: Optional[int] = 0,
+                 expire_date: Optional[int] = 0):
         random_number_bytes = list(randint(0, 255) for _ in range(32))
         random_number = to_b64(bytearray(random_number_bytes))
 
@@ -163,6 +169,7 @@ class AtmelKeyGenerator(KeyGeneratorInterface):
             if pub_key == 0:
                 return
 
+            # TODO: update is needed, sign data is vs_pubkey_dated_t for HL keys
             sign_data = signer_key.sign(pub_key)
             if sign_data == 0:
                 return

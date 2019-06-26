@@ -562,14 +562,20 @@ class UtilityManager(object):
                 empty_allow=True
             )
 
+        # Get start/expiration date
+        start_date, expiration_date = self.__choose_dates_for_key(necessary=start_date_required)
+
         # Generate
-        if not key.generate(rec_pub_keys=rec_pub_keys, signature_limit=signature_limit, signer_key=rec_key_for_sign):
+        if not key.generate(
+                rec_pub_keys=rec_pub_keys,
+                signature_limit=signature_limit,
+                signer_key=rec_key_for_sign,
+                start_date=start_date,
+                expire_date=expiration_date
+        ):
             self.__logger.info("{} Key generation failed".format(name_for_log))
             self.__ui.print_message("{} Key generation failed".format(name_for_log))
             return
-
-        # Get start/expiration date
-        start_date, expiration_date = self.__choose_dates_for_key(necessary=start_date_required)
 
         # Enter comment
         comment = self.__ui.get_user_input("Enter comment for %s Key: " % name_for_log)
@@ -587,7 +593,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             key_info["signature"] = key.signature
             key_info["signer_key_id"] = rec_key_for_sign.key_id
-            key_info["signer_hash_type"] = rec_key_for_sign.hash_type
+            key_info["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
 
         # - public
         public_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
@@ -615,7 +621,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             card_content["signature"] = key.signature
             card_content["signer_public_key"] = rec_key_for_sign.public_key
-            card_content["signer_hash_type"] = rec_key_for_sign.hash_type
+            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
         if extra_card_content:
             card_content.update(extra_card_content)
         self.__card_requests_handler.create_and_save_request_for_key(key, key_info=card_content)
