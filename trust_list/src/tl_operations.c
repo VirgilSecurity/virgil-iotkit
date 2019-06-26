@@ -129,7 +129,6 @@ static bool
 _verify_tl(vs_tl_context_t *tl_ctx) {
     uint8_t buf[TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
-    vs_tl_footer_t footer;
     uint16_t i;
 
 
@@ -363,7 +362,6 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
 int
 vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_t *footer_sz) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    vs_tl_header_t header;
     uint8_t buf[TL_STORAGE_MAX_PART_SIZE];
     vs_sign_t *element = (vs_sign_t *)(buf + sizeof(vs_tl_footer_t));
     uint16_t _sz = sizeof(vs_tl_footer_t);
@@ -381,7 +379,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         return VS_TL_ERROR_GENERAL;
     }
 
-    for (i = 0; i < header.signatures_count; ++i) {
+    for (i = 0; i < tl_ctx->header.signatures_count; ++i) {
         _sz += sizeof(vs_sign_t);
         if (0 != vs_secbox_load(&el, buf, _sz)) {
             return VS_TL_ERROR_READ;
@@ -396,7 +394,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 
         _sz += key_len + sign_len;
 
-        element = (vs_sign_t *)((uint8_t *)element + _sz);
+        element = (vs_sign_t *)((uint8_t *)element + sizeof(vs_sign_t) + key_len + sign_len);
     }
 
     if (buf_sz < _sz) {
