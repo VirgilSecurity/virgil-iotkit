@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <secbox.h>
+#include <virgil/iot/secbox/secbox.h>
 #include <sdmp/PRVS.h>
 #include <hal/macro.h>
 

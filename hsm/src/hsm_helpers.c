@@ -63,6 +63,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 32;
     default:
+        VS_IOT_ASSERT(false && "Unsupported keypair type");
         return -VS_HSM_ERR_INVAL;
     }
 }
@@ -91,6 +92,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 64;
     default:
+        VS_IOT_ASSERT(false && "Unsupported signature type");
         return -VS_HSM_ERR_INVAL;
     }
 }
@@ -106,7 +108,8 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
     case VS_HASH_SHA_512:
         return 64;
     default:
-        return -1;
+        VS_IOT_ASSERT(false && "Unsupported hash type");
+        return -VS_HSM_ERR_INVAL;
     }
 }
 

@@ -19,10 +19,16 @@ typedef struct {
     tl_keys_qty_t keys_qty;
 } vs_tl_context_t;
 
+#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
+    if (!(CONDITION)) {                                                                                                \
+        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
+        return (RETCODE);                                                                                              \
+    }
+
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
+
 void
 vs_tl_storage_init();
-bool
-vs_tl_verify_hl_key(const uint8_t *key_to_check, vs_hsm_keypair_type_e key_type, vs_hsm_hash_type_e hash_type);
 int
 vs_tl_invalidate(size_t storage_type);
 int

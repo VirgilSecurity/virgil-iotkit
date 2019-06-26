@@ -85,8 +85,9 @@ target_compile_definitions(${PROJECT_NAME}
 #
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list
-        ${CMAKE_CURRENT_LIST_DIR}/../secbox/include/virgil/iot/secbox
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../secbox/include
+        ${CMAKE_CURRENT_LIST_DIR}/../logger/include
         ${CMAKE_CURRENT_LIST_DIR}/../hsm/include
          $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 

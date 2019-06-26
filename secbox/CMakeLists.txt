@@ -62,7 +62,7 @@ set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno
 #
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/secbox
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/

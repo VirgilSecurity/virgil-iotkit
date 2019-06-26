@@ -43,9 +43,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <logger.h>
-#include <logger_hal.h>
-#include <utoa_fast_div.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/logger/private/logger_hal.h>
+#include <virgil/iot/logger/private/utoa_fast_div.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static bool _last_res = true;
