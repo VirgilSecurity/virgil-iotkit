@@ -37,11 +37,10 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 #include <stdlib-config.h>
+#include <global-hal.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-
-#include <global-hal.h>
 
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
@@ -131,7 +130,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 
     vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
 
-    VS_ASSERT(_prvs_impl.device_info_func);
+    VS_IOT_ASSERT(_prvs_impl.device_info_func);
     if (0 != _prvs_impl.device_info_func(devi_response, response_buf_sz)) {
         return -1;
     }
@@ -152,7 +151,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
 
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
 
-    VS_ASSERT(_prvs_impl.finalize_storage_func);
+    VS_IOT_ASSERT(_prvs_impl.finalize_storage_func);
 
     return _prvs_impl.finalize_storage_func(asav_response, response_sz);
 }
@@ -167,7 +166,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
                            uint16_t *response_sz) {
 
     uint16_t result_sz;
-    VS_ASSERT(_prvs_impl.sign_data_func);
+    VS_IOT_ASSERT(_prvs_impl.sign_data_func);
 
     if (0 != _prvs_impl.sign_data_func(request, request_sz, response, response_buf_sz, &result_sz)) {
         return -1;
@@ -260,8 +259,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {
-    }
+    default: {}
     }
 
     return -1;

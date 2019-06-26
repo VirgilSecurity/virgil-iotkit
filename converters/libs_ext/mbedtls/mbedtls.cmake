@@ -100,3 +100,4 @@ ExternalProject_Add (${PROJECT_NAME}
 
 add_custom_target ("${PROJECT_NAME}-build" ALL COMMENT "Build package ${PROJECT_NAME}")
 add_dependencies ("${PROJECT_NAME}-build" ${PROJECT_NAME})
+
