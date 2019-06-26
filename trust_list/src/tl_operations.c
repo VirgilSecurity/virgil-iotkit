@@ -44,6 +44,7 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/provision/provision.h>
 
 static vs_tl_context_t _tl_static_ctx;
 
@@ -469,7 +470,10 @@ vs_tl_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     int key_len;
     int sign_len;
+    int hash_size;
     uint16_t signed_data_sz;
+    uint16_t res_sz;
+    uint8_t *pubkey;
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args")
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small")
@@ -495,36 +499,22 @@ vs_tl_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
     BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong")
 
+    hash_size = vs_hsm_get_hash_len(sign->hash_type);
+    BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type")
 
-    //    size_t read_sz;
-    //    uint8_t buf[32];
-    //    uint16_t result_sz;
-    //
-    //    if (!key_to_check || sizeof(vs_crypto_signed_hl_public_key_t) != key_size) {
-    //        return false;
-    //    }
-    //
-    //    vs_crypto_signed_hl_public_key_t *key = (vs_crypto_signed_hl_public_key_t *)key_to_check;
-    //    vs_crypto_signed_hl_public_key_t rec_key;
-    //
-    //    if(VS_HSM_ERR_OK != vs_hsm_hash_create(hash_type,
-    //                                        (uint8_t *)key->public_key.val,
-    //                                        PUBKEY_TINY_SZ,
-    //                                        buf,
-    //                                        32,
-    //                                        &result_sz)) {
-    //        return false;
-    //    }
-    //
-    //        for (size_t i = 0; i < TL_SIGNATURES_QTY; ++i) {
-    //            vs_secbox_element_info_t el = {IOT_HSM_ELEMENT_PBR, i};
-    //
-    //            if (GATEWAY_OK == vs_secbox_load(&el, (uint8_t *)&rec_key, sizeof(crypto_signed_hl_public_key_t),
-    //            &read_sz) &&
-    //                key->sign.signer_id.key_id == rec_key.public_key.id.key_id &&
-    //                _verify_hash(&hash, vscf_alg_id_SHA256, rec_key.public_key.val, key->sign.val)) {
-    //                return true;
-    //            }
-    //        }
+    uint8_t hash[hash_size];
+
+    VS_HSM_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
+                     "Error hash create")
+
+    pubkey = sign->raw_sign_pubkey + sign_len;
+
+    BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+                   "Signer key is wrong")
+
+    VS_HSM_CHECK_RET(
+            vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
+            "Signature is wrong")
+
     return true;
 }
