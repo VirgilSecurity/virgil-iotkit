@@ -34,13 +34,34 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(provision VERSION 0.1.0 LANGUAGES C)
+project(converters VERSION 0.1.0 LANGUAGES C)
+
+set(CONV_LIB converters)
 
 #
-#   Provision library
+#   Source code
 #
-add_library(provision
-        src/provision.c
+set(CONV_SRC
+        src/signature_converters.c
+        src/pubkey_converters.c
+        )
+
+# Include and build external libraries
+include (${CMAKE_CURRENT_SOURCE_DIR}/../cmake/virgil_depends.cmake)
+
+virgil_depends (
+        PACKAGE_NAME "MbedTLS"
+        CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs_ext/mbedtls"
+        CMAKE_ARGS "${MBEDTLS_CMAKE_ARGS}"
+)
+virgil_find_package (MbedTLS 2.4)
+
+#
+#   Converters library
+#
+add_library(${CONV_LIB}
+        SHARED
+        ${CONV_SRC}
         )
 
 #
@@ -53,16 +74,18 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(provision
+target_compile_options(${PROJECT_NAME}
         PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
-
-#
-#   Compile definitions
-#
 
 #
 #   Config path
 #
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[converters] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
 
 target_compile_definitions(${PROJECT_NAME}
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
@@ -74,5 +97,18 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        )
+
+target_link_libraries (${PROJECT_NAME}
+        PUBLIC
+        mbedtls::mbedcrypto
+        mbedtls::ed25519
         )

@@ -63,7 +63,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(logger
+target_compile_options(${PROJECT_NAME}
         PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
 
 #

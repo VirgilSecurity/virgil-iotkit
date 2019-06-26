@@ -32,62 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <helpers.h>
-#include <stdlib.h>
+#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
 
-uint16_t failed_test_result;
-
-void
-sdmp_tests(void);
-void
-prvs_tests(void);
+#include <stdint.h>
 
 void
-test_hash(void);
-void
-test_hmac(void);
-void
-test_kdf2(void);
-void
-test_ecdsa(void);
-void
-test_ecdh(void);
-void
-test_keypair(void);
-void
-test_random(void);
-void
-test_aes(void);
-void
-test_sign_converters(void);
-void
-test_pubkeys_converters(void);
-/**********************************************************/
-static void
-crypto_tests(void) {
-    test_hash();
-    test_hmac();
-    test_kdf2();
-    test_ecdsa();
-    test_ecdh();
-    test_keypair();
-    test_random();
-    test_aes();
-#if !VIRGIL_IOT_MCU_BUILD
-    test_sign_converters();
-    test_pubkeys_converters();
-#endif
-}
+vs_global_hal_msleep(size_t msec);
 
-/**********************************************************/
-uint16_t
-virgil_iot_sdk_tests(void) {
-    failed_test_result = 0;
 
-    sdmp_tests();
-    prvs_tests();
-
-    crypto_tests();
-
-    return failed_test_result;
-}
+#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H

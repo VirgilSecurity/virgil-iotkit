@@ -60,23 +60,35 @@ add_library(${SDMP_LIB}
 set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
 
 #
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[sdmp] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[sdmp] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+#
 #   Common include directories
 #
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../provision/include
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../inc
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../config
         )
 
 #
 #   Link libraries
 #
 target_link_libraries (${PROJECT_NAME}
-        logger)
+        logger
+        provision)
 
 #
 # Format code

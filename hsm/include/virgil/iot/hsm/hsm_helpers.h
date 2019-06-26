@@ -37,6 +37,13 @@
 
 #include <virgil/iot/hsm/hsm_structs.h>
 
+int
+vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+int
+vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
+
 const char *
 vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 

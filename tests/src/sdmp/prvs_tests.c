@@ -39,8 +39,10 @@
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/logger/logger.h>
 #include <private/test_prvs.h>
 #include <stdlib-config.h>
+#include <virgil/iot/hsm/hsm_structs.h>
 
 static vs_netif_t test_netif;
 static vs_sdmp_prvs_dnid_list_t dnid_list;
@@ -100,19 +102,25 @@ terminate:
 /**********************************************************/
 static bool
 test_save_provision(void) {
-    vs_sdmp_pubkey_t res_pubkey;
-    static const vs_sdmp_pubkey_t asav_response = {.pubkey = "Password", .pubkey_sz = 9};
+    uint8_t res_buf[256];
+    vs_pubkey_t *res_pubkey = (vs_pubkey_t *)res_buf;
 
+    vs_pubkey_t *asav_response = &make_server_response.finalize_storage.asav_response;
     prvs_call.call = 0;
     is_client_call = true;
 
-    make_server_response.finalize_storage.asav_response = asav_response;
+    memcpy(asav_response->pubkey, "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", 48);
+    asav_response->key_type = VS_KEY_IOT_DEVICE;
+    asav_response->ec_type = VS_KEYPAIR_EC_SECP192K1;
 
-    SDMP_CHECK_GOTO(vs_sdmp_prvs_save_provision(&test_netif, &mac_addr_server, &res_pubkey, wait_msec),
+    make_server_response.finalize_storage.size = strlen((char *)asav_response->pubkey) + sizeof(vs_pubkey_t);
+
+    SDMP_CHECK_GOTO(vs_sdmp_prvs_save_provision(&test_netif, &mac_addr_server, res_buf, sizeof(res_buf), wait_msec),
                     "vs_sdmp_prvs_save_provision call");
     PRVS_OP_CHECK_GOTO(prvs_call.finalize_storage);
-    CHECK_GOTO(res_pubkey.pubkey_sz == asav_response.pubkey_sz &&
-                       !VS_IOT_MEMCMP(res_pubkey.pubkey, asav_response.pubkey, res_pubkey.pubkey_sz),
+
+    CHECK_GOTO(res_pubkey->key_type == asav_response->key_type && res_pubkey->ec_type == asav_response->ec_type &&
+                       !VS_IOT_MEMCMP(res_pubkey->pubkey, asav_response->pubkey, 48),
                "Incorrect received public key");
 
     return true;
@@ -127,11 +135,16 @@ static bool
 test_device_info(void) {
     uint8_t response_buf[256];
     vs_sdmp_prvs_devi_t *dev_resp = (vs_sdmp_prvs_devi_t *)response_buf;
+
     uint8_t server_buf[256];
     vs_sdmp_prvs_devi_t *serv_resp = (vs_sdmp_prvs_devi_t *)server_buf;
+    vs_pubkey_t *serv_pubkey = (vs_pubkey_t *)serv_resp->data;
+    vs_sign_t *serv_sign;
     static const uint8_t pubkey_raw[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    static const uint8_t sign_raw[] = {20, 19, 18, 17, 16, 15, 14, 13, 12, 11};
     uint16_t pos;
     uint16_t size;
+
     const uint8_t *buf1;
     const uint8_t *buf2;
 
@@ -142,20 +155,20 @@ test_device_info(void) {
         server_buf[pos] = pos;
     }
 
-    serv_resp->mac = mac_addr_client;
-    VS_IOT_MEMCPY((char *)serv_resp->own_key.pubkey, pubkey_raw, sizeof(pubkey_raw));
+    memcpy(&serv_resp->mac, &mac_addr_client, sizeof(vs_mac_addr_t));
+    serv_pubkey->ec_type = 255;
+    serv_pubkey->key_type = 255;
+    VS_IOT_MEMCPY((char *)serv_pubkey->pubkey, pubkey_raw, sizeof(pubkey_raw));
+
+    serv_sign = (vs_sign_t *)(serv_resp->data + sizeof(pubkey_raw) + sizeof(vs_pubkey_t));
+    serv_sign->ec_type = 255;
+    serv_sign->hash_type = 255;
+    serv_sign->signer_type = 255;
+    VS_IOT_MEMCPY((char *)serv_sign->raw_sign_pubkey, sign_raw, sizeof(sign_raw));
 
     make_server_response.device_info = serv_resp;
 
-    serv_resp->own_key.pubkey_sz = 255;
-    serv_resp->signature.val_sz = 255;
-
-    SDMP_CHECK_ERROR_GOTO(
-            vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
-            "vs_sdmp_prvs_device_info call");
-
-    serv_resp->own_key.pubkey_sz = sizeof(pubkey_raw);
-    serv_resp->signature.val_sz = sizeof(response_buf) - sizeof(vs_sdmp_prvs_devi_t);
+    serv_resp->data_sz = sizeof(pubkey_raw) + sizeof(vs_pubkey_t) + sizeof(sign_raw) + sizeof(vs_sign_t);
 
     SDMP_CHECK_GOTO(vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
                     "vs_sdmp_prvs_device_info call");
@@ -164,19 +177,14 @@ test_device_info(void) {
 
     CHECK_GOTO(sizeof(response_buf) != server_request.finalize_storage.buf_sz, "Incorrect request received by server");
 
-    buf1 = dev_resp->own_key.pubkey;
-    buf2 = serv_resp->own_key.pubkey;
-    size = dev_resp->own_key.pubkey_sz;
-    CHECK_GOTO(dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz && !VS_IOT_MEMCMP(buf1, buf2, size),
-               "Incorrect own_key");
+    buf1 = dev_resp->data;
+    buf2 = serv_resp->data;
+    size = dev_resp->data_sz;
+    CHECK_GOTO(dev_resp->data_sz == serv_resp->data_sz && !VS_IOT_MEMCMP(buf1, buf2, size), "Incorrect own_key");
 
-    CHECK_GOTO(dev_resp->signature.val_sz == serv_resp->signature.val_sz &&
-                       !VS_IOT_MEMCMP(dev_resp->signature.val, serv_resp->signature.val, dev_resp->signature.val_sz),
-               "Incorrect signature");
     CHECK_GOTO(!VS_IOT_MEMCMP(dev_resp->mac.bytes, serv_resp->mac.bytes, sizeof(serv_resp->mac.bytes)),
                "Incorrect MAC address");
-    CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model &&
-                       dev_resp->signature.id == serv_resp->signature.id,
+    CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model,
                "Incorrect response");
 
     return true;

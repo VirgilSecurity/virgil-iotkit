@@ -143,6 +143,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
         ${CMAKE_CURRENT_SOURCE_DIR}/logger
         ${CMAKE_CURRENT_SOURCE_DIR}/hsm
+        ${CMAKE_CURRENT_SOURCE_DIR}/converters
 )
 
 
@@ -172,10 +173,22 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 
 #
+#   Converters
+#
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+endif()
+#
 #   HSM
 #
 # TODO: Add Option to disable hsm
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
+
+#
+#   Provision
+#
+# TODO: Add Option to disable hsm
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/provision)
 
 #
 #   Protocols

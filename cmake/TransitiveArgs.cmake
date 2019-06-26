@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2018 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -32,47 +32,47 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(provision VERSION 0.1.0 LANGUAGES C)
+if(${CMAKE_VERSION} VERSION_LESS "3.10")
+    if(__TRANSITIVE_ARGS_INCLUDED__)
+      return()
+    endif()
 
-#
-#   Provision library
-#
-add_library(provision
-        src/provision.c
-        )
-
-#
-#   Set additional compiler flags
-#
-if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("No CFLAGS_PLATFORM")
+    set(__TRANSITIVE_ARGS_INCLUDED__ TRUE)
 else()
-    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
-    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+    include_guard()
 endif()
 
-target_compile_options(provision
-        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
 
-#
-#   Compile definitions
-#
+function(TRANSITIVE_ARGS_INIT)
+    if(NOT TRANSITIVE_ARGS_FILE)
+        set(TRANSITIVE_ARGS_FILE "${CMAKE_BINARY_DIR}/transitive-args.cmake" CACHE FILEPATH "")
+    endif ()
 
-#
-#   Config path
-#
+    if(NOT EXISTS "${TRANSITIVE_ARGS_FILE}")
+        file(WRITE "${TRANSITIVE_ARGS_FILE}"
+                "set(TRANSITIVE_ARGS_FILE \"${TRANSITIVE_ARGS_FILE}\" CACHE FILEPATH \"\")\n")
+    endif()
+endfunction()
 
-target_compile_definitions(${PROJECT_NAME}
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
-        )
 
-#
-#   Common include directories
-#
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-        )
+function(TRANSITIVE_ARGS_ADD)
+    if(NOT TRANSITIVE_ARGS_FILE)
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: variable TRANSITIVE_ARGS_FILE is not defined")
+    endif ()
+
+    if(NOT EXISTS "${TRANSITIVE_ARGS_FILE}")
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: file '${TRANSITIVE_ARGS_FILE}' does not exists")
+    endif ()
+
+    file(STRINGS "${TRANSITIVE_ARGS_FILE}" file_content)
+
+    foreach(var ${ARGN})
+        if(${var} AND NOT file_content MATCHES "${var}")
+            file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(${var} \"${${var}}\" CACHE INTERNAL \"\")\n")
+        endif()
+    endforeach()
+endfunction()
+
+
+transitive_args_init ()

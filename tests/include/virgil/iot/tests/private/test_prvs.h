@@ -82,8 +82,10 @@ typedef union {
 } server_request_t;
 
 typedef union {
+    uint8_t data[1024];
     struct {
-        vs_sdmp_pubkey_t asav_response;
+        uint16_t size;
+        vs_pubkey_t asav_response;
     } finalize_storage;
 
     vs_sdmp_prvs_devi_t *device_info;

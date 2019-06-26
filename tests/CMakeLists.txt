@@ -63,6 +63,16 @@ target_link_libraries(virgil-iot-sdk-tests
         sdmp
         )
 
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    target_sources(virgil-iot-sdk-tests
+            PRIVATE
+            src/crypto/sign_converters.c
+            src/crypto/pubkeys_converters.c
+            )
+    target_link_libraries(virgil-iot-sdk-tests
+            converters
+            )
+endif()
 #
 #   Set additional compiler flags
 #
@@ -100,6 +110,7 @@ target_include_directories(virgil-iot-sdk-tests
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../converters/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/hsm/include>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"

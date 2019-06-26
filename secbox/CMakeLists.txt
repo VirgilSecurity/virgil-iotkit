@@ -67,6 +67,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../provision/include/
         ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/virgil/iot/protocols
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )

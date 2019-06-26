@@ -35,7 +35,7 @@
 package sdmp
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../protocols/sdmp/include -I${SRCDIR}/../c_libs/include
+#cgo CFLAGS: -I${SRCDIR}/../../../protocols/sdmp/include -I${SRCDIR}/../../../provision/include -I${SRCDIR}/../c_libs/include
 #cgo LDFLAGS: -L${SRCDIR}/../lib -lsdmp -lnetif_plc_sim
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
