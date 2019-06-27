@@ -40,4 +40,7 @@
 const char *
 vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
 
+bool
+is_keypair_type_implemented(vs_hsm_keypair_type_e keypair_type);
+
 #endif // VS_TESTS_PRIVATE_HELPERS_H

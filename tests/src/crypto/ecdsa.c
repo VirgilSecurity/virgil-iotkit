@@ -24,7 +24,9 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
                                         &result_sz),
                      "ERROR while creating hash");
 
-    VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, sizeof(sign_buf), &signature_sz),
+    signature_sz = vs_hsm_get_signature_len(keypair_type);
+
+    VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
                      "ERROR while signing hash");
     BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size");
 
@@ -48,7 +50,11 @@ test_ecdsa(void) {
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(HASH));                                         \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");                                                    \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
-    TEST_CASE_OK(descr, _test_sign_verify_pass(SLOT, HASH, KEY));
+    if (!is_keypair_type_implemented(KEY)) {   \
+        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEY));   \
+    } else {    \
+       TEST_CASE_OK(descr, _test_sign_verify_pass(SLOT, HASH, KEY)); \
+    }
 
     char descr[256];
 

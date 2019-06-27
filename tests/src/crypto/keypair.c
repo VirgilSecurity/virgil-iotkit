@@ -15,13 +15,6 @@ typedef struct {
 
 /******************************************************************************/
 static bool
-_is_keypair_type_implemented(_test_case_t *test_case) {
-
-    return VS_HSM_ERR_NOT_IMPLEMENTED != vs_hsm_keypair_create(test_case->slot, test_case->keypair_type);
-}
-
-/******************************************************************************/
-static bool
 _test_keypair_generate(_test_case_t *test_case) {
     vs_hsm_keypair_type_e keypair;
 
@@ -99,24 +92,19 @@ test_keypair(void) {
     static const size_t cases_amount = sizeof(test_cases) / sizeof(test_cases[0]);
     size_t pos;
     char buf[256];
-    vs_log_level_t default_loglev;
 
     START_TEST("Keypair tests");
 
-    default_loglev = vs_logger_get_loglev();
 
     for (pos = 0; pos < cases_amount; ++pos) {
         _test_case_t *test_case = &test_cases[pos];
 
         test_case->initialized = false;
 
-        vs_logger_set_loglev(VS_LOGLEV_CRITICAL);
-        if (!_is_keypair_type_implemented(test_case)) {
-            vs_logger_set_loglev(VS_LOGLEV_WARNING);
+        if (!is_keypair_type_implemented(test_case->keypair_type)) {
             VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(test_case->keypair_type));
             continue;
         }
-        vs_logger_set_loglev(default_loglev);
 
         VS_IOT_STRCPY(buf, "Keypair type ");
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_hsm_keypair_type_descr(test_case->keypair_type));
@@ -125,8 +113,6 @@ test_keypair(void) {
 
         TEST_CASE_OK(buf, _test_keypair_generate(test_case));
     }
-
-    vs_logger_set_loglev(default_loglev);
 
     TEST_CASE_OK("Compare buffer outputs", _compare_outputs(test_cases, cases_amount));
 
