@@ -122,12 +122,14 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint16_t signed_data_sz;
     uint16_t res_sz;
     uint8_t *pubkey;
+    vs_sign_t *sign;
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args")
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small")
 
     vs_pubkey_dated_t *key = (vs_pubkey_dated_t *)key_to_check;
 
+    // Recovery key doesn't have signature
     if (VS_KEY_RECOVERY == key->pubkey.key_type) {
         return true;
     }
@@ -136,17 +138,23 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     BOOL_CHECK_RET(key_len > 0, "Unsupported key ec_type")
 
+    // Determine stuff size under signature
     signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
 
     BOOL_CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), "key stuff is too small")
 
-    vs_sign_t *sign = (vs_sign_t *)(key_to_check + signed_data_sz);
+    // Signature pointer
+    sign = (vs_sign_t *)(key_to_check + signed_data_sz);
+
+    BOOL_CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, "Signer type must be RECOVERY")
+
     sign_len = vs_hsm_get_signature_len(sign->ec_type);
     key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
     BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
     BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong")
 
+    // Calculate hash of stuff under signature
     hash_size = vs_hsm_get_hash_len(sign->hash_type);
     BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type")
 
@@ -155,10 +163,11 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     VS_HSM_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
                      "Error hash create")
 
+    // Signer raw key pointer
     pubkey = sign->raw_sign_pubkey + sign_len;
 
     BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                   "Signer key is wrong")
+                   "Signer key is not present")
 
     VS_HSM_CHECK_RET(
             vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
