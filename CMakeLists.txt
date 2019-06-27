@@ -175,10 +175,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 #
 #   Converters
 #
-# TODO : temporary disabled
-#if (NOT VIRGIL_IOT_MCU_BUILD)
-#    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
-#endif()
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+endif()
 #
 #   HSM
 #
