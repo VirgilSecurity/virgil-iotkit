@@ -2,7 +2,7 @@
 #define TL_OPERATIONS_H
 
 #include <virgil/iot/hsm/hsm_structs.h>
-
+#include <virgil/iot/macros/macros.h>
 typedef struct {
     size_t storage_type;
 } vs_tl_storage_ctx_t;
@@ -18,15 +18,6 @@ typedef struct {
     vs_tl_header_t header;
     tl_keys_qty_t keys_qty;
 } vs_tl_context_t;
-
-#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
-    if (!(CONDITION)) {                                                                                                \
-        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
-        return (RETCODE);                                                                                              \
-    }
-
-#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 void
 vs_tl_storage_init();

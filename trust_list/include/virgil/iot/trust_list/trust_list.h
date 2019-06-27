@@ -21,9 +21,6 @@ typedef struct vs_tl_element_info_s {
 void
 vs_tl_init_storage(void);
 
-bool
-vs_tl_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
-
 int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
 
