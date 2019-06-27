@@ -105,7 +105,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
 
         if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz &&
             0 == memcmp(key, ref_key->pubkey.pubkey, key_sz)) {
-            return true;
+            return vs_provision_verify_hl_key(buf, _sz);
         }
     }
 
