@@ -32,25 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TL_CONFIG_H
-#define VIRGIL_IOT_SDK_TL_CONFIG_H
+#ifndef VS_MACROS_H
+#define VS_MACROS_H
 
-/*
- * TL_STORAGE_SIZE
- * Maximum size of trust list used.
- * Please note that library uses three type of storage,
- * so you need have at least TL_STORAGE_SIZE * 3 memory size
- * (excluding filesystem)
- */
+#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
+    if (!(CONDITION)) {                                                                                                \
+        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
+        return (RETCODE);                                                                                              \
+    }
 
-#define TL_STORAGE_SIZE (10 * 4096)
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
 
-/*
- * TL_STORAGE_MAX_PART_SIZE
- * Maximum size of each part of trust list.
- * It should be not less than max size of tl header, tl footer and tl public key
- */
+#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
+    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+                   #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
+                   (int)(SIZE))
 
-#define TL_STORAGE_MAX_PART_SIZE (512)
-
-#endif // VIRGIL_IOT_SDK_TL_CONFIG_H
+#endif // VS_MACROS_H

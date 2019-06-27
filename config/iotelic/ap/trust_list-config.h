@@ -45,4 +45,11 @@
 
 #define TL_STORAGE_SIZE (10 * 4096)
 
+/*
+ * TL_STORAGE_MAX_PART_SIZE
+ * Maximum size of each part of trust list.
+ * It should be not less than max size of tl header, tl footer and tl public key
+ */
+
+#define TL_STORAGE_MAX_PART_SIZE (512)
 #endif // VIRGIL_IOT_SDK_TL_CONFIG_H
