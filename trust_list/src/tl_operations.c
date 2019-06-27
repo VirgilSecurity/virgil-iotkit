@@ -152,7 +152,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         sign = (vs_sign_t *)(pubkey + key_len);
     }
 
-    VS_LOG_TRACE("TL %u. Sign rules is %s",
+    VS_LOG_DEBUG("TL %u. Sign rules is %s",
                  tl_ctx->storage.storage_type,
                  sign_rules >= VS_TL_SIGNATURES_QTY ? "correct" : "wrong");
 

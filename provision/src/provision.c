@@ -87,6 +87,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     vs_iot_hsm_slot_e slot;
     uint8_t i = 0;
     int ref_key_sz;
+    // TODO: Fix buffer constant size
     uint8_t buf[512];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
