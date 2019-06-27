@@ -52,10 +52,24 @@ static vs_tl_context_t _tl_dynamic_ctx;
 
 static vs_tl_context_t _tl_tmp_ctx;
 
+static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_SIGNER_TYPE_LIST;
+
+/******************************************************************************/
+static bool
+_is_rule_equal_to(vs_key_type_e type) {
+    uint8_t i;
+    for (i = 0; i < VS_TL_SIGNATURES_QTY; ++i) {
+        if (sign_rules_list[i] == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /******************************************************************************/
 static bool
 _verify_tl(vs_tl_context_t *tl_ctx) {
-    uint8_t buf[TL_STORAGE_MAX_PART_SIZE];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
     vs_hsm_sw_sha256_ctx ctx;
@@ -65,6 +79,8 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint8_t *pubkey;
     uint16_t sign_len;
     uint16_t key_len;
+    uint8_t sign_rules = 0;
+
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
@@ -75,7 +91,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         return false;
     }
 
-    if (tl_ctx->header.tl_size > TL_STORAGE_SIZE) {
+    if (tl_ctx->header.tl_size > VS_TL_STORAGE_SIZE) {
         tl_ctx->ready = false;
         return false;
     }
@@ -104,14 +120,15 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     // First signature
     sign = (vs_sign_t *)footer->signatures;
 
-    // TODO: Need to get rules for signature types
+    BOOL_CHECK_RET(tl_ctx->header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
+
     for (i = 0; i < tl_ctx->header.signatures_count; ++i) {
-        BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL");
+        BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL")
 
         sign_len = vs_hsm_get_signature_len(sign->ec_type);
         key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
-        BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
+        BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type")
 
         // Signer raw key pointer
         pubkey = sign->raw_sign_pubkey + sign_len;
@@ -119,17 +136,27 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
                        "Signer key is wrong")
 
-        BOOL_CHECK_RET(
-                VS_HSM_ERR_OK ==
-                        vs_hsm_ecdsa_verify(
-                                sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
-                "Signature is wrong")
+        if (_is_rule_equal_to(sign->signer_type)) {
+            BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_ecdsa_verify(sign->ec_type,
+                                                                pubkey,
+                                                                key_len,
+                                                                sign->hash_type,
+                                                                hash,
+                                                                sign->raw_sign_pubkey,
+                                                                sign_len),
+                           "Signature is wrong")
+            sign_rules++;
+        }
 
         // Next signature
         sign = (vs_sign_t *)(pubkey + key_len);
     }
 
-    return true;
+    VS_LOG_TRACE("TL %u. Sign rules is %s",
+                 tl_ctx->storage.storage_type,
+                 sign_rules >= VS_TL_SIGNATURES_QTY ? "correct" : "wrong");
+
+    return sign_rules >= VS_TL_SIGNATURES_QTY;
 }
 
 /******************************************************************************/
@@ -138,7 +165,7 @@ _init_tl_ctx(size_t storage_type, vs_tl_context_t *ctx) {
     if (!ctx)
         return;
 
-    memset(ctx, 0, sizeof(vs_tl_context_t));
+    VS_IOT_MEMSET(ctx, 0, sizeof(vs_tl_context_t));
     ctx->storage.storage_type = storage_type;
 }
 
@@ -162,7 +189,7 @@ _get_tl_ctx(size_t storage_type) {
 static int
 _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     vs_tl_header_t header;
-    uint8_t buf[TL_STORAGE_MAX_PART_SIZE];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
 
@@ -219,7 +246,7 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "tl_ctx is NULL")
     CHECK_RET(NULL != header, VS_TL_ERROR_PARAMS, "Invalid args")
-    CHECK_RET(header->tl_size <= TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
+    CHECK_RET(header->tl_size <= VS_TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
 
     tl_ctx->ready = false;
     tl_ctx->keys_qty.keys_count = 0;
@@ -228,7 +255,7 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     CHECK_RET(
             0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox load")
 
-    memcpy(&tl_ctx->header, header, sizeof(vs_tl_header_t));
+    VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
 }
 
@@ -244,7 +271,7 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     CHECK_RET(
             0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_READ, "Error secbox load")
 
-    memcpy(&tl_ctx->header, header, sizeof(vs_tl_header_t));
+    VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
 }
 
@@ -267,7 +294,7 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
 int
 vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_t *footer_sz) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    uint8_t buf[TL_STORAGE_MAX_PART_SIZE];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
 
     // Pointer to first signature
     vs_sign_t *element = (vs_sign_t *)(buf + sizeof(vs_tl_footer_t));
