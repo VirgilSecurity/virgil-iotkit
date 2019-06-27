@@ -70,7 +70,7 @@ if (NOT VIRGIL_IOT_MCU_BUILD)
             src/crypto/pubkeys_converters.c
             )
     target_link_libraries(virgil-iot-sdk-tests
-            converters
+#            converters
             )
 endif()
 #
