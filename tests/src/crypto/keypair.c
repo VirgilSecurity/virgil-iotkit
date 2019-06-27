@@ -30,7 +30,7 @@ _test_keypair_generate(_test_case_t *test_case) {
     VS_HSM_CHECK_RET(vs_hsm_keypair_create(test_case->slot, test_case->keypair_type),
                      "vs_hsm_keypair_create call error");
     VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(
-            test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
+                             test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
                      "vs_hsm_keypair_get_pubkey call error");
     BOOL_CHECK_RET(keypair == test_case->keypair_type, "Received key pair type error");
     BOOL_CHECK_RET(test_case->key_sz == test_case->expected_size, "Received buffer error");
@@ -48,12 +48,12 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
     size_t pos2;
 
     for (pos = 0; pos < cases_amount; ++pos) {
-        if(!test_cases[pos].initialized){
+        if (!test_cases[pos].initialized) {
             continue;
         }
 
         for (pos2 = pos + 1; pos2 < cases_amount; ++pos2) {
-            if(!test_cases[pos2].initialized){
+            if (!test_cases[pos2].initialized) {
                 continue;
             }
             if (test_cases[pos].key_sz != test_cases[pos2].key_sz) {
@@ -111,7 +111,7 @@ test_keypair(void) {
         test_case->initialized = false;
 
         vs_logger_set_loglev(VS_LOGLEV_CRITICAL);
-        if(!_is_keypair_type_implemented(test_case)){
+        if (!_is_keypair_type_implemented(test_case)) {
             vs_logger_set_loglev(VS_LOGLEV_WARNING);
             VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(test_case->keypair_type));
             continue;

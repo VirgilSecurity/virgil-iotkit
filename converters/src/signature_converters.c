@@ -49,27 +49,27 @@
 static int
 _coord_sz(vs_hsm_keypair_type_e keypair_type) {
     switch (keypair_type) {
-        case VS_KEYPAIR_EC_SECP192R1:
-        case VS_KEYPAIR_EC_SECP192K1:
-            return 24;
-        case VS_KEYPAIR_EC_SECP224R1:
-        case VS_KEYPAIR_EC_SECP224K1:
-            return 28;
-        case VS_KEYPAIR_EC_SECP256R1:
-        case VS_KEYPAIR_EC_SECP256K1:
-            return 32;
-        case VS_KEYPAIR_EC_SECP384R1:
-            return 48;
-        case VS_KEYPAIR_EC_SECP521R1:
-            return 66;
-        case VS_KEYPAIR_EC_CURVE25519:
-        case VS_KEYPAIR_EC_ED25519:
-            return 32;
-        case VS_KEYPAIR_RSA_2048:
-            return 256;
+    case VS_KEYPAIR_EC_SECP192R1:
+    case VS_KEYPAIR_EC_SECP192K1:
+        return 24;
+    case VS_KEYPAIR_EC_SECP224R1:
+    case VS_KEYPAIR_EC_SECP224K1:
+        return 28;
+    case VS_KEYPAIR_EC_SECP256R1:
+    case VS_KEYPAIR_EC_SECP256K1:
+        return 32;
+    case VS_KEYPAIR_EC_SECP384R1:
+        return 48;
+    case VS_KEYPAIR_EC_SECP521R1:
+        return 66;
+    case VS_KEYPAIR_EC_CURVE25519:
+    case VS_KEYPAIR_EC_ED25519:
+        return 32;
+    case VS_KEYPAIR_RSA_2048:
+        return 256;
 
-        default:
-            return 0;
+    default:
+        return 0;
     }
 }
 
@@ -77,14 +77,14 @@ _coord_sz(vs_hsm_keypair_type_e keypair_type) {
 static mbedtls_md_type_t
 _hsm_hash_to_mbedtls(vs_hsm_hash_type_e hash_type) {
     switch (hash_type) {
-        case VS_HASH_SHA_256:
-            return MBEDTLS_MD_SHA256;
-        case VS_HASH_SHA_384:
-            return MBEDTLS_MD_SHA384;
-        case VS_HASH_SHA_512:
-            return MBEDTLS_MD_SHA512;
-        default:
-            return MBEDTLS_MD_NONE;
+    case VS_HASH_SHA_256:
+        return MBEDTLS_MD_SHA256;
+    case VS_HASH_SHA_384:
+        return MBEDTLS_MD_SHA384;
+    case VS_HASH_SHA_512:
+        return MBEDTLS_MD_SHA512;
+    default:
+        return MBEDTLS_MD_NONE;
     }
 }
 
@@ -127,7 +127,7 @@ _raw_ec_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
     memcpy(signature, p, len);
     *signature_sz = len;
 
-    terminate:
+terminate:
 
     mbedtls_mpi_free(&r);
     mbedtls_mpi_free(&s);
@@ -158,7 +158,7 @@ vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
 
     res = true;
 
-    terminate:
+terminate:
 
     return res;
 }
@@ -207,7 +207,7 @@ _mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
 
     res = true;
 
-    terminate:
+terminate:
     mbedtls_mpi_free(&r);
     mbedtls_mpi_free(&s);
 

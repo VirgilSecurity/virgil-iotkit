@@ -37,11 +37,12 @@
 
 #include <virgil/iot/logger/logger.h>
 
-#define NOT_ZERO(ARG)   do {\
-    if(!(ARG)){ \
-        VS_LOG_ERROR("Zero argument " #ARG " value");\
-        goto terminate; \
-    }\
+#define NOT_ZERO(ARG)                                                                                                  \
+    do {                                                                                                               \
+        if (!(ARG)) {                                                                                                  \
+            VS_LOG_ERROR("Zero argument " #ARG " value");                                                              \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
     } while (0)
 
 
