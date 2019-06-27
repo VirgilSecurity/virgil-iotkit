@@ -37,6 +37,7 @@
 #include <stdlib-config.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/logger/logger.h>
 
 /******************************************************************************/
 int
@@ -63,7 +64,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 32;
     default:
-        VS_IOT_ASSERT(false && "Unsupported keypair type");
+        VS_LOG_DEBUG("Unsupported keypair type");
         return -VS_HSM_ERR_INVAL;
     }
 }
@@ -92,7 +93,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 64;
     default:
-        VS_IOT_ASSERT(false && "Unsupported signature type");
+        VS_LOG_DEBUG("Unsupported signature type");
         return -VS_HSM_ERR_INVAL;
     }
 }
@@ -108,7 +109,7 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
     case VS_HASH_SHA_512:
         return 64;
     default:
-        VS_IOT_ASSERT(false && "Unsupported hash type");
+        VS_LOG_DEBUG("Unsupported hash type");
         return -VS_HSM_ERR_INVAL;
     }
 }
@@ -140,7 +141,7 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type) {
     case VS_KEYPAIR_RSA_2048:
         return "RSA 2048 bit";
     default:
-        VS_IOT_ASSERT(false && "Unsupported keypair type");
+        VS_LOG_DEBUG("Unsupported keypair type");
         return "";
     }
 }
@@ -156,7 +157,7 @@ vs_hsm_hash_type_descr(vs_hsm_hash_type_e type) {
     case VS_HASH_SHA_512:
         return "SHA 512";
     default:
-        VS_IOT_ASSERT(false && "Unsupported hash type");
+        VS_LOG_DEBUG("Unsupported hash type");
         return "";
     }
 }
