@@ -39,8 +39,10 @@
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
-
+#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
+
+#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 
@@ -108,4 +110,59 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     }
 
     return false;
+}
+
+/******************************************************************************/
+bool
+vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
+
+    int key_len;
+    int sign_len;
+    int hash_size;
+    uint16_t signed_data_sz;
+    uint16_t res_sz;
+    uint8_t *pubkey;
+
+    BOOL_CHECK_RET(NULL != key_to_check, "Invalid args")
+    BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small")
+
+    vs_pubkey_dated_t *key = (vs_pubkey_dated_t *)key_to_check;
+
+    if (VS_KEY_RECOVERY == key->pubkey.key_type) {
+        return true;
+    }
+
+    key_len = vs_hsm_get_pubkey_len(key->pubkey.ec_type);
+
+    BOOL_CHECK_RET(key_len > 0, "Unsupported key ec_type")
+
+    signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
+
+    BOOL_CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), "key stuff is too small")
+
+    vs_sign_t *sign = (vs_sign_t *)(key_to_check + signed_data_sz);
+    sign_len = vs_hsm_get_signature_len(sign->ec_type);
+    key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+
+    BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
+    BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong")
+
+    hash_size = vs_hsm_get_hash_len(sign->hash_type);
+    BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type")
+
+    uint8_t hash[hash_size];
+
+    VS_HSM_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
+                     "Error hash create")
+
+    pubkey = sign->raw_sign_pubkey + sign_len;
+
+    BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+                   "Signer key is wrong")
+
+    VS_HSM_CHECK_RET(
+            vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
+            "Signature is wrong")
+
+    return true;
 }

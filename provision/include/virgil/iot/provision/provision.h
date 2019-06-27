@@ -71,4 +71,7 @@ typedef struct __attribute__((__packed__)) {
 bool
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
 
+bool
+vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
+
 #endif // VS_IOT_PROVISION_H
