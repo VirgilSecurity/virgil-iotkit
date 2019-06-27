@@ -40,10 +40,11 @@
 
 #include <stdio.h>
 
+#include <stdlib-config.h>
+
 #include "virgil/iot/converters/private/macros.h"
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/hsm/hsm_structs.h>
-#include <virgil/iot/logger/logger.h>
 
 /******************************************************************************/
 static int
@@ -192,7 +193,6 @@ _mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
     MBEDTLS_CHECK(mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE), -1);
 
     if (p + len != end) {
-        VS_LOG_ERROR("Bad input data : ASN1 length mismatch");
         goto terminate;
     }
 

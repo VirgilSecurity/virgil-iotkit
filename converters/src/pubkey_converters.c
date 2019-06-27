@@ -41,7 +41,6 @@
 
 #include <virgil/iot/converters/private/macros.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
-#include <virgil/iot/logger/logger.h>
 
 /******************************************************************************/
 static bool
