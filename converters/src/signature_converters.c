@@ -124,7 +124,7 @@ _raw_ec_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
     MBEDTLS_ASN1_CHK_ADD(len, mbedtls_asn1_write_len(&p, signature, len));
     MBEDTLS_ASN1_CHK_ADD(len, mbedtls_asn1_write_tag(&p, signature, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE));
 
-    memcpy(signature, p, len);
+    VS_IOT_MEMCPY(signature, p, len);
     *signature_sz = len;
 
 terminate:
@@ -153,7 +153,7 @@ _raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
     }
 
     CHECK_BOOL_GOTO(buf_sz >= raw_sz, -1);
-    memcpy(signature, raw, raw_sz);
+    VS_IOT_MEMCPY(signature, raw, raw_sz);
     *signature_sz = raw_sz;
 
 terminate:
@@ -231,7 +231,7 @@ _mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
         return -1;
     }
 
-    memcpy(raw_sign, mbedtls_sign, mbedtls_sign_sz);
+    VS_IOT_MEMCPY(raw_sign, mbedtls_sign, mbedtls_sign_sz);
     *raw_sz = mbedtls_sign_sz;
     return 0;
 }
@@ -296,7 +296,7 @@ _mbedtls_sign_to_virgil(vs_hsm_hash_type_e hash_type,
     len += hash_type_len;
 
     if (buf_sz > len) {
-        memmove(virgil_sign, p, len);
+        VS_IOT_MEMMOVE(virgil_sign, p, len);
     }
 
     *virgil_sign_sz = len;
