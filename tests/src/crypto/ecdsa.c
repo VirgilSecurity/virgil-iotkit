@@ -24,7 +24,7 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
                                         &result_sz),
                      "ERROR while creating hash");
 
-    signature_sz = vs_hsm_get_signature_len(keypair_type);
+    signature_sz = sizeof(sign_buf);
 
     VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
                      "ERROR while signing hash");
@@ -39,6 +39,32 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
     return true;
 }
 
+/******************************************************************************/
+static bool
+_prepare_and_test(char *descr, vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash, vs_hsm_keypair_type_e keypair_type) {
+    bool not_implemented;
+
+    VS_IOT_STRCPY(descr, "slot ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", hash ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(hash));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
+
+    TEST_KEYPAIR_NOT_IMPLEMENTED(slot, keypair_type);
+    if (not_implemented) {
+        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(keypair_type));
+        return false;
+    }
+
+    TEST_HASH_NOT_IMPLEMENTED(hash);
+    if (not_implemented) {
+        VS_LOG_WARNING("Hash %s is not implemented", vs_hsm_hash_type_descr(hash));
+        return false;
+    }
+
+    return true;
+}
 
 /******************************************************************************/
 void
@@ -50,10 +76,9 @@ test_ecdsa(void) {
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(HASH));                                         \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");                                                    \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
-    if (!is_keypair_type_implemented(KEY)) {   \
-        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEY));   \
-    } else {    \
-       TEST_CASE_OK(descr, _test_sign_verify_pass(SLOT, HASH, KEY)); \
+                                                                                                                       \
+    if (_prepare_and_test(descr, (SLOT), (HASH), (KEY))) {                                                             \
+        TEST_CASE_OK(descr, _test_sign_verify_pass(SLOT, HASH, KEY));                                                  \
     }
 
     char descr[256];

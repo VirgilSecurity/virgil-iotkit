@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <helpers.h>
+#include <private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 
 #if IOTELIC_MCU_BUILD
@@ -189,8 +190,17 @@ _frequency_2bytes_diff(uint8_t *sequence) {
 void
 test_random(void) {
     uint8_t sequence[SEQUENCE_SIZE];
+    uint8_t buf[128];
+    bool not_implemented;
 
     START_TEST("Random tests");
+
+    TEST_NOT_IMPLEMENTED(vs_hsm_random(buf, sizeof(buf)));
+
+    if (not_implemented) {
+        VS_LOG_WARNING("Random function is not implemented");
+        goto terminate;
+    }
 
     TEST_CASE_OK("Generate random sequence", _generate_random(sequence));
     TEST_CASE_OK("\"Bits frequency\" test", _frequency_bits(sequence));

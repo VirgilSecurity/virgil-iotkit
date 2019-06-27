@@ -1,5 +1,6 @@
 
 #include <helpers.h>
+#include <private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
@@ -103,6 +104,21 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
 /******************************************************************************/
 void
 test_kdf2(void) {
+#define TEST_STEP(BITLEN)                                                                                              \
+    do {                                                                                                               \
+        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
+        const uint8_t *correct_result = sha##BITLEN##_result_raw;                                                      \
+        uint16_t result_len = sizeof(sha##BITLEN##_result_raw);                                                        \
+                                                                                                                       \
+        TEST_HKDF_NOT_IMPLEMENTED(hash_type);                                                                          \
+                                                                                                                       \
+        if (not_implemented) {                                                                                         \
+            VS_LOG_WARNING("KDF for SHA_" #BITLEN " algorithm is not implemented");                                    \
+        } else {                                                                                                       \
+            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type), _test_kdf2_step(hash_type, correct_result, result_len));   \
+        }                                                                                                              \
+    } while (0)
+
     static const uint8_t sha256_result_raw[] = {
             0x85, 0xc0, 0x97, 0xf6, 0x09, 0xfb, 0x8c, 0x9b, 0xe6, 0xc4, 0xfa, 0xf1, 0x10, 0xde, 0xb6, 0xcf,
             0x9a, 0xda, 0xb0, 0xe4, 0x8a, 0x34, 0x50, 0xad, 0x96, 0xcc, 0xb0, 0x7a, 0xd1, 0x78, 0xed, 0xcc,
@@ -136,20 +152,22 @@ test_kdf2(void) {
             0x9a, 0x43, 0x43, 0x03, 0x14, 0xa5, 0x6a, 0x3d, 0x38, 0x03, 0x26, 0xe8, 0xd9, 0xe5, 0xfe, 0x34,
             0xab, 0xb2, 0x6e, 0x4f, 0x71, 0x0e, 0x9f, 0xd9, 0x7a, 0x34, 0xd8, 0x3d, 0x8f, 0xf0, 0xde, 0xe4,
             0xf9, 0x2a, 0x2d, 0xa4, 0x3b, 0x80, 0x51, 0x95, 0x00, 0xcd, 0xef, 0xbf, 0x35, 0x7c, 0x63, 0x53};
+    bool not_implemented;
 
     START_TEST("KDF2 tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
-                 _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                 _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
-                 _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
+    TEST_STEP(256);
+    TEST_STEP(384);
+
+    if (!not_implemented) {
+        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                     _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
+    }
+    TEST_STEP(512);
 
     START_TEST("HKDF tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                 _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
-
 terminate:;
+
+#undef TEST_STEP
 }

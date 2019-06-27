@@ -1,5 +1,6 @@
 
 #include <helpers.h>
+#include <private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
@@ -86,18 +87,37 @@ _test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_resu
 /******************************************************************************/
 void
 test_hash(void) {
+#define TEST_STEP(BITLEN)                                                                                              \
+    do {                                                                                                               \
+        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
+        const uint8_t *correct_result_raw = correct_result_sha_##BITLEN##_raw;                                         \
+        uint16_t correct_result_size = sizeof(correct_result_sha_##BITLEN##_raw);                                      \
+                                                                                                                       \
+        TEST_HASH_NOT_IMPLEMENTED(hash_type);                                                                          \
+                                                                                                                       \
+        if (not_implemented) {                                                                                         \
+            VS_LOG_WARNING("Hash for SHA_" #BITLEN " algorithm is not implemented");                                   \
+        } else {                                                                                                       \
+            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type),                                                            \
+                         _test_sha_pass(hash_type, correct_result_raw, correct_result_size));                          \
+        }                                                                                                              \
+    } while (0)
+    bool not_implemented;
 
     START_TEST("HASH tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
-                 _test_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                 _test_sha_pass(VS_HASH_SHA_384, correct_result_sha_384_raw, sizeof(correct_result_sha_384_raw)));
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
-                 _test_sha_pass(VS_HASH_SHA_512, correct_result_sha_512_raw, sizeof(correct_result_sha_512_raw)));
-    TEST_CASE_OK(
-            "SHA256 partial calculating pass",
-            _test_partial_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
+    TEST_STEP(256);
+
+    if (!not_implemented) {
+        TEST_CASE_OK("SHA256 partial calculating pass",
+                     _test_partial_sha_pass(
+                             VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
+    }
+
+    TEST_STEP(384);
+    TEST_STEP(512);
 
 terminate:;
+
+#undef TEST_STEP
 }

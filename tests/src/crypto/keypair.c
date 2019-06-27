@@ -72,7 +72,6 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
 /******************************************************************************/
 void
 test_keypair(void) {
-
     _test_case_t test_cases[] = {
 #if USE_RSA
         {.slot = VS_KEY_SLOT_EXT_MTP_0, .keypair_type = VS_KEYPAIR_RSA_2048, .expected_size = 256},
@@ -92,6 +91,7 @@ test_keypair(void) {
     static const size_t cases_amount = sizeof(test_cases) / sizeof(test_cases[0]);
     size_t pos;
     char buf[256];
+    bool not_implemented;
 
     START_TEST("Keypair tests");
 
@@ -101,7 +101,9 @@ test_keypair(void) {
 
         test_case->initialized = false;
 
-        if (!is_keypair_type_implemented(test_case->keypair_type)) {
+        TEST_KEYPAIR_NOT_IMPLEMENTED(test_case->slot, test_case->keypair_type);
+
+        if (not_implemented) {
             VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(test_case->keypair_type));
             continue;
         }

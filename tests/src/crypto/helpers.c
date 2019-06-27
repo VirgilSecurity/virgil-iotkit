@@ -127,19 +127,3 @@ vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot) {
         return "";
     }
 }
-
-/******************************************************************************/
-bool
-is_keypair_type_implemented(vs_hsm_keypair_type_e keypair_type){
-    vs_log_level_t prev_loglev;
-    bool res;
-
-    prev_loglev = vs_logger_get_loglev();
-    vs_logger_set_loglev(VS_LOGLEV_CRITICAL);
-
-    res = vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_0, keypair_type) != VS_HSM_ERR_NOT_IMPLEMENTED;
-
-    vs_logger_set_loglev(prev_loglev);
-
-    return res;
-}

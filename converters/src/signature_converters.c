@@ -233,12 +233,12 @@ vs_converters_mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
     }
 
     if (mbedtls_sign_sz > buf_sz) {
-        return -1;
+        return false;
     }
 
     memcpy(raw_sign, mbedtls_sign, mbedtls_sign_sz);
     *raw_sz = mbedtls_sign_sz;
-    return 0;
+    return true;
 }
 
 /******************************************************************************/
