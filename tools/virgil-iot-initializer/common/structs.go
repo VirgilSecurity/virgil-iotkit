@@ -61,21 +61,45 @@ type Go_vs_pubkey_dated_t struct {
     PubKey     Go_vs_pubkey_t
 }
 
-func (g *Go_vs_pubkey_dated_t) FromBytes(b []byte) error {
+func (g *Go_vs_pubkey_dated_t) ToBytes() ([]byte, error) {
+    buf := new(bytes.Buffer)
+
+    if err := binary.Write(buf, SystemEndian, g.StartDate); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_dated_t StartDate: %v", err)
+    }
+    if err := binary.Write(buf, SystemEndian, g.ExpireDate); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_dated_t ExpireDate: %v", err)
+    }
+
+    // Public key
+    if pubKeyBytes, err := g.PubKey.ToBytes(); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_dated_t PubKey: %v", err)
+    } else {
+        buf.Write(pubKeyBytes)
+    }
+
+    return buf.Bytes(), nil
+}
+
+func (g *Go_vs_pubkey_dated_t) FromBytes(b []byte) (n int, err error) {
     buf := bytes.NewBuffer(b)
 
     if err := binary.Read(buf, binary.LittleEndian, &g.StartDate); err != nil {
-        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t StartDate: %v", err)
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_dated_t StartDate: %v", err)
     }
     if err := binary.Read(buf, binary.LittleEndian, &g.ExpireDate); err != nil {
-        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t ExpireDate: %v", err)
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_dated_t ExpireDate: %v", err)
     }
+    n += len(b) - len(buf.Bytes())
 
     pubKeyT := Go_vs_pubkey_t{}
-    if _, err := pubKeyT.FromBytes(buf.Bytes()); err != nil {
-        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t PubKey: %v", err)
+    if pubKeyLen, err := pubKeyT.FromBytes(buf.Bytes()); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_dated_t PubKey: %v", err)
+    } else {
+        n += pubKeyLen
     }
-    return nil
+    g.PubKey = pubKeyT
+    return n, nil
 }
 
 type Go_vs_pubkey_t struct  {
@@ -140,6 +164,9 @@ func (g *Go_vs_sign_t) FromBytes(b []byte) (n int, err error) {
     if err := binary.Read(buf, SystemEndian, &g.ECType); err != nil {
         return 0, fmt.Errorf("failed to deserialize vs_sign_t ECType: %v", err)
     }
+    if err := binary.Read(buf, SystemEndian, &g.HashType); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_sign_t HashType: %v", err)
+    }
 
     // Signature
     signatureSize := GetSignatureSizeByECType(g.ECType)
@@ -170,6 +197,9 @@ func (g *Go_vs_sign_t) ToBytes() ([]byte, error) {
     }
     if err := binary.Write(buf, SystemEndian, g.ECType); err != nil {
         return nil, fmt.Errorf("failed to serialize vs_sign_t ECType: %v", err)
+    }
+    if err := binary.Write(buf, SystemEndian, g.HashType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sign_t HashType: %v", err)
     }
 
     // Signature

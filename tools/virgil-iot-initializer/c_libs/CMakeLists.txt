@@ -50,7 +50,9 @@ target_link_libraries (${PROJECT_NAME} sdmp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
         )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")

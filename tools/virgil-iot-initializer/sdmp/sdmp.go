@@ -185,25 +185,36 @@ func (p *DeviceProcessor) SetTrustList() error {
 
     // Set TL chunks
     for index, chunk := range trustList.TlChunks {
-        binBuf.Reset()  // reset buffer
-        if err := binary.Write(&binBuf, binary.LittleEndian, chunk); err != nil {
-            return fmt.Errorf("failed to write TrustList chunk to buffer")
+        chunkBytes, err := chunk.ToBytes()
+        if err != nil {
+            return err
         }
         name := fmt.Sprintf("TrustList chunk %d", index)
-        if err := p.uploadData(C.VS_PRVS_TLC, binBuf.Bytes(), name); err != nil {
+        if err := p.uploadData(C.VS_PRVS_TLC, chunkBytes, name); err != nil {
             return err
         }
     }
 
     // Set TL Footer
     binBuf.Reset()  // reset buffer
-    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer); err != nil {
-        return fmt.Errorf("failed to write TrustList footer to buffer")
+    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer.TLType); err != nil {
+        return fmt.Errorf("failed to write TrustList footer tl_type to buffer")
     }
+    for index, signature := range trustList.Footer.Signatures {
+        signatureBytes, err := signature.ToBytes()
+        if err != nil {
+            return err
+        }
+        if _, err := binBuf.Write(signatureBytes); err != nil {
+            return fmt.Errorf("failed to write footer signature #%d to buffer: %v", index, err)
+        }
+    }
+
     fmt.Println("Upload TrustList Footer")
     mac := p.deviceInfo.mac_addr
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
+    fmt.Println(footerBytes)
     if 0 != C.vs_sdmp_prvs_finalize_tl(nil,
                                        &mac,
                                        dataPtr,
