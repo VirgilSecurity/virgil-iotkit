@@ -34,16 +34,153 @@
 
 package common
 
+import (
+    "bytes"
+    "encoding/binary"
+    "fmt"
+)
+
 type ProvisioningInfo struct {
-	TlOnly        bool
-	CardOnly      bool
-	AuthPubKey1   []byte
-	AuthPubKey2   []byte
-	RecPubKey1    []byte
-	RecPubKey2    []byte
-	TlPubKey1     []byte
-	TlPubKey2     []byte
-	FwPubKey1     []byte
-	FwPubKey2     []byte
-	TrustList     []byte
+    TlOnly            bool
+    CardOnly          bool
+    FactoryKeyECType  uint8
+    AuthPubKey1       []byte
+    AuthPubKey2       []byte
+    RecPubKey1        []byte
+    RecPubKey2        []byte
+    TlPubKey1         []byte
+    TlPubKey2         []byte
+    FwPubKey1         []byte
+    FwPubKey2         []byte
+    TrustList         []byte
+}
+
+type Go_vs_pubkey_dated_t struct {
+    StartDate  uint32
+    ExpireDate uint32
+    PubKey     Go_vs_pubkey_t
+}
+
+func (g *Go_vs_pubkey_dated_t) FromBytes(b []byte) error {
+    buf := bytes.NewBuffer(b)
+
+    if err := binary.Read(buf, binary.LittleEndian, &g.StartDate); err != nil {
+        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t StartDate: %v", err)
+    }
+    if err := binary.Read(buf, binary.LittleEndian, &g.ExpireDate); err != nil {
+        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t ExpireDate: %v", err)
+    }
+
+    pubKeyT := Go_vs_pubkey_t{}
+    if _, err := pubKeyT.FromBytes(buf.Bytes()); err != nil {
+        return fmt.Errorf("failed to deserialize vs_pubkey_dated_t PubKey: %v", err)
+    }
+    return nil
+}
+
+type Go_vs_pubkey_t struct  {
+    KeyType    uint8
+    ECType     uint8
+    RawPubKey  []byte // raw public key, size of element depends on @ec_type
+}
+
+func (g *Go_vs_pubkey_t) FromBytes(b []byte) (n int, err error) {
+    buf := bytes.NewBuffer(b)
+    if err := binary.Read(buf, SystemEndian, &g.KeyType); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_t KeyType: %v", err)
+    }
+    if err := binary.Read(buf, SystemEndian, &g.ECType); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_t ECType: %v", err)
+    }
+
+    pubKeySize := GetPublicKeySizeByECType(g.ECType)
+    pubKey := buf.Next(pubKeySize)
+    if len(pubKey) != pubKeySize {
+        return 0, fmt.Errorf(
+            "failed to deserialize vs_pubkey_t PubKey: got %d bytes instead of %d", len(pubKey), pubKeySize)
+    }
+    g.RawPubKey = pubKey
+    return len(b) - len(buf.Bytes()), nil
+}
+
+func (g *Go_vs_pubkey_t) ToBytes() ([]byte, error) {
+    buf := new(bytes.Buffer)
+
+    if err := binary.Write(buf, SystemEndian, g.KeyType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_t KeyType: %v", err)
+    }
+    if err := binary.Write(buf, SystemEndian, g.ECType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_t ECType: %v", err)
+    }
+
+    // Public key
+    if _, err := buf.Write(g.RawPubKey); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_t RawPubKey: %v", err)
+    }
+
+    return buf.Bytes(), nil
+}
+
+type Go_vs_sign_t struct {
+    SignerType uint8
+    ECType     uint8
+    HashType   uint8
+
+    // Size of elements depends on ECType:
+    RawSignature  []byte
+    RawPubKey     []byte
+}
+
+func (g *Go_vs_sign_t) FromBytes(b []byte) (n int, err error) {
+    buf := bytes.NewBuffer(b)
+
+    if err := binary.Read(buf, SystemEndian, &g.SignerType); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_sign_t SignerType: %v", err)
+    }
+    if err := binary.Read(buf, SystemEndian, &g.ECType); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_sign_t ECType: %v", err)
+    }
+
+    // Signature
+    signatureSize := GetSignatureSizeByECType(g.ECType)
+    signature := buf.Next(signatureSize)
+    if len(signature) != signatureSize {
+        return 0, fmt.Errorf(
+            "failed to deserialize vs_sign_t Signature: got %d bytes instead of %d", len(signature), signatureSize)
+    }
+    g.RawSignature = signature
+
+    // Public key
+    pubKeySize := GetPublicKeySizeByECType(g.ECType)
+    pubKey := buf.Next(pubKeySize)
+    if len(pubKey) != pubKeySize {
+        return 0, fmt.Errorf(
+            "failed to deserialize vs_sign_t PubKey: got %d bytes instead of %d", len(pubKey), pubKeySize)
+    }
+    g.RawPubKey = pubKey
+
+    return len(b) - len(buf.Bytes()), nil
+}
+
+func (g *Go_vs_sign_t) ToBytes() ([]byte, error) {
+    buf := new(bytes.Buffer)
+
+    if err := binary.Write(buf, SystemEndian, g.SignerType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sign_t SignerType: %v", err)
+    }
+    if err := binary.Write(buf, SystemEndian, g.ECType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sign_t ECType: %v", err)
+    }
+
+    // Signature
+    if _, err := buf.Write(g.RawSignature); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sign_t Signature: %v", err)
+    }
+
+    // Public key
+    if _, err := buf.Write(g.RawPubKey); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sign_t PubKey: %v", err)
+    }
+
+    return buf.Bytes(), nil
 }
