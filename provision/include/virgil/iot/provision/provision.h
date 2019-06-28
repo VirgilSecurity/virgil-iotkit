@@ -46,7 +46,8 @@ typedef enum {
     VS_KEY_IOT_DEVICE,
     VS_KEY_USER_DEVICE,
     VS_KEY_FIRMWARE_INTERNAL,
-    VS_KEY_AUTH_INTERNAL
+    VS_KEY_AUTH_INTERNAL,
+    VS_KEY_UNSUPPORTED
 } vs_key_type_e;
 
 typedef struct __attribute__((__packed__)) {
