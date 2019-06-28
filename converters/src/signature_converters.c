@@ -323,8 +323,8 @@ vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
     VS_IOT_ASSERT(virgil_sign);
     VS_IOT_ASSERT(sign);
 
-    if (_virgil_sign_to_mbedtls(virgil_sign, virgil_sign_sz, &p, &result_sz) ||
-        vs_converters_mbedtls_sign_to_raw(keypair_type, (uint8_t *)p, result_sz, sign, buf_sz, sign_sz)) {
+    if (!_virgil_sign_to_mbedtls(virgil_sign, virgil_sign_sz, &p, &result_sz) ||
+        !vs_converters_mbedtls_sign_to_raw(keypair_type, (uint8_t *)p, result_sz, sign, buf_sz, sign_sz)) {
         return false;
     }
 
@@ -346,8 +346,8 @@ vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
     VS_IOT_ASSERT(raw_sign);
     VS_IOT_ASSERT(virgil_sign_sz);
 
-    if (vs_converters_raw_sign_to_mbedtls(keypair_type, raw_sign, raw_sign_sz, virgil_sign, buf_sz, &result_sz) ||
-        _mbedtls_sign_to_virgil(hash_type, virgil_sign, result_sz, virgil_sign, buf_sz, virgil_sign_sz)) {
+    if (!vs_converters_raw_sign_to_mbedtls(keypair_type, raw_sign, raw_sign_sz, virgil_sign, buf_sz, &result_sz) ||
+        !_mbedtls_sign_to_virgil(hash_type, virgil_sign, result_sz, virgil_sign, buf_sz, virgil_sign_sz)) {
         return false;
     }
     return true;
