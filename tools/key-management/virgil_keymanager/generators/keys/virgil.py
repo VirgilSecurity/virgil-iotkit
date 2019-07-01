@@ -1,41 +1,81 @@
+import io
+from typing import Optional
+
 from PyCRC.CRCCCITT import CRCCCITT
 
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
 
+from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils import VirgilSignExtractor
 from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
-class VirgilKeyGenerator:
+class VirgilKeyGenerator(KeyGeneratorInterface):
     """
     Represents key pair entity for virgil_crypto lib usage only (without dongles/emulator)
     """
-    def __init__(self, key_type, private_key=None, public_key=None):
+
+    def __init__(self,
+                 key_type: str,
+                 private_key=None,
+                 public_key=None,
+                 ec_type=VirgilKeyPair.Type_EC_SECP256R1,
+                 hash_type=HashAlgorithm.SHA256):
         self._crypto = VirgilCrypto()
-        self._crypto.signature_hash_algorithm = HashAlgorithm.SHA256
+        self._crypto.signature_hash_algorithm = hash_type
+        self.__hash_type = hash_type
         self.__key_type = key_type
+        self.__ec_type = ec_type
         self.__public_key = None if not private_key else b64_to_bytes(public_key)
         self.__private_key = None if not private_key else b64_to_bytes(private_key)
         self.__key_id = None
         self.__signature = None
         self.device_serial = None
 
-    def generate(self, *, signature_limit=None, rec_pub_keys=None, signer_key=None, private_key_base64=None):
+    def generate(self,
+                 *,
+                 signature_limit=None,
+                 rec_pub_keys=None,
+                 signer_key: Optional[KeyGeneratorInterface]=None,
+                 private_key_base64: Optional[str]=None,
+                 start_date: Optional[int]=0,
+                 expire_date: Optional[int]=0):
+        def make_signature():
+            byte_buffer = io.BytesIO()
+
+            # vs_pubkey_dated_t
+            byte_buffer.write(start_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(expire_date.to_bytes(4, byteorder='little', signed=False))
+            byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(b64_to_bytes(self.public_key))
+
+            bytes_to_sign = byte_buffer.getvalue()
+            return signer_key.sign(to_b64(bytes_to_sign), long_sign=False)
+
         # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
-            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-64:]
+            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-65:]
 
         if self.__private_key is None:
-            virgil_key_pair = VirgilKeyPair.generate(VirgilKeyPair.Type_EC_SECP256R1)
+            virgil_key_pair = VirgilKeyPair.generate(self.ec_type)
             self.__private_key = VirgilKeyPair.privateKeyToDER(virgil_key_pair.privateKey())
-            self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-64:]
+            self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_key_pair.publicKey())[-65:]
 
         if signer_key:
-            self.__signature = signer_key.sign(self.public_key)
+            self.__signature = make_signature()
 
         return self
+
+    @property
+    def ec_type(self):
+        return self.__ec_type
+
+    @property
+    def hash_type(self):
+        return self.__hash_type
 
     @property
     def private_key(self):
