@@ -214,7 +214,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     mac := p.deviceInfo.mac_addr
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
-    fmt.Println(footerBytes)
+
     if 0 != C.vs_sdmp_prvs_finalize_tl(nil,
                                        &mac,
                                        dataPtr,
