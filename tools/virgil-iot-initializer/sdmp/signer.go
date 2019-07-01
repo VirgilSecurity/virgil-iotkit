@@ -37,6 +37,8 @@ package sdmp
 import (
     "fmt"
 
+    "../converters"
+
     "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
@@ -45,11 +47,19 @@ type Signer struct {
 }
 
 func (s *Signer) Sign(data []byte) ([]byte, error) {
-    signature, err := s.Processor.SignDataInDevice(data)
+    rawSignature, err := s.Processor.SignDataInDevice(data)
     if err != nil {
         return nil, err
     }
-    return signature, nil
+
+    // Convert signature to Virgil format
+    var virgilSignature []byte
+    virgilSignature, err = converters.RawSignToVirgil(rawSignature, s.Processor.DevicePublicKey.ECType, DEVICE_HASH_ALGO)
+    if err != nil {
+        return nil, err
+    }
+
+    return virgilSignature, nil
 }
 
 func (s *Signer) Verify(data []byte,
