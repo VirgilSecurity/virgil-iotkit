@@ -75,6 +75,7 @@ crypto_tests(void) {
     test_keypair();
     test_random();
     test_aes();
+
 #if !VIRGIL_IOT_MCU_BUILD
     test_sign_converters();
     test_pubkeys_converters();
