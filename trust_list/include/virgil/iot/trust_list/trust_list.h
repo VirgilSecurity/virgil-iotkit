@@ -3,6 +3,7 @@
 #define TRUST_LIST_H
 
 #include <stdint.h>
+#include <virgil/iot/hsm/hsm_structs.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,

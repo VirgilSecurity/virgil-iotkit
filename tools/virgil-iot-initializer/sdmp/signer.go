@@ -36,6 +36,8 @@ package sdmp
 
 import (
     "fmt"
+
+    "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
 type Signer struct {
@@ -50,12 +52,11 @@ func (s *Signer) Sign(data []byte) ([]byte, error) {
     return signature, nil
 }
 
-func (s *Signer) Verify(data []byte, signature []byte, publicKeyBytes []byte) error {
+func (s *Signer) Verify(data []byte,
+                        signature []byte,
+                        pubKeyBytes []byte,
+                        hash virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) error {
     return fmt.Errorf("not implemented for sdmp signer")
-}
-
-func (s *Signer) SignerId() (uint16, error) {
-    return 0, fmt.Errorf("not implemented for sdmp signer")
 }
 
 func (s *Signer) PublicKeyFull() ([]byte, error) {

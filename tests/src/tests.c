@@ -70,6 +70,8 @@ crypto_tests(void) {
     test_hash();
     test_hmac();
     test_kdf2();
+    test_random();
+    test_aes();
     test_ecdsa();
     test_ecdh();
     test_keypair();

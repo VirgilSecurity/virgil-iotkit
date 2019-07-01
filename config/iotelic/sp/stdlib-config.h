@@ -47,6 +47,8 @@
 #define VS_IOT_MALLOC    malloc
 #define VS_IOT_MEMCMP    memcmp
 #define VS_IOT_MEMCPY    memcpy
+#define VS_IOT_MEMSET    memset
+#define VS_IOT_MEMMOVE   memmove
 #define VS_IOT_SNPRINTF  snprintf
 #define VS_IOT_SPRINTF   sprintf
 #define VS_IOT_STRCPY    strcpy

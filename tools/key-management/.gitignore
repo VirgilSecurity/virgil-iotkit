@@ -2,6 +2,7 @@
 test_fs/*
 !test_fs/keymanager.conf
 !test_fs/keys
+!test_fs/factory_info_sample.json
 *DS_STORE*
 
 # binary compilation

@@ -23,7 +23,6 @@ class UtilContext:
 
         self.dongles_mode = "emulator" if cli_args["emulator"] else "dongles"
         self.skip_confirm = cli_args["skip_confirm"]
-        self.dev_mode = "dev" if cli_args["development"] else "main"
         self.disable_cache = cli_args["no_cache"]
         self.printer_disable = cli_args["printer_disable"]
         self.debug_logging = cli_args["verbose_logging"]
@@ -32,8 +31,9 @@ class UtilContext:
         self.storage_path = config_["MAIN"]["storage_path"]
         self.secure_transfer_keys_path = config_["MAIN"]["secure_transfer_keys_path"]
         self.secure_transfer_password = config_["MAIN"]["secure_transfer_keys_passwd"]
-        self.release_trust_list_folder = config_["MAIN"]["release_trust_list_folder"]
-        self.device_dev_mode_list_path = config_["MAIN"]["dev_mode_folder_path"]
+
+        self.virgil_app_id = config_["CARDS"]["virgil_app_id"]
+        self.factory_info_json = config_["CARDS"]["factory_info_json"]
 
 
 class Core(object):
@@ -45,7 +45,6 @@ class Core(object):
         self._ui = None
         self.__dongles_mode = "emulator" if self.__args["emulator"] else "dongles"
         self.__skip_confirm = self.__args["skip_confirm"]
-        self._dev_mode = None
         self.__disable_cache = self.__args["no_cache"]
         self.__printer_disable = self.__args["printer_disable"]
         self.__debug_logging = self.__args["verbose_logging"]
@@ -86,9 +85,11 @@ class Core(object):
                 "dongles_cli_path",
                 "dongles_cli_emulator_path",
                 "secure_transfer_keys_path",
-                "secure_transfer_keys_passwd",
-                "dev_mode_folder_path",
-                "release_trust_list_folder"
+                "secure_transfer_keys_passwd"
+            ],
+            "CARDS": [
+                "virgil_app_id",
+                "factory_info_json"
             ]
         }
         config.check_content(required_content)
@@ -136,7 +137,6 @@ class Core(object):
             arguments.add_argument('-b', '--verbose-logging', action='store_true', help="enable debug logging")
             arguments.add_argument('-w', '--no-dongles', action='store_true',
                                    help="Virgil Crypto use only, all keys will be stored on the disk")
-            arguments.add_argument('-d', '--development', action='store_true', help="development mode"),
             arguments.add_argument('-e', '--emulator', action='store_true', help="enable dongles emulator mode")
             arguments.add_argument('-p', "--printer-disable", action="store_true",
                                    help="disable RestorePaper printing requests")
@@ -176,16 +176,10 @@ class Core(object):
         return self._ui
 
     @property
-    def __dev_mode(self):
-        if not self._dev_mode:
-            self._dev_mode = "dev" if self.__args["development"] else "main"
-            self.logger.debug("util run in development mode")
-        return self._dev_mode
-
-    @property
     def __atmel(self):
         if not self._atmel:
-            self._atmel = AtmelDonglesController(self.__atmel_util_path, self.__dev_mode, logger=self.logger)
+            mode = "dev" if self.__dongles_mode == "emulator" else "main"
+            self._atmel = AtmelDonglesController(self.__atmel_util_path, mode, logger=self.logger)
         return self._atmel
 
     @property

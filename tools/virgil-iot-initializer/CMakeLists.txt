@@ -36,10 +36,48 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil-iot-initializer VERSION 0.1.0 LANGUAGES Go C)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/c_libs)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
+
+#
+# CFLAGS for CGO
+#
+set(CMAKE_CGO_CFLAGS
+        ${CMAKE_CGO_CFLAGS}
+        -I${CMAKE_CURRENT_LIST_DIR}/../../protocols/sdmp/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../../provision/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../../converters/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../../hsm/include
+        -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
+    )
+
+#
+# LDFLAGS for CGO
+#
+set(CMAKE_CGO_LDFLAGS
+        ${CMAKE_CGO_LDFLAGS}
+        -L${CMAKE_BINARY_DIR}/ap/security-sdk/protocols/sdmp
+        -L${CMAKE_BINARY_DIR}/ap/security-sdk/tools/virgil-iot-initializer/c_libs
+        -L${CMAKE_BINARY_DIR}/ap/security-sdk/converters
+    )
+
+#
+# Workaround target
+# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
+#
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(LIBS_TARGET ${PROJECT_NAME}-libs)
+add_custom_target(${LIBS_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a"
+        ${INITIALIZER_LIB_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a"
+        ${INITIALIZER_LIB_DIR}
+        )
 
 #
 #   Virgil IoT Initializer
 #
-# TODO: remove workaround with copying libs
-add_go_executable(virgil-iot-initializer netif_plc_sim)
+
+add_go_executable(${PROJECT_NAME} netif_plc_sim converters ${LIBS_TARGET})

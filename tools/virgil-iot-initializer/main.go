@@ -133,6 +133,11 @@ func main()  {
             Aliases: []string{"z"},
             Usage:   "File with Factory private key",
         },
+        &cli.IntFlag{
+            Name:    "factory_key_ec_type",
+            Aliases: []string{"l"},
+            Usage:   "EC type (hsm) of Factory private key",
+        },
     }
 
     app := &cli.App{

@@ -35,6 +35,8 @@
 #ifndef VS_IOT_PROVISION_H
 #define VS_IOT_PROVISION_H
 
+#include <virgil/iot/hsm/hsm_structs.h>
+
 typedef enum {
     VS_KEY_RECOVERY = 0,
     VS_KEY_AUTH,
@@ -44,7 +46,8 @@ typedef enum {
     VS_KEY_IOT_DEVICE,
     VS_KEY_USER_DEVICE,
     VS_KEY_FIRMWARE_INTERNAL,
-    VS_KEY_AUTH_INTERNAL
+    VS_KEY_AUTH_INTERNAL,
+    VS_KEY_UNSUPPORTED
 } vs_key_type_e;
 
 typedef struct __attribute__((__packed__)) {
@@ -65,5 +68,11 @@ typedef struct __attribute__((__packed__)) {
     uint32_t expire_date;
     vs_pubkey_t pubkey;
 } vs_pubkey_dated_t;
+
+bool
+vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
+
+bool
+vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 
 #endif // VS_IOT_PROVISION_H

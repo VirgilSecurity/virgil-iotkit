@@ -1,25 +1,35 @@
 import sys
 from random import randint
+from typing import Optional
 
 from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilKeyPair
+from virgil_crypto.hashes import HashAlgorithm
 
+from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
 
 
-class AtmelKeyGenerator:
+class AtmelKeyGenerator(KeyGeneratorInterface):
     """
     Represents key pair entity for atmel dongles/dongles emulator usage
     """
-    def __init__(self, key_type, device_serial, util_context):
+
+    def __init__(self, key_type,
+                 device_serial,
+                 util_context,
+                 ec_type=VirgilKeyPair.Type_EC_SECP256R1,
+                 hash_type=HashAlgorithm.SHA256):
         self._context = util_context
         self._ui = self._context.ui
         self._atmel = self._context.atmel
         self._key_type = key_type
         self._logger = self._context.logger
+        self._ec_type = ec_type
+        self._hash_type = hash_type
 
+        self._private_key = None
         self.device_serial = device_serial
-        self.private_key = None
 
     def _a_check(self, atmel_ops_status):
         """
@@ -43,12 +53,24 @@ class AtmelKeyGenerator:
             sys.exit(ops_status[1])
 
     @property
+    def ec_type(self):
+        return self._ec_type
+
+    @property
+    def hash_type(self):
+        return self._hash_type
+
+    @property
     def public_key(self):
         ops_status = self._atmel.get_public_key(self.device_serial)
         if not ops_status[0]:
             self._logger.error("failed to get public key: {}".format(ops_status[1]))
             sys.exit(ops_status[1])
         return ops_status[1]
+
+    @property
+    def private_key(self):
+        return self._private_key
 
     @property
     def signature(self):
@@ -110,13 +132,19 @@ class AtmelKeyGenerator:
             sys.exit(ops_status[1])
         return ops_status[1]
 
-    def generate(self, *, signature_limit=None, rec_pub_keys=None, signer_key=None, private_key_base64=None):
+    def generate(self, *,
+                 signature_limit=None,
+                 rec_pub_keys=None,
+                 signer_key: Optional[KeyGeneratorInterface] = None,
+                 private_key_base64: Optional[str] = None,
+                 start_date: Optional[int] = 0,
+                 expire_date: Optional[int] = 0):
         random_number_bytes = list(randint(0, 255) for _ in range(32))
         random_number = to_b64(bytearray(random_number_bytes))
 
         if not private_key_base64:
             # generation virgil crypto key
-            virgil_key_pair = VirgilKeyPair.generate(VirgilKeyPair.Type_EC_SECP256R1)
+            virgil_key_pair = VirgilKeyPair.generate(self.ec_type)
             private_key = VirgilKeyPair.privateKeyToDER(virgil_key_pair.privateKey())
             private_key_base64 = to_b64(private_key)
 
@@ -141,6 +169,7 @@ class AtmelKeyGenerator:
             if pub_key == 0:
                 return
 
+            # TODO: update is needed, sign data is vs_pubkey_dated_t for HL keys
             sign_data = signer_key.sign(pub_key)
             if sign_data == 0:
                 return
@@ -154,5 +183,5 @@ class AtmelKeyGenerator:
                 return
 
         self._lock_data_field()
-        self.private_key = private_key_base64
+        self._private_key = private_key_base64
         return self
