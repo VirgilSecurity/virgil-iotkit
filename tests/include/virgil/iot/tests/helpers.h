@@ -77,7 +77,7 @@ extern uint16_t failed_test_result;
     do {                                                                                                               \
         BORDER;                                                                                                        \
         VS_LOG_INFO("[TESTS-BEGIN]");                                                                                  \
-    } while (0);
+    } while (0)
 
 #define FINISH_TESTS                                                                                                   \
     do {                                                                                                               \
@@ -90,30 +90,30 @@ extern uint16_t failed_test_result;
         } else if (failed_test_result > 1) {                                                                           \
             VS_LOG_INFO("%lu tests have been failed", failed_test_result);                                             \
         }                                                                                                              \
-    } while (0);
+    } while (0)
 
 #define START_TEST(NAME)                                                                                               \
     do {                                                                                                               \
         BORDER;                                                                                                        \
         VS_LOG_INFO(" START TEST: %s ", NAME);                                                                         \
-    } while (0);
+    } while (0)
 
 #define START_ELEMENT(NAME)                                                                                            \
     do {                                                                                                               \
         VS_LOG_INFO(" TEST CASE : %s ", NAME);                                                                         \
-    } while (0);
+    } while (0)
 
 #define RESULT_OK                                                                                                      \
     do {                                                                                                               \
         VS_LOG_INFO("[TEST-SUCCESS]");                                                                                 \
-    } while (0);
+    } while (0)
 
 #define RESULT_ERROR                                                                                                   \
     do {                                                                                                               \
         VS_LOG_ERROR("[TEST-FAILURE]");                                                                                \
         failed_test_result++;                                                                                          \
         goto terminate;                                                                                                \
-    } while (0);
+    } while (0)
 
 #define TEST_CASE(NAME, TEST_ELEMENT)                                                                                  \
     do {                                                                                                               \
@@ -123,7 +123,7 @@ extern uint16_t failed_test_result;
         } else {                                                                                                       \
             RESULT_ERROR;                                                                                              \
         }                                                                                                              \
-    } while (0);
+    } while (0)
 
 #define TEST_CASE_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true == (TEST_ELEMENT));
 

@@ -62,9 +62,11 @@ void
 test_sign_converters(void);
 void
 test_pubkeys_converters(void);
+
 /**********************************************************/
 static void
 crypto_tests(void) {
+
     test_hash();
     test_hmac();
     test_kdf2();
@@ -77,17 +79,51 @@ crypto_tests(void) {
     test_sign_converters();
     test_pubkeys_converters();
 #endif
+
 }
 
 /**********************************************************/
 uint16_t
-virgil_iot_sdk_tests(void) {
+vs_tests_checks(bool print_start_finish_tests) {
     failed_test_result = 0;
+
+    if(print_start_finish_tests){
+        START_TESTS;
+    }
 
     sdmp_tests();
     prvs_tests();
 
     crypto_tests();
 
+    if(print_start_finish_tests){
+        FINISH_TESTS;
+    }
+
     return failed_test_result;
+}
+
+/**********************************************************/
+void
+vs_tests_begin(){
+    START_TESTS;
+}
+
+/**********************************************************/
+void
+vs_tests_step_success(){
+    RESULT_OK;
+}
+
+/**********************************************************/
+void
+vs_tests_step_failure(){
+    RESULT_ERROR;
+    terminate:;
+}
+
+/**********************************************************/
+void
+vs_tests_end(){
+    FINISH_TESTS;
 }
