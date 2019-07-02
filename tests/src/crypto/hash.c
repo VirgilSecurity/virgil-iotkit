@@ -22,9 +22,42 @@ static const uint8_t correct_result_sha_512_raw[] = {
         0x39, 0x17, 0xb1, 0x58, 0xf7, 0x51, 0x4f, 0xd4, 0x61, 0x2e, 0x75, 0xe7, 0x74, 0x8f, 0x59, 0x2a,
         0x80, 0xde, 0x87, 0x50, 0x7c, 0x21, 0xae, 0x72, 0x34, 0x16, 0x9f, 0x89, 0x41, 0x1c, 0x34, 0xda};
 
+
+static const uint8_t long_test_data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x04, 0x91, 0xF7,
+                                         0x62, 0x91, 0x45, 0x5A, 0x58, 0xA6, 0xD5, 0x5C, 0x5D, 0x06, 0x82, 0x99, 0x77,
+                                         0xF2, 0x73, 0x4B, 0x99, 0x28, 0x44, 0x76, 0x9A, 0xFC, 0xB4, 0x08, 0x52, 0x8C,
+                                         0x87, 0xA5, 0xA6, 0x30, 0xFF, 0x75, 0xE5, 0x4A, 0x2E, 0xD0, 0x95, 0x8D, 0xC2,
+                                         0x4A, 0xA4, 0x46, 0x80, 0x4E, 0x05, 0xF5, 0x59, 0x14, 0xC2, 0xBE, 0x10, 0x5E,
+                                         0x30, 0x47, 0x8C, 0x4B, 0x0F, 0xFA, 0x90, 0x90, 0x7D, 0x22};
+
+static const uint8_t long_sha256_hash[] = {0x47, 0x79, 0x98, 0xCB, 0x39, 0xC5, 0x4E, 0x44, 0x35, 0xCD, 0x69,
+                                           0x1C, 0xD4, 0x5D, 0xDD, 0xB2, 0x40, 0x41, 0xA3, 0xF8, 0xD3, 0xB3,
+                                           0xD5, 0x85, 0x06, 0x0E, 0x68, 0x87, 0x37, 0x32, 0xA2, 0xDE};
+
+
 /******************************************************************************/
 static bool
-_test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
+_test_long_sha_pass(vs_hsm_hash_type_e hash_type,
+                    const uint8_t *data,
+                    uint16_t data_sz,
+                    const uint8_t *ref_result,
+                    uint16_t ref_result_size) {
+    static uint8_t result_buf[HASH_MAX_BUF_SIZE];
+    uint16_t result_sz;
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK ==
+                           vs_hsm_hash_create(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
+                   "Error execute hash op");
+    BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result")
+
+    MEMCMP_CHECK_RET(ref_result, result_buf, result_sz);
+
+    return true;
+}
+
+/******************************************************************************/
+static bool
+_test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, uint16_t correct_result_size) {
     static uint8_t result_buf[HASH_MAX_BUF_SIZE];
     static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
@@ -55,7 +88,7 @@ _test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, 
 
 /******************************************************************************/
 static bool
-_test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, size_t correct_result_size) {
+_test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, uint16_t correct_result_size) {
 
     switch (hash_type) {
     case VS_HASH_SHA_256: {
@@ -88,6 +121,13 @@ void
 test_hash(void) {
 
     START_TEST("HASH tests");
+
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_long_sha_pass(VS_HASH_SHA_256,
+                                     long_test_data,
+                                     sizeof(long_test_data),
+                                     long_sha256_hash,
+                                     sizeof(long_sha256_hash)));
 
     TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
                  _test_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
