@@ -55,12 +55,14 @@ add_library(virgil-iot-sdk-tests
         src/crypto/keypair.c
         src/crypto/random.c
         src/crypto/helpers.c
+        src/crypto/trust_list.c
         )
 
 target_link_libraries(virgil-iot-sdk-tests
         hsm
         secbox
         sdmp
+        trust_list
         )
 
 if (NOT VIRGIL_IOT_MCU_BUILD)
@@ -111,6 +113,8 @@ target_include_directories(virgil-iot-sdk-tests
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../converters/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../trust_list/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../secbox/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/hsm/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"

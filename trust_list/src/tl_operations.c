@@ -253,7 +253,7 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     tl_ctx->keys_qty.keys_amount = header->pub_keys_count;
 
     CHECK_RET(
-            0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox load")
+            0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox save")
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
