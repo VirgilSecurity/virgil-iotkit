@@ -77,7 +77,7 @@ _is_greater_timespec(struct timespec a, struct timespec b) {
 
 /******************************************************************************/
 static int
-vs_prvs_wait_func(size_t wait_ms, int *condition, int idle) {
+vs_prvs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     struct timespec time_to_wait;
     struct timespec ts_now;
 

@@ -1,61 +1,36 @@
 
 #include <helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
-#include <virgil/crypto/foundation/vscf_iotelic_hmac.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+static uint8_t key_raw[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
 
-static vsc_data_t key;
-static vsc_data_t input;
-static vsc_data_t another_input;
+static uint8_t input_raw[] = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                              0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                              0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                              0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                              0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02};
 
 /******************************************************************************/
 static bool
-test_hmac_step(vscf_impl_t *sha_impl, vsc_data_t correct_result) {
-    vsc_buffer_t result;
-    vsc_buffer_t another_result;
-    vscf_iotelic_hmac_t *hmac_ctx = vscf_iotelic_hmac_new();
-    bool correct;
-    bool incorrect;
-    static uint8_t result_buf[RESULT_BUF_SIZE];
-    static uint8_t another_result_buf[RESULT_BUF_SIZE];
+_test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t correct_sz) {
+    uint8_t buf[128];
+    uint16_t sz;
 
-    vsc_buffer_init(&result);
-    vsc_buffer_init(&another_result);
+    VS_HSM_CHECK_RET(
+            vs_hsm_hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz),
+            "vs_hsm_hmac incorrect result");
 
-    vsc_buffer_use(&result, result_buf, sizeof(result_buf));
-    vsc_buffer_use(&another_result, another_result_buf, sizeof(another_result));
+    MEMCMP_CHECK_RET(correct, buf, correct_sz);
 
-    vscf_iotelic_hmac_take_hash(hmac_ctx, sha_impl);
-    vscf_iotelic_hmac_mac(hmac_ctx, key, input, &result);
-    correct = vsc_data_equal(correct_result, vsc_buffer_data(&result));
-
-    vscf_iotelic_hmac_mac(hmac_ctx, key, another_input, &another_result);
-    incorrect = !vsc_data_equal(correct_result, vsc_buffer_data(&another_result));
-
-    vsc_buffer_cleanup(&result);
-    vsc_buffer_cleanup(&another_result);
-    vscf_iotelic_hmac_delete(hmac_ctx);
-
-    return correct && incorrect;
+    return true;
 }
 
 /******************************************************************************/
 void
 test_hmac(void) {
-    static const uint8_t another_raw[] = {};
-
-    uint8_t key_raw[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-                         0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-                         0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
-
-    uint8_t input_raw[] = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-                           0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-                           0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-                           0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-                           0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02};
 
     uint8_t sha256_result_raw[] = {0x70, 0xa8, 0xe8, 0xa8, 0xb5, 0x24, 0x1b, 0x7e, 0x75, 0x84, 0x93,
                                    0x55, 0x3f, 0x29, 0x21, 0x80, 0x1b, 0x11, 0xd3, 0x6f, 0x47, 0x35,
@@ -72,21 +47,14 @@ test_hmac(void) {
                                    0x21, 0xd2, 0x88, 0xac, 0x81, 0x63, 0x17, 0xe9, 0x13, 0x37, 0xb7, 0x4e, 0xde,
                                    0xf1, 0x7a, 0xb5, 0x97, 0xbc, 0x27, 0x0d, 0x23, 0x9a, 0xb8, 0xc8, 0x36};
 
-    key = vsc_data(key_raw, sizeof(key_raw));
-    input = vsc_data(input_raw, sizeof(input_raw));
-    another_input = vsc_data(another_raw, sizeof(another_raw));
-
     START_TEST("HMAC test");
 
-    TEST_CASE_OK("SHA-256 usage",
-                 test_hmac_step(vscf_iotelic_sha256_impl(vscf_iotelic_sha256_new()),
-                                vsc_data(sha256_result_raw, sizeof(sha256_result_raw))));
-    TEST_CASE_OK("SHA-384 usage",
-                 test_hmac_step(vscf_iotelic_sha384_impl(vscf_iotelic_sha384_new()),
-                                vsc_data(sha384_result_raw, sizeof(sha384_result_raw))));
-    TEST_CASE_OK("SHA-512 usage",
-                 test_hmac_step(vscf_iotelic_sha512_impl(vscf_iotelic_sha512_new()),
-                                vsc_data(sha512_result_raw, sizeof(sha512_result_raw))));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_hmac_case(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_hmac_case(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
 
 terminate:;
 }

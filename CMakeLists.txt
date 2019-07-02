@@ -126,7 +126,6 @@ set(VIRGIL_LIB_PHE OFF CACHE BOOL "Build 'phe' library" FORCE)
 set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
 set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
 
 
@@ -135,7 +134,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 # ---------------------------------------------------------------------------
 clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/cloud
-        ${CMAKE_CURRENT_SOURCE_DIR}/common
         ${CMAKE_CURRENT_SOURCE_DIR}/protocols
         ${CMAKE_CURRENT_SOURCE_DIR}/provision
         ${CMAKE_CURRENT_SOURCE_DIR}/secbox
@@ -145,6 +143,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
         ${CMAKE_CURRENT_SOURCE_DIR}/logger
         ${CMAKE_CURRENT_SOURCE_DIR}/hsm
+        ${CMAKE_CURRENT_SOURCE_DIR}/converters
 )
 
 
@@ -174,10 +173,22 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 
 #
+#   Converters
+#
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+endif()
+#
 #   HSM
 #
 # TODO: Add Option to disable hsm
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
+
+#
+#   Provision
+#
+# TODO: Add Option to disable hsm
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/provision)
 
 #
 #   Protocols

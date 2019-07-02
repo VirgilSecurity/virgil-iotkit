@@ -45,71 +45,18 @@ import (
 // TODO: use BigEndian instead of common.SystemEndian after correct serialization support from C side
 // Otherwise there could be problems if device/initializer are using different byte order
 
-type Go_vs_sdmp_pubkey_t struct  {
-    PubKey   [PUBKEY_MAX_SZ]uint8
-    PubKeySz uint8
-}
-
-func (g *Go_vs_sdmp_pubkey_t) fromBytes(b []byte) error {
-    buf := bytes.NewBuffer(b)
-    if err := binary.Read(buf, common.SystemEndian, g); err != nil {
-        return fmt.Errorf("failed to deserialize vs_sdmp_pubkey_t: %v", err)
-    }
-    return nil
-}
-
-type Go_vs_sdmp_prvs_signature_t struct {
-    Id    uint16
-    ValSz uint8
-    Val   []byte
-}
-
-func (g *Go_vs_sdmp_prvs_signature_t) fromBytes(b []byte) error {
-    buf := bytes.NewBuffer(b)
-
-    if err := binary.Read(buf, common.SystemEndian, &g.Id); err != nil {
-        return fmt.Errorf("failed to deserialize signature Id: %v", err)
-    }
-    if err := binary.Read(buf, common.SystemEndian, &g.ValSz); err != nil {
-        return fmt.Errorf("failed to deserialize signature ValSz: %v", err)
-    }
-    // Rest of buffer contains signature value
-    rest := buf.Bytes()
-    valueBytes := rest[:g.ValSz]
-    g.Val = valueBytes
-
-    return nil
-}
-
-func (g *Go_vs_sdmp_prvs_signature_t) toBytes() ([]byte, error) {
-    buf := new(bytes.Buffer)
-
-    if err := binary.Write(buf, common.SystemEndian, g.Id); err != nil {
-        return nil, fmt.Errorf("failed to serialize signature Id: %v", err)
-    }
-    if err := binary.Write(buf, common.SystemEndian, g.ValSz); err != nil {
-        return nil, fmt.Errorf("failed to serialize signature ValSz: %v", err)
-    }
-    // Write signature value
-    _, err := buf.Write(g.Val)
-    if err != nil {
-        return nil, fmt.Errorf("failed to serialize signature Val: %v", err)
-    }
-
-    return buf.Bytes(), nil
-}
-
 type Go_vs_sdmp_prvs_devi_t struct {
     Manufacturer uint32
     Model        uint32
     MacAddress   [6]byte
     UdidOfDevice [32]uint8
+    DataSz       uint16
 
-    OwnKey    Go_vs_sdmp_pubkey_t
-    Signature Go_vs_sdmp_prvs_signature_t
+    PubKey       common.Go_vs_pubkey_t
+    Signature    common.Go_vs_sign_t
 }
 
-func (g *Go_vs_sdmp_prvs_devi_t) fromBytes(b []byte) error {
+func (g *Go_vs_sdmp_prvs_devi_t) FromBytes(b []byte) error {
     buf := bytes.NewBuffer(b)
     if err := binary.Read(buf, common.SystemEndian, &g.Manufacturer); err != nil {
         return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t Manufacturer: %v", err)
@@ -123,14 +70,46 @@ func (g *Go_vs_sdmp_prvs_devi_t) fromBytes(b []byte) error {
     if err := binary.Read(buf, common.SystemEndian, &g.UdidOfDevice); err != nil {
         return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t UdidOfDevice: %v", err)
     }
-    if err := binary.Read(buf, common.SystemEndian, &g.OwnKey); err != nil {
-        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t OwnKey: %v", err)
+    if err := binary.Read(buf, common.SystemEndian, &g.DataSz); err != nil {
+        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t DataSz: %v", err)
     }
-    signature := Go_vs_sdmp_prvs_signature_t{}
-    if err := signature.fromBytes(buf.Bytes()); err != nil {
+
+    // Rest of buffer holds vs_pubkey_t + vs_sign_t
+    data := buf.Bytes()
+
+    // Public key
+    publicKey := common.Go_vs_pubkey_t{}
+    signatureOffset, err := publicKey.FromBytes(data)
+    if err != nil {
+        return err
+    }
+    g.PubKey = publicKey
+
+    // Signature
+    signature := common.Go_vs_sign_t{}
+    if _, err := signature.FromBytes(data[signatureOffset:]); err != nil {
         return err
     }
     g.Signature = signature
 
     return nil
+}
+
+type Go_vs_sdmp_prvs_sgnp_req_t struct {
+    HashType uint8
+    Data     []byte
+}
+
+func (g *Go_vs_sdmp_prvs_sgnp_req_t) ToBytes() ([]byte, error) {
+    buf := new(bytes.Buffer)
+
+    if err := binary.Write(buf, common.SystemEndian, g.HashType); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sdmp_prvs_sgnp_req_t HashType: %v", err)
+    }
+
+    if _, err := buf.Write(g.Data); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_sdmp_prvs_sgnp_req_t Data: %v", err)
+    }
+
+    return buf.Bytes(), nil
 }

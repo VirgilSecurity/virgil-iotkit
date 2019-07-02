@@ -137,3 +137,33 @@ class UI(object):
 
     def get_password(self):
         pass
+
+    def get_date(self):
+        while True:
+            year = self.get_user_input(
+                "Enter year (yyyy): ",
+                input_checker_callback=lambda i: i.isdigit() and (int(i) in range(2015, 2151)),
+                input_checker_msg="Only integer value from 2015 to 2150 is allowed. Please try again: ",
+                empty_allow=False
+            )
+            month = self.get_user_input(
+                "Enter month (1-12): ",
+                input_checker_callback=lambda i: i.isdigit() and (int(i) in range(1, 13)),
+                input_checker_msg="Only integer value from 1 to 12 is allowed. Please try again: ",
+                empty_allow=False
+            )
+            day = self.get_user_input(
+                "Enter day (1-31): ",
+                input_checker_callback=lambda i: i.isdigit() and (int(i) in range(1, 32)),
+                input_checker_msg="Only integer value from 1 to 31 is allowed. Please try again: ",
+                empty_allow=False
+            )
+
+            confirmed = self.get_user_input(
+                "Year: %s, Month: %s, Day: %s. Confirm? [y/n] " % (year, month, day),
+                input_checker_callback=self.InputCheckers.yes_no_checker,
+                input_checker_msg="Allowed answers [y/n]. Please try again: ",
+                empty_allow=False
+            ).upper()
+            if confirmed == "Y":
+                return int(year), int(month), int(day)

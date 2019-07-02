@@ -35,69 +35,71 @@
 package common
 
 import (
-	"fmt"
+    "fmt"
 
-	"gopkg.in/virgil.v5/cryptoapi"
-	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
+    "gopkg.in/virgil.v5/cryptoapi"
+    "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
 var (
-	crypto = virgil_crypto_go.NewVirgilCrypto()
+    crypto = virgil_crypto_go.NewVirgilCrypto()
 )
 
 func init() {
-	crypto.UseSha256Fingerprints = true
+    crypto.UseSha256Fingerprints = true
 }
 
 type SignerInterface interface {
-	Sign(data []byte) ([]byte, error)
-	Verify(data []byte, signature []byte, publicKeyBytes []byte) error
-	SignerId() (uint16, error)
-	PublicKeyFull() ([]byte, error)
+    Sign(data []byte) ([]byte, error)
+    Verify(data []byte, signature []byte, pubKeyBytes []byte, hash virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) error
+    PublicKeyFull() ([]byte, error)
 }
 
 type VirgilCryptoSigner struct {
-	PrivateKey cryptoapi.PrivateKey
+    PrivateKey cryptoapi.PrivateKey
 }
 
 func (s *VirgilCryptoSigner) Sign(data []byte) ([]byte, error){
-	signature, err := crypto.Sign(data, s.PrivateKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to sign data: %v", err)
-	}
-	return signature, nil
+    signature, err := crypto.Sign(data, s.PrivateKey)
+    if err != nil {
+        return nil, fmt.Errorf("failed to sign data: %v", err)
+    }
+    return signature, nil
 }
 
-func (s *VirgilCryptoSigner) Verify(data []byte, signature []byte, publicKeyBytes []byte) error {
-	publicKey, err := crypto.ImportPublicKey(publicKeyBytes)
-	if err != nil {
-		return fmt.Errorf("failed import public key: %v", err)
-	}
+func (s *VirgilCryptoSigner) Verify(data []byte,
+                                    signature []byte,
+                                    pubKeyBytes []byte,
+                                    hashAlg virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) (err error) {
+    if len(pubKeyBytes) == 0 {
+        return fmt.Errorf("verify error: public key is empty")
+    }
+    signer := virgil_crypto_go.NewVirgilSigner(hashAlg)
+    defer virgil_crypto_go.DeleteVirgilSigner(signer)
 
-	if err := crypto.VerifySignature(data, signature, publicKey); err != nil {
-		return fmt.Errorf("error with VerifySignature: %v", err)
-	}
-	return nil
-}
+    vdata := virgil_crypto_go.ToVirgilByteArray(data)
+    defer virgil_crypto_go.DeleteVirgilByteArray(vdata)
+    vsignature := virgil_crypto_go.ToVirgilByteArray(signature)
+    defer virgil_crypto_go.DeleteVirgilByteArray(vsignature)
+    vcontents := virgil_crypto_go.ToVirgilByteArray(pubKeyBytes)
+    defer virgil_crypto_go.DeleteVirgilByteArray(vcontents)
 
-func (s *VirgilCryptoSigner) SignerId() (uint16, error) {
-	fullPubKeyBytes, err := s.PublicKeyFull()
-	if err != nil {
-		return 0, err
-	}
-	tinyOffset := len(fullPubKeyBytes) - 64
-	tinyPubKeyBytes := fullPubKeyBytes[tinyOffset:]
-	return Crc(tinyPubKeyBytes), nil
+    valid := signer.Verify(vdata, vsignature, vcontents)
+
+    if !valid {
+        return fmt.Errorf("verify error: invalid signature")
+    }
+    return nil
 }
 
 func (s *VirgilCryptoSigner) PublicKeyFull() ([]byte, error) {
-	publicKey, err := crypto.ExtractPublicKey(s.PrivateKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to extract public key: %v", err)
-	}
-	pubKeyBytes, err := crypto.ExportPublicKey(publicKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to export public key: %v", err)
-	}
-	return pubKeyBytes, nil
+    publicKey, err := crypto.ExtractPublicKey(s.PrivateKey)
+    if err != nil {
+        return nil, fmt.Errorf("failed to extract public key: %v", err)
+    }
+    pubKeyBytes, err := crypto.ExportPublicKey(publicKey)
+    if err != nil {
+        return nil, fmt.Errorf("failed to export public key: %v", err)
+    }
+    return pubKeyBytes, nil
 }

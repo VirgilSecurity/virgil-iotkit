@@ -37,37 +37,22 @@
 
 #include <stdbool.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
 
-extern size_t failed_test_result;
+extern uint16_t failed_test_result;
 
-#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
-    if (!(CONDITION)) {                                                                                                \
-        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
-        return (RETCODE);                                                                                              \
-    }
+#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
-#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
-
-#define VSCF_CHECK_RET(OPERATION, MESSAGE, ...)                                                                        \
-    BOOL_CHECK_RET(vscf_status_SUCCESS == (OPERATION), MESSAGE, ##__VA_ARGS__)
-
-#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
-    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
-                   #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
-                   (int)(SIZE))
-
-
-#define BOOL_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
     if (!(OPERATION)) {                                                                                                \
         VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
         goto terminate;                                                                                                \
     }
 
-#define VSCF_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
-    BOOL_CHECK_GOTO(vscf_status_SUCCESS == (OPERATION), DESCRIPTION, ##__VA_ARGS__)
-
-
-#define RESULT_BUF_SIZE 1024
+#define RESULT_BUF_SIZE (1024)
+#define HASH_MAX_BUF_SIZE (64)
+#define SHA256_SIZE (32)
+#define PUBKEY_MAX_BUF_SIZE (256)
 
 #define BORDER VS_LOG_INFO("------------------------------------------------------");
 
@@ -85,7 +70,7 @@ extern size_t failed_test_result;
             VS_LOG_INFO("Test have been finished successfully");                                                       \
         } else if (failed_test_result == 1) {                                                                          \
             VS_LOG_INFO("1 test has been failed");                                                                     \
-        } else if (failed_test_result >= 1) {                                                                          \
+        } else if (failed_test_result > 1) {                                                                           \
             VS_LOG_INFO("%lu tests have been failed", failed_test_result);                                             \
         }                                                                                                              \
     } while (0);

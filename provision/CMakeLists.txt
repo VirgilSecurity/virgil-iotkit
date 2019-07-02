@@ -33,3 +33,52 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(provision VERSION 0.1.0 LANGUAGES C)
+
+#
+#   Provision library
+#
+add_library(provision
+        src/provision.c
+        )
+
+#
+#   Set additional compiler flags
+#
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("No CFLAGS_PLATFORM")
+else()
+    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(provision
+        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+
+#
+#   Compile definitions
+#
+
+#
+#   Config path
+#
+
+target_compile_definitions(${PROJECT_NAME}
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        )
+
+#
+#   Common include directories
+#
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+
+        PRIVATE
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
+        )

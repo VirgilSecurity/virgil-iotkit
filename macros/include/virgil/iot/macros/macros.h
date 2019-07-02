@@ -32,20 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_API_H
-#define VS_HSM_API_H
-#include <stdint.h>
-#include <stddef.h>
+#ifndef VS_MACROS_H
+#define VS_MACROS_H
 
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
+    if (!(CONDITION)) {                                                                                                \
+        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
+        return (RETCODE);                                                                                              \
+    }
 
-int
-vs_hsm_slot_save(vs_hsm_slot_e slot, const uint8_t *in_data, size_t data_sz);
-int
-vs_hsm_slot_load(vs_hsm_slot_e slot, uint8_t *out_data, size_t buf_sz, size_t *out_sz);
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
 
-#endif // VS_HSM_API_H
+#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
+    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+                   #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
+                   (int)(SIZE))
+
+#endif // VS_MACROS_H

@@ -53,7 +53,7 @@ vs_sdmp_add_netif(const vs_netif_t *netif);
 #endif
 
 int
-vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz);
+vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
 
 int
 vs_sdmp_register_service(const vs_sdmp_service_t *service);

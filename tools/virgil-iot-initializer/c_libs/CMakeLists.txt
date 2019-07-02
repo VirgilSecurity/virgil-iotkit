@@ -50,19 +50,9 @@ target_link_libraries (${PROJECT_NAME} sdmp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
         )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
-
-# TODO: remove workaround with copying libs
-set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_BINARY_DIR}/ap/security-sdk/protocols/sdmp/libsdmp.a"
-        ${INITIALIZER_LIB_DIR}/libsdmp.a
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_BINARY_DIR}/ap/security-sdk/tools/virgil-iot-initializer/c_libs/libnetif_plc_sim.a"
-        ${INITIALIZER_LIB_DIR}/libnetif_plc_sim.a
-        )

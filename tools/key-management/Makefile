@@ -21,15 +21,9 @@ define clean_nuitka_build
 	@if [ -d ./db_converter.build ]; then \
 		rm -r ./db_converter.build; \
 	fi
-	@if [ -d ./bulb_devmode.build ]; then \
-		rm -rf ./bulb_devmode.build; \
-	fi
 
 	@if [ -d ./db_converter.dist ]; then \
 		rm -rf ./db_converter.dist; \
-	fi
-	@if [ -d ./bulb_devmode.dist ]; then \
-		rm -rf ./bulb_devmode.dist; \
 	fi
 endef
 
@@ -47,10 +41,6 @@ build_nuitka_converter:
 	nuitka --standalone --python-version=3.5 ./db_converter.py
 	rsync --ignore-existing ./db_converter.dist/* ./virgil-keymanager.dist/
 
-build_nuitka_buld_devmode:
-	nuitka --standalone --python-version=3.5 ./bulb_devmode.py
-	rsync --ignore-existing ./bulb_devmode.dist/* ./virgil-keymanager.dist/
-
 wheel:
 	${PYTHON3} setup.py bdist_wheel --universal
 	$(call clean_after_wheel)
@@ -67,7 +57,7 @@ clean_dist:
 venv:
 	@if [ ! -d "$(VENV)" ]; then \
 		echo ">>>Creating venv at $(VENV)"; \
-		python3.5 -m venv $(VENV); \
+		python3 -m venv $(VENV); \
 		. $(VENV)/bin/activate; \
 		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; \
 		python get-pip.py; \

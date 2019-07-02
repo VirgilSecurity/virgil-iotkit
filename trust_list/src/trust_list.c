@@ -35,10 +35,10 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include "tl_structs.h"
-#include "private/tl_operations.h"
-#include "trust_list.h"
-#include "secbox.h"
+#include "virgil/iot/trust_list/tl_structs.h"
+#include "virgil/iot/trust_list/private/tl_operations.h"
+#include "virgil/iot/trust_list/trust_list.h"
+#include "virgil/iot/secbox/secbox.h"
 
 /******************************************************************************/
 void
@@ -48,13 +48,13 @@ vs_tl_init_storage(void) {
 
 /******************************************************************************/
 int
-vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size_t data_sz) {
+vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
     if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return TL_ERROR_PARAMS;
+        return VS_TL_ERROR_PARAMS;
     }
 
-    int res = TL_ERROR_GENERAL;
+    int res = VS_TL_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
@@ -64,22 +64,19 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size
         break;
     case VS_TL_ELEMENT_TLF:
 
-        if (sizeof(vs_tl_footer_t) == data_sz) {
-            res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, (vs_tl_footer_t *)in_data);
+        res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
 
-            if (TL_OK == res) {
-                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
-                if (TL_OK == res) {
-                    res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
-                }
+        if (VS_TL_OK == res) {
+            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
+            if (VS_TL_OK == res) {
+                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
             }
         }
+
         vs_tl_invalidate(TL_STORAGE_TYPE_TMP);
         break;
     case VS_TL_ELEMENT_TLC:
-        if (sizeof(vs_tl_pubkey_t) == data_sz) {
-            res = vs_tl_key_save(TL_STORAGE_TYPE_TMP, (vs_tl_pubkey_t *)in_data);
-        }
+        res = vs_tl_key_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
         break;
     default:
         break;
@@ -90,13 +87,13 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size
 
 /******************************************************************************/
 int
-vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, size_t buf_sz, size_t *out_sz) {
+vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz) {
     if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return TL_ERROR_PARAMS;
+        return VS_TL_ERROR_PARAMS;
     }
 
-    int res = TL_ERROR_GENERAL;
+    int res = VS_TL_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
@@ -110,15 +107,11 @@ vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, size_t bu
 
         if (buf_sz >= sizeof(vs_tl_footer_t)) {
             *out_sz = sizeof(vs_tl_footer_t);
-            res = vs_tl_footer_load(TL_STORAGE_TYPE_STATIC, (vs_tl_footer_t *)out_data);
+            res = vs_tl_footer_load(TL_STORAGE_TYPE_STATIC, out_data, buf_sz, out_sz);
         }
         break;
     case VS_TL_ELEMENT_TLC:
-
-        if (buf_sz >= sizeof(vs_tl_pubkey_t)) {
-            *out_sz = sizeof(vs_tl_pubkey_t);
-            res = vs_tl_key_load(TL_STORAGE_TYPE_STATIC, element_info->index, (vs_tl_pubkey_t *)out_data);
-        }
+        res = vs_tl_key_load(TL_STORAGE_TYPE_STATIC, element_info->index, out_data, buf_sz, out_sz);
         break;
     default:
         break;

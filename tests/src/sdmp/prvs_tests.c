@@ -39,12 +39,14 @@
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/logger/logger.h>
 #include <private/test_prvs.h>
 #include <stdlib-config.h>
+#include <virgil/iot/hsm/hsm_structs.h>
 
 static vs_netif_t test_netif;
 static vs_sdmp_prvs_dnid_list_t dnid_list;
-static const size_t wait_msec = 0;
+static const uint32_t wait_msec = 0;
 
 static const vs_mac_addr_t mac_addr_server = {.bytes = {0xF2, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6}};
 static const vs_mac_addr_t mac_addr_fake_server = {.bytes = {0xE2, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6}};
@@ -87,8 +89,7 @@ test_uninitialized_devices(void) {
                     "vs_sdmp_prvs_uninitialized_devices call");
 
     PRVS_OP_CHECK_GOTO(prvs_call.dnid);
-    BOOL_CHECK_GOTO(
-            dnid_list.count == 1, "Incorrect dnid list size %lu while it must be equal to %d", dnid_list.count, 1);
+    CHECK_GOTO(dnid_list.count == 1, "Incorrect dnid list size %lu while it must be equal to %d", dnid_list.count, 1);
     MAC_ADDR_CHECK_GOTO(dnid_list.elements[0].mac_addr, mac_addr_server);
 
     return true;
@@ -101,20 +102,26 @@ terminate:
 /**********************************************************/
 static bool
 test_save_provision(void) {
-    vs_sdmp_pubkey_t res_pubkey;
-    static const vs_sdmp_pubkey_t asav_response = {.pubkey = "Password", .pubkey_sz = 9};
+    uint8_t res_buf[256];
+    vs_pubkey_t *res_pubkey = (vs_pubkey_t *)res_buf;
 
+    vs_pubkey_t *asav_response = &make_server_response.finalize_storage.asav_response;
     prvs_call.call = 0;
     is_client_call = true;
 
-    make_server_response.finalize_storage.asav_response = asav_response;
+    memcpy(asav_response->pubkey, "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", 48);
+    asav_response->key_type = VS_KEY_IOT_DEVICE;
+    asav_response->ec_type = VS_KEYPAIR_EC_SECP192K1;
 
-    SDMP_CHECK_GOTO(vs_sdmp_prvs_save_provision(&test_netif, &mac_addr_server, &res_pubkey, wait_msec),
+    make_server_response.finalize_storage.size = strlen((char *)asav_response->pubkey) + sizeof(vs_pubkey_t);
+
+    SDMP_CHECK_GOTO(vs_sdmp_prvs_save_provision(&test_netif, &mac_addr_server, res_buf, sizeof(res_buf), wait_msec),
                     "vs_sdmp_prvs_save_provision call");
     PRVS_OP_CHECK_GOTO(prvs_call.finalize_storage);
-    BOOL_CHECK_GOTO(res_pubkey.pubkey_sz == asav_response.pubkey_sz &&
-                            !VS_IOT_MEMCMP(res_pubkey.pubkey, asav_response.pubkey, res_pubkey.pubkey_sz),
-                    "Incorrect received public key");
+
+    CHECK_GOTO(res_pubkey->key_type == asav_response->key_type && res_pubkey->ec_type == asav_response->ec_type &&
+                       !VS_IOT_MEMCMP(res_pubkey->pubkey, asav_response->pubkey, 48),
+               "Incorrect received public key");
 
     return true;
 
@@ -128,11 +135,16 @@ static bool
 test_device_info(void) {
     uint8_t response_buf[256];
     vs_sdmp_prvs_devi_t *dev_resp = (vs_sdmp_prvs_devi_t *)response_buf;
+
     uint8_t server_buf[256];
     vs_sdmp_prvs_devi_t *serv_resp = (vs_sdmp_prvs_devi_t *)server_buf;
+    vs_pubkey_t *serv_pubkey = (vs_pubkey_t *)serv_resp->data;
+    vs_sign_t *serv_sign;
     static const uint8_t pubkey_raw[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    size_t pos;
-    size_t size;
+    static const uint8_t sign_raw[] = {20, 19, 18, 17, 16, 15, 14, 13, 12, 11};
+    uint16_t pos;
+    uint16_t size;
+
     const uint8_t *buf1;
     const uint8_t *buf2;
 
@@ -143,44 +155,37 @@ test_device_info(void) {
         server_buf[pos] = pos;
     }
 
-    serv_resp->mac = mac_addr_client;
-    VS_IOT_MEMCPY((char *)serv_resp->own_key.pubkey, pubkey_raw, sizeof(pubkey_raw));
+    memcpy(&serv_resp->mac, &mac_addr_client, sizeof(vs_mac_addr_t));
+    serv_pubkey->ec_type = 255;
+    serv_pubkey->key_type = 255;
+    VS_IOT_MEMCPY((char *)serv_pubkey->pubkey, pubkey_raw, sizeof(pubkey_raw));
+
+    serv_sign = (vs_sign_t *)(serv_resp->data + sizeof(pubkey_raw) + sizeof(vs_pubkey_t));
+    serv_sign->ec_type = 255;
+    serv_sign->hash_type = 255;
+    serv_sign->signer_type = 255;
+    VS_IOT_MEMCPY((char *)serv_sign->raw_sign_pubkey, sign_raw, sizeof(sign_raw));
 
     make_server_response.device_info = serv_resp;
 
-    serv_resp->own_key.pubkey_sz = 255;
-    serv_resp->signature.val_sz = 255;
-
-    SDMP_CHECK_ERROR_GOTO(
-            vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
-            "vs_sdmp_prvs_device_info call");
-
-    serv_resp->own_key.pubkey_sz = sizeof(pubkey_raw);
-    serv_resp->signature.val_sz = sizeof(response_buf) - sizeof(vs_sdmp_prvs_devi_t);
+    serv_resp->data_sz = sizeof(pubkey_raw) + sizeof(vs_pubkey_t) + sizeof(sign_raw) + sizeof(vs_sign_t);
 
     SDMP_CHECK_GOTO(vs_sdmp_prvs_device_info(&test_netif, &mac_addr_server, dev_resp, sizeof(response_buf), wait_msec),
                     "vs_sdmp_prvs_device_info call");
 
     PRVS_OP_CHECK_GOTO(prvs_call.device_info);
 
-    BOOL_CHECK_GOTO(sizeof(response_buf) != server_request.finalize_storage.buf_sz,
-                    "Incorrect request received by server");
+    CHECK_GOTO(sizeof(response_buf) != server_request.finalize_storage.buf_sz, "Incorrect request received by server");
 
-    buf1 = dev_resp->own_key.pubkey;
-    buf2 = serv_resp->own_key.pubkey;
-    size = dev_resp->own_key.pubkey_sz;
-    BOOL_CHECK_GOTO(dev_resp->own_key.pubkey_sz == serv_resp->own_key.pubkey_sz && !VS_IOT_MEMCMP(buf1, buf2, size),
-                    "Incorrect own_key");
+    buf1 = dev_resp->data;
+    buf2 = serv_resp->data;
+    size = dev_resp->data_sz;
+    CHECK_GOTO(dev_resp->data_sz == serv_resp->data_sz && !VS_IOT_MEMCMP(buf1, buf2, size), "Incorrect own_key");
 
-    BOOL_CHECK_GOTO(
-            dev_resp->signature.val_sz == serv_resp->signature.val_sz &&
-                    !VS_IOT_MEMCMP(dev_resp->signature.val, serv_resp->signature.val, dev_resp->signature.val_sz),
-            "Incorrect signature");
-    BOOL_CHECK_GOTO(!VS_IOT_MEMCMP(dev_resp->mac.bytes, serv_resp->mac.bytes, sizeof(serv_resp->mac.bytes)),
-                    "Incorrect MAC address");
-    BOOL_CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model &&
-                            dev_resp->signature.id == serv_resp->signature.id,
-                    "Incorrect response");
+    CHECK_GOTO(!VS_IOT_MEMCMP(dev_resp->mac.bytes, serv_resp->mac.bytes, sizeof(serv_resp->mac.bytes)),
+               "Incorrect MAC address");
+    CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model,
+               "Incorrect response");
 
     return true;
 
@@ -195,7 +200,7 @@ test_sign_data(void) {
     static const uint8_t data[] = {"Some data to be signed"};
     static uint8_t serv_sign[] = {"Signature example"};
     uint8_t signature[128];
-    size_t signature_sz = sizeof(signature);
+    uint16_t signature_sz = sizeof(signature);
     bool res = false;
 
     prvs_call.call = 0;
@@ -217,16 +222,16 @@ test_sign_data(void) {
                     "vs_sdmp_prvs_sign_data call");
     PRVS_OP_CHECK_GOTO(prvs_call.sign_data);
 
-    BOOL_CHECK_GOTO(server_request.sign_data.data_sz == sizeof(data) &&
-                            server_request.sign_data.buf_sz >= sizeof(signature) &&
-                            !VS_IOT_MEMCMP(data, server_request.sign_data.data, sizeof(data)),
-                    "Incorrect request received by server");
+    CHECK_GOTO(server_request.sign_data.data_sz == sizeof(data) &&
+                       server_request.sign_data.buf_sz >= sizeof(signature) &&
+                       !VS_IOT_MEMCMP(data, server_request.sign_data.data, sizeof(data)),
+               "Incorrect request received by server");
 
-    BOOL_CHECK_GOTO(signature_sz == make_server_response.sign_data.signature_sz &&
-                            !VS_IOT_MEMCMP(signature,
-                                           make_server_response.sign_data.signature,
-                                           make_server_response.sign_data.signature_sz),
-                    "Incorrect response");
+    CHECK_GOTO(signature_sz == make_server_response.sign_data.signature_sz &&
+                       !VS_IOT_MEMCMP(signature,
+                                      make_server_response.sign_data.signature,
+                                      make_server_response.sign_data.signature_sz),
+               "Incorrect response");
 
     res = true;
 
@@ -242,7 +247,7 @@ static bool
 test_set(bool use_fake_mac_addr) {
     static const vs_sdmp_prvs_element_t elem = VS_PRVS_PBR1;
     static const uint8_t data[] = "Some data";
-    size_t data_sz;
+    uint16_t data_sz;
     bool result = false;
 
     prvs_call.call = 0;
@@ -255,9 +260,9 @@ test_set(bool use_fake_mac_addr) {
         SDMP_CHECK_GOTO(vs_sdmp_prvs_set(&test_netif, &mac_addr_server, elem, data, data_sz, wait_msec),
                         "vs_sdmp_prvs_set call");
         PRVS_OP_CHECK_GOTO(prvs_call.save_data);
-        BOOL_CHECK_GOTO(server_request.save_data.element_id == elem && server_request.save_data.data_sz == data_sz &&
-                                !VS_IOT_MEMCMP(data, server_request.save_data.data, data_sz),
-                        "Incorrect set request data");
+        CHECK_GOTO(server_request.save_data.element_id == elem && server_request.save_data.data_sz == data_sz &&
+                           !VS_IOT_MEMCMP(data, server_request.save_data.data, data_sz),
+                   "Incorrect set request data");
     } else {
         SDMP_CHECK_ERROR_GOTO(vs_sdmp_prvs_set(&test_netif, &mac_addr_fake_server, elem, data, data_sz, wait_msec),
                               "vs_sdmp_prvs_set call");
@@ -285,9 +290,9 @@ test_finalize(void) {
     SDMP_CHECK_GOTO(vs_sdmp_prvs_finalize_tl(&test_netif, &mac_addr_server, data, sizeof(data), wait_msec),
                     "vs_sdmp_prvs_finalize_tl call");
     PRVS_OP_CHECK_GOTO(prvs_call.finalize_tl);
-    BOOL_CHECK_GOTO(server_request.finalize_tl.data_sz == sizeof(data) &&
-                            !VS_IOT_MEMCMP(data, server_request.finalize_tl.data, sizeof(data)),
-                    "Incorrect request data");
+    CHECK_GOTO(server_request.finalize_tl.data_sz == sizeof(data) &&
+                       !VS_IOT_MEMCMP(data, server_request.finalize_tl.data, sizeof(data)),
+               "Incorrect request data");
 
     result = true;
 

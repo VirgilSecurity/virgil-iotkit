@@ -3,6 +3,7 @@
 #define TRUST_LIST_H
 
 #include <stdint.h>
+#include <virgil/iot/hsm/hsm_structs.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
@@ -21,8 +22,8 @@ void
 vs_tl_init_storage(void);
 
 int
-vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, size_t data_sz);
+vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
 
 int
-vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, size_t buf_sz, size_t *out_sz);
+vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
 #endif // TRUST_LIST_H

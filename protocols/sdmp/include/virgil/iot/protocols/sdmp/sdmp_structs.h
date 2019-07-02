@@ -62,9 +62,9 @@ typedef uint32_t vs_sdmp_service_id_t;
 typedef uint32_t vs_sdmp_element_t;
 
 // Callback for Received data
-typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const size_t data_sz);
+typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
-typedef int (*vs_netif_tx_t)(const uint8_t *data, const size_t data_sz);
+typedef int (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
 typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
 typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
@@ -76,16 +76,16 @@ typedef int (*vs_netif_deinit_t)();
 typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
                                                    vs_sdmp_element_t element_id,
                                                    const uint8_t *request,
-                                                   const size_t request_sz,
+                                                   const uint16_t request_sz,
                                                    uint8_t *response,
-                                                   const size_t response_buf_sz,
-                                                   size_t *response_sz);
+                                                   const uint16_t response_buf_sz,
+                                                   uint16_t *response_sz);
 
 typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
                                                     vs_sdmp_element_t element_id,
                                                     bool is_ack,
                                                     const uint8_t *response,
-                                                    const size_t response_sz);
+                                                    const uint16_t response_sz);
 
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
