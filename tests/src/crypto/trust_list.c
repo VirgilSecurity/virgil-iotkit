@@ -431,7 +431,6 @@ test_keystorage_and_tl(void) {
     if (!_parse_test_tl_data(tl_data1, tl_data1_len)) {
         VS_LOG_ERROR("Bad test data");
         RESULT_ERROR
-        goto terminate;
     }
 
     TEST_CASE_OK("TL save hl keys", _test_save_hl_keys())
