@@ -35,7 +35,6 @@ static uint16_t test_footer_sz;
         VS_LOG_SET_LOGLEVEL(prev_loglevel);                                                                            \
         return false;                                                                                                  \
     }
-#define VS_TL_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_TL_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 /******************************************************************************/
 static bool
@@ -200,9 +199,9 @@ _test_tl_keys_save_pass() {
     uint16_t i;
 
     for (i = 0; i < test_header->pub_keys_count; ++i) {
-        VS_TL_CHECK_RET(_save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-                        "Error write tl key %u",
-                        i)
+        BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+                       "Error write tl key %u",
+                       i)
     }
     return true;
 }
@@ -214,17 +213,19 @@ _tl_keys_save_wrong_order() {
 
     if (test_header->pub_keys_count > 2) {
         for (i = 0; i < test_header->pub_keys_count - 2; ++i) {
-            VS_TL_CHECK_RET(_save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-                            "Error write tl key %u",
-                            i)
+            BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+                           "Error write tl key %u",
+                           i)
         }
     }
     i = test_header->pub_keys_count - 1;
-    VS_TL_CHECK_RET(
-            _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size), "Error write tl key %u", i)
+    BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+                   "Error write tl key %u",
+                   i)
     i = test_header->pub_keys_count - 2;
-    VS_TL_CHECK_RET(
-            _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size), "Error write tl key %u", i)
+    BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+                   "Error write tl key %u",
+                   i)
     return true;
 }
 
@@ -253,8 +254,8 @@ _test_tl_keys_read_pass() {
 static bool
 _test_tl_footer_save_pass() {
 
-    VS_TL_CHECK_RET(_save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t *)test_footer, test_footer_sz),
-                    "Error write tl footer")
+    BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t *)test_footer, test_footer_sz),
+                   "Error write tl footer")
 
     return true;
 }
