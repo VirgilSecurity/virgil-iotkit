@@ -69,6 +69,17 @@ typedef struct __attribute__((__packed__)) {
     vs_pubkey_t pubkey;
 } vs_pubkey_dated_t;
 
+/**
+ * @brief vs_provision_get_slot_num() - get specific slot number for required provision element
+ * @param element_id:   specified provision element. Value from vs_sdmp_prvs_element_t enum declared
+ *                      in PRVS.h
+ * @param slot:         function will return specific slot number here
+ *
+ * @return              return true if slot has found for element_id
+ */
+bool
+vs_provision_get_slot_num(uint32_t element_id, size_t *slot);
+
 bool
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
 

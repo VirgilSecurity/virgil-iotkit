@@ -80,5 +80,6 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
         )

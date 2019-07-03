@@ -41,6 +41,7 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
 
 #define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
@@ -54,7 +55,7 @@ static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLO
 
 /******************************************************************************/
 static bool
-_get_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
+_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
     bool res = true;
 
     const size_t *ptr;
@@ -83,6 +84,60 @@ _get_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
 
 /******************************************************************************/
 bool
+vs_provision_get_slot_num(uint32_t element_id, size_t *slot) {
+    bool res = true;
+    size_t index;
+    const size_t *ptr;
+
+    BOOL_CHECK_RET(NULL != slot, "Invalid args")
+
+    switch (element_id) {
+    case VS_PRVS_PBR1:
+        ptr = rec_key_slot;
+        index = 0;
+        break;
+    case VS_PRVS_PBR2:
+        ptr = rec_key_slot;
+        index = 1;
+        break;
+    case VS_PRVS_PBA1:
+        ptr = auth_key_slot;
+        index = 0;
+        break;
+    case VS_PRVS_PBA2:
+        ptr = auth_key_slot;
+        index = 1;
+        break;
+    case VS_PRVS_PBT1:
+        ptr = tl_key_slot;
+        index = 0;
+        break;
+    case VS_PRVS_PBT2:
+        ptr = tl_key_slot;
+        index = 1;
+        break;
+    case VS_PRVS_PBF1:
+        ptr = fw_key_slot;
+        index = 0;
+        break;
+    case VS_PRVS_PBF2:
+        ptr = fw_key_slot;
+        index = 1;
+        break;
+    case VS_PRVS_SGNP:
+        *slot = SIGNATURE_SLOT;
+        return true;
+    default:
+        return false;
+    }
+
+    *slot = ptr[index];
+
+    return res;
+}
+
+/******************************************************************************/
+bool
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz) {
     vs_iot_hsm_slot_e slot;
     uint8_t i = 0;
@@ -94,7 +149,8 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
-        if (!_get_slot_num(key_type, i, &slot) || VS_HSM_ERR_OK != vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz)) {
+        if (!_get_pubkey_slot_num(key_type, i, &slot) ||
+            VS_HSM_ERR_OK != vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz)) {
             return false;
         }
 
