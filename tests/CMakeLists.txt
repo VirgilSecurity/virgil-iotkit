@@ -109,14 +109,7 @@ endif()
 target_include_directories(virgil-iot-sdk-tests
         PRIVATE
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../converters/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../trust_list/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../secbox/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/hsm/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 

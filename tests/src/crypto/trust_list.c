@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <string.h>
-#include "tests.h"
+#include <virgil/iot/tests/tests.h>
+#include <virgil/iot/tests/helpers.h>
 
 #include "stdlib-config.h"
 #include "trust_list-config.h"
@@ -12,9 +12,8 @@
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
-#include "test_hl_keys_data.h"
-#include "test_tl_data.h"
-#include "helpers.h"
+#include <virgil/iot/tests/private/test_hl_keys_data.h>
+#include <virgil/iot/tests/private/test_tl_data.h>
 
 typedef struct {
     const uint8_t *key;

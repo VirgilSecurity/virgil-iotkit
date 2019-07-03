@@ -35,7 +35,7 @@
 #ifndef VIRGIL_IOT_SDK_TESTS_PRVS_H_
 #define VIRGIL_IOT_SDK_TESTS_PRVS_H_
 
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 
