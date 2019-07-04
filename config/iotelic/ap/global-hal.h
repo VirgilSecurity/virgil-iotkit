@@ -32,4 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/hsm/hsm.h>
+#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+
+#include <stdint.h>
+
+void
+vs_global_hal_msleep(size_t msec);
+
+
+#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H

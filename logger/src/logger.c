@@ -43,9 +43,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <logger.h>
-#include <logger_hal.h>
-#include <utoa_fast_div.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/logger/private/logger_hal.h>
+#include <virgil/iot/logger/private/utoa_fast_div.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static bool _last_res = true;
@@ -276,11 +276,11 @@ vs_logger_message_hex(vs_log_level_t level,
                       uint32_t line_num,
                       const char *prefix,
                       const void *data_buf,
-                      const size_t data_size) {
+                      const uint16_t data_size) {
     static const char *HEX_FORMAT = "%02X";
     char buf[3]; // HEX_FORMAT output
     unsigned char *cur_byte;
-    size_t pos;
+    uint16_t pos;
     bool res = false;
 
     _last_res = true;
@@ -302,7 +302,7 @@ vs_logger_message_hex(vs_log_level_t level,
 
     cur_byte = (unsigned char *)data_buf;
     for (pos = 0; pos < data_size; ++pos, ++cur_byte) {
-        if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) < 0)
+        if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) > 0)
 
             VS_LOGGER_OUTPUT(buf);
     }

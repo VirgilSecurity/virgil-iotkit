@@ -1,84 +1,143 @@
 
-#include <helpers.h>
-
-#include <virgil/crypto/foundation/vscf_iotelic_sha256.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha384.h>
-#include <virgil/crypto/foundation/vscf_iotelic_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 static const char *test_data = "Data for hash creation ...";
 static const char *another_test_data = "Another data for hash creation ...";
 
-typedef struct {
-    const uint8_t *correct_result_raw;
-    size_t correct_result_size;
-    void (*funct)(vsc_data_t data, vsc_buffer_t *digest);
-} vs_test_data_t;
-
-/******************************************************************************/
-static bool
-_test_sha_pass(const vs_test_data_t *test) {
-    vsc_data_t input;
-    vsc_buffer_t result;
-    vsc_buffer_t another_result;
-    bool correct;
-    bool incorrect;
-    static uint8_t result_buf[RESULT_BUF_SIZE];
-    static uint8_t another_result_buf[RESULT_BUF_SIZE];
-
-    vsc_buffer_init(&result);
-    vsc_buffer_init(&another_result);
-
-    vsc_buffer_use(&result, result_buf, sizeof(result_buf));
-    vsc_buffer_use(&another_result, another_result_buf, sizeof(another_result));
-
-    input = vsc_data((const byte *)test_data, strlen(test_data));
-    test->funct(input, &result);
-    correct = vsc_data_equal(vsc_data(test->correct_result_raw, test->correct_result_size), vsc_buffer_data(&result));
-
-    input = vsc_data((const byte *)another_test_data, sizeof(another_test_data));
-    test->funct(input, &another_result);
-    incorrect = !vsc_data_equal(vsc_data((const byte *)another_test_data, strlen(another_test_data)),
-                                vsc_buffer_data(&another_result));
-
-    vsc_buffer_cleanup(&result);
-    vsc_buffer_cleanup(&another_result);
-
-    return correct && incorrect;
-}
-
 static const uint8_t correct_result_sha_256_raw[] = {0xef, 0x25, 0x84, 0xbc, 0x6f, 0xaf, 0x4a, 0x77, 0xff, 0x32, 0xe7,
                                                      0x45, 0x82, 0x62, 0xef, 0x89, 0x08, 0x8e, 0x93, 0x88, 0x64, 0x67,
                                                      0xa2, 0xc8, 0x19, 0xbd, 0x99, 0x60, 0xb8, 0x6e, 0xfb, 0x16};
-static const vs_test_data_t sha256_test_data = {.correct_result_raw = correct_result_sha_256_raw,
-                                                .correct_result_size = sizeof(correct_result_sha_256_raw),
-                                                .funct = vscf_iotelic_sha256_hash};
 
 static const uint8_t correct_result_sha_384_raw[] = {
         0x61, 0xf0, 0xbb, 0x30, 0xa9, 0xca, 0x9a, 0xec, 0x94, 0x21, 0xb5, 0xfb, 0xe2, 0x98, 0x0d, 0x60,
         0xf2, 0xe3, 0x35, 0x70, 0x8b, 0xf2, 0x14, 0x4b, 0x85, 0x9f, 0xdb, 0x3e, 0xa0, 0xbf, 0x46, 0x2a,
         0x6f, 0x5b, 0xc2, 0x1a, 0x44, 0xf7, 0x7c, 0xf2, 0x3b, 0x47, 0xe0, 0x56, 0x27, 0xb9, 0xa5, 0x7b};
-static const vs_test_data_t sha384_test_data = {.correct_result_raw = correct_result_sha_384_raw,
-                                                .correct_result_size = sizeof(correct_result_sha_384_raw),
-                                                .funct = vscf_iotelic_sha384_hash};
 
 static const uint8_t correct_result_sha_512_raw[] = {
         0xe7, 0x3c, 0xa0, 0x66, 0xc1, 0x1f, 0x56, 0xf5, 0xd8, 0x35, 0x93, 0x2b, 0xaa, 0xdd, 0xbf, 0x71,
         0x0a, 0xb2, 0xbd, 0x1b, 0x51, 0x86, 0xf3, 0x2b, 0x5b, 0xdf, 0xaf, 0x20, 0x50, 0xfe, 0xeb, 0x13,
         0x39, 0x17, 0xb1, 0x58, 0xf7, 0x51, 0x4f, 0xd4, 0x61, 0x2e, 0x75, 0xe7, 0x74, 0x8f, 0x59, 0x2a,
         0x80, 0xde, 0x87, 0x50, 0x7c, 0x21, 0xae, 0x72, 0x34, 0x16, 0x9f, 0x89, 0x41, 0x1c, 0x34, 0xda};
-static const vs_test_data_t sha512_test_data = {.correct_result_raw = correct_result_sha_512_raw,
-                                                .correct_result_size = sizeof(correct_result_sha_512_raw),
-                                                .funct = vscf_iotelic_sha512_hash};
+
+
+static const uint8_t long_test_data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x04, 0x91, 0xF7,
+                                         0x62, 0x91, 0x45, 0x5A, 0x58, 0xA6, 0xD5, 0x5C, 0x5D, 0x06, 0x82, 0x99, 0x77,
+                                         0xF2, 0x73, 0x4B, 0x99, 0x28, 0x44, 0x76, 0x9A, 0xFC, 0xB4, 0x08, 0x52, 0x8C,
+                                         0x87, 0xA5, 0xA6, 0x30, 0xFF, 0x75, 0xE5, 0x4A, 0x2E, 0xD0, 0x95, 0x8D, 0xC2,
+                                         0x4A, 0xA4, 0x46, 0x80, 0x4E, 0x05, 0xF5, 0x59, 0x14, 0xC2, 0xBE, 0x10, 0x5E,
+                                         0x30, 0x47, 0x8C, 0x4B, 0x0F, 0xFA, 0x90, 0x90, 0x7D, 0x22};
+
+static const uint8_t long_sha256_hash[] = {0x47, 0x79, 0x98, 0xCB, 0x39, 0xC5, 0x4E, 0x44, 0x35, 0xCD, 0x69,
+                                           0x1C, 0xD4, 0x5D, 0xDD, 0xB2, 0x40, 0x41, 0xA3, 0xF8, 0xD3, 0xB3,
+                                           0xD5, 0x85, 0x06, 0x0E, 0x68, 0x87, 0x37, 0x32, 0xA2, 0xDE};
+
+
+/******************************************************************************/
+static bool
+_test_long_sha_pass(vs_hsm_hash_type_e hash_type,
+                    const uint8_t *data,
+                    uint16_t data_sz,
+                    const uint8_t *ref_result,
+                    uint16_t ref_result_size) {
+    static uint8_t result_buf[HASH_MAX_BUF_SIZE];
+    uint16_t result_sz;
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK ==
+                           vs_hsm_hash_create(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
+                   "Error execute hash op");
+    BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result")
+
+    MEMCMP_CHECK_RET(ref_result, result_buf, result_sz);
+
+    return true;
+}
+
+/******************************************************************************/
+static bool
+_test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, uint16_t correct_result_size) {
+    static uint8_t result_buf[HASH_MAX_BUF_SIZE];
+    static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
+    uint16_t result_sz;
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)test_data,
+                                                       strlen(test_data),
+                                                       result_buf,
+                                                       sizeof(result_buf),
+                                                       &result_sz),
+                   "Error execute hash op");
+    BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result")
+
+    MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz);
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
+                                                       (uint8_t *)another_test_data,
+                                                       strlen(another_test_data),
+                                                       another_result_buf,
+                                                       sizeof(another_result_buf),
+                                                       &result_sz),
+                   "Error execute hash op");
+    BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
+    BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");
+
+    return true;
+}
+
+/******************************************************************************/
+static bool
+_test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, uint16_t correct_result_size) {
+
+    switch (hash_type) {
+    case VS_HASH_SHA_256: {
+        vs_hsm_sw_sha256_ctx ctx;
+        static uint8_t result_buf[SHA256_SIZE];
+        static uint8_t another_result_buf[SHA256_SIZE];
+
+        vs_hsm_sw_sha256_init(&ctx);
+        vs_hsm_sw_sha256_update(&ctx, (uint8_t *)test_data, strlen(test_data));
+        vs_hsm_sw_sha256_final(&ctx, result_buf);
+
+        MEMCMP_CHECK_RET(correct_result_raw, result_buf, sizeof(result_buf));
+
+        vs_hsm_sw_sha256_init(&ctx);
+        vs_hsm_sw_sha256_update(&ctx, (uint8_t *)another_test_data, strlen(another_test_data));
+        vs_hsm_sw_sha256_final(&ctx, another_result_buf);
+
+        BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf)),
+                       "Hash is constant");
+    } break;
+    default:
+        return false;
+    }
+
+    return true;
+}
 
 /******************************************************************************/
 void
 test_hash(void) {
+
     START_TEST("HASH tests");
 
-    TEST_CASE_OK("SHA256 pass", _test_sha_pass(&sha256_test_data));
-    TEST_CASE_OK("SHA384 pass", _test_sha_pass(&sha384_test_data));
-    TEST_CASE_OK("SHA512 pass", _test_sha_pass(&sha512_test_data));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_long_sha_pass(VS_HASH_SHA_256,
+                                     long_test_data,
+                                     sizeof(long_test_data),
+                                     long_sha256_hash,
+                                     sizeof(long_sha256_hash)));
+
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_sha_pass(VS_HASH_SHA_384, correct_result_sha_384_raw, sizeof(correct_result_sha_384_raw)));
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_sha_pass(VS_HASH_SHA_512, correct_result_sha_512_raw, sizeof(correct_result_sha_512_raw)));
+    TEST_CASE_OK(
+            "SHA256 partial calculating pass",
+            _test_partial_sha_pass(VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
 
 terminate:;
 }

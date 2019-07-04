@@ -36,13 +36,41 @@
 #define VIRGIL_IOT_SDK_TL_CONFIG_H
 
 /*
- * TL_STORAGE_SIZE
+ * VS_TL_STORAGE_SIZE
  * Maximum size of trust list used.
  * Please note that library uses three type of storage,
- * so you need have at least TL_STORAGE_SIZE * 3 memory size
+ * so you need have at least VS_TL_STORAGE_SIZE * 3 memory size
  * (excluding filesystem)
  */
 
-#define TL_STORAGE_SIZE (10 * 4096)
+#define VS_TL_STORAGE_SIZE (10 * 4096)
+
+/*
+ * VS_TL_STORAGE_MAX_PART_SIZE
+ * Maximum size of each part of trust list.
+ * It should be not less than max size of tl header, tl footer and tl public key
+ */
+
+#define VS_TL_STORAGE_MAX_PART_SIZE (512)
+
+/*Trust list signature rules*/
+
+/*
+ * VS_TL_SIGNATURES_QTY
+ * Minimum quantity of required signatures, which must be in TL footer
+ */
+
+#define VS_TL_SIGNATURES_QTY (2)
+
+/*
+ * List of signer types, which must be among signatures in TL footer
+ * Quantity MUST be equal to VS_TL_SIGNATURES_QTY
+ * It's values of vs_key_type_e from provision library
+ */
+
+#define VS_SIGNER_TYPE_LIST {                                                                                       \
+    VS_KEY_AUTH,                                                                                                    \
+    VS_KEY_TRUSTLIST                                                                                                \
+};
 
 #endif // VIRGIL_IOT_SDK_TL_CONFIG_H

@@ -82,7 +82,7 @@ _plc_receive_processor(void *sock_desc) {
 
 /******************************************************************************/
 static int
-_plc_tx_sim(const uint8_t *data, const size_t data_sz) {
+_plc_tx_sim(const uint8_t *data, const uint16_t data_sz) {
 
     if (_plc_sock <= 0) {
         return -1;
