@@ -62,7 +62,8 @@ void
 test_sign_converters(void);
 void
 test_pubkeys_converters(void);
-
+void
+test_keystorage_and_tl(void);
 /**********************************************************/
 static void
 crypto_tests(void) {
@@ -70,12 +71,12 @@ crypto_tests(void) {
     test_hash();
     test_hmac();
     test_kdf2();
-    test_ecdsa();
-    test_ecdh();
-    test_keypair();
     test_random();
     test_aes();
-
+    test_keystorage_and_tl();
+    test_keypair();
+    test_ecdsa();
+    test_ecdh();
 #if !VIRGIL_IOT_MCU_BUILD
     test_sign_converters();
     test_pubkeys_converters();

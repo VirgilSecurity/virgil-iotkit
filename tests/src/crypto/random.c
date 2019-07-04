@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 

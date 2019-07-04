@@ -35,10 +35,10 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include "tl_structs.h"
-#include "private/tl_operations.h"
-#include "trust_list.h"
-#include "secbox.h"
+#include "virgil/iot/trust_list/tl_structs.h"
+#include "virgil/iot/trust_list/private/tl_operations.h"
+#include "virgil/iot/trust_list/trust_list.h"
+#include "virgil/iot/secbox/secbox.h"
 
 /******************************************************************************/
 void

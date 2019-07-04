@@ -139,9 +139,9 @@ _keypair_ec_key_to_internal(vs_hsm_keypair_type_e keypair_type,
 
     size_t mpi_size;
 
-    memset(&ec_key, 0, sizeof(ec_key));
-    memset(&pk_info, 0, sizeof(pk_info));
-    memset(&pk_ctx, 0, sizeof(pk_ctx));
+    VS_IOT_MEMSET(&ec_key, 0, sizeof(ec_key));
+    VS_IOT_MEMSET(&pk_info, 0, sizeof(pk_info));
+    VS_IOT_MEMSET(&pk_ctx, 0, sizeof(pk_ctx));
 
     pk_ctx.pk_info = &pk_info;
     pk_ctx.pk_ctx = &ec_key;
@@ -158,7 +158,7 @@ _keypair_ec_key_to_internal(vs_hsm_keypair_type_e keypair_type,
         *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
         if (buf_sz > *public_key_out_sz) {
-            memmove(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+            VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
         }
         res = true;
     }
@@ -183,9 +183,9 @@ _keypair_rsa_key_to_internal(vs_hsm_keypair_type_e keypair_type,
     mbedtls_pk_context pk_ctx;
     uint8_t buf[3] = {0x01, 0x00, 0x01};
 
-    memset(&rsa_key, 0, sizeof(rsa_key));
-    memset(&pk_info, 0, sizeof(pk_info));
-    memset(&pk_ctx, 0, sizeof(pk_ctx));
+    VS_IOT_MEMSET(&rsa_key, 0, sizeof(rsa_key));
+    VS_IOT_MEMSET(&pk_info, 0, sizeof(pk_info));
+    VS_IOT_MEMSET(&pk_ctx, 0, sizeof(pk_ctx));
 
     pk_ctx.pk_info = &pk_info;
     pk_ctx.pk_ctx = &rsa_key;
@@ -197,7 +197,7 @@ _keypair_rsa_key_to_internal(vs_hsm_keypair_type_e keypair_type,
         *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
         if (buf_sz > *public_key_out_sz) {
-            memmove(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+            VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
         }
         res = true;
     }
@@ -221,9 +221,9 @@ _keypair_25519_key_to_internal(vs_hsm_keypair_type_e keypair_type,
     mbedtls_pk_context pk_ctx;
     mbedtls_fast_ec_type_t type;
 
-    memset(&fast_ec_key, 0, sizeof(fast_ec_key));
-    memset(&pk_info, 0, sizeof(pk_info));
-    memset(&pk_ctx, 0, sizeof(pk_ctx));
+    VS_IOT_MEMSET(&fast_ec_key, 0, sizeof(fast_ec_key));
+    VS_IOT_MEMSET(&pk_info, 0, sizeof(pk_info));
+    VS_IOT_MEMSET(&pk_ctx, 0, sizeof(pk_ctx));
 
     pk_ctx.pk_info = &pk_info;
     pk_ctx.pk_ctx = &fast_ec_key;
@@ -271,7 +271,7 @@ vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
     if (0 != mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE))
         return false;
     p += len;
-    memset(&bs, 0, sizeof(mbedtls_asn1_bitstring));
+    VS_IOT_MEMSET(&bs, 0, sizeof(mbedtls_asn1_bitstring));
     mbedtls_asn1_get_bitstring(&p, end, &bs);
 
     if (_keypair_is_rsa(keypair_type)) {
@@ -295,7 +295,7 @@ vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
         return false;
     }
 
-    memcpy(pubkey_raw, bs.p, bs.len);
+    VS_IOT_MEMCPY(pubkey_raw, bs.p, bs.len);
     *pubkey_raw_sz = bs.len;
 
     return true;

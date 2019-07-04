@@ -316,7 +316,7 @@ vs_sdmp_prvs_service() {
 static int
 _send_request(const vs_netif_t *netif,
               const vs_mac_addr_t *mac,
-              vs_sdmp_prvs_element_t element,
+              vs_sdmp_prvs_element_e element,
               const uint8_t *data,
               uint16_t data_sz) {
     uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
@@ -382,7 +382,7 @@ _reset_last_result() {
 int
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
-                 vs_sdmp_prvs_element_t element,
+                 vs_sdmp_prvs_element_e element,
                  const uint8_t *data,
                  uint16_t data_sz,
                  uint32_t wait_ms) {
@@ -406,7 +406,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 int
 vs_sdmp_prvs_get(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
-                 vs_sdmp_prvs_element_t element,
+                 vs_sdmp_prvs_element_e element,
                  uint8_t *data,
                  uint16_t buf_sz,
                  uint16_t *data_sz,
