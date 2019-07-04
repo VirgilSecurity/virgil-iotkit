@@ -38,21 +38,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define HTONL_IN_COMPILE_TIME(val)                                                                                     \
-    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
-               ((uint32_t)val & 0xFF000000) >> 24)
-#else
-#define HTONL_IN_COMPILE_TIME(val) (val)
-#endif
-
-// Macro used to do htons in compile time
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define HTONS_IN_COMPILE_TIME(val) (uint16_t)(((uint16_t)val & 0xFF) << 8 | ((uint16_t)val & 0xFF00) >> 8)
-#else
-#define HTONS_IN_COMPILE_TIME(val) (val)
-#endif
+#include <virgil/iot/provision/provision.h>
 
 struct vs_netif_t;
 struct vs_mac_addr_t;

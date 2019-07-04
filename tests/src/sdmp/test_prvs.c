@@ -53,7 +53,7 @@ prvs_dnid() {
 
 /**********************************************************/
 static int
-prvs_save_data(vs_sdmp_prvs_element_t element_id, const uint8_t *data, uint16_t data_sz) {
+prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
     server_request.save_data.data_sz = data_sz;

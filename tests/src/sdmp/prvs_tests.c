@@ -245,7 +245,7 @@ terminate:
 /**********************************************************/
 static bool
 test_set(bool use_fake_mac_addr) {
-    static const vs_sdmp_prvs_element_t elem = VS_PRVS_PBR1;
+    static const vs_sdmp_prvs_element_e elem = VS_PRVS_PBR1;
     static const uint8_t data[] = "Some data";
     uint16_t data_sz;
     bool result = false;

@@ -36,7 +36,6 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include <virgil/iot/provision/provision.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
@@ -84,47 +83,47 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *s
 
 /******************************************************************************/
 bool
-vs_provision_get_slot_num(uint32_t element_id, size_t *slot) {
+vs_provision_get_slot_num(vs_provision_element_id_e id, size_t *slot) {
     bool res = true;
     size_t index;
     const size_t *ptr;
 
     BOOL_CHECK_RET(NULL != slot, "Invalid args")
 
-    switch (element_id) {
-    case VS_PRVS_PBR1:
+    switch (id) {
+    case VS_PROVISION_PBR1:
         ptr = rec_key_slot;
         index = 0;
         break;
-    case VS_PRVS_PBR2:
+    case VS_PROVISION_PBR2:
         ptr = rec_key_slot;
         index = 1;
         break;
-    case VS_PRVS_PBA1:
+    case VS_PROVISION_PBA1:
         ptr = auth_key_slot;
         index = 0;
         break;
-    case VS_PRVS_PBA2:
+    case VS_PROVISION_PBA2:
         ptr = auth_key_slot;
         index = 1;
         break;
-    case VS_PRVS_PBT1:
+    case VS_PROVISION_PBT1:
         ptr = tl_key_slot;
         index = 0;
         break;
-    case VS_PRVS_PBT2:
+    case VS_PROVISION_PBT2:
         ptr = tl_key_slot;
         index = 1;
         break;
-    case VS_PRVS_PBF1:
+    case VS_PROVISION_PBF1:
         ptr = fw_key_slot;
         index = 0;
         break;
-    case VS_PRVS_PBF2:
+    case VS_PROVISION_PBF2:
         ptr = fw_key_slot;
         index = 1;
         break;
-    case VS_PRVS_SGNP:
+    case VS_PROVISION_SGNP:
         *slot = SIGNATURE_SLOT;
         return true;
     default:

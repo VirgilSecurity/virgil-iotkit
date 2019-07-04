@@ -248,7 +248,7 @@ func (p *DeviceProcessor) InitDevice() error {
 }
 
 // Calls vs_sdmp_prvs_set
-func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []byte, name string) error {
+func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_e, data []byte, name string) error {
     fmt.Println("Upload", name)
 
     mac := p.deviceInfo.mac_addr
