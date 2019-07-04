@@ -35,7 +35,7 @@
 #ifndef VIRGIL_IOT_SDK_TESTS_PRVS_H_
 #define VIRGIL_IOT_SDK_TESTS_PRVS_H_
 
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 
@@ -69,7 +69,7 @@ typedef union {
     } sign_data;
 
     struct {
-        vs_sdmp_prvs_element_t element_id;
+        vs_sdmp_prvs_element_e element_id;
         uint8_t *data;
         uint16_t data_sz;
     } save_data;
@@ -96,7 +96,7 @@ typedef union {
     } sign_data;
 
     struct {
-        vs_sdmp_prvs_element_t element_id;
+        vs_sdmp_prvs_element_e element_id;
         uint8_t *data;
         uint16_t data_sz;
     } save_data;
