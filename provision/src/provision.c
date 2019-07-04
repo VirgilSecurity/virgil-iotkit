@@ -83,7 +83,7 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *s
 
 /******************************************************************************/
 bool
-vs_provision_get_slot_num(vs_provision_element_id_e id, size_t *slot) {
+vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
     bool res = true;
     size_t index;
     const size_t *ptr;
