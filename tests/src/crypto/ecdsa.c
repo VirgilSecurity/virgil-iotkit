@@ -6,17 +6,32 @@
 /*******************************************************************************/
 static bool
 _create_keypairs_() {
+#define TEST_AND_CREATE(SLOT, KEYPAIR)  do {    \
+    TEST_KEYPAIR_NOT_IMPLEMENTED((SLOT), (KEYPAIR));    \
+    if (not_implemented) {  \
+        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));  \
+    } else {    \
+        VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),  \
+                "Unable to create keypair %s for slot %d (%s) while preparing test",    \
+                vs_hsm_keypair_type_descr(KEYPAIR), (SLOT), vs_iot_hsm_slot_descr(SLOT));   \
+                } \
+    } while(0)
 
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_8, VS_KEYPAIR_EC_SECP192R1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_9, VS_KEYPAIR_EC_SECP192K1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_10, VS_KEYPAIR_EC_SECP224R1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_11, VS_KEYPAIR_EC_SECP224K1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_12, VS_KEYPAIR_EC_SECP256R1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_13, VS_KEYPAIR_EC_SECP256K1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_14, VS_KEYPAIR_EC_SECP384R1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_EC_SECP521R1), "ERROR while prepare test")
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(VS_KEY_SLOT_STD_MTP_0, VS_KEYPAIR_EC_ED25519), "ERROR while prepare test")
+    bool not_implemented;
+
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_8, VS_KEYPAIR_EC_SECP192R1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_9, VS_KEYPAIR_EC_SECP192K1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_10, VS_KEYPAIR_EC_SECP224R1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_11, VS_KEYPAIR_EC_SECP224K1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_12, VS_KEYPAIR_EC_SECP256R1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_13, VS_KEYPAIR_EC_SECP256K1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_14, VS_KEYPAIR_EC_SECP384R1);
+    TEST_AND_CREATE(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_EC_SECP521R1);
+    TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_0, VS_KEYPAIR_EC_ED25519);
+
     return true;
+
+#undef TEST_AND_CREATE
 }
 
 /*******************************************************************************/

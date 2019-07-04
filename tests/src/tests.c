@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <helpers.h>
 #include <stdlib.h>
+#include <virgil/iot/tests/helpers.h>
 
 uint16_t failed_test_result;
 
@@ -81,7 +81,6 @@ crypto_tests(void) {
     test_sign_converters();
     test_pubkeys_converters();
 #endif
-
 }
 
 /**********************************************************/
@@ -89,7 +88,7 @@ uint16_t
 vs_tests_checks(bool print_start_finish_tests) {
     failed_test_result = 0;
 
-    if(print_start_finish_tests){
+    if (print_start_finish_tests) {
         START_TESTS;
     }
 
@@ -98,7 +97,7 @@ vs_tests_checks(bool print_start_finish_tests) {
 
     crypto_tests();
 
-    if(print_start_finish_tests){
+    if (print_start_finish_tests) {
         FINISH_TESTS;
     }
 
@@ -107,25 +106,25 @@ vs_tests_checks(bool print_start_finish_tests) {
 
 /**********************************************************/
 void
-vs_tests_begin(){
+vs_tests_begin() {
     START_TESTS;
 }
 
 /**********************************************************/
 void
-vs_tests_step_success(){
+vs_tests_step_success() {
     RESULT_OK;
 }
 
 /**********************************************************/
 void
-vs_tests_step_failure(){
+vs_tests_step_failure() {
     RESULT_ERROR;
-    terminate:;
+terminate:;
 }
 
 /**********************************************************/
 void
-vs_tests_end(){
+vs_tests_end() {
     FINISH_TESTS;
 }
