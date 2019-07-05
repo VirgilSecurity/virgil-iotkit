@@ -36,63 +36,84 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(sdmp VERSION 0.1.0 LANGUAGES C)
 
-set(SDMP_LIB sdmp)
+function(add_sdmp _for_factory)
 
+    if (_for_factory)
+        set (_targetname "sdmp-factory")
+    else()
+        set (_targetname "sdmp")
+    endif()
+
+    #
+    #   SDMP library
+    #
+    add_library(${_targetname}
+            src/sdmp.c
+            src/services/PRVS.c
+            )
+
+    #
+    #   -Wall -Werror
+    #
+    set_target_properties(${_targetname} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+
+    #
+    #   Config path
+    #
+
+    if (NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+        message(FATAL_ERROR "[sdmp] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+    else ()
+        message(STATUS "[sdmp] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+    endif ()
+
+    #
+    #   Common include directories
+    #
+    target_include_directories(${_targetname}
+            PUBLIC
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+
+            PRIVATE
+            # TODO: FIX PVS
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
+            )
+
+    #
+    #   Add definitions
+    #
+    target_compile_definitions(${_targetname}
+            PUBLIC
+            "VS_SDMP_FACTORY=${_for_factory}"
+            )
+
+    #
+    #   Link libraries
+    #
+    target_link_libraries(${_targetname}
+            PUBLIC
+            logger
+            provision
+            $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
+            $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
+            )
+    #
+    # Format code
+    #
+    if (COMMAND add_clangformat)
+        add_clangformat(${_targetname})
+    endif ()
+
+endfunction()
 
 #
-#   Source code
+#   SDMP For factory purposes
 #
-set(SDMP_SRC
-        src/sdmp.c
-        src/services/PRVS.c
-        )
+add_sdmp(1)
 
 #
-#   SDMP library
+#   SDMP For common usage
 #
-add_library(${SDMP_LIB}
-        ${SDMP_SRC}
-        )
-
-#
-#   -Wall -Werror
-#
-set_target_properties(${SDMP_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
-
-#
-#   Config path
-#
-
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[sdmp] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-else()
-    message(STATUS "[sdmp] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
-endif()
-
-#
-#   Common include directories
-#
-target_include_directories(${PROJECT_NAME}
-        PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-
-        PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
-        )
-
-#
-#   Link libraries
-#
-target_link_libraries (${PROJECT_NAME}
-        logger
-        provision)
-
-#
-# Format code
-#
-if(COMMAND add_clangformat)
-    add_clangformat(${SDMP_LIB})
-endif()
+add_sdmp(0)
