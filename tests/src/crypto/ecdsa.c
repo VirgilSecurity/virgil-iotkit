@@ -20,7 +20,7 @@ _create_keypairs_() {
         }                                                                                                              \
     } while (0)
 
-    bool not_implemented;
+    bool not_implemented = false;
 
     TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_8, VS_KEYPAIR_EC_SECP192R1);
     TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_9, VS_KEYPAIR_EC_SECP192K1);
@@ -75,7 +75,7 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
 /******************************************************************************/
 static bool
 _prepare_and_test(char *descr, vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash, vs_hsm_keypair_type_e keypair_type) {
-    bool not_implemented;
+    bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "slot ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(slot));

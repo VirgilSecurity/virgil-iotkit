@@ -135,7 +135,7 @@ test_hash(void) {
                          _test_sha_pass(hash_type, correct_result_raw, correct_result_size));                          \
         }                                                                                                              \
     } while (0)
-    bool not_implemented;
+    bool not_implemented = false;
 
     START_TEST("HASH tests");
 

@@ -140,7 +140,7 @@ _prepare_and_test(char *descr,
                   vs_iot_hsm_slot_e alice_slot,
                   vs_iot_hsm_slot_e bob_slot,
                   bool corrupt) {
-    bool not_implemented;
+    bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "Key ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));

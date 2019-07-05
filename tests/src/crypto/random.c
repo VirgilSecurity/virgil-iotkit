@@ -191,7 +191,7 @@ void
 test_random(void) {
     uint8_t sequence[SEQUENCE_SIZE];
     uint8_t buf[128];
-    bool not_implemented;
+    bool not_implemented = false;
 
     START_TEST("Random tests");
 

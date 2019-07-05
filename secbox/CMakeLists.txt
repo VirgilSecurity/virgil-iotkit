@@ -63,6 +63,7 @@ set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../inc>"
