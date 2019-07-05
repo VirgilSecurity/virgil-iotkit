@@ -42,6 +42,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#if !VS_SDMP_FACTORY
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#endif // !VS_SDMP_FACTORY
+
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
 static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;
@@ -59,10 +65,172 @@ static int _last_res = RES_UNKNOWN;
 static uint16_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
+#if !VS_SDMP_FACTORY
+/******************************************************************************/
+static int
+vs_prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
+    uint16_t slot;
+
+    if (!vs_provision_get_slot_num((vs_provision_element_id_e)element_id, &slot)) {
+        return -1;
+    }
+
+    return vs_hsm_slot_save(slot, data, data_sz);
+}
+
+/******************************************************************************/
+static int
+vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
+    uint16_t key_sz = 0;
+    vs_hsm_keypair_type_e ec_type;
+
+    VS_IOT_ASSERT(asav_response);
+    VS_IOT_ASSERT(resp_sz);
+
+    if (VS_HSM_ERR_OK != vs_hsm_slot_delete(PRIVATE_KEY_SLOT) || VS_HSM_ERR_OK != vs_hsm_slot_delete(REC1_KEY_SLOT) ||
+        VS_HSM_ERR_OK != vs_hsm_slot_delete(REC2_KEY_SLOT) ||
+        VS_HSM_ERR_OK != vs_hsm_keypair_create(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1) ||
+        VS_HSM_ERR_OK !=
+                vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, asav_response->pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type)) {
+        return -1;
+    }
+
+    asav_response->key_type = VS_KEY_IOT_DEVICE;
+    asav_response->ec_type = ec_type;
+    *resp_sz = sizeof(vs_pubkey_t) + key_sz;
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
+vs_prvs_start_save_tl(const uint8_t *data, uint16_t data_sz) {
+    vs_tl_element_info_t info;
+
+    info.id = VS_TL_ELEMENT_TLH;
+    info.index = 0;
+
+    return vs_tl_save_part(&info, data, data_sz);
+}
+
+/******************************************************************************/
+static int
+vs_prvs_save_tl_part(const uint8_t *data, uint16_t data_sz) {
+    vs_tl_element_info_t info;
+
+    info.id = VS_TL_ELEMENT_TLC;
+    info.index = 0;
+
+    return vs_tl_save_part(&info, data, data_sz);
+}
+
+/******************************************************************************/
+static int
+vs_prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
+    vs_tl_element_info_t info;
+
+    info.id = VS_TL_ELEMENT_TLF;
+    info.index = 0;
+
+    return vs_tl_save_part(&info, data, data_sz);
+}
+
+/******************************************************************************/
+static int
+vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
+    uint16_t sign_sz;
+    uint16_t pubkey_sz;
+
+    VS_IOT_ASSERT(signature_sz);
+    VS_IOT_ASSERT(data);
+    VS_IOT_ASSERT(signature);
+
+    vs_sdmp_prvs_sgnp_req_t *request = (vs_sdmp_prvs_sgnp_req_t *)data;
+    vs_sign_t *response = (vs_sign_t *)signature;
+    int hash_len = vs_hsm_get_hash_len(request->hash_type);
+    vs_hsm_keypair_type_e keypair_type;
+
+    if (hash_len <= 0 || buf_sz <= sizeof(vs_sign_t)) {
+        return -1;
+    }
+    uint8_t hash[hash_len];
+    buf_sz -= sizeof(vs_sign_t);
+
+    if (VS_HSM_ERR_OK != vs_hsm_hash_create(request->hash_type,
+                                            (uint8_t *)&request->data,
+                                            data_sz - sizeof(vs_sdmp_prvs_sgnp_req_t),
+                                            hash,
+                                            hash_len,
+                                            &sign_sz) ||
+        VS_HSM_ERR_OK !=
+                vs_hsm_ecdsa_sign(
+                        PRIVATE_KEY_SLOT, request->hash_type, hash, response->raw_sign_pubkey, buf_sz, &sign_sz)) {
+        return -1;
+    }
+
+    buf_sz -= sign_sz;
+
+    if (VS_HSM_ERR_OK !=
+        vs_hsm_keypair_get_pubkey(
+                PRIVATE_KEY_SLOT, response->raw_sign_pubkey + sign_sz, buf_sz, &pubkey_sz, &keypair_type)) {
+        return -1;
+    }
+
+    response->signer_type = VS_KEY_IOT_DEVICE;
+    response->hash_type = (uint8_t)request->hash_type;
+    response->ec_type = (uint8_t)keypair_type;
+    *signature_sz = sizeof(vs_sign_t) + sign_sz + pubkey_sz;
+
+    return 0;
+}
+#endif // !VS_SDMP_FACTORY
 /******************************************************************************/
 int
 vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
-    _prvs_impl = impl;
+    VS_IOT_MEMSET(&_prvs_impl, 0, sizeof(_prvs_impl));
+
+#if !VS_SDMP_FACTORY
+    _prvs_impl.save_data_func = &vs_prvs_save_data;
+    _prvs_impl.finalize_storage_func = &vs_prvs_finalize_storage;
+    _prvs_impl.start_save_tl_func = &vs_prvs_start_save_tl;
+    _prvs_impl.save_tl_part_func = &vs_prvs_save_tl_part;
+    _prvs_impl.finalize_tl_func = &vs_prvs_finalize_tl;
+    _prvs_impl.sign_data_func = &vs_prvs_sign_data;
+#endif // !VS_SDMP_FACTORY
+
+    if (impl.save_data_func) {
+        _prvs_impl.save_data_func = impl.save_data_func;
+    }
+
+    if (impl.load_data_func) {
+        _prvs_impl.load_data_func = impl.load_data_func;
+    }
+
+    if (impl.finalize_storage_func) {
+        _prvs_impl.finalize_storage_func = impl.finalize_storage_func;
+    }
+
+    if (impl.start_save_tl_func) {
+        _prvs_impl.start_save_tl_func = impl.start_save_tl_func;
+    }
+
+    if (impl.save_tl_part_func) {
+        _prvs_impl.save_tl_part_func = impl.save_tl_part_func;
+    }
+
+    if (impl.finalize_tl_func) {
+        _prvs_impl.finalize_tl_func = impl.finalize_tl_func;
+    }
+
+    if (impl.sign_data_func) {
+        _prvs_impl.sign_data_func = impl.sign_data_func;
+    }
+
+    _prvs_impl.dnid_func = impl.dnid_func;
+    _prvs_impl.device_info_func = impl.device_info_func;
+    _prvs_impl.wait_func = impl.wait_func;
+    _prvs_impl.stop_wait_func = impl.stop_wait_func;
+
     return 0;
 }
 
