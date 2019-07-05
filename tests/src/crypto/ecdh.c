@@ -106,10 +106,9 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
                                      sizeof(shared_secret_2),
                                      &shared_secret_sz_2)) {
         if (!corrupt_key) {
-            BOOL_CHECK_RET(false,
-                           "Can't process ECDH (slot %s, keypair type %s) for Bob",
-                           vs_iot_hsm_slot_descr(bob_slot),
-                           vs_hsm_keypair_type_descr(alice_keypair_type));
+            VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
+                         vs_iot_hsm_slot_descr(bob_slot),
+                         vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
         return false;
@@ -128,7 +127,6 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
         if (!corrupt_key) {
             VS_LOG_ERROR("Shared secret sequences are not equal");
         }
-
         return false;
     }
 
@@ -180,7 +178,11 @@ test_ecdh(void) {
     do {                                                                                                               \
                                                                                                                        \
         if (_prepare_and_test(descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                                    \
-            TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                                  \
+            if (CORRUPT) {                                                                                             \
+                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                          \
+            } else {                                                                                                   \
+                TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                              \
+            }                                                                                                          \
         }                                                                                                              \
     } while (0)
 

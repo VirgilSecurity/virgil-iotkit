@@ -6,16 +6,19 @@
 /*******************************************************************************/
 static bool
 _create_keypairs_() {
-#define TEST_AND_CREATE(SLOT, KEYPAIR)  do {    \
-    TEST_KEYPAIR_NOT_IMPLEMENTED((SLOT), (KEYPAIR));    \
-    if (not_implemented) {  \
-        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));  \
-    } else {    \
-        VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),  \
-                "Unable to create keypair %s for slot %d (%s) while preparing test",    \
-                vs_hsm_keypair_type_descr(KEYPAIR), (SLOT), vs_iot_hsm_slot_descr(SLOT));   \
-                } \
-    } while(0)
+#define TEST_AND_CREATE(SLOT, KEYPAIR)                                                                                 \
+    do {                                                                                                               \
+        TEST_KEYPAIR_NOT_IMPLEMENTED((SLOT), (KEYPAIR));                                                               \
+        if (not_implemented) {                                                                                         \
+            VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));                  \
+        } else {                                                                                                       \
+            VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                                 \
+                             "Unable to create keypair %s for slot %d (%s) while preparing test",                      \
+                             vs_hsm_keypair_type_descr(KEYPAIR),                                                       \
+                             (SLOT),                                                                                   \
+                             vs_iot_hsm_slot_descr(SLOT));                                                             \
+        }                                                                                                              \
+    } while (0)
 
     bool not_implemented;
 
