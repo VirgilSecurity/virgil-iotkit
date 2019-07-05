@@ -112,3 +112,4 @@ target_link_libraries (${PROJECT_NAME}
         mbedtls::mbedcrypto
         mbedtls::ed25519
         )
+

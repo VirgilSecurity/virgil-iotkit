@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdbool.h>
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_prvs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>

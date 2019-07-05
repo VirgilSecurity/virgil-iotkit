@@ -32,29 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_ERRORS_API_H
-#define VS_HSM_ERRORS_API_H
+#ifndef VIRGIL_IOT_SDK_TL_CONFIG_H
+#define VIRGIL_IOT_SDK_TL_CONFIG_H
 
-typedef enum {
-    VS_HSM_ERR_OK,
-    VS_HSM_ERR_INVAL,          // invalid parameters
-    VS_HSM_ERR_NOMEM,          // out of memory
-    VS_HSM_ERR_NOSUPP,         // not supported
-    VS_HSM_ERR_NOSEC_WL,       // not secure due to white list
-    VS_HSM_ERR_NOT_EXIST,      // not exist
-    VS_HSM_ERR_AGAIN,          // again
-    VS_HSM_ERR_NOT_READY,      // device not ready
-    VS_HSM_ERR_EXIST,          // already exist
-    VS_HSM_ERR_BUSY,           // busy
-    VS_HSM_ERR_PENDING,        // pending
-    VS_HSM_ERR_FAIL,           // failed
-    VS_HSM_ERR_FILE_IO,        // file I/O error
-    VS_HSM_ERR_NOSEC_BL,       // not secure due to black list
-    VS_HSM_ERR_CRC_LEN,        // calc crc but len < 0
-    VS_HSM_ERROR_VERIFY,       // verifying of signature error
-    VS_HSM_ERR_CRYPTO,         // error during crypto operation
-    VS_HSM_ERR_NOT_AUTH,       // not authenticated
-    VS_HSM_ERR_NOT_IMPLEMENTED // this feature is still not implemented
-} vs_hsm_err_code_e;
+/*
+ * VS_TL_STORAGE_SIZE
+ * Maximum size of trust list used.
+ * Please note that library uses three type of storage,
+ * so you need have at least VS_TL_STORAGE_SIZE * 3 memory size
+ * (excluding filesystem)
+ */
 
-#endif // VS_HSM_ERRORS_API_H
+#define VS_TL_STORAGE_SIZE (10 * 4096)
+
+/*
+ * VS_TL_STORAGE_MAX_PART_SIZE
+ * Maximum size of each part of trust list.
+ * It should be not less than max size of tl header, tl footer and tl public key
+ */
+
+#define VS_TL_STORAGE_MAX_PART_SIZE (512)
+
+/*Trust list signature rules*/
+
+/*
+ * VS_TL_SIGNATURES_QTY
+ * Minimum quantity of required signatures, which must be in TL footer
+ */
+
+#define VS_TL_SIGNATURES_QTY (2)
+
+/*
+ * List of signer types, which must be among signatures in TL footer
+ * Quantity MUST be equal to VS_TL_SIGNATURES_QTY
+ * It's values of vs_key_type_e from provision library
+ */
+
+#define VS_SIGNER_TYPE_LIST {                                                                                       \
+    VS_KEY_AUTH,                                                                                                    \
+    VS_KEY_TRUSTLIST                                                                                                \
+};
+
+#endif // VIRGIL_IOT_SDK_TL_CONFIG_H

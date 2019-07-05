@@ -426,11 +426,11 @@ _test_tl_read_pass() {
 void
 test_keystorage_and_tl(void) {
 
-    START_TEST("Provision and TL tests")
+    START_TEST("Provision and TL tests");
 
     if (!_parse_test_tl_data(tl_data1, tl_data1_len)) {
         VS_LOG_ERROR("Bad test data");
-        RESULT_ERROR
+        RESULT_ERROR;
     }
 
     TEST_CASE_OK("TL save hl keys", _test_save_hl_keys())
