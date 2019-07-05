@@ -86,7 +86,7 @@ function(add_sdmp _for_factory)
     #
     target_compile_definitions(${_targetname}
             PUBLIC
-            "VS_SDMP_FACTORY=$<NOT:$<BOOL:${VIRGIL_IOT_MCU_BUILD}>>"
+            "VS_SDMP_FACTORY=${_for_factory}"
             )
 
     #
