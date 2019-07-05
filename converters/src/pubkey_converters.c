@@ -38,7 +38,6 @@
 #include <mbedtls/oid.h>
 
 #include <stdio.h>
-#include <stdlib-config.h>
 
 #include <virgil/iot/converters/private/macros.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
