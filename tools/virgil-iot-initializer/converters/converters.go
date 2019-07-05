@@ -54,8 +54,8 @@ func RawSignToVirgil(rawSignature []byte, ecType uint8, hsmHashType uint8) ([]by
     signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
     keyType := C.vs_hsm_keypair_type_e(ecType)
     hashType := C.vs_hsm_hash_type_e(hsmHashType)
-    rawSignSize := C.size_t(len(rawSignature))
-    bufSize := C.size_t(signatureBufSize)
+    rawSignSize := C.uint16_t(len(rawSignature))
+    bufSize := C.uint16_t(signatureBufSize)
 
     convertRes := C.vs_converters_raw_sign_to_virgil(keyType,
                                                      hashType,
@@ -79,7 +79,7 @@ func VirgilSignToRaw(virgilSign []byte, ecType uint8) ([]byte, error) {
     rawSignSize := C.uint16_t(0)
     rawSignPointer := (*C.uchar)(unsafe.Pointer(&rawSignBuf[0]))
     keyType := C.vs_hsm_keypair_type_e(ecType)
-    signSize := C.size_t(len(virgilSign))
+    signSize := C.uint16_t(len(virgilSign))
     bufSize := C.uint16_t(signatureBufSize)
 
     convertRes := C.vs_converters_virgil_sign_to_raw(keyType,

@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <helpers.h>
-#include <private_helpers.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 
 #if IOTELIC_MCU_BUILD
@@ -191,7 +191,7 @@ void
 test_random(void) {
     uint8_t sequence[SEQUENCE_SIZE];
     uint8_t buf[128];
-    bool not_implemented;
+    bool not_implemented = false;
 
     START_TEST("Random tests");
 

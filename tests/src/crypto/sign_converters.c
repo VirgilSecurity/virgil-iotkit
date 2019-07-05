@@ -1,4 +1,4 @@
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
 static const uint8_t virgil_SHA256_SECP192R1_sign[] = {
         0x30, 0x49, 0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
@@ -149,16 +149,18 @@ _test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
 /******************************************************************************/
 void
 test_sign_converters(void) {
-#define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)        do {               \
-vs_hsm_hash_type_e hash_alg = VS_HASH_SHA_ ##HASH;        \
-    vs_hsm_keypair_type_e keypair_type = VS_KEYPAIR_EC_ ##KEYPAIR;     \
-    const uint8_t *virgil_sign = virgil_SHA ##HASH ##_ ##KEYPAIR ##_sign; \
-    uint16_t virgil_sign_sz = sizeof(virgil_SHA ##HASH ##_ ##KEYPAIR ##_sign);    \
-    const uint8_t *raw_sign = raw_SHA ##HASH ##_ ##KEYPAIR ##_sign;    \
-            uint16_t raw_sign_sz = sizeof(raw_SHA ##HASH ##_ ##KEYPAIR ##_sign);   \
-    TEST_CASE_OK("hash " #HASH ", key " #KEYPAIR,                                                                          \
-                 _test_case_converters_sign_pass(hash_alg, keypair_type, virgil_sign, virgil_sign_sz, raw_sign, raw_sign_sz)); \
-} while(0)
+#define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)                                                                       \
+    do {                                                                                                               \
+        vs_hsm_hash_type_e hash_alg = VS_HASH_SHA_##HASH;                                                              \
+        vs_hsm_keypair_type_e keypair_type = VS_KEYPAIR_EC_##KEYPAIR;                                                  \
+        const uint8_t *virgil_sign = virgil_SHA##HASH##_##KEYPAIR##_sign;                                              \
+        uint16_t virgil_sign_sz = sizeof(virgil_SHA##HASH##_##KEYPAIR##_sign);                                         \
+        const uint8_t *raw_sign = raw_SHA##HASH##_##KEYPAIR##_sign;                                                    \
+        uint16_t raw_sign_sz = sizeof(raw_SHA##HASH##_##KEYPAIR##_sign);                                               \
+        TEST_CASE_OK("hash " #HASH ", key " #KEYPAIR,                                                                  \
+                     _test_case_converters_sign_pass(                                                                  \
+                             hash_alg, keypair_type, virgil_sign, virgil_sign_sz, raw_sign, raw_sign_sz));             \
+    } while (0)
 
     START_TEST("Signatures converters");
     TEST_CONVERTERS_SIGN_PASS(256, SECP192R1);

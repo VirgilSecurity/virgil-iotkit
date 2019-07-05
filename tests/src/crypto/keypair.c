@@ -1,5 +1,5 @@
-#include <helpers.h>
-#include <private_helpers.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <stdlib-config.h>
@@ -91,7 +91,7 @@ test_keypair(void) {
     static const size_t cases_amount = sizeof(test_cases) / sizeof(test_cases[0]);
     size_t pos;
     char buf[256];
-    bool not_implemented;
+    bool not_implemented = false;
 
     START_TEST("Keypair tests");
 

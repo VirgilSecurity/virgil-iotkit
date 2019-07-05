@@ -1,6 +1,6 @@
 
-#include <helpers.h>
-#include <private_helpers.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
@@ -38,7 +38,7 @@ test_hmac(void) {
         vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
         const uint8_t *correct = sha##BITLEN##_result_raw;                                                             \
         uint16_t correct_sz = sizeof(sha##BITLEN##_result_raw);                                                        \
-        bool not_implemented;                                                                                          \
+        bool not_implemented = false;                                                                                  \
                                                                                                                        \
         TEST_HMAC_NOT_IMPLEMENTED(hash_type);                                                                          \
                                                                                                                        \

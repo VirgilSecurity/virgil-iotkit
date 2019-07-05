@@ -79,7 +79,6 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../provision/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
         )

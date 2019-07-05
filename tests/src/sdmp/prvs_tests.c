@@ -33,14 +33,14 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdbool.h>
-#include <helpers.h>
-#include <test_netif.h>
-#include <test_prvs.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/test_netif.h>
+#include <virgil/iot/tests/private/test_prvs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
-#include <private/test_prvs.h>
+#include <virgil/iot/tests/private/test_prvs.h>
 #include <stdlib-config.h>
 #include <virgil/iot/hsm/hsm_structs.h>
 
@@ -245,7 +245,7 @@ terminate:
 /**********************************************************/
 static bool
 test_set(bool use_fake_mac_addr) {
-    static const vs_sdmp_prvs_element_t elem = VS_PRVS_PBR1;
+    static const vs_sdmp_prvs_element_e elem = VS_PRVS_PBR1;
     static const uint8_t data[] = "Some data";
     uint16_t data_sz;
     bool result = false;

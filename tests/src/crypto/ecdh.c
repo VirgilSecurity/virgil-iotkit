@@ -33,9 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdio.h>
-#include <stdbool.h>
-#include <helpers.h>
-#include <private_helpers.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
@@ -107,10 +106,9 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
                                      sizeof(shared_secret_2),
                                      &shared_secret_sz_2)) {
         if (!corrupt_key) {
-            BOOL_CHECK_RET(false,
-                           "Can't process ECDH (slot %s, keypair type %s) for Bob",
-                           vs_iot_hsm_slot_descr(bob_slot),
-                           vs_hsm_keypair_type_descr(alice_keypair_type));
+            VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
+                         vs_iot_hsm_slot_descr(bob_slot),
+                         vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
         return false;
@@ -129,7 +127,6 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
         if (!corrupt_key) {
             VS_LOG_ERROR("Shared secret sequences are not equal");
         }
-
         return false;
     }
 
@@ -143,7 +140,7 @@ _prepare_and_test(char *descr,
                   vs_iot_hsm_slot_e alice_slot,
                   vs_iot_hsm_slot_e bob_slot,
                   bool corrupt) {
-    bool not_implemented;
+    bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "Key ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
@@ -181,7 +178,11 @@ test_ecdh(void) {
     do {                                                                                                               \
                                                                                                                        \
         if (_prepare_and_test(descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                                    \
-            TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                                  \
+            if (CORRUPT) {                                                                                             \
+                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                          \
+            } else {                                                                                                   \
+                TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                              \
+            }                                                                                                          \
         }                                                                                                              \
     } while (0)
 

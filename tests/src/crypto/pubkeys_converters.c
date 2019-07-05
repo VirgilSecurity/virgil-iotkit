@@ -1,4 +1,4 @@
-#include <helpers.h>
+#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
 
 static const uint8_t virgil_RSA2048_pubkey[] = {

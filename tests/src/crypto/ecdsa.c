@@ -1,23 +1,26 @@
-#include <helpers.h>
-#include <private_helpers.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
 /*******************************************************************************/
 static bool
 _create_keypairs_() {
-#define TEST_AND_CREATE(SLOT, KEYPAIR)  do {    \
-    TEST_KEYPAIR_NOT_IMPLEMENTED((SLOT), (KEYPAIR));    \
-    if (not_implemented) {  \
-        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));  \
-    } else {    \
-        VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),  \
-                "Unable to create keypair %s for slot %d (%s) while preparing test",    \
-                vs_hsm_keypair_type_descr(KEYPAIR), (SLOT), vs_iot_hsm_slot_descr(SLOT));   \
-                } \
-    } while(0)
+#define TEST_AND_CREATE(SLOT, KEYPAIR)                                                                                 \
+    do {                                                                                                               \
+        TEST_KEYPAIR_NOT_IMPLEMENTED((SLOT), (KEYPAIR));                                                               \
+        if (not_implemented) {                                                                                         \
+            VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));                  \
+        } else {                                                                                                       \
+            VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                                 \
+                             "Unable to create keypair %s for slot %d (%s) while preparing test",                      \
+                             vs_hsm_keypair_type_descr(KEYPAIR),                                                       \
+                             (SLOT),                                                                                   \
+                             vs_iot_hsm_slot_descr(SLOT));                                                             \
+        }                                                                                                              \
+    } while (0)
 
-    bool not_implemented;
+    bool not_implemented = false;
 
     TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_8, VS_KEYPAIR_EC_SECP192R1);
     TEST_AND_CREATE(VS_KEY_SLOT_STD_MTP_9, VS_KEYPAIR_EC_SECP192K1);
@@ -52,13 +55,13 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
                                         hash_buf,
                                         sizeof(hash_buf),
                                         &result_sz),
-                     "ERROR while creating hash");
+                     "ERROR while creating hash")
 
     signature_sz = sizeof(sign_buf);
 
     VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
-                     "ERROR while signing hash");
-    BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size");
+                     "ERROR while signing hash")
+    BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size")
 
     VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
                      "ERROR while importing public key from slot")
@@ -72,7 +75,7 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
 /******************************************************************************/
 static bool
 _prepare_and_test(char *descr, vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash, vs_hsm_keypair_type_e keypair_type) {
-    bool not_implemented;
+    bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "slot ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(slot));

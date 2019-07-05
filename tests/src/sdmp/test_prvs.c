@@ -35,8 +35,8 @@
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
-#include <private/test_netif.h>
-#include <private/test_prvs.h>
+#include <virgil/iot/tests/private/test_netif.h>
+#include <virgil/iot/tests/private/test_prvs.h>
 
 prvs_call_t prvs_call;
 server_request_t server_request;
@@ -53,7 +53,7 @@ prvs_dnid() {
 
 /**********************************************************/
 static int
-prvs_save_data(vs_sdmp_prvs_element_t element_id, const uint8_t *data, uint16_t data_sz) {
+prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
     server_request.save_data.data_sz = data_sz;

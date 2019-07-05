@@ -42,6 +42,7 @@
 
 #include <virgil/iot/converters/private/macros.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
+#include <stdlib-config.h>
 
 /******************************************************************************/
 static bool
@@ -55,7 +56,8 @@ _keypair_is_rsa(vs_hsm_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_RSA_2048:
         return true;
-    default: {}
+    default: {
+    }
     }
     return false;
 }
@@ -66,7 +68,8 @@ _keypair_rsa_key_size(vs_hsm_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_RSA_2048:
         return (2048 / 8);
-    default: {}
+    default: {
+    }
     }
     return 0;
 }
@@ -93,7 +96,8 @@ _keypair_ec_mpi_size(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_SECP521R1:
         return 66;
 
-    default: {}
+    default: {
+    }
     }
     return 0;
 }
@@ -118,7 +122,8 @@ _keypair_type_to_ecp_group_id(vs_hsm_keypair_type_e keypair_type) {
         return MBEDTLS_ECP_DP_SECP224K1;
     case VS_KEYPAIR_EC_SECP256K1:
         return MBEDTLS_ECP_DP_SECP256K1;
-    default: {}
+    default: {
+    }
     }
 
     return MBEDTLS_ECP_DP_NONE;
