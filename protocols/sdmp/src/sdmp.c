@@ -35,7 +35,7 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/logger/logger.h>
-#include "hal/macro.h"
+#include "stdlib-config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -221,9 +221,9 @@ int
 vs_sdmp_init(const vs_netif_t *default_netif) {
 
     // Check input data
-    VS_ASSERT(default_netif);
-    VS_ASSERT(default_netif->init);
-    VS_ASSERT(default_netif->tx);
+    VS_IOT_ASSERT(default_netif);
+    VS_IOT_ASSERT(default_netif->init);
+    VS_IOT_ASSERT(default_netif->tx);
 
     // Save default network interface
     _sdmp_default_netif = default_netif;
@@ -237,8 +237,8 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
 /******************************************************************************/
 int
 vs_sdmp_deinit() {
-    VS_ASSERT(_sdmp_default_netif);
-    VS_ASSERT(_sdmp_default_netif->deinit);
+    VS_IOT_ASSERT(_sdmp_default_netif);
+    VS_IOT_ASSERT(_sdmp_default_netif->deinit);
 
     _sdmp_default_netif->deinit();
 
@@ -250,8 +250,8 @@ vs_sdmp_deinit() {
 /******************************************************************************/
 int
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
-    VS_ASSERT(_sdmp_default_netif);
-    VS_ASSERT(_sdmp_default_netif->tx);
+    VS_IOT_ASSERT(_sdmp_default_netif);
+    VS_IOT_ASSERT(_sdmp_default_netif->tx);
 
     if (!netif || netif == _sdmp_default_netif) {
         return _sdmp_default_netif->tx(data, data_sz);
@@ -264,7 +264,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 int
 vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 
-    VS_ASSERT(service);
+    VS_IOT_ASSERT(service);
 
     if (_sdmp_services_num >= SERVICES_CNT_MAX) {
         return -1;
@@ -279,11 +279,11 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 /******************************************************************************/
 int
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
-    VS_ASSERT(mac_addr);
+    VS_IOT_ASSERT(mac_addr);
 
     if (!netif || netif == _sdmp_default_netif) {
-        VS_ASSERT(_sdmp_default_netif);
-        VS_ASSERT(_sdmp_default_netif->mac_addr);
+        VS_IOT_ASSERT(_sdmp_default_netif);
+        VS_IOT_ASSERT(_sdmp_default_netif->mac_addr);
         _sdmp_default_netif->mac_addr(mac_addr);
         return 0;
     }
@@ -303,7 +303,7 @@ _sdmp_transaction_id() {
 int
 _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
 
-    VS_ASSERT(packet);
+    VS_IOT_ASSERT(packet);
 
     // Ethernet packet type
     packet->eth_header.type = VS_ETHERTYPE_VIRGIL;

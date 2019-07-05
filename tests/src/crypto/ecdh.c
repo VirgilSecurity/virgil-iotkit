@@ -106,10 +106,9 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
                                      sizeof(shared_secret_2),
                                      &shared_secret_sz_2)) {
         if (!corrupt_key) {
-            BOOL_CHECK_RET(false,
-                           "Can't process ECDH (slot %s, keypair type %s) for Bob",
-                           vs_iot_hsm_slot_descr(bob_slot),
-                           vs_hsm_keypair_type_descr(alice_keypair_type));
+            VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
+                         vs_iot_hsm_slot_descr(bob_slot),
+                         vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
         return false;
@@ -128,7 +127,40 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
         if (!corrupt_key) {
             VS_LOG_ERROR("Shared secret sequences are not equal");
         }
+        return false;
+    }
 
+    return true;
+}
+
+/******************************************************************************/
+static bool
+_prepare_and_test(char *descr,
+                  vs_hsm_keypair_type_e keypair_type,
+                  vs_iot_hsm_slot_e alice_slot,
+                  vs_iot_hsm_slot_e bob_slot,
+                  bool corrupt) {
+    bool not_implemented = false;
+
+    VS_IOT_STRCPY(descr, "Key ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(alice_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(bob_slot));
+    if (corrupt) {
+        VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");
+    }
+
+    TEST_KEYPAIR_NOT_IMPLEMENTED(alice_slot, keypair_type);
+    if (not_implemented) {
+        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(keypair_type));
+        return false;
+    }
+
+    TEST_ECDH_NOT_IMPLEMENTED(alice_slot, keypair_type);
+    if (not_implemented) {
+        VS_LOG_WARNING("ECDH for keypair type %s is not implemented", vs_hsm_keypair_type_descr(keypair_type));
         return false;
     }
 
@@ -142,32 +174,25 @@ test_ecdh(void) {
 
     START_TEST("ECDH tests");
 
-#define TEST_ECDH_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                                   \
-    VS_IOT_STRCPY(descr, "Key ");                                                                                      \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");                                                    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE));                                    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");                                                      \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB));                                      \
-    TEST_CASE_OK(descr, _test_ecdh_pass(KEY, false, SLOT_ALICE, SLOT_BOB));
+#define TEST_ECDH_PASS(KEY, SLOT_ALICE, SLOT_BOB, CORRUPT)                                                             \
+    do {                                                                                                               \
+                                                                                                                       \
+        if (_prepare_and_test(descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                                    \
+            if (CORRUPT) {                                                                                             \
+                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                          \
+            } else {                                                                                                   \
+                TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                              \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (0)
 
-#define TEST_ECDH_NOT_OK_PASS(KEY, SLOT_ALICE, SLOT_BOB)                                                               \
-    VS_IOT_STRCPY(descr, "Key ");                                                                                      \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(KEY));                                       \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice slot ");                                                      \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_ALICE));                                    \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob slot ");                                                        \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT_BOB));                                      \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");                                                   \
-    TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, true, SLOT_ALICE, SLOT_BOB));
-
-    TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
-    TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_SECP384R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
-    TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_SECP521R1, VS_KEY_SLOT_EXT_MTP_0, VS_KEY_SLOT_EXT_TMP_0);
-    TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_ED25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
-    TEST_ECDH_OK_PASS(VS_KEYPAIR_EC_CURVE25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
-    TEST_ECDH_NOT_OK_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
-    TEST_ECDH_NOT_OK_PASS(VS_KEYPAIR_EC_CURVE25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, false);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_SECP384R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, false);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_SECP521R1, VS_KEY_SLOT_EXT_MTP_0, VS_KEY_SLOT_EXT_TMP_0, false);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_ED25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, false);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_CURVE25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, false);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, true);
+    TEST_ECDH_PASS(VS_KEYPAIR_EC_CURVE25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, true);
 
 terminate:;
 

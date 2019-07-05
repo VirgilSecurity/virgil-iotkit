@@ -68,7 +68,7 @@ vs_converters_pubkey_to_virgil(vs_hsm_keypair_type_e keypair_type,
 bool
 vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
                                  const uint8_t *virgil_sign,
-                                 size_t virgil_sign_sz,
+                                 uint16_t virgil_sign_sz,
                                  uint8_t *sign,
                                  uint16_t buf_sz,
                                  uint16_t *sign_sz);
@@ -77,10 +77,26 @@ bool
 vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
                                  vs_hsm_hash_type_e hash_type,
                                  const uint8_t *raw_sign,
-                                 size_t raw_sign_sz,
+                                 uint16_t raw_sign_sz,
                                  uint8_t *virgil_sign,
-                                 size_t buf_sz,
+                                 uint16_t buf_sz,
                                  uint16_t *virgil_sign_sz);
+
+bool
+vs_converters_mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
+                                  uint8_t *mbedtls_sign,
+                                  uint16_t mbedtls_sign_sz,
+                                  uint8_t *raw_sign,
+                                  uint16_t buf_sz,
+                                  uint16_t *raw_sz);
+
+bool
+vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
+                                  const unsigned char *raw,
+                                  uint16_t raw_sz,
+                                  unsigned char *signature,
+                                  uint16_t buf_sz,
+                                  uint16_t *signature_sz);
 
 #ifdef __cplusplus
 }

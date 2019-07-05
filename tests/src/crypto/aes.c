@@ -33,12 +33,13 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <stdlib-config.h>
 
 /******************************************************************************/
 static bool
-test_aes_cases(vs_iot_aes_type_e aes_type) {
+test_aes_cases(vs_iot_aes_type_e aes_type, bool test_implemented) {
     static const uint8_t source[] = "Input data to be crypted";
     uint8_t crypted[sizeof(source)];
     uint8_t decrypted[sizeof(source)];
@@ -55,30 +56,72 @@ test_aes_cases(vs_iot_aes_type_e aes_type) {
     static const uint16_t tag_sz = sizeof(tag);
     static const uint16_t key_bitsz = sizeof(key) * 8;
 
-    VS_HSM_CHECK_RET(
-            vs_hsm_aes_encrypt(aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz),
-            "Unable to encrypt data");
-    VS_HSM_CHECK_RET(
-            vs_hsm_aes_decrypt(
-                    aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, decrypted, tag, tag_sz),
-            "Unable to decrypt data");
-    MEMCMP_CHECK_RET(source, decrypted, data_sz);
-    VS_HSM_CHECK_RET(
-            vs_hsm_aes_auth_decrypt(
-                    aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, auth_decrypted, tag, tag_sz),
-            "Unable to decrypt with authentication");
-    MEMCMP_CHECK_RET(source, auth_decrypted, data_sz);
+    if (test_implemented) {
+        return VS_HSM_ERR_NOT_IMPLEMENTED != vs_hsm_aes_encrypt(aes_type,
+                                                                key,
+                                                                key_bitsz,
+                                                                iv,
+                                                                iv_sz,
+                                                                add,
+                                                                add_sz,
+                                                                data_sz,
+                                                                source,
+                                                                crypted,
+                                                                tag,
+                                                                tag_sz) &&
+               VS_HSM_ERR_NOT_IMPLEMENTED != vs_hsm_aes_decrypt(aes_type,
+                                                                key,
+                                                                key_bitsz,
+                                                                iv,
+                                                                iv_sz,
+                                                                add,
+                                                                add_sz,
+                                                                data_sz,
+                                                                crypted,
+                                                                decrypted,
+                                                                tag,
+                                                                tag_sz);
+    } else {
 
-    return true;
+        VS_HSM_CHECK_RET(
+                vs_hsm_aes_encrypt(
+                        aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz),
+                "Unable to encrypt data");
+        VS_HSM_CHECK_RET(
+                vs_hsm_aes_decrypt(
+                        aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, decrypted, tag, tag_sz),
+                "Unable to decrypt data");
+        MEMCMP_CHECK_RET(source, decrypted, data_sz);
+        VS_HSM_CHECK_RET(vs_hsm_aes_auth_decrypt(aes_type,
+                                                 key,
+                                                 key_bitsz,
+                                                 iv,
+                                                 iv_sz,
+                                                 add,
+                                                 add_sz,
+                                                 data_sz,
+                                                 crypted,
+                                                 auth_decrypted,
+                                                 tag,
+                                                 tag_sz),
+                         "Unable to decrypt with authentication");
+        MEMCMP_CHECK_RET(source, auth_decrypted, data_sz);
+
+        return true;
+    }
 }
 
 /******************************************************************************/
 void
 test_aes(void) {
-
     START_TEST("AES tests");
 
-    TEST_CASE_OK("GCM", test_aes_cases(VS_AES_GCM));
+    if (!test_aes_cases(VS_AES_GCM, true)) {
+        VS_LOG_WARNING("AES GCM functions are not implemented");
+        goto terminate;
+    }
+
+    TEST_CASE_OK("GCM", test_aes_cases(VS_AES_GCM, false));
 
 terminate:;
 }

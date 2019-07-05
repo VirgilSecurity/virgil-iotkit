@@ -36,12 +36,11 @@
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
-#include "hal/macro.h"
+#include <stdlib-config.h>
+#include <global-hal.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-
-#include <global-hal.h>
 
 static vs_sdmp_service_t _prvs_service = {0};
 static bool _prvs_service_ready = false;
@@ -78,14 +77,14 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
 
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
-    VS_ASSERT(_prvs_impl.dnid_func);
+    VS_IOT_ASSERT(_prvs_impl.dnid_func);
 
     if (0 != _prvs_impl.dnid_func()) {
         return -1;
     }
 
     const uint16_t required_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
-    VS_ASSERT(response_buf_sz >= required_sz);
+    VS_IOT_ASSERT(response_buf_sz >= required_sz);
 
     vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
     dnid_response->device_type = 0;
@@ -116,7 +115,7 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
                                vs_sdmp_element_t element_id,
                                const uint8_t *key,
                                const uint16_t key_sz) {
-    VS_ASSERT(_prvs_impl.save_data_func);
+    VS_IOT_ASSERT(_prvs_impl.save_data_func);
     return _prvs_impl.save_data_func(element_id, key, key_sz);
 }
 
@@ -131,7 +130,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 
     vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
 
-    VS_ASSERT(_prvs_impl.device_info_func);
+    VS_IOT_ASSERT(_prvs_impl.device_info_func);
     if (0 != _prvs_impl.device_info_func(devi_response, response_buf_sz)) {
         return -1;
     }
@@ -152,7 +151,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
 
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
 
-    VS_ASSERT(_prvs_impl.finalize_storage_func);
+    VS_IOT_ASSERT(_prvs_impl.finalize_storage_func);
 
     return _prvs_impl.finalize_storage_func(asav_response, response_sz);
 }
@@ -167,7 +166,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
                            uint16_t *response_sz) {
 
     uint16_t result_sz;
-    VS_ASSERT(_prvs_impl.sign_data_func);
+    VS_IOT_ASSERT(_prvs_impl.sign_data_func);
 
     if (0 != _prvs_impl.sign_data_func(request, request_sz, response, response_buf_sz, &result_sz)) {
         return -1;
@@ -181,7 +180,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 static int
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
 
-    VS_ASSERT(_prvs_impl.start_save_tl_func);
+    VS_IOT_ASSERT(_prvs_impl.start_save_tl_func);
     if (0 != _prvs_impl.start_save_tl_func(request, request_sz)) {
         return -1;
     }
@@ -193,7 +192,7 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 static int
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
 
-    VS_ASSERT(_prvs_impl.save_tl_part_func);
+    VS_IOT_ASSERT(_prvs_impl.save_tl_part_func);
     if (0 != _prvs_impl.save_tl_part_func(request, request_sz)) {
         return -1;
     }
@@ -205,7 +204,7 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 static int
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
 
-    VS_ASSERT(_prvs_impl.finalize_tl_func);
+    VS_IOT_ASSERT(_prvs_impl.finalize_tl_func);
     if (0 != _prvs_impl.finalize_tl_func(request, request_sz)) {
         return -1;
     }
@@ -275,7 +274,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
                                  const uint8_t *response,
                                  const uint16_t response_sz) {
 
-    VS_ASSERT(_prvs_impl.stop_wait_func);
+    VS_IOT_ASSERT(_prvs_impl.stop_wait_func);
 
     switch (element_id) {
     case VS_PRVS_DNID:
@@ -345,7 +344,7 @@ _send_request(const vs_netif_t *netif,
 int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms) {
 
-    VS_ASSERT(_prvs_impl.wait_func);
+    VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     // Set storage for DNID request
     _prvs_dnid_list = list;
@@ -389,7 +388,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
                  uint16_t data_sz,
                  uint32_t wait_ms) {
 
-    VS_ASSERT(_prvs_impl.wait_func);
+    VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
 
@@ -414,7 +413,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
                  uint16_t *data_sz,
                  uint32_t wait_ms) {
 
-    VS_ASSERT(_prvs_impl.wait_func);
+    VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
 
@@ -443,7 +442,7 @@ vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
                             uint8_t *asav_res,
                             uint16_t buf_sz,
                             uint32_t wait_ms) {
-    VS_ASSERT(asav_res);
+    VS_IOT_ASSERT(asav_res);
 
     uint16_t sz;
     return vs_sdmp_prvs_get(netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, buf_sz, &sz, wait_ms);
@@ -460,7 +459,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        uint16_t *signature_sz,
                        uint32_t wait_ms) {
 
-    VS_ASSERT(_prvs_impl.wait_func);
+    VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
 

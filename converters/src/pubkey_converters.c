@@ -39,9 +39,9 @@
 
 #include <stdio.h>
 
-#include "virgil/iot/converters/private/macros.h"
-#include "virgil/iot/converters/crypto_format_converters.h"
-#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/converters/private/macros.h>
+#include <virgil/iot/converters/crypto_format_converters.h>
+#include <stdlib-config.h>
 
 /******************************************************************************/
 static bool

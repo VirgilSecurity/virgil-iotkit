@@ -149,67 +149,28 @@ _test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
 /******************************************************************************/
 void
 test_sign_converters(void) {
-#define TEST_CONVERTERS_SIGN_PASS(HASH, KEY, VIRGIL_SIGN, VIRGIL_SIGN_SZ, RAW_SIGN, RAW_SIGN_SZ)                       \
-    TEST_CASE_OK("hash " #HASH ", key " #KEY,                                                                          \
-                 _test_case_converters_sign_pass(HASH, KEY, VIRGIL_SIGN, VIRGIL_SIGN_SZ, RAW_SIGN, RAW_SIGN_SZ))
+#define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)                                                                       \
+    do {                                                                                                               \
+        vs_hsm_hash_type_e hash_alg = VS_HASH_SHA_##HASH;                                                              \
+        vs_hsm_keypair_type_e keypair_type = VS_KEYPAIR_EC_##KEYPAIR;                                                  \
+        const uint8_t *virgil_sign = virgil_SHA##HASH##_##KEYPAIR##_sign;                                              \
+        uint16_t virgil_sign_sz = sizeof(virgil_SHA##HASH##_##KEYPAIR##_sign);                                         \
+        const uint8_t *raw_sign = raw_SHA##HASH##_##KEYPAIR##_sign;                                                    \
+        uint16_t raw_sign_sz = sizeof(raw_SHA##HASH##_##KEYPAIR##_sign);                                               \
+        TEST_CASE_OK("hash " #HASH ", key " #KEYPAIR,                                                                  \
+                     _test_case_converters_sign_pass(                                                                  \
+                             hash_alg, keypair_type, virgil_sign, virgil_sign_sz, raw_sign, raw_sign_sz));             \
+    } while (0)
 
-    START_TEST("sirnatures converters");
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_SECP192R1,
-                              virgil_SHA256_SECP192R1_sign,
-                              sizeof(virgil_SHA256_SECP192R1_sign),
-                              raw_SHA256_SECP192R1_sign,
-                              sizeof(raw_SHA256_SECP192R1_sign))
-
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_SECP224R1,
-                              virgil_SHA256_SECP224R1_sign,
-                              sizeof(virgil_SHA256_SECP224R1_sign),
-                              raw_SHA256_SECP224R1_sign,
-                              sizeof(raw_SHA256_SECP224R1_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_SECP256R1,
-                              virgil_SHA256_SECP256R1_sign,
-                              sizeof(virgil_SHA256_SECP256R1_sign),
-                              raw_SHA256_SECP256R1_sign,
-                              sizeof(raw_SHA256_SECP256R1_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_SECP384R1,
-                              virgil_SHA256_SECP384R1_sign,
-                              sizeof(virgil_SHA256_SECP384R1_sign),
-                              raw_SHA256_SECP384R1_sign,
-                              sizeof(raw_SHA256_SECP384R1_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_SECP521R1,
-                              virgil_SHA256_SECP521R1_sign,
-                              sizeof(virgil_SHA256_SECP521R1_sign),
-                              raw_SHA256_SECP521R1_sign,
-                              sizeof(raw_SHA256_SECP521R1_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_256,
-                              VS_KEYPAIR_EC_ED25519,
-                              virgil_SHA256_ED25519_sign,
-                              sizeof(virgil_SHA256_ED25519_sign),
-                              raw_SHA256_ED25519_sign,
-                              sizeof(raw_SHA256_ED25519_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_384,
-                              VS_KEYPAIR_EC_SECP256R1,
-                              virgil_SHA384_SECP256R1_sign,
-                              sizeof(virgil_SHA384_SECP256R1_sign),
-                              raw_SHA384_SECP256R1_sign,
-                              sizeof(raw_SHA384_SECP256R1_sign))
-
-    TEST_CONVERTERS_SIGN_PASS(VS_HASH_SHA_512,
-                              VS_KEYPAIR_EC_SECP256R1,
-                              virgil_SHA512_SECP256R1_sign,
-                              sizeof(virgil_SHA512_SECP256R1_sign),
-                              raw_SHA512_SECP256R1_sign,
-                              sizeof(raw_SHA512_SECP256R1_sign))
+    START_TEST("Signatures converters");
+    TEST_CONVERTERS_SIGN_PASS(256, SECP192R1);
+    TEST_CONVERTERS_SIGN_PASS(256, SECP224R1);
+    TEST_CONVERTERS_SIGN_PASS(256, SECP256R1);
+    TEST_CONVERTERS_SIGN_PASS(256, SECP384R1);
+    TEST_CONVERTERS_SIGN_PASS(256, SECP521R1);
+    TEST_CONVERTERS_SIGN_PASS(256, ED25519);
+    TEST_CONVERTERS_SIGN_PASS(384, SECP256R1);
+    TEST_CONVERTERS_SIGN_PASS(512, SECP256R1);
 
 terminate:;
 

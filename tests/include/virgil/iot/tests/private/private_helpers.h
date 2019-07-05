@@ -40,4 +40,69 @@
 const char *
 vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
 
+#define TEST_NOT_IMPLEMENTED(OPERATION)                                                                                \
+    do {                                                                                                               \
+        vs_log_level_t prev_loglev;                                                                                    \
+        prev_loglev = vs_logger_get_loglev();                                                                          \
+        vs_logger_set_loglev(VS_LOGLEV_CRITICAL);                                                                      \
+        not_implemented = (OPERATION) == VS_HSM_ERR_NOT_IMPLEMENTED;                                                   \
+        vs_logger_set_loglev(prev_loglev);                                                                             \
+    } while (0)
+
+#define TEST_KEYPAIR_NOT_IMPLEMENTED(SLOT, KEYPAIR_TYPE)                                                               \
+    do {                                                                                                               \
+        TEST_NOT_IMPLEMENTED(vs_hsm_keypair_create((SLOT), (KEYPAIR_TYPE)));                                           \
+    } while (0)
+
+#define TEST_HASH_NOT_IMPLEMENTED(HASH)                                                                                \
+    do {                                                                                                               \
+        static const uint8_t test_data[] = "Stub";                                                                     \
+        uint8_t result_buf[128];                                                                                       \
+        uint16_t tmp_size;                                                                                             \
+        TEST_NOT_IMPLEMENTED(vs_hsm_hash_create(                                                                       \
+                (HASH), (const uint8_t *)test_data, sizeof(test_data), result_buf, sizeof(result_buf), &tmp_size));    \
+    } while (0)
+
+#define TEST_ECDH_NOT_IMPLEMENTED(SLOT, KEYPAIR_TYPE)                                                                  \
+    do {                                                                                                               \
+        uint8_t pubkey[256] = {0};                                                                                     \
+        uint16_t pubkey_sz = 0;                                                                                        \
+        uint8_t shared_secret_1[128] = {0};                                                                            \
+        uint16_t shared_secret_sz_1 = 0;                                                                               \
+        TEST_NOT_IMPLEMENTED(vs_hsm_ecdh((SLOT),                                                                       \
+                                         (KEYPAIR_TYPE),                                                               \
+                                         pubkey,                                                                       \
+                                         pubkey_sz,                                                                    \
+                                         shared_secret_1,                                                              \
+                                         sizeof(shared_secret_1),                                                      \
+                                         &shared_secret_sz_1));                                                        \
+    } while (0)
+
+#define TEST_HMAC_NOT_IMPLEMENTED(HASH)                                                                                \
+    do {                                                                                                               \
+        static uint8_t key_raw[] = "Stub";                                                                             \
+        static uint8_t input_raw[] = "Stub";                                                                           \
+        uint8_t buf[128];                                                                                              \
+        uint16_t tmp_sz;                                                                                               \
+        TEST_NOT_IMPLEMENTED(vs_hsm_hmac(                                                                              \
+                (HASH), key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &tmp_sz));           \
+    } while (0)
+
+#define TEST_HKDF_NOT_IMPLEMENTED(HASH)                                                                                \
+    do {                                                                                                               \
+        static uint8_t salt_raw[] = "Stub";                                                                            \
+        static uint8_t input_raw[] = "Stub";                                                                           \
+        static uint8_t hkdf_info_raw[] = "Stub";                                                                       \
+        uint8_t buf[128];                                                                                              \
+        TEST_NOT_IMPLEMENTED(vs_hsm_hkdf((HASH),                                                                       \
+                                         input_raw,                                                                    \
+                                         sizeof(input_raw),                                                            \
+                                         salt_raw,                                                                     \
+                                         sizeof(salt_raw),                                                             \
+                                         hkdf_info_raw,                                                                \
+                                         sizeof(hkdf_info),                                                            \
+                                         buf,                                                                          \
+                                         sizeof(buf)));                                                                \
+    } while (0)
+
 #endif // VS_TESTS_PRIVATE_HELPERS_H
