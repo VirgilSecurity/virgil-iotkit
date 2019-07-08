@@ -15,6 +15,7 @@ from virgil_keymanager import consts
 from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
 from virgil_keymanager.core_utils.helpers import b64_to_bytes
 
+from virgil_keymanager.consts.modes import ProgramModes
 from virgil_keymanager.core_utils import DonglesCache, DongleChooser
 from virgil_keymanager.core_utils.card_requests import CardRequestsHandler
 from virgil_keymanager.external_utils.printer_controller import PrinterController
@@ -105,7 +106,7 @@ class UtilityManager(object):
         self.__logger.info("initialization successful")
 
         # chooser
-        if self._context.no_dongles:
+        if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
             self.key_chooser = self.__db_key_chooser
         else:
             self.key_chooser = self.__dongle_key_chooser
@@ -164,7 +165,7 @@ class UtilityManager(object):
 
         storage_path = os.path.join(self.__key_storage_path, "db", name)
         with db_init_logs():
-            if self._context.no_dongles:
+            if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
                 if name == "TrustListVersions":  # TODO: find better way for storage selection
                     return TLVersionTinyDBStorage(storage_path)
                 return DBStorage(storage_path)
@@ -466,7 +467,7 @@ class UtilityManager(object):
         ):
             self.__logger.error("Factory Key generation failed")
             sys.exit("Factory Key generation failed")
-        if self._context.dongles_mode == "dongles":
+        if self._context.program_mode in (ProgramModes.ATMEL_DONGLES_EMULATOR, ProgramModes.ATMEL_DONGLES):
             self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
         key_id = factory_key.key_id
         self.__ui.print_message("Generation finished")
@@ -600,15 +601,15 @@ class UtilityManager(object):
 
         # - private
         key_info["key"] = key.private_key
-        if self._context.no_dongles:
+        if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
             private_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
 
-        if stored_on_dongle and self._context.dongles_mode == "dongles":
+        if stored_on_dongle and self._context.program_mode in (ProgramModes.ATMEL_DONGLES, ProgramModes.ATMEL_DONGLES_EMULATOR):
             self.__dongle_unplug_and_mark(key.device_serial, key_type)
 
         # Print to paper
         if print_to_paper:
-            if not self._context.printer_disable:
+            if self._context.printer_enable:
                 self.__printer_controller.send_to_printer(key_info)
 
         # Create card request
@@ -897,10 +898,10 @@ class UtilityManager(object):
             if key_type == consts.VSKeyTypeS.FACTORY:
                 if key in self.__factory_priv_keys.get_keys():
                     self.__factory_priv_keys.delete_key(key)
-            if self._context.no_dongles and key_type == consts.VSKeyTypeS.RECOVERY:
+            if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY and key_type == consts.VSKeyTypeS.RECOVERY:
                 if key in self.__recovery_private_keys.get_keys():
                     self.__recovery_private_keys.delete_key(key)
-            if self._context.no_dongles and key_type == consts.VSKeyTypeS.AUTH:
+            if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY and key_type == consts.VSKeyTypeS.AUTH:
                 if key in self.__auth_private_keys.get_keys():
                     self.__auth_private_keys.delete_key(key)
 
@@ -1127,7 +1128,7 @@ class UtilityManager(object):
 
     def __dongle_unplug_and_mark(self, device_serial, key_type: consts.VSKeyTypeS):
 
-        if self._context.no_dongles:
+        if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
             return
 
         def dongle_unplugged(dongle_serial):
@@ -1209,43 +1210,31 @@ class UtilityManager(object):
                     .format(self.__upper_level_keys_count), self.__generate_initial_keys],
                 ["---"],
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
-                ["Revive the Recovery Key from the RestorePaper", self.__revive_recovery_key],
                 ["---"],
                 ["Generate Auth Key ({})".format(self.__upper_level_keys_count), self.__generate_auth_by_count],
                 ["Generate AuthInternal Key", self.__generate_auth_internal_key],
-                ["Revive the Auth Key from the RestorePaper", self.__revive_auth_key],
                 ["---"],
                 ["Generate TrustList Service Key ({})".format(self.__upper_level_keys_count),
                  self.__generate_tl_key_by_count],
-                ["Revive the TrustList Service Key from the RestorePaper", self.__revive_tl_service_key],
                 ["---"],
                 ["Generate Factory Key", self.__generate_factory_key],
-                ["Create a new Factory dongle from the existing Key", self.__re_generate_factory_key],
                 ["Delete Factory Key", self.__delete_factory_key],
                 ["---"],
                 ["Generate Firmware Key ({})".format(self.__upper_level_keys_count), self.__generate_firmware_by_count],
                 ["Generate FirmwareInternal Key", self.__generate_firmware_internal_key],
-                ["Revive the Firmware Key from the RestorePaper", self.__revive_firmware_key],
                 ["---"],
                 ["Generate TrustList", self.__generate_trust_list],
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
                 ["Dump upper level Public Keys", self.__dump_upper_level_pub_keys],
-                ["Restore UpperLevelKeys db from dongles", self.__restore_upper_level_db_from_keys],
                 ["Import TrustList to db", self.__import_trust_list_to_db],
-                ["---"]
+                ["---"],
+                ["Export Private Keys", self.__get_all_private_keys],
+                ["Export Internal Private Keys", self.__get_internal_private_keys],
+                ["---"],
+                ["Exit", self.__exit]
             ])
-            if self._context.no_dongles:
-                self._utility_list.append(
-                    ["Export Private Keys", self.__get_all_private_keys]
-                )
-            else:
-                self._utility_list.extend([
-                    ["Export Internal Private Keys", self.__get_internal_private_keys],
-                    ["---"]
-                ])
-            self._utility_list.append(["Exit", self.__exit])
 
         return self._utility_list
 

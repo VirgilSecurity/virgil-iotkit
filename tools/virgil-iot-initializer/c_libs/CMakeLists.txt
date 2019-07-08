@@ -46,7 +46,7 @@ add_library(${PROJECT_NAME}
         ${NETIF_PLC_SIM}
         )
 
-target_link_libraries (${PROJECT_NAME} sdmp)
+target_link_libraries (${PROJECT_NAME} sdmp-factory)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
