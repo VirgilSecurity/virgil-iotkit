@@ -44,7 +44,7 @@ extern uint16_t failed_test_result;
 #define VS_HSM_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                       \
     do {                                                                                                               \
         if (VS_HSM_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \
-            VS_LOG_WARNING("AES GCM encrypt is not implemented");                                                      \
+            VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
             return true;                                                                                               \
         }                                                                                                              \
     } while (0)
