@@ -93,7 +93,7 @@ vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
         static uint8_t salt_raw[] = "Stub";                                                                            \
         static uint8_t input_raw[] = "Stub";                                                                           \
         static uint8_t hkdf_info_raw[] = "Stub";                                                                       \
-        uint8_t buf[128];                                                                                              \
+        uint8_t buf[64];                                                                                               \
         TEST_NOT_IMPLEMENTED(vs_hsm_hkdf((HASH),                                                                       \
                                          input_raw,                                                                    \
                                          sizeof(input_raw),                                                            \
@@ -103,6 +103,13 @@ vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
                                          sizeof(hkdf_info),                                                            \
                                          buf,                                                                          \
                                          sizeof(buf)));                                                                \
+    } while (0)
+
+#define TEST_KDF_NOT_IMPLEMENTED(HASH)                                                                                 \
+    do {                                                                                                               \
+        static uint8_t input_raw[] = "Stub";                                                                           \
+        uint8_t buf[64];                                                                                               \
+        TEST_NOT_IMPLEMENTED(vs_hsm_kdf(VS_KDF_2, (HASH), input_raw, sizeof(input_raw), buf, sizeof(buf)));            \
     } while (0)
 
 #endif // VS_TESTS_PRIVATE_HELPERS_H
