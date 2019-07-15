@@ -60,11 +60,6 @@ func main()  {
             Aliases: []string{"i"},
             Usage:   "Input file",
         },
-        &cli.StringFlag{
-            Name:    "build-time",
-            Aliases: []string{"b"},
-            Usage:   "Build time",
-        },
         &cli.IntFlag{
             Name:    "file-size",
             Aliases: []string{"s"},
@@ -126,7 +121,6 @@ func signerFunc(context *cli.Context) (err error) {
         Model:              context.String("model"),
         ChunkSize:          context.Int("chunk-size"),
         ApplicationType:    context.String("app-type"),
-        BuildTime:          context.String("build-time"),
     }
     fmt.Printf("Signer utility prepared: %+v \n", signerUtil)
 

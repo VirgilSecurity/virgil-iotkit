@@ -43,10 +43,16 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"../converters"
 	"../firmware"
 	"../signers"
+)
+
+
+const (
+	TIME_OFFSET = 1420070400  // 01/01/2015 @ 12:00am (UTC)
 )
 
 type SignerUtility struct {
@@ -58,7 +64,6 @@ type SignerUtility struct {
 	Model           string
 	ChunkSize       int
 	ApplicationType string
-	BuildTime       string
 
 	progFile        *firmware.ProgFile
 }
@@ -253,10 +258,8 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
 		return ver, err
 	}
 	// Timestamp
-	timestampUint, err := stringToUint32(s.BuildTime)
-	if err != nil {
-		return ver, err
-	}
+	currentTime := time.Now().UTC().Unix()
+	timestamp := uint32(currentTime - TIME_OFFSET)
 
 	ver = firmware.Version{
 		Major:            major,
@@ -264,7 +267,7 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
 		Patch:            patch,
 		DevMilestone:     devMilestone,
 		DevBuild:         devBuild,
-		Timestamp:        timestampUint,
+		Timestamp:        timestamp,
 	}
 	// Application type
 	copy(ver.ApplicationType[:], s.ApplicationType)
@@ -303,10 +306,3 @@ func stringToUint8(s string) (uint8, error) {
 	return uint8(intValue), nil
 }
 
-func stringToUint32(s string) (uint32, error) {
-	intValue, err := strconv.ParseUint(s, 10, 4)
-	if err != nil {
-		return 0, fmt.Errorf("can`t convert %s string to uint32: %s", s, err)
-	}
-	return uint32(intValue), nil
-}
