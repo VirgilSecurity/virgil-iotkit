@@ -35,110 +35,112 @@
 package signers
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
 
-	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
+    "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 
-	"../converters"
-	"../firmware"
+    "../converters"
+    "../firmware"
 )
 
 var (
-	crypto = virgil_crypto_go.NewVirgilCrypto()
+    crypto = virgil_crypto_go.NewVirgilCrypto()
 )
 
 func init() {
-	crypto.UseSha256Fingerprints = true
+    crypto.UseSha256Fingerprints = true
 }
 
 type VirgilCryptoSigner struct {
-	FileKeys     []FileKey
+    FileKeys     []FileKey
 }
 
 type FileKey struct {
-	FilePath    string `json:"path"`
-	EcType      uint8  `json:"ec_type"`
-	KeyType     uint8  `json:"key_type"`
+    FilePath    string `json:"path"`
+    EcType      uint8  `json:"ec_type"`
+    KeyType     uint8  `json:"key_type"`
 }
 
 func NewVirgilCryptoSigner(keysConfigPath string) (signer VirgilCryptoSigner, err error) {
-	var cfgBytes []byte
-	if cfgBytes, err = ioutil.ReadFile(keysConfigPath); err != nil {
-		return signer, fmt.Errorf("failed to read config json: %v", err)
-	}
+    var cfgBytes []byte
+    if cfgBytes, err = ioutil.ReadFile(keysConfigPath); err != nil {
+        return signer, fmt.Errorf("failed to read config json: %v", err)
+    }
 
-	var keys []FileKey
-	if err = json.Unmarshal(cfgBytes, &keys); err != nil {
-		return signer, fmt.Errorf("failed to deserialize config json: %v", err)
-	}
-	signer.FileKeys = keys
-	return signer, nil
+    var keys []FileKey
+    if err = json.Unmarshal(cfgBytes, &keys); err != nil {
+        return signer, fmt.Errorf("failed to deserialize config json: %v", err)
+    }
+    signer.FileKeys = keys
+    return signer, nil
 }
 
 func (s VirgilCryptoSigner) Sign(data []byte) (signatures []firmware.Signature, err error){
     for _, fileKey := range s.FileKeys {
-    	fmt.Printf("Signing data by %s\n", fileKey.FilePath)
+        fmt.Printf("Signing data by %s\n", fileKey.FilePath)
 
-    	// Read key from file
-		keyFileBytes, err := ioutil.ReadFile(fileKey.FilePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read key at path %s: %v", fileKey.FilePath, err)
-		}
-		privateKey, err := crypto.ImportPrivateKey(keyFileBytes, "")
-		if err != nil {
-			return nil, fmt.Errorf("failed to import private key %s: %v", fileKey.FilePath, err)
-		}
+        // Read key from file
+        keyFileBytes, err := ioutil.ReadFile(fileKey.FilePath)
+        if err != nil {
+            return nil, fmt.Errorf("failed to read key at path %s: %v", fileKey.FilePath, err)
+        }
+        privateKey, err := crypto.ImportPrivateKey(keyFileBytes, "")
+        if err != nil {
+            return nil, fmt.Errorf("failed to import private key %s: %v", fileKey.FilePath, err)
+        }
 
-		// Sign data and get signature in Virgil format
-		virgilSignature, err := crypto.Sign(data, privateKey)
-		if err != nil {
-			return nil, fmt.Errorf("failed to sign data: %v", err)
-		}
+        // Sign data and get signature in Virgil format
+        virgilSignature, err := crypto.Sign(data, privateKey)
+        if err != nil {
+            return nil, fmt.Errorf("failed to sign data: %v", err)
+        }
 
-		// Convert signature to raw format
-		var rawSignature []byte
-		rawSignature, err = converters.VirgilSignToRaw(virgilSignature, fileKey.EcType)
-		if err != nil {
-			return nil, err
-		}
+        // Convert signature to raw format
+        var rawSignature []byte
+        rawSignature, err = converters.VirgilSignToRaw(virgilSignature, fileKey.EcType)
+        if err != nil {
+            return nil, err
+        }
 
-		// Extract public key
-		publicKey, err := crypto.ExtractPublicKey(privateKey)
-		if err != nil {
-			return nil, fmt.Errorf("failed to extract public key: %v", err)
-		}
-		virgilPubKey, err := crypto.ExportPublicKey(publicKey)
-		if err != nil {
-			return nil, fmt.Errorf("failed to export public key: %v", err)
-		}
+        // Extract public key
+        publicKey, err := crypto.ExtractPublicKey(privateKey)
+        if err != nil {
+            return nil, fmt.Errorf("failed to extract public key: %v", err)
+        }
+        virgilPubKey, err := crypto.ExportPublicKey(publicKey)
+        if err != nil {
+            return nil, fmt.Errorf("failed to export public key: %v", err)
+        }
 
-		// Convert public key to raw format
-		rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, fileKey.EcType)
-		if err != nil {
-			return nil, fmt.Errorf("failed to prepare raw public key: %v", err)
-		}
+        // Convert public key to raw format
+        rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, fileKey.EcType)
+        if err != nil {
+            return nil, fmt.Errorf("failed to prepare raw public key: %v", err)
+        }
 
-		signature := firmware.Signature{
-			SignerType:       fileKey.KeyType,
-			ECType:           fileKey.EcType,
-			HashType:         converters.VS_HASH_SHA_256,
-			Sign:             rawSignature,
-			SignerPublicKey:  rawPubKey,
-		}
-		
-		signatures = append(signatures, signature)
-	}
-    fmt.Println("Data signed successfully")
-    
+        signature := firmware.Signature{
+            SignerType:       fileKey.KeyType,
+            ECType:           fileKey.EcType,
+            HashType:         converters.VS_HASH_SHA_256,
+            Sign:             rawSignature,
+            SignerPublicKey:  rawPubKey,
+        }
+
+        signatures = append(signatures, signature)
+        fmt.Printf("Signature added: %+v\n", signature)
+    }
+    fmt.Println("Data signed successfully:")
+
+
     return signatures, nil
 }
 
 func (s VirgilCryptoSigner) SignerKeyEcTypes() []uint8 {
-	var types []uint8
-	for _, t := range s.FileKeys {
-		types = append(types, t.EcType)
-	}
-	return types
+    var types []uint8
+    for _, t := range s.FileKeys {
+        types = append(types, t.EcType)
+    }
+    return types
 }

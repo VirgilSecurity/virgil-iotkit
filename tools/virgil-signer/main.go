@@ -122,7 +122,6 @@ func signerFunc(context *cli.Context) (err error) {
         ChunkSize:          context.Int("chunk-size"),
         ApplicationType:    context.String("app-type"),
     }
-    fmt.Printf("Signer utility prepared: %+v \n", signerUtil)
 
     err = signerUtil.CreateSignedFirmware()
     if err != nil {
