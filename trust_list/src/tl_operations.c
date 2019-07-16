@@ -81,6 +81,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint16_t key_len;
     uint8_t sign_rules = 0;
 
+    VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
