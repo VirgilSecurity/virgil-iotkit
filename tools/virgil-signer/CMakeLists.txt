@@ -35,7 +35,41 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
+
+#
+# CFLAGS for CGO
+#
+set(CMAKE_CGO_CFLAGS
+        ${CMAKE_CGO_CFLAGS}
+        -I${CMAKE_CURRENT_LIST_DIR}/../../converters/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../../hsm/include
+    )
+
+#
+# LDFLAGS for CGO
+#
+set(CMAKE_CGO_LDFLAGS
+        ${CMAKE_CGO_LDFLAGS}
+        -L${CMAKE_BINARY_DIR}/ap/security-sdk/converters
+    )
+
+#
+# Workaround target
+# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
+#
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(LIBS_TARGET ${PROJECT_NAME}-libs)
+add_custom_target(${LIBS_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a"
+        ${INITIALIZER_LIB_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a"
+        ${INITIALIZER_LIB_DIR}
+        )
+
 #
 #   Virgil Signer
 #
-add_go_executable(virgil-firmware-signer)
+add_go_executable(virgil-firmware-signer converters ${LIBS_TARGET})
