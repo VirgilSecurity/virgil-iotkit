@@ -52,6 +52,7 @@ void loop() {
     // Process start
     if (!received) {
       if (BEG_CHAR == received_byte) {
+        received = 0;
         received_data[received++] = received_byte;
         Serial.write(received_byte);
       }
