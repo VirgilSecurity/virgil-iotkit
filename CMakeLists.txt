@@ -178,6 +178,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 
 #
+#   Cloud
+#
+# TODO: Add Option to disable cloud
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+
+#
 #   Trust list
 #
 # TODO: Add Option to disable trust_list

@@ -32,30 +32,27 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#ifndef CLOUD_ASN1_CRYPTOGRAM_H
+#define CLOUD_ASN1_CRYPTOGRAM_H
 
-
-
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-#define VS_IOT_ASSERT    assert
-#define VS_IOT_CALLOC    calloc
-#define VS_IOT_FREE      platform_free
-#define VS_IOT_MALLOC    platform_malloc
-#define VS_IOT_MEMCMP    memcmp
-#define VS_IOT_MEMCPY    memcpy
-#define VS_IOT_MEMSET    memset
-#define VS_IOT_MEMMOVE   memmove
-#define VS_IOT_SNPRINTF  snprintf
-#define VS_IOT_SPRINTF   sprintf
-#define VS_IOT_STRCPY    strcpy
-#define VS_IOT_STRLEN    strlen
-#define VS_IOT_VSNPRINTF vsnprintf
+#ifdef __cplusplus
+extern "C" {
+#endif
+int
+vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                               size_t cryptogram_sz,
+                                               uint8_t **public_key,
+                                               uint8_t **iv_key,
+                                               uint8_t **encrypted_key,
+                                               uint8_t **mac_data,
+                                               uint8_t **iv_data,
+                                               uint8_t **encrypted_data,
+                                               size_t *encrypted_data_sz);
+#ifdef __cplusplus
+}
+#endif
 
-
-
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#endif // CLOUD_ASN1_CRYPTOGRAM_H

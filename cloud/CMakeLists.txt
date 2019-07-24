@@ -33,3 +33,28 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(cloud VERSION 0.1.0 LANGUAGES C)
+
+add_library(cloud)
+
+target_sources(cloud
+        PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/cloud.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/json/json_parser.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/json/json_generator.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
+        )
+
+target_link_libraries(cloud
+        PRIVATE
+        logger
+        macros
+        jsmn
+        )
+
+target_include_directories(cloud
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        )
