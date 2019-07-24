@@ -160,6 +160,11 @@ endif()
 #   Features
 # ---------------------------------------------------------------------------
 
+#   jsmn
+#
+# TODO: Add Option to disable cloud
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+
 #
 #   Logger
 #
