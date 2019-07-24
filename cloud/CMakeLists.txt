@@ -52,9 +52,13 @@ target_link_libraries(cloud
         logger
         macros
         jsmn
+        hsm
         )
 
 target_include_directories(cloud
+        PRIVATE
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         )

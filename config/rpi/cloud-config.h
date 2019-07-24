@@ -32,23 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAL_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAL_H
+#ifndef VIRGIL_IOT_SDK_CLOUD_CONFIG_H
+#define VIRGIL_IOT_SDK_CLOUD_CONFIG_H
 
-#include <stdint.h>
+#define MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
+#define CLOUD_HOST "https://things-dev.virgilsecurity.com"
+#define THING_EP "thing"
+#define AWS_ID "aws"
+#define MQTT_ID "mqtt"
 
-#define SERIAL_SIZE (32)
+#define HTTPS_INPUT_BUFFER_SIZE (8192)
 
-void *
-platform_malloc(size_t size);
-
-void
-platform_free(void *ptr);
-
-void
-vs_global_hal_msleep(size_t msec);
-
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAL_H
+#endif //VIRGIL_IOT_SDK_CLOUD_CONFIG_H

@@ -35,4 +35,13 @@
 #ifndef CLOUD_HAL_H
 #define CLOUD_HAL_H
 
+uint16_t
+https(http_method_t type,
+      const char *url,
+      const char *authorization,
+      const char *data,
+      size_t data_size,
+      char *out_data,
+      size_t *in_out_size);
+
 #endif // CLOUD_HAL_H

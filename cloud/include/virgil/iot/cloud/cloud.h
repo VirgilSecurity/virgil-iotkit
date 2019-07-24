@@ -37,6 +37,8 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
+#include <stddef.h>
+
 typedef enum {
     VS_CLOUD_ERR_OK,
     VS_CLOUD_ERR_FAIL,
@@ -45,5 +47,32 @@ typedef enum {
     VS_CLOUD_ERR_DECRYPT_FAIL, //
     VS_CLOUD_ERR_VALUE_FAIL,   //
 } vs_cloud_err_code_e;
+
+#define HTTPS_RET_CODE_ERROR_OPEN_SESSION 1000
+#define HTTPS_RET_CODE_ERROR_PREPARE_REQ 1001
+#define HTTPS_RET_CODE_ERROR_SEND_REQ 1002
+#define HTTPS_RET_CODE_ERROR_GET 1003
+#define HTTPS_RET_CODE_OK 200
+
+typedef int http_session_t;
+
+/* Request methods */
+typedef enum {
+    HTTP_OPTIONS, /* request to server for communication  options */
+    HTTP_GET,     /* retrieve information */
+    HTTP_HEAD,    /* get meta-info */
+    HTTP_POST,    /* request to accept new sub-ordinate of resource */
+    HTTP_PUT,     /* modify or create new resource referred to by URI */
+    HTTP_PATCH,   /* modify or create new resource referred
+                   * to by URI */
+    HTTP_DELETE,  /* delete the resource */
+    HTTP_TRACE,   /* echo */
+    HTTP_CONNECT, /* do we need this  ? */
+} http_method_t;
+
+int
+vs_cloud_get_gateway_iot(char *out_answer, size_t *in_out_answer_len);
+int
+vs_cloud_get_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
 
 #endif // CLOUD_H
