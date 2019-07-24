@@ -160,6 +160,12 @@ endif()
 #   Features
 # ---------------------------------------------------------------------------
 
+#
+#   Shared macros interface
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
+
+#
 #   jsmn
 #
 # TODO: Add Option to disable cloud
