@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include <virgil/iot/cloud/cloud.h>
+#include <global-hal.h>
+#include <stdlib-config.h>
 #include <virgil/iot/cloud/json/json_parser.h>
 
 #ifndef JSMN_PARENT_LINKS
@@ -581,7 +583,7 @@ json_parse_start(jobj_t *jobj, char *js, size_t js_len) {
             return -WM_E_JSON_FAIL;
         }
     }
-    jsontok_t *tokens = calloc(parsed_tokens * sizeof(jsontok_t), 1);
+    jsontok_t *tokens = VS_IOT_MALLOC(parsed_tokens * sizeof(jsontok_t));
     if (!tokens)
         return -WM_E_JSON_NOMEM;
 
@@ -595,5 +597,5 @@ json_parse_start(jobj_t *jobj, char *js, size_t js_len) {
 void
 json_parse_stop(jobj_t *jobj) {
     if (jobj->tokens)
-        free(jobj->tokens);
+        VS_IOT_FREE(jobj->tokens);
 }
