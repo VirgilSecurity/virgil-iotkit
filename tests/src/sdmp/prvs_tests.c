@@ -43,6 +43,7 @@
 #include <virgil/iot/tests/private/test_prvs.h>
 #include <stdlib-config.h>
 #include <virgil/iot/hsm/hsm_structs.h>
+#include <global-hal.h>
 
 static vs_netif_t test_netif;
 static vs_sdmp_prvs_dnid_list_t dnid_list;

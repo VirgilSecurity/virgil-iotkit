@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 #define VS_IOT_ASSERT    assert
-#define VS_IOT_CALLOC    calloc
+#define VS_IOT_CALLOC    platform_calloc
 #define VS_IOT_FREE      platform_free
 #define VS_IOT_MALLOC    platform_malloc
 #define VS_IOT_MEMCMP    memcmp

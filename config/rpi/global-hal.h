@@ -40,6 +40,9 @@
 #define SERIAL_SIZE (32)
 
 void *
+platform_calloc(size_t num, size_t size);
+
+void *
 platform_malloc(size_t size);
 
 void
