@@ -45,6 +45,7 @@ target_sources(cloud
         "${CMAKE_CURRENT_LIST_DIR}/src/json/json_parser.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/json/json_generator.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c"
         )
 
 target_link_libraries(cloud

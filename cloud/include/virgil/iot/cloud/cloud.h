@@ -37,7 +37,28 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
+#include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
+
+typedef struct {
+    char *topic_list;
+    uint16_t *topic_len_list;
+    size_t topic_count;
+} vs_cloud_mb_topics_list_t;
+
+typedef struct {
+    char *login;
+    char *password;
+    char *cert;
+    char *pk;
+    char *host;
+    vs_cloud_mb_topics_list_t topic_list;
+    char *client_id;
+    uint16_t port;
+    bool is_filled;
+    bool is_active;
+} vs_cloud_mb_mqtt_ctx_t;
 
 typedef enum {
     VS_CLOUD_ERR_OK,
@@ -70,9 +91,30 @@ typedef enum {
     HTTP_CONNECT, /* do we need this  ? */
 } http_method_t;
 
-int
-vs_cloud_get_gateway_iot(char *out_answer, size_t *in_out_answer_len);
-int
-vs_cloud_get_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+typedef int (*vs_cloud_mb_connect_func)(const char *host,
+                                        uint16_t port,
+                                        const char *device_cert,
+                                        const char *priv_key,
+                                        const char *ca_cert);
+typedef int (*vs_cloud_mb_subscribe_func)(const char *client_id,
+                                          const char *login,
+                                          const char *password,
+                                          const vs_cloud_mb_topics_list_t *topic_list);
+typedef int (*vs_cloud_mb_process_func)(void);
 
+int
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
+
+int
+vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+
+int
+vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx);
+
+int
+vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
+                    const char *root_ca_crt,
+                    vs_cloud_mb_connect_func connect,
+                    vs_cloud_mb_subscribe_func subscribe,
+                    vs_cloud_mb_process_func process);
 #endif // CLOUD_H

@@ -36,7 +36,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(jsmn VERSION 0.1.0 LANGUAGES C)
 
-add_library(jsmn SHARED)
+add_library(jsmn)
 
 target_sources(jsmn
         PRIVATE

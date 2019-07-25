@@ -258,15 +258,19 @@ fail:
 }
 
 /******************************************************************************/
-int
-vs_cloud_get_gateway_iot(char *out_answer, size_t *in_out_answer_len) {
+static int
+_get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
     int16_t ret;
-    char *url = (char *)VS_IOT_MALLOC(512);
-
     char serial[SERIAL_SIZE * 2 + 1];
+
+    CHECK_NOT_ZERO(out_answer, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO(in_out_answer_len, VS_CLOUD_ERR_INVAL);
+
+    char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
+
     _get_serial_number_in_hex_str(serial);
 
-    int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", CLOUD_HOST, THING_EP, serial, AWS_ID);
+    int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
     if (res < 0 || res > MAX_EP_SIZE ||
         https(HTTP_GET, url, NULL, NULL, 0, out_answer, in_out_answer_len) != HTTPS_RET_CODE_OK) {
         ret = VS_CLOUD_ERR_FAIL;
@@ -280,22 +284,12 @@ vs_cloud_get_gateway_iot(char *out_answer, size_t *in_out_answer_len) {
 
 /******************************************************************************/
 int
-vs_cloud_get_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
-    int16_t ret;
-    char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
+    return _get_credentials(CLOUD_HOST, THING_EP, AWS_ID, out_answer, in_out_answer_len);
+}
 
-    char serial[SERIAL_SIZE * 2 + 1];
-    _get_serial_number_in_hex_str(serial);
-
-    int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", CLOUD_HOST, THING_EP, serial, MQTT_ID);
-
-    if (res < 0 || res > MAX_EP_SIZE ||
-        https(HTTP_GET, url, NULL, NULL, 0, out_answer, in_out_answer_len) != HTTPS_RET_CODE_OK) {
-        ret = VS_CLOUD_ERR_FAIL;
-    } else {
-        ret = _decrypt_answer(out_answer, in_out_answer_len);
-    }
-
-    VS_IOT_FREE(url);
-    return ret;
+/******************************************************************************/
+int
+vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
+    return _get_credentials(CLOUD_HOST, THING_EP, MQTT_ID, out_answer, in_out_answer_len);
 }
