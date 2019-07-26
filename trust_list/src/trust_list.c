@@ -67,9 +67,9 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
         res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
 
         if (VS_TL_OK == res) {
-            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
-            if (VS_TL_OK == res) {
-                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
+            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
+            if (VS_TL_OK == res && VS_TL_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
+                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
             }
         }
 

@@ -37,6 +37,8 @@ int
 vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz);
 int
 vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint16_t buf_sz, uint16_t *key_sz);
+int
+vs_tl_verify_storage(size_t storage_type);
 
 
 #endif // TL_OPERATIONS_H
