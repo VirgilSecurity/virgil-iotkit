@@ -91,15 +91,15 @@ typedef enum {
     HTTP_CONNECT, /* do we need this  ? */
 } http_method_t;
 
-typedef int (*vs_cloud_mb_connect_func)(const char *host,
-                                        uint16_t port,
-                                        const char *device_cert,
-                                        const char *priv_key,
-                                        const char *ca_cert);
-typedef int (*vs_cloud_mb_subscribe_func)(const char *client_id,
-                                          const char *login,
-                                          const char *password,
-                                          const vs_cloud_mb_topics_list_t *topic_list);
+typedef int (*vs_cloud_mb_init_func)(const char *host,
+                                     uint16_t port,
+                                     const char *device_cert,
+                                     const char *priv_key,
+                                     const char *ca_cert);
+typedef int (*vs_cloud_mb_connect_subscribe_func)(const char *client_id,
+                                                  const char *login,
+                                                  const char *password,
+                                                  const vs_cloud_mb_topics_list_t *topic_list);
 typedef int (*vs_cloud_mb_process_func)(void);
 
 int
@@ -114,7 +114,7 @@ vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx);
 int
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     const char *root_ca_crt,
-                    vs_cloud_mb_connect_func connect,
-                    vs_cloud_mb_subscribe_func subscribe,
+                    vs_cloud_mb_init_func init,
+                    vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process);
 #endif // CLOUD_H

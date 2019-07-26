@@ -243,14 +243,14 @@ vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
 int
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     const char *root_ca_crt,
-                    vs_cloud_mb_connect_func connect,
-                    vs_cloud_mb_subscribe_func subscribe,
+                    vs_cloud_mb_init_func init,
+                    vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process) {
 
     CHECK_NOT_ZERO(ctx, VS_CLOUD_ERR_INVAL);
     CHECK_NOT_ZERO(root_ca_crt, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(connect, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(subscribe, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO(init, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO(connect_subscribe, VS_CLOUD_ERR_INVAL);
     CHECK_NOT_ZERO(process, VS_CLOUD_ERR_INVAL);
 
     bool provision_is_present = ctx->is_filled || (VS_CLOUD_ERR_OK == _get_message_bin_credentials(ctx));
@@ -260,12 +260,12 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
 
             VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", ctx->host, ctx->port);
 
-            if (VS_CLOUD_ERR_OK == connect(ctx->host,
-                                           ctx->port,
-                                           (const char *)ctx->cert,
-                                           (const char *)ctx->pk,
-                                           (const char *)root_ca_crt) &&
-                VS_CLOUD_ERR_OK == subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list)) {
+            if (VS_CLOUD_ERR_OK == init(ctx->host,
+                                        ctx->port,
+                                        (const char *)ctx->cert,
+                                        (const char *)ctx->pk,
+                                        (const char *)root_ca_crt) &&
+                VS_CLOUD_ERR_OK == connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list)) {
                 ctx->is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");
