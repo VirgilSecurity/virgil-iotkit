@@ -44,9 +44,11 @@
 
 #include <virgil/iot/cloud/cloud.h>
 #include <virgil/iot/cloud/private/cloud_hal.h>
+#include <virgil/iot/cloud/private/cloud_operations.h>
 #include <virgil/iot/cloud/private/asn1_cryptogram.h>
 #include <virgil/iot/cloud/base64/base64.h>
-#include <virgil/iot/cloud/json/json_parser.h>
+#include <virgil/iot/json/json_parser.h>
+#include <virgil/iot/update/update.h>
 #include <stdlib-config.h>
 #include <cloud-config.h>
 #include <global-hal.h>
@@ -213,7 +215,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
     size_t buf_size = *in_out_answer_len;
 
-    if (json_parse_start(&jobj, out_answer, buf_size) != VS_CLOUD_ERR_OK) {
+    if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
         return VS_CLOUD_ERR_FAIL;
     }
 
@@ -221,7 +223,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
 
     int crypto_answer_b64_len;
 
-    if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_CLOUD_ERR_OK)
+    if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK)
         return VS_CLOUD_ERR_FAIL;
     else {
         crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)strlen(crypto_answer_b64));
@@ -272,7 +274,7 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
     if (res < 0 || res > MAX_EP_SIZE ||
-        https(HTTP_GET, url, NULL, NULL, 0, out_answer, in_out_answer_len) != HTTPS_RET_CODE_OK) {
+        https(VS_HTTP_GET, url, NULL, NULL, 0, out_answer, in_out_answer_len) != HTTPS_RET_CODE_OK) {
         ret = VS_CLOUD_ERR_FAIL;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
@@ -285,11 +287,35 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 /******************************************************************************/
 int
 vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(CLOUD_HOST, THING_EP, AWS_ID, out_answer, in_out_answer_len);
+    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
 }
 
 /******************************************************************************/
 int
 vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(CLOUD_HOST, THING_EP, MQTT_ID, out_answer, in_out_answer_len);
+    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
+}
+
+/*************************************************************************/
+int
+vs_cloud_fetch_firmware(void *data_source, vs_firmware_info_t *fw_info) {
+    return VS_CLOUD_ERR_OK;
+}
+
+/*************************************************************************/
+int
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, void *pData) {
+    return VS_CLOUD_ERR_OK;
+}
+
+/*************************************************************************/
+int
+vs_cloud_fetch_tl(void *data_source, vs_tl_info_t *tl_info) {
+    return VS_CLOUD_ERR_OK;
+}
+
+/*************************************************************************/
+int
+vs_cloud_fetch_and_store_tl(const char *tl_file_url, void *pData) {
+    return VS_CLOUD_ERR_OK;
 }

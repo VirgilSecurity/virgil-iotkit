@@ -42,8 +42,6 @@ target_sources(cloud
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/cloud.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/json/json_parser.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/json/json_generator.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c"
         )
@@ -53,7 +51,9 @@ target_link_libraries(cloud
         logger
         macros
         jsmn
+        vs-json
         hsm
+        update
         )
 
 target_include_directories(cloud

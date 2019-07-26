@@ -35,14 +35,11 @@
 #ifndef VIRGIL_IOT_SDK_CLOUD_CONFIG_H
 #define VIRGIL_IOT_SDK_CLOUD_CONFIG_H
 
-#define MSG_BIN_MQTT_PORT 8883
+#define VS_MSG_BIN_MQTT_PORT 8883
 
-#define MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
-#define CLOUD_HOST "https://things-dev.virgilsecurity.com"
-#define THING_EP "thing"
-#define AWS_ID "aws"
-#define MQTT_ID "mqtt"
+#define VS_MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
+#define VS_CLOUD_HOST "https://things-dev.virgilsecurity.com"
 
-#define HTTPS_INPUT_BUFFER_SIZE (8192)
+#define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 
 #endif //VIRGIL_IOT_SDK_CLOUD_CONFIG_H

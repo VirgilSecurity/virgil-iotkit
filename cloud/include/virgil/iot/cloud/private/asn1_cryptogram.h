@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef CLOUD_ASN1_CRYPTOGRAM_H
-#define CLOUD_ASN1_CRYPTOGRAM_H
+#ifndef VS_CLOUD_ASN1_CRYPTOGRAM_H
+#define VS_CLOUD_ASN1_CRYPTOGRAM_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -55,4 +55,4 @@ vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 }
 #endif
 
-#endif // CLOUD_ASN1_CRYPTOGRAM_H
+#endif // VS_CLOUD_ASN1_CRYPTOGRAM_H

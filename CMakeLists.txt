@@ -172,6 +172,16 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
 
 #
+#   vs-json
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+
+#
+#   update
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)
+
+#
 #   Logger
 #
 # TODO: Add Option to disable Logger

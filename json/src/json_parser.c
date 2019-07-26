@@ -8,10 +8,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <virgil/iot/cloud/cloud.h>
 #include <global-hal.h>
 #include <stdlib-config.h>
-#include <virgil/iot/cloud/json/json_parser.h>
+#include <virgil/iot/json/json_parser.h>
 
 #ifndef JSMN_PARENT_LINKS
 #error JSON Parser requires JSMN_PARENT_LINKS
@@ -59,7 +58,7 @@ _json_str_to_bool(jobj_t *jobj, jsontok_t *t, bool *value) {
         *value = false;
     else
         return -WM_E_JSON_INVALID_TYPE;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -72,7 +71,7 @@ _json_str_to_int(jobj_t *jobj, jsontok_t *t, int *value) {
     int int_val = (int)strtoul(&jobj->js[t->start], &endptr, 10);
     if (endptr == &(jobj->js[t->end])) {
         *value = int_val;
-        return VS_CLOUD_ERR_OK;
+        return VS_JSON_ERR_OK;
     } else {
         return -WM_E_JSON_INVALID_TYPE;
     }
@@ -88,7 +87,7 @@ _json_str_to_int64(jobj_t *jobj, jsontok_t *t, int64_t *value) {
     int64_t int_val = strtoull(&jobj->js[t->start], &endptr, 10);
     if (endptr == &(jobj->js[t->end])) {
         *value = int_val;
-        return VS_CLOUD_ERR_OK;
+        return VS_JSON_ERR_OK;
     } else {
         return -WM_E_JSON_INVALID_TYPE;
     }
@@ -120,7 +119,7 @@ _json_str_to_str(jobj_t *jobj, jsontok_t *t, char *value, int maxlen) {
         return -WM_E_JSON_NOMEM;
     strncpy(value, jobj->js + t->start, t->end - t->start);
     value[t->end - t->start] = 0;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -168,7 +167,7 @@ _json_get_value(jobj_t *jobj, char *key, jsontok_t **val_t) {
              */
             t++;
             *val_t = t;
-            return VS_CLOUD_ERR_OK;
+            return VS_JSON_ERR_OK;
         } else {
             /* Skip the value token since this is not the
              * key that we were looking for
@@ -186,7 +185,7 @@ int
 json_get_val_bool(jobj_t *jobj, char *key, bool *value) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_bool(jobj, t, value);
 }
@@ -197,7 +196,7 @@ int
 json_get_val_int(jobj_t *jobj, char *key, int *value) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_int(jobj, t, value);
 }
@@ -208,7 +207,7 @@ int
 json_get_val_int64(jobj_t *jobj, char *key, int64_t *value) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_int64(jobj, t, value);
 }
@@ -237,7 +236,7 @@ int
 json_get_val_str(jobj_t *jobj, char *key, char *value, int maxlen) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_str(jobj, t, value, maxlen);
 }
@@ -247,12 +246,12 @@ int
 json_get_val_str_len(jobj_t *jobj, char *key, int *len) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_STRING)
         return -WM_E_JSON_INVALID_TYPE;
     *len = t->end - t->start;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -261,13 +260,13 @@ int
 json_get_composite_object(jobj_t *jobj, char *key) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_OBJECT)
         return -WM_E_JSON_INVALID_TYPE;
     /* Reduce the scope of subsequent searches to this object */
     jobj->cur = t;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -283,7 +282,7 @@ json_release_composite_object(jobj_t *jobj) {
         return -WM_E_JSON_FAIL;
     /* The parent of the key will be the actual parent object/array */
     jobj->cur = &jobj->tokens[jobj->cur->parent];
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -292,7 +291,7 @@ int
 json_get_array_object(jobj_t *jobj, char *key, int *num_elements) {
     jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_ARRAY)
         return -WM_E_JSON_INVALID_TYPE;
@@ -301,7 +300,7 @@ json_get_array_object(jobj_t *jobj, char *key, int *num_elements) {
     /* Indicate the number of array elements found, if requested */
     if (num_elements)
         *num_elements = t->size;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -350,7 +349,7 @@ _json_get_array_index(jobj_t *jobj, uint16_t index, jsontok_t **val_t) {
         t++;
     }
     *val_t = t;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -359,7 +358,7 @@ int
 json_array_get_bool(jobj_t *jobj, uint16_t index, bool *value) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_bool(jobj, t, value);
 }
@@ -370,7 +369,7 @@ int
 json_array_get_int(jobj_t *jobj, uint16_t index, int *value) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_int(jobj, t, value);
 }
@@ -381,7 +380,7 @@ int
 json_array_get_int64(jobj_t *jobj, uint16_t index, int64_t *value) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_int64(jobj, t, value);
 }
@@ -410,7 +409,7 @@ int
 json_array_get_str(jobj_t *jobj, uint16_t index, char *value, int maxlen) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     return _json_str_to_str(jobj, t, value, maxlen);
 }
@@ -420,12 +419,12 @@ int
 json_array_get_str_len(jobj_t *jobj, uint16_t index, int *len) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_STRING)
         return -WM_E_JSON_INVALID_TYPE;
     *len = t->end - t->start;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -434,12 +433,12 @@ int
 json_array_get_composite_object(jobj_t *jobj, uint16_t index) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_OBJECT)
         return -WM_E_JSON_INVALID_TYPE;
     jobj->cur = t;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -451,7 +450,7 @@ json_array_release_composite_object(jobj_t *jobj) {
     /* The parent of the current element will be the array */
     jobj->cur = &jobj->tokens[jobj->cur->parent];
 
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -460,13 +459,13 @@ int
 json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements) {
     jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         return ret;
     if (!t || t->type != JSMN_ARRAY)
         return -WM_E_JSON_INVALID_TYPE;
     jobj->cur = t;
     *num_elements = t->size;
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -605,12 +604,12 @@ json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_l
      */
     if (jobj->tokens->type == JSMN_OBJECT) {
         if (_json_is_object_valid(jobj))
-            return VS_CLOUD_ERR_OK;
+            return VS_JSON_ERR_OK;
         else
             return -WM_E_JSON_INVALID_JOBJ;
     } else if (jobj->tokens->type == JSMN_ARRAY) {
         if (_json_is_array_valid(jobj))
-            return VS_CLOUD_ERR_OK;
+            return VS_JSON_ERR_OK;
         else
             return -WM_E_JSON_INVALID_JARRAY;
     } else
@@ -642,7 +641,7 @@ json_parse_start(jobj_t *jobj, char *js, size_t js_len) {
         return -WM_E_JSON_NOMEM;
 
     int ret = json_init(jobj, tokens, parsed_tokens, js, js_len);
-    if (ret != VS_CLOUD_ERR_OK)
+    if (ret != VS_JSON_ERR_OK)
         json_parse_stop(jobj);
 
     return ret;

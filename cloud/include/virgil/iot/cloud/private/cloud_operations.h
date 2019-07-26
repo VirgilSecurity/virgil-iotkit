@@ -32,16 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_HAL_H
-#define VS_CLOUD_HAL_H
+#ifndef VS_CLOUD_OPERATIONS_H
+#define VS_CLOUD_OPERATIONS_H
 
-uint16_t
-https(vs_http_method_t type,
-      const char *url,
-      const char *authorization,
-      const char *data,
-      size_t data_size,
-      char *out_data,
-      size_t *in_out_size);
+#define VS_THING_EP "thing"
+#define VS_AWS_ID "aws"
+#define VS_MQTT_ID "mqtt"
 
-#endif // VS_CLOUD_HAL_H
+
+#define VS_FW_TOPIC_MASK "fw/"
+
+#define VS_TL_TOPIC_MASK "tl/"
+
+int
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
+
+int
+vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+
+#endif // VS_CLOUD_OPERATIONS_H

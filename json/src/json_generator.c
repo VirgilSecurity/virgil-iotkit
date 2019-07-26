@@ -10,9 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/json/json_generator.h>
-#include <virgil/iot/cloud/json/json_parser.h>
+#include <virgil/iot/json/json_generator.h>
+#include <virgil/iot/json/json_parser.h>
 
 #define json_e(m) puts("json: " m)
 
@@ -88,7 +87,7 @@ _verify_buffer_limit(struct json_str *jptr) {
         json_e("buffer maximum limit reached");
         return -1;
     } else
-        return VS_CLOUD_ERR_OK;
+        return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -130,7 +129,7 @@ json_push_object(struct json_str *jptr, const char *name) {
     snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":{", name);
 
     jptr->free_ptr = strlen(jptr->buff);
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -149,7 +148,7 @@ json_push_array_object(struct json_str *jptr, const char *name) {
     snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":[", name);
 
     jptr->free_ptr = strlen(jptr->buff);
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -173,7 +172,7 @@ json_start_object(struct json_str *jptr) {
             jptr->buff[jptr->free_ptr++] = ',';
     }
     jptr->buff[jptr->free_ptr++] = '{';
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -184,7 +183,7 @@ json_close_object(struct json_str *jptr) {
 
     jptr->buff[jptr->free_ptr++] = '}';
 
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -195,7 +194,7 @@ json_pop_array_object(struct json_str *jptr) {
 
     jptr->buff[jptr->free_ptr++] = ']';
 
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -212,7 +211,7 @@ json_start_array(struct json_str *jptr) {
         jptr->buff[jptr->free_ptr++] = ',';
 
     jptr->buff[jptr->free_ptr++] = '[';
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -222,7 +221,7 @@ json_close_array(struct json_str *jptr) {
         return -WM_E_JSON_OBUF;
 
     jptr->buff[jptr->free_ptr++] = ']';
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -260,7 +259,7 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
     }
 
     jptr->free_ptr = strlen(jptr->buff);
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }
 
 /******************************************************************************/
@@ -340,5 +339,5 @@ json_set_object_value(struct json_str *jptr,
     }
 
     jptr->free_ptr = strlen(jptr->buff);
-    return VS_CLOUD_ERR_OK;
+    return VS_JSON_ERR_OK;
 }

@@ -35,10 +35,11 @@
 #include <virgil/iot/macros/macros.h>
 
 #include <virgil/iot/cloud/cloud.h>
+#include <virgil/iot/cloud/private/cloud_operations.h>
 #include <virgil/iot/cloud/private/cloud_hal.h>
 #include <virgil/iot/cloud/private/asn1_cryptogram.h>
 #include <virgil/iot/cloud/base64/base64.h>
-#include <virgil/iot/cloud/json/json_parser.h>
+#include <virgil/iot/json/json_parser.h>
 #include <virgil/iot/logger/logger.h>
 
 #include <stdlib-config.h>
@@ -89,7 +90,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
 
     VS_LOG_DEBUG("------------------------- LOAD MESSAGE BIN CREDENTIALS -------------------------");
 
-    size_t answer_size = HTTPS_INPUT_BUFFER_SIZE;
+    size_t answer_size = VS_HTTPS_INPUT_BUFFER_SIZE;
     char *answer = (char *)VS_IOT_MALLOC(answer_size);
     if (!answer) {
         VS_LOG_ERROR("ALLOCATION FAIL in message bin credentials\r\n");
@@ -100,15 +101,15 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         jobj_t jobj;
         int len;
 
-        ctx->host = MESSAGE_BIN_BROKER_URL; /*host*/
-        ctx->port = MSG_BIN_MQTT_PORT;      /*port*/
+        ctx->host = VS_MESSAGE_BIN_BROKER_URL; /*host*/
+        ctx->port = VS_MSG_BIN_MQTT_PORT;      /*port*/
 
-        if (json_parse_start(&jobj, answer, answer_size) != VS_CLOUD_ERR_OK) {
+        if (json_parse_start(&jobj, answer, answer_size) != VS_JSON_ERR_OK) {
             goto clean;
         }
 
         /*----login----*/
-        if (json_get_val_str_len(&jobj, "login", &len) != VS_CLOUD_ERR_OK || len < 0) {
+        if (json_get_val_str_len(&jobj, "login", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [login]!!!\r\n");
             goto clean;
         }
@@ -116,7 +117,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ctx->login = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "login", ctx->login, len);
         /*----password----*/
-        if (json_get_val_str_len(&jobj, "password", &len) != VS_CLOUD_ERR_OK || len < 0) {
+        if (json_get_val_str_len(&jobj, "password", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [password]");
             goto clean;
         }
@@ -124,7 +125,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ctx->password = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "password", ctx->password, len);
         /*----client_id----*/
-        if (json_get_val_str_len(&jobj, "client_id", &len) != VS_CLOUD_ERR_OK || len < 0) {
+        if (json_get_val_str_len(&jobj, "client_id", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [client_id]");
             goto clean;
         }
@@ -132,7 +133,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ctx->client_id = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "client_id", ctx->client_id, len);
         /*----certificate----*/
-        if (json_get_val_str_len(&jobj, "certificate", &len) != VS_CLOUD_ERR_OK || len < 0) {
+        if (json_get_val_str_len(&jobj, "certificate", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");
             goto clean;
         }
@@ -155,7 +156,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         VS_IOT_FREE(tmp);
 
         /*----private_key----*/
-        if (json_get_val_str_len(&jobj, "private_key", &len) != VS_CLOUD_ERR_OK || len < 0) {
+        if (json_get_val_str_len(&jobj, "private_key", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [private_key]");
             goto clean;
         }
@@ -178,7 +179,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
 
         /*----available_topics----*/
         int topic_count;
-        if (json_get_array_object(&jobj, "available_topics", &topic_count) != VS_CLOUD_ERR_OK || topic_count < 0) {
+        if (json_get_array_object(&jobj, "available_topics", &topic_count) != VS_JSON_ERR_OK || topic_count < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [available_topics]");
             goto clean;
         }
