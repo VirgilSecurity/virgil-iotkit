@@ -51,30 +51,13 @@ typedef struct __attribute__((__packed__)) {
     char fw_file_url[VS_UPD_URL_STR_SIZE];
 } vs_firmware_manifest_entry_t;
 
-typedef struct __attribute__((__packed__)) {
-    uint32_t application_type;
-    uint8_t fw_major;
-    uint8_t fw_minor;
-    uint8_t fw_patch;
-    uint8_t fw_dev_milestone;
-    uint8_t fw_dev_build;
-    char build_timestamp[12];
-} vs_firmware_version_t;
-
-typedef struct __attribute__((__packed__)) firmware_info_s {
-    uint32_t manufacturer;
-    uint32_t model;
-    vs_firmware_version_t version_info;
-} vs_firmware_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint16_t version;
-    uint8_t type;
-} vs_tl_info_t;
-
 typedef struct {
     int version;
     int type;
+} vs_tl_info_t;
+
+typedef struct {
+    vs_tl_info_t info;
     char file_url[VS_UPD_URL_STR_SIZE];
 } vs_tl_manifest_entry_t;
 
@@ -89,5 +72,8 @@ typedef struct {
 #define VS_TL_URL_FIELD "download_url"
 #define VS_TL_VERSION_FIELD "version"
 #define VS_TL_TYPE_FIELD "type"
+
+int
+vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
 
 #endif // CLOUD_PARSE_MANIFEST_H

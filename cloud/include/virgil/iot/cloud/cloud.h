@@ -125,4 +125,39 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url);
 int
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
 
+typedef struct __attribute__((__packed__)) {
+    uint8_t app_type[4];
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint8_t dev_milestone;
+    uint8_t dev_build;
+    uint32_t timestamp;
+} vs_firmware_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[4];
+    uint8_t device_type[4];
+    vs_firmware_version_t version;
+    uint8_t padding;
+    uint16_t chunk_size;
+    uint32_t firmware_length;
+    uint32_t app_size;
+} vs_firmware_descriptor_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t code_offest;
+    uint32_t code_length;
+    uint32_t footer_offset;
+    uint32_t footer_length;
+    uint8_t signatures_count;
+    vs_firmware_descriptor_t descriptor;
+} vs_firmware_header_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t signatures_count;
+    vs_firmware_descriptor_t descriptor;
+    uint8_t signatures[];
+} vs_firmware_footer_t;
+
 #endif // VS_CLOUD_H

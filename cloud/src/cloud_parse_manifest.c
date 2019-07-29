@@ -46,14 +46,14 @@
 #include <virgil/iot/cloud/cloud.h>
 
 /*************************************************************************/
-static int
-_is_new_tl_version_available(vs_tl_manifest_entry_t *tl_entry) {
+int
+vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     vs_tl_header_t tl_header;
     uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
     uint16_t res_sz;
 
-    if (tl_entry->type < 0 || tl_entry->type > 0xFF || (uint32_t)tl_entry->version > 0xFFFF) {
+    if (tl_info->type < 0 || tl_info->type > 0xFF || (uint32_t)tl_info->version > 0xFFFF) {
         return VS_CLOUD_ERR_INVAL;
     }
 
@@ -66,8 +66,8 @@ _is_new_tl_version_available(vs_tl_manifest_entry_t *tl_entry) {
         return VS_CLOUD_ERR_FAIL;
     }
 
-    if ((uint8_t)tl_entry->type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
-        (uint16_t)tl_entry->version <= tl_header.version) {
+    if ((uint8_t)tl_info->type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
+        (uint16_t)tl_info->version <= tl_header.version) {
         return VS_CLOUD_ERR_FAIL;
     }
 
@@ -164,14 +164,14 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     int res = VS_CLOUD_ERR_FAIL;
 
-    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.type) &&
-        VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.version)) {
+    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
+        VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.info.version)) {
         VS_LOG_INFO("[TL] new tl manifest:");
         VS_LOG_INFO("[TL] url = %s", tl_entry.file_url);
-        VS_LOG_INFO("[TL] type = %d", tl_entry.type);
-        VS_LOG_INFO("[TL] version = %d", tl_entry.version);
+        VS_LOG_INFO("[TL] type = %d", tl_entry.info.type);
+        VS_LOG_INFO("[TL] version = %d", tl_entry.info.version);
 
-        res = _is_new_tl_version_available(&tl_entry);
+        res = vs_cloud_is_new_tl_version_available(&tl_entry.info);
         if (VS_CLOUD_ERR_OK == res) {
             VS_IOT_STRCPY(tl_url, tl_entry.file_url);
         }

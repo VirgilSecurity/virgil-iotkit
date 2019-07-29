@@ -36,13 +36,16 @@
 #define VS_CLOUD_HAL_H
 
 uint16_t
-https(vs_http_method_t type,
-      const char *url,
-      const char *data,
-      size_t data_size,
-      char *out_data,
-      fetch_handler_func fetch_handler,
-      void *hander_data,
-      size_t *in_out_size);
+vs_cloud_https_hal(vs_http_method_t type,
+                   const char *url,
+                   const char *data,
+                   size_t data_size,
+                   char *out_data,
+                   fetch_handler_func fetch_handler,
+                   void *hander_data,
+                   size_t *in_out_size);
+
+int
+vs_cloud_store_firmware_hal(uint8_t *data, uint32_t data_size, uint32_t offset);
 
 #endif // VS_CLOUD_HAL_H
