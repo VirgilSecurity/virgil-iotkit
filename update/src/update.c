@@ -73,10 +73,64 @@ _is_new_tl_version_available(vs_tl_manifest_entry_t *tl_entry) {
 }
 
 /*************************************************************************/
+static int
+_is_new_fw_version_available(vs_firmware_manifest_entry_t *fm_entry) {
+
+    // TODO: Need to compare both current and new versions of fw
+    return VS_UPDATE_ERR_OK;
+}
+
+/*************************************************************************/
 int
 vs_update_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url) {
-    VS_IOT_MEMSET(fw_url, 0, VS_UPD_URL_STR_SIZE);
-    return VS_UPDATE_ERR_OK;
+    jobj_t jobj;
+    vs_firmware_manifest_entry_t fm_entry;
+
+    CHECK_NOT_ZERO(payload, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(fw_url, VS_UPDATE_ERR_INVAL);
+
+    VS_LOG_DEBUG("NEW FIRMWARE: %s", (char *)payload);
+
+    if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
+        VS_LOG_ERROR("[FW] Error. Invalid JSON");
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    if (VS_JSON_ERR_OK ==
+        json_get_val_str(&jobj, VS_FW_URL_FIELD, fm_entry.fw_file_url, sizeof(fm_entry.fw_file_url))) {
+        if (json_get_composite_object(&jobj, VS_MANIFEST_FILED)) {
+            VS_LOG_ERROR("[FW] Get composite JSON obj failed");
+            return VS_UPDATE_ERR_FAIL;
+        }
+    } else {
+        VS_LOG_ERROR("[FW] Get firmware url failed");
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    int res = VS_UPDATE_ERR_FAIL;
+
+    if (VS_JSON_ERR_OK ==
+                json_get_val_str(&jobj, VS_FW_MANUFACTURER_ID_FIELD, fm_entry.manufID.str, sizeof(fm_entry.manufID)) &&
+        VS_JSON_ERR_OK ==
+                json_get_val_str(&jobj, VS_FW_MODEL_TYPE_FIELD, fm_entry.modelID.str, sizeof(fm_entry.modelID)) &&
+        VS_JSON_ERR_OK ==
+                json_get_val_str(
+                        &jobj, VS_FW_VERSION_FIELD, fm_entry.firmwareVersion, sizeof(fm_entry.firmwareVersion)) &&
+        VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_TIMESTAMP, fm_entry.timestamp, sizeof(fm_entry.timestamp))) {
+        VS_LOG_INFO("[FW] new firmware manifest:");
+        VS_LOG_INFO("[FW] url = %s", fm_entry.fw_file_url);
+        VS_LOG_INFO("[FW] manufacture_id = %s", fm_entry.manufID.str);
+        VS_LOG_INFO("[FW] model_id = %s", fm_entry.modelID.str);
+        VS_LOG_INFO("[FW] version = %s", fm_entry.firmwareVersion);
+        VS_LOG_INFO("[FW] timestamp = %s", fm_entry.timestamp);
+
+        res = _is_new_fw_version_available(&fm_entry);
+        if (VS_UPDATE_ERR_OK == res) {
+            VS_IOT_STRCPY(fw_url, fm_entry.fw_file_url);
+        }
+    }
+
+    return res;
 }
 
 /*************************************************************************/
@@ -117,9 +171,10 @@ vs_update_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
         res = _is_new_tl_version_available(&tl_entry);
         if (VS_UPDATE_ERR_OK == res) {
-            strcpy(tl_url, tl_entry.file_url);
+            VS_IOT_STRCPY(tl_url, tl_entry.file_url);
         }
     }
+
     int released = json_release_composite_object(&jobj);
     VS_LOG_INFO("[TL] manifest released=%d", released);
     json_parse_stop(&jobj);
