@@ -38,10 +38,11 @@
 uint16_t
 https(vs_http_method_t type,
       const char *url,
-      const char *authorization,
       const char *data,
       size_t data_size,
       char *out_data,
+      fetch_handler_func fetch_handler,
+      void *hander_data,
       size_t *in_out_size);
 
 #endif // VS_CLOUD_HAL_H

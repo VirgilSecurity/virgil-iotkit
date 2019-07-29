@@ -49,6 +49,7 @@ target_sources(cloud
 target_link_libraries(cloud
         PRIVATE
         logger
+        trust_list
         macros
         jsmn
         vs-json

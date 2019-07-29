@@ -56,7 +56,8 @@
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/logger/logger.h>
-
+#include "virgil/iot/trust_list/tl_structs.h"
+#include "virgil/iot/trust_list/trust_list.h"
 #define MAX_EP_SIZE (256)
 
 /******************************************************************************/
@@ -274,7 +275,7 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
     if (res < 0 || res > MAX_EP_SIZE ||
-        https(VS_HTTP_GET, url, NULL, NULL, 0, out_answer, in_out_answer_len) != HTTPS_RET_CODE_OK) {
+        https(VS_HTTP_GET, url, NULL, 0, out_answer, NULL, NULL, in_out_answer_len) != HTTPS_RET_CODE_OK) {
         ret = VS_CLOUD_ERR_FAIL;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
@@ -298,24 +299,179 @@ vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_l
 
 /*************************************************************************/
 int
-vs_cloud_fetch_firmware(void *data_source, vs_firmware_info_t *fw_info) {
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url) {
     return VS_CLOUD_ERR_OK;
+}
+
+#define VS_CLOUD_FETCH_Tl_STEP_HEADER 0
+#define VS_CLOUD_FETCH_Tl_STEP_KEYS 1
+#define VS_CLOUD_Tl_STEP_FOOTER 2
+#define VS_CLOUD_Tl_STEP_UNDEFINED 3
+
+typedef struct resp_buff_s {
+    uint8_t step;
+    vs_tl_header_t header;
+    uint16_t keys_cnt;
+    uint8_t *buff;
+    size_t footer_sz;
+    size_t used_size;
+} tl_resp_buff_t;
+
+/*************************************************************************/
+static size_t
+_store_tl_handler(char *contents, size_t chunksize, void *userdata) {
+    tl_resp_buff_t *resp = (tl_resp_buff_t *)userdata;
+    size_t rest_data_sz = chunksize;
+    if (NULL == resp->buff) {
+        return 0;
+    }
+
+    switch (resp->step) {
+    case VS_CLOUD_FETCH_Tl_STEP_HEADER: {
+        size_t read_sz = chunksize;
+
+        if (resp->used_size + chunksize > sizeof(vs_tl_header_t)) {
+            read_sz = sizeof(vs_tl_header_t) - resp->used_size;
+        }
+
+        VS_IOT_MEMCPY(&((uint8_t *)&resp->header)[resp->used_size], contents, read_sz);
+
+        resp->used_size += read_sz;
+
+        if (resp->used_size == sizeof(vs_tl_header_t)) {
+            vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
+
+            if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
+                return 0;
+            }
+            resp->step = VS_CLOUD_FETCH_Tl_STEP_KEYS;
+        }
+
+        if (read_sz == chunksize) {
+            break;
+        }
+
+        contents += read_sz;
+        rest_data_sz = chunksize - read_sz;
+        resp->used_size = 0;
+    }
+    case VS_CLOUD_FETCH_Tl_STEP_KEYS:
+        while (rest_data_sz && VS_CLOUD_FETCH_Tl_STEP_KEYS == resp->step) {
+            size_t read_sz = rest_data_sz;
+            size_t curr_key_sz = 0;
+
+            if (resp->used_size < sizeof(vs_pubkey_dated_t)) {
+                if (resp->used_size + rest_data_sz > sizeof(vs_pubkey_dated_t)) {
+                    read_sz = sizeof(vs_pubkey_dated_t) - resp->used_size;
+                }
+
+            } else {
+                vs_pubkey_dated_t *pubkey = (vs_pubkey_dated_t *)resp->buff;
+                curr_key_sz = sizeof(vs_pubkey_dated_t) + vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                if (resp->used_size + rest_data_sz > curr_key_sz) {
+                    read_sz = curr_key_sz - resp->used_size;
+                }
+            }
+
+            VS_IOT_MEMCPY(&(resp->buff[resp->used_size]), contents, read_sz);
+
+            contents += read_sz;
+            rest_data_sz -= read_sz;
+            resp->used_size += read_sz;
+
+            if (curr_key_sz != 0 && resp->used_size == curr_key_sz) {
+                resp->used_size = 0;
+                vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLC, .index = 0};
+                if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
+                    return 0;
+                }
+                resp->used_size = 0;
+                if (++resp->keys_cnt == resp->header.pub_keys_count) {
+                    resp->step = VS_CLOUD_Tl_STEP_FOOTER;
+                }
+            }
+        }
+
+        if (!rest_data_sz) {
+            break;
+        }
+
+    case VS_CLOUD_Tl_STEP_FOOTER:
+        while (rest_data_sz) {
+            size_t read_sz = rest_data_sz;
+
+            if (resp->used_size < sizeof(vs_tl_footer_t)) {
+                if (resp->used_size + rest_data_sz > sizeof(vs_tl_footer_t)) {
+                    read_sz = sizeof(vs_tl_footer_t) - resp->used_size;
+                }
+            } else if (0 != resp->footer_sz) {
+                if (resp->used_size + rest_data_sz > resp->footer_sz) {
+                    return 0;
+                }
+            } else {
+                vs_tl_footer_t *footer_info = (vs_tl_footer_t *)resp->buff;
+
+                if (resp->used_size < sizeof(vs_tl_footer_t) + sizeof(vs_sign_t) &&
+                    resp->used_size + rest_data_sz >= sizeof(vs_tl_footer_t) + sizeof(vs_sign_t)) {
+                    read_sz = sizeof(vs_tl_footer_t) + sizeof(vs_sign_t) - resp->used_size;
+                } else {
+                    vs_sign_t *element = (vs_sign_t *)footer_info->signatures;
+                    int sign_len;
+                    int key_len;
+
+                    sign_len = vs_hsm_get_signature_len(element->ec_type);
+                    key_len = vs_hsm_get_pubkey_len(element->ec_type);
+
+                    CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] Footer parse error")
+                    resp->footer_sz = sizeof(vs_tl_footer_t) +
+                                      resp->header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
+
+                    if (resp->used_size + rest_data_sz > resp->footer_sz) {
+                        return 0;
+                    }
+                }
+            }
+
+            VS_IOT_MEMCPY(&(resp->buff[resp->used_size]), contents, read_sz);
+            contents += read_sz;
+            rest_data_sz -= read_sz;
+            resp->used_size += read_sz;
+
+            if (resp->footer_sz != 0 && resp->used_size == resp->footer_sz) {
+                resp->used_size = 0;
+                vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
+                if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
+                    return 0;
+                }
+                if (++resp->keys_cnt == resp->header.pub_keys_count) {
+                    resp->step = VS_CLOUD_Tl_STEP_UNDEFINED;
+                }
+            }
+        }
+        break;
+    default:
+        return 0;
+    }
+
+    return chunksize;
 }
 
 /*************************************************************************/
 int
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, void *pData) {
-    return VS_CLOUD_ERR_OK;
-}
+vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
+    int res = VS_CLOUD_ERR_OK;
+    CHECK_NOT_ZERO(tl_file_url, VS_CLOUD_ERR_INVAL);
+    size_t in_out_answer_len = 0;
+    tl_resp_buff_t resp;
+    VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
-/*************************************************************************/
-int
-vs_cloud_fetch_tl(void *data_source, vs_tl_info_t *tl_info) {
-    return VS_CLOUD_ERR_OK;
-}
+    resp.buff = VS_IOT_CALLOC(512, 1);
 
-/*************************************************************************/
-int
-vs_cloud_fetch_and_store_tl(const char *tl_file_url, void *pData) {
-    return VS_CLOUD_ERR_OK;
+    if (https(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) !=
+        HTTPS_RET_CODE_OK) {
+        res = VS_CLOUD_ERR_FAIL;
+    }
+
+    VS_IOT_FREE(resp.buff);
+    return res;
 }

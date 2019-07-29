@@ -74,8 +74,6 @@ typedef enum {
 #define HTTPS_RET_CODE_ERROR_GET 1003
 #define HTTPS_RET_CODE_OK 200
 
-typedef int vs_http_session_t;
-
 /* Request methods */
 typedef enum {
     VS_HTTP_OPTIONS, /* request to server for communication  options */
@@ -111,16 +109,12 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process);
 
+typedef size_t (*fetch_handler_func)(char *contents, size_t chunksize, void *userdata);
 
 int
-vs_cloud_fetch_firmware(void *data_source, vs_firmware_info_t *fw_info);
-int
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, void *pData);
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url);
 
 int
-vs_cloud_fetch_tl(void *data_source, vs_tl_info_t *tl_info);
-
-int
-vs_cloud_fetch_and_store_tl(const char *tl_file_url, void *pData);
+vs_cloud_fetch_and_store_tl(const char *tl_file_url);
 
 #endif // VS_CLOUD_H
