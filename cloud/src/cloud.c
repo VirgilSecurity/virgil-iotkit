@@ -44,6 +44,7 @@
 
 #include <virgil/iot/cloud/cloud.h>
 #include <virgil/iot/cloud/private/cloud_hal.h>
+#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
 #include <virgil/iot/cloud/private/cloud_operations.h>
 #include <virgil/iot/cloud/private/asn1_cryptogram.h>
 #include <virgil/iot/cloud/base64/base64.h>

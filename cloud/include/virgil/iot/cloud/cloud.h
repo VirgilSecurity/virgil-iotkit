@@ -68,6 +68,8 @@ typedef enum {
     VS_CLOUD_ERR_VALUE_FAIL,   //
 } vs_cloud_err_code_e;
 
+#define VS_UPD_URL_STR_SIZE 200
+
 #define HTTPS_RET_CODE_ERROR_OPEN_SESSION 1000
 #define HTTPS_RET_CODE_ERROR_PREPARE_REQ 1001
 #define HTTPS_RET_CODE_ERROR_SEND_REQ 1002
@@ -110,6 +112,12 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     vs_cloud_mb_process_func process);
 
 typedef size_t (*fetch_handler_func)(char *contents, size_t chunksize, void *userdata);
+
+int
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
+
+int
+vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 int
 vs_cloud_fetch_and_store_fw_file(const char *fw_file_url);
