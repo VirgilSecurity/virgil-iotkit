@@ -48,6 +48,9 @@ target_compile_definitions(jsmn
         -DJSMN_PARENT_LINKS
         -DJSMN_STRICT
         )
+target_compile_options(jsmn
+        PRIVATE -fPIC
+        )
 
 target_include_directories(jsmn
         PUBLIC

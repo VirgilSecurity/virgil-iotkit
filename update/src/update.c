@@ -89,6 +89,8 @@ vs_update_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     vs_tl_manifest_entry_t tl_entry;
 
+    VS_LOG_DEBUG("NEW TL: %s", (char *)payload);
+
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[TL] Error. Invalid JSON");
         return VS_UPDATE_ERR_FAIL;
