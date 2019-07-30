@@ -339,7 +339,9 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == sizeof(vs_firmware_header_t)) {
 
-            if (VS_TL_OK != vs_cloud_store_firmware_hal((uint8_t *)&resp->header, 0, sizeof(vs_firmware_header_t))) {
+            if (VS_TL_OK !=
+                vs_cloud_store_firmware_hal(
+                        &resp->header.descriptor, (uint8_t *)&resp->header, sizeof(vs_firmware_header_t), 0)) {
                 return 0;
             }
 
@@ -385,7 +387,8 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
-                if (VS_TL_OK != vs_cloud_store_firmware_hal(resp->buff, resp->file_offset, required_chunk_size)) {
+                if (VS_TL_OK != vs_cloud_store_firmware_hal(
+                                        &resp->header.descriptor, resp->buff, required_chunk_size, resp->file_offset)) {
                     return 0;
                 }
 
@@ -418,7 +421,8 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == resp->header.footer_length) {
             resp->used_size = 0;
-            if (VS_TL_OK != vs_cloud_store_firmware_hal(resp->buff, resp->file_offset, resp->footer_sz)) {
+            if (VS_TL_OK !=
+                vs_cloud_store_firmware_hal(&resp->header.descriptor, resp->buff, resp->footer_sz, resp->file_offset)) {
                 return 0;
             }
             resp->step = VS_CLOUD_FETCH_FW_STEP_DONE;

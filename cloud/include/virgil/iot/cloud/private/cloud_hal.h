@@ -46,6 +46,6 @@ vs_cloud_https_hal(vs_http_method_t type,
                    size_t *in_out_size);
 
 int
-vs_cloud_store_firmware_hal(uint8_t *data, uint32_t data_size, uint32_t offset);
+vs_cloud_store_firmware_hal(vs_firmware_descriptor_t *descriptor, uint8_t *data, uint32_t data_size, uint32_t offset);
 
 #endif // VS_CLOUD_HAL_H
