@@ -39,6 +39,26 @@
 
 #define SERIAL_SIZE (32)
 
+typedef struct __attribute__((__packed__)) {
+    uint8_t app_type[4];
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint8_t dev_milestone;
+    uint8_t dev_build;
+    uint32_t timestamp;
+} vs_firmware_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[4];
+    uint8_t device_type[4];
+    vs_firmware_version_t version;
+    uint8_t padding;
+    uint16_t chunk_size;
+    uint32_t firmware_length;
+    uint32_t app_size;
+} vs_firmware_descriptor_t;
+
 void *
 platform_calloc(size_t num, size_t size);
 
@@ -53,5 +73,8 @@ vs_global_hal_msleep(size_t msec);
 
 void
 vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
+
+const vs_firmware_descriptor_t *
+vs_global_hal_get_firmware_descriptor(void);
 
 #endif // VIRGIL_IOT_SDK_GLOBAL_HAL_H

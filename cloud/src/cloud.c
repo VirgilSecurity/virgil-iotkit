@@ -299,15 +299,18 @@ vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_l
 }
 
 #define VS_CLOUD_FETCH_FW_STEP_HEADER 0
-#define VS_CLOUD_FETCH_FW_CHUNKS 1
-#define VS_CLOUD_FETCH_FW_FOOTER 2
-#define VS_CLOUD_FETCH_FW_STEP_UNDEFINED 3
+#define VS_CLOUD_FETCH_FW_STEP_CHUNKS 1
+#define VS_CLOUD_FETCH_FW_STEP_FOOTER 2
+#define VS_CLOUD_FETCH_FW_STEP_DONE 3
 
 typedef struct {
     uint8_t step;
     vs_firmware_header_t header;
-    uint16_t keys_cnt;
+    uint32_t file_offset;
+    uint16_t chunks_qty;
+    uint16_t chunk_cnt;
     uint8_t *buff;
+    uint32_t buff_sz;
     size_t footer_sz;
     size_t used_size;
 } fw_resp_buff_t;
@@ -339,7 +342,18 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             if (VS_TL_OK != vs_cloud_store_firmware_hal((uint8_t *)&resp->header, 0, sizeof(vs_firmware_header_t))) {
                 return 0;
             }
-            resp->step = VS_CLOUD_FETCH_FW_CHUNKS;
+
+            resp->chunks_qty = resp->header.footer_length / resp->header.descriptor.chunk_size;
+            if (resp->header.footer_length % resp->header.descriptor.chunk_size) {
+                resp->chunks_qty++;
+            }
+
+            if (resp->header.descriptor.chunk_size > resp->buff_sz) {
+                VS_IOT_FREE(resp->buff);
+                resp->buff = VS_IOT_CALLOC(1, resp->header.descriptor.chunk_size);
+            }
+
+            resp->step = VS_CLOUD_FETCH_FW_STEP_CHUNKS;
         }
 
         if (read_sz == chunksize) {
@@ -349,11 +363,66 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
         contents += read_sz;
         rest_data_sz = chunksize - read_sz;
         resp->used_size = 0;
+        resp->file_offset = sizeof(vs_firmware_header_t);
+    }
+    case VS_CLOUD_FETCH_FW_STEP_CHUNKS:
+        while (rest_data_sz && VS_CLOUD_FETCH_FW_STEP_CHUNKS == resp->step) {
+            size_t read_sz = rest_data_sz;
 
-    } break;
-    case VS_CLOUD_FETCH_FW_CHUNKS:
-        break;
-    case VS_CLOUD_FETCH_FW_FOOTER:
+            uint32_t fw_rest = resp->header.code_length + resp->header.code_offest - resp->file_offset;
+            uint32_t required_chunk_size =
+                    fw_rest > resp->header.descriptor.chunk_size ? resp->header.descriptor.chunk_size : fw_rest;
+
+            if (resp->used_size + rest_data_sz > required_chunk_size) {
+                read_sz = required_chunk_size - resp->used_size;
+            }
+
+            VS_IOT_MEMCPY(&(resp->buff[resp->used_size]), contents, read_sz);
+
+            contents += read_sz;
+            rest_data_sz -= read_sz;
+            resp->used_size += read_sz;
+
+            if (resp->used_size == required_chunk_size) {
+                resp->used_size = 0;
+                if (VS_TL_OK != vs_cloud_store_firmware_hal(resp->buff, resp->file_offset, required_chunk_size)) {
+                    return 0;
+                }
+
+                resp->file_offset += required_chunk_size;
+
+                if (++resp->chunk_cnt == resp->chunks_qty) {
+
+                    if (resp->header.footer_length > resp->buff_sz) {
+                        VS_IOT_FREE(resp->buff);
+                        resp->buff = VS_IOT_CALLOC(1, resp->header.footer_length);
+                    }
+
+                    resp->step = VS_CLOUD_FETCH_FW_STEP_FOOTER;
+                }
+            }
+        }
+
+        if (!rest_data_sz) {
+            break;
+        }
+
+    case VS_CLOUD_FETCH_FW_STEP_FOOTER:
+
+        if (resp->used_size + rest_data_sz > resp->header.footer_length) {
+            return 0;
+        }
+
+        VS_IOT_MEMCPY(&(resp->buff[resp->used_size]), contents, rest_data_sz);
+        resp->used_size += rest_data_sz;
+
+        if (resp->used_size == resp->header.footer_length) {
+            resp->used_size = 0;
+            if (VS_TL_OK != vs_cloud_store_firmware_hal(resp->buff, resp->file_offset, resp->footer_sz)) {
+                return 0;
+            }
+            resp->step = VS_CLOUD_FETCH_FW_STEP_DONE;
+        }
         break;
     }
     return chunksize;
@@ -368,10 +437,12 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url) {
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
-    resp.buff = VS_IOT_CALLOC(512, 1);
+    resp.buff = VS_IOT_CALLOC(1, sizeof(vs_firmware_header_t));
+    resp.buff_sz = sizeof(vs_firmware_header_t);
 
     if (vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) !=
-        HTTPS_RET_CODE_OK) {
+                HTTPS_RET_CODE_OK ||
+        VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CLOUD_ERR_FAIL;
     }
 
@@ -382,7 +453,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url) {
 #define VS_CLOUD_FETCH_Tl_STEP_HEADER 0
 #define VS_CLOUD_FETCH_Tl_STEP_KEYS 1
 #define VS_CLOUD_FETCH_Tl_STEP_FOOTER 2
-#define VS_CLOUD_FETCH_Tl_STEP_UNDEFINED 3
+#define VS_CLOUD_FETCH_Tl_STEP_DONE 3
 
 typedef struct {
     uint8_t step;
@@ -461,7 +532,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                 if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
                     return 0;
                 }
-                resp->used_size = 0;
+
                 if (++resp->keys_cnt == resp->header.pub_keys_count) {
                     resp->step = VS_CLOUD_FETCH_Tl_STEP_FOOTER;
                 }
@@ -498,7 +569,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     sign_len = vs_hsm_get_signature_len(element->ec_type);
                     key_len = vs_hsm_get_pubkey_len(element->ec_type);
 
-                    CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] Footer parse error")
+                    CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] TL footer parse error")
                     resp->footer_sz = sizeof(vs_tl_footer_t) +
                                       resp->header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
 
@@ -522,9 +593,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
                     return 0;
                 }
-                if (++resp->keys_cnt == resp->header.pub_keys_count) {
-                    resp->step = VS_CLOUD_FETCH_Tl_STEP_UNDEFINED;
-                }
+                resp->step = VS_CLOUD_FETCH_Tl_STEP_DONE;
             }
         }
         break;
@@ -547,7 +616,8 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     resp.buff = VS_IOT_CALLOC(512, 1);
 
     if (vs_cloud_https_hal(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) !=
-        HTTPS_RET_CODE_OK) {
+                HTTPS_RET_CODE_OK ||
+        VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
         res = VS_CLOUD_ERR_FAIL;
     }
 
