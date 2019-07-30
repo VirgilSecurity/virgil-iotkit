@@ -41,14 +41,14 @@ import (
 )
 
 const (
-    HEADER_SIZE = 49
-    DESCRIPTOR_SIZE = 32
+    HEADER_SIZE = 61
+    DESCRIPTOR_SIZE = 44
     FOOTER_META_SIZE = DESCRIPTOR_SIZE + 1  // descriptor + signatures size
     SIGNATURE_META_SIZE = 3                 // ec type + key type + hash type
 )
 
 
-// Size: 4 + 4 + 4 + 4 + 1 + 32 = 49
+// Size: 4 + 4 + 4 + 4 + 1 + 44 = 61
 type Header struct {
     CodeOffset       uint32
     CodeLength       uint32
@@ -58,9 +58,9 @@ type Header struct {
     Descriptor       Descriptor
 }
 
-// Size: 4 + 4 + 13 + 1 + 2 + 4 + 4 = 32
+// Size: 16 + 4 + 13 + 1 + 2 + 4 + 4 = 44
 type Descriptor struct {
-    ManufactureID    [4]byte
+    ManufactureID    [16]byte
     DeviceType       [4]byte
     Version          Version
     Padding          uint8
