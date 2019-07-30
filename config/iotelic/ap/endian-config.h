@@ -32,17 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_HAL_H
-#define VS_CLOUD_HAL_H
+#ifndef VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
+#define VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
 
-uint16_t
-vs_cloud_https_hal(vs_http_method_t type,
-                   const char *url,
-                   const char *data,
-                   size_t data_size,
-                   char *out_data,
-                   fetch_handler_func fetch_handler,
-                   void *hander_data,
-                   size_t *in_out_size);
+#include <iot_ntoh_api.h>
 
-#endif // VS_CLOUD_HAL_H
+#define VS_IOT_NTOHS iot_ntohs
+#define VS_IOT_NTOHL iot_ntohl
+#define VS_IOT_HTONS iot_htons
+#define VS_IOT_HTONL iot_htonl
+
+#endif //VIRGIL_IOT_SDK_ENDIAN_CONFIG_H

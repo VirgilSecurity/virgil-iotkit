@@ -32,17 +32,34 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_HAL_H
-#define VS_CLOUD_HAL_H
+#ifndef VS_UPDATE_INTERFACE_H
+#define VS_UPDATE_INTERFACE_H
 
-uint16_t
-vs_cloud_https_hal(vs_http_method_t type,
-                   const char *url,
-                   const char *data,
-                   size_t data_size,
-                   char *out_data,
-                   fetch_handler_func fetch_handler,
-                   void *hander_data,
-                   size_t *in_out_size);
+typedef enum {
+    VS_UPDATE_ERR_OK,
+    VS_UPDATE_ERR_FAIL,
+    VS_UPDATE_ERR_INVAL,
+    VS_UPDATE_ERR_NOMEM,
+} vs_update_err_code_e;
 
-#endif // VS_CLOUD_HAL_H
+int
+vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint32_t chunk_sz, uint32_t offset);
+
+int
+vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
+
+int
+vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+                              uint32_t offset,
+                              uint8_t *data,
+                              uint32_t buff_sz,
+                              uint32_t *data_sz);
+
+int
+vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
+                               uint8_t *data,
+                               uint32_t buff_sz,
+                               uint32_t *data_sz);
+
+
+#endif // VS_UPDATE_INTERFACE_H

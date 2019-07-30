@@ -31,3 +31,21 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#include <stdint.h>
+#include <stddef.h>
+
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/update/update.h>
+#include <virgil/iot/update/update_interface.h>
+#include <virgil/iot/logger/logger.h>
+
+/*************************************************************************/
+int
+vs_update_load_firmware_descriptor_by_vendor_and_dev_type(uint8_t manufacture_id[16],
+                                                          uint32_t device_type,
+                                                          vs_firmware_descriptor_t *descriptor) {
+    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+
+    return VS_UPDATE_ERR_OK;
+}

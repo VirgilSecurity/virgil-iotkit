@@ -50,9 +50,11 @@
 #include <virgil/iot/cloud/base64/base64.h>
 #include <virgil/iot/json/json_parser.h>
 #include <virgil/iot/update/update.h>
+#include <virgil/iot/update/update_interface.h>
 #include <stdlib-config.h>
 #include <cloud-config.h>
 #include <global-hal.h>
+#include <endian-config.h>
 
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
@@ -316,6 +318,20 @@ typedef struct {
 } fw_resp_buff_t;
 
 /*************************************************************************/
+static void
+_ntoh_fw_header(vs_firmware_header_t *header) {
+    header->descriptor.chunk_size = ntohs(header->descriptor.chunk_size);
+    header->descriptor.app_size = ntohl(header->descriptor.app_size);
+    header->descriptor.firmware_length = ntohl(header->descriptor.firmware_length);
+    header->descriptor.version.timestamp = ntohl(header->descriptor.version.timestamp);
+
+    header->code_length = ntohl(header->code_length);
+    header->code_offest = ntohl(header->code_offest);
+    header->footer_length = ntohl(header->footer_length);
+    header->footer_offset = ntohl(header->footer_offset);
+}
+
+/*************************************************************************/
 static size_t
 _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
     fw_resp_buff_t *resp = (fw_resp_buff_t *)userdata;
@@ -339,11 +355,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == sizeof(vs_firmware_header_t)) {
 
-            if (VS_TL_OK !=
-                vs_cloud_store_firmware_hal(
-                        &resp->header.descriptor, (uint8_t *)&resp->header, sizeof(vs_firmware_header_t), 0)) {
-                return 0;
-            }
+            _ntoh_fw_header(&resp->header);
 
             resp->chunks_qty = resp->header.footer_length / resp->header.descriptor.chunk_size;
             if (resp->header.footer_length % resp->header.descriptor.chunk_size) {
@@ -365,7 +377,6 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
         contents += read_sz;
         rest_data_sz = chunksize - read_sz;
         resp->used_size = 0;
-        resp->file_offset = sizeof(vs_firmware_header_t);
     }
     case VS_CLOUD_FETCH_FW_STEP_CHUNKS:
         while (rest_data_sz && VS_CLOUD_FETCH_FW_STEP_CHUNKS == resp->step) {
@@ -387,8 +398,9 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
-                if (VS_TL_OK != vs_cloud_store_firmware_hal(
-                                        &resp->header.descriptor, resp->buff, required_chunk_size, resp->file_offset)) {
+                if (VS_UPDATE_ERR_OK !=
+                    vs_update_save_firmware_chunk(
+                            &resp->header.descriptor, resp->buff, required_chunk_size, resp->file_offset)) {
                     return 0;
                 }
 
@@ -421,8 +433,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == resp->header.footer_length) {
             resp->used_size = 0;
-            if (VS_TL_OK !=
-                vs_cloud_store_firmware_hal(&resp->header.descriptor, resp->buff, resp->footer_sz, resp->file_offset)) {
+            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_footer(&resp->header.descriptor, resp->buff)) {
                 return 0;
             }
             resp->step = VS_CLOUD_FETCH_FW_STEP_DONE;
