@@ -38,15 +38,27 @@ project(virgil-iot-initializer VERSION 0.1.0 LANGUAGES Go C)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
 
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[virgil-iot-initializer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+else()
+    message(STATUS "[virgil-iot-initializer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
+endif()
+
+if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
+    message(FATAL_ERROR "[virgil-iot-initializer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+else()
+    message(STATUS "[virgil-iot-initializer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
+endif()
+
 #
 # CFLAGS for CGO
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
-        -I${CMAKE_CURRENT_LIST_DIR}/../../protocols/sdmp/include
-        -I${CMAKE_CURRENT_LIST_DIR}/../../provision/include
-        -I${CMAKE_CURRENT_LIST_DIR}/../../converters/include
-        -I${CMAKE_CURRENT_LIST_DIR}/../../hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/protocols/sdmp/include
+        -I${VIRGIL_IOT_DIRECTORY}/provision/include
+        -I${VIRGIL_IOT_DIRECTORY}/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/hsm/include
         -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
     )
 
@@ -55,9 +67,9 @@ set(CMAKE_CGO_CFLAGS
 #
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
-        -L${CMAKE_BINARY_DIR}/ap/security-sdk/protocols/sdmp
-        -L${CMAKE_BINARY_DIR}/ap/security-sdk/tools/virgil-iot-initializer/c_libs
-        -L${CMAKE_BINARY_DIR}/ap/security-sdk/converters
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-initializer/c_libs
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
     )
 
 #
@@ -66,6 +78,7 @@ set(CMAKE_CGO_LDFLAGS
 #
 set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
 set(LIBS_TARGET ${PROJECT_NAME}-libs)
+
 add_custom_target(${LIBS_TARGET}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
         COMMAND ${CMAKE_COMMAND} -E copy
