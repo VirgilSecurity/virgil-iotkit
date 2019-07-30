@@ -50,7 +50,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_version_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[4];
+    uint8_t manufacture_id[16];
     uint8_t device_type[4];
     vs_firmware_version_t version;
     uint8_t padding;
