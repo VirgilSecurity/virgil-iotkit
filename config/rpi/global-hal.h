@@ -38,7 +38,8 @@
 #include <stdint.h>
 
 #define SERIAL_SIZE (32)
-
+#define MANUFACTURE_ID_SIZE 16
+#define DEVICE_TYPE_SIZE (4)
 typedef struct __attribute__((__packed__)) {
     uint8_t app_type[4];
     uint8_t major;
@@ -50,13 +51,13 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_version_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[16];
-    uint8_t device_type[4];
+    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t device_type[DEVICE_TYPE_SIZE];
     vs_firmware_version_t version;
     uint8_t padding;
     uint16_t chunk_size;
     uint32_t firmware_length;
-    uint32_t app_size;
+    uint32_t app_size; //firmware_length + fill_size + footer
 } vs_firmware_descriptor_t;
 
 void *
@@ -75,6 +76,6 @@ void
 vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
 
 const vs_firmware_descriptor_t *
-vs_global_hal_get_firmware_descriptor(void);
+vs_global_hal_get_own_firmware_descriptor(void);
 
 #endif // VIRGIL_IOT_SDK_GLOBAL_HAL_H

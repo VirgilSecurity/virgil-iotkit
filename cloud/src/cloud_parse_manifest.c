@@ -111,19 +111,19 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
 
     int res = VS_CLOUD_ERR_FAIL;
 
-    if (VS_JSON_ERR_OK ==
-                json_get_val_str(&jobj, VS_FW_MANUFACTURER_ID_FIELD, fm_entry.manufID.str, sizeof(fm_entry.manufID)) &&
+    if (VS_JSON_ERR_OK == json_get_val_str(&jobj,
+                                           VS_FW_MANUFACTURER_ID_FIELD,
+                                           fm_entry.manufacturer_id.str,
+                                           sizeof(fm_entry.manufacturer_id)) &&
         VS_JSON_ERR_OK ==
-                json_get_val_str(&jobj, VS_FW_MODEL_TYPE_FIELD, fm_entry.modelID.str, sizeof(fm_entry.modelID)) &&
-        VS_JSON_ERR_OK ==
-                json_get_val_str(
-                        &jobj, VS_FW_VERSION_FIELD, fm_entry.firmwareVersion, sizeof(fm_entry.firmwareVersion)) &&
+                json_get_val_str(&jobj, VS_FW_MODEL_TYPE_FIELD, fm_entry.model_type.str, sizeof(fm_entry.model_type)) &&
+        VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_VERSION_FIELD, fm_entry.version, sizeof(fm_entry.version)) &&
         VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_TIMESTAMP, fm_entry.timestamp, sizeof(fm_entry.timestamp))) {
         VS_LOG_INFO("[FW] new firmware manifest:");
         VS_LOG_INFO("[FW] url = %s", fm_entry.fw_file_url);
-        VS_LOG_INFO("[FW] manufacture_id = %s", fm_entry.manufID.str);
-        VS_LOG_INFO("[FW] model_id = %s", fm_entry.modelID.str);
-        VS_LOG_INFO("[FW] version = %s", fm_entry.firmwareVersion);
+        VS_LOG_INFO("[FW] manufacture_id = %s", fm_entry.manufacturer_id.str);
+        VS_LOG_INFO("[FW] model_type = %s", fm_entry.model_type.str);
+        VS_LOG_INFO("[FW] version = %s", fm_entry.version);
         VS_LOG_INFO("[FW] timestamp = %s", fm_entry.timestamp);
 
         res = _is_new_fw_version_available(&fm_entry);

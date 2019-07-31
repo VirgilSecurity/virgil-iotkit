@@ -43,7 +43,7 @@ typedef enum {
 } vs_update_err_code_e;
 
 int
-vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint32_t chunk_sz, uint32_t offset);
+vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
 
 int
 vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
@@ -52,14 +52,22 @@ int
 vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
-                              uint32_t buff_sz,
-                              uint32_t *data_sz);
+                              uint16_t buff_sz,
+                              uint16_t *data_sz);
 
 int
 vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
-                               uint32_t buff_sz,
-                               uint32_t *data_sz);
+                               uint16_t buff_sz,
+                               uint16_t *data_sz);
 
+int
+vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
+
+
+int
+vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                   uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   vs_firmware_descriptor_t *descriptor);
 
 #endif // VS_UPDATE_INTERFACE_H

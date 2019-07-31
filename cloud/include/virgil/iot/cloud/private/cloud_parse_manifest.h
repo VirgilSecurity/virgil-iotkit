@@ -41,13 +41,18 @@
 typedef union {
     uint32_t id;
     char str[sizeof(uint32_t) + 1];
+} vs_readable_type_t;
+
+typedef union {
+    uint32_t id;
+    char str[32 + 1];
 } vs_readable_id_t;
 
 typedef struct __attribute__((__packed__)) {
-    vs_readable_id_t manufID;
-    vs_readable_id_t modelID;
-    char firmwareVersion[16];
-    char timestamp[13];
+    vs_readable_id_t manufacturer_id;
+    vs_readable_type_t model_type;
+    char version[16];
+    char timestamp[9];
     char fw_file_url[VS_UPD_URL_STR_SIZE];
 } vs_firmware_manifest_entry_t;
 
@@ -63,11 +68,13 @@ typedef struct {
 
 #define VS_MANIFEST_FILED "manifest"
 
-#define VS_FW_URL_FIELD "firmware_url"
+#define VS_FW_URL_FIELD "download_url"
 #define VS_FW_MANUFACTURER_ID_FIELD "manufacturer_id"
 #define VS_FW_MODEL_TYPE_FIELD "model_type"
 #define VS_FW_VERSION_FIELD "version"
 #define VS_FW_TIMESTAMP "build_timestamp"
+#define VS_FW_PERCENTAGE "percentage"
+#define VS_FW_LIST "devices"
 
 #define VS_TL_URL_FIELD "download_url"
 #define VS_TL_VERSION_FIELD "version"

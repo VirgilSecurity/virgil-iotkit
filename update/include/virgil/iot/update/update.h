@@ -38,8 +38,8 @@
 #include <global-hal.h>
 
 int
-vs_update_load_firmware_descriptor_by_vendor_and_dev_type(uint8_t manufacture_id[16],
-                                                          uint32_t device_type,
+vs_update_load_firmware_descriptor_by_vendor_and_dev_type(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                                          uint8_t device_type[DEVICE_TYPE_SIZE],
                                                           vs_firmware_descriptor_t *descriptor);
 
 #endif // VS_UPDATE_H

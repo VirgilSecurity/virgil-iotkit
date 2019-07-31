@@ -127,9 +127,9 @@ int
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t code_offest;
-    uint32_t code_length;
-    uint32_t footer_offset;
+    uint32_t code_offset;   // sizeof(vs_firmware_header_t)
+    uint32_t code_length;   // firmware_length
+    uint32_t footer_offset; // code_offset + code_length
     uint32_t footer_length;
     uint8_t signatures_count;
     vs_firmware_descriptor_t descriptor;

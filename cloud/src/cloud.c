@@ -326,7 +326,7 @@ _ntoh_fw_header(vs_firmware_header_t *header) {
     header->descriptor.version.timestamp = ntohl(header->descriptor.version.timestamp);
 
     header->code_length = ntohl(header->code_length);
-    header->code_offest = ntohl(header->code_offest);
+    header->code_offset = ntohl(header->code_offset);
     header->footer_length = ntohl(header->footer_length);
     header->footer_offset = ntohl(header->footer_offset);
 }
@@ -357,6 +357,10 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             _ntoh_fw_header(&resp->header);
 
+            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+                return 0;
+            }
+
             resp->chunks_qty = resp->header.footer_length / resp->header.descriptor.chunk_size;
             if (resp->header.footer_length % resp->header.descriptor.chunk_size) {
                 resp->chunks_qty++;
@@ -382,7 +386,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
         while (rest_data_sz && VS_CLOUD_FETCH_FW_STEP_CHUNKS == resp->step) {
             size_t read_sz = rest_data_sz;
 
-            uint32_t fw_rest = resp->header.code_length + resp->header.code_offest - resp->file_offset;
+            uint32_t fw_rest = resp->header.code_length + resp->header.code_offset - resp->file_offset;
             uint32_t required_chunk_size =
                     fw_rest > resp->header.descriptor.chunk_size ? resp->header.descriptor.chunk_size : fw_rest;
 
