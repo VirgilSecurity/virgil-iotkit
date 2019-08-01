@@ -40,6 +40,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 if (NOT GO_DISABLE)
     include(cmake/golang.cmake)
     include(cmake/flags.cmake)
+    set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
     set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 endif()
 
