@@ -319,16 +319,23 @@ typedef struct {
 
 /*************************************************************************/
 static void
-_ntoh_fw_header(vs_firmware_header_t *header) {
-    header->descriptor.chunk_size = ntohs(header->descriptor.chunk_size);
-    header->descriptor.app_size = ntohl(header->descriptor.app_size);
-    header->descriptor.firmware_length = ntohl(header->descriptor.firmware_length);
-    header->descriptor.version.timestamp = ntohl(header->descriptor.version.timestamp);
+_ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
+    desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
+    desc->app_size = VS_IOT_NTOHL(desc->app_size);
+    desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
+    desc->version.timestamp = VS_IOT_NTOHL(desc->version.timestamp);
+}
 
-    header->code_length = ntohl(header->code_length);
-    header->code_offset = ntohl(header->code_offset);
-    header->footer_length = ntohl(header->footer_length);
-    header->footer_offset = ntohl(header->footer_offset);
+/*************************************************************************/
+static void
+_ntoh_fw_header(vs_firmware_header_t *header) {
+
+    _ntoh_fw_desdcriptor(&header->descriptor);
+
+    header->code_length = VS_IOT_NTOHL(header->code_length);
+    header->code_offset = VS_IOT_NTOHL(header->code_offset);
+    header->footer_length = VS_IOT_NTOHL(header->footer_length);
+    header->footer_offset = VS_IOT_NTOHL(header->footer_offset);
 }
 
 /*************************************************************************/
@@ -346,7 +353,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
         size_t read_sz = chunksize;
 
         if (resp->used_size + chunksize > sizeof(vs_firmware_header_t)) {
-            read_sz = sizeof(vs_tl_header_t) - resp->used_size;
+            read_sz = sizeof(vs_firmware_header_t) - resp->used_size;
         }
 
         VS_IOT_MEMCPY(&((uint8_t *)&resp->header)[resp->used_size], contents, read_sz);
@@ -361,14 +368,15 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
                 return 0;
             }
 
-            resp->chunks_qty = resp->header.footer_length / resp->header.descriptor.chunk_size;
-            if (resp->header.footer_length % resp->header.descriptor.chunk_size) {
+            resp->chunks_qty = resp->header.code_length / resp->header.descriptor.chunk_size;
+            if (resp->header.code_length % resp->header.descriptor.chunk_size) {
                 resp->chunks_qty++;
             }
 
             if (resp->header.descriptor.chunk_size > resp->buff_sz) {
                 VS_IOT_FREE(resp->buff);
                 resp->buff = VS_IOT_CALLOC(1, resp->header.descriptor.chunk_size);
+                resp->buff_sz = resp->header.descriptor.chunk_size;
             }
 
             resp->step = VS_CLOUD_FETCH_FW_STEP_CHUNKS;
@@ -386,7 +394,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
         while (rest_data_sz && VS_CLOUD_FETCH_FW_STEP_CHUNKS == resp->step) {
             size_t read_sz = rest_data_sz;
 
-            uint32_t fw_rest = resp->header.code_length + resp->header.code_offset - resp->file_offset;
+            uint32_t fw_rest = resp->header.code_length - resp->file_offset;
             uint32_t required_chunk_size =
                     fw_rest > resp->header.descriptor.chunk_size ? resp->header.descriptor.chunk_size : fw_rest;
 
@@ -415,6 +423,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
                     if (resp->header.footer_length > resp->buff_sz) {
                         VS_IOT_FREE(resp->buff);
                         resp->buff = VS_IOT_CALLOC(1, resp->header.footer_length);
+                        resp->buff_sz = resp->header.footer_length;
                     }
 
                     resp->step = VS_CLOUD_FETCH_FW_STEP_FOOTER;
@@ -437,6 +446,16 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == resp->header.footer_length) {
             resp->used_size = 0;
+
+            vs_firmware_descriptor_t f;
+            VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
+            _ntoh_fw_desdcriptor(&f);
+
+            if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
+                VS_LOG_ERROR("Invalid firmware descriptor");
+                return VS_UPDATE_ERR_INVAL;
+            }
+
             if (VS_UPDATE_ERR_OK != vs_update_save_firmware_footer(&resp->header.descriptor, resp->buff)) {
                 return 0;
             }
