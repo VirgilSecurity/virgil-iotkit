@@ -38,7 +38,7 @@ project(virgil-iot-initializer VERSION 0.1.0 LANGUAGES Go C)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
 
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+if(NOT VIRGIL_IOT_DIRECTORY)
     message(FATAL_ERROR "[virgil-iot-initializer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
 else()
     message(STATUS "[virgil-iot-initializer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
@@ -60,7 +60,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
         -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
-    )
+        )
 
 #
 # LDFLAGS for CGO
@@ -70,7 +70,7 @@ set(CMAKE_CGO_LDFLAGS
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-initializer/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
-    )
+        )
 
 #
 # Workaround target

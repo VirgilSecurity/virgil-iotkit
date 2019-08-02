@@ -34,19 +34,19 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
+project(virgil-firmware-signer VERSION 0.1.0 LANGUAGES Go)
 
 
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[virgil-signer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[virgil-firmware-signer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
 else()
-    message(STATUS "[virgil-signer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
+    message(STATUS "[virgil-firmware-signer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
 endif()
 
 if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[virgil-signer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+    message(FATAL_ERROR "[virgil-firmware-signer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
 else()
-    message(STATUS "[virgil-signer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
+    message(STATUS "[virgil-firmware-signer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
 endif()
 
 #
@@ -56,7 +56,7 @@ set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
-    )
+        )
 
 #
 # LDFLAGS for CGO
@@ -64,7 +64,7 @@ set(CMAKE_CGO_CFLAGS
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
-    )
+        )
 
 #
 # Workaround target
