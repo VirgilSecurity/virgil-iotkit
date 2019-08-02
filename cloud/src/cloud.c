@@ -364,7 +364,10 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             _ntoh_fw_header(&resp->header);
 
-            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+            if (VS_UPDATE_ERR_OK != vs_cloud_is_new_firmware_version_available(resp->header.descriptor.manufacture_id,
+                                                                               resp->header.descriptor.device_type,
+                                                                               &resp->header.descriptor.version) ||
+                VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
                 return 0;
             }
 
