@@ -40,6 +40,7 @@ typedef enum {
     VS_UPDATE_ERR_FAIL,
     VS_UPDATE_ERR_INVAL,
     VS_UPDATE_ERR_NOMEM,
+    VS_UPDATE_ERR_NOT_FOUND,
 } vs_update_err_code_e;
 
 int

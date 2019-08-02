@@ -37,20 +37,16 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <global-hal.h>
 
 typedef union {
-    uint32_t id;
+    uint8_t id[DEVICE_TYPE_SIZE];
     char str[sizeof(uint32_t) + 1];
 } vs_readable_type_t;
 
-typedef union {
-    uint32_t id;
-    char str[32 + 1];
-} vs_readable_id_t;
-
 typedef struct __attribute__((__packed__)) {
-    vs_readable_id_t manufacturer_id;
-    vs_readable_type_t model_type;
+    uint8_t manufacturer_id[32 + 1];
+    vs_readable_type_t device_type;
     char version[16];
     char timestamp[9];
     char fw_file_url[VS_UPD_URL_STR_SIZE];
@@ -70,7 +66,7 @@ typedef struct {
 
 #define VS_FW_URL_FIELD "download_url"
 #define VS_FW_MANUFACTURER_ID_FIELD "manufacturer_id"
-#define VS_FW_MODEL_TYPE_FIELD "model_type"
+#define VS_FW_DEVICE_TYPE_FIELD "device_type"
 #define VS_FW_VERSION_FIELD "version"
 #define VS_FW_TIMESTAMP "build_timestamp"
 #define VS_FW_PERCENTAGE "percentage"

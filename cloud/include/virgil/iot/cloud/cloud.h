@@ -67,6 +67,7 @@ typedef enum {
     VS_CLOUD_ERR_NOMEM,        // out of memory
     VS_CLOUD_ERR_DECRYPT_FAIL, //
     VS_CLOUD_ERR_VALUE_FAIL,   //
+    VS_CLOUD_ERR_NOT_FOUND,
 } vs_cloud_err_code_e;
 
 #define VS_UPD_URL_STR_SIZE 200
