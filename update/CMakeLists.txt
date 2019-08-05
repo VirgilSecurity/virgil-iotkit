@@ -33,3 +33,30 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+project(update VERSION 0.1.0 LANGUAGES C)
+
+add_library(update)
+
+target_sources(update
+        PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/update.c"
+        )
+
+target_link_libraries(update
+        PRIVATE
+        logger
+        macros
+        jsmn
+        vs-json
+        hsm
+        trust_list
+        )
+
+target_include_directories(update
+        PRIVATE
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        )

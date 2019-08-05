@@ -34,34 +34,25 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(cloud VERSION 0.1.0 LANGUAGES C)
+project(jsmn VERSION 0.1.0 LANGUAGES C)
 
-add_library(cloud)
+add_library(jsmn)
 
-target_sources(cloud
+target_sources(jsmn
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cloud.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c"
+        "${CMAKE_CURRENT_LIST_DIR}/jsmn.c"
         )
 
-target_link_libraries(cloud
-        PRIVATE
-        logger
-        trust_list
-        macros
-        jsmn
-        vs-json
-        hsm
-        update
-        )
-
-target_include_directories(cloud
-        PRIVATE
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-
+target_compile_definitions(jsmn
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        -DJSMN_PARENT_LINKS
+        -DJSMN_STRICT
+        )
+target_compile_options(jsmn
+        PRIVATE -fPIC
+        )
+
+target_include_directories(jsmn
+        PUBLIC
+        "${CMAKE_CURRENT_LIST_DIR}"
         )

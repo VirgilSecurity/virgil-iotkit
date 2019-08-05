@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_SDMP_STRUCTS_H
-#define KUNLUN_SDMP_STRUCTS_H
+#ifndef VS_SDMP_STRUCTS_H
+#define VS_SDMP_STRUCTS_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -137,4 +137,4 @@ typedef struct {
 } vs_sdmp_service_t;
 
 
-#endif // KUNLUN_SDMP_STRUCTS_H
+#endif // VS_SDMP_STRUCTS_H

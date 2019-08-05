@@ -32,17 +32,46 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VS_UPDATE_INTERFACE_H
+#define VS_UPDATE_INTERFACE_H
 
-#include <stdint.h>
+typedef enum {
+    VS_UPDATE_ERR_OK,
+    VS_UPDATE_ERR_FAIL,
+    VS_UPDATE_ERR_INVAL,
+    VS_UPDATE_ERR_NOMEM,
+    VS_UPDATE_ERR_NOT_FOUND,
+} vs_update_err_code_e;
 
-#define SERIAL_SIZE (32)
+int
+vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
 
-void
-vs_global_hal_msleep(size_t msec);
+int
+vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
+int
+vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+                              uint32_t offset,
+                              uint8_t *data,
+                              uint16_t buff_sz,
+                              uint16_t *data_sz);
 
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+int
+vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
+                               uint8_t *data,
+                               uint16_t buff_sz,
+                               uint16_t *data_sz);
+
+int
+vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
+
+
+int
+vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                   uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   vs_firmware_descriptor_t *descriptor);
+
+int
+vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
+
+#endif // VS_UPDATE_INTERFACE_H

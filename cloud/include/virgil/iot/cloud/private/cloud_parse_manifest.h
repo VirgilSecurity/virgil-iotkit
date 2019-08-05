@@ -32,17 +32,55 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef CLOUD_PARSE_MANIFEST_H
+#define CLOUD_PARSE_MANIFEST_H
 
 #include <stdint.h>
+#include <stddef.h>
+#include <global-hal.h>
 
-#define SERIAL_SIZE (32)
+typedef union {
+    uint8_t id[DEVICE_TYPE_SIZE];
+    char str[sizeof(uint32_t) + 1];
+} vs_readable_type_t;
 
-void
-vs_global_hal_msleep(size_t msec);
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacturer_id[32 + 1];
+    vs_readable_type_t device_type;
+    char version[16];
+    char timestamp[9];
+    char fw_file_url[VS_UPD_URL_STR_SIZE];
+} vs_firmware_manifest_entry_t;
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
+typedef struct {
+    int version;
+    int type;
+} vs_tl_info_t;
 
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+typedef struct {
+    vs_tl_info_t info;
+    char file_url[VS_UPD_URL_STR_SIZE];
+} vs_tl_manifest_entry_t;
+
+#define VS_MANIFEST_FILED "manifest"
+
+#define VS_FW_URL_FIELD "download_url"
+#define VS_FW_MANUFACTURER_ID_FIELD "manufacturer_id"
+#define VS_FW_DEVICE_TYPE_FIELD "device_type"
+#define VS_FW_VERSION_FIELD "version"
+#define VS_FW_TIMESTAMP "build_timestamp"
+#define VS_FW_PERCENTAGE "percentage"
+#define VS_FW_LIST "devices"
+
+#define VS_TL_URL_FIELD "download_url"
+#define VS_TL_VERSION_FIELD "version"
+#define VS_TL_TYPE_FIELD "type"
+
+int
+vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
+int
+vs_cloud_is_new_firmware_version_available(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                           uint8_t device_type[DEVICE_TYPE_SIZE],
+                                           vs_firmware_version_t *new_ver);
+
+#endif // CLOUD_PARSE_MANIFEST_H

@@ -32,17 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
+#define VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
 
-#include <stdint.h>
+#include <iot_ntoh_api.h>
 
-#define SERIAL_SIZE (32)
+#define VS_IOT_NTOHS iot_ntohs
+#define VS_IOT_NTOHL iot_ntohl
+#define VS_IOT_HTONS iot_htons
+#define VS_IOT_HTONL iot_htonl
 
-void
-vs_global_hal_msleep(size_t msec);
-
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#endif //VIRGIL_IOT_SDK_ENDIAN_CONFIG_H

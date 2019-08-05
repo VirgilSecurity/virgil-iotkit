@@ -37,8 +37,12 @@
 
 #include <stdint.h>
 
+#define SERIAL_SIZE (32)
+
 void
 vs_global_hal_msleep(size_t msec);
 
+void
+vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
 
 #endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H

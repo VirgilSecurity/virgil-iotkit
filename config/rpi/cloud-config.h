@@ -32,17 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VIRGIL_IOT_SDK_CLOUD_CONFIG_H
+#define VIRGIL_IOT_SDK_CLOUD_CONFIG_H
 
-#include <stdint.h>
+#define VS_MSG_BIN_MQTT_PORT 8883
 
-#define SERIAL_SIZE (32)
+#define VS_MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
+#define VS_CLOUD_HOST "https://things-dev.virgilsecurity.com"
 
-void
-vs_global_hal_msleep(size_t msec);
+#define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#endif //VIRGIL_IOT_SDK_CLOUD_CONFIG_H

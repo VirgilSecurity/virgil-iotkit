@@ -32,17 +32,27 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VS_CLOUD_ASN1_CRYPTOGRAM_H
+#define VS_CLOUD_ASN1_CRYPTOGRAM_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
-#define SERIAL_SIZE (32)
+#ifdef __cplusplus
+extern "C" {
+#endif
+int
+vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                               size_t cryptogram_sz,
+                                               uint8_t **public_key,
+                                               uint8_t **iv_key,
+                                               uint8_t **encrypted_key,
+                                               uint8_t **mac_data,
+                                               uint8_t **iv_data,
+                                               uint8_t **encrypted_data,
+                                               size_t *encrypted_data_sz);
+#ifdef __cplusplus
+}
+#endif
 
-void
-vs_global_hal_msleep(size_t msec);
-
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#endif // VS_CLOUD_ASN1_CRYPTOGRAM_H

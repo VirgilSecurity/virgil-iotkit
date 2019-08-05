@@ -32,17 +32,33 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VIRGIL_IOT_SDK_CLOUD_CONFIG_H
+#define VIRGIL_IOT_SDK_CLOUD_CONFIG_H
 
-#include <stdint.h>
+#define VS_MSG_BIN_MQTT_PORT 8883
 
-#define SERIAL_SIZE (32)
+#define VS_MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
+#define VS_CLOUD_HOST "https://things-dev.virgilsecurity.com"
+#define VS_THING_EP "thing"
+#define VS_AWS_ID "aws"
+#define VS_MQTT_ID "mqtt"
 
-void
-vs_global_hal_msleep(size_t msec);
+#define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
+#define VS_MANIFEST "manifest"
+#define VS_FW_URL "firmware_url"
 
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#define VS_MANUFACTURE_ID "manufacturer_id"
+#define VS_MODEL_ID "model_type"
+#define VS_FW_VERSION "version"
+
+#define VS_FW_TIMESTAMP "build_timestamp"
+#define VS_FW_TOPIC_MASK "fw/"
+
+#define VS_TL_TOPIC_MASK "tl/"
+
+#define VS_TL_URL_FIELD "trustlist_url"
+#define VS_TL_VERSION_FIELD "version"
+#define VS_TL_TYPE_FILE "type"
+
+#endif //VIRGIL_IOT_SDK_CLOUD_CONFIG_H

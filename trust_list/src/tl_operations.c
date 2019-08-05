@@ -226,6 +226,18 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
 }
 
 /******************************************************************************/
+int
+vs_tl_verify_storage(size_t storage_type) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+
+    CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
+
+    if (!_verify_tl(tl_ctx)) {
+        return VS_TL_ERROR_GENERAL;
+    }
+    return VS_TL_OK;
+}
+/******************************************************************************/
 void
 vs_tl_storage_init() {
 

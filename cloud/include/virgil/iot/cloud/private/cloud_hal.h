@@ -32,17 +32,17 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VS_CLOUD_HAL_H
+#define VS_CLOUD_HAL_H
 
-#include <stdint.h>
+uint16_t
+vs_cloud_https_hal(vs_http_method_t type,
+                   const char *url,
+                   const char *data,
+                   size_t data_size,
+                   char *out_data,
+                   fetch_handler_func fetch_handler,
+                   void *hander_data,
+                   size_t *in_out_size);
 
-#define SERIAL_SIZE (32)
-
-void
-vs_global_hal_msleep(size_t msec);
-
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#endif // VS_CLOUD_HAL_H

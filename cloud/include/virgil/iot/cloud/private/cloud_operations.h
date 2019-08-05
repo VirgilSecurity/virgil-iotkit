@@ -32,17 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAB_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAB_H
+#ifndef VS_CLOUD_OPERATIONS_H
+#define VS_CLOUD_OPERATIONS_H
 
-#include <stdint.h>
+#define VS_THING_EP "thing"
+#define VS_AWS_ID "aws"
+#define VS_MQTT_ID "mqtt"
 
-#define SERIAL_SIZE (32)
 
-void
-vs_global_hal_msleep(size_t msec);
+#define VS_FW_TOPIC_MASK "fw/"
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
+#define VS_TL_TOPIC_MASK "tl/"
 
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAB_H
+int
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
+
+int
+vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+
+#endif // VS_CLOUD_OPERATIONS_H

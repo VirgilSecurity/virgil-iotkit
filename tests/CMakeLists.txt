@@ -40,7 +40,10 @@ project(virgil-iot-sdk-tests VERSION 0.1.0 LANGUAGES C)
 #  Tests library
 #
 
-add_library(virgil-iot-sdk-tests
+add_library(virgil-iot-sdk-tests)
+
+target_sources(virgil-iot-sdk-tests
+        PRIVATE
         src/tests.c
         src/sdmp/prvs_tests.c
         src/sdmp/sdmp_tests.c
@@ -58,13 +61,6 @@ add_library(virgil-iot-sdk-tests
         src/crypto/trust_list.c
         )
 
-target_link_libraries(virgil-iot-sdk-tests
-        hsm
-        secbox
-        sdmp
-        trust_list
-        )
-
 if (NOT VIRGIL_IOT_MCU_BUILD)
     target_sources(virgil-iot-sdk-tests
             PRIVATE
@@ -75,6 +71,15 @@ if (NOT VIRGIL_IOT_MCU_BUILD)
             converters
             )
 endif()
+
+target_link_libraries(virgil-iot-sdk-tests
+        hsm
+        secbox
+        sdmp
+        trust_list
+        macros
+        )
+
 #
 #   Set additional compiler flags
 #
@@ -110,7 +115,6 @@ target_include_directories(virgil-iot-sdk-tests
         PRIVATE
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         INTERFACE

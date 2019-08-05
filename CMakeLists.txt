@@ -69,7 +69,6 @@ endif()
 
 file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 
-
 # ---------------------------------------------------------------------------
 #   Build options
 # ---------------------------------------------------------------------------
@@ -162,10 +161,37 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
+#   Shared macros interface
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
+
+#
+#   jsmn
+#
+# TODO: Add Option to disable cloud
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+
+#
+#   vs-json
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+
+#
+#   update
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)
+
+#
 #   Logger
 #
 # TODO: Add Option to disable Logger
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
+
+#
+#   Cloud
+#
+# TODO: Add Option to disable cloud
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
 
 #
 #   Trust list
