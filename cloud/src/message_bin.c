@@ -32,19 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/macros/macros.h>
-
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/private/cloud_hal.h>
-#include <virgil/iot/cloud/private/asn1_cryptogram.h>
-#include <virgil/iot/cloud/base64/base64.h>
-#include <virgil/iot/json/json_parser.h>
-#include <virgil/iot/logger/logger.h>
-
-#include <stdlib-config.h>
-#include <cloud-config.h>
-#include <global-hal.h>
+#include <virgil/iot/cloud/private/cloud_include.h>
 
 /*************************************************************************/
 static void

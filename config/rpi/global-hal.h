@@ -37,7 +37,7 @@
 
 #include <stdint.h>
 
-#define SERIAL_SIZE (32)
+#define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
 #define DEVICE_TYPE_SIZE (4)
 typedef struct __attribute__((__packed__)) {
@@ -47,7 +47,7 @@ typedef struct __attribute__((__packed__)) {
     uint8_t patch;
     uint8_t dev_milestone;
     uint8_t dev_build;
-    uint32_t timestamp;
+    uint32_t timestamp; //the number of seconds elapsed since January 1, 2015 UTC
 } vs_firmware_version_t;
 
 typedef struct __attribute__((__packed__)) {

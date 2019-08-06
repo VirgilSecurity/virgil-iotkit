@@ -32,58 +32,31 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef CLOUD_PARSE_MANIFEST_H
-#define CLOUD_PARSE_MANIFEST_H
+#ifndef VS_CLOUD_INCLUDE_H
+#define VS_CLOUD_INCLUDE_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <trust_list-config.h>
+#include <stdlib-config.h>
+#include <cloud-config.h>
 #include <global-hal.h>
+#include <endian-config.h>
 
-#define MANUFACTURE_ID_STR_LEN (32 + 1)
-#define DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
+#include <virgil/iot/cloud/private/asn1_cryptogram.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/update/update.h>
+#include <virgil/iot/update/update_interface.h>
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/json/json_parser.h>
 
-typedef union {
-    uint8_t id[DEVICE_TYPE_SIZE];
-    char str[DEV_TYPE_ID_STR_LEN];
-} vs_readable_type_t;
+#include <virgil/iot/cloud/cloud.h>
+#include <virgil/iot/cloud/private/cloud_hal.h>
+#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
+#include <virgil/iot/cloud/private/cloud_operations.h>
+#include <virgil/iot/cloud/private/asn1_cryptogram.h>
+#include <virgil/iot/cloud/base64/base64.h>
 
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer_id[MANUFACTURE_ID_STR_LEN];
-    vs_readable_type_t device_type;
-    char version[16];
-    char timestamp[9];
-    char fw_file_url[VS_UPD_URL_STR_SIZE];
-} vs_firmware_manifest_entry_t;
-
-typedef struct {
-    int version;
-    int type;
-} vs_tl_info_t;
-
-typedef struct {
-    vs_tl_info_t info;
-    char file_url[VS_UPD_URL_STR_SIZE];
-} vs_tl_manifest_entry_t;
-
-#define VS_MANIFEST_FILED "manifest"
-
-#define VS_FW_URL_FIELD "download_url"
-#define VS_FW_MANUFACTURER_ID_FIELD "manufacturer_id"
-#define VS_FW_DEVICE_TYPE_FIELD "device_type"
-#define VS_FW_VERSION_FIELD "version"
-#define VS_FW_TIMESTAMP "build_timestamp"
-#define VS_FW_PERCENTAGE "percentage"
-#define VS_FW_LIST "devices"
-
-#define VS_TL_URL_FIELD "download_url"
-#define VS_TL_VERSION_FIELD "version"
-#define VS_TL_TYPE_FIELD "type"
-
-int
-vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
-int
-vs_cloud_is_new_firmware_version_available(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                           uint8_t device_type[DEVICE_TYPE_SIZE],
-                                           vs_firmware_version_t *new_ver);
-
-#endif // CLOUD_PARSE_MANIFEST_H
+#endif // VS_CLOUD_INCLUDE_H

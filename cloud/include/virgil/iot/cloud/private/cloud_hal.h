@@ -41,7 +41,7 @@ vs_cloud_https_hal(vs_http_method_t type,
                    const char *data,
                    size_t data_size,
                    char *out_data,
-                   fetch_handler_func fetch_handler,
+                   vs_fetch_handler_func_t fetch_handler,
                    void *hander_data,
                    size_t *in_out_size);
 

@@ -44,10 +44,9 @@ target_sources(update
         )
 
 target_link_libraries(update
-        PRIVATE
+        PUBLIC
         logger
         macros
-        jsmn
         vs-json
         hsm
         trust_list

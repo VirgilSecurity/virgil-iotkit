@@ -11,7 +11,7 @@ target_sources(vs-json
         )
 
 target_link_libraries(vs-json
-        PRIVATE
+        PUBLIC
         jsmn
         )
 
