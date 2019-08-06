@@ -35,43 +35,29 @@
 #ifndef VS_UPDATE_INTERFACE_H
 #define VS_UPDATE_INTERFACE_H
 
-typedef enum {
-    VS_UPDATE_ERR_OK,
-    VS_UPDATE_ERR_FAIL,
-    VS_UPDATE_ERR_INVAL,
-    VS_UPDATE_ERR_NOMEM,
-    VS_UPDATE_ERR_NOT_FOUND,
-} vs_update_err_code_e;
+int
+vs_update_read_firmware_data_hal(uint8_t *manufacture_id,
+                                 uint8_t *device_type,
+                                 uint32_t offset,
+                                 uint8_t *data,
+                                 uint16_t buf_sz,
+                                 uint16_t *read_sz);
+int
+vs_update_write_firmware_data_hal(uint8_t *manufacture_id,
+                                  uint8_t *device_type,
+                                  uint32_t offset,
+                                  const void *data,
+                                  uint16_t data_sz);
+int
+vs_update_remove_firmware_data_hal(uint8_t *manufacture_id, uint8_t *device_type);
 
 int
-vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
-
+vs_update_read_firmware_descriptor_table_hal(uint8_t *data, uint16_t buf_sz, uint16_t *read_sz);
 int
-vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
-
+vs_update_write_firmware_descriptor_table_hal(const void *data, uint16_t data_sz);
 int
-vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
-                              uint32_t offset,
-                              uint8_t *data,
-                              uint16_t buff_sz,
-                              uint16_t *data_sz);
-
+vs_update_remove_firmware_descriptor_table_hal(void);
 int
-vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
-                               uint8_t *data,
-                               uint16_t buff_sz,
-                               uint16_t *data_sz);
-
-int
-vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
-
-
-int
-vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   uint8_t device_type[DEVICE_TYPE_SIZE],
-                                   vs_firmware_descriptor_t *descriptor);
-
-int
-vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_get_firmware_descriptor_table_len_hal(void);
 
 #endif // VS_UPDATE_INTERFACE_H
