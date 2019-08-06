@@ -35,13 +35,18 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <update-config.h>
+
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/update/update_interface.h>
 #include <virgil/iot/logger/logger.h>
-
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
+
+static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_TYPE_LIST;
 
 /*************************************************************************/
 int
@@ -106,12 +111,31 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                uint16_t buff_sz,
                                uint16_t *data_sz) {
+    int file_sz;
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
-    return vs_update_read_firmware_data_hal(
-            descriptor->manufacture_id, descriptor->device_type, descriptor->firmware_length, data, buff_sz, data_sz);
+    *data_sz = 0;
+
+    file_sz = vs_update_get_firmware_image_len_hal(descriptor->manufacture_id, descriptor->device_type);
+
+    if (file_sz > 0) {
+
+        int32_t footer_sz = file_sz - descriptor->firmware_length;
+        CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_UPDATE_ERR_INVAL, "Incorrect footer size")
+
+        *data_sz = (uint16_t)footer_sz;
+        CHECK_RET(footer_sz <= buff_sz, VS_UPDATE_ERR_INVAL, "Buffer to small")
+
+        return vs_update_read_firmware_data_hal(descriptor->manufacture_id,
+                                                descriptor->device_type,
+                                                descriptor->firmware_length,
+                                                data,
+                                                footer_sz,
+                                                data_sz);
+    }
+    return VS_UPDATE_ERR_FAIL;
 }
 
 /*************************************************************************/
@@ -253,4 +277,119 @@ terminate:
     VS_IOT_FREE(buf);
 
     return res;
+}
+
+/******************************************************************************/
+static bool
+_is_rule_equal_to(vs_key_type_e type) {
+    uint8_t i;
+    for (i = 0; i < VS_FW_SIGNATURES_QTY; ++i) {
+        if (sign_rules_list[i] == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*************************************************************************/
+int
+vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
+    int file_sz;
+    uint8_t *pubkey;
+    uint16_t sign_len;
+    uint16_t key_len;
+    uint8_t sign_rules = 0;
+    uint16_t i;
+    vs_hsm_sw_sha256_ctx ctx;
+
+    // TODO: Need to support all hash types
+    uint8_t hash[32];
+
+    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
+    file_sz = vs_update_get_firmware_image_len_hal(descriptor->manufacture_id, descriptor->device_type);
+
+    if (file_sz <= 0) {
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    int32_t footer_sz = file_sz - descriptor->firmware_length;
+    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_UPDATE_ERR_INVAL, "Incorrect footer size")
+
+    uint8_t buf[descriptor->chunk_size < footer_sz ? footer_sz : descriptor->chunk_size];
+    vs_update_firmware_footer_t *footer = (vs_update_firmware_footer_t *)buf;
+    uint32_t offset = 0;
+    uint16_t read_sz;
+
+    vs_hsm_sw_sha256_init(&ctx);
+
+    // Update hash by firmware
+    while (offset < descriptor->firmware_length) {
+        uint32_t fw_rest = descriptor->firmware_length - offset;
+        uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
+
+        if (VS_UPDATE_ERR_OK != vs_update_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
+            return VS_UPDATE_ERR_FAIL;
+        }
+
+        vs_hsm_sw_sha256_update(&ctx, buf, required_chunk_size);
+        offset += required_chunk_size;
+    }
+
+    // Calculate fill size
+    uint32_t fill_sz = descriptor->app_size - descriptor->firmware_length;
+    CHECK_RET(footer_sz - sizeof(vs_update_firmware_footer_t) < fill_sz, VS_UPDATE_ERR_FAIL, "Bad fill size of image")
+    fill_sz -= (footer_sz - sizeof(vs_update_firmware_footer_t));
+    VS_IOT_MEMSET(buf, 0xFF, descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size);
+
+    // Update hash by fill
+    while (fill_sz) {
+        uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
+        vs_hsm_sw_sha256_update(&ctx, buf, sz);
+        fill_sz -= sz;
+    }
+
+    // Update hash by footer
+    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(descriptor, buf, footer_sz, &read_sz)) {
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    vs_hsm_sw_sha256_update(&ctx, buf, sizeof(vs_update_firmware_footer_t));
+    vs_hsm_sw_sha256_final(&ctx, hash);
+
+    // First signature
+    vs_sign_t *sign = (vs_sign_t *)footer->signatures;
+
+    BOOL_CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY, "There are not enough signatures")
+
+    for (i = 0; i < footer->signatures_count; ++i) {
+        BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL")
+
+        sign_len = vs_hsm_get_signature_len(sign->ec_type);
+        key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+
+        BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type")
+
+        // Signer raw key pointer
+        pubkey = sign->raw_sign_pubkey + sign_len;
+
+        BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+                       "Signer key is wrong")
+
+        if (_is_rule_equal_to(sign->signer_type)) {
+            BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_ecdsa_verify(sign->ec_type,
+                                                                pubkey,
+                                                                key_len,
+                                                                sign->hash_type,
+                                                                hash,
+                                                                sign->raw_sign_pubkey,
+                                                                sign_len),
+                           "Signature is wrong")
+            sign_rules++;
+        }
+
+        // Next signature
+        sign = (vs_sign_t *)(pubkey + key_len);
+    }
+
+    return VS_UPDATE_ERR_FAIL;
 }

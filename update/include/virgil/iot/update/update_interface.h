@@ -60,4 +60,6 @@ vs_update_remove_firmware_descriptor_table_hal(void);
 int
 vs_update_get_firmware_descriptor_table_len_hal(void);
 
+int
+vs_update_get_firmware_image_len_hal(uint8_t *manufacture_id, uint8_t *device_type);
 #endif // VS_UPDATE_INTERFACE_H
