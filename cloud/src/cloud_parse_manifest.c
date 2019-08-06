@@ -33,19 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #include <stdint.h>
 
-#include <trust_list-config.h>
-#include <stdlib-config.h>
-
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/json/json_parser.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/update/update_interface.h>
-#include <endian-config.h>
+#include <virgil/iot/cloud/private/cloud_include.h>
 
 /*************************************************************************/
 int
@@ -128,7 +116,7 @@ _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
     }
 
     for (i = str_len - 1; i >= 0; i--) {
-        if (str[i] < 0x30 || str[i] > 0x39) {
+        if (str[i] < '0' || str[i] > '9') {
             return -1;
         }
         tmp += (uint16_t)(str[i] - 0x30) * deg;

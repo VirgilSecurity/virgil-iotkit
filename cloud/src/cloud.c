@@ -40,27 +40,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/cloud/private/cloud_include.h>
 
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_hal.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/private/asn1_cryptogram.h>
-#include <virgil/iot/cloud/base64/base64.h>
-#include <virgil/iot/json/json_parser.h>
-#include <virgil/iot/update/update.h>
-#include <virgil/iot/update/update_interface.h>
-#include <stdlib-config.h>
-#include <cloud-config.h>
-#include <global-hal.h>
-#include <endian-config.h>
-
-#include <virgil/iot/hsm/hsm_interface.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/logger/logger.h>
-#include "virgil/iot/trust_list/tl_structs.h"
-#include "virgil/iot/trust_list/trust_list.h"
 #define MAX_EP_SIZE (256)
 
 /******************************************************************************/

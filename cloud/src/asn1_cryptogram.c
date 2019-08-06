@@ -32,12 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/cloud/private/asn1_cryptogram.h>
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/macros/macros.h>
 #include <string.h>
 #include <stdbool.h>
+#include <virgil/iot/cloud/private/cloud_include.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04

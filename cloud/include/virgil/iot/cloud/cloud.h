@@ -113,7 +113,7 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process);
 
-typedef size_t (*fetch_handler_func)(char *contents, size_t chunksize, void *userdata);
+typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
 
 int
 vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);

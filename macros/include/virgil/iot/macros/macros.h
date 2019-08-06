@@ -35,6 +35,8 @@
 #ifndef VS_MACROS_H
 #define VS_MACROS_H
 
+#define VS_UNUSED(x) (void)(x)
+
 #define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
