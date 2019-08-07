@@ -143,7 +143,9 @@ int
 vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
     int file_sz;
     uint8_t *buf = NULL;
+    uint8_t *newbuf = NULL;
     uint32_t offset = 0;
+    int res;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
 
@@ -159,21 +161,48 @@ vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
             return VS_UPDATE_ERR_FAIL;
         }
 
-        while (offset < file_sz || offset + sizeof(vs_firmware_descriptor_t) > file_sz) {
+        while (offset < file_sz) {
+            if (offset + sizeof(vs_firmware_descriptor_t) > file_sz) {
+                file_sz = offset;
+                break;
+            }
+
             vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
             if (0 == memcmp(ptr->manufacture_id, descriptor->manufacture_id, MANUFACTURE_ID_SIZE) &&
                 0 == memcmp(ptr->device_type, descriptor->device_type, DEVICE_TYPE_SIZE)) {
-                break;
+                VS_IOT_MEMCPY(ptr, descriptor, sizeof(vs_firmware_descriptor_t));
+                newbuf = buf;
+                goto save_data;
             }
 
             offset += sizeof(vs_firmware_descriptor_t);
         }
+
+        newbuf = VS_IOT_CALLOC(1, file_sz + sizeof(vs_firmware_descriptor_t));
+
+        if (NULL == newbuf) {
+            VS_IOT_FREE(buf);
+            return VS_UPDATE_ERR_FAIL;
+        }
+
+        VS_IOT_MEMCPY(newbuf, buf, file_sz);
+        VS_IOT_MEMCPY(newbuf + file_sz, descriptor, sizeof(vs_firmware_descriptor_t));
+        file_sz += sizeof(vs_firmware_descriptor_t);
+
+        VS_IOT_FREE(buf);
+    } else {
+        file_sz = sizeof(vs_firmware_descriptor_t);
+        newbuf = VS_IOT_CALLOC(1, file_sz);
+        CHECK_NOT_ZERO(newbuf, VS_UPDATE_ERR_FAIL);
+        VS_IOT_MEMCPY(newbuf, (uint8_t *)descriptor, file_sz);
     }
 
-    VS_IOT_FREE(buf);
+save_data:
+    res = vs_update_write_firmware_descriptor_table_hal(newbuf, file_sz);
+    VS_IOT_FREE(newbuf);
 
-    return vs_update_write_firmware_descriptor_table_hal(descriptor, sizeof(vs_firmware_descriptor_t));
+    return res;
 }
 
 /*************************************************************************/
@@ -204,7 +233,7 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
         goto terminate;
     }
 
-    while (offset < file_sz || offset + sizeof(vs_firmware_descriptor_t) > file_sz) {
+    while (offset + sizeof(vs_firmware_descriptor_t) <= file_sz) {
         vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
         if (0 == memcmp(ptr->manufacture_id, manufacture_id, MANUFACTURE_ID_SIZE) &&

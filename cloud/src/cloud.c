@@ -352,7 +352,8 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
                 return 0;
             }
 
-            vs_update_delete_firmware(&resp->header.descriptor);
+            vs_update_remove_firmware_data_hal(resp->header.descriptor.manufacture_id,
+                                               resp->header.descriptor.device_type);
 
             if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
                 return 0;
