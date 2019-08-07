@@ -288,6 +288,7 @@ vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_l
 
 typedef struct {
     uint8_t step;
+    bool is_descriptor_stored;
     vs_cloud_firmware_header_t header;
     uint32_t file_offset;
     uint16_t chunks_qty;
@@ -347,10 +348,16 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (VS_UPDATE_ERR_OK != vs_cloud_is_new_firmware_version_available(resp->header.descriptor.manufacture_id,
                                                                                resp->header.descriptor.device_type,
-                                                                               &resp->header.descriptor.version) ||
-                VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+                                                                               &resp->header.descriptor.version)) {
                 return 0;
             }
+
+            vs_update_delete_firmware(&resp->header.descriptor);
+
+            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+                return 0;
+            }
+            resp->is_descriptor_stored = true;
 
             resp->chunks_qty = resp->header.code_length / resp->header.descriptor.chunk_size;
             if (resp->header.code_length % resp->header.descriptor.chunk_size) {
@@ -468,6 +475,11 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_head
                 HTTPS_RET_CODE_OK ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CLOUD_ERR_FAIL;
+
+        if (resp.is_descriptor_stored) {
+            vs_update_delete_firmware(&resp.header.descriptor);
+        }
+
     } else {
         VS_IOT_MEMCPY(fetched_header, &resp.header, sizeof(vs_cloud_firmware_header_t));
     }

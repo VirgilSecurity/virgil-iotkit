@@ -337,8 +337,8 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
 
     // Calculate fill size
     uint32_t fill_sz = descriptor->app_size - descriptor->firmware_length;
-    CHECK_RET(footer_sz - sizeof(vs_update_firmware_footer_t) < fill_sz, VS_UPDATE_ERR_FAIL, "Bad fill size of image")
-    fill_sz -= (footer_sz - sizeof(vs_update_firmware_footer_t));
+    CHECK_RET(footer_sz <= fill_sz, VS_UPDATE_ERR_FAIL, "Bad fill size of image")
+    fill_sz -= footer_sz;
     VS_IOT_MEMSET(buf, 0xFF, descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size);
 
     // Update hash by fill
@@ -359,31 +359,33 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
 
-    BOOL_CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY, "There are not enough signatures")
+    CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY, VS_UPDATE_ERR_FAIL, "There are not enough signatures")
 
     for (i = 0; i < footer->signatures_count; ++i) {
-        BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL")
+        CHECK_RET(sign->hash_type == VS_HASH_SHA_256, VS_UPDATE_ERR_FAIL, "Unsupported hash size for sign FW")
 
         sign_len = vs_hsm_get_signature_len(sign->ec_type);
         key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
-        BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type")
+        CHECK_RET(sign_len > 0 && key_len > 0, VS_UPDATE_ERR_FAIL, "Unsupported signature ec_type")
 
         // Signer raw key pointer
         pubkey = sign->raw_sign_pubkey + sign_len;
 
-        BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                       "Signer key is wrong")
+        CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+                  VS_UPDATE_ERR_FAIL,
+                  "Signer key is wrong")
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_ecdsa_verify(sign->ec_type,
-                                                                pubkey,
-                                                                key_len,
-                                                                sign->hash_type,
-                                                                hash,
-                                                                sign->raw_sign_pubkey,
-                                                                sign_len),
-                           "Signature is wrong")
+            CHECK_RET(VS_HSM_ERR_OK == vs_hsm_ecdsa_verify(sign->ec_type,
+                                                           pubkey,
+                                                           key_len,
+                                                           sign->hash_type,
+                                                           hash,
+                                                           sign->raw_sign_pubkey,
+                                                           sign_len),
+                      VS_UPDATE_ERR_FAIL,
+                      "Signature is wrong")
             sign_rules++;
         }
 
@@ -391,5 +393,7 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
         sign = (vs_sign_t *)(pubkey + key_len);
     }
 
-    return VS_UPDATE_ERR_FAIL;
+    VS_LOG_DEBUG("New FW Image. Sign rules is %s", sign_rules >= VS_FW_SIGNATURES_QTY ? "correct" : "wrong");
+
+    return sign_rules >= VS_FW_SIGNATURES_QTY ? VS_UPDATE_ERR_OK : VS_UPDATE_ERR_FAIL;
 }
