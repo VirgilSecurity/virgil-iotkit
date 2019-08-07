@@ -32,30 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_INCLUDE_H
-#define VS_CLOUD_INCLUDE_H
+#ifndef VS_IOT_SDK_UPDATE_CONFIG_H
+#define VS_IOT_SDK_UPDATE_CONFIG_H
 
-#include <trust_list-config.h>
-#include <stdlib-config.h>
-#include <cloud-config.h>
-#include <global-hal.h>
-#include <endian-config.h>
+/*Firmware signature rules*/
 
-#include <virgil/iot/cloud/private/asn1_cryptogram.h>
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/update/update_interface.h>
-#include <virgil/iot/hsm/hsm_interface.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/json/json_parser.h>
+/*
+ * VS_FW_SIGNATURES_QTY
+ * Minimum quantity of required signatures, which must be in firmware footer
+ */
+#define VS_FW_SIGNATURES_QTY (2)
 
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_hal.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/private/asn1_cryptogram.h>
-#include <virgil/iot/cloud/base64/base64.h>
+/*
+ * List of signer types, which must be among signatures in firmware footer
+ * Quantity MUST be equal to VS_FW_SIGNATURES_QTY
+ * It's values of vs_key_type_e from provision library
+ */
 
-#endif // VS_CLOUD_INCLUDE_H
+#define VS_FW_SIGNER_TYPE_LIST {                                                                                       \
+    VS_KEY_AUTH,                                                                                                    \
+    VS_KEY_FIRMWARE                                                                                                \
+};
+
+#endif //VS_IOT_SDK_UPDATE_CONFIG_H

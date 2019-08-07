@@ -288,7 +288,8 @@ vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_l
 
 typedef struct {
     uint8_t step;
-    vs_firmware_header_t header;
+    bool is_descriptor_stored;
+    vs_cloud_firmware_header_t header;
     uint32_t file_offset;
     uint16_t chunks_qty;
     uint16_t chunk_cnt;
@@ -309,7 +310,7 @@ _ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
 
 /*************************************************************************/
 static void
-_ntoh_fw_header(vs_firmware_header_t *header) {
+_ntoh_fw_header(vs_cloud_firmware_header_t *header) {
 
     _ntoh_fw_desdcriptor(&header->descriptor);
 
@@ -333,24 +334,31 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
     case VS_CLOUD_FETCH_FW_STEP_HEADER: {
         size_t read_sz = chunksize;
 
-        if (resp->used_size + chunksize > sizeof(vs_firmware_header_t)) {
-            read_sz = sizeof(vs_firmware_header_t) - resp->used_size;
+        if (resp->used_size + chunksize > sizeof(vs_cloud_firmware_header_t)) {
+            read_sz = sizeof(vs_cloud_firmware_header_t) - resp->used_size;
         }
 
         VS_IOT_MEMCPY(&((uint8_t *)&resp->header)[resp->used_size], contents, read_sz);
 
         resp->used_size += read_sz;
 
-        if (resp->used_size == sizeof(vs_firmware_header_t)) {
+        if (resp->used_size == sizeof(vs_cloud_firmware_header_t)) {
 
             _ntoh_fw_header(&resp->header);
 
             if (VS_UPDATE_ERR_OK != vs_cloud_is_new_firmware_version_available(resp->header.descriptor.manufacture_id,
                                                                                resp->header.descriptor.device_type,
-                                                                               &resp->header.descriptor.version) ||
-                VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+                                                                               &resp->header.descriptor.version)) {
                 return 0;
             }
+
+            vs_update_remove_firmware_data_hal(resp->header.descriptor.manufacture_id,
+                                               resp->header.descriptor.device_type);
+
+            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
+                return 0;
+            }
+            resp->is_descriptor_stored = true;
 
             resp->chunks_qty = resp->header.code_length / resp->header.descriptor.chunk_size;
             if (resp->header.code_length % resp->header.descriptor.chunk_size) {
@@ -432,7 +440,8 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             resp->used_size = 0;
 
             vs_firmware_descriptor_t f;
-            VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
+            VS_IOT_MEMCPY(
+                    &f, &((vs_update_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
             _ntoh_fw_desdcriptor(&f);
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
@@ -452,20 +461,28 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
 /*************************************************************************/
 int
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url) {
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header) {
     int res = VS_CLOUD_ERR_OK;
     CHECK_NOT_ZERO(fw_file_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO(fetched_header, VS_CLOUD_ERR_INVAL);
     size_t in_out_answer_len = 0;
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
-    resp.buff = VS_IOT_CALLOC(1, sizeof(vs_firmware_header_t));
-    resp.buff_sz = sizeof(vs_firmware_header_t);
+    resp.buff = VS_IOT_CALLOC(1, sizeof(vs_cloud_firmware_header_t));
+    resp.buff_sz = sizeof(vs_cloud_firmware_header_t);
 
     if (vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) !=
                 HTTPS_RET_CODE_OK ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CLOUD_ERR_FAIL;
+
+        if (resp.is_descriptor_stored) {
+            vs_update_delete_firmware(&resp.header.descriptor);
+        }
+
+    } else {
+        VS_IOT_MEMCPY(fetched_header, &resp.header, sizeof(vs_cloud_firmware_header_t));
     }
 
     VS_IOT_FREE(resp.buff);

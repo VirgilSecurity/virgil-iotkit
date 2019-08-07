@@ -52,7 +52,7 @@ static vs_tl_context_t _tl_dynamic_ctx;
 
 static vs_tl_context_t _tl_tmp_ctx;
 
-static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_SIGNER_TYPE_LIST;
+static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
 
 /******************************************************************************/
 static bool

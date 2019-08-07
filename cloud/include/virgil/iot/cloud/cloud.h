@@ -92,6 +92,15 @@ typedef enum {
     VS_HTTP_CONNECT, /* do we need this  ? */
 } vs_http_method_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint32_t code_offset;   // sizeof(vs_cloud_firmware_header_t)
+    uint32_t code_length;   // firmware_length
+    uint32_t footer_offset; // code_offset + code_length
+    uint32_t footer_length;
+    uint8_t signatures_count;
+    vs_firmware_descriptor_t descriptor;
+} vs_cloud_firmware_header_t;
+
 typedef int (*vs_cloud_mb_init_func)(const char *host,
                                      uint16_t port,
                                      const char *device_cert,
@@ -122,24 +131,9 @@ int
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 int
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url);
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header);
 
 int
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
-
-typedef struct __attribute__((__packed__)) {
-    uint32_t code_offset;   // sizeof(vs_firmware_header_t)
-    uint32_t code_length;   // firmware_length
-    uint32_t footer_offset; // code_offset + code_length
-    uint32_t footer_length;
-    uint8_t signatures_count;
-    vs_firmware_descriptor_t descriptor;
-} vs_firmware_header_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t signatures_count;
-    vs_firmware_descriptor_t descriptor;
-    uint8_t signatures[];
-} vs_firmware_footer_t;
 
 #endif // VS_CLOUD_H
