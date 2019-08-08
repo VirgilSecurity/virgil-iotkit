@@ -84,4 +84,7 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
 int
 vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
 
+int
+vs_update_install_firmware(vs_firmware_descriptor_t *descriptor);
+
 #endif // VS_UPDATE_H

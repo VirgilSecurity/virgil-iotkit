@@ -434,5 +434,63 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
 /*************************************************************************/
 int
 vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
-    return VS_UPDATE_ERR_OK;
+    int file_sz;
+    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
+
+    CHECK_RET(VS_UPDATE_ERR_OK == vs_update_install_prepare_space_hal(),
+              VS_UPDATE_ERR_FAIL,
+              "Unable to prepare the install space");
+
+    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
+
+    if (file_sz <= 0) {
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    int32_t footer_sz = file_sz - descriptor->firmware_length;
+    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_UPDATE_ERR_INVAL, "Incorrect footer size")
+
+    uint8_t buf[descriptor->chunk_size < footer_sz ? footer_sz : descriptor->chunk_size];
+    uint32_t offset = 0;
+    uint16_t read_sz;
+
+    // Update image by firmware
+    while (offset < descriptor->firmware_length) {
+        uint32_t fw_rest = descriptor->firmware_length - offset;
+        uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
+
+        if (VS_UPDATE_ERR_OK != vs_update_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
+            return VS_UPDATE_ERR_FAIL;
+        }
+
+        if (VS_UPDATE_ERR_OK != vs_update_install_append_data_hal(buf, required_chunk_size)) {
+            return VS_UPDATE_ERR_FAIL;
+        }
+
+        offset += required_chunk_size;
+    }
+
+    // Calculate fill size
+    uint32_t fill_sz = descriptor->app_size - descriptor->firmware_length;
+    CHECK_RET(footer_sz <= fill_sz, VS_UPDATE_ERR_FAIL, "Bad fill size of image")
+    fill_sz -= footer_sz;
+    VS_IOT_MEMSET(buf, 0xFF, descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size);
+
+    // Update image by fill
+    while (fill_sz) {
+        uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
+
+        if (VS_UPDATE_ERR_OK != vs_update_install_append_data_hal(buf, sz)) {
+            return VS_UPDATE_ERR_FAIL;
+        }
+
+        fill_sz -= sz;
+    }
+
+    // Update image by footer
+    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(descriptor, buf, footer_sz, &read_sz)) {
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    return vs_update_install_append_data_hal(buf, read_sz);
 }
