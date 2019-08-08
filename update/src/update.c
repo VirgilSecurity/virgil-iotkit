@@ -62,7 +62,7 @@ vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
     return vs_update_read_firmware_data_hal(
-            descriptor->manufacture_id, descriptor->device_type, offset, data, buff_sz, data_sz);
+            descriptor->info.manufacture_id, descriptor->info.device_type, offset, data, buff_sz, data_sz);
 }
 
 /*************************************************************************/
@@ -76,7 +76,7 @@ vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor,
     CHECK_NOT_ZERO(chunk, VS_UPDATE_ERR_INVAL);
 
     return vs_update_write_firmware_data_hal(
-            descriptor->manufacture_id, descriptor->device_type, offset, chunk, chunk_sz);
+            descriptor->info.manufacture_id, descriptor->info.device_type, offset, chunk, chunk_sz);
 }
 
 /*************************************************************************/
@@ -101,8 +101,11 @@ vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *fo
         footer_sz += sizeof(vs_sign_t) + sign_len + key_len;
     }
 
-    return vs_update_write_firmware_data_hal(
-            descriptor->manufacture_id, descriptor->device_type, descriptor->firmware_length, footer, footer_sz);
+    return vs_update_write_firmware_data_hal(descriptor->info.manufacture_id,
+                                             descriptor->info.device_type,
+                                             descriptor->firmware_length,
+                                             footer,
+                                             footer_sz);
 }
 
 /*************************************************************************/
@@ -118,7 +121,7 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
 
     *data_sz = 0;
 
-    file_sz = vs_update_get_firmware_image_len_hal(descriptor->manufacture_id, descriptor->device_type);
+    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
 
     if (file_sz > 0) {
 
@@ -128,8 +131,8 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
         *data_sz = (uint16_t)footer_sz;
         CHECK_RET(footer_sz <= buff_sz, VS_UPDATE_ERR_INVAL, "Buffer to small")
 
-        return vs_update_read_firmware_data_hal(descriptor->manufacture_id,
-                                                descriptor->device_type,
+        return vs_update_read_firmware_data_hal(descriptor->info.manufacture_id,
+                                                descriptor->info.device_type,
                                                 descriptor->firmware_length,
                                                 data,
                                                 footer_sz,
@@ -169,8 +172,8 @@ vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
 
             vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-            if (0 == memcmp(ptr->manufacture_id, descriptor->manufacture_id, MANUFACTURE_ID_SIZE) &&
-                0 == memcmp(ptr->device_type, descriptor->device_type, DEVICE_TYPE_SIZE)) {
+            if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
+                0 == memcmp(ptr->info.device_type, descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
                 VS_IOT_MEMCPY(ptr, descriptor, sizeof(vs_firmware_descriptor_t));
                 newbuf = buf;
                 goto save_data;
@@ -236,8 +239,8 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
     while (offset + sizeof(vs_firmware_descriptor_t) <= file_sz) {
         vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-        if (0 == memcmp(ptr->manufacture_id, manufacture_id, MANUFACTURE_ID_SIZE) &&
-            0 == memcmp(ptr->device_type, device_type, DEVICE_TYPE_SIZE)) {
+        if (0 == memcmp(ptr->info.manufacture_id, manufacture_id, MANUFACTURE_ID_SIZE) &&
+            0 == memcmp(ptr->info.device_type, device_type, DEVICE_TYPE_SIZE)) {
             VS_IOT_MEMCPY(descriptor, ptr, sizeof(vs_firmware_descriptor_t));
             res = VS_UPDATE_ERR_OK;
             break;
@@ -261,7 +264,8 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
 
-    if (VS_UPDATE_ERR_OK != vs_update_remove_firmware_data_hal(descriptor->manufacture_id, descriptor->device_type)) {
+    if (VS_UPDATE_ERR_OK !=
+        vs_update_remove_firmware_data_hal(descriptor->info.manufacture_id, descriptor->info.device_type)) {
         goto terminate;
     }
 
@@ -283,8 +287,8 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
     while (offset < file_sz || offset + sizeof(vs_firmware_descriptor_t) > file_sz) {
         vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-        if (0 == memcmp(ptr->manufacture_id, descriptor->manufacture_id, MANUFACTURE_ID_SIZE) &&
-            0 == memcmp(ptr->device_type, descriptor->device_type, DEVICE_TYPE_SIZE)) {
+        if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
+            0 == memcmp(ptr->info.device_type, descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
             VS_IOT_MEMMOVE(buf + offset,
                            buf + offset + sizeof(vs_firmware_descriptor_t),
                            file_sz - offset - sizeof(vs_firmware_descriptor_t));
@@ -335,7 +339,7 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     uint8_t hash[32];
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
-    file_sz = vs_update_get_firmware_image_len_hal(descriptor->manufacture_id, descriptor->device_type);
+    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
 
     if (file_sz <= 0) {
         return VS_UPDATE_ERR_FAIL;
@@ -425,4 +429,10 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     VS_LOG_DEBUG("New FW Image. Sign rules is %s", sign_rules >= VS_FW_SIGNATURES_QTY ? "correct" : "wrong");
 
     return sign_rules >= VS_FW_SIGNATURES_QTY ? VS_UPDATE_ERR_OK : VS_UPDATE_ERR_FAIL;
+}
+
+/*************************************************************************/
+int
+vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
+    return VS_UPDATE_ERR_OK;
 }

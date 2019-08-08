@@ -50,10 +50,14 @@ typedef struct __attribute__((__packed__)) {
     uint32_t timestamp; //the number of seconds elapsed since January 1, 2015 UTC
 } vs_firmware_version_t;
 
-typedef struct __attribute__((__packed__)) {
+typedef struct  __attribute__((__packed__)) {
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
     uint8_t device_type[DEVICE_TYPE_SIZE];
     vs_firmware_version_t version;
+} vs_firmware_info_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_firmware_info_t info;
     uint8_t padding;
     uint16_t chunk_size;
     uint32_t firmware_length;

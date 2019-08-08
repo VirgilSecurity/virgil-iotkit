@@ -222,7 +222,7 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[MANUFACTURE_ID_SI
     if (VS_UPDATE_ERR_NOT_FOUND == res) {
         VS_IOT_MEMSET(cur_version, 0, sizeof(vs_firmware_version_t));
     } else if (VS_UPDATE_ERR_OK == res) {
-        VS_IOT_MEMCPY(cur_version, &desc.version, sizeof(vs_firmware_version_t));
+        VS_IOT_MEMCPY(cur_version, &desc.info.version, sizeof(vs_firmware_version_t));
     } else {
         return false;
     }
