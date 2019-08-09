@@ -55,7 +55,7 @@ else()
 endif()
 
 target_compile_options(logger
-        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
 #   Compile definitions

@@ -68,7 +68,7 @@
  * It's values of vs_key_type_e from provision library
  */
 
-#define VS_SIGNER_TYPE_LIST {                                                                                       \
+#define VS_TL_SIGNER_TYPE_LIST {                                                                                       \
     VS_KEY_AUTH,                                                                                                    \
     VS_KEY_TRUSTLIST                                                                                                \
 };

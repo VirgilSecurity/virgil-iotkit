@@ -55,7 +55,7 @@ function(add_sdmp _for_factory)
     #
     #   -Wall -Werror
     #
-    set_target_properties(${_targetname} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+    set_target_properties(${_targetname} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
     #
     #   Config path
