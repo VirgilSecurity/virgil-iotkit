@@ -50,6 +50,7 @@ function(add_sdmp _for_factory)
     add_library(${_targetname}
             src/sdmp.c
             src/services/PRVS.c
+            src/services/fwdt.c
             )
 
     #
