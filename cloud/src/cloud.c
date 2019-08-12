@@ -305,7 +305,7 @@ _ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
     desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
-    desc->version.timestamp = VS_IOT_NTOHL(desc->version.timestamp);
+    desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
 }
 
 /*************************************************************************/
@@ -346,14 +346,15 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             _ntoh_fw_header(&resp->header);
 
-            if (VS_UPDATE_ERR_OK != vs_cloud_is_new_firmware_version_available(resp->header.descriptor.manufacture_id,
-                                                                               resp->header.descriptor.device_type,
-                                                                               &resp->header.descriptor.version)) {
+            if (VS_UPDATE_ERR_OK !=
+                vs_cloud_is_new_firmware_version_available(resp->header.descriptor.info.manufacture_id,
+                                                           resp->header.descriptor.info.device_type,
+                                                           &resp->header.descriptor.info.version)) {
                 return 0;
             }
 
-            vs_update_remove_firmware_data_hal(resp->header.descriptor.manufacture_id,
-                                               resp->header.descriptor.device_type);
+            vs_update_remove_firmware_data_hal(resp->header.descriptor.info.manufacture_id,
+                                               resp->header.descriptor.info.device_type);
 
             if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
                 return 0;
