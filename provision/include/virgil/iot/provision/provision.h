@@ -52,6 +52,8 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
 typedef enum {
     VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */
     VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */
@@ -70,6 +72,7 @@ typedef enum {
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
 } vs_sdmp_prvs_element_e;
+#pragma GCC diagnostic pop
 
 typedef enum {
     VS_PROVISION_SGNP = VS_PRVS_SGNP,
