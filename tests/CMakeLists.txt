@@ -43,8 +43,10 @@ project(virgil-iot-sdk-tests VERSION 0.1.0 LANGUAGES C)
 add_library(virgil-iot-sdk-tests
         src/tests.c
         src/sdmp/prvs_tests.c
+        src/sdmp/fwdt_tests.c
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
+        src/sdmp/test_fwdt.c
         src/sdmp/test_netif.c
         src/crypto/aes.c
         src/crypto/ecdh.c

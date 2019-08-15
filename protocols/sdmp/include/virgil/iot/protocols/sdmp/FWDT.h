@@ -32,48 +32,58 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_STRUCTURES_API_H
-#define VS_HSM_STRUCTURES_API_H
+#ifndef VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H
+#define VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H
 
-#include <stdint.h>
-#include <stddef.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-typedef enum {
-    VS_KEYPAIR_INVALID = -1,
-    VS_KEYPAIR_EC_SECP_MIN = 1,
-    VS_KEYPAIR_EC_SECP192R1 = VS_KEYPAIR_EC_SECP_MIN, ///< 192-bits NIST curve
-    VS_KEYPAIR_EC_SECP224R1,                          ///< 224-bits NIST curve
-    VS_KEYPAIR_EC_SECP256R1,                          ///< 256-bits NIST curve
-    VS_KEYPAIR_EC_SECP384R1,                          ///< 384-bits NIST curve
-    VS_KEYPAIR_EC_SECP521R1,                          ///< 521-bits NIST curve
-    VS_KEYPAIR_EC_SECP192K1,                          ///< 192-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP224K1,                          ///< 224-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP256K1,                          ///< 256-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP_MAX = VS_KEYPAIR_EC_SECP256K1,
-    VS_KEYPAIR_EC_CURVE25519, ///< Curve25519
-    VS_KEYPAIR_EC_ED25519,    ///< Ed25519
-    VS_KEYPAIR_RSA_2048,      ///< RSA 2048 bit (not recommended)
-    VS_KEYPAIR_MAX
-} vs_hsm_keypair_type_e;
+#define FWDT_LIST_SZ_MAX (50)
+#define PUBKEY_MAX_SZ (100)
 
 typedef enum {
-    VS_HASH_SHA_INVALID = -1,
-    VS_HASH_SHA_256 = 0,
-    VS_HASH_SHA_384,
-    VS_HASH_SHA_512,
-} vs_hsm_hash_type_e;
+    VS_FWDT_DNID = HTONL_IN_COMPILE_TIME('DNID'), /* Discover Not Initialized Devices */
+} vs_sdmp_fwdt_element_e;
 
-typedef enum {
-    VS_KDF_INVALID = -1,
-    VS_KDF_2 = 0,
-} vs_hsm_kdf_type_e;
+typedef struct {
+    vs_mac_addr_t mac_addr;
+    uint8_t device_type;
+    uint8_t reserved[10];
+} vs_sdmp_fwdt_dnid_element_t;
 
-typedef enum { VS_AES_GCM, VS_AES_CBC } vs_iot_aes_type_e;
+typedef struct {
+    vs_sdmp_fwdt_dnid_element_t elements[FWDT_LIST_SZ_MAX];
+    uint16_t count;
+} vs_sdmp_fwdt_dnid_list_t;
 
-#endif // VS_HSM_STRUCTURES_API_H
+typedef int (*vs_sdmp_fwdt_dnid_t)();
+typedef int (*vs_sdmp_fwdt_stop_wait_t)(int *condition, int expect);
+typedef int (*vs_sdmp_fwdt_wait_t)(uint32_t wait_ms, int *condition, int idle);
+
+typedef struct {
+    vs_sdmp_fwdt_dnid_t dnid_func;
+    vs_sdmp_fwdt_stop_wait_t stop_wait_func;
+    vs_sdmp_fwdt_wait_t wait_func;
+} vs_sdmp_fwdt_impl_t;
+
+// Get Service descriptor
+
+const vs_sdmp_service_t *
+vs_sdmp_fwdt_service();
+
+// HAL
+int
+vs_sdmp_fwdt_configure_hal(vs_sdmp_fwdt_impl_t impl);
+
+// Commands
+int
+vs_sdmp_fwdt_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_fwdt_dnid_list_t *list, uint32_t wait_ms);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H

@@ -32,48 +32,55 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_STRUCTURES_API_H
-#define VS_HSM_STRUCTURES_API_H
+#include <stdlib-config.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/FWDT.h>
+#include <virgil/iot/tests/private/test_netif.h>
+#include <virgil/iot/tests/private/test_fwdt.h>
 
-#include <stdint.h>
-#include <stddef.h>
+fwdt_call_t fwdt_call;
+server_request_t server_request;
+make_server_response_t make_server_response;
 
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+/**********************************************************/
+static int
+fwdt_dnid() {
 
-typedef enum {
-    VS_KEYPAIR_INVALID = -1,
-    VS_KEYPAIR_EC_SECP_MIN = 1,
-    VS_KEYPAIR_EC_SECP192R1 = VS_KEYPAIR_EC_SECP_MIN, ///< 192-bits NIST curve
-    VS_KEYPAIR_EC_SECP224R1,                          ///< 224-bits NIST curve
-    VS_KEYPAIR_EC_SECP256R1,                          ///< 256-bits NIST curve
-    VS_KEYPAIR_EC_SECP384R1,                          ///< 384-bits NIST curve
-    VS_KEYPAIR_EC_SECP521R1,                          ///< 521-bits NIST curve
-    VS_KEYPAIR_EC_SECP192K1,                          ///< 192-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP224K1,                          ///< 224-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP256K1,                          ///< 256-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP_MAX = VS_KEYPAIR_EC_SECP256K1,
-    VS_KEYPAIR_EC_CURVE25519, ///< Curve25519
-    VS_KEYPAIR_EC_ED25519,    ///< Ed25519
-    VS_KEYPAIR_RSA_2048,      ///< RSA 2048 bit (not recommended)
-    VS_KEYPAIR_MAX
-} vs_hsm_keypair_type_e;
+    fwdt_call.dnid = 1;
 
-typedef enum {
-    VS_HASH_SHA_INVALID = -1,
-    VS_HASH_SHA_256 = 0,
-    VS_HASH_SHA_384,
-    VS_HASH_SHA_512,
-} vs_hsm_hash_type_e;
+    return 0;
+}
 
-typedef enum {
-    VS_KDF_INVALID = -1,
-    VS_KDF_2 = 0,
-} vs_hsm_kdf_type_e;
+/**********************************************************/
+static int
+fwdt_stop_wait(int *condition, int expect) {
 
-typedef enum { VS_AES_GCM, VS_AES_CBC } vs_iot_aes_type_e;
+    VS_IOT_ASSERT(condition);
 
-#endif // VS_HSM_STRUCTURES_API_H
+    *condition = expect;
+
+    fwdt_call.stop_wait = 1;
+
+    return 0;
+}
+
+/**********************************************************/
+static int
+fwdt_wait(uint32_t wait_ms, int *condition, int idle) {
+
+    fwdt_call.wait = 1;
+
+    return 0;
+}
+
+/**********************************************************/
+vs_sdmp_fwdt_impl_t
+make_fwdt_implementation(void) {
+    vs_sdmp_fwdt_impl_t fwdt_impl;
+
+    fwdt_impl.dnid_func = fwdt_dnid;
+    fwdt_impl.stop_wait_func = fwdt_stop_wait;
+    fwdt_impl.wait_func = fwdt_wait;
+
+    return fwdt_impl;
+}

@@ -47,9 +47,26 @@ function(add_sdmp _for_factory)
     #
     #   SDMP library
     #
-    add_library(${_targetname}
-            src/sdmp.c
-            src/services/PRVS.c
+
+    add_library(${_targetname})
+
+    #
+    #   Sources
+    #
+
+    target_sources(${_targetname}
+            PRIVATE
+
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/PRVS.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/FWDT.h
+
+            ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/FWDT.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/PRVS.c
+
             )
 
     #

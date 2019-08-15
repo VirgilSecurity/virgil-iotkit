@@ -41,7 +41,9 @@
         return (RETCODE);                                                                                              \
     }
 
-#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
+#define NOT_NULL(VAR, RETCODE)  CHECK_RET((VAR), false, #VAR " must not be null");
+
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET((CONDITION), false, MESSAGE, ##__VA_ARGS__)
 
 #define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
     BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
