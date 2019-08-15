@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_PRVS_H
-#define KUNLUN_PRVS_H
+#ifndef VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H
+#define VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,8 +41,49 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
+#define FWDT_LIST_SZ_MAX (50)
+#define PUBKEY_MAX_SZ (100)
+
+typedef enum {
+    VS_FWDT_DNID = HTONL_IN_COMPILE_TIME('DNID'), /* Discover Not Initialized Devices */
+} vs_sdmp_fwdt_element_e;
+
+typedef struct {
+    vs_mac_addr_t mac_addr;
+    uint8_t device_type;
+    uint8_t reserved[10];
+} vs_sdmp_fwdt_dnid_element_t;
+
+typedef struct {
+    vs_sdmp_fwdt_dnid_element_t elements[FWDT_LIST_SZ_MAX];
+    uint16_t count;
+} vs_sdmp_fwdt_dnid_list_t;
+
+typedef int (*vs_sdmp_fwdt_dnid_t)();
+typedef int (*vs_sdmp_fwdt_stop_wait_t)(int *condition, int expect);
+typedef int (*vs_sdmp_fwdt_wait_t)(uint32_t wait_ms, int *condition, int idle);
+
+typedef struct {
+    vs_sdmp_fwdt_dnid_t dnid_func;
+    vs_sdmp_fwdt_stop_wait_t stop_wait_func;
+    vs_sdmp_fwdt_wait_t wait_func;
+} vs_sdmp_fwdt_impl_t;
+
+// Get Service descriptor
+
+const vs_sdmp_service_t *
+vs_sdmp_fwdt_service();
+
+// HAL
+int
+vs_sdmp_fwdt_configure_hal(vs_sdmp_fwdt_impl_t impl);
+
+// Commands
+int
+vs_sdmp_fwdt_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_fwdt_dnid_list_t *list, uint32_t wait_ms);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // KUNLUN_PRVS_H
+#endif // VIRGIL_SECURITY_SDK_SDMP_SERVICES_FWDT_H
