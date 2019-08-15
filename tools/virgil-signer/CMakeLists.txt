@@ -34,8 +34,55 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-signer VERSION 0.1.0 LANGUAGES Go)
+project(virgil-firmware-signer VERSION 0.1.0 LANGUAGES Go)
+
+
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[virgil-firmware-signer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+else()
+    message(STATUS "[virgil-firmware-signer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
+endif()
+
+if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
+    message(FATAL_ERROR "[virgil-firmware-signer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+else()
+    message(STATUS "[virgil-firmware-signer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
+endif()
+
+#
+# CFLAGS for CGO
+#
+set(CMAKE_CGO_CFLAGS
+        ${CMAKE_CGO_CFLAGS}
+        -I${VIRGIL_IOT_DIRECTORY}/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/hsm/include
+        )
+
+#
+# LDFLAGS for CGO
+#
+set(CMAKE_CGO_LDFLAGS
+        ${CMAKE_CGO_LDFLAGS}
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
+        )
+
+#
+# Workaround target
+# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
+#
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(LIBS_TARGET ${PROJECT_NAME}-libs)
+add_custom_target(${LIBS_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a"
+        ${INITIALIZER_LIB_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a"
+        ${INITIALIZER_LIB_DIR}
+        )
+
 #
 #   Virgil Signer
 #
-add_go_executable(virgil-firmware-signer)
+add_go_executable(virgil-firmware-signer converters ${LIBS_TARGET})

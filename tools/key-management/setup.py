@@ -6,7 +6,7 @@ setup(
     version=__version__,
     packages=find_packages(exclude=('tests',)),
     install_requires=[
-        'virgil-sdk>=5,<6',
+        'virgil-sdk==5.2.1',
         'virgil-crypto>=3,<4',
         'prettytable',
         'pyasn1',

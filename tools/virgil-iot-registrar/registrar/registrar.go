@@ -37,6 +37,7 @@ package registrar
 import (
 	"bufio"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"gopkg.in/urfave/cli.v2"
 	"io"
@@ -75,6 +76,10 @@ type cardsServiceInfo struct {
 	apiKeyID            string
 	apiPrivateKey       cryptoapi.PrivateKey
 	cardsClient         *sdk.CardClient
+}
+
+type iotRegistrarSnapshot struct {
+	AppID  string  `json:"app_id"`
 }
 
 func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
@@ -249,8 +254,16 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 		return fmt.Errorf("parse snapshot error: %s", err)
 	}
 
+	// Prepare "iot_registrator" snapshot
+	registrarSnapshot := &iotRegistrarSnapshot{
+		AppID:   r.cardService.appID,
+	}
+	extraFields, err := json.Marshal(registrarSnapshot)
+	if err != nil {
+		return fmt.Errorf("failed to marshal iotRegistrarSnapshot: %v", err)
+	}
+
 	// Add IoT registrar signature
-	extraFields := []byte{}
 	modelSigner := sdk.NewModelSigner(cardCrypto)
 	if err := modelSigner.SignRaw(rawSignedModel, "iot_registrator", r.iotPrivateKey, extraFields); err != nil {
 		return fmt.Errorf("failed to sign by IoT registrar key %v", err)

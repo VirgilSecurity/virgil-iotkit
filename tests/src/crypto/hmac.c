@@ -19,12 +19,14 @@ static bool
 _test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t correct_sz) {
     uint8_t buf[128];
     uint16_t sz;
+    int res;
 
-    VS_HSM_CHECK_RET(
-            vs_hsm_hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz),
-            "vs_hsm_hmac incorrect result");
+    res = vs_hsm_hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz);
 
-    MEMCMP_CHECK_RET(correct, buf, correct_sz);
+    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "HMAC for %s algorithm is not implemented", vs_hsm_hash_type_descr(hash_type));
+    VS_HSM_CHECK_RET(res, "vs_hsm_hmac incorrect result")
+
+    MEMCMP_CHECK_RET(correct, buf, correct_sz)
 
     return true;
 }
@@ -32,22 +34,6 @@ _test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t c
 /******************************************************************************/
 void
 test_hmac(void) {
-
-#define TEST_STEP(BITLEN)                                                                                              \
-    do {                                                                                                               \
-        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
-        const uint8_t *correct = sha##BITLEN##_result_raw;                                                             \
-        uint16_t correct_sz = sizeof(sha##BITLEN##_result_raw);                                                        \
-        bool not_implemented = false;                                                                                  \
-                                                                                                                       \
-        TEST_HMAC_NOT_IMPLEMENTED(hash_type);                                                                          \
-                                                                                                                       \
-        if (not_implemented) {                                                                                         \
-            VS_LOG_WARNING("HMAC for SHA_" #BITLEN " algorithm is not implemented");                                   \
-        } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type), _test_hmac_case(hash_type, correct, correct_sz));          \
-        }                                                                                                              \
-    } while (0)
 
     uint8_t sha256_result_raw[] = {0x70, 0xa8, 0xe8, 0xa8, 0xb5, 0x24, 0x1b, 0x7e, 0x75, 0x84, 0x93,
                                    0x55, 0x3f, 0x29, 0x21, 0x80, 0x1b, 0x11, 0xd3, 0x6f, 0x47, 0x35,
@@ -66,9 +52,12 @@ test_hmac(void) {
 
     START_TEST("HMAC test");
 
-    TEST_STEP(256);
-    TEST_STEP(384);
-    TEST_STEP(512);
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                 _test_hmac_case(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)))
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                 _test_hmac_case(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)))
+    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                 _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)))
 
 terminate:;
 

@@ -55,7 +55,7 @@ add_library(${SECBOX_LIB}
 #
 #   -Wall -Werror
 #
-set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
 #
 #   Common include directories

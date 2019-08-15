@@ -52,7 +52,7 @@ static vs_tl_context_t _tl_dynamic_ctx;
 
 static vs_tl_context_t _tl_tmp_ctx;
 
-static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_SIGNER_TYPE_LIST;
+static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
 
 /******************************************************************************/
 static bool
@@ -81,6 +81,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint16_t key_len;
     uint8_t sign_rules = 0;
 
+    VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
@@ -224,6 +225,18 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     return VS_TL_OK;
 }
 
+/******************************************************************************/
+int
+vs_tl_verify_storage(size_t storage_type) {
+    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+
+    CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
+
+    if (!_verify_tl(tl_ctx)) {
+        return VS_TL_ERROR_GENERAL;
+    }
+    return VS_TL_OK;
+}
 /******************************************************************************/
 void
 vs_tl_storage_init() {

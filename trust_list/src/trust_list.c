@@ -67,9 +67,9 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
         res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
 
         if (VS_TL_OK == res) {
-            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
-            if (VS_TL_OK == res) {
-                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
+            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
+            if (VS_TL_OK == res && VS_TL_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
+                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
             }
         }
 
@@ -100,18 +100,18 @@ vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t 
 
         if (buf_sz >= sizeof(vs_tl_header_t)) {
             *out_sz = sizeof(vs_tl_header_t);
-            res = vs_tl_header_load(TL_STORAGE_TYPE_STATIC, (vs_tl_header_t *)out_data);
+            res = vs_tl_header_load(TL_STORAGE_TYPE_DYNAMIC, (vs_tl_header_t *)out_data);
         }
         break;
     case VS_TL_ELEMENT_TLF:
 
         if (buf_sz >= sizeof(vs_tl_footer_t)) {
             *out_sz = sizeof(vs_tl_footer_t);
-            res = vs_tl_footer_load(TL_STORAGE_TYPE_STATIC, out_data, buf_sz, out_sz);
+            res = vs_tl_footer_load(TL_STORAGE_TYPE_DYNAMIC, out_data, buf_sz, out_sz);
         }
         break;
     case VS_TL_ELEMENT_TLC:
-        res = vs_tl_key_load(TL_STORAGE_TYPE_STATIC, element_info->index, out_data, buf_sz, out_sz);
+        res = vs_tl_key_load(TL_STORAGE_TYPE_DYNAMIC, element_info->index, out_data, buf_sz, out_sz);
         break;
     default:
         break;

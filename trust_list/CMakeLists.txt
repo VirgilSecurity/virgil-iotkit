@@ -64,7 +64,7 @@ else()
 endif()
 
 target_compile_options(${TRUST_LIST_LIB}
-        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
 #   Config path

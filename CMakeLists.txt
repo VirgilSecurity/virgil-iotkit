@@ -40,6 +40,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 if (NOT GO_DISABLE)
     include(cmake/golang.cmake)
     include(cmake/flags.cmake)
+    set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
     set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 endif()
 
@@ -67,7 +68,6 @@ if(VIRGIL_IOT_SDK_VERSION_LABEL)
 endif()
 
 file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
-
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -103,7 +103,7 @@ option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 # Features
 #
 option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
-option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
+option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
@@ -161,10 +161,39 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
+#   Shared macros interface
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
+
+#
+#   jsmn
+#
+if (VIRGIL_IOT_CLOUD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+endif()
+
+#
+#   vs-json
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+
+#
+#   update
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)
+
+#
 #   Logger
 #
 # TODO: Add Option to disable Logger
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
+
+#
+#   Cloud
+#
+if (VIRGIL_IOT_CLOUD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+endif()
 
 #
 #   Trust list

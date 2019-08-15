@@ -35,6 +35,8 @@
 #ifndef VS_MACROS_H
 #define VS_MACROS_H
 
+#define VS_UNUSED(x) (void)(x)
+
 #define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
@@ -49,5 +51,13 @@
     BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
+
+#define CHECK_NOT_ZERO(ARG, RETCODE)                                                                                   \
+    do {                                                                                                               \
+        if (!(ARG)) {                                                                                                  \
+            VS_LOG_ERROR("Argument " #ARG " must not be zero");                                                        \
+            return RETCODE;                                                                                            \
+        }                                                                                                              \
+    } while (0)
 
 #endif // VS_MACROS_H

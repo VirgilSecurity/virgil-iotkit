@@ -21,9 +21,9 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
     uint8_t another_result_buf[result_len];
 
     VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len),
-                     "ERROR while execute kdf");
+                     "ERROR while execute kdf")
 
-    MEMCMP_CHECK_RET(result_buf, correct_result, result_len);
+    MEMCMP_CHECK_RET(result_buf, correct_result, result_len)
 
     VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2,
                                 hash_type,
@@ -33,7 +33,7 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
                                 result_len),
                      "ERROR while execute kdf");
 
-    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "Hkdf is constant");
+    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "kdf is constant")
     return true;
 }
 
@@ -54,7 +54,7 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                                  result_len),
                      "ERROR while execute hkdf");
 
-    MEMCMP_CHECK_RET(result_buf, correct_result, result_len);
+    MEMCMP_CHECK_RET(result_buf, correct_result, result_len)
 
     memset(result_buf, 0, result_len);
     VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
@@ -68,7 +68,7 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                                  result_len),
                      "ERROR while execute hkdf");
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other salt");
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other salt")
 
     memset(result_buf, 0, result_len);
     VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
@@ -82,7 +82,7 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                                  result_len),
                      "ERROR while execute hkdf");
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other input");
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other input")
 
     memset(result_buf, 0, result_len);
     VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
@@ -96,7 +96,7 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                                  result_len),
                      "ERROR while execute hkdf");
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other info");
+    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other info")
 
     return true;
 }
@@ -104,18 +104,25 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
 /******************************************************************************/
 void
 test_kdf2(void) {
-#define TEST_STEP(BITLEN)                                                                                              \
+#define HKDF_TEST_STEP(BITLEN)                                                                                         \
     do {                                                                                                               \
         vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
-        const uint8_t *correct_result = sha##BITLEN##_result_raw;                                                      \
-        uint16_t result_len = sizeof(sha##BITLEN##_result_raw);                                                        \
                                                                                                                        \
         TEST_HKDF_NOT_IMPLEMENTED(hash_type);                                                                          \
                                                                                                                        \
         if (not_implemented) {                                                                                         \
+            VS_LOG_WARNING("HKDF for SHA_" #BITLEN " algorithm is not implemented");                                   \
+        }                                                                                                              \
+    } while (0)
+
+#define KDF_TEST_STEP(BITLEN)                                                                                          \
+    do {                                                                                                               \
+        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
+                                                                                                                       \
+        TEST_KDF_NOT_IMPLEMENTED(hash_type);                                                                           \
+                                                                                                                       \
+        if (not_implemented) {                                                                                         \
             VS_LOG_WARNING("KDF for SHA_" #BITLEN " algorithm is not implemented");                                    \
-        } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type), _test_kdf2_step(hash_type, correct_result, result_len));   \
         }                                                                                                              \
     } while (0)
 
@@ -156,16 +163,33 @@ test_kdf2(void) {
 
     START_TEST("KDF2 tests");
 
-    TEST_STEP(256);
-    TEST_STEP(384);
+    KDF_TEST_STEP(256);
+    if (!not_implemented) {
+        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+                     _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)))
+    }
 
+    KDF_TEST_STEP(384);
     if (!not_implemented) {
         TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                     _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)));
+                     _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)))
     }
-    TEST_STEP(512);
+
+    KDF_TEST_STEP(512);
+    if (!not_implemented) {
+        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
+                     _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)))
+    }
 
     START_TEST("HKDF tests");
+
+    HKDF_TEST_STEP(256);
+    HKDF_TEST_STEP(384);
+    if (!not_implemented) {
+        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
+                     _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)))
+    }
+    HKDF_TEST_STEP(512);
 
 terminate:;
 
