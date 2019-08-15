@@ -57,7 +57,7 @@
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
-#define CHECK_NOT_ZERO(ARG)        CHECK_RET((ARG), "Argument " #ARG " must not be zero");
+#define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero");
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero");                                                                              \
 
 #endif // VS_MACROS_H

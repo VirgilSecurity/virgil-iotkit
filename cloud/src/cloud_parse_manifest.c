@@ -268,8 +268,8 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
 
-    CHECK_NOT_ZERO(payload, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(fw_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(payload, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(fw_url, VS_CLOUD_ERR_INVAL);
 
     VS_LOG_DEBUG("NEW FIRMWARE: %s", (char *)payload);
 
@@ -321,8 +321,8 @@ int
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
 
-    CHECK_NOT_ZERO(payload, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(tl_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(payload, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(tl_url, VS_CLOUD_ERR_INVAL);
 
     vs_tl_manifest_entry_t tl_entry;
 

@@ -57,9 +57,9 @@ vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
                               uint16_t *data_sz) {
 
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(data, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(data_sz, VS_UPDATE_ERR_INVAL);
 
     return vs_update_read_firmware_data_hal(
             descriptor->info.manufacture_id, descriptor->info.device_type, offset, data, buff_sz, data_sz);
@@ -72,8 +72,8 @@ vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor,
                               uint16_t chunk_sz,
                               uint32_t offset) {
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(chunk, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(chunk, VS_UPDATE_ERR_INVAL);
 
     return vs_update_write_firmware_data_hal(
             descriptor->info.manufacture_id, descriptor->info.device_type, offset, chunk, chunk_sz);
@@ -85,8 +85,8 @@ vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *fo
     uint16_t footer_sz = sizeof(vs_update_firmware_footer_t);
     vs_update_firmware_footer_t *f = (vs_update_firmware_footer_t *)footer;
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(footer, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(footer, VS_UPDATE_ERR_INVAL);
 
     for (uint8_t i = 0; i < f->signatures_count; ++i) {
         int key_len;
@@ -115,9 +115,9 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
                                uint16_t buff_sz,
                                uint16_t *data_sz) {
     int file_sz;
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
-    CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(data, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(data_sz, VS_UPDATE_ERR_INVAL);
 
     *data_sz = 0;
 
@@ -150,14 +150,14 @@ vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
     uint32_t offset = 0;
     int res;
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
 
     file_sz = vs_update_get_firmware_descriptor_table_len_hal();
 
     if (file_sz > 0) {
         uint16_t read_sz;
         buf = VS_IOT_CALLOC(1, file_sz);
-        CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
+        CHECK_NOT_ZERO_RET(buf, VS_UPDATE_ERR_FAIL);
 
         if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
             VS_IOT_FREE(buf);
@@ -197,7 +197,7 @@ vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
     } else {
         file_sz = sizeof(vs_firmware_descriptor_t);
         newbuf = VS_IOT_CALLOC(1, file_sz);
-        CHECK_NOT_ZERO(newbuf, VS_UPDATE_ERR_FAIL);
+        CHECK_NOT_ZERO_RET(newbuf, VS_UPDATE_ERR_FAIL);
         VS_IOT_MEMCPY(newbuf, (uint8_t *)descriptor, file_sz);
     }
 
@@ -219,7 +219,7 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
     uint8_t *buf = NULL;
     uint32_t offset = 0;
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
 
     file_sz = vs_update_get_firmware_descriptor_table_len_hal();
 
@@ -229,7 +229,7 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
 
     uint16_t read_sz;
     buf = VS_IOT_CALLOC(1, file_sz);
-    CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
+    CHECK_NOT_ZERO_RET(buf, VS_UPDATE_ERR_FAIL);
 
     if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
         res = VS_UPDATE_ERR_FAIL;
@@ -262,7 +262,7 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
     int file_sz;
     uint8_t *buf = NULL;
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_INVAL);
 
     if (VS_UPDATE_ERR_OK !=
         vs_update_remove_firmware_data_hal(descriptor->info.manufacture_id, descriptor->info.device_type)) {
@@ -278,7 +278,7 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
     uint16_t read_sz;
     uint32_t offset = 0;
     buf = VS_IOT_CALLOC(1, file_sz);
-    CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
+    CHECK_NOT_ZERO_RET(buf, VS_UPDATE_ERR_FAIL);
 
     if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
         goto terminate;
@@ -338,7 +338,7 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     // TODO: Need to support all hash types
     uint8_t hash[32];
 
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_FAIL);
     file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
 
     if (file_sz <= 0) {
@@ -435,7 +435,7 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
 int
 vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
     int file_sz;
-    CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
+    CHECK_NOT_ZERO_RET(descriptor, VS_UPDATE_ERR_FAIL);
 
     CHECK_RET(VS_UPDATE_ERR_OK == vs_update_install_prepare_space_hal(),
               VS_UPDATE_ERR_FAIL,

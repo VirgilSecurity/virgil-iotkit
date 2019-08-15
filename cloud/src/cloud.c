@@ -250,8 +250,8 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
     int16_t ret;
     char serial[SERIAL_SIZE * 2 + 1];
 
-    CHECK_NOT_ZERO(out_answer, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(in_out_answer_len, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(out_answer, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CLOUD_ERR_INVAL);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
 
@@ -464,8 +464,8 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 int
 vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header) {
     int res = VS_CLOUD_ERR_OK;
-    CHECK_NOT_ZERO(fw_file_url, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(fetched_header, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(fw_file_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(fetched_header, VS_CLOUD_ERR_INVAL);
     size_t in_out_answer_len = 0;
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
@@ -648,7 +648,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 int
 vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     int res = VS_CLOUD_ERR_OK;
-    CHECK_NOT_ZERO(tl_file_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(tl_file_url, VS_CLOUD_ERR_INVAL);
     size_t in_out_answer_len = 0;
     tl_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));

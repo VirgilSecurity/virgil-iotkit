@@ -72,7 +72,7 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
 
 /**********************************************************/
 static int
-test_netif_init(const vs_netif_rx_cb_t rx_cb) {
+test_netif_init(const vs_netif_rx_cb_t rx_cb, const struct vs_netif_t *netif) {
     VS_IOT_ASSERT(rx_cb);
 
     callback_rx_cb = rx_cb;

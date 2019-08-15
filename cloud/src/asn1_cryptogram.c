@@ -162,14 +162,14 @@ vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
     size_t _sz, ar_sz, asn1_sz;
     const uint8_t *_data, *p_ar = 0;
 
-    CHECK_NOT_ZERO(cryptogram, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(public_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(mac_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data_sz, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(public_key, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_key, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_key, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(mac_data, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_data, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_CLOUD_ERR_INVAL);
 
     _sz = cryptogram_sz;
     _data = cryptogram;
