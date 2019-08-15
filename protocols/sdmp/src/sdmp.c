@@ -68,7 +68,9 @@ _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 /******************************************************************************/
 static bool
 _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
-    return _is_broadcast(mac_addr) || _is_my_mac(netif, mac_addr);
+    bool is_broadcast = _is_broadcast(mac_addr);
+    bool is_my_mac = _is_my_mac(netif, mac_addr);
+    return is_broadcast || is_my_mac;
 }
 
 /******************************************************************************/
@@ -229,7 +231,7 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
     _sdmp_default_netif = default_netif;
 
     // Init default network interface
-    default_netif->init(_sdmp_rx_cb);
+    default_netif->init(_sdmp_rx_cb, default_netif);
 
     return 0;
 }

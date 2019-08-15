@@ -53,7 +53,7 @@ typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *d
 typedef int (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
 typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
-typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
+typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const struct vs_netif_t *netif);
 
 typedef int (*vs_netif_deinit_t)();
 
