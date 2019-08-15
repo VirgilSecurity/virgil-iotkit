@@ -322,7 +322,7 @@ _ntoh_fw_header(vs_cloud_firmware_header_t *header) {
 
 /*************************************************************************/
 static bool
-_chech_firmware_header(vs_cloud_firmware_header_t *header) {
+_check_firmware_header(vs_cloud_firmware_header_t *header) {
     return header->descriptor.firmware_length == header->code_length &&
            header->code_offset == sizeof(vs_cloud_firmware_header_t) && header->footer_offset >= header->code_length &&
            header->footer_offset + header->footer_length < VS_MAX_FIRMWARE_UPDATE_SIZE;
@@ -354,7 +354,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             _ntoh_fw_header(&resp->header);
 
-            if (!_chech_firmware_header(&resp->header) ||
+            if (!_check_firmware_header(&resp->header) ||
                 VS_UPDATE_ERR_OK !=
                         vs_cloud_is_new_firmware_version_available(resp->header.descriptor.info.manufacture_id,
                                                                    resp->header.descriptor.info.device_type,
