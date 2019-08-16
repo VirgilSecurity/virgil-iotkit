@@ -1,6 +1,7 @@
 #ifndef SECBOX_H
 #define SECBOX_H
 #include <stdint.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 typedef struct vs_secbox_element_info_s {
     uint16_t storage_type;

@@ -38,12 +38,11 @@
 #include "virgil/iot/trust_list/tl_structs.h"
 #include "virgil/iot/trust_list/private/tl_operations.h"
 #include "virgil/iot/trust_list/trust_list.h"
-#include "virgil/iot/secbox/secbox.h"
 
 /******************************************************************************/
 void
-vs_tl_init_storage(void) {
-    vs_tl_storage_init();
+vs_tl_init_storage() {
+    vs_tl_storage_init_internal();
 }
 
 /******************************************************************************/
