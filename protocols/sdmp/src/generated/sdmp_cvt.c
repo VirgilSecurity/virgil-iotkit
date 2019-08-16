@@ -36,24 +36,6 @@
 
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->manufacturer = htonl(src_data->manufacturer);
-    src_data->model = htonl(src_data->model);
-    vs_sdmp_prvs_signature_t_encode(&src_data->signature);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->manufacturer = ntohl(src_data->manufacturer);
-    src_data->model = ntohl(src_data->model);
-    vs_sdmp_prvs_signature_t_decode(&src_data->signature);
-}
-
-/******************************************************************************/
 // Converting encode function for (vs_ethernet_header_t)
 void
 vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data) {
@@ -71,18 +53,24 @@ vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
 // Converting encode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-    src_data->flags = htonl(src_data->flags);
     src_data->padding = htons(src_data->padding);
     src_data->content_size = htons(src_data->content_size);
+    src_data->transaction_id = htons(src_data->transaction_id);
+    src_data->service_id = htonl(src_data->service_id);
+    src_data->element_id = htonl(src_data->element_id);
+    src_data->flags = htonl(src_data->flags);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-    src_data->flags = ntohl(src_data->flags);
     src_data->padding = ntohs(src_data->padding);
     src_data->content_size = ntohs(src_data->content_size);
+    src_data->transaction_id = ntohs(src_data->transaction_id);
+    src_data->service_id = ntohl(src_data->service_id);
+    src_data->element_id = ntohl(src_data->element_id);
+    src_data->flags = ntohl(src_data->flags);
 }
 
 /******************************************************************************/
@@ -102,15 +90,19 @@ vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
 }
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_prvs_signature_t)
+// Converting encode function for (vs_sdmp_prvs_devi_t)
 void
-vs_sdmp_prvs_signature_t_encode(vs_sdmp_prvs_signature_t *src_data) {
-    src_data->id = htons(src_data->id);
+vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = htons(src_data->data_sz);
+    src_data->manufacturer = htonl(src_data->manufacturer);
+    src_data->model = htonl(src_data->model);
 }
 
 /******************************************************************************/
-// Converting decode function for (vs_sdmp_prvs_signature_t)
+// Converting decode function for (vs_sdmp_prvs_devi_t)
 void
-vs_sdmp_prvs_signature_t_decode(vs_sdmp_prvs_signature_t *src_data) {
-    src_data->id = ntohs(src_data->id);
+vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = ntohs(src_data->data_sz);
+    src_data->manufacturer = ntohl(src_data->manufacturer);
+    src_data->model = ntohl(src_data->model);
 }

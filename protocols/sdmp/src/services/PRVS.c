@@ -303,8 +303,9 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
         return -1;
     }
 
-    // Normalize byte order
     *response_sz = sizeof(vs_sdmp_prvs_devi_t) + devi_response->data_sz;
+
+    // Normalize byte order
     vs_sdmp_prvs_devi_t_encode(devi_response);
 
 

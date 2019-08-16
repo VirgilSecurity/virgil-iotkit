@@ -6,8 +6,12 @@ import (
 	"./types"
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -95,6 +99,32 @@ func CreateFinalData(StructsList map[string]map[string]string) (FinData types.St
 }
 
 //********************************************************************************************************************
+func fileCopy(src, dst string) (int64, error) {
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return 0, err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return 0, fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return 0, err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return 0, err
+	}
+	defer destination.Close()
+	sz, err := io.Copy(destination, source)
+	return sz, err
+}
+
+//********************************************************************************************************************
 func main() {
 	var (
 		errret error = nil
@@ -111,13 +141,30 @@ func main() {
 	OutputCFileName := flag.String("oc", "vs_conv.c", "Output C file")
 	flag.Parse()
 
-	//Preparing file paths
+	// Create tmp directory
+	dir, err := ioutil.TempDir("", "vs-codegen")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	// Preparing files to be processed
+	preparedFiles := []string{}
 	for _, FilePath := range InFiles {
-		FilePath = path.Base(FilePath)
+		// Create temporary files
+		dst := dir + "/" + filepath.Base(FilePath)
+		_, err := fileCopy(FilePath, dst)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Replace typedefs
+		parser.ReplaceTypedefs(dst, ConvertTypes)
+		preparedFiles = append(preparedFiles, dst)
 	}
 
 	ParsedStructs = make(map[string]map[string]string)
-	ParsedStructs, errret = parser.GetStructrures(InFiles)
+	ParsedStructs, errret = parser.GetStructrures(preparedFiles)
 	if errret != nil {
 		fmt.Printf("ERROR reading Structs [%s]\n", errret)
 		os.Exit(1)

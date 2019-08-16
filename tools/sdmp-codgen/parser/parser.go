@@ -2,9 +2,11 @@ package parser
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -34,7 +36,7 @@ func GetStructrures(InputFiles []string) (AllStructs map[string]map[string]strin
 
 		// Open file and reader
 		fmt.Printf("###=== Opening input file [%s]\n", InputFileName)
-		InFile, err := os.Open(InputFileName);
+		InFile, err := os.Open(InputFileName)
 		if err != nil {
 			errret = errors.New(fmt.Sprintf("[GetStructrures]: Error opening File [%s]", InputFileName))
 			return AllStructs, errret
@@ -108,4 +110,58 @@ func GetStructrures(InputFiles []string) (AllStructs map[string]map[string]strin
 	}
 
 	return AllStructs, errret
+}
+
+//********************************************************************************************************************
+func ReplaceTypedefs(InputFileName string, DataTypes []string) (errret error) {
+
+	// Open file and reader
+	fmt.Printf("###=== Opening input file [%s]\n", InputFileName)
+	InFile, err := os.Open(InputFileName)
+	if err != nil {
+		errret := errors.New(fmt.Sprintf("[GetStructrures]: Error opening File [%s]", InputFileName))
+		return errret
+	}
+
+	FileReader := bufio.NewReader(InFile)
+	if FileReader == nil {
+		errret = errors.New(fmt.Sprintf("[GetStructrures]: Error opening Reader for File [%s]", InputFileName))
+		return errret
+	}
+
+	//Parsing file
+	fmt.Printf("###===--- Parsing file \n")
+	for {
+		RLine, err := FileReader.ReadString('\n')
+		if err == io.EOF {
+			break
+		}
+		// Search structure contains ("typedef", "__packed__")
+		if strings.Contains(RLine, "typedef") && CheckEqualType(RLine, DataTypes) {
+
+			input, err := ioutil.ReadFile(InputFileName)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			for _, DataType := range DataTypes {
+				if strings.Contains(RLine, DataType) {
+
+					parts := strings.Split(RLine, " ")
+					typeName := strings.Replace(parts[2], ";", "", -1)
+					typeName = strings.Replace(typeName, "\n", "", -1)
+
+					output := bytes.Replace(input, []byte(typeName), []byte(DataType), -1)
+					if err = ioutil.WriteFile(InputFileName, output, 0666); err != nil {
+						fmt.Println(err)
+						os.Exit(1)
+					}
+				}
+			}
+
+		}
+	}
+
+	return nil
 }
