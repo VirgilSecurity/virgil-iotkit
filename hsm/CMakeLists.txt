@@ -42,7 +42,8 @@ set(HSM_LIB hsm)
 #   Source code
 #
 set(HSM_SRC
-        src/hsm.c
+        src/hsm_sha2_routines.c
+        src/hsm_helpers.c
         )
 
 #
@@ -62,8 +63,8 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(logger
-        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+target_compile_options(${PROJECT_NAME}
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
 #   Config path
@@ -82,16 +83,17 @@ target_compile_definitions(${PROJECT_NAME}
 #
 #   Common include directories
 #
-add_dependencies(${PROJECT_NAME} common)
-
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/library/common/include>
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+
+        PRIVATE
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
 
         INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<INSTALL_INTERFACE:include>"
         )
 

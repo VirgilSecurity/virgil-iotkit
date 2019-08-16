@@ -55,7 +55,7 @@ else()
 endif()
 
 target_compile_options(logger
-        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
 #   Compile definitions
@@ -80,12 +80,9 @@ target_compile_definitions(logger
 #
 target_include_directories(logger
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-
-        PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

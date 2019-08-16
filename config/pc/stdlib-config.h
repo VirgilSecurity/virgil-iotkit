@@ -40,6 +40,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define VS_IOT_ASSERT    assert
 #define VS_IOT_CALLOC    calloc
@@ -47,9 +48,12 @@
 #define VS_IOT_MALLOC    malloc
 #define VS_IOT_MEMCMP    memcmp
 #define VS_IOT_MEMCPY    memcpy
+#define VS_IOT_MEMSET    memset
+#define VS_IOT_MEMMOVE   memmove
 #define VS_IOT_SNPRINTF  snprintf
 #define VS_IOT_SPRINTF   sprintf
 #define VS_IOT_STRCPY    strcpy
+#define VS_IOT_STRLEN    strlen
 #define VS_IOT_VSNPRINTF vsnprintf
 
 

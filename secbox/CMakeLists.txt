@@ -55,16 +55,21 @@ add_library(${SECBOX_LIB}
 #
 #   -Wall -Werror
 #
-set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror -Wno-multichar")
+set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
 #
 #   Common include directories
 #
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/virgil/iot/secbox
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../inc
-        ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/
-        ${CMAKE_CURRENT_SOURCE_DIR}/../protocols/sdmp/include/virgil/iot/protocols
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../inc>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include/>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include/>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../provision/include/>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include/virgil/iot/protocols>"
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
         )

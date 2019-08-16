@@ -35,8 +35,7 @@
 package sdmp
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../protocols/sdmp/include -I${SRCDIR}/../c_libs/include
-#cgo LDFLAGS: -L${SRCDIR}/../lib -lsdmp -lnetif_plc_sim
+#cgo LDFLAGS: -lsdmp-factory -lnetif_plc_sim
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/initializer/hal/ti_netif_plc_sim.h>
@@ -45,7 +44,6 @@ package sdmp
 import "C"
 import (
     "bytes"
-    "crypto/sha256"
     "encoding/base64"
     "encoding/binary"
     "fmt"
@@ -53,13 +51,16 @@ import (
     "unsafe"
 
     "../common"
+    "../converters"
 )
 
 
 const (
-    DEFAULT_TIMEOUT_MS   = 3000
-    ETH_ADDR_LEN         = int(C.ETH_ADDR_LEN)
-    PUBKEY_MAX_SZ        = int(C.PUBKEY_MAX_SZ)
+    DEFAULT_TIMEOUT_MS = 7000
+    ETH_ADDR_LEN       = int(C.ETH_ADDR_LEN)
+    // algorithm, which is used by device in sign operations and signing device:
+    DEVICE_HASH_ALGO   = common.VS_HASH_SHA_256
+    FACTORY_KEY_TYPE   = 4
 )
 
 type Processor struct {
@@ -70,18 +71,16 @@ type Processor struct {
 }
 
 type DeviceProcessor struct {
-    ProvisioningInfo    *common.ProvisioningInfo
-    DeviceSigner        common.SignerInterface
-    deviceInfo          C.vs_sdmp_prvs_dnid_element_t
+    ProvisioningInfo       *common.ProvisioningInfo
+    DeviceSigner           common.SignerInterface
+    deviceInfo             C.vs_sdmp_prvs_dnid_element_t
 
-    DevicePublicKeyTiny []byte
-    DeviceID            [32]uint8
-    DeviceMacAddr       [6]byte
-    DevicePublicKey     []byte
-    SignerId            uint16
-    Signature           []byte
-    Manufacturer        uint32
-    Model               uint32
+    DeviceID               [32]uint8
+    DeviceMacAddr          [6]byte
+    Manufacturer           uint32
+    Model                  uint32
+    DevicePublicKey        common.Go_vs_pubkey_t
+    Signature              common.Go_vs_sign_t
 }
 
 func (p *Processor) NewDeviceProcessor(i int, deviceSigner common.SignerInterface) *DeviceProcessor {
@@ -186,29 +185,40 @@ func (p *DeviceProcessor) SetTrustList() error {
 
     // Set TL chunks
     for index, chunk := range trustList.TlChunks {
-        binBuf.Reset()  // reset buffer
-        if err := binary.Write(&binBuf, binary.LittleEndian, chunk); err != nil {
-            return fmt.Errorf("failed to write TrustList chunk to buffer")
+        chunkBytes, err := chunk.ToBytes()
+        if err != nil {
+            return err
         }
         name := fmt.Sprintf("TrustList chunk %d", index)
-        if err := p.uploadData(C.VS_PRVS_TLC, binBuf.Bytes(), name); err != nil {
+        if err := p.uploadData(C.VS_PRVS_TLC, chunkBytes, name); err != nil {
             return err
         }
     }
 
     // Set TL Footer
     binBuf.Reset()  // reset buffer
-    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer); err != nil {
-        return fmt.Errorf("failed to write TrustList footer to buffer")
+    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer.TLType); err != nil {
+        return fmt.Errorf("failed to write TrustList footer tl_type to buffer")
     }
+    for index, signature := range trustList.Footer.Signatures {
+        signatureBytes, err := signature.ToBytes()
+        if err != nil {
+            return err
+        }
+        if _, err := binBuf.Write(signatureBytes); err != nil {
+            return fmt.Errorf("failed to write footer signature #%d to buffer: %v", index, err)
+        }
+    }
+
     fmt.Println("Upload TrustList Footer")
     mac := p.deviceInfo.mac_addr
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
+
     if 0 != C.vs_sdmp_prvs_finalize_tl(nil,
                                        &mac,
                                        dataPtr,
-                                       C.ulong(len(footerBytes)),
+                                       C.uint16_t(len(footerBytes)),
                                        DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to set TrustList footer")
     }
@@ -221,25 +231,24 @@ func (p *DeviceProcessor) SetTrustList() error {
 func (p *DeviceProcessor) InitDevice() error {
     const bufSize = 512
     var asavInfoBuf [bufSize]uint8
-    asavInfoPtr := (*C.vs_sdmp_pubkey_t)(unsafe.Pointer(&asavInfoBuf[0]))
+    asavInfoPtr := (*C.uchar)(unsafe.Pointer(&asavInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, DEFAULT_TIMEOUT_MS) {
+    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, bufSize, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("InitDevice: vs_sdmp_prvs_save_provision error")
     }
 
-    pubKeyT := Go_vs_sdmp_pubkey_t{}
-    if err := pubKeyT.fromBytes(asavInfoBuf[:]); err != nil {
+    pubKeyT := common.Go_vs_pubkey_t{}
+    if _, err := pubKeyT.FromBytes(asavInfoBuf[:]); err != nil {
         return err
     }
 
-    tinyOffset := len(pubKeyT.PubKey) - 64
-    p.DevicePublicKeyTiny = pubKeyT.PubKey[tinyOffset:]
+    p.DevicePublicKey = pubKeyT
     return nil
 }
 
 // Calls vs_sdmp_prvs_set
-func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []byte, name string) error {
+func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_e, data []byte, name string) error {
     fmt.Println("Upload", name)
 
     mac := p.deviceInfo.mac_addr
@@ -248,10 +257,12 @@ func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_t, data []by
                                &mac,
                                element,
                                dataPtr,
-                               C.ulong(len(data)),
+                               C.uint16_t(len(data)),
                                DEFAULT_TIMEOUT_MS) {
+        fmt.Println("Failed: upload", name)
         return fmt.Errorf("failed to set %s on device (vs_sdmp_prvs_set)", name)
     }
+    fmt.Println("Success: upload", name)
     return nil
 }
 
@@ -296,46 +307,74 @@ func (p *DeviceProcessor) SetKeys() error {
 }
 
 func (p *DeviceProcessor) SignDevice() error {
-    // Prepare signature for device
-    signature, err := p.DeviceSigner.Sign(p.DevicePublicKeyTiny)
+    fmt.Println("Sign device by Factory key")
+
+    virgilHashType := common.HsmHashTypeToVirgil(DEVICE_HASH_ALGO)
+
+    // Prepare signature for device: sign vs_pubkey_t of device by Factory key
+    dataToSign, err := p.DevicePublicKey.ToBytes()
+    if err != nil {
+        return fmt.Errorf("failed to prepare data for sign: %v", err)
+    }
+    virgilSignature, err := p.DeviceSigner.Sign(dataToSign)
     if err != nil {
         return err
     }
 
-    if len(signature) == 0 {
+    if len(virgilSignature) == 0 {
         return fmt.Errorf("signature is empty")
     }
 
+    // Convert virgil signature to raw
+    var rawSignature []byte
+    rawSignature, err = converters.VirgilSignToRaw(virgilSignature, p.ProvisioningInfo.FactoryKeyECType)
+    if err != nil {
+        return err
+    }
+
+    // Prepare raw public Factory key
+    virgilPubKey, err := p.DeviceSigner.PublicKeyFull()
+    if err != nil {
+        return fmt.Errorf("failed to get full Factory public key: %v", err)
+    }
+    rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, p.ProvisioningInfo.FactoryKeyECType)
+    if err != nil {
+        return fmt.Errorf("failed to prepare raw Factory public key: %v", err)
+    }
+
+    // Prepare structure with sign
+    signatureStruct := common.Go_vs_sign_t{
+        SignerType:   FACTORY_KEY_TYPE,
+        ECType:       p.ProvisioningInfo.FactoryKeyECType,
+        HashType:     DEVICE_HASH_ALGO,
+        RawSignature: rawSignature,
+        RawPubKey:    rawPubKey,
+    }
+
+    fmt.Println("Device key type", p.DevicePublicKey.KeyType)
+    fmt.Println("Device key EC type", p.DevicePublicKey.ECType)
+    fmt.Println("Device public key (raw):", base64.StdEncoding.EncodeToString(p.DevicePublicKey.RawPubKey))
+    fmt.Println("Signature (raw):", base64.StdEncoding.EncodeToString(rawSignature))
+
+    // Verify prepared signature
+    // - get device public key in Virgil format
     pubKeyFull, err := p.DeviceSigner.PublicKeyFull()
     if err != nil {
         return err
     }
+    fmt.Println("Device public key (virgil):", base64.StdEncoding.EncodeToString(pubKeyFull))
 
-    if p.DeviceSigner.Verify(p.DevicePublicKeyTiny, signature, pubKeyFull) != nil {
-        return fmt.Errorf("signature verification failed")
-    }
-
-    signerId, err := p.DeviceSigner.SignerId()
-    if err != nil {
-        return err
-    }
-
-    fmt.Println("Signer ID:", signerId)
-    fmt.Println("Signer public key (full):", base64.StdEncoding.EncodeToString(pubKeyFull))
-    fmt.Println("Device public key (tiny):", base64.StdEncoding.EncodeToString(p.DevicePublicKeyTiny))
-    fmt.Println("Signature:", base64.StdEncoding.EncodeToString(signature))
-
-    signatureStruct := Go_vs_sdmp_prvs_signature_t{
-        Id:    signerId,
-        ValSz: uint8(len(signature)),
-        Val:   signature,
-    }
-    uploadBytes, err := signatureStruct.toBytes()
-    if err != nil {
-        return err
+    // - verify
+    if p.DeviceSigner.Verify(dataToSign, virgilSignature, pubKeyFull, virgilHashType) != nil {
+        return fmt.Errorf("verification of created Device signature failed")
     }
 
     // Upload signature to device
+    uploadBytes, err := signatureStruct.ToBytes()
+    if err != nil {
+        return err
+    }
+
     if err := p.uploadData(C.VS_PRVS_SGNP, uploadBytes, "Device signature"); err != nil {
         return err
     }
@@ -352,22 +391,19 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
     if 0 != C.vs_sdmp_prvs_device_info(nil,
                                        &mac,
                                        deviceInfoPtr,
-                                       C.size_t(bufSize),
+                                       C.uint16_t(bufSize),
                                        DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("failed to get device info (vs_sdmp_prvs_device_info)")
     }
 
     // Convert to Go struct
     deviceInfo := Go_vs_sdmp_prvs_devi_t{}
-    if err := deviceInfo.fromBytes(devInfoBuf[:]); err != nil {
+    if err := deviceInfo.FromBytes(devInfoBuf[:]); err != nil {
         return err
     }
 
-    pubKeyFull := deviceInfo.OwnKey.PubKey[:deviceInfo.OwnKey.PubKeySz]
-
-    p.DevicePublicKey = pubKeyFull
-    p.SignerId = deviceInfo.Signature.Id
-    p.Signature = deviceInfo.Signature.Val
+    p.DevicePublicKey = deviceInfo.PubKey
+    p.Signature = deviceInfo.Signature
     p.DeviceID = deviceInfo.UdidOfDevice
     p.DeviceMacAddr = deviceInfo.MacAddress
     p.Manufacturer = deviceInfo.Manufacturer
@@ -379,33 +415,62 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
 func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     const signatureBufSize = 512
     var signatureBuf [signatureBufSize]uint8
-    signature_sz := C.size_t(0)
+    var requestBytes []byte
+    var err error
+    signature_sz := C.uint16_t(0)
 
-    // Calculate hash - device does not calculate hash, only signs data
-    dataHash := sha256.Sum256(data)
+    // Prepare signing request
+    signRequestStruct := Go_vs_sdmp_prvs_sgnp_req_t{
+        HashType: DEVICE_HASH_ALGO,
+        Data:     data,
+    }
+
+    requestBytes, err = signRequestStruct.ToBytes()
+    if err != nil {
+        return nil, err
+    }
 
     mac := p.deviceInfo.mac_addr
     signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
-    dataPtr := (*C.uchar)(unsafe.Pointer(&dataHash[0]))
+    dataPtr := (*C.uchar)(unsafe.Pointer(&requestBytes[0]))
 
     signRes := C.vs_sdmp_prvs_sign_data(nil,
                                         &mac,
                                         dataPtr,
-                                        C.ulong(len(dataHash)),
+                                        C.uint16_t(len(requestBytes)),
                                         signaturePtr,
-                                        C.ulong(signatureBufSize),
+                                        C.uint16_t(signatureBufSize),
                                         &signature_sz,
                                         DEFAULT_TIMEOUT_MS)
     if signRes != 0 {
         return nil, fmt.Errorf("failed to sign data in device")
     }
 
-    signature := signatureBuf[:signature_sz]
+    signature := common.Go_vs_sign_t{}
+    if _, err = signature.FromBytes(signatureBuf[:]); err != nil {
+        return nil, err
+    }
 
     // Verify signature on full data
-    if err := p.DeviceSigner.Verify(data, signature, p.DevicePublicKey); err != nil {
+    // - prepare signature in Virgil format
+    var virgilSignature []byte
+    virgilSignature, err = converters.RawSignToVirgil(signature.RawSignature, signature.ECType, DEVICE_HASH_ALGO)
+    if err != nil {
+        return nil, err
+    }
+
+    // - prepare public key in Virgil format
+    var virgilPubKey []byte
+    virgilPubKey, err = converters.RawPubKeyToVirgil(signature.RawPubKey, signature.ECType)
+    if err != nil {
+        return nil, err
+    }
+
+    // - verify
+    virgilHashType := common.HsmHashTypeToVirgil(DEVICE_HASH_ALGO)
+    if err := p.DeviceSigner.Verify(data, virgilSignature, virgilPubKey, virgilHashType); err != nil {
       return nil, fmt.Errorf("failed to verify signature of data signed inside device: %v", err)
     }
 
-    return signature, nil
+    return signature.RawSignature, nil
 }

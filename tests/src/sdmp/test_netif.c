@@ -34,7 +34,7 @@
 
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <private/test_netif.h>
+#include <virgil/iot/tests/private/test_netif.h>
 
 netif_state_t netif_state;
 vs_mac_addr_t mac_addr_client_call;
@@ -46,7 +46,7 @@ static vs_netif_rx_cb_t callback_rx_cb;
 
 /**********************************************************/
 static int
-test_netif_tx(const uint8_t *data, const size_t data_sz) {
+test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
     int ret_code;
 
     is_client_call = !is_client_call;

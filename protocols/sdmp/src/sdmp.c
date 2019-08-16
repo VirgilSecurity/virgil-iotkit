@@ -36,7 +36,7 @@
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
-#include "hal/macro.h"
+#include "stdlib-config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -48,7 +48,7 @@ static const vs_netif_t *_sdmp_default_netif = 0;
 #define RESPONSE_RESERVED_SZ (sizeof(vs_sdmp_packet_t))
 #define SERVICES_CNT_MAX (10)
 static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
-static size_t _sdmp_services_num = 0;
+static uint32_t _sdmp_services_num = 0;
 static uint8_t _sdmp_broadcast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 /******************************************************************************/
@@ -75,9 +75,9 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 /******************************************************************************/
 static int
 _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
-    int i;
+    uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
-    size_t response_sz = 0;
+    uint16_t response_sz = 0;
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
     bool processed = false;
 
@@ -140,7 +140,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 }
 
 /******************************************************************************/
-static size_t
+static uint16_t
 _packet_sz(const uint8_t *packet_data) {
     const vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)packet_data;
     return sizeof(vs_sdmp_packet_t) + ntohs(packet->header.content_size);
@@ -148,16 +148,16 @@ _packet_sz(const uint8_t *packet_data) {
 
 /******************************************************************************/
 static int
-_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const size_t data_sz) {
+_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
 #define LEFT_INCOMING ((int)data_sz - bytes_processed)
     static uint8_t packet_buf[1024];
-    static size_t packet_buf_filled = 0;
+    static uint16_t packet_buf_filled = 0;
 
     int bytes_processed = 0;
     int need_bytes_for_header;
     int need_bytes_for_packet;
-    size_t packet_sz;
-    size_t copy_bytes;
+    uint16_t packet_sz;
+    uint16_t copy_bytes;
 
     vs_sdmp_packet_t *packet = 0;
 
@@ -225,9 +225,9 @@ int
 vs_sdmp_init(const vs_netif_t *default_netif) {
 
     // Check input data
-    VS_ASSERT(default_netif);
-    VS_ASSERT(default_netif->init);
-    VS_ASSERT(default_netif->tx);
+    VS_IOT_ASSERT(default_netif);
+    VS_IOT_ASSERT(default_netif->init);
+    VS_IOT_ASSERT(default_netif->tx);
 
     // Save default network interface
     _sdmp_default_netif = default_netif;
@@ -241,8 +241,8 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
 /******************************************************************************/
 int
 vs_sdmp_deinit() {
-    VS_ASSERT(_sdmp_default_netif);
-    VS_ASSERT(_sdmp_default_netif->deinit);
+    VS_IOT_ASSERT(_sdmp_default_netif);
+    VS_IOT_ASSERT(_sdmp_default_netif->deinit);
 
     _sdmp_default_netif->deinit();
 
@@ -253,11 +253,11 @@ vs_sdmp_deinit() {
 
 /******************************************************************************/
 int
-vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz) {
+vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
+    VS_IOT_ASSERT(_sdmp_default_netif);
+    VS_IOT_ASSERT(_sdmp_default_netif->tx);
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
 
-    VS_ASSERT(_sdmp_default_netif);
-    VS_ASSERT(_sdmp_default_netif->tx);
 
     // Normalize byte order
     if (packet) {
@@ -275,7 +275,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, size_t data_sz) {
 int
 vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 
-    VS_ASSERT(service);
+    VS_IOT_ASSERT(service);
 
     if (_sdmp_services_num >= SERVICES_CNT_MAX) {
         return -1;
@@ -290,11 +290,11 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 /******************************************************************************/
 int
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
-    VS_ASSERT(mac_addr);
+    VS_IOT_ASSERT(mac_addr);
 
     if (!netif || netif == _sdmp_default_netif) {
-        VS_ASSERT(_sdmp_default_netif);
-        VS_ASSERT(_sdmp_default_netif->mac_addr);
+        VS_IOT_ASSERT(_sdmp_default_netif);
+        VS_IOT_ASSERT(_sdmp_default_netif->mac_addr);
         _sdmp_default_netif->mac_addr(mac_addr);
         return 0;
     }
@@ -314,7 +314,7 @@ _sdmp_transaction_id() {
 int
 _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
 
-    VS_ASSERT(packet);
+    VS_IOT_ASSERT(packet);
 
     // Ethernet packet type
     packet->eth_header.type = VS_ETHERTYPE_VIRGIL;

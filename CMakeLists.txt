@@ -40,6 +40,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 if (NOT GO_DISABLE)
     include(cmake/golang.cmake)
     include(cmake/flags.cmake)
+    set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
     set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 endif()
 
@@ -70,7 +71,6 @@ if(VIRGIL_IOT_SDK_VERSION_LABEL)
 endif()
 
 file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
-
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -106,7 +106,7 @@ option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 # Features
 #
 option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
-option(VIRGIL_IOT_CLOUD "Enable 'cloud'" OFF)
+option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
@@ -129,7 +129,6 @@ set(VIRGIL_LIB_PHE OFF CACHE BOOL "Build 'phe' library" FORCE)
 set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
 set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
 
 
@@ -138,7 +137,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 # ---------------------------------------------------------------------------
 clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/cloud
-        ${CMAKE_CURRENT_SOURCE_DIR}/common
         ${CMAKE_CURRENT_SOURCE_DIR}/protocols
         ${CMAKE_CURRENT_SOURCE_DIR}/provision
         ${CMAKE_CURRENT_SOURCE_DIR}/secbox
@@ -148,6 +146,7 @@ clangformat_folder(
         ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
         ${CMAKE_CURRENT_SOURCE_DIR}/logger
         ${CMAKE_CURRENT_SOURCE_DIR}/hsm
+        ${CMAKE_CURRENT_SOURCE_DIR}/converters
 )
 
 
@@ -165,10 +164,39 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
+#   Shared macros interface
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
+
+#
+#   jsmn
+#
+if (VIRGIL_IOT_CLOUD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+endif()
+
+#
+#   vs-json
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+
+#
+#   update
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)
+
+#
 #   Logger
 #
 # TODO: Add Option to disable Logger
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
+
+#
+#   Cloud
+#
+if (VIRGIL_IOT_CLOUD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+endif()
 
 #
 #   Trust list
@@ -177,10 +205,22 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 
 #
+#   Converters
+#
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+endif()
+#
 #   HSM
 #
 # TODO: Add Option to disable hsm
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
+
+#
+#   Provision
+#
+# TODO: Add Option to disable hsm
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/provision)
 
 #
 #   Protocols

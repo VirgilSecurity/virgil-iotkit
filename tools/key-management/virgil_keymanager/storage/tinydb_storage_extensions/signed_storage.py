@@ -9,7 +9,7 @@ from PyCRC.CRCCCITT import CRCCCITT
 from tinydb import Storage
 from tinydb.storages import touch
 
-from virgil_keymanager.data_types import DongleType
+from virgil_keymanager.consts import VSKeyTypeS
 
 
 class SignedByteStorage(Storage):
@@ -36,7 +36,7 @@ class SignedByteStorage(Storage):
         self._upper_level_db = self.kwargs.pop("upper_level_keys_db")
         self._suppress_db_warning = self.kwargs.pop("suppress_db_warning") or False
         self._handle = open(path, 'r+b')
-        self._required_key_type = DongleType.AUTH.value
+        self._required_key_type = VSKeyTypeS.AUTH.value
         self._auth = list()
 
     def _a_check(self, atmel_ops_status):
@@ -62,7 +62,7 @@ class SignedByteStorage(Storage):
                 for device_serial in device_list:
                     dev_info = self._a_check(self._atmel.info(device_serial=device_serial))
                     if "type" in dev_info.keys() \
-                            and dev_info["type"] == DongleType.AUTH.value \
+                            and dev_info["type"] == VSKeyTypeS.AUTH.value \
                             and device_serial not in self._auth:
                         self._auth.append(device_serial)
 
@@ -165,7 +165,7 @@ class SignedByteStorage(Storage):
         if auth_verify:
             return loaded_data
         else:
-            sys.exit("[FATAL]: Db signature verification failed by ({}) Key!".format(DongleType.AUTH.value))
+            sys.exit("[FATAL]: Db signature verification failed by ({}) Key!".format(VSKeyTypeS.AUTH.value))
 
     def _verify_on_dongle(self, raw_data, signature, device_serial):
         signer_pub_key = self._a_check(self._atmel.get_public_key(device_serial))
@@ -182,7 +182,7 @@ class SignedByteStorage(Storage):
     def _check_required_keys(self, db_values):
         for db_row in db_values:
             if "type" in db_row.keys() and db_row["type"] == self._required_key_type:
-                    return True
+                return True
 
     def _get_file_size(self):
         self._handle.seek(0, os.SEEK_END)

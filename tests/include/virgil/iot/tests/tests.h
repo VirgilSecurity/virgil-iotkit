@@ -35,7 +35,21 @@
 #ifndef VIRGIL_IOT_SDK_TESTS_H
 #define VIRGIL_IOT_SDK_TESTS_H
 
-size_t
-virgil_iot_sdk_tests(void);
+#include <stdbool.h>
+
+void
+vs_tests_begin();
+
+uint16_t
+vs_tests_checks(bool print_start_finish_tests);
+
+void
+vs_tests_step_success();
+
+void
+vs_tests_step_failure();
+
+void
+vs_tests_end();
 
 #endif // VIRGIL_IOT_SDK_TESTS_H

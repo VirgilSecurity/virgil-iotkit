@@ -147,7 +147,7 @@ vs_logger_message_hex(vs_log_level_t level,
                       uint32_t line_num,
                       const char *prefix,
                       const void *data_buf,
-                      const size_t data_size);
+                      const uint16_t data_size);
 
 #elif VS_IOT_LOGGER_USE_LIBRARY != 1 && defined(VS_IOT_LOGGER_FUNCTION)
 

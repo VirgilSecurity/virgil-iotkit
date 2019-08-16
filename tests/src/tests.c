@@ -32,10 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <helpers.h>
 #include <stdlib.h>
+#include <virgil/iot/tests/helpers.h>
 
-size_t failed_test_result;
+uint16_t failed_test_result;
 
 void
 sdmp_tests(void);
@@ -51,28 +51,80 @@ test_kdf2(void);
 void
 test_ecdsa(void);
 void
+test_ecdh(void);
+void
 test_keypair(void);
-
+void
+test_random(void);
+void
+test_aes(void);
+void
+test_sign_converters(void);
+void
+test_pubkeys_converters(void);
+void
+test_keystorage_and_tl(void);
 /**********************************************************/
 static void
 crypto_tests(void) {
+
     test_hash();
     test_hmac();
     test_kdf2();
-    test_kdf2();
-    test_ecdsa();
+    test_random();
+    test_aes();
+    test_keystorage_and_tl();
     test_keypair();
+    test_ecdsa();
+    test_ecdh();
+#if !VIRGIL_IOT_MCU_BUILD
+    test_sign_converters();
+    test_pubkeys_converters();
+#endif
 }
 
 /**********************************************************/
-size_t
-virgil_iot_sdk_tests(void) {
+uint16_t
+vs_tests_checks(bool print_start_finish_tests) {
     failed_test_result = 0;
+
+    if (print_start_finish_tests) {
+        START_TESTS;
+    }
 
     sdmp_tests();
     prvs_tests();
 
-//    crypto_tests();
+    //    crypto_tests();
+
+    if (print_start_finish_tests) {
+        FINISH_TESTS;
+    }
 
     return failed_test_result;
+}
+
+/**********************************************************/
+void
+vs_tests_begin() {
+    START_TESTS;
+}
+
+/**********************************************************/
+void
+vs_tests_step_success() {
+    RESULT_OK;
+}
+
+/**********************************************************/
+void
+vs_tests_step_failure() {
+    RESULT_ERROR;
+terminate:;
+}
+
+/**********************************************************/
+void
+vs_tests_end() {
+    FINISH_TESTS;
 }

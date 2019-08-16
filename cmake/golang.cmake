@@ -3,6 +3,9 @@ file (MAKE_DIRECTORY ${GOPATH})
 set (GOTMP "${GOPATH}/tmp")
 file (MAKE_DIRECTORY ${GOTMP})
 
+set(CMAKE_CGO_CFLAGS ${CGO_CFLAGS})
+set(CMAKE_CGO_LDFLAGS ${CGO_LDFLAGS})
+
 function(ExternalGoProject_Add TARG)
     add_custom_target(${TARG} env GOPATH=${GOPATH} ${CMAKE_Go_COMPILER} get ${ARGN})
 endfunction(ExternalGoProject_Add)
@@ -23,7 +26,7 @@ function(add_go_executable NAME)
             COMMAND env GOPATH=${GOPATH} ${DEPS_SH})
 
     add_custom_command(OUTPUT ${OUTPUT_DIR}/.timestamp
-            COMMAND env GOPATH=${GOPATH} ${CMAKE_Go_COMPILER} build
+            COMMAND env GOPATH=${GOPATH} CGO_CFLAGS="${CMAKE_CGO_CFLAGS}" CGO_LDFLAGS="${CMAKE_CGO_LDFLAGS}" ${CMAKE_Go_COMPILER} build
             -o "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
             ${CMAKE_GO_FLAGS} ${GO_SOURCE}
             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})

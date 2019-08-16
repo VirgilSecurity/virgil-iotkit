@@ -1,6 +1,3 @@
-[submodule "crypto"]
-	path = crypto
-url=https://github.com/VirgilSecurity/virgil-crypto-c.git
 [submodule "ext/noisesocket"]
 	path = ext/noisesocket
 	url = https://github.com/VirgilSecurity/noisesocket-lib.git

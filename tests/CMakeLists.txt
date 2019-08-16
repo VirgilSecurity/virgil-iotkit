@@ -40,23 +40,45 @@ project(virgil-iot-sdk-tests VERSION 0.1.0 LANGUAGES C)
 #  Tests library
 #
 
-add_library(virgil-iot-sdk-tests
+add_library(virgil-iot-sdk-tests)
+
+target_sources(virgil-iot-sdk-tests
+        PRIVATE
         src/tests.c
         src/sdmp/prvs_tests.c
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
         src/sdmp/test_netif.c
+        src/crypto/aes.c
+        src/crypto/ecdh.c
         src/crypto/ecdsa.c
         src/crypto/hash.c
         src/crypto/hmac.c
         src/crypto/kdf.c
         src/crypto/keypair.c
+        src/crypto/random.c
+        src/crypto/helpers.c
+        src/crypto/trust_list.c
         )
 
+if (NOT VIRGIL_IOT_MCU_BUILD)
+    target_sources(virgil-iot-sdk-tests
+            PRIVATE
+            src/crypto/sign_converters.c
+            src/crypto/pubkeys_converters.c
+            )
+    target_link_libraries(virgil-iot-sdk-tests
+            converters
+            )
+endif()
+
 target_link_libraries(virgil-iot-sdk-tests
-        foundation
+        hsm
         secbox
-        sdmp)
+        sdmp
+        trust_list
+        macros
+        )
 
 #
 #   Set additional compiler flags
@@ -70,7 +92,7 @@ else()
 endif()
 
 #target_compile_options(virgil-iot-sdk-tests
-#        PRIVATE -Wall -Werror -Wno-multichar ${CFLAGS_PLATFORM})
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 target_compile_definitions(virgil-iot-sdk-tests
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
@@ -91,14 +113,11 @@ endif()
 #
 target_include_directories(virgil-iot-sdk-tests
         PRIVATE
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        "$<INSTALL_INTERFACE:include>"
         )
