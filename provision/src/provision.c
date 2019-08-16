@@ -40,7 +40,7 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 
 #define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 

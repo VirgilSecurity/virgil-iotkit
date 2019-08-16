@@ -37,7 +37,7 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 
 typedef struct {
     union {

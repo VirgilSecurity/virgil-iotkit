@@ -42,7 +42,7 @@ sdmp_tests(void);
 void
 prvs_tests(void);
 void
-fwdt_tests(void);
+fldt_tests(void);
 
 void
 test_hash(void);
@@ -96,7 +96,7 @@ vs_tests_checks(bool print_start_finish_tests) {
 
     sdmp_tests();
     prvs_tests();
-    fwdt_tests();
+    fldt_tests();
 
     crypto_tests();
 

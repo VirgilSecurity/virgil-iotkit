@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>

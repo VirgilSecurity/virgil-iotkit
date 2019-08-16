@@ -2,7 +2,7 @@
 #include <stddef.h>
 
 #include <virgil/iot/secbox/secbox.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 #include <stdlib-config.h>
 
 static const vs_secbox_hal_impl_t *_hal_mpl = NULL;
