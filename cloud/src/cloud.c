@@ -305,7 +305,7 @@ _ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
     desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
-    desc->version.timestamp = VS_IOT_NTOHL(desc->version.timestamp);
+    desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
 }
 
 /*************************************************************************/
@@ -318,6 +318,14 @@ _ntoh_fw_header(vs_cloud_firmware_header_t *header) {
     header->code_offset = VS_IOT_NTOHL(header->code_offset);
     header->footer_length = VS_IOT_NTOHL(header->footer_length);
     header->footer_offset = VS_IOT_NTOHL(header->footer_offset);
+}
+
+/*************************************************************************/
+static bool
+_check_firmware_header(vs_cloud_firmware_header_t *header) {
+    return header->descriptor.firmware_length == header->code_length &&
+           header->code_offset == sizeof(vs_cloud_firmware_header_t) && header->footer_offset >= header->code_length &&
+           header->footer_offset + header->footer_length < VS_MAX_FIRMWARE_UPDATE_SIZE;
 }
 
 /*************************************************************************/
@@ -346,14 +354,16 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             _ntoh_fw_header(&resp->header);
 
-            if (VS_UPDATE_ERR_OK != vs_cloud_is_new_firmware_version_available(resp->header.descriptor.manufacture_id,
-                                                                               resp->header.descriptor.device_type,
-                                                                               &resp->header.descriptor.version)) {
+            if (!_check_firmware_header(&resp->header) ||
+                VS_UPDATE_ERR_OK !=
+                        vs_cloud_is_new_firmware_version_available(resp->header.descriptor.info.manufacture_id,
+                                                                   resp->header.descriptor.info.device_type,
+                                                                   &resp->header.descriptor.info.version)) {
                 return 0;
             }
 
-            vs_update_remove_firmware_data_hal(resp->header.descriptor.manufacture_id,
-                                               resp->header.descriptor.device_type);
+            vs_update_remove_firmware_data_hal(resp->header.descriptor.info.manufacture_id,
+                                               resp->header.descriptor.info.device_type);
 
             if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(&resp->header.descriptor)) {
                 return 0;
@@ -525,6 +535,12 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
         resp->used_size += read_sz;
 
         if (resp->used_size == sizeof(vs_tl_header_t)) {
+            uint32_t required_storage_sz = (resp->header.pub_keys_count + 2) * VS_TL_STORAGE_MAX_PART_SIZE;
+
+            if (resp->header.tl_size > VS_TL_STORAGE_SIZE || required_storage_sz > VS_TL_STORAGE_SIZE) {
+                return 0;
+            }
+
             vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
 
             if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
@@ -612,7 +628,8 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     resp->footer_sz = sizeof(vs_tl_footer_t) +
                                       resp->header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
 
-                    if (resp->used_size + rest_data_sz > resp->footer_sz) {
+                    if (resp->used_size + rest_data_sz > resp->footer_sz ||
+                        resp->footer_sz > VS_TL_STORAGE_MAX_PART_SIZE) {
                         return 0;
                     }
                 }
