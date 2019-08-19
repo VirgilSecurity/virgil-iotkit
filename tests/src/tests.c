@@ -85,46 +85,13 @@ crypto_tests(void) {
 
 /**********************************************************/
 uint16_t
-vs_tests_checks(bool print_start_finish_tests) {
+vs_tests_checks() {
     failed_test_result = 0;
-
-    if (print_start_finish_tests) {
-        START_TESTS;
-    }
 
     sdmp_tests();
     prvs_tests();
 
     crypto_tests();
 
-    if (print_start_finish_tests) {
-        FINISH_TESTS;
-    }
-
     return failed_test_result;
-}
-
-/**********************************************************/
-void
-vs_tests_begin() {
-    START_TESTS;
-}
-
-/**********************************************************/
-void
-vs_tests_step_success() {
-    RESULT_OK;
-}
-
-/**********************************************************/
-void
-vs_tests_step_failure() {
-    RESULT_ERROR;
-terminate:;
-}
-
-/**********************************************************/
-void
-vs_tests_end() {
-    FINISH_TESTS;
 }

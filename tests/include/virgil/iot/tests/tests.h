@@ -36,20 +36,12 @@
 #define VIRGIL_IOT_SDK_TESTS_H
 
 #include <stdbool.h>
-
-void
-vs_tests_begin();
+#include <virgil/iot/secbox/secbox.h>
 
 uint16_t
-vs_tests_checks(bool print_start_finish_tests);
+vs_tests_checks();
 
 void
-vs_tests_step_success();
-
-void
-vs_tests_step_failure();
-
-void
-vs_tests_end();
+vs_secbox_test(vs_storage_op_ctx_t *ctx);
 
 #endif // VIRGIL_IOT_SDK_TESTS_H

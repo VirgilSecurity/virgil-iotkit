@@ -94,9 +94,8 @@ typedef int (*vs_storage_del_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
+// HAL
 typedef struct {
-    // HAL
-    vs_storage_hal_ctx_t storage_ctx;
     vs_storage_deinit_hal_t deinit;
 
     vs_storage_open_hal_t open;
@@ -107,10 +106,13 @@ typedef struct {
     vs_storage_file_size_hal_t size;
 
     vs_storage_del_hal_t del;
+}vs_storage_op_impl_t;
 
-    size_t file_sz_limit;     // Maximum size of file
-
+typedef struct {
     // Context if required
+    vs_storage_hal_ctx_t storage_ctx;
+    size_t file_sz_limit;     // Maximum size of file
+    vs_storage_op_impl_t impl;
 } vs_storage_op_ctx_t;
 
 

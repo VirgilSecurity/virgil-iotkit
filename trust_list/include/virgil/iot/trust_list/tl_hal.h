@@ -22,4 +22,4 @@ vs_tl_load_hal(vs_tl_element_info_hal_t *element_info, uint8_t *out_data, uint16
 int
 vs_tl_del_hal(vs_tl_element_info_hal_t *element_info);
 
-#endif //VS_TL_HAL_H
+#endif // VS_TL_HAL_H
