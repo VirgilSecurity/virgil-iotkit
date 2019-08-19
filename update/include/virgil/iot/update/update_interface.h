@@ -62,4 +62,11 @@ vs_update_get_firmware_descriptor_table_len_hal(void);
 
 int
 vs_update_get_firmware_image_len_hal(uint8_t *manufacture_id, uint8_t *device_type);
+
+int
+vs_update_install_prepare_space_hal(void);
+
+int
+vs_update_install_append_data_hal(const void *data, uint16_t data_sz);
+
 #endif // VS_UPDATE_INTERFACE_H
