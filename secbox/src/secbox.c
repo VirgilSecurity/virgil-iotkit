@@ -58,7 +58,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     }
 
     vs_storage_file_t f = ctx->impl.open(ctx->storage_ctx, id);
-    CHECK_RET(NULL == f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
+    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
 
     res = ctx->impl.save(ctx->storage_ctx, f, 0, data, data_sz);
     if (VS_STORAGE_OK != res) {
