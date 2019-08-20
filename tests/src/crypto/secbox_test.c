@@ -53,8 +53,9 @@ _test_case_secbox_del(vs_storage_op_ctx_t *ctx, const char *filename) {
 }
 
 /**********************************************************/
-void
+uint16_t
 vs_secbox_test(vs_storage_op_ctx_t *ctx) {
+    uint16_t failed_test_result = 0;
     char *_big_test_data = NULL;
     START_TEST("Secbox tests");
 
@@ -83,4 +84,5 @@ terminate:;
         VS_IOT_FREE(_big_test_data);
     }
     vs_secbox_deinit(ctx);
+    return failed_test_result;
 }

@@ -168,8 +168,10 @@ _prepare_and_test(char *descr,
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_ecdh(void) {
+    uint16_t failed_test_result = 0;
+
     char descr[256];
 
     START_TEST("ECDH tests");
@@ -194,8 +196,8 @@ test_ecdh(void) {
     TEST_ECDH_PASS(VS_KEYPAIR_EC_SECP256R1, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, true);
     TEST_ECDH_PASS(VS_KEYPAIR_EC_CURVE25519, VS_KEY_SLOT_STD_MTP_1, VS_KEY_SLOT_STD_MTP_2, true);
 
-terminate:;
-
+terminate:
+    return failed_test_result;
 #undef TEST_ECDH_OK_PASS
 #undef TEST_ECDH_NOT_OK_PASS
 }

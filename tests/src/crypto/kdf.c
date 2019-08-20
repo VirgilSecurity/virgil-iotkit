@@ -102,8 +102,10 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_kdf2(void) {
+    uint16_t failed_test_result = 0;
+
 #define HKDF_TEST_STEP(BITLEN)                                                                                         \
     do {                                                                                                               \
         vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
@@ -191,7 +193,8 @@ test_kdf2(void) {
     }
     HKDF_TEST_STEP(512);
 
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_STEP
 }

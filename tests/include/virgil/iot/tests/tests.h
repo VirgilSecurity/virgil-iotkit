@@ -41,7 +41,7 @@
 uint16_t
 vs_tests_checks();
 
-void
+uint16_t
 vs_secbox_test(vs_storage_op_ctx_t *ctx);
 
 #endif // VIRGIL_IOT_SDK_TESTS_H
