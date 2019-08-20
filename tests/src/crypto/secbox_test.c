@@ -20,10 +20,13 @@ _test_case_secbox_save_load(vs_storage_op_ctx_t *ctx, const char *filename, cons
 
     vs_hsm_hash_create(VS_HASH_SHA_256, (uint8_t *)filename, strlen(filename), file_id, sizeof(file_id), &hash_sz);
 
-    BOOL_CHECK_RET(0 == vs_secbox_save(ctx, VS_SECBOX_SIGNED, file_id, (uint8_t *)test_data, data_sz),
+    BOOL_CHECK_RET(VS_STORAGE_OK == vs_secbox_save(ctx, VS_SECBOX_SIGNED, file_id, (uint8_t *)test_data, data_sz),
                    "Error save file")
 
-    BOOL_CHECK_RET(data_sz == vs_secbox_load(ctx, file_id, buf, data_sz), "Error read file")
+    BOOL_CHECK_RET(data_sz == vs_secbox_file_size(ctx, file_id),
+                   "Error file size")
+
+    BOOL_CHECK_RET(VS_STORAGE_OK == vs_secbox_load(ctx, file_id, buf, data_sz), "Error read file")
     MEMCMP_CHECK_RET(buf, test_data, data_sz)
 
     return true;

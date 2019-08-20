@@ -63,11 +63,11 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     res = ctx->impl.save(ctx->storage_ctx, f, 0, data, data_sz);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't save file");
-        ctx->impl.close(ctx->storage_ctx, id);
+        ctx->impl.close(ctx->storage_ctx, f);
         return res;
     }
 
-    return ctx->impl.close(ctx->storage_ctx, id);
+    return ctx->impl.close(ctx->storage_ctx, f);
 }
 
 /******************************************************************************/
@@ -87,19 +87,19 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
 
     CHECK_RET(0 < file_sz, VS_STORAGE_ERROR_GENERAL, "Can't find file")
 
-    CHECK_RET(data_sz != file_sz, VS_STORAGE_ERROR_PARAMS, "Can't read requested data quantity")
+    CHECK_RET(data_sz == file_sz, VS_STORAGE_ERROR_PARAMS, "Can't read requested data quantity")
 
     vs_storage_file_t f = ctx->impl.open(ctx->storage_ctx, id);
-    CHECK_RET(NULL == f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
+    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
 
     res = ctx->impl.load(ctx->storage_ctx, f, 0, data, data_sz);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't load file");
-        ctx->impl.close(ctx->storage_ctx, id);
+        ctx->impl.close(ctx->storage_ctx, f);
         return res;
     }
 
-    return ctx->impl.close(ctx->storage_ctx, id);
+    return ctx->impl.close(ctx->storage_ctx, f);
 }
 
 /******************************************************************************/
