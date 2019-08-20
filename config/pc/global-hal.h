@@ -36,6 +36,7 @@
 #define VIRGIL_IOT_SDK_GLOBAL_HAB_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 
