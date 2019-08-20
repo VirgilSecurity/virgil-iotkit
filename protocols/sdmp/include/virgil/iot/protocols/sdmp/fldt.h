@@ -42,7 +42,13 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 // File type
-enum vs_fldt_file_type { VS_FLDT_FIRMWARE, VS_FLDT_TRUSTLIST, VS_FLDT_OTHER };
+enum vs_fldt_file_type {
+    VS_FLDT_FIRST_FILETYPE = 0,
+    VS_FLDT_FIRMWARE = VS_FLDT_FIRST_FILETYPE,
+    VS_FLDT_TRUSTLIST,
+    VS_FLDT_OTHER,
+    VS_FLDT_FILETYPES_AMOUNT
+};
 
 typedef struct __attribute__((__packed__)) {
     uint8_t file_type; // = enum vs_fldt_file_type
