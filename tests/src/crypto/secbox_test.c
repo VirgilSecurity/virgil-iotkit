@@ -1,7 +1,8 @@
 #include <stdlib.h>
+
+#include <global-hal.h>
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
-
 #include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 
