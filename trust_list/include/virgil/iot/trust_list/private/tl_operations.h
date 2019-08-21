@@ -40,5 +40,8 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 int
 vs_tl_verify_storage(size_t storage_type);
 
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
+
 
 #endif // TL_OPERATIONS_H

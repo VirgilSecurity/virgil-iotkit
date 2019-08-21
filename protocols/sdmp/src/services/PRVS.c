@@ -412,7 +412,6 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
         return _prvs_asgn_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_TLH:
-        vs_tl_header_t_decode((vs_tl_header_t *)request);
         return _prvs_start_tl_process_request(netif, request, request_sz);
 
     case VS_PRVS_TLC:
@@ -669,14 +668,7 @@ vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
                            const uint8_t *data,
                            uint16_t data_sz,
                            uint32_t wait_ms) {
-
-    vs_tl_header_t *header = (vs_tl_header_t *)data;
-    VS_IOT_ASSERT(data);
-
-    // Normalize byte order
-    vs_tl_header_t_encode(header);
-
-    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, (uint8_t *)header, data_sz, wait_ms);
+    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
 }
 
 /******************************************************************************/

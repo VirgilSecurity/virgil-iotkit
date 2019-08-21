@@ -95,7 +95,7 @@ vs_tests_checks(bool print_start_finish_tests) {
     sdmp_tests();
     prvs_tests();
 
-    //    crypto_tests();
+    crypto_tests();
 
     if (print_start_finish_tests) {
         FINISH_TESTS;

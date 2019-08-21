@@ -80,6 +80,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint16_t sign_len;
     uint16_t key_len;
     uint8_t sign_rules = 0;
+    vs_tl_header_t host_header;
 
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
@@ -92,7 +93,9 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         return false;
     }
 
-    if (tl_ctx->header.tl_size > VS_TL_STORAGE_SIZE) {
+    vs_tl_header_to_host(&(tl_ctx->header), &host_header);
+
+    if (host_header.tl_size > VS_TL_STORAGE_SIZE) {
         tl_ctx->ready = false;
         return false;
     }
@@ -100,7 +103,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     vs_hsm_sw_sha256_init(&ctx);
     vs_hsm_sw_sha256_update(&ctx, (uint8_t *)&tl_ctx->header, sizeof(vs_tl_header_t));
 
-    for (i = 0; i < tl_ctx->header.pub_keys_count; ++i) {
+    for (i = 0; i < host_header.pub_keys_count; ++i) {
 
         if (VS_TL_OK != vs_tl_key_load(tl_ctx->storage.storage_type, i, buf, sizeof(buf), &res_sz)) {
             tl_ctx->ready = false;
@@ -121,9 +124,16 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     // First signature
     sign = (vs_sign_t *)footer->signatures;
 
-    BOOL_CHECK_RET(tl_ctx->header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
 
-    for (i = 0; i < tl_ctx->header.signatures_count; ++i) {
+    for (i = 0; i < 64; ++i) {
+        printf("%02x", footer->signatures[i]);
+    }
+    printf("\n");
+
+
+    BOOL_CHECK_RET(host_header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
+
+    for (i = 0; i < host_header.signatures_count; ++i) {
         BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL")
 
         sign_len = vs_hsm_get_signature_len(sign->ec_type);
@@ -190,6 +200,7 @@ _get_tl_ctx(size_t storage_type) {
 static int
 _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     vs_tl_header_t header;
+    vs_tl_header_t host_header;
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
@@ -204,7 +215,9 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
         return VS_TL_ERROR_WRITE;
     }
 
-    for (i = 0; i < header.pub_keys_count; ++i) {
+    vs_tl_header_to_host(&header, &host_header);
+
+    for (i = 0; i < host_header.pub_keys_count; ++i) {
         if (VS_TL_OK != vs_tl_key_load(src->storage.storage_type, i, buf, sizeof(buf), &res_sz) ||
             VS_TL_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
             dst->ready = false;
@@ -256,14 +269,19 @@ int
 vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
+    vs_tl_header_t host_header;
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(NULL != header, VS_TL_ERROR_PARAMS, "Invalid args")
-    CHECK_RET(header->tl_size <= VS_TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
+
+    // Normalize byte order
+    vs_tl_header_to_host(header, &host_header);
+
+    CHECK_RET(host_header.tl_size <= VS_TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
 
     tl_ctx->ready = false;
     tl_ctx->keys_qty.keys_count = 0;
-    tl_ctx->keys_qty.keys_amount = header->pub_keys_count;
+    tl_ctx->keys_qty.keys_amount = host_header.pub_keys_count;
 
     CHECK_RET(
             0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox save")
@@ -467,3 +485,14 @@ vs_tl_apply_tmp_to(size_t storage_type) {
 
     return VS_TL_ERROR_GENERAL;
 }
+
+/******************************************************************************/
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
+    *dst_data = *src_data;
+    dst_data->pub_keys_count = ntohs(src_data->pub_keys_count);
+    dst_data->tl_size = ntohl(src_data->tl_size);
+    dst_data->version = ntohs(src_data->version);
+}
+
+/******************************************************************************/

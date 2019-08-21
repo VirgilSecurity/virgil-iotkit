@@ -30,7 +30,7 @@ class CryptoByteStorage(SignedByteStorage):
             if self._get_file_size():
                 self._handle.seek(0)
                 raw_signer_id = self._handle.read(2)
-                signer_id = int.from_bytes(raw_signer_id, byteorder='little', signed=False)
+                signer_id = int.from_bytes(raw_signer_id, byteorder='big', signed=False)
             if signer_id != 0:
                 for key in self._auth:
                     auth_pub_key = self._a_check(self._atmel.get_public_key(key))
@@ -51,11 +51,11 @@ class CryptoByteStorage(SignedByteStorage):
             signature = bytearray(64)
         else:
             self._ui.print_error("Can't sign by Auth Key")
-        signer_id = signer_id.to_bytes(2, byteorder='little', signed=False)
+        signer_id = signer_id.to_bytes(2, byteorder='big', signed=False)
         return signature, signer_id
 
     def _verify(self, data, signer_id, signature_bytes):
-        signer_id = int.from_bytes(signer_id, byteorder='little', signed=False)
+        signer_id = int.from_bytes(signer_id, byteorder='big', signed=False)
         self._plugged_dongles()
 
         base64_data = base64.b64encode(bytes(data)).decode()
@@ -89,7 +89,7 @@ class CryptoByteStorage(SignedByteStorage):
         #
         encrypted_data_buffer = BytesIO(encrypted_data)
         while data_parts_count > 0:
-            part_size = int.from_bytes(encrypted_data_buffer.read(2), byteorder='little', signed=False)
+            part_size = int.from_bytes(encrypted_data_buffer.read(2), byteorder='big', signed=False)
             data_part = base64.b64encode(encrypted_data_buffer.read(part_size)).decode()
             return json.loads(base64.b64decode(data_part).decode())
         #     if self._auth:
@@ -130,13 +130,13 @@ class CryptoByteStorage(SignedByteStorage):
         #
         # byte_buffer = BytesIO()
         # for data_part in data_parts:
-        #     byte_buffer.write(len(bytearray(data_part)).to_bytes(2, byteorder='little', signed=False))
+        #     byte_buffer.write(len(bytearray(data_part)).to_bytes(2, byteorder='big', signed=False))
         #     byte_buffer.write(data_part)
         # encrypted_data = byte_buffer.getvalue()
         # return len(data_parts), encrypted_data
 
         byte_buffer = BytesIO()
-        byte_buffer.write(len(bytearray(serialized_data)).to_bytes(2, byteorder='little', signed=False))
+        byte_buffer.write(len(bytearray(serialized_data)).to_bytes(2, byteorder='big', signed=False))
         byte_buffer.write(serialized_data)
         return 1, byte_buffer.getvalue()
 
@@ -164,7 +164,7 @@ class CryptoByteStorage(SignedByteStorage):
             self._handle.seek(0)
             signer_id = self._handle.read(2)
             signature_data = self._handle.read(64)
-            data_parts_count = int.from_bytes(self._handle.read(2), byteorder='little', signed=False)
+            data_parts_count = int.from_bytes(self._handle.read(2), byteorder='big', signed=False)
             encrypted_data = bytearray(binascii.unhexlify(self._handle.read().decode()))
 
             if not self._verify(encrypted_data, signer_id, signature_data):
@@ -188,7 +188,7 @@ class CryptoByteStorage(SignedByteStorage):
         self._handle.seek(2)
         self._handle.write(signature)
         self._handle.seek(66)
-        self._handle.write(data_parts_count.to_bytes(2, byteorder='little', signed=False))
+        self._handle.write(data_parts_count.to_bytes(2, byteorder='big', signed=False))
         self._handle.seek(68)
         self._handle.write(bytearray(binascii.hexlify(encrypted_data)))
         self._handle.flush()
