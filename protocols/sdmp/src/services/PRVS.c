@@ -32,20 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/PRVS.h>
-#include <virgil/iot/protocols/sdmp/sdmp_private.h>
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
-#include <stdlib-config.h>
 #include <global-hal.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib-config.h>
+#include <string.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/sdmp_private.h>
 
 #if !VS_SDMP_FACTORY
-#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #endif // !VS_SDMP_FACTORY
 
@@ -431,7 +431,8 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {}
+    default: {
+    }
     }
 
     return -1;
@@ -661,11 +662,11 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms) {
+vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
+                         const vs_mac_addr_t *mac,
+                         const uint8_t *data,
+                         uint16_t data_sz,
+                         uint32_t wait_ms) {
     return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
 }
 
@@ -676,5 +677,4 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
                            const uint8_t *data,
                            uint16_t data_sz,
                            uint32_t wait_ms) {
-    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
-}
+    { return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms); }
