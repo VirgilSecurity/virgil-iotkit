@@ -79,7 +79,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
               "Unable to get last file version information for file type \"%s\"",
               vs_fldt_file_type_descr(file_type));
 
-    VS_LOG_DEBUG("[FLDT:GFTI] server file information : %s",
+    VS_LOG_DEBUG("[FLDT:GFTI] Server file information : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &file_info_response->version));
 
     *response_sz = sizeof(vs_fldt_file_version_t);
@@ -118,8 +118,6 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     file_type = &file_ver->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:GNFH] header request : %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
-
     CHECK_RET(file_type_info->get_header,
               -7,
               "There is no get_header callback for file type \"%s\"",
@@ -131,6 +129,10 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
               vs_fldt_file_type_descr(file_type));
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
+
+    VS_LOG_DEBUG("[FLDT:GNFH] Header request for file %s. Header : %d bytes, chunks : %d x %d bytes, footer : %d bytes",
+                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
+                 header_response->header_size, header_response->chunks_amount, header_response->chunk_size, header_response->footer_size);
 
     return 0;
 }
@@ -165,7 +167,7 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
     file_type = &file_ver->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:GNFC] chunk %d request : %s",
+    VS_LOG_DEBUG("[FLDT:GNFC] Chunk %d request for file %s",
                  chunk_request->chunk_id,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -215,7 +217,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     file_type = &file_ver->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:GNFF] footer request : %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
+    VS_LOG_DEBUG("[FLDT:GNFF] Footer request for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
     CHECK_RET(file_type_info->get_footer,
               -7,
@@ -256,12 +258,16 @@ int
 vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
     char filever_descr[FLDT_FILEVER_BUF];
 
-    VS_LOG_DEBUG("*** [FLDT] Broadcast new file version present. %s",
+    VS_LOG_DEBUG("*** [FLDT] Broadcast new file version present for file %s",
                  vs_fldt_file_version_descr(filever_descr, &new_file->version));
 
     CHECK_NOT_ZERO_RET(new_file, -1);
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, vs_fldt_broadcast_mac_addr, VS_FLDT_INFV, (const uint8_t *)new_file, sizeof(*new_file)),
+    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+                                    vs_fldt_broadcast_mac_addr,
+                                    VS_FLDT_INFV,
+                                    (const uint8_t *)new_file,
+                                    sizeof(*new_file)),
               -2,
               "Unable to send FLDT \"INFV\" broadcast request");
 

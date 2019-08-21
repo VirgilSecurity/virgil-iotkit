@@ -47,15 +47,19 @@ extern "C" {
 //  Callbacks
 //
 
+// . "Set Gateway MAC address"
+// .  Set gateway MAC address
+typedef int (*vs_fldt_client_set_gateway_mac_funct)(const vs_mac_addr_t *mac);
+
 // . "Get Current Version"
 // .  Get file_type current file version and store it to the file_info
 typedef int (*vs_fldt_client_get_version_funct)(const vs_fldt_file_type_t *file_type,
-                                                vs_fldt_file_version_t *file_info);
+                                                vs_fldt_file_version_t *file_version);
 
 // . "Update file"
-// .  Current file specified by file_version is older than gateway one, so need to call
+// .  Current file specified by file_version_request is older than gateway one, so need to call
 //    get_file_header, get_file_chunk, ..., get_file_footer (if footer is present)
-typedef int (*vs_fldt_client_update_file_funct)(const vs_fldt_file_version_t *file_version);
+typedef int (*vs_fldt_client_update_file_funct)(const vs_fldt_infv_new_file_request_t *file_version_request);
 
 // . "Get file info"
 // .  File header for file file_version has been received
@@ -87,6 +91,7 @@ typedef struct {
     vs_fldt_file_type_t file_type;
     vs_fldt_storage_id_t id;
 
+    vs_fldt_client_set_gateway_mac_funct set_gateway_mac;
     vs_fldt_client_get_version_funct get_current_version;
     vs_fldt_client_update_file_funct update_file;
     vs_fldt_client_get_info_funct get_info;

@@ -137,11 +137,12 @@ typedef struct __attribute__((__packed__)) {
 
 // Functions
 static inline void
-vs_fldt_set_is_gateway(bool is_gateway){
+vs_fldt_set_is_gateway(bool is_gateway) {
     vs_fldt_is_gateway = is_gateway;
 }
+
 static inline bool
-vs_fldt_get_is_gateway(void){
+vs_fldt_get_is_gateway(void) {
     return vs_fldt_is_gateway;
 }
 

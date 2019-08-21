@@ -110,7 +110,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
         return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GFTI:
-        if(vs_fldt_get_is_gateway()) {
+        if (vs_fldt_get_is_gateway()) {
             return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
         } else {
             return 0;
