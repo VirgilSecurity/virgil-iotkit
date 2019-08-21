@@ -35,6 +35,7 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 #include <trust_list-config.h>
+#include <endian-config.h>
 
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
@@ -123,13 +124,6 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
 
     // First signature
     sign = (vs_sign_t *)footer->signatures;
-
-
-    for (i = 0; i < 64; ++i) {
-        printf("%02x", footer->signatures[i]);
-    }
-    printf("\n");
-
 
     BOOL_CHECK_RET(host_header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
 
@@ -490,9 +484,9 @@ vs_tl_apply_tmp_to(size_t storage_type) {
 void
 vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
     *dst_data = *src_data;
-    dst_data->pub_keys_count = ntohs(src_data->pub_keys_count);
-    dst_data->tl_size = ntohl(src_data->tl_size);
-    dst_data->version = ntohs(src_data->version);
+    dst_data->pub_keys_count = VS_IOT_NTOHS(src_data->pub_keys_count);
+    dst_data->tl_size = VS_IOT_NTOHL(src_data->tl_size);
+    dst_data->version = VS_IOT_NTOHS(src_data->version);
 }
 
 /******************************************************************************/

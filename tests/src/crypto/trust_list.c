@@ -4,8 +4,9 @@
 #include <virgil/iot/tests/tests.h>
 #include <virgil/iot/tests/helpers.h>
 
-#include "stdlib-config.h"
-#include "trust_list-config.h"
+#include <stdlib-config.h>
+#include <endian-config.h>
+#include <trust_list-config.h>
 #include <global-hal.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
@@ -52,7 +53,7 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     test_header_sz = sizeof(vs_tl_header_t);
 
     // Use values in host endian
-    pub_keys_count = ntohs(test_header->pub_keys_count);
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
     signatures_count = test_header->signatures_count;
 
     uint8_t *ptr = (uint8_t *)data + sizeof(vs_tl_header_t);
