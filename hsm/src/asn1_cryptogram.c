@@ -40,6 +40,8 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/hsm/hsm_errors.h>
 
+#define ANS1_BUF_SIZE 1024
+
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
 #define INTEGER 0x02
@@ -47,6 +49,42 @@
 #define ZERO_TAG 0xA0
 #define OID 0x06
 #define SET 0x31
+
+static const uint8_t _aes256_gcm[] =
+        {0x30, 0x26, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E, 0x04, 0x0C};
+
+static const uint8_t _aes256_cbc[] =
+        {0x30, 0x1D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A, 0x04, 0x10};
+
+static const uint8_t _pkcs7_data[] = {0x30, 0x26, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01};
+
+static const uint8_t _hmac[] = {0x30,
+                                0x41,
+                                0x30,
+                                0x0D,
+                                0x06,
+                                0x09,
+                                0x60,
+                                0x86,
+                                0x48,
+                                0x01,
+                                0x65,
+                                0x03,
+                                0x04,
+                                0x02,
+                                0x02,
+                                0x05,
+                                0x00,
+                                0x04,
+                                0x30};
+
+static const uint8_t _hash_info[] = {0x30, 0x18, 0x06, 0x07, 0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x02, 0x30, 0x0D,
+                                     0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00};
+
+static const uint8_t _ec_type_info[] = {0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01,
+                                        0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07};
+
+static const uint8_t _enveloped_data_oid[] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03};
 
 /******************************************************************************/
 static bool
@@ -127,6 +165,109 @@ _asn1_get_size(int pos, const uint8_t *data) {
     }
 
     return res;
+}
+
+/******************************************************************************/
+bool
+asn1_put_array(uint8_t element,
+               int *pos,
+               uint8_t *data,
+               const uint8_t *array,
+               size_t array_size,
+               size_t *res_size,
+               size_t *total_sz) {
+    int prefix_sz = 2;
+    uint8_t *w;
+
+    if (INTEGER == element && array[0] >= 0x80) {
+        prefix_sz += 1;
+    }
+    *res_size = array_size + prefix_sz;
+
+    if (*pos > *res_size) {
+        w = &data[*pos - *res_size];
+        w[0] = element;
+        w[1] = array_size + prefix_sz - 2;
+
+        if (prefix_sz > 2) {
+            w[2] = 0x00;
+            w += 3;
+        } else {
+            w += 2;
+        }
+        memcpy(w, array, array_size);
+        *pos -= *res_size;
+        if (total_sz) {
+            *total_sz += *res_size;
+        }
+        return true;
+    }
+    return false;
+}
+
+/******************************************************************************/
+static bool
+_asn1_put_header(uint8_t element, int *pos, uint8_t *data, size_t data_size, size_t *res_size, size_t *total_sz) {
+    uint8_t *w;
+    *res_size = data_size < 0x80 ? 2 : 4;
+
+    if (*pos > *res_size) {
+        w = &data[*pos - *res_size];
+        w[0] = element;
+        if (data_size < 0x80) {
+            w[1] = data_size;
+        } else {
+            w[1] = 0x82;
+            w[2] = data_size >> 8;
+            w[3] = data_size & 0xFF;
+        }
+        *pos -= *res_size;
+        if (total_sz) {
+            *total_sz += *res_size;
+        }
+        return true;
+    }
+    return false;
+}
+
+/******************************************************************************/
+static bool
+_asn1_put_uint8(int *pos, uint8_t *data, uint8_t val, size_t *res_size, size_t *total_sz) {
+    uint8_t *w;
+
+    *res_size = 3;
+
+    if (*pos > *res_size) {
+        w = &data[*pos - *res_size];
+        w[0] = INTEGER;
+        w[1] = 1;
+        w[2] = val;
+        *pos -= *res_size;
+        if (total_sz) {
+            *total_sz += *res_size;
+        }
+        return true;
+    }
+    return false;
+}
+
+/******************************************************************************/
+static bool
+_asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size, size_t *res_size, size_t *total_sz) {
+    uint8_t *w;
+
+    *res_size = data_size;
+
+    if (*pos > *res_size) {
+        w = &data[*pos - *res_size];
+        memcpy(w, raw_data, data_size);
+        *pos -= *res_size;
+        if (total_sz) {
+            *total_sz += *res_size;
+        }
+        return true;
+    }
+    return false;
 }
 
 /******************************************************************************/
@@ -292,4 +433,141 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
     }
 
     return VS_HSM_ERR_FAIL;
+}
+
+/******************************************************************************/
+int
+vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                              size_t recipient_id_sz,
+                                              size_t encrypted_data_sz,
+                                              const uint8_t *encrypted_data,
+                                              const uint8_t *iv_data,
+                                              const uint8_t *encrypted_key,
+                                              const uint8_t *iv_key,
+                                              const uint8_t *hmac,
+                                              const uint8_t *public_key,
+                                              size_t public_key_sz,
+                                              uint8_t *cryptogram,
+                                              size_t *cryptogram_sz) {
+
+    uint8_t buf[ANS1_BUF_SIZE];
+    int pos = ANS1_BUF_SIZE;
+    size_t total_sz = 0, pkcs7_data_sz = 0, el_sz;
+
+    CHECK_NOT_ZERO(recipient_id, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(recipient_id_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_data_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(iv_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(iv_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(hmac, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(public_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(public_key_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
+
+    // Put encrypted data
+    if (!_asn1_put_raw(&pos, buf, encrypted_data, encrypted_data_sz, &el_sz, 0))
+        return VS_HSM_ERR_FAIL;
+
+    // PKCS #7 data
+    if (!_asn1_put_raw(&pos, buf, iv_data, 12, &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, _aes256_gcm, sizeof(_aes256_gcm), &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, _pkcs7_data, sizeof(_pkcs7_data), &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    pkcs7_data_sz = total_sz;
+
+    // AES256-GCM encrypted key
+    if (!asn1_put_array(OCTET_STRING, &pos, buf, encrypted_key, 48, &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, iv_key, 16, &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, _aes256_cbc, sizeof(_aes256_cbc), &el_sz, &total_sz) ||
+        !_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // HMAC
+    if (!_asn1_put_raw(&pos, buf, hmac, 48, &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, _hmac, sizeof(_hmac), &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // hash info
+    if (!_asn1_put_raw(&pos, buf, _hash_info, sizeof(_hash_info), &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // public key
+    if (!_asn1_put_raw(&pos, buf, public_key, public_key_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // integer
+    if (!_asn1_put_uint8(&pos, buf, 0, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // wrap with sequence
+    if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // wrap with octet string
+    if (!_asn1_put_header(OCTET_STRING, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // EC type info
+    if (!_asn1_put_raw(&pos, buf, _ec_type_info, sizeof(_ec_type_info), &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Recipient ID
+    if (!asn1_put_array(OCTET_STRING, &pos, buf, recipient_id, recipient_id_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Zero element
+    if (!_asn1_put_header(ZERO_TAG, &pos, buf, el_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Integer ver
+    if (!_asn1_put_uint8(&pos, buf, 2, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with sequence
+    if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with set
+    if (!_asn1_put_header(SET, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Integer ver
+    if (!_asn1_put_uint8(&pos, buf, 2, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with sequence
+    if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with zero tag
+    if (!_asn1_put_header(ZERO_TAG, &pos, buf, total_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // PKCS #7 enveloped data
+    if (!_asn1_put_raw(&pos, buf, _enveloped_data_oid, sizeof(_enveloped_data_oid), &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with sequence
+    if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Integer
+    if (!_asn1_put_uint8(&pos, buf, 0, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    // Wrap with sequence
+    if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
+        return VS_HSM_ERR_FAIL;
+
+    if (*cryptogram_sz < total_sz)
+        return VS_HSM_ERR_FAIL;
+
+    *cryptogram_sz = total_sz + encrypted_data_sz;
+    VS_IOT_MEMCPY(cryptogram, &buf[pos], *cryptogram_sz);
+
+    return true;
 }

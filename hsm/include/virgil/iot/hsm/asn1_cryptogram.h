@@ -53,6 +53,20 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              uint8_t **iv_data,
                                              uint8_t **encrypted_data,
                                              size_t *encrypted_data_sz);
+
+int
+vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                              size_t recipient_id_sz,
+                                              size_t encrypted_data_sz,
+                                              const uint8_t *encrypted_data,
+                                              const uint8_t *iv_data,
+                                              const uint8_t *encrypted_key,
+                                              const uint8_t *iv_key,
+                                              const uint8_t *hmac,
+                                              const uint8_t *public_key,
+                                              size_t public_key_sz,
+                                              uint8_t *cryptogram,
+                                              size_t *cryptogram_sz);
 #ifdef __cplusplus
 }
 #endif
