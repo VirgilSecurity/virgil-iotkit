@@ -80,11 +80,11 @@ typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *net
 #define ETH_MIN_LEN (64)
 #define ETH_MTU (1500)
 
-#define VS_ETHERTYPE_VIRGIL (HTONS_IN_COMPILE_TIME(0xABCD))
+#define VS_ETHERTYPE_VIRGIL (CHAR_SHORT(0xAB, 0xCD))
 
 typedef enum {
-    VS_SDMP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001),
-    VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
+    VS_SDMP_FLAG_ACK = CHAR_LONG('0', '0', '0', '1'),
+    VS_SDMP_FLAG_NACK = CHAR_LONG('0', '0', '0', '2')
 } vs_sdmp_flags_e;
 
 

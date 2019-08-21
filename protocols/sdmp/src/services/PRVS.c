@@ -431,8 +431,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
-    default: {
-    }
+    default: {}
     }
 
     return -1;
@@ -469,10 +468,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
 static void
 _prepare_prvs_service() {
     _prvs_service.user_data = 0;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-    _prvs_service.id = HTONL_IN_COMPILE_TIME('PRVS');
-#pragma GCC diagnostic pop
+    _prvs_service.id = CHAR_LONG('P', 'R', 'V', 'S');
     _prvs_service.request_process = _prvs_service_request_processor;
     _prvs_service.response_process = _prvs_service_response_processor;
 }

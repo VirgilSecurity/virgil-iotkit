@@ -99,6 +99,10 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 
     // Detect required command
     for (i = 0; i < _sdmp_services_num; i++) {
+        char *p1 = (char *)(&_sdmp_services[i]->id);
+        char *p2 = (char *)(&packet->header.service_id);
+
+        printf(">>> %c%c%c%c CMP %c%c%c%c\n", p1[0], p1[1], p1[2], p1[3], p2[0], p2[1], p2[2], p2[3]);
         if (_sdmp_services[i]->id == packet->header.service_id) {
 
             // Process response

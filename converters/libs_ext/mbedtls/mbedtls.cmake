@@ -92,7 +92,7 @@ ExternalProject_Add (${PROJECT_NAME}
     URL "https://github.com/VirgilSecurity/mbedtls/archive/mbedtls-2.4.2-virgil-2.0.4.tar.gz"
     URL_HASH SHA1=8b8f2c27443f2ccf527613d4dba5f5a500ab24bd
     PREFIX "@VIRGIL_DEPENDS_PACKAGE_BUILD_DIR@"
-    CMAKE_ARGS "-DCMAKE_C_FLAGS=-fvisibility=hidden -fPIC" "@VIRGIL_DEPENDS_CMAKE_ARGS@" "${MBEDTLS_CMAKE_ARGS}"
+    CMAKE_ARGS "-DCMAKE_C_FLAGS=-fvisibility=hidden -fPIC ${CMAKE_C_FLAGS}" "@VIRGIL_DEPENDS_CMAKE_ARGS@" "${MBEDTLS_CMAKE_ARGS}"
     UPDATE_COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_BINARY_DIR}/configs
             ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}/include/mbedtls
