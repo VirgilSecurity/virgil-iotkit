@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_ASN1_CRYPTOGRAM_H
-#define VS_CLOUD_ASN1_CRYPTOGRAM_H
+#ifndef VS_HSM_ASN1_CRYPTOGRAM_H
+#define VS_HSM_ASN1_CRYPTOGRAM_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -42,17 +42,17 @@
 extern "C" {
 #endif
 int
-vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                               size_t cryptogram_sz,
-                                               uint8_t **public_key,
-                                               uint8_t **iv_key,
-                                               uint8_t **encrypted_key,
-                                               uint8_t **mac_data,
-                                               uint8_t **iv_data,
-                                               uint8_t **encrypted_data,
-                                               size_t *encrypted_data_sz);
+vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                             size_t cryptogram_sz,
+                                             uint8_t **public_key,
+                                             uint8_t **iv_key,
+                                             uint8_t **encrypted_key,
+                                             uint8_t **mac_data,
+                                             uint8_t **iv_data,
+                                             uint8_t **encrypted_data,
+                                             size_t *encrypted_data_sz);
 #ifdef __cplusplus
 }
 #endif
 
-#endif // VS_CLOUD_ASN1_CRYPTOGRAM_H
+#endif // VS_HSM_ASN1_CRYPTOGRAM_H

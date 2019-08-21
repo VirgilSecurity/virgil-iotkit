@@ -119,15 +119,15 @@ _crypto_decrypt_sha384_aes256(uint8_t *cryptogram,
     uint8_t *mac_data;
     uint8_t *iv_data;
 
-    if (VS_CLOUD_ERR_OK != vs_cloud_virgil_cryptogram_parse_sha384_aes256(cryptogram,
-                                                                          cryptogram_sz,
-                                                                          &public_key,
-                                                                          &iv_key,
-                                                                          &encrypted_key,
-                                                                          &mac_data,
-                                                                          &iv_data,
-                                                                          &encrypted_data,
-                                                                          &encrypted_data_sz)) {
+    if (VS_HSM_ERR_OK != vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
+                                                                      cryptogram_sz,
+                                                                      &public_key,
+                                                                      &iv_key,
+                                                                      &encrypted_key,
+                                                                      &mac_data,
+                                                                      &iv_data,
+                                                                      &encrypted_data,
+                                                                      &encrypted_data_sz)) {
         return false;
     }
 

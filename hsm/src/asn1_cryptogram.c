@@ -32,9 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include <virgil/iot/cloud/private/cloud_include.h>
+
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/hsm/hsm_errors.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -148,28 +152,28 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
 
 /******************************************************************************/
 int
-vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                               size_t cryptogram_sz,
-                                               uint8_t **public_key,
-                                               uint8_t **iv_key,
-                                               uint8_t **encrypted_key,
-                                               uint8_t **mac_data,
-                                               uint8_t **iv_data,
-                                               uint8_t **encrypted_data,
-                                               size_t *encrypted_data_sz) {
+vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                             size_t cryptogram_sz,
+                                             uint8_t **public_key,
+                                             uint8_t **iv_key,
+                                             uint8_t **encrypted_key,
+                                             uint8_t **mac_data,
+                                             uint8_t **iv_data,
+                                             uint8_t **encrypted_data,
+                                             size_t *encrypted_data_sz) {
 
     int pos = 0, saved_pos, set_pos = 0;
     size_t _sz, ar_sz, asn1_sz;
     const uint8_t *_data, *p_ar = 0;
 
-    CHECK_NOT_ZERO(cryptogram, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(public_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_key, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(mac_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data_sz, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(public_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(iv_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(mac_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(iv_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(encrypted_data_sz, VS_HSM_ERR_INVAL);
 
     _sz = cryptogram_sz;
     _data = cryptogram;
@@ -181,39 +185,39 @@ vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 
         set_pos = pos;
         if (!_asn1_step_into(SET, &pos, _sz, _data))
-            return VS_CLOUD_ERR_VALUE_FAIL;
+            return VS_HSM_ERR_CRYPTO;
 
         while (true) {
 
             if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data) ||
                 !_asn1_step_into(ZERO_TAG, &pos, _sz, _data) || !_asn1_skip(OCTET_STRING, &pos, _sz, _data))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(OCTET_STRING, &pos, _sz, _data) ||
                 !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             // Read public key
             if (!_virgil_pubkey_to_tiny_no_copy(&_data[pos], _asn1_get_size(pos, _data), public_key))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data)) //-V501
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             saved_pos = pos;
             // Read mac
             if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
                 !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             if (ar_sz != 48)
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
             *mac_data = (uint8_t *)p_ar;
 
             pos = saved_pos;
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
             saved_pos = pos;
 
@@ -223,7 +227,7 @@ vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                 return false;
 
             if (ar_sz != 16)
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
             *iv_key = (uint8_t *)p_ar;
 
             pos = saved_pos;
@@ -231,41 +235,41 @@ vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
             // Read encrypted_key
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
                 !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
 
 
             if (ar_sz != 48)
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
             *encrypted_key = (uint8_t *)p_ar;
 
             pos = set_pos;
             if (!_asn1_skip(SET, &pos, _sz, _data))
-                return VS_CLOUD_ERR_VALUE_FAIL;
+                return VS_HSM_ERR_CRYPTO;
             break;
         }
 
         if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
             !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data))
-            return VS_CLOUD_ERR_VALUE_FAIL;
+            return VS_HSM_ERR_CRYPTO;
 
         // Get IV for data (AES)
         if (!_asn1_get_array(OCTET_STRING, &pos, _sz, _data, &p_ar, &ar_sz))
-            return VS_CLOUD_ERR_VALUE_FAIL;
+            return VS_HSM_ERR_CRYPTO;
 
         if (ar_sz != 12)
-            return VS_CLOUD_ERR_VALUE_FAIL;
+            return VS_HSM_ERR_CRYPTO;
         *iv_data = (uint8_t *)p_ar;
 
         // Read encrypted data
         asn1_sz = _asn1_get_size(0, _data);
         if (_sz <= asn1_sz)
-            return VS_CLOUD_ERR_FAIL;
+            return VS_HSM_ERR_FAIL;
 
         *encrypted_data_sz = _sz - asn1_sz;
         *encrypted_data = (uint8_t *)&_data[asn1_sz];
 
-        return VS_CLOUD_ERR_OK;
+        return VS_HSM_ERR_OK;
     }
 
-    return VS_CLOUD_ERR_FAIL;
+    return VS_HSM_ERR_FAIL;
 }

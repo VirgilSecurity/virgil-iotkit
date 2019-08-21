@@ -36,23 +36,14 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(hsm VERSION 0.1.0 LANGUAGES C)
 
-set(HSM_LIB hsm)
+add_library(hsm)
 
-#
-#   Source code
-#
-set(HSM_SRC
-        src/hsm_sha2_routines.c
-        src/hsm_helpers.c
+target_sources(hsm
+        PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/hsm_sha2_routines.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
         )
-
-#
-#   HSM library
-#
-add_library(${HSM_LIB}
-        ${HSM_SRC}
-        )
-
 #
 #   Set additional compiler flags
 #
@@ -63,7 +54,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(hsm
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -76,21 +67,23 @@ else()
     message(STATUS "[hsm] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-target_compile_definitions(${PROJECT_NAME}
+target_compile_definitions(hsm
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
+target_link_libraries(hsm
+        PUBLIC
+        logger
+        macros
+        )
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
+target_include_directories(hsm
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-
-        PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
 
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
