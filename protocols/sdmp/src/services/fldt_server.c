@@ -261,7 +261,7 @@ vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
 
     CHECK_NOT_ZERO_RET(new_file, -1);
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, 0, VS_FLDT_INFV, (const uint8_t *)new_file, sizeof(*new_file)),
+    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, vs_fldt_broadcast_mac_addr, VS_FLDT_INFV, (const uint8_t *)new_file, sizeof(*new_file)),
               -2,
               "Unable to send FLDT \"INFV\" broadcast request");
 

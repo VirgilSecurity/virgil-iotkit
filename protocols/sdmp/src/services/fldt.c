@@ -48,6 +48,8 @@ static vs_sdmp_service_t _fldt_service = {0};
 static bool _fldt_service_ready = false;
 
 const vs_netif_t *vs_fldt_netif = NULL;
+const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
+bool vs_fldt_is_gateway;
 
 /******************************************************************/
 const char *
@@ -108,7 +110,11 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
         return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        if(vs_fldt_get_is_gateway()) {
+            return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        } else {
+            return 0;
+        }
 
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);

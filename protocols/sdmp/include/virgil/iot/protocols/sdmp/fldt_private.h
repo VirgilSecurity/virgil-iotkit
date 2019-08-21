@@ -60,8 +60,8 @@ typedef struct {
 } vs_fldt_storage_ctx_t;
 
 typedef uint16_t vs_fldt_storage_id_t;
-
 const vs_netif_t *vs_fldt_netif;
+const vs_mac_addr_t *vs_fldt_broadcast_mac_addr;
 
 int
 vs_fldt_send_request(const vs_netif_t *netif,

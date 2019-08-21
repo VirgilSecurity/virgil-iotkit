@@ -46,6 +46,8 @@ extern "C" {
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
+bool vs_fldt_is_gateway;
+
 // File type
 enum vs_fldt_file_type { VS_FLDT_FIRMWARE = 0, VS_FLDT_TRUSTLIST, VS_FLDT_OTHER, VS_FLDT_FILETYPES_AMOUNT };
 
@@ -81,6 +83,7 @@ vs_sdmp_fldt_service(const vs_netif_t *netif);
 // "Inform New File Version"
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
+    vs_mac_addr_t gateway_mac;
     // TODO : is it necessary???
     uint8_t file_specific_info[FLDT_FILE_SPEC_INFO_SZ];
 } vs_fldt_infv_new_file_request_t;
@@ -133,6 +136,15 @@ typedef struct __attribute__((__packed__)) {
 } vs_fldt_gnff_footer_response_t;
 
 // Functions
+static inline void
+vs_fldt_set_is_gateway(bool is_gateway){
+    vs_fldt_is_gateway = is_gateway;
+}
+static inline bool
+vs_fldt_get_is_gateway(void){
+    return vs_fldt_is_gateway;
+}
+
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
 

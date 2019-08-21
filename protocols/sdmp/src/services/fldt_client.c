@@ -72,10 +72,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     file_type = &new_file_ver->file_type;
     file_type_info = &_client_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:INFV] request for file type \"%s\"", vs_fldt_file_type_descr(file_type));
-
-    VS_LOG_DEBUG("[FLDT:INFV] New file is present. ", &new_file->version);
-
+    VS_LOG_DEBUG("[FLDT:INFV] request for new file : %s", vs_fldt_file_version_descr(file_ver_descr, new_file_ver));
 
     CHECK_RET(file_type_info->get_current_version != NULL,
               -7,
@@ -87,7 +84,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
               "Unable to retrieve present file version for file type %s",
               vs_fldt_file_type_descr(file_type));
 
-    VS_LOG_DEBUG("[FLDT:INFV] Current file is present. %s",
+    VS_LOG_DEBUG("[FLDT:INFV] Current file version : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &present_file_ver));
 
     download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
@@ -271,21 +268,20 @@ vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_e
 
 /******************************************************************/
 int
-vs_fldt_ask_file_type_info(const vs_mac_addr_t *mac, const vs_fldt_gfti_fileinfo_request_t *file_type) {
+vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
 
-    CHECK_NOT_ZERO_RET(mac, -1);
-    CHECK_NOT_ZERO_RET(file_type, -2);
+    CHECK_NOT_ZERO_RET(file_type, -1);
 
     VS_LOG_DEBUG("*** [FLDT] Ask file type information for file type %s",
                  vs_fldt_file_type_descr(&file_type->file_type));
 
     file_type_info = &_client_file_type_mapping[file_type->file_type.file_type];
 
-    CHECK_RET(file_type_info->get_info, -3, "There is no callback get_info to process response");
+    CHECK_RET(file_type_info->get_info, -2, "There is no callback get_info to process response");
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
-              -4,
+    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, vs_fldt_broadcast_mac_addr, VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
+              -3,
               "Unable to send FLDT \"GFTI\" server request");
 
     return 0;
@@ -308,7 +304,7 @@ vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_requ
     CHECK_RET(file_type_info->get_header, -3, "There is no callback get_header to process response");
 
     CHECK_RET(!vs_fldt_send_request(
-                      vs_fldt_netif, mac, VS_FLDT_GNFH, (const uint8_t *)header_request, sizeof(*header_request)),
+            vs_fldt_netif, mac, VS_FLDT_GNFH, (const uint8_t *)header_request, sizeof(*header_request)),
               -4,
               "Unable to send FLDT \"GNFH\" server request");
 

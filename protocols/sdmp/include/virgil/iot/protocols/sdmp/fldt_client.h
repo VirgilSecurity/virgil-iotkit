@@ -104,7 +104,7 @@ int
 vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem);
 
 int
-vs_fldt_ask_file_type_info(const vs_mac_addr_t *mac, const vs_fldt_gfti_fileinfo_request_t *file_type);
+vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type);
 
 int
 vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request);
