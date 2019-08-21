@@ -662,11 +662,11 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         const uint8_t *data,
-                         uint16_t data_sz,
-                         uint32_t wait_ms) {
+vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms) {
     return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
 }
 
