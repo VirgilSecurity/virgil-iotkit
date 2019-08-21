@@ -78,123 +78,6 @@ _get_serial_number_in_hex_str(char _out_str[SERIAL_SIZE * 2 + 1]) {
 }
 
 /******************************************************************************/
-static uint8_t
-_remove_padding_size(uint8_t *data, size_t data_sz) {
-    uint8_t i, padding_val;
-
-    padding_val = data[data_sz - 1];
-
-    if (padding_val < 2 || padding_val > 15 || data_sz < padding_val)
-        return 0;
-
-    for (i = 0; i < padding_val; ++i) {
-        if (data[data_sz - 1 - i] != padding_val) {
-            return 0;
-        }
-    }
-
-    return padding_val;
-}
-
-/******************************************************************************/
-static bool
-_crypto_decrypt_sha384_aes256(uint8_t *cryptogram,
-                              size_t cryptogram_sz,
-                              uint8_t *decrypted_data,
-                              size_t buf_sz,
-                              size_t *decrypted_data_sz) {
-    uint8_t decrypted_key[48];
-    uint8_t *encrypted_data;
-    size_t encrypted_data_sz;
-
-    uint8_t pre_master_key[32];
-    uint16_t pre_master_key_sz;
-    uint8_t master_key[80];
-    uint8_t mac_buf[48];
-    uint16_t mac_sz;
-
-    uint8_t *public_key;
-    uint8_t *iv_key;
-    uint8_t *encrypted_key;
-    uint8_t *mac_data;
-    uint8_t *iv_data;
-
-    if (VS_HSM_ERR_OK != vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
-                                                                      cryptogram_sz,
-                                                                      &public_key,
-                                                                      &iv_key,
-                                                                      &encrypted_key,
-                                                                      &mac_data,
-                                                                      &iv_data,
-                                                                      &encrypted_data,
-                                                                      &encrypted_data_sz)) {
-        return false;
-    }
-
-    if (VS_HSM_ERR_OK != vs_hsm_ecdh(PRIVATE_KEY_SLOT,
-                                     VS_KEYPAIR_EC_SECP256R1,
-                                     public_key,
-                                     vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
-                                     pre_master_key,
-                                     sizeof(pre_master_key),
-                                     &pre_master_key_sz) ||
-        VS_HSM_ERR_OK != vs_hsm_kdf(VS_KDF_2,
-                                    VS_HASH_SHA_384,
-                                    pre_master_key,
-                                    sizeof(pre_master_key),
-                                    master_key,
-                                    sizeof(master_key)) ||
-        VS_HSM_ERR_OK != vs_hsm_hmac(VS_HASH_SHA_384,
-                                     master_key + 32,
-                                     sizeof(master_key) - 32,
-                                     encrypted_key,
-                                     48,
-                                     mac_buf,
-                                     sizeof(mac_buf),
-                                     &mac_sz) ||
-        0 != memcmp(mac_data, mac_buf, mac_sz) ||
-        VS_HSM_ERR_OK != vs_hsm_aes_decrypt(VS_AES_CBC,
-                                            master_key,
-                                            32 * 8,
-                                            iv_key,
-                                            16,
-                                            NULL,
-                                            0,
-                                            48,
-                                            encrypted_key,
-                                            decrypted_key,
-                                            NULL,
-                                            0)) {
-        return false;
-    }
-
-    if (buf_sz < encrypted_data_sz) {
-        return false;
-    }
-
-    *decrypted_data_sz = encrypted_data_sz - 16;
-
-    if (VS_HSM_ERR_OK != vs_hsm_aes_auth_decrypt(VS_AES_GCM,
-                                                 decrypted_key,
-                                                 32 * 8,
-                                                 iv_data,
-                                                 12,
-                                                 NULL,
-                                                 0,
-                                                 encrypted_data_sz - 16,
-                                                 encrypted_data,
-                                                 decrypted_data,
-                                                 &encrypted_data[encrypted_data_sz - 16],
-                                                 16)) {
-        return false;
-    }
-
-    *decrypted_data_sz -= _remove_padding_size(decrypted_data, *decrypted_data_sz);
-
-    return true;
-}
-
-/******************************************************************************/
 static int16_t
 _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
@@ -223,11 +106,11 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                      &crypto_answer_b64_len);
         size_t decrypted_data_sz;
 
-        if (!_crypto_decrypt_sha384_aes256((uint8_t *)crypto_answer_b64,
-                                           (size_t)crypto_answer_b64_len,
-                                           (uint8_t *)out_answer,
-                                           buf_size,
-                                           &decrypted_data_sz) ||
+        if (VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256((uint8_t *)crypto_answer_b64,
+                                                                 (size_t)crypto_answer_b64_len,
+                                                                 (uint8_t *)out_answer,
+                                                                 buf_size,
+                                                                 &decrypted_data_sz) ||
             decrypted_data_sz > UINT16_MAX) {
             goto fail;
         }

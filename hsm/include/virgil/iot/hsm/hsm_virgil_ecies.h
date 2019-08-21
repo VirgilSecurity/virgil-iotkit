@@ -32,31 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_INCLUDE_H
-#define VS_CLOUD_INCLUDE_H
+#ifndef VS_HSM_VIRGIL_ECIES_H
+#define VS_HSM_VIRGIL_ECIES_H
 
-#include <trust_list-config.h>
-#include <stdlib-config.h>
-#include <cloud-config.h>
-#include <update-config.h>
-#include <global-hal.h>
-#include <endian-config.h>
+#include <stdint.h>
 
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/update/update_interface.h>
-#include <virgil/iot/hsm/asn1_cryptogram.h>
-#include <virgil/iot/hsm/hsm_virgil_ecies.h>
-#include <virgil/iot/hsm/hsm_interface.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/json/json_parser.h>
+int
+vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
+                                    size_t cryptogram_sz,
+                                    uint8_t *decrypted_data,
+                                    size_t buf_sz,
+                                    size_t *decrypted_data_sz);
 
-#include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_hal.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/base64/base64.h>
-
-#endif // VS_CLOUD_INCLUDE_H
+#endif // VS_HSM_VIRGIL_ECIES_H
