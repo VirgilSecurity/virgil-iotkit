@@ -153,12 +153,15 @@ test_aes_gcm_cases() {
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_aes(void) {
+    uint16_t failed_test_result = 0;
+
     START_TEST("AES tests");
 
     TEST_CASE_OK("GCM", test_aes_gcm_cases())
     TEST_CASE_OK("CBC", test_aes_cbc_cases())
 
-terminate:;
+terminate:
+    return failed_test_result;
 }

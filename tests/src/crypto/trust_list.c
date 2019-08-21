@@ -424,8 +424,9 @@ _test_tl_read_pass() {
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_keystorage_and_tl(void) {
+    uint16_t failed_test_result = 0;
 
     START_TEST("Provision and TL tests");
 
@@ -448,4 +449,5 @@ test_keystorage_and_tl(void) {
 terminate:
 
     VS_IOT_FREE(test_tl_keys);
+    return failed_test_result;
 }

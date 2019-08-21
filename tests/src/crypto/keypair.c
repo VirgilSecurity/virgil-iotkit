@@ -70,8 +70,10 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_keypair(void) {
+    uint16_t failed_test_result = 0;
+
     _test_case_t test_cases[] = {
 #if USE_RSA
         {.slot = VS_KEY_SLOT_EXT_MTP_0, .keypair_type = VS_KEYPAIR_RSA_2048, .expected_size = 256},
@@ -118,5 +120,6 @@ test_keypair(void) {
 
     TEST_CASE_OK("Compare buffer outputs", _compare_outputs(test_cases, cases_amount));
 
-terminate:;
+terminate:
+    return failed_test_result;
 }

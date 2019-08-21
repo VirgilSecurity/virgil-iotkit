@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/trust_list/tl_hal.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
@@ -19,7 +20,7 @@ typedef struct vs_tl_element_info_s {
 } vs_tl_element_info_t;
 
 void
-vs_tl_init_storage(void);
+vs_tl_init_storage();
 
 int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);

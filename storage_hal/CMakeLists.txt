@@ -34,72 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(trust_list VERSION 0.1.0 LANGUAGES C)
+project(storage_hal VERSION 0.1.0 LANGUAGES C)
 
-set(TRUST_LIST_LIB trust_list)
+add_library(storage_hal INTERFACE)
 
-#
-#   Source code
-#
-set(TRUST_LIST_SRC
-        src/tl_operations.c
-        src/trust_list.c
-        )
-
-#
-#   Trust List library
-#
-add_library(${TRUST_LIST_LIB}
-        ${TRUST_LIST_SRC}
-        )
-
-#
-#   Set additional compiler flags
-#
-if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("No CFLAGS_PLATFORM")
-else()
-    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
-    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
-endif()
-
-target_compile_options(${TRUST_LIST_LIB}
-        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
-
-#
-#   Config path
-#
-
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[trust_list] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-else()
-    message(STATUS "[trust_list] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
-endif()
-
-target_compile_definitions(${PROJECT_NAME}
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
-        )
-
-target_link_libraries(trust_list
-        PUBLIC
-        logger
-        hsm
-        macros
-        provision
-        )
-#
-#   Common include directories
-#
-target_include_directories(${PROJECT_NAME}
-        PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-
-        PUBLIC
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-
+target_include_directories(storage_hal
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<INSTALL_INTERFACE:include>"
         )
-

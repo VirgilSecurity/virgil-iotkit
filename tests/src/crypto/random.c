@@ -187,8 +187,10 @@ _frequency_2bytes_diff(uint8_t *sequence) {
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_random(void) {
+    uint16_t failed_test_result = 0;
+
     uint8_t sequence[SEQUENCE_SIZE];
     uint8_t buf[128];
     bool not_implemented = false;
@@ -207,5 +209,6 @@ test_random(void) {
     TEST_CASE_OK("\"Bytes frequency\" test", _frequency_bytes(sequence));
     TEST_CASE_OK("\"Nearby bytes differences frequency\" test", _frequency_2bytes_diff(sequence));
 
-terminate:;
+terminate:
+    return failed_test_result;
 }
