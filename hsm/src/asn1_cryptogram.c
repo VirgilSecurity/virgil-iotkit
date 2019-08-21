@@ -154,6 +154,8 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
 int
 vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              size_t cryptogram_sz,
+                                             const uint8_t *recipient_id,
+                                             size_t recipient_id_sz,
                                              uint8_t **public_key,
                                              uint8_t **iv_key,
                                              uint8_t **encrypted_key,
@@ -188,10 +190,28 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
             return VS_HSM_ERR_CRYPTO;
 
         while (true) {
+            saved_pos = pos;
 
             if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data) ||
-                !_asn1_step_into(ZERO_TAG, &pos, _sz, _data) || !_asn1_skip(OCTET_STRING, &pos, _sz, _data))
+                !_asn1_step_into(ZERO_TAG, &pos, _sz, _data))
                 return VS_HSM_ERR_CRYPTO;
+
+            if (recipient_id && recipient_id_sz) {
+                if (!_asn1_step_into(OCTET_STRING, &pos, _sz, _data)) {
+                    return VS_HSM_ERR_CRYPTO;
+                }
+                // Find out need recipient
+                if (0 != VS_IOT_MEMCMP(&_data[pos], recipient_id, recipient_id_sz)) {
+                    pos = saved_pos;
+                    if (!_asn1_skip(SEQUENCE, &pos, _sz, _data))
+                        return false;
+                    continue;
+                }
+
+                pos += recipient_id_sz;
+            } else if (!_asn1_skip(OCTET_STRING, &pos, _sz, _data)) {
+                return VS_HSM_ERR_CRYPTO;
+            }
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(OCTET_STRING, &pos, _sz, _data) ||
                 !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data))

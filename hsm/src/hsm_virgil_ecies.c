@@ -65,6 +65,8 @@ _remove_padding_size(uint8_t *data, size_t data_sz) {
 int
 vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
                                     size_t cryptogram_sz,
+                                    const uint8_t *recipient_id,
+                                    size_t recipient_id_sz,
                                     uint8_t *decrypted_data,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz) {
@@ -86,6 +88,8 @@ vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
 
     if (VS_HSM_ERR_OK != vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
                                                                       cryptogram_sz,
+                                                                      recipient_id,
+                                                                      recipient_id_sz,
                                                                       &public_key,
                                                                       &iv_key,
                                                                       &encrypted_key,

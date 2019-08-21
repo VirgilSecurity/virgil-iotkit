@@ -44,6 +44,8 @@ extern "C" {
 int
 vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              size_t cryptogram_sz,
+                                             const uint8_t *recipient_id,
+                                             size_t recipient_id_sz,
                                              uint8_t **public_key,
                                              uint8_t **iv_key,
                                              uint8_t **encrypted_key,
