@@ -32,8 +32,9 @@ _test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t c
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_hmac(void) {
+    uint16_t failed_test_result = 0;
 
     uint8_t sha256_result_raw[] = {0x70, 0xa8, 0xe8, 0xa8, 0xb5, 0x24, 0x1b, 0x7e, 0x75, 0x84, 0x93,
                                    0x55, 0x3f, 0x29, 0x21, 0x80, 0x1b, 0x11, 0xd3, 0x6f, 0x47, 0x35,
@@ -59,7 +60,8 @@ test_hmac(void) {
     TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
                  _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)))
 
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_STEP
 }

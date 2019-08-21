@@ -147,8 +147,10 @@ _test_case_converters_pubkey_pass(vs_hsm_keypair_type_e keypair_type,
 
 
 /******************************************************************************/
-void
+uint16_t
 test_pubkeys_converters(void) {
+    uint16_t failed_test_result = 0;
+
 #define TEST_CONVERTERS_PUBKEY_PASS(KEY, VIRGIL_PUBKEY, VIRGIL_PUBKEY_SZ, RAW_PUBKEY, RAW_PUBKEY_SZ)                   \
     TEST_CASE_OK("key " #KEY,                                                                                          \
                  _test_case_converters_pubkey_pass(KEY, VIRGIL_PUBKEY, VIRGIL_PUBKEY_SZ, RAW_PUBKEY, RAW_PUBKEY_SZ))
@@ -197,7 +199,8 @@ test_pubkeys_converters(void) {
                                 raw_CURVE25519_pubkey,
                                 sizeof(raw_CURVE25519_pubkey))
 
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_CONVERTERS_PUBKEY_PASS
 }

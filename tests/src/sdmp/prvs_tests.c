@@ -305,8 +305,9 @@ terminate:
 }
 
 /**********************************************************/
-void
+uint16_t
 prvs_tests(void) {
+    uint16_t failed_test_result = 0;
 
     START_TEST("PRVS");
 
@@ -329,5 +330,6 @@ prvs_tests(void) {
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
 
-terminate:;
+terminate:
+    return failed_test_result;
 }

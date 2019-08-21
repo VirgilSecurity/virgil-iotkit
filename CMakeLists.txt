@@ -169,6 +169,11 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
 
 #
+#   Data storage hal interface
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)
+
+#
 #   jsmn
 #
 if (VIRGIL_IOT_CLOUD)

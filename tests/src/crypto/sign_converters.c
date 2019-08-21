@@ -147,8 +147,10 @@ _test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
 
 
 /******************************************************************************/
-void
+uint16_t
 test_sign_converters(void) {
+    uint16_t failed_test_result = 0;
+
 #define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)                                                                       \
     do {                                                                                                               \
         vs_hsm_hash_type_e hash_alg = VS_HASH_SHA_##HASH;                                                              \
@@ -172,7 +174,8 @@ test_sign_converters(void) {
     TEST_CONVERTERS_SIGN_PASS(384, SECP256R1);
     TEST_CONVERTERS_SIGN_PASS(512, SECP256R1);
 
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_CONVERTERS_SIGN_PASS
 }
