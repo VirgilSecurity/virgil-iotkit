@@ -42,6 +42,10 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/hsm/asn1_cryptogram.h>
 
+static const uint8_t _secp256r1_pubkey_prefix[] = {0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48,
+                                                   0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A, 0x86, 0x48,
+                                                   0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03, 0x42, 0x00, 0x04};
+
 /******************************************************************************/
 static uint8_t
 _remove_padding_size(uint8_t *data, size_t data_sz) {
@@ -70,6 +74,7 @@ vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
                                     uint8_t *decrypted_data,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz) {
+
     uint8_t decrypted_key[48];
     uint8_t *encrypted_data;
     size_t encrypted_data_sz;
@@ -85,6 +90,11 @@ vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
     uint8_t *encrypted_key;
     uint8_t *mac_data;
     uint8_t *iv_data;
+
+    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(decrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(decrypted_data_sz, VS_HSM_ERR_INVAL);
 
     if (VS_HSM_ERR_OK != vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
                                                                       cryptogram_sz,
@@ -161,4 +171,126 @@ vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
     *decrypted_data_sz -= _remove_padding_size(decrypted_data, *decrypted_data_sz);
 
     return VS_HSM_ERR_OK;
+}
+
+/******************************************************************************/
+static bool
+_tiny_pubkey_to_virgil(uint8_t public_key[64], uint8_t *virgil_public_key, size_t *virgil_public_key_sz) {
+    if (*virgil_public_key_sz < (sizeof(_secp256r1_pubkey_prefix) + 64))
+        return false;
+
+    VS_IOT_MEMCPY(virgil_public_key, _secp256r1_pubkey_prefix, sizeof(_secp256r1_pubkey_prefix));
+    VS_IOT_MEMCPY(&virgil_public_key[sizeof(_secp256r1_pubkey_prefix)], public_key, 64);
+    *virgil_public_key_sz = sizeof(_secp256r1_pubkey_prefix) + 64;
+    return true;
+}
+
+/******************************************************************************/
+int
+vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
+                                    size_t recipient_id_sz,
+                                    uint8_t *data,
+                                    size_t data_sz,
+                                    uint8_t *cryptogram,
+                                    size_t buf_sz,
+                                    size_t *cryptogram_sz) {
+    CHECK_NOT_ZERO(data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
+
+    vs_hsm_keypair_type_e ec_type;
+    uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    uint8_t pubkey[key_sz];
+
+    uint8_t pre_master_key[32];
+    uint16_t pre_master_key_sz;
+    uint8_t master_key[80];
+
+    uint8_t encrypted_key[48];
+
+    uint8_t hmac[48];
+    uint16_t hmac_sz;
+
+    uint8_t virgil_public_key[100];
+    size_t virgil_public_key_sz;
+
+    uint8_t rnd_buf[16 + 12 + 32];
+    uint8_t *iv_key = rnd_buf;
+    uint8_t *iv_data = &rnd_buf[16];
+    uint8_t *shared_key = &rnd_buf[16 + 12];
+
+    if (VS_HSM_ERR_OK != vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, pubkey, key_sz, &key_sz, &ec_type) ||
+        !_tiny_pubkey_to_virgil(&pubkey[1], virgil_public_key, &virgil_public_key_sz)) {
+        return VS_HSM_ERR_FAIL;
+    }
+
+    if (VS_HSM_ERR_OK != vs_hsm_random(rnd_buf, sizeof(rnd_buf))) {
+        return VS_HSM_ERR_FAIL;
+    }
+
+    if (VS_HSM_ERR_OK != vs_hsm_ecdh(PRIVATE_KEY_SLOT,
+                                     VS_KEYPAIR_EC_SECP256R1,
+                                     pubkey,
+                                     vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
+                                     pre_master_key,
+                                     sizeof(pre_master_key),
+                                     &pre_master_key_sz) ||
+        VS_HSM_ERR_OK != vs_hsm_kdf(VS_KDF_2,
+                                    VS_HASH_SHA_384,
+                                    pre_master_key,
+                                    sizeof(pre_master_key),
+                                    master_key,
+                                    sizeof(master_key)) ||
+        VS_HSM_ERR_OK != vs_hsm_aes_encrypt(VS_AES_CBC,
+                                            master_key,
+                                            32 * 8,
+                                            iv_key,
+                                            16,
+                                            NULL,
+                                            0,
+                                            sizeof(encrypted_key),
+                                            shared_key,
+                                            encrypted_key,
+                                            NULL,
+                                            0) ||
+        VS_HSM_ERR_OK != vs_hsm_hmac(VS_HASH_SHA_384,
+                                     master_key + 32,
+                                     sizeof(master_key) - 32,
+                                     encrypted_key,
+                                     48,
+                                     hmac,
+                                     sizeof(hmac),
+                                     &hmac_sz)) {
+        return VS_HSM_ERR_CRYPTO;
+    }
+    uint8_t add_data = 0;
+    uint8_t encrypted_data[data_sz + 16];
+
+    if (VS_HSM_ERR_OK != vs_hsm_aes_encrypt(VS_AES_GCM,
+                                            shared_key,
+                                            32 * 8,
+                                            iv_data,
+                                            12,
+                                            &add_data,
+                                            0,
+                                            data_sz,
+                                            data,
+                                            encrypted_data,
+                                            &encrypted_data[sizeof(encrypted_data) - 16],
+                                            16)) {
+        return VS_HSM_ERR_CRYPTO;
+    }
+
+    return vs_hsm_virgil_cryptogram_create_sha384_aes256(recipient_id,
+                                                         recipient_id_sz,
+                                                         sizeof(encrypted_data),
+                                                         encrypted_data,
+                                                         iv_data,
+                                                         encrypted_key,
+                                                         iv_key,
+                                                         hmac,
+                                                         virgil_public_key,
+                                                         virgil_public_key_sz,
+                                                         cryptogram,
+                                                         cryptogram_sz);
 }
