@@ -53,18 +53,18 @@ vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
 // Converting encode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = htons(src_data->transaction_id);
     src_data->padding = htons(src_data->padding);
     src_data->content_size = htons(src_data->content_size);
+    src_data->transaction_id = htons(src_data->transaction_id);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = ntohs(src_data->transaction_id);
     src_data->padding = ntohs(src_data->padding);
     src_data->content_size = ntohs(src_data->content_size);
+    src_data->transaction_id = ntohs(src_data->transaction_id);
 }
 
 /******************************************************************************/
@@ -87,16 +87,34 @@ vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
 // Converting encode function for (vs_sdmp_prvs_devi_t)
 void
 vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->data_sz = htons(src_data->data_sz);
     src_data->manufacturer = htonl(src_data->manufacturer);
     src_data->model = htonl(src_data->model);
+    src_data->data_sz = htons(src_data->data_sz);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_prvs_devi_t)
 void
 vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->data_sz = ntohs(src_data->data_sz);
     src_data->manufacturer = ntohl(src_data->manufacturer);
     src_data->model = ntohl(src_data->model);
+    src_data->data_sz = ntohs(src_data->data_sz);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_tl_header_t)
+void
+vs_tl_header_t_encode(vs_tl_header_t *src_data) {
+    src_data->pub_keys_count = htons(src_data->pub_keys_count);
+    src_data->tl_size = htonl(src_data->tl_size);
+    src_data->version = htons(src_data->version);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_tl_header_t)
+void
+vs_tl_header_t_decode(vs_tl_header_t *src_data) {
+    src_data->pub_keys_count = ntohs(src_data->pub_keys_count);
+    src_data->tl_size = ntohl(src_data->tl_size);
+    src_data->version = ntohs(src_data->version);
 }

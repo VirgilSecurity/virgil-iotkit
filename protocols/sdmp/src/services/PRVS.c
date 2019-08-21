@@ -412,6 +412,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
         return _prvs_asgn_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_TLH:
+        vs_tl_header_t_decode((vs_tl_header_t *)request);
         return _prvs_start_tl_process_request(netif, request, request_sz);
 
     case VS_PRVS_TLC:
@@ -472,6 +473,7 @@ _prepare_prvs_service() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
     _prvs_service.id = HTONL_IN_COMPILE_TIME('PRVS');
+    printf(">>> PRVS = %lu\n", (unsigned long)_prvs_service.id);
 #pragma GCC diagnostic pop
     _prvs_service.request_process = _prvs_service_request_processor;
     _prvs_service.response_process = _prvs_service_response_processor;
@@ -662,10 +664,27 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         const uint8_t *data,
-                         uint16_t data_sz,
-                         uint32_t wait_ms) {
+vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms) {
+
+    vs_tl_header_t *header = (vs_tl_header_t *)data;
+    VS_IOT_ASSERT(data);
+
+    // Normalize byte order
+    vs_tl_header_t_encode(header);
+
+    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, (uint8_t *)header, data_sz, wait_ms);
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms) {
     return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
 }
