@@ -91,8 +91,8 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-#target_compile_options(virgil-iot-sdk-tests
-#        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
+target_compile_options(virgil-iot-sdk-tests
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 target_compile_definitions(virgil-iot-sdk-tests
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"

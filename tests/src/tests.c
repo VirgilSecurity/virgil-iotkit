@@ -77,10 +77,10 @@ crypto_tests(void) {
     test_keypair();
     test_ecdsa();
     test_ecdh();
-    #if !VIRGIL_IOT_MCU_BUILD
-        test_sign_converters();
-        test_pubkeys_converters();
-    #endif
+#if !VIRGIL_IOT_MCU_BUILD
+    test_sign_converters();
+    test_pubkeys_converters();
+#endif
 }
 
 /**********************************************************/
