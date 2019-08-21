@@ -1,224 +1,220 @@
-/**
- * \file
- * \brief Software implementation of the SHA256 algorithm.
- *
- * Copyright (c) 2015 Atmel Corporation. All rights reserved.
- *
- * \atmel_crypto_device_library_license_start
- *
- * \page License
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * 3. The name of Atmel may not be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * 4. This software may only be redistributed and used in connection with an
- *    Atmel integrated circuit.
- *
- * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
- * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * \atmel_crypto_device_library_license_stop
- */
-
 #include <string.h>
 #include <stdlib-config.h>
 #include "virgil/iot/hsm/hsm_sw_sha2_routines.h"
 
-#define ROTATE_RIGHT(value, places) ((value >> places) | (value << (32 - places)))
-
-/**
- * \brief Processes whole blocks (64 bytes) of data.
- *
- * \param[in] ctx          SAH256 hash context
- * \param[in] blocks       Raw blocks to be processed
- * \param[in] block_count  Number of 64-byte blocks to process
+/*
+ * 32-bit integer manipulation macros (big endian)
  */
-static void
-_sw_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *blocks, uint32_t block_count) {
-    int i = 0;
-    uint32_t block = 0;
+#ifndef GET_UINT32_BE
+#define GET_UINT32_BE(n, b, i)                                                                                         \
+    do {                                                                                                               \
+        (n) = ((uint32_t)(b)[(i)] << 24) | ((uint32_t)(b)[(i) + 1] << 16) | ((uint32_t)(b)[(i) + 2] << 8) |            \
+              ((uint32_t)(b)[(i) + 3]);                                                                                \
+    } while (0)
+#endif
 
-    uint32_t w_index;
-    uint32_t word_value;
-    uint32_t s0, s1;
-    uint32_t t1, t2;
-    uint32_t maj, ch;
-    uint32_t rotate_register[8];
-    const uint8_t *cur_msg_block;
-
-    union {
-        uint32_t w_word[SHA256_BLOCK_SIZE];
-        uint8_t w_byte[SHA256_BLOCK_SIZE * sizeof(uint32_t)];
-    } w_union;
-
-    static const uint32_t k[] = {
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
-
-    VS_IOT_ASSERT(blocks);
-
-    // Loop through all the blocks to process
-    for (block = 0; block < block_count; block++) {
-        cur_msg_block = &blocks[block * SHA256_BLOCK_SIZE];
-
-        // Swap word bytes
-        for (i = 0; i < SHA256_BLOCK_SIZE; i += 4) {
-            w_union.w_byte[i + 3] = cur_msg_block[i + 0];
-            w_union.w_byte[i + 2] = cur_msg_block[i + 1];
-            w_union.w_byte[i + 1] = cur_msg_block[i + 2];
-            w_union.w_byte[i + 0] = cur_msg_block[i + 3];
-        }
-
-        w_index = 16;
-        while (w_index < SHA256_BLOCK_SIZE) {
-            // right rotate for 32-bit variable in C: (value >> places) | (value << 32 - places)
-            word_value = w_union.w_word[w_index - 15];
-            s0 = ROTATE_RIGHT(word_value, 7) ^ ROTATE_RIGHT(word_value, 18) ^ (word_value >> 3);
-
-            word_value = w_union.w_word[w_index - 2];
-            s1 = ROTATE_RIGHT(word_value, 17) ^ ROTATE_RIGHT(word_value, 19) ^ (word_value >> 10);
-
-            w_union.w_word[w_index] = w_union.w_word[w_index - 16] + s0 + w_union.w_word[w_index - 7] + s1;
-
-            w_index++;
-        }
-
-        // Initialize hash value for this chunk.
-        memcpy(rotate_register, ctx->hash, 8 * sizeof(uint32_t));
-
-        // hash calculation loop
-        for (i = 0; i < SHA256_BLOCK_SIZE; i++) {
-            s0 = ROTATE_RIGHT(rotate_register[0], 2) ^ ROTATE_RIGHT(rotate_register[0], 13) ^
-                 ROTATE_RIGHT(rotate_register[0], 22);
-            maj = (rotate_register[0] & rotate_register[1]) ^ (rotate_register[0] & rotate_register[2]) ^
-                  (rotate_register[1] & rotate_register[2]);
-            t2 = s0 + maj;
-            s1 = ROTATE_RIGHT(rotate_register[4], 6) ^ ROTATE_RIGHT(rotate_register[4], 11) ^
-                 ROTATE_RIGHT(rotate_register[4], 25);
-            ch = (rotate_register[4] & rotate_register[5]) ^ (~rotate_register[4] & rotate_register[6]);
-            t1 = rotate_register[7] + s1 + ch + k[i] + w_union.w_word[i];
-
-            rotate_register[7] = rotate_register[6];
-            rotate_register[6] = rotate_register[5];
-            rotate_register[5] = rotate_register[4];
-            rotate_register[4] = rotate_register[3] + t1;
-            rotate_register[3] = rotate_register[2];
-            rotate_register[2] = rotate_register[1];
-            rotate_register[1] = rotate_register[0];
-            rotate_register[0] = t1 + t2;
-        }
-
-        // Add the hash of this block to current result.
-        for (i = 0; i < 8; i++)
-            ctx->hash[i] += rotate_register[i];
-    }
-}
+#ifndef PUT_UINT32_BE
+#define PUT_UINT32_BE(n, b, i)                                                                                         \
+    do {                                                                                                               \
+        (b)[(i)] = (unsigned char)((n) >> 24);                                                                         \
+        (b)[(i) + 1] = (unsigned char)((n) >> 16);                                                                     \
+        (b)[(i) + 2] = (unsigned char)((n) >> 8);                                                                      \
+        (b)[(i) + 3] = (unsigned char)((n));                                                                           \
+    } while (0)
+#endif
 
 /******************************************************************************/
 void
 vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx) {
-    static const uint32_t hash_init[] = {
-            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+    VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
+    ctx->total[0] = 0;
+    ctx->total[1] = 0;
 
-    VS_IOT_ASSERT(ctx);
-    memset(ctx, 0, sizeof(*ctx));
-    memcpy(ctx->hash, hash_init, 8 * sizeof(uint32_t));
+    /* SHA-256 */
+    ctx->state[0] = 0x6A09E667;
+    ctx->state[1] = 0xBB67AE85;
+    ctx->state[2] = 0x3C6EF372;
+    ctx->state[3] = 0xA54FF53A;
+    ctx->state[4] = 0x510E527F;
+    ctx->state[5] = 0x9B05688C;
+    ctx->state[6] = 0x1F83D9AB;
+    ctx->state[7] = 0x5BE0CD19;
 }
 
-/******************************************************************************/
-void
-vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *msg, uint32_t msg_size) {
-    uint32_t block_count;
-    uint32_t rem_size = SHA256_BLOCK_SIZE - ctx->block_size;
-    uint32_t copy_size = msg_size > rem_size ? rem_size : msg_size;
+static const uint32_t K[] = {
+        0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
+        0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174,
+        0xE49B69C1, 0xEFBE4786, 0x0FC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA,
+        0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x06CA6351, 0x14292967,
+        0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85,
+        0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070,
+        0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3,
+        0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2,
+};
 
-    VS_IOT_ASSERT(ctx);
-    VS_IOT_ASSERT(msg);
-    // Copy data into current block
-    memcpy(&ctx->block[ctx->block_size], msg, copy_size);
+#define SHR(x, n) ((x & 0xFFFFFFFF) >> n)
+#define ROTR(x, n) (SHR(x, n) | (x << (32 - n)))
 
-    if (ctx->block_size + msg_size < SHA256_BLOCK_SIZE) {
-        // Not enough data to finish off the current block
-        ctx->block_size += msg_size;
-        return;
+#define S0(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
+#define S1(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
+
+#define S2(x) (ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22))
+#define S3(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
+
+#define F0(x, y, z) ((x & y) | (z & (x | y)))
+#define F1(x, y, z) (z ^ (x & (y ^ z)))
+
+#define R(t) (W[t] = S1(W[t - 2]) + W[t - 7] + S0(W[t - 15]) + W[t - 16])
+
+#define P(a, b, c, d, e, f, g, h, x, K)                                                                                \
+    {                                                                                                                  \
+        temp1 = h + S3(e) + F1(e, f, g) + K + x;                                                                       \
+        temp2 = S2(a) + F0(a, b, c);                                                                                   \
+        d += temp1;                                                                                                    \
+        h = temp1 + temp2;                                                                                             \
     }
 
-    // Process the current block
-    _sw_sha256_process(ctx, ctx->block, 1);
+/******************************************************************************/
+static int
+mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char data[64]) {
+    uint32_t temp1, temp2, W[64];
+    uint32_t A[8];
+    unsigned int i;
 
-    // Process any additional blocks
-    msg_size -= copy_size; // Adjust to the remaining message bytes
-    block_count = msg_size / SHA256_BLOCK_SIZE;
-    _sw_sha256_process(ctx, &msg[copy_size], block_count);
+    for (i = 0; i < 8; i++)
+        A[i] = ctx->state[i];
 
-    // Save any remaining data
-    ctx->total_msg_size += (block_count + 1) * SHA256_BLOCK_SIZE;
-    ctx->block_size = msg_size % SHA256_BLOCK_SIZE;
-    memcpy(ctx->block, &msg[copy_size + block_count * SHA256_BLOCK_SIZE], ctx->block_size);
+    for (i = 0; i < 16; i++)
+        GET_UINT32_BE(W[i], data, 4 * i);
+
+    for (i = 0; i < 16; i += 8) {
+        P(A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7], W[i + 0], K[i + 0]);
+        P(A[7], A[0], A[1], A[2], A[3], A[4], A[5], A[6], W[i + 1], K[i + 1]);
+        P(A[6], A[7], A[0], A[1], A[2], A[3], A[4], A[5], W[i + 2], K[i + 2]);
+        P(A[5], A[6], A[7], A[0], A[1], A[2], A[3], A[4], W[i + 3], K[i + 3]);
+        P(A[4], A[5], A[6], A[7], A[0], A[1], A[2], A[3], W[i + 4], K[i + 4]);
+        P(A[3], A[4], A[5], A[6], A[7], A[0], A[1], A[2], W[i + 5], K[i + 5]);
+        P(A[2], A[3], A[4], A[5], A[6], A[7], A[0], A[1], W[i + 6], K[i + 6]);
+        P(A[1], A[2], A[3], A[4], A[5], A[6], A[7], A[0], W[i + 7], K[i + 7]);
+    }
+
+    for (i = 16; i < 64; i += 8) {
+        P(A[0], A[1], A[2], A[3], A[4], A[5], A[6], A[7], R(i + 0), K[i + 0]);
+        P(A[7], A[0], A[1], A[2], A[3], A[4], A[5], A[6], R(i + 1), K[i + 1]);
+        P(A[6], A[7], A[0], A[1], A[2], A[3], A[4], A[5], R(i + 2), K[i + 2]);
+        P(A[5], A[6], A[7], A[0], A[1], A[2], A[3], A[4], R(i + 3), K[i + 3]);
+        P(A[4], A[5], A[6], A[7], A[0], A[1], A[2], A[3], R(i + 4), K[i + 4]);
+        P(A[3], A[4], A[5], A[6], A[7], A[0], A[1], A[2], R(i + 5), K[i + 5]);
+        P(A[2], A[3], A[4], A[5], A[6], A[7], A[0], A[1], R(i + 6), K[i + 6]);
+        P(A[1], A[2], A[3], A[4], A[5], A[6], A[7], A[0], R(i + 7), K[i + 7]);
+    }
+
+    for (i = 0; i < 8; i++)
+        ctx->state[i] += A[i];
+
+    return (0);
 }
 
 /******************************************************************************/
-void
+int
+vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
+    int ret;
+    size_t fill;
+    uint32_t left;
+
+    if (len == 0)
+        return (0);
+
+    left = ctx->total[0] & 0x3F;
+    fill = 64 - left;
+
+    ctx->total[0] += (uint32_t)len;
+    ctx->total[0] &= 0xFFFFFFFF;
+
+    if (ctx->total[0] < (uint32_t)len)
+        ctx->total[1]++;
+
+    if (left && len >= fill) {
+        memcpy((void *)(ctx->buffer + left), message, fill);
+
+        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
+            return (ret);
+
+        message += fill;
+        len -= fill;
+        left = 0;
+    }
+
+    while (len >= 64) {
+        if ((ret = mbedtls_internal_sha256_process(ctx, message)) != 0)
+            return (ret);
+
+        message += 64;
+        len -= 64;
+    }
+
+    if (len > 0)
+        memcpy((void *)(ctx->buffer + left), message, len);
+
+    return (0);
+}
+
+/******************************************************************************/
+int
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]) {
-    int i, j;
-    uint32_t msg_size_bits;
-    uint32_t pad_zero_count;
+    int ret;
+    uint32_t used;
+    uint32_t high, low;
 
-    VS_IOT_ASSERT(ctx);
-    // Calculate the total message size in bits
-    ctx->total_msg_size += ctx->block_size;
-    msg_size_bits = ctx->total_msg_size * 8;
+    /*
+     * Add padding: 0x80 then 0x00 until 8 bytes remain for the length
+     */
+    used = ctx->total[0] & 0x3F;
 
-    // Calculate the number of padding zero bytes required between the 1 bit byte and the 64 bit message size in bits.
-    pad_zero_count = (SHA256_BLOCK_SIZE - ((ctx->block_size + 9) % SHA256_BLOCK_SIZE)) % SHA256_BLOCK_SIZE;
+    ctx->buffer[used++] = 0x80;
 
-    // Append a single 1 bit
-    ctx->block[ctx->block_size++] = 0x80;
+    if (used <= 56) {
+        /* Enough room for padding + length in current block */
+        VS_IOT_MEMSET(ctx->buffer + used, 0, 56 - used);
+    } else {
+        /* We'll need an extra block */
+        VS_IOT_MEMSET(ctx->buffer + used, 0, 64 - used);
 
-    // Add padding zeros plus upper 4 bytes of total msg size in bits (only supporting 32bit message bit counts)
-    memset(&ctx->block[ctx->block_size], 0, pad_zero_count + 4);
-    ctx->block_size += pad_zero_count + 4;
+        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
+            return (ret);
 
-    // Add the total message size in bits to the end of the current block. Technically this is
-    // supposed to be 8 bytes. This shortcut will reduce the max message size to 536,870,911 bytes.
-    ctx->block[ctx->block_size++] = (uint8_t)(msg_size_bits >> 24);
-    ctx->block[ctx->block_size++] = (uint8_t)(msg_size_bits >> 16);
-    ctx->block[ctx->block_size++] = (uint8_t)(msg_size_bits >> 8);
-    ctx->block[ctx->block_size++] = (uint8_t)(msg_size_bits >> 0);
-
-    _sw_sha256_process(ctx, ctx->block, ctx->block_size / SHA256_BLOCK_SIZE);
-
-    // All blocks have been processed.
-    // Concatenate the hashes to produce digest, MSB of every hash first.
-    // 4 means sizeof(int32_t). This change regarding of PVS warning
-    for (i = 0; i < 8; i++) {
-        for (j = 4 - 1; j >= 0; j--, ctx->hash[i] >>= 8) {
-            digest[i * 4 + j] = ctx->hash[i] & 0xFF;
-        }
+        VS_IOT_MEMSET(ctx->buffer, 0, 56);
     }
+
+    /*
+     * Add message length
+     */
+    high = (ctx->total[0] >> 29) | (ctx->total[1] << 3);
+    low = (ctx->total[0] << 3);
+
+    PUT_UINT32_BE(high, ctx->buffer, 56);
+    PUT_UINT32_BE(low, ctx->buffer, 60);
+
+    if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
+        return (ret);
+
+    /*
+     * Output final state
+     */
+    PUT_UINT32_BE(ctx->state[0], digest, 0);
+    PUT_UINT32_BE(ctx->state[1], digest, 4);
+    PUT_UINT32_BE(ctx->state[2], digest, 8);
+    PUT_UINT32_BE(ctx->state[3], digest, 12);
+    PUT_UINT32_BE(ctx->state[4], digest, 16);
+    PUT_UINT32_BE(ctx->state[5], digest, 20);
+    PUT_UINT32_BE(ctx->state[6], digest, 24);
+
+    PUT_UINT32_BE(ctx->state[7], digest, 28);
+
+    VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
+
+
+    return (0);
 }
+
+/******************************************************************************/
