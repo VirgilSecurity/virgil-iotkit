@@ -194,7 +194,6 @@ vs_fldt_send_request(const vs_netif_t *netif,
     vs_sdmp_packet_t *packet;
 
     VS_IOT_ASSERT(netif);
-    VS_IOT_ASSERT(mac);
     VS_IOT_ASSERT(data);
     VS_IOT_ASSERT(data_sz);
 
@@ -218,11 +217,18 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
 /******************************************************************************/
 bool
+vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver) {
+    return !file_ver->timestamp;
+}
+
+/******************************************************************************/
+bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current) {
 
     VS_IOT_ASSERT(available);
     VS_IOT_ASSERT(current);
+    VS_IOT_ASSERT(!vs_fldt_no_file_ver(available));
 
-    return available->major > current->major || available->minor > current->minor ||
+    return vs_fldt_no_file_ver(current) || available->major > current->major || available->minor > current->minor ||
            available->patch > current->patch || available->dev_milestone > current->dev_milestone;
 }

@@ -41,18 +41,17 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
+#define FLDT_FILEVER_BUF (128) // buffer for vs_fldt_file_version_descr
+
+#define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
+#define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
+
 // File type
-enum vs_fldt_file_type {
-    VS_FLDT_FIRST_FILETYPE = 0,
-    VS_FLDT_FIRMWARE = VS_FLDT_FIRST_FILETYPE,
-    VS_FLDT_TRUSTLIST,
-    VS_FLDT_OTHER,
-    VS_FLDT_FILETYPES_AMOUNT
-};
+enum vs_fldt_file_type { VS_FLDT_FIRMWARE = 0, VS_FLDT_TRUSTLIST, VS_FLDT_OTHER, VS_FLDT_FILETYPES_AMOUNT };
 
 typedef struct __attribute__((__packed__)) {
     uint8_t file_type; // = enum vs_fldt_file_type
-    uint8_t add_info[4];
+    uint8_t add_info[FLDT_FILE_TYPE_ADD_INFO_SZ];
 } vs_fldt_file_type_t;
 
 // File version
@@ -75,8 +74,6 @@ typedef enum {
     VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
 } vs_sdmp_fldt_element_e;
 
-#define FLDT_FILE_SPEC_INFO_SZ (64)
-
 // Get Service descriptor
 const vs_sdmp_service_t *
 vs_sdmp_fldt_service(const vs_netif_t *netif);
@@ -84,6 +81,7 @@ vs_sdmp_fldt_service(const vs_netif_t *netif);
 // "Inform New File Version"
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
+    // TODO : is it necessary???
     uint8_t file_specific_info[FLDT_FILE_SPEC_INFO_SZ];
 } vs_fldt_infv_new_file_request_t;
 
@@ -137,6 +135,15 @@ typedef struct __attribute__((__packed__)) {
 // Functions
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
+
+bool
+vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver);
+
+const char *
+vs_fldt_file_type_descr(const vs_fldt_file_type_t *file_type);
+
+char *
+vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);
 
 #ifdef __cplusplus
 }

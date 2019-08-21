@@ -43,8 +43,6 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 
-#define FLDT_SERVER_FILE_MAPPING_SZ FLDT_FILE_MAPPING_SZ
-
 
 //
 //  Callbacks

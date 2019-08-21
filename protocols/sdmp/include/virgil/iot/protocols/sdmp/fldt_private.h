@@ -42,8 +42,6 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/logger/logger.h>
 
-#define FLDT_FILE_MAPPING_SZ (10)
-
 //
 //  Internal structures
 //
@@ -62,8 +60,6 @@ typedef struct {
 } vs_fldt_storage_ctx_t;
 
 typedef uint16_t vs_fldt_storage_id_t;
-
-#define FLDT_FILEVER_BUF (128)
 
 const vs_netif_t *vs_fldt_netif;
 
@@ -123,25 +119,6 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
 
 int
 vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
-
-// Utilities
-const char *
-vs_fldt_file_type_descr(const vs_fldt_file_type_t *file_type);
-
-char *
-vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);
-
-#define NO_FILE_TYPE (-1)
-#define vs_fldt_find_file_type_impl(FILE_TYPE, FILES_LIST, FILES_LIST_SIZE)                                            \
-    size_t i;                                                                                                          \
-    VS_IOT_ASSERT(FILE_TYPE);                                                                                          \
-                                                                                                                       \
-    for (i = 0; i < (FILES_LIST_SIZE); ++i) {                                                                          \
-        if (!VS_IOT_MEMCMP(&(FILES_LIST)[i].file_type, (FILE_TYPE), sizeof(*(FILE_TYPE))))                             \
-            return i;                                                                                                  \
-    }                                                                                                                  \
-                                                                                                                       \
-    return NO_FILE_TYPE;
 
 #ifdef __cplusplus
 }

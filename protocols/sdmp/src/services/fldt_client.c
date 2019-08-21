@@ -40,14 +40,7 @@
 #include <stdlib-config.h>
 #include <global-hal.h>
 
-static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[FLDT_CLIENT_FILE_MAPPING_SZ];
-static size_t _client_file_type_mapping_sz = 0;
-
-/******************************************************************/
-static int
-_find_file_type(const vs_fldt_file_type_t *file_type) {
-    vs_fldt_find_file_type_impl(file_type, _client_file_type_mapping, _client_file_type_mapping_sz);
-}
+static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[VS_FLDT_FILETYPES_AMOUNT];
 
 /******************************************************************/
 int
@@ -61,7 +54,6 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     const vs_fldt_file_version_t *new_file_ver = NULL;
     const vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_file_version_t present_file_ver;
-    size_t id;
     const vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     bool download;
     char file_ver_descr[FLDT_FILEVER_BUF];
@@ -78,25 +70,20 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
     new_file_ver = &new_file->version;
     file_type = &new_file_ver->file_type;
+    file_type_info = &_client_file_type_mapping[file_type->file_type];
 
     VS_LOG_DEBUG("[FLDT:INFV] request for file type \"%s\"", vs_fldt_file_type_descr(file_type));
 
-    if (NO_FILE_TYPE == (id = _find_file_type(file_type))) {
-        VS_LOG_ERROR("File type %s has not been added to the file type mapping", vs_fldt_file_type_descr(file_type));
-        return -7;
-    }
-
     VS_LOG_DEBUG("[FLDT:INFV] New file is present. ", &new_file->version);
 
-    file_type_info = _client_file_type_mapping + id;
 
     CHECK_RET(file_type_info->get_current_version != NULL,
-              -8,
+              -7,
               "callback get_current_version for file type %s has not been specified",
               vs_fldt_file_type_descr(file_type));
 
     CHECK_RET(!file_type_info->get_current_version(file_type, &present_file_ver),
-              -9,
+              -8,
               "Unable to retrieve present file version for file type %s",
               vs_fldt_file_type_descr(file_type));
 
@@ -108,12 +95,12 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     if (download) {
 
         CHECK_RET(file_type_info->update_file != NULL,
-                  -10,
+                  -9,
                   "callback new_version for file type %s has not been specified",
                   vs_fldt_file_type_descr(file_type));
 
         CHECK_RET(!file_type_info->update_file(new_file_ver),
-                  -11,
+                  -10,
                   "Unable to notify new file version for file type %s",
                   vs_fldt_file_type_descr(file_type));
     }
@@ -130,7 +117,6 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_file_type_t *file_type = NULL;
     const vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
-    size_t id;
 
     (void)is_ack;
 
@@ -140,23 +126,17 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &file_info->version;
     file_type = &file_ver->file_type;
+    file_type_info = &_client_file_type_mapping[file_type->file_type];
 
     VS_LOG_DEBUG("[FLDT:GFTI] response for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    if (NO_FILE_TYPE == (id = _find_file_type(file_type))) {
-        VS_LOG_ERROR("File type %s has not been added to the file type mapping", vs_fldt_file_type_descr(file_type));
-        return -4;
-    }
-
-    file_type_info = _client_file_type_mapping + id;
-
     CHECK_RET(file_type_info->get_info != NULL,
-              -5,
+              -4,
               "callback get_info for file type %s has not been specified",
               vs_fldt_file_type_descr(file_type));
 
     CHECK_RET(!file_type_info->get_info(file_info),
-              -6,
+              -5,
               "Unable to process received file information for file %s",
               vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -171,7 +151,6 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_file_type_t *file_type = NULL;
     const vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
-    size_t id;
 
     (void)is_ack;
 
@@ -184,22 +163,16 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &header->version;
     file_type = &file_ver->file_type;
+    file_type_info = &_client_file_type_mapping[file_type->file_type];
 
     VS_LOG_DEBUG("[FLDT:GNFH] response for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    if (NO_FILE_TYPE == (id = _find_file_type(file_type))) {
-        VS_LOG_ERROR("File type %s has not been added to the file type mapping", vs_fldt_file_type_descr(file_type));
-        return -4;
-    }
-
-    file_type_info = _client_file_type_mapping + id;
-
     CHECK_RET(file_type_info->get_header != NULL,
-              -5,
+              -4,
               "callback get_header for file type %s has not been specified",
               vs_fldt_file_type_descr(file_type));
     CHECK_RET(!file_type_info->get_header(header),
-              -6,
+              -5,
               "Unable to process received file information for file %s",
               vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -214,7 +187,6 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_file_type_t *file_type = NULL;
     const vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
-    size_t id;
 
     (void)is_ack;
 
@@ -227,22 +199,16 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &chunk->version;
     file_type = &file_ver->file_type;
+    file_type_info = &_client_file_type_mapping[file_type->file_type];
 
     VS_LOG_DEBUG("[FLDT:GNFC] response for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    if (NO_FILE_TYPE == (id = _find_file_type(file_type))) {
-        VS_LOG_ERROR("File type %s has not been added to the file type mapping", vs_fldt_file_type_descr(file_type));
-        return -4;
-    }
-
-    file_type_info = _client_file_type_mapping + id;
-
     CHECK_RET(file_type_info->get_chunk != NULL,
-              -5,
+              -4,
               "callback get_chunk for file type %s has not been specified",
               vs_fldt_file_type_descr(file_type));
     CHECK_RET(!file_type_info->get_chunk(chunk),
-              -6,
+              -5,
               "Unable to process received file information for file %s",
               vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -257,7 +223,6 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_file_type_t *file_type = NULL;
     const vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
-    size_t id;
 
     (void)is_ack;
 
@@ -270,22 +235,16 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &footer->version;
     file_type = &file_ver->file_type;
+    file_type_info = &_client_file_type_mapping[file_type->file_type];
 
     VS_LOG_DEBUG("[FLDT:GNFF] response for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    if (NO_FILE_TYPE == (id = _find_file_type(file_type))) {
-        VS_LOG_ERROR("File type %s has not been added to the file type mapping", vs_fldt_file_type_descr(file_type));
-        return -4;
-    }
-
-    file_type_info = _client_file_type_mapping + id;
-
     CHECK_RET(file_type_info->get_footer != NULL,
-              -5,
+              -4,
               "callback get_footer for file type %s has not been specified",
               vs_fldt_file_type_descr(file_type));
     CHECK_RET(!file_type_info->get_footer(footer),
-              -6,
+              -5,
               "Unable to process received file information for file %s",
               vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -295,20 +254,17 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 /******************************************************************/
 int
 vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem) {
+    uint8_t file_type;
 
     CHECK_NOT_ZERO_RET(mapping_elem, -1);
 
-    CHECK_RET(_client_file_type_mapping_sz < FLDT_CLIENT_FILE_MAPPING_SZ,
+    file_type = mapping_elem->file_type.file_type;
+
+    CHECK_RET(file_type >= 0 && file_type < VS_FLDT_FILETYPES_AMOUNT,
               -2,
               "Client's file type mapping array has no free place");
 
-    CHECK_RET(_find_file_type(&mapping_elem->file_type) == NO_FILE_TYPE,
-              -3,
-              "Such file type has been already added to the mapping list");
-
-    VS_IOT_MEMCPY(_client_file_type_mapping + _client_file_type_mapping_sz, mapping_elem, sizeof(*mapping_elem));
-
-    ++_client_file_type_mapping_sz;
+    VS_IOT_MEMCPY(&_client_file_type_mapping[file_type], mapping_elem, sizeof(*mapping_elem));
 
     return 0;
 }
@@ -317,24 +273,19 @@ vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_e
 int
 vs_fldt_ask_file_type_info(const vs_mac_addr_t *mac, const vs_fldt_gfti_fileinfo_request_t *file_type) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    size_t id;
-
-    VS_LOG_DEBUG("*** [FLDT] Ask file type information for file type %s",
-                 vs_fldt_file_type_descr(&file_type->file_type));
 
     CHECK_NOT_ZERO_RET(mac, -1);
     CHECK_NOT_ZERO_RET(file_type, -2);
 
-    CHECK_RET(NO_FILE_TYPE != (id = _find_file_type(&file_type->file_type)),
-              -3,
-              "Such file type has not been added to the mapping list");
+    VS_LOG_DEBUG("*** [FLDT] Ask file type information for file type %s",
+                 vs_fldt_file_type_descr(&file_type->file_type));
 
-    file_type_info = _client_file_type_mapping + id;
+    file_type_info = &_client_file_type_mapping[file_type->file_type.file_type];
 
-    CHECK_RET(file_type_info->get_info, -4, "There is no callback get_info to process response");
+    CHECK_RET(file_type_info->get_info, -3, "There is no callback get_info to process response");
 
     CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
-              -5,
+              -4,
               "Unable to send FLDT \"GFTI\" server request");
 
     return 0;
@@ -344,7 +295,6 @@ vs_fldt_ask_file_type_info(const vs_mac_addr_t *mac, const vs_fldt_gfti_fileinfo
 int
 vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    size_t id;
     char file_type_descr[FLDT_FILEVER_BUF];
 
     VS_LOG_DEBUG("*** [FLDT] Ask file header for file type %s",
@@ -353,17 +303,13 @@ vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_requ
     CHECK_NOT_ZERO_RET(mac, -1);
     CHECK_NOT_ZERO_RET(header_request, -2);
 
-    CHECK_RET(NO_FILE_TYPE != (id = _find_file_type(&header_request->version.file_type)),
-              -3,
-              "Such file type has not been added to the mapping list");
+    file_type_info = &_client_file_type_mapping[header_request->version.file_type.file_type];
 
-    file_type_info = _client_file_type_mapping + id;
-
-    CHECK_RET(file_type_info->get_header, -4, "There is no callback get_header to process response");
+    CHECK_RET(file_type_info->get_header, -3, "There is no callback get_header to process response");
 
     CHECK_RET(!vs_fldt_send_request(
                       vs_fldt_netif, mac, VS_FLDT_GNFH, (const uint8_t *)header_request, sizeof(*header_request)),
-              -5,
+              -4,
               "Unable to send FLDT \"GNFH\" server request");
 
     return 0;
@@ -373,7 +319,6 @@ vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_requ
 int
 vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *file_chunk) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    size_t id;
     char file_type_descr[FLDT_FILEVER_BUF];
 
     VS_LOG_DEBUG("*** [FLDT] Ask file chunk %d for file type %s",
@@ -383,15 +328,12 @@ vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *f
     CHECK_NOT_ZERO_RET(mac, -1);
     CHECK_NOT_ZERO_RET(file_chunk, -2);
 
-    CHECK_RET(NO_FILE_TYPE != (id = _find_file_type(&file_chunk->version.file_type)),
-              -3,
-              "Such file type has not been added to the mapping list");
-    file_type_info = _client_file_type_mapping + id;
+    file_type_info = &_client_file_type_mapping[file_chunk->version.file_type.file_type];
 
-    CHECK_RET(file_type_info->get_chunk, -4, "There is no callback get_chunk to process response");
+    CHECK_RET(file_type_info->get_chunk, -3, "There is no callback get_chunk to process response");
 
     CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GNFC, (const uint8_t *)file_chunk, sizeof(*file_chunk)),
-              -5,
+              -4,
               "Unable to send FLDT \"GNFC\" server request");
 
     return 0;
@@ -401,7 +343,6 @@ vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *f
 int
 vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_request_t *file_footer) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    size_t id;
     char file_type_descr[FLDT_FILEVER_BUF];
 
     VS_LOG_DEBUG("*** [FLDT] Ask file footer for file type %s",
@@ -410,17 +351,13 @@ vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_requ
     CHECK_NOT_ZERO_RET(mac, -1);
     CHECK_NOT_ZERO_RET(file_footer, -2);
 
-    CHECK_RET(NO_FILE_TYPE != (id = _find_file_type(&file_footer->version.file_type)),
-              -3,
-              "Such file type has not been added to the mapping list");
+    file_type_info = &_client_file_type_mapping[file_footer->version.file_type.file_type];
 
-    file_type_info = _client_file_type_mapping + id;
-
-    CHECK_RET(file_type_info->get_footer, -4, "There is no callback get_footer to process response");
+    CHECK_RET(file_type_info->get_footer, -3, "There is no callback get_footer to process response");
 
     CHECK_RET(
             !vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GNFF, (const uint8_t *)file_footer, sizeof(*file_footer)),
-            -5,
+            -4,
             "Unable to send FLDT \"GNFF\" server request");
 
     return 0;

@@ -35,6 +35,8 @@
 #ifndef VS_MACROS_H
 #define VS_MACROS_H
 
+#include <virgil/iot/logger/logger.h>
+
 #define VS_UNUSED(x) (void)(x)
 
 #define CHECK(CONDITION, MESSAGE, ...)                                                                    \
