@@ -53,24 +53,18 @@ vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
 // Converting encode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
+    src_data->transaction_id = htons(src_data->transaction_id);
     src_data->padding = htons(src_data->padding);
     src_data->content_size = htons(src_data->content_size);
-    src_data->transaction_id = htons(src_data->transaction_id);
-    src_data->service_id = htonl(src_data->service_id);
-    src_data->element_id = htonl(src_data->element_id);
-    src_data->flags = htonl(src_data->flags);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
+    src_data->transaction_id = ntohs(src_data->transaction_id);
     src_data->padding = ntohs(src_data->padding);
     src_data->content_size = ntohs(src_data->content_size);
-    src_data->transaction_id = ntohs(src_data->transaction_id);
-    src_data->service_id = ntohl(src_data->service_id);
-    src_data->element_id = ntohl(src_data->element_id);
-    src_data->flags = ntohl(src_data->flags);
 }
 
 /******************************************************************************/

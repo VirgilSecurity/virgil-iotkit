@@ -80,11 +80,11 @@ typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *net
 #define ETH_MIN_LEN (64)
 #define ETH_MTU (1500)
 
-#define VS_ETHERTYPE_VIRGIL (CHAR_SHORT(0xAB, 0xCD))
+#define VS_ETHERTYPE_VIRGIL (HTONS_IN_COMPILE_TIME(0xABCD))
 
 typedef enum {
-    VS_SDMP_FLAG_ACK = CHAR_LONG('0', '0', '0', '1'),
-    VS_SDMP_FLAG_NACK = CHAR_LONG('0', '0', '0', '2')
+    VS_SDMP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
 } vs_sdmp_flags_e;
 
 
@@ -103,9 +103,9 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 /******************************************************************************/
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id;
-    vs_sdmp_service_id_t service_id;
-    vs_sdmp_element_t element_id;
-    uint32_t flags;
+    vs_sdmp_service_id_t service_id; // CODEGEN: SKIP
+    vs_sdmp_element_t element_id;    // CODEGEN: SKIP
+    uint32_t flags;                  // CODEGEN: SKIP
     uint16_t padding;
     uint16_t content_size;
 } vs_sdmp_header_t;

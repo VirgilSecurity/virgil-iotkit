@@ -37,27 +37,42 @@
 
 #include <virgil/iot/hsm/hsm_structs.h>
 
-#define CHAR_LONG(a,b,c,d) ( ((a)<<24) | ((b)<<16) | ((c)<<8) | (d) )
-#define CHAR_SHORT(a,b) ( ((a)<<8) | (b) )
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONL_IN_COMPILE_TIME(val)                                                                                     \
+    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
+               ((uint32_t)val & 0xFF000000) >> 24)
+#else
+#define HTONL_IN_COMPILE_TIME(val) (val)
+#endif
 
+// Macro used to do htons in compile time
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONS_IN_COMPILE_TIME(val) (uint16_t)(((uint16_t)val & 0xFF) << 8 | ((uint16_t)val & 0xFF00) >> 8)
+#else
+#define HTONS_IN_COMPILE_TIME(val) (val)
+#endif
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
 typedef enum {
-    VS_PRVS_DNID = CHAR_LONG('D', 'N', 'I', 'D'), /**< Discover Not Initialized Devices */
-    VS_PRVS_SGNP = CHAR_LONG('S', 'G', 'N', 'P'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */
-    VS_PRVS_PBR1 = CHAR_LONG('P', 'B', 'R', '1'), /**< Set Recovery Key 1 */
-    VS_PRVS_PBR2 = CHAR_LONG('P', 'B', 'R', '2'), /**< Set Recovery Key 2 */
-    VS_PRVS_PBA1 = CHAR_LONG('P', 'B', 'A', '1'), /**< Set Auth Key 1 */
-    VS_PRVS_PBA2 = CHAR_LONG('P', 'B', 'A', '2'), /**< Set Auth Key 2 */
-    VS_PRVS_PBT1 = CHAR_LONG('P', 'B', 'T', '1'), /**< Set Trust List Key 1 */
-    VS_PRVS_PBT2 = CHAR_LONG('P', 'B', 'T', '2'), /**< Set Trust List 2 */
-    VS_PRVS_PBF1 = CHAR_LONG('P', 'B', 'F', '1'), /**< Set Firmware Key 1 */
-    VS_PRVS_PBF2 = CHAR_LONG('P', 'B', 'F', '2'), /**< Set Firmware Key 2 */
-    VS_PRVS_TLH = CHAR_LONG('_', 'T', 'L', 'H'),  /**< Set Trust List Header */
-    VS_PRVS_TLC = CHAR_LONG('_', 'T', 'L', 'C'),  /**< Set Trust List Chunk */
-    VS_PRVS_TLF = CHAR_LONG('_', 'T', 'L', 'F'),  /**< Set Trust List Footer */
-    VS_PRVS_DEVI = CHAR_LONG('D', 'E', 'V', 'I'), /**< Get DEVice Info */
-    VS_PRVS_ASAV = CHAR_LONG('A', 'S', 'A', 'V'), /**< Action SAVe provision */
-    VS_PRVS_ASGN = CHAR_LONG('A', 'S', 'G', 'N'), /**< Action SiGN data */
+    VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */
+    VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */
+    VS_PRVS_PBR1 = HTONL_IN_COMPILE_TIME('PBR1'), /**< Set Recovery Key 1 */
+    VS_PRVS_PBR2 = HTONL_IN_COMPILE_TIME('PBR2'), /**< Set Recovery Key 2 */
+    VS_PRVS_PBA1 = HTONL_IN_COMPILE_TIME('PBA1'), /**< Set Auth Key 1 */
+    VS_PRVS_PBA2 = HTONL_IN_COMPILE_TIME('PBA2'), /**< Set Auth Key 2 */
+    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'), /**< Set Trust List Key 1 */
+    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set Trust List 2 */
+    VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'), /**< Set Firmware Key 1 */
+    VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'), /**< Set Firmware Key 2 */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set Trust List Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set Trust List Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set Trust List Footer */
+    VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
+    VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
+    VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
 } vs_sdmp_prvs_element_e;
+#pragma GCC diagnostic pop
 
 typedef enum {
     VS_PROVISION_SGNP = VS_PRVS_SGNP,

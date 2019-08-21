@@ -21,6 +21,7 @@ var (
 	ConvertTypes                   = []string{"uint16_t", "uint32_t"}
 	ConvertEncodeFuncPrefix        = "_encode"
 	ConvertDecodeFuncPrefix        = "_decode"
+	SkipMarker                     = "CODEGEN: SKIP"
 	H_Template              string = "conv_h.tmpl"
 	C_Template              string = "conv_c.tmpl"
 )
@@ -65,7 +66,7 @@ func GetCascadeData(StructsList map[string]map[string]string, StructName string)
 	if StructData, ok := StructsList[StructName]; ok {
 		for DataName, DataType := range StructData {
 			// Check base types
-			if parser.CheckEqualType(DataType, ConvertTypes) {
+			if parser.CheckEqualType(DataType, ConvertTypes)     {
 				fmt.Printf("###===--- APPEND BASE[%s] <= BASE TYPE\n", DataName)
 				ConvertedStrings = append(ConvertedStrings, types.StructPrep_t{false, DataName,DataType})
 				continue
@@ -164,7 +165,7 @@ func main() {
 	}
 
 	ParsedStructs = make(map[string]map[string]string)
-	ParsedStructs, errret = parser.GetStructrures(preparedFiles)
+	ParsedStructs, errret = parser.GetStructrures(preparedFiles, SkipMarker)
 	if errret != nil {
 		fmt.Printf("ERROR reading Structs [%s]\n", errret)
 		os.Exit(1)
