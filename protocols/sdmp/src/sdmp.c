@@ -32,14 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "stdlib-config.h"
+#include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
-#include <virgil/iot/logger/logger.h>
-#include "stdlib-config.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 static const vs_netif_t *_sdmp_default_netif = 0;
 

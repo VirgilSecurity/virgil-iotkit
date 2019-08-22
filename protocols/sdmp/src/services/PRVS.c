@@ -32,19 +32,19 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/PRVS.h>
-#include <virgil/iot/protocols/sdmp/sdmp_private.h>
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/logger/logger.h>
-#include <stdlib-config.h>
 #include <global-hal.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib-config.h>
+#include <string.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/sdmp_private.h>
 
 #if !VS_SDMP_FACTORY
-#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #endif // !VS_SDMP_FACTORY
 
