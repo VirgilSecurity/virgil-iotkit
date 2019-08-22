@@ -38,10 +38,10 @@
 #include <stdint.h>
 
 int
-vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
-                                    size_t cryptogram_sz,
-                                    const uint8_t *recipient_id,
+vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
+                                    uint8_t *cryptogram,
+                                    size_t cryptogram_sz,
                                     uint8_t *decrypted_data,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz);

@@ -1,0 +1,100 @@
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#include <stdlib.h>
+
+#include <global-hal.h>
+
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/hsm/hsm_virgil_ecies.h>
+#include <virgil/iot/hsm/hsm_interface.h>
+
+const char *test_recipient_id = "test-recipient-id";
+const char *test_data = "this string will be encrypted";
+
+/**********************************************************/
+static bool
+_create_device_key() {
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
+                   "Error create device key");
+    return true;
+}
+
+/**********************************************************/
+static bool
+_ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uint8_t *data, size_t data_sz) {
+
+    uint8_t encrypted_data[1024];
+    size_t encrypted_data_sz;
+
+    uint8_t decrypted_data[128];
+    size_t decrypted_data_sz;
+
+    size_t test_data_sz = strlen((char *)data) + 1;
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
+                                                                        recipient_id_sz,
+                                                                        (uint8_t *)data,
+                                                                        data_sz,
+                                                                        encrypted_data,
+                                                                        sizeof(encrypted_data),
+                                                                        &encrypted_data_sz),
+                   "Error encrypt data")
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_decrypt_sha384_aes256(recipient_id,
+                                                                        recipient_id_sz,
+                                                                        (uint8_t *)encrypted_data,
+                                                                        encrypted_data_sz,
+                                                                        decrypted_data,
+                                                                        sizeof(decrypted_data),
+                                                                        &decrypted_data_sz),
+                   "Error encrypt data")
+    return decrypted_data_sz == test_data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
+}
+
+/**********************************************************/
+uint16_t
+vs_virgil_ecies_test() {
+    uint16_t failed_test_result = 0;
+    START_TEST("Virgil ecies encryption");
+
+    TEST_CASE_OK("Create device key", _create_device_key())
+    TEST_CASE_OK("Encrypt/decrypt data",
+                 _ecies_crypt_case((uint8_t *)test_recipient_id,
+                                   strlen(test_recipient_id),
+                                   (uint8_t *)test_data,
+                                   strlen(test_data) + 1))
+terminate:
+
+    return failed_test_result;
+}

@@ -67,10 +67,10 @@ _remove_padding_size(uint8_t *data, size_t data_sz) {
 
 /******************************************************************************/
 int
-vs_hsm_virgil_decrypt_sha384_aes256(uint8_t *cryptogram,
-                                    size_t cryptogram_sz,
-                                    const uint8_t *recipient_id,
+vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
+                                    uint8_t *cryptogram,
+                                    size_t cryptogram_sz,
                                     uint8_t *decrypted_data,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz) {
@@ -212,7 +212,7 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
     uint16_t hmac_sz;
 
     uint8_t virgil_public_key[100];
-    size_t virgil_public_key_sz;
+    size_t virgil_public_key_sz = sizeof(virgil_public_key);
 
     uint8_t rnd_buf[16 + 12 + 32];
     uint8_t *iv_key = rnd_buf;
