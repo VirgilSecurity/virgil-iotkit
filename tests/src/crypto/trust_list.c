@@ -207,7 +207,7 @@ _test_tl_keys_save_pass() {
     uint16_t i;
     uint16_t pub_keys_count;
 
-    pub_keys_count = ntohs(test_header->pub_keys_count);
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
 
     for (i = 0; i < pub_keys_count; ++i) {
         BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
@@ -223,7 +223,7 @@ _tl_keys_save_wrong_order() {
     uint16_t i;
     uint16_t pub_keys_count;
 
-    pub_keys_count = ntohs(test_header->pub_keys_count);
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
 
     if (pub_keys_count > 2) {
         for (i = 0; i < pub_keys_count - 2; ++i) {
@@ -251,7 +251,7 @@ _test_tl_keys_read_pass() {
     uint16_t readed_bytes;
     uint16_t pub_keys_count;
 
-    pub_keys_count = ntohs(test_header->pub_keys_count);
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
 
     for (i = 0; i < pub_keys_count; ++i) {
 

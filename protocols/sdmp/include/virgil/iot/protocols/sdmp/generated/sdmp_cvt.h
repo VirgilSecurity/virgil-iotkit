@@ -35,17 +35,10 @@
 #ifndef SDMP_CVT_H
 #define SDMP_CVT_H
 
-#include <netinet/in.h>
+#include <endian-config.h>
 #include <virgil/iot/protocols/sdmp/PRVS.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-
-/******************************************************************************/
-// Converting functions for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data);
-void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data);
 
 /******************************************************************************/
 // Converting functions for (vs_ethernet_header_t)
@@ -67,5 +60,12 @@ void
 vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data);
 void
 vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data);
+void
+vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data);
 
 #endif // SDMP_CVT_H

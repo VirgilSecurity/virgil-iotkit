@@ -44,9 +44,9 @@ void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }}
   {{$StructItem.TypeName}}{{ $.EncPref }}(&src_data->{{$StructItem.VarName}});
    {{- else }}
      {{- if eq $StructItem.TypeName "uint16_t"}}
-  src_data->{{$StructItem.VarName}} = htons(src_data->{{$StructItem.VarName}});     
+  src_data->{{$StructItem.VarName}} = VS_IOT_HTONS(src_data->{{$StructItem.VarName}});
      {{- else }}
-  src_data->{{$StructItem.VarName}} = htonl(src_data->{{$StructItem.VarName}});
+  src_data->{{$StructItem.VarName}} = VS_IOT_HTONL(src_data->{{$StructItem.VarName}});
      {{- end }}
   {{- end }}
 {{- end}}
@@ -60,9 +60,9 @@ void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} 
   {{$StructItem.TypeName}}{{ $.DecPref }}(&src_data->{{$StructItem.VarName}});
    {{- else }}
      {{- if eq $StructItem.TypeName "uint16_t"}}   
-  src_data->{{$StructItem.VarName}} = ntohs(src_data->{{$StructItem.VarName}});     
+  src_data->{{$StructItem.VarName}} = VS_IOT_NTOHS(src_data->{{$StructItem.VarName}});
      {{- else }}
-  src_data->{{$StructItem.VarName}} = ntohl(src_data->{{$StructItem.VarName}});
+  src_data->{{$StructItem.VarName}} = VS_IOT_NTOHL(src_data->{{$StructItem.VarName}});
      {{- end }}  
   {{- end }}  
 {{- end}}

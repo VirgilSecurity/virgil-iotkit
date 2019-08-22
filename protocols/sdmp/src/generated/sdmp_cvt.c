@@ -36,53 +36,35 @@
 
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->manufacturer = htonl(src_data->manufacturer);
-    src_data->model = htonl(src_data->model);
-    src_data->data_sz = htons(src_data->data_sz);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->manufacturer = ntohl(src_data->manufacturer);
-    src_data->model = ntohl(src_data->model);
-    src_data->data_sz = ntohs(src_data->data_sz);
-}
-
-/******************************************************************************/
 // Converting encode function for (vs_ethernet_header_t)
 void
 vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data) {
-    src_data->type = htons(src_data->type);
+    src_data->type = VS_IOT_HTONS(src_data->type);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_ethernet_header_t)
 void
 vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
-    src_data->type = ntohs(src_data->type);
+    src_data->type = VS_IOT_NTOHS(src_data->type);
 }
 
 /******************************************************************************/
 // Converting encode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = htons(src_data->transaction_id);
-    src_data->padding = htons(src_data->padding);
-    src_data->content_size = htons(src_data->content_size);
+    src_data->transaction_id = VS_IOT_HTONS(src_data->transaction_id);
+    src_data->padding = VS_IOT_HTONS(src_data->padding);
+    src_data->content_size = VS_IOT_HTONS(src_data->content_size);
 }
 
 /******************************************************************************/
 // Converting decode function for (vs_sdmp_header_t)
 void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = ntohs(src_data->transaction_id);
-    src_data->padding = ntohs(src_data->padding);
-    src_data->content_size = ntohs(src_data->content_size);
+    src_data->transaction_id = VS_IOT_NTOHS(src_data->transaction_id);
+    src_data->padding = VS_IOT_NTOHS(src_data->padding);
+    src_data->content_size = VS_IOT_NTOHS(src_data->content_size);
 }
 
 /******************************************************************************/
@@ -99,4 +81,22 @@ void
 vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
     vs_ethernet_header_t_decode(&src_data->eth_header);
     vs_sdmp_header_t_decode(&src_data->header);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = VS_IOT_HTONS(src_data->data_sz);
+    src_data->manufacturer = VS_IOT_HTONL(src_data->manufacturer);
+    src_data->model = VS_IOT_HTONL(src_data->model);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = VS_IOT_NTOHS(src_data->data_sz);
+    src_data->manufacturer = VS_IOT_NTOHL(src_data->manufacturer);
+    src_data->model = VS_IOT_NTOHL(src_data->model);
 }

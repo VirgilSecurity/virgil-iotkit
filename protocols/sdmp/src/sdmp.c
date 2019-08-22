@@ -143,7 +143,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 static uint16_t
 _packet_sz(const uint8_t *packet_data) {
     const vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)packet_data;
-    return sizeof(vs_sdmp_packet_t) + ntohs(packet->header.content_size);
+    return sizeof(vs_sdmp_packet_t) + VS_IOT_NTOHS(packet->header.content_size);
 }
 
 /******************************************************************************/
