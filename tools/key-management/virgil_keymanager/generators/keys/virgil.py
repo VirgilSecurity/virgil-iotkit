@@ -45,10 +45,10 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             byte_buffer = io.BytesIO()
 
             # vs_pubkey_dated_t
-            byte_buffer.write(start_date.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(expire_date.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='little', signed=False))
-            byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(start_date.to_bytes(4, byteorder='big', signed=False))
+            byte_buffer.write(expire_date.to_bytes(4, byteorder='big', signed=False))
+            byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(b64_to_bytes(self.public_key))
 
             bytes_to_sign = byte_buffer.getvalue()

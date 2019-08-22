@@ -66,7 +66,7 @@ func NewTrustList(tlData []byte) (*trustList, error){
 	tlBytesBuf := bytes.NewBuffer(tlData)
 
 	// Read TL header
-	if err := binary.Read(tlBytesBuf, binary.LittleEndian, &tl.Header); err != nil {
+	if err := binary.Read(tlBytesBuf, binary.BigEndian, &tl.Header); err != nil {
 		return nil, fmt.Errorf("failed to serialize TrustList header from data: %v", err)
 	}
 
@@ -88,7 +88,7 @@ func NewTrustList(tlData []byte) (*trustList, error){
 
 	// Read TL Footer
 	// - tl type
-	if err = binary.Read(tlBytesBuf, binary.LittleEndian, &tl.Footer.TLType); err != nil {
+	if err = binary.Read(tlBytesBuf, binary.BigEndian, &tl.Footer.TLType); err != nil {
 		return nil, fmt.Errorf("failed to serialize TrustList footer, tl_type from data: %v", err)
 	}
 	// - signatures

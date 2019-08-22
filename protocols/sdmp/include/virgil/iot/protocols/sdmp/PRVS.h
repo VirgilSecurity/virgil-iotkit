@@ -155,11 +155,18 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
                  uint32_t wait_ms);
 
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         const uint8_t *data,
-                         uint16_t data_sz,
-                         uint32_t wait_ms);
+vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms);
+
+int
+vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms);
 
 #ifdef __cplusplus
 }
