@@ -76,7 +76,7 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx) {
     }
 
     TEST_CASE_OK("Read/write big piece of data",
-                 _test_case_secbox_save_load(ctx, TEST_FILENAME_BIG_DATA, _big_test_data, sizeof(_big_test_data)))
+                 _test_case_secbox_save_load(ctx, TEST_FILENAME_BIG_DATA, _big_test_data, big_test_size))
 
     TEST_CASE_OK("Delete file", _test_case_secbox_del(ctx, TEST_FILENAME_FOR_DELETE))
 terminate:;
