@@ -78,7 +78,7 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
                                                                         decrypted_data,
                                                                         sizeof(decrypted_data),
                                                                         &decrypted_data_sz),
-                   "Error encrypt data")
+                   "Error decrypt data")
     return decrypted_data_sz == test_data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
 }
 

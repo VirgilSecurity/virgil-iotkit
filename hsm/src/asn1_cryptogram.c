@@ -51,7 +51,7 @@
 #define SET 0x31
 
 static const uint8_t _aes256_gcm[] =
-        {0x30, 0x26, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E, 0x04, 0x0C};
+        {0x30, 0x19, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E, 0x04, 0x0C};
 
 static const uint8_t _aes256_cbc[] =
         {0x30, 0x1D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A, 0x04, 0x10};
@@ -195,7 +195,7 @@ asn1_put_array(uint8_t element,
         } else {
             w += 2;
         }
-        memcpy(w, array, array_size);
+        VS_IOT_MEMCPY(w, array, array_size);
         *pos -= *res_size;
         if (total_sz) {
             *total_sz += *res_size;
@@ -260,11 +260,12 @@ _asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size
 
     if (*pos > *res_size) {
         w = &data[*pos - *res_size];
-        memcpy(w, raw_data, data_size);
+        VS_IOT_MEMCPY(w, raw_data, data_size);
         *pos -= *res_size;
         if (total_sz) {
             *total_sz += *res_size;
         }
+
         return true;
     }
     return false;
@@ -569,5 +570,5 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
     *cryptogram_sz = total_sz + encrypted_data_sz;
     VS_IOT_MEMCPY(cryptogram, &buf[pos], *cryptogram_sz);
 
-    return true;
+    return VS_HSM_ERR_OK;
 }
