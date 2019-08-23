@@ -35,11 +35,11 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 #include <trust_list-config.h>
+#include <endian-config.h>
 
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/private/tl_operations.h>
-#include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
@@ -80,6 +80,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint16_t sign_len;
     uint16_t key_len;
     uint8_t sign_rules = 0;
+    vs_tl_header_t host_header;
 
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
@@ -92,7 +93,9 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         return false;
     }
 
-    if (tl_ctx->header.tl_size > VS_TL_STORAGE_SIZE) {
+    vs_tl_header_to_host(&(tl_ctx->header), &host_header);
+
+    if (host_header.tl_size > VS_TL_STORAGE_SIZE) {
         tl_ctx->ready = false;
         return false;
     }
@@ -100,7 +103,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     vs_hsm_sw_sha256_init(&ctx);
     vs_hsm_sw_sha256_update(&ctx, (uint8_t *)&tl_ctx->header, sizeof(vs_tl_header_t));
 
-    for (i = 0; i < tl_ctx->header.pub_keys_count; ++i) {
+    for (i = 0; i < host_header.pub_keys_count; ++i) {
 
         if (VS_TL_OK != vs_tl_key_load(tl_ctx->storage.storage_type, i, buf, sizeof(buf), &res_sz)) {
             tl_ctx->ready = false;
@@ -121,9 +124,9 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     // First signature
     sign = (vs_sign_t *)footer->signatures;
 
-    BOOL_CHECK_RET(tl_ctx->header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
+    BOOL_CHECK_RET(host_header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
 
-    for (i = 0; i < tl_ctx->header.signatures_count; ++i) {
+    for (i = 0; i < host_header.signatures_count; ++i) {
         BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL")
 
         sign_len = vs_hsm_get_signature_len(sign->ec_type);
@@ -190,6 +193,7 @@ _get_tl_ctx(size_t storage_type) {
 static int
 _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     vs_tl_header_t header;
+    vs_tl_header_t host_header;
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
@@ -204,7 +208,9 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
         return VS_TL_ERROR_WRITE;
     }
 
-    for (i = 0; i < header.pub_keys_count; ++i) {
+    vs_tl_header_to_host(&header, &host_header);
+
+    for (i = 0; i < host_header.pub_keys_count; ++i) {
         if (VS_TL_OK != vs_tl_key_load(src->storage.storage_type, i, buf, sizeof(buf), &res_sz) ||
             VS_TL_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
             dst->ready = false;
@@ -239,8 +245,7 @@ vs_tl_verify_storage(size_t storage_type) {
 }
 /******************************************************************************/
 void
-vs_tl_storage_init() {
-
+vs_tl_storage_init_internal() {
     _init_tl_ctx(TL_STORAGE_TYPE_DYNAMIC, &_tl_dynamic_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, &_tl_static_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_TMP, &_tl_tmp_ctx);
@@ -255,18 +260,23 @@ vs_tl_storage_init() {
 int
 vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
+    vs_tl_header_t host_header;
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(NULL != header, VS_TL_ERROR_PARAMS, "Invalid args")
-    CHECK_RET(header->tl_size <= VS_TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
+
+    // Normalize byte order
+    vs_tl_header_to_host(header, &host_header);
+
+    CHECK_RET(host_header.tl_size <= VS_TL_STORAGE_SIZE, VS_TL_ERROR_SMALL_BUFFER, "TL storage is too small for new TL")
 
     tl_ctx->ready = false;
     tl_ctx->keys_qty.keys_count = 0;
-    tl_ctx->keys_qty.keys_amount = header->pub_keys_count;
+    tl_ctx->keys_qty.keys_amount = host_header.pub_keys_count;
 
     CHECK_RET(
-            0 == vs_secbox_save(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox save")
+            0 == vs_tl_save_hal(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_WRITE, "Error secbox save")
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
@@ -276,13 +286,13 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 int
 vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(tl_ctx->ready, VS_TL_ERROR_GENERAL, "TL Storage is not ready")
 
     CHECK_RET(
-            0 == vs_secbox_load(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_READ, "Error secbox load")
+            0 == vs_tl_load_hal(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_READ, "Error secbox load")
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
@@ -292,13 +302,13 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
 int
 vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(
             tl_ctx->keys_qty.keys_amount == tl_ctx->keys_qty.keys_count, VS_TL_ERROR_PARAMS, "Keys amount is not equal")
 
-    CHECK_RET(0 == vs_secbox_save(&el, footer, footer_sz), VS_TL_ERROR_WRITE, "Error secbox write")
+    CHECK_RET(0 == vs_tl_save_hal(&el, footer, footer_sz), VS_TL_ERROR_WRITE, "Error secbox write")
 
     return VS_TL_OK;
 }
@@ -318,7 +328,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
     int key_len;
     uint8_t i;
 
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLF, 0};
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(NULL != footer && NULL != footer_sz, VS_TL_ERROR_PARAMS, "Invalid args")
@@ -329,7 +339,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         // Add meta info size of current signature
         _sz += sizeof(vs_sign_t);
 
-        CHECK_RET(0 == vs_secbox_load(&el, buf, _sz), VS_TL_ERROR_READ, "Error secbox load")
+        CHECK_RET(0 == vs_tl_load_hal(&el, buf, _sz), VS_TL_ERROR_READ, "Error secbox load")
 
         sign_len = vs_hsm_get_signature_len(element->ec_type);
         key_len = vs_hsm_get_pubkey_len(element->ec_type);
@@ -345,7 +355,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 
     CHECK_RET(buf_sz >= _sz, VS_TL_ERROR_SMALL_BUFFER, "Out buffer too small")
 
-    CHECK_RET(0 == vs_secbox_load(&el, footer, _sz), VS_TL_ERROR_READ, "Error secbox load")
+    CHECK_RET(0 == vs_tl_load_hal(&el, footer, _sz), VS_TL_ERROR_READ, "Error secbox load")
 
     *footer_sz = _sz;
 
@@ -356,7 +366,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 int
 vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     vs_pubkey_dated_t *element = (vs_pubkey_dated_t *)key;
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLC, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLC, 0};
     int key_len = vs_hsm_get_pubkey_len(element->pubkey.ec_type);
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 
@@ -374,7 +384,7 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     }
 
     el.index = tl_ctx->keys_qty.keys_count;
-    if (0 != vs_secbox_save(&el, key, key_sz)) {
+    if (0 != vs_tl_save_hal(&el, key, key_sz)) {
         return VS_TL_ERROR_WRITE;
     }
 
@@ -388,7 +398,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     int key_len;
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_pubkey_dated_t element;
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
 
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(NULL != key && NULL != key_sz, VS_TL_ERROR_PARAMS, "Invalid args")
@@ -396,7 +406,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(tl_ctx->ready, VS_TL_ERROR_GENERAL, "TL Storage is not ready")
 
     // First, we need to load a meta info of required key to determine a full size
-    CHECK_RET(0 == vs_secbox_load(&el, (uint8_t *)&element, sizeof(vs_pubkey_dated_t)),
+    CHECK_RET(0 == vs_tl_load_hal(&el, (uint8_t *)&element, sizeof(vs_pubkey_dated_t)),
               VS_TL_ERROR_READ,
               "Error secbox load")
 
@@ -409,7 +419,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 
     CHECK_RET(key_len <= buf_sz, VS_TL_ERROR_SMALL_BUFFER, "Out buffer too small")
 
-    CHECK_RET(0 == vs_secbox_load(&el, key, key_len), VS_TL_ERROR_READ, "Error secbox load")
+    CHECK_RET(0 == vs_tl_load_hal(&el, key, key_len), VS_TL_ERROR_READ, "Error secbox load")
 
     *key_sz = key_len;
 
@@ -420,7 +430,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 int
 vs_tl_invalidate(size_t storage_type) {
     vs_tl_header_t header;
-    vs_secbox_element_info_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
+    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 
@@ -429,20 +439,20 @@ vs_tl_invalidate(size_t storage_type) {
     tl_ctx->keys_qty.keys_count = 0;
     tl_ctx->keys_qty.keys_amount = 0;
 
-    if (!tl_ctx->ready || VS_TL_OK != vs_tl_header_load(storage_type, &header) || (0 != vs_secbox_del(&el))) {
+    if (!tl_ctx->ready || VS_TL_OK != vs_tl_header_load(storage_type, &header) || (0 != vs_tl_del_hal(&el))) {
         return VS_TL_OK;
     }
 
     tl_ctx->ready = false;
 
     el.id = VS_TL_ELEMENT_TLF;
-    if (0 != vs_secbox_del(&el)) {
+    if (0 != vs_tl_del_hal(&el)) {
         return VS_TL_OK;
     }
 
     el.id = VS_TL_ELEMENT_TLC;
     for (el.index = 0; el.index < header.pub_keys_count; ++el.index) {
-        if (0 != vs_secbox_del(&el)) {
+        if (0 != vs_tl_del_hal(&el)) {
             return VS_TL_OK;
         }
     }
@@ -467,3 +477,14 @@ vs_tl_apply_tmp_to(size_t storage_type) {
 
     return VS_TL_ERROR_GENERAL;
 }
+
+/******************************************************************************/
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
+    *dst_data = *src_data;
+    dst_data->pub_keys_count = VS_IOT_NTOHS(src_data->pub_keys_count);
+    dst_data->tl_size = VS_IOT_NTOHL(src_data->tl_size);
+    dst_data->version = VS_IOT_NTOHS(src_data->version);
+}
+
+/******************************************************************************/

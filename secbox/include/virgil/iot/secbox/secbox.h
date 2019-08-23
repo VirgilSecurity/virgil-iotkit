@@ -1,35 +1,33 @@
 #ifndef SECBOX_H
 #define SECBOX_H
 #include <stdint.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
-typedef struct vs_secbox_element_info_s {
-    uint16_t storage_type;
-    uint16_t id;
-    uint16_t index;
-} vs_secbox_element_info_t;
-
-typedef int (*vs_secbox_save_hal_t)(vs_secbox_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
-typedef int (*vs_secbox_load_hal_t)(vs_secbox_element_info_t *element_info, uint8_t *out_data, uint16_t data_sz);
-typedef int (*vs_secbox_del_hal_t)(vs_secbox_element_info_t *element_info);
-typedef int (*vs_secbox_init_hal_t)(void);
-
-typedef struct {
-    vs_secbox_save_hal_t save;
-    vs_secbox_load_hal_t load;
-    vs_secbox_del_hal_t del;
-    vs_secbox_init_hal_t init;
-} vs_secbox_hal_impl_t;
+typedef enum {
+    VS_SECBOX_SIGNED,
+    VS_SECBOX_SIGNED_AND_ENCRYPTED,
+} vs_secbox_type_t;
 
 int
-vs_secbox_configure_hal(const vs_secbox_hal_impl_t *impl);
+vs_secbox_init(const vs_storage_op_ctx_t *ctx);
 
 int
-vs_secbox_save(vs_secbox_element_info_t *element_info, const uint8_t *data, uint16_t data_sz);
+vs_secbox_deinit(const vs_storage_op_ctx_t *ctx);
 
 int
-vs_secbox_load(vs_secbox_element_info_t *element_info, uint8_t *out_data, uint16_t data_sz);
+vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id);
 
 int
-vs_secbox_del(vs_secbox_element_info_t *element_info);
+vs_secbox_save(const vs_storage_op_ctx_t *ctx,
+               vs_secbox_type_t type,
+               vs_storage_element_id_t id,
+               const uint8_t *data,
+               size_t data_sz);
+
+int
+vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
+
+int
+vs_secbox_del(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id);
 
 #endif // SECBOX_H

@@ -32,14 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "stdlib-config.h"
+#include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
-#include <virgil/iot/logger/logger.h>
-#include "stdlib-config.h"
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 static const vs_netif_t *_sdmp_default_netif = 0;
 
@@ -75,7 +76,7 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 static int
-_process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
+_process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
     uint16_t response_sz = 0;
@@ -83,6 +84,9 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
     bool processed = false;
 
     memset(response, 0, sizeof(response));
+
+    // Normalize byte order
+    vs_sdmp_packet_t_decode(packet);
 
     // Check packet
 
@@ -141,7 +145,7 @@ _process_packet(const vs_netif_t *netif, const vs_sdmp_packet_t *packet) {
 static uint16_t
 _packet_sz(const uint8_t *packet_data) {
     const vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)packet_data;
-    return sizeof(vs_sdmp_packet_t) + packet->header.content_size;
+    return sizeof(vs_sdmp_packet_t) + VS_IOT_NTOHS(packet->header.content_size);
 }
 
 /******************************************************************************/
@@ -157,7 +161,7 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz
     uint16_t packet_sz;
     uint16_t copy_bytes;
 
-    const vs_sdmp_packet_t *packet = 0;
+    vs_sdmp_packet_t *packet = 0;
 
     while (LEFT_INCOMING) {
 
@@ -254,6 +258,13 @@ int
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->tx);
+    vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+
+
+    // Normalize byte order
+    if (packet) {
+        vs_sdmp_packet_t_encode(packet);
+    }
 
     if (!netif || netif == _sdmp_default_netif) {
         return _sdmp_default_netif->tx(data, data_sz);

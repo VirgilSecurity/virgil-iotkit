@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
@@ -39,12 +40,13 @@
 #include <stdlib-config.h>
 #include <global-hal.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib-config.h>
+#include <string.h>
 
 #if !VS_SDMP_FACTORY
-#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #endif // !VS_SDMP_FACTORY
 
@@ -64,7 +66,6 @@ static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 static int _last_res = RES_UNKNOWN;
 static uint16_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
-
 #if !VS_SDMP_FACTORY
 /******************************************************************************/
 static int
@@ -305,6 +306,10 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 
     *response_sz = sizeof(vs_sdmp_prvs_devi_t) + devi_response->data_sz;
 
+    // Normalize byte order
+    vs_sdmp_prvs_devi_t_encode(devi_response);
+
+
     return 0;
 }
 
@@ -539,7 +544,11 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif,
                          uint16_t buf_sz,
                          uint32_t wait_ms) {
     uint16_t sz;
-    return vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms);
+    if (0 == vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms)) {
+        vs_sdmp_prvs_devi_t_decode(device_info);
+        return 0;
+    }
+    return -1;
 }
 
 /******************************************************************************/
@@ -653,10 +662,20 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 
 /******************************************************************************/
 int
-vs_sdmp_prvs_finalize_tl(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         const uint8_t *data,
-                         uint16_t data_sz,
-                         uint32_t wait_ms) {
+vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms) {
+    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
+}
+
+/******************************************************************************/
+int
+vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
+                           const vs_mac_addr_t *mac,
+                           const uint8_t *data,
+                           uint16_t data_sz,
+                           uint32_t wait_ms) {
     return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
 }

@@ -103,9 +103,9 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 /******************************************************************************/
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id;
-    vs_sdmp_service_id_t service_id;
-    vs_sdmp_element_t element_id;
-    uint32_t flags;
+    vs_sdmp_service_id_t service_id; // CODEGEN: SKIP
+    vs_sdmp_element_t element_id;    // CODEGEN: SKIP
+    uint32_t flags;                  // CODEGEN: SKIP
     uint16_t padding;
     uint16_t content_size;
 } vs_sdmp_header_t;

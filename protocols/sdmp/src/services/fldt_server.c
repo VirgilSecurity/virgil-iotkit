@@ -250,7 +250,6 @@ int
 vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
     char filever_descr[FLDT_FILEVER_BUF];
 
-
     VS_LOG_DEBUG("[FLDT] Broadcast new file version present for file %s",
                  vs_fldt_file_version_descr(filever_descr, &new_file->version));
 

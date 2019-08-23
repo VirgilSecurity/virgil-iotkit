@@ -95,8 +95,9 @@ terminate:
 }
 
 /**********************************************************/
-void
+uint16_t
 sdmp_tests(void) {
+    uint16_t failed_test_result = 0;
 
     START_TEST("SDMP");
 
@@ -112,4 +113,5 @@ sdmp_tests(void) {
     SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
 
 terminate:;
+    return failed_test_result;
 }

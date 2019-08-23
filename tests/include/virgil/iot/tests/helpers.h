@@ -39,8 +39,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 
-extern uint16_t failed_test_result;
-
 #define VS_HSM_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                       \
     do {                                                                                                               \
         if (VS_HSM_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \

@@ -35,99 +35,74 @@
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
 
-uint16_t failed_test_result;
-
-void
+uint16_t
 sdmp_tests(void);
-void
+uint16_t
 prvs_tests(void);
 void
 fldt_tests(void);
 
-void
+uint16_t
 test_hash(void);
-void
+uint16_t
 test_hmac(void);
-void
+uint16_t
 test_kdf2(void);
-void
+uint16_t
 test_ecdsa(void);
-void
+uint16_t
 test_ecdh(void);
-void
+uint16_t
 test_keypair(void);
-void
+uint16_t
 test_random(void);
-void
+uint16_t
 test_aes(void);
-void
+uint16_t
 test_sign_converters(void);
-void
+uint16_t
 test_pubkeys_converters(void);
-void
+uint16_t
 test_keystorage_and_tl(void);
 /**********************************************************/
-static void
+static uint16_t
 crypto_tests(void) {
+    uint16_t failed_test_result = 0;
 
-    test_hash();
-    test_hmac();
-    test_kdf2();
-    test_random();
-    test_aes();
-    test_keystorage_and_tl();
-    test_keypair();
-    test_ecdsa();
-    test_ecdh();
+    failed_test_result = test_hash();
+    failed_test_result += test_hmac();
+    failed_test_result += test_kdf2();
+    failed_test_result += test_random();
+    failed_test_result += test_aes();
+    failed_test_result += test_keystorage_and_tl();
+    failed_test_result += test_keypair();
+    failed_test_result += test_ecdsa();
+    failed_test_result += test_ecdh();
 #if !VIRGIL_IOT_MCU_BUILD
-    test_sign_converters();
-    test_pubkeys_converters();
+    failed_test_result += test_sign_converters();
+    failed_test_result += test_pubkeys_converters();
 #endif
+    return failed_test_result;
 }
 
 /**********************************************************/
 uint16_t
 vs_tests_checks(bool print_start_finish_tests) {
-    failed_test_result = 0;
+    uint16_t failed_test_result = 0;
 
-    if (print_start_finish_tests) {
-        START_TESTS;
+    if(print_start_finish_tests){
+    	START_TESTS;
     }
+    
+    failed_test_result = sdmp_tests();
+    failed_test_result += prvs_tests();
+    failed_test_result += fldt_tests();
 
-    sdmp_tests();
-    prvs_tests();
-    fldt_tests();
-
-    crypto_tests();
+    failed_test_result += crypto_tests();
 
     if (print_start_finish_tests) {
         FINISH_TESTS;
     }
 
     return failed_test_result;
-}
-
-/**********************************************************/
-void
-vs_tests_begin() {
-    START_TESTS;
-}
-
-/**********************************************************/
-void
-vs_tests_step_success() {
-    RESULT_OK;
-}
-
-/**********************************************************/
-void
-vs_tests_step_failure() {
-    RESULT_ERROR;
-terminate:;
-}
-
-/**********************************************************/
-void
-vs_tests_end() {
-    FINISH_TESTS;
 }

@@ -36,27 +36,29 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(secbox VERSION 0.1.0 LANGUAGES C)
 
-set(SECBOX_LIB secbox)
-
-#
-#   Source code
-#
-set(SECBOX_SRC
-        src/secbox.c
-        )
-
 #
 #   SecBox library
 #
-add_library(${SECBOX_LIB}
-        ${SECBOX_SRC}
+add_library(secbox)
+
+target_sources(secbox
+        PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/secbox.c"
         )
 
 #
 #   -Wall -Werror
 #
-set_target_properties(${SECBOX_LIB} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+set_target_properties(secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
+target_link_libraries(secbox
+        PUBLIC
+        sdmp
+        hsm
+        provision
+        virgil-iot-macros
+        storage_hal
+        )
 #
 #   Common include directories
 #
@@ -66,10 +68,5 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../inc>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include/>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include/>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../provision/include/>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include/virgil/iot/protocols>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
         )

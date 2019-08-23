@@ -100,8 +100,10 @@ _prepare_and_test(char *descr, vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash, 
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_ecdsa(void) {
+    uint16_t failed_test_result = 0;
+
 #define TEST_SIGN_VERIFY_PASS(SLOT, HASH, KEY)                                                                         \
     VS_IOT_STRCPY(descr, "slot ");                                                                                     \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT));                                          \
@@ -119,7 +121,7 @@ test_ecdsa(void) {
     START_TEST("ECDSA Sign/Verify tests");
 
     if (!_create_keypairs_()) {
-        return;
+        return failed_test_result;
     }
 
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_8, VS_HASH_SHA_256, VS_KEYPAIR_EC_SECP192R1)
@@ -153,15 +155,16 @@ test_ecdsa(void) {
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_ED25519)
 
 #if USE_RSA
-    if (VS_HSM_ERR_OK == vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
-        return;
+    if (VS_HSM_ERR_OK != vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
+        return failed_test_result + 1;
     }
 
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_256, VS_KEYPAIR_RSA_2048)
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_384, VS_KEYPAIR_RSA_2048)
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_RSA_2048)
 #endif
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_SIGN_VERIFY_PASS
 }

@@ -60,7 +60,7 @@ class KeySigner(object):
         byte_buffer = io.BytesIO()
         byte_buffer.write(key_id_bytes)
         byte_buffer.write(bytes_for_sign)
-        byte_buffer.write(int(signer_key_id).to_bytes(2, byteorder='little', signed=False))
+        byte_buffer.write(int(signer_key_id).to_bytes(2, byteorder='big', signed=False))
         byte_buffer.write(b64decode(signature))
 
         open(self.__file_for_resign, "wb").write(bytes(byte_buffer.getvalue()))

@@ -48,3 +48,8 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-registrar)
 #   Signer
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
+
+#
+#   SDMP convert function generator
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sdmp-codgen)

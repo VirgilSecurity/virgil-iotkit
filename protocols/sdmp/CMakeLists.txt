@@ -71,7 +71,7 @@ function(add_sdmp _for_factory)
             ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs.c
-
+            ${CMAKE_CURRENT_LIST_DIR}/src/generated/sdmp_cvt.c
             )
 
     #

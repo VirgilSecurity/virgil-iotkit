@@ -118,8 +118,9 @@ _test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_resu
 }
 
 /******************************************************************************/
-void
+uint16_t
 test_hash(void) {
+    uint16_t failed_test_result = 0;
 #define TEST_STEP(BITLEN)                                                                                              \
     do {                                                                                                               \
         vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
@@ -157,7 +158,8 @@ test_hash(void) {
     TEST_STEP(384);
     TEST_STEP(512);
 
-terminate:;
+terminate:
+    return failed_test_result;
 
 #undef TEST_STEP
 }

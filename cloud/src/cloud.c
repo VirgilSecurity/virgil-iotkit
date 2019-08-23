@@ -41,6 +41,7 @@
 #include <unistd.h>
 
 #include <virgil/iot/cloud/private/cloud_include.h>
+#include <virgil/iot/trust_list/private/tl_operations.h>
 
 #define MAX_EP_SIZE (256)
 
@@ -507,6 +508,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_head
 typedef struct {
     uint8_t step;
     vs_tl_header_t header;
+    vs_tl_header_t host_header;
     uint16_t keys_cnt;
     uint8_t *buff;
     size_t footer_sz;
@@ -535,9 +537,12 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
         resp->used_size += read_sz;
 
         if (resp->used_size == sizeof(vs_tl_header_t)) {
-            uint32_t required_storage_sz = (resp->header.pub_keys_count + 2) * VS_TL_STORAGE_MAX_PART_SIZE;
 
-            if (resp->header.tl_size > VS_TL_STORAGE_SIZE || required_storage_sz > VS_TL_STORAGE_SIZE) {
+            vs_tl_header_to_host(&resp->header, &resp->host_header);
+
+            uint32_t required_storage_sz = (resp->host_header.pub_keys_count + 2) * VS_TL_STORAGE_MAX_PART_SIZE;
+
+            if (resp->host_header.tl_size > VS_TL_STORAGE_SIZE || required_storage_sz > VS_TL_STORAGE_SIZE) {
                 return 0;
             }
 
@@ -588,7 +593,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     return 0;
                 }
 
-                if (++resp->keys_cnt == resp->header.pub_keys_count) {
+                if (++resp->keys_cnt == resp->host_header.pub_keys_count) {
                     resp->step = VS_CLOUD_FETCH_Tl_STEP_FOOTER;
                 }
             }
@@ -626,7 +631,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
                     CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] TL footer parse error")
                     resp->footer_sz = sizeof(vs_tl_footer_t) +
-                                      resp->header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
+                                      resp->host_header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
 
                     if (resp->used_size + rest_data_sz > resp->footer_sz ||
                         resp->footer_sz > VS_TL_STORAGE_MAX_PART_SIZE) {
@@ -643,7 +648,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
             if (resp->footer_sz != 0 && resp->used_size == resp->footer_sz) {
                 resp->used_size = 0;
                 vs_tl_info_t tl_info = {.type = ((vs_tl_footer_t *)resp->buff)->tl_type,
-                                        .version = resp->header.version};
+                                        .version = resp->host_header.version};
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
                 if (VS_CLOUD_ERR_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
                     VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {

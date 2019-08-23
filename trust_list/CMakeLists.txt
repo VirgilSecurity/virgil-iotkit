@@ -80,21 +80,23 @@ target_compile_definitions(${PROJECT_NAME}
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
+target_link_libraries(trust_list
+        PUBLIC
+        logger
+        hsm
+        virgil-iot-macros
+        provision
+        )
 #
 #   Common include directories
 #
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../secbox/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
 
         PUBLIC
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../provision/include>"
 
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
