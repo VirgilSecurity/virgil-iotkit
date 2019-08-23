@@ -56,7 +56,7 @@ target_link_libraries(secbox
         sdmp
         hsm
         provision
-        virgil-iot-macros
+        macros
         storage_hal
         )
 #

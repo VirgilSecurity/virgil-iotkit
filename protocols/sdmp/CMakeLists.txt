@@ -122,7 +122,7 @@ function(add_sdmp _for_factory)
             $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
 
             PRIVATE
-            virgil-iot-macros
+            macros
             )
     #
     # Format code

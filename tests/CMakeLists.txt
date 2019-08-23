@@ -80,7 +80,7 @@ target_link_libraries(virgil-iot-sdk-tests
         secbox
         sdmp
         trust_list
-        virgil-iot-macros
+        macros
         )
 
 #

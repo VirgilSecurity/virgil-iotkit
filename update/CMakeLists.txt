@@ -46,7 +46,7 @@ target_sources(update
 target_link_libraries(update
         PUBLIC
         logger
-        virgil-iot-macros
+        macros
         vs-json
         hsm
         trust_list

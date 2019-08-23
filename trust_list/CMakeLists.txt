@@ -84,7 +84,7 @@ target_link_libraries(trust_list
         PUBLIC
         logger
         hsm
-        virgil-iot-macros
+        macros
         provision
         )
 #
