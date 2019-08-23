@@ -43,43 +43,57 @@
 
 /**********************************************************/
 static int client_version_funct(const vs_fldt_file_type_t *file_type, vs_fldt_file_version_t *cur_file_version){
+    (void) file_type;
+    (void) cur_file_version;
     calls.client_get_curver = 1;
     VS_IOT_MEMCPY(cur_file_version, &to_set_client_curver, sizeof (to_set_client_curver));
     return 0;
 }
 
 /**********************************************************/
-static int client_update_funct(const vs_fldt_file_version_t *file_version){
+static int client_update_funct(const vs_fldt_infv_new_file_request_t *file_version_request){
+    (void) file_version_request;
     calls.client_update = 1;
     return 0;
 }
 
 /**********************************************************/
 static int client_info_funct(const vs_fldt_gfti_fileinfo_response_t *file_info){
+    (void) file_info;
     calls.client_info = 1;
     return 0;
 }
 
 /**********************************************************/
 static int client_header_funct(const vs_fldt_gnfh_header_response_t *file_header){
+    (void) file_header;
     calls.client_header = 1;
     return 0;
 }
 
 /**********************************************************/
 static int client_chunk_funct(const vs_fldt_gnfc_chunk_response_t *file_chunk){
+    (void) file_chunk;
     calls.client_chunk = 1;
     return 0;
 }
 
 /**********************************************************/
 static int client_footer_funct(const vs_fldt_gnff_footer_response_t *file_footer){
+    (void) file_footer;
     calls.client_footer = 1;
     return 0;
 }
 
 /**********************************************************/
+static int client_set_gateway_mac_funct(const vs_mac_addr_t *mac){
+    (void) mac;
+    calls.client_mac = 1;
+    return 0;}
+
+/**********************************************************/
 static int server_version_funct(const vs_fldt_gfti_fileinfo_request_t *request, vs_fldt_gfti_fileinfo_response_t *response){
+    (void) request;
     calls.server_curver = 1;
     VS_IOT_MEMCPY(response, &to_set_client_curver, sizeof (to_set_client_curver));
     return 0;
@@ -87,18 +101,27 @@ static int server_version_funct(const vs_fldt_gfti_fileinfo_request_t *request, 
 
 /**********************************************************/
 static int server_header_funct(const vs_fldt_gnfh_header_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfh_header_response_t *response){
+    (void) request;
+    (void) response_buf_sz;
+    (void) response;
     calls.server_header = 1;
     return 0;
 }
 
 /**********************************************************/
 static int server_chunk_funct(const vs_fldt_gnfc_chunk_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfc_chunk_response_t *response) {
+    (void) request;
+    (void) response_buf_sz;
+    (void) response;
     calls.server_chunk = 1;
     return 0;
 }
 
 /**********************************************************/
 static int server_footer_funct(const vs_fldt_gnff_footer_request_t *request, uint16_t response_buf_sz, vs_fldt_gnff_footer_response_t *response){
+    (void) request;
+    (void) response_buf_sz;
+    (void) response;
     calls.server_footer = 1;
     return 0;
 }
@@ -124,7 +147,8 @@ get_client_file_mapping(enum vs_fldt_file_type file_type) {
             .get_info = client_info_funct,
             .get_header = client_header_funct,
             .get_chunk = client_chunk_funct,
-            .get_footer = client_footer_funct
+            .get_footer = client_footer_funct,
+            .set_gateway_mac = client_set_gateway_mac_funct
     };
 
     return file_mapping;

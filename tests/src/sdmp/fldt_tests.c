@@ -90,8 +90,6 @@ test_fldt_add_filetypes(void) {
     vs_logger_set_loglev(VS_LOGLEV_ALERT);
 
     client_file_type = get_client_file_mapping(VS_FLDT_TRUSTLIST);
-    FLDT_CHECK_ERROR_GOTO(vs_fldt_add_client_file_type(&client_file_type), "The same client file mapping adding");
-
     FLDT_CHECK_ERROR_GOTO(vs_fldt_add_client_file_type(NULL), "Null client file type has been added");
 
     vs_logger_set_loglev(prev_loglev);
@@ -106,8 +104,6 @@ test_fldt_add_filetypes(void) {
     vs_logger_set_loglev(VS_LOGLEV_ALERT);
 
     server_file_type = get_server_file_mapping(VS_FLDT_TRUSTLIST);
-    FLDT_CHECK_ERROR_GOTO(vs_fldt_add_server_file_type(&server_file_type), "The same server file mapping adding");
-
     FLDT_CHECK_ERROR_GOTO(vs_fldt_add_server_file_type(NULL), "Null server file type has been added");
 
     vs_logger_set_loglev(prev_loglev);
@@ -148,7 +144,7 @@ test_INFV(void){
 
     FLDT_CHECK_GOTO(vs_fldt_broadcast_new_file(&new_file_request), "Unable to send request");
 
-    BOOL_CHECK_RET(calls.client_get_curver && calls.client_update, "Not all callbacks have been called");
+    BOOL_CHECK_RET(calls.client_get_curver && calls.client_update && calls.client_update, "Not all callbacks have been called");
 
     return true;
 
@@ -166,8 +162,9 @@ test_GFTI(void){
 
     vs_fldt_gfti_fileinfo_request_t fileinfo_request;
     fileinfo_request.file_type = new_trustlist_file.file_type;
+    vs_fldt_set_is_gateway(true);
 
-    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&mac_addr_server, &fileinfo_request), "Unable to send request");
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&fileinfo_request), "Unable to send request");
 
     BOOL_CHECK_RET(calls.server_curver, "Not all callbacks have been called");
 
@@ -194,7 +191,7 @@ test_GNFH(void){
 
     FLDT_CHECK_GOTO(vs_fldt_ask_file_header(&mac_addr_server, &request), "Unable to send request");
 
-    BOOL_CHECK_RET(calls.server_header, "Not all callbacks have been called");
+    BOOL_CHECK_RET(calls.server_header && calls.client_header, "Not all callbacks have been called");
 
     return true;
 
@@ -219,7 +216,7 @@ test_GNFC(void){
 
     FLDT_CHECK_GOTO(vs_fldt_ask_file_chunk(&mac_addr_server, &request), "Unable to send request");
 
-    BOOL_CHECK_RET(calls.server_chunk, "Not all callbacks have been called");
+    BOOL_CHECK_RET(calls.server_chunk && calls.client_chunk, "Not all callbacks have been called");
 
     return true;
 
@@ -244,7 +241,7 @@ test_GNFF(void){
 
     FLDT_CHECK_GOTO(vs_fldt_ask_file_footer(&mac_addr_server, &request), "Unable to send request");
 
-    BOOL_CHECK_RET(calls.server_footer, "Not all callbacks have been called");
+    BOOL_CHECK_RET(calls.server_footer && calls.client_footer, "Not all callbacks have been called");
 
     return true;
 
@@ -254,8 +251,10 @@ test_GNFF(void){
 }
 
 /**********************************************************/
-void
+uint16_t
 fldt_tests(void) {
+    uint16_t failed_test_result = 0;
+
     START_TEST("FLDT");
 
     prepare_test_netif(&test_netif);
@@ -278,5 +277,7 @@ fldt_tests(void) {
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
 
-terminate:;
+terminate:
+
+    return failed_test_result;
 }

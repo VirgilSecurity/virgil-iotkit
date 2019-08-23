@@ -39,7 +39,7 @@ uint16_t
 sdmp_tests(void);
 uint16_t
 prvs_tests(void);
-void
+uint16_t
 fldt_tests(void);
 
 uint16_t

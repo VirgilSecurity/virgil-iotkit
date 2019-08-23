@@ -46,7 +46,7 @@ typedef struct {
         uint16_t calls;
         struct {
             uint16_t server_curver : 1, server_header : 1, server_chunk : 1, server_footer : 1,
-            client_get_curver : 1, client_update : 1, client_info : 1, client_header : 1, client_chunk : 1, client_footer : 1;
+            client_get_curver : 1, client_update : 1, client_info : 1, client_header : 1, client_chunk : 1, client_footer : 1, client_mac : 1;
         };
     };
 } calls_t;
