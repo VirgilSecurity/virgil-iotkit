@@ -62,6 +62,7 @@ vs_fldt_file_type_descr(const vs_fldt_file_type_t *file_type) {
     case VS_FLDT_OTHER:
         return "Any file";
     default:
+        VS_LOG_ERROR("[FLDT] Unsupported file type : %d", file_type->file_type);
         VS_IOT_ASSERT(false && "Unsupported file type");
         return "";
     }

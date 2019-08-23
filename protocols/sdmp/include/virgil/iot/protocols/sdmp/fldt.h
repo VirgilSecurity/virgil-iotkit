@@ -41,8 +41,8 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#define FLDT_FILEVER_BUF (128) // buffer for vs_fldt_file_version_descr
-
+#define FLDT_FILEVER_BUF (128)         // buffer for vs_fldt_file_version_descr
+#define FLDT_ERR_CODE (-127)           // FLDT internal calls error
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
@@ -135,7 +135,17 @@ typedef struct __attribute__((__packed__)) {
     uint8_t footer_data[];
 } vs_fldt_gnff_footer_response_t;
 
-// Functions
+// Utilities
+
+#define FLDT_CHECK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                      \
+    do {                                                                                                               \
+        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL,                                                                    \
+                  FLDT_ERR_CODE,                                                                                       \
+                  "There is no " #CALLBACK " callback for file type \"%s\"",                                           \
+                  vs_fldt_file_type_descr(&(FILETYPEINFO)->file_type));                                                \
+        CHECK_RET((FILETYPEINFO)->CALLBACK ARGUMENTS == 0, FLDT_ERR_CODE, (DESCR), ##__VA_ARGS__)                      \
+    } while (0)
+
 static inline void
 vs_fldt_set_is_gateway(bool is_gateway) {
     vs_fldt_is_gateway = is_gateway;

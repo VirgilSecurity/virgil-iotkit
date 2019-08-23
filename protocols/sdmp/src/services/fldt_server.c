@@ -69,15 +69,13 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     file_type = &file_info_request->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    CHECK_RET(file_type_info->get_version,
-              -7,
-              "There is no get_version callback for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    VS_LOG_DEBUG("[FLDT:GFTI] Request for file type : %s", vs_fldt_file_type_descr(file_type));
 
-    CHECK_RET(!file_type_info->get_version(file_info_request, file_info_response),
-              -8,
-              "Unable to get last file version information for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    FLDT_CHECK(file_type_info,
+               get_version,
+               (file_info_request, file_info_response),
+               "Unable to get last file version information for file type \"%s\"",
+               vs_fldt_file_type_descr(file_type));
 
     VS_LOG_DEBUG("[FLDT:GFTI] Server file information : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &file_info_response->version));
@@ -118,21 +116,23 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     file_type = &file_ver->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    CHECK_RET(file_type_info->get_header,
-              -7,
-              "There is no get_header callback for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
+                 vs_fldt_file_version_descr(file_ver_descr, &header_request->version));
 
-    CHECK_RET(!file_type_info->get_header(header_request, response_buf_sz, header_response),
-              -8,
-              "Unable to get last file version information for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    FLDT_CHECK(file_type_info,
+               get_header,
+               (header_request, response_buf_sz, header_response),
+               "Unable to get last file version information for file type \"%s\"",
+               vs_fldt_file_type_descr(file_type));
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
 
     VS_LOG_DEBUG("[FLDT:GNFH] Header request for file %s. Header : %d bytes, chunks : %d x %d bytes, footer : %d bytes",
                  vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 header_response->header_size, header_response->chunks_amount, header_response->chunk_size, header_response->footer_size);
+                 header_response->header_size,
+                 header_response->chunks_amount,
+                 header_response->chunk_size,
+                 header_response->footer_size);
 
     return 0;
 }
@@ -171,15 +171,11 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
                  chunk_request->chunk_id,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    CHECK_RET(file_type_info->get_chunk,
-              -7,
-              "There is no get_chunk callback for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
-
-    CHECK_RET(!file_type_info->get_chunk(chunk_request, response_buf_sz, chunk_response),
-              -8,
-              "Unable to get last file version information for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    FLDT_CHECK(file_type_info,
+               get_chunk,
+               (chunk_request, response_buf_sz, chunk_response),
+               "Unable to get last file version information for file type \"%s\"",
+               vs_fldt_file_type_descr(file_type));
 
     *response_sz = sizeof(vs_fldt_gnfc_chunk_response_t) + chunk_response->chunk_size;
 
@@ -219,15 +215,11 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
 
     VS_LOG_DEBUG("[FLDT:GNFF] Footer request for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    CHECK_RET(file_type_info->get_footer,
-              -7,
-              "There is no get_footer callback for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
-
-    CHECK_RET(!file_type_info->get_footer(footer_request, response_buf_sz, footer_response),
-              -8,
-              "Unable to get last file version information for file type \"%s\"",
-              vs_fldt_file_type_descr(file_type));
+    FLDT_CHECK(file_type_info,
+               get_footer,
+               (footer_request, response_buf_sz, footer_response),
+               "Unable to get last file version information for file type \"%s\"",
+               vs_fldt_file_type_descr(file_type));
 
     *response_sz = sizeof(vs_fldt_gnff_footer_response_t) + footer_response->footer_size;
 
@@ -258,7 +250,8 @@ int
 vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
     char filever_descr[FLDT_FILEVER_BUF];
 
-    VS_LOG_DEBUG("*** [FLDT] Broadcast new file version present for file %s",
+
+    VS_LOG_DEBUG("[FLDT] Broadcast new file version present for file %s",
                  vs_fldt_file_version_descr(filever_descr, &new_file->version));
 
     CHECK_NOT_ZERO_RET(new_file, -1);
