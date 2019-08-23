@@ -4,8 +4,9 @@
 #include <virgil/iot/tests/tests.h>
 #include <virgil/iot/tests/helpers.h>
 
-#include "stdlib-config.h"
-#include "trust_list-config.h"
+#include <stdlib-config.h>
+#include <endian-config.h>
+#include <trust_list-config.h>
 #include <global-hal.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
@@ -45,17 +46,23 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     uint16_t i;
     vs_sign_t *element;
     test_footer_sz = sizeof(vs_tl_footer_t);
+    uint16_t pub_keys_count;
+    uint8_t signatures_count;
 
     test_header = (vs_tl_header_t *)data;
     test_header_sz = sizeof(vs_tl_header_t);
 
+    // Use values in host endian
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
+    signatures_count = test_header->signatures_count;
+
     uint8_t *ptr = (uint8_t *)data + sizeof(vs_tl_header_t);
 
-    test_tl_keys = (test_tl_keys_info_t *)VS_IOT_CALLOC(test_header->pub_keys_count, sizeof(test_tl_keys_info_t));
+    test_tl_keys = (test_tl_keys_info_t *)VS_IOT_CALLOC(pub_keys_count, sizeof(test_tl_keys_info_t));
 
     BOOL_CHECK_RET(NULL != test_tl_keys, "Allocate memory error")
 
-    for (i = 0; i < test_header->pub_keys_count; ++i) {
+    for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
         key_len = vs_hsm_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
 
@@ -73,7 +80,7 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
 
     element = (vs_sign_t *)(test_footer->signatures);
 
-    for (i = 0; i < test_header->signatures_count; ++i) {
+    for (i = 0; i < signatures_count; ++i) {
         test_footer_sz += sizeof(vs_sign_t);
 
         sign_len = vs_hsm_get_signature_len(element->ec_type);
@@ -198,8 +205,11 @@ _test_tl_header_read_pass() {
 static bool
 _test_tl_keys_save_pass() {
     uint16_t i;
+    uint16_t pub_keys_count;
 
-    for (i = 0; i < test_header->pub_keys_count; ++i) {
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
+
+    for (i = 0; i < pub_keys_count; ++i) {
         BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                        "Error write tl key %u",
                        i)
@@ -211,19 +221,22 @@ _test_tl_keys_save_pass() {
 static bool
 _tl_keys_save_wrong_order() {
     uint16_t i;
+    uint16_t pub_keys_count;
 
-    if (test_header->pub_keys_count > 2) {
-        for (i = 0; i < test_header->pub_keys_count - 2; ++i) {
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
+
+    if (pub_keys_count > 2) {
+        for (i = 0; i < pub_keys_count - 2; ++i) {
             BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                            "Error write tl key %u",
                            i)
         }
     }
-    i = test_header->pub_keys_count - 1;
+    i = pub_keys_count - 1;
     BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                    "Error write tl key %u",
                    i)
-    i = test_header->pub_keys_count - 2;
+    i = pub_keys_count - 2;
     BOOL_CHECK_RET(VS_TL_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                    "Error write tl key %u",
                    i)
@@ -236,8 +249,11 @@ _test_tl_keys_read_pass() {
     size_t i;
     uint8_t readed_key[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t readed_bytes;
+    uint16_t pub_keys_count;
 
-    for (i = 0; i < test_header->pub_keys_count; ++i) {
+    pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
+
+    for (i = 0; i < pub_keys_count; ++i) {
 
         BOOL_CHECK_RET(VS_TL_OK == _load_tl_part(VS_TL_ELEMENT_TLC, i, readed_key, sizeof(readed_key), &readed_bytes) &&
                                test_tl_keys[i].size == readed_bytes,

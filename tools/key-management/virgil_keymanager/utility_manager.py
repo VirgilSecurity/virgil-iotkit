@@ -1049,7 +1049,7 @@ class UtilityManager(object):
             trust_list_file.seek(6)
             pub_keys_count = int.from_bytes(
                 trust_list_file.read(2),
-                byteorder='little',
+                byteorder='big',
                 signed=False
             )
             self.__logger.debug("Finded TrustList have {} key(s)".format(pub_keys_count))
@@ -1063,8 +1063,8 @@ class UtilityManager(object):
             while pub_keys_count > 0:
                 key_data = trust_list_file.read(96)
                 self.__logger.debug("Data bytearray size: {}".format(len(key_data)))
-                key_type_int = int.from_bytes(key_data[66:68], byteorder='little', signed=False)
-                key_id = int.from_bytes(key_data[64:66], byteorder='little', signed=False)
+                key_type_int = int.from_bytes(key_data[66:68], byteorder='big', signed=False)
+                key_id = int.from_bytes(key_data[64:66], byteorder='big', signed=False)
                 key_type_name = key_type_names[key_type_int]
                 key_bytes_base64 = base64.b64encode(bytes(key_data[:64])).decode()
                 if key_type_int not in list(key_type_names.keys()) or self.__trust_list_pub_keys.get_value(key_id):

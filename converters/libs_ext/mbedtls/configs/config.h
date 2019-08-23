@@ -35,7 +35,7 @@
  * \{
  */
 
-#define MBEDTLS_HAVE_ASM
+//#define MBEDTLS_HAVE_ASM
 
 #define MBEDTLS_KDF_C
 #define MBEDTLS_KDF2_C
@@ -107,7 +107,7 @@
 
 #define MBEDTLS_VERSION_FEATURES
 
-#define MBEDTLS_AESNI_C
+//#define MBEDTLS_AESNI_C
 
 #define MBEDTLS_AES_C
 #define MBEDTLS_ASN1_PARSE_C
@@ -129,7 +129,7 @@
 #define MBEDTLS_MD5_C
 
 #define MBEDTLS_OID_C
-#define MBEDTLS_PADLOCK_C
+//#define MBEDTLS_PADLOCK_C
 
 #define MBEDTLS_PK_C
 #define MBEDTLS_PK_PARSE_C

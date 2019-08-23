@@ -174,14 +174,26 @@ func (p *DeviceProcessor) SetTrustList() error {
     }
     var binBuf bytes.Buffer
 
+    mac := p.deviceInfo.mac_addr
+
     // Set TL header
-    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Header); err != nil {
+    fmt.Println("Upload TrustList Header")
+
+    if err := binary.Write(&binBuf, binary.BigEndian, trustList.Header); err != nil {
         return fmt.Errorf("failed to write TrustList header to buffer")
     }
 
-    if err := p.uploadData(C.VS_PRVS_TLH, binBuf.Bytes(), "TrustList Header"); err != nil {
-        return err
+    headerBytes := binBuf.Bytes()
+    headerPtr := (*C.uchar)(unsafe.Pointer(&headerBytes[0]))
+
+    if 0 != C.vs_sdmp_prvs_set_tl_header(nil,
+                                         &mac,
+                                         headerPtr,
+                                         C.uint16_t(len(headerBytes)),
+                                         DEFAULT_TIMEOUT_MS) {
+        return fmt.Errorf("failed to set TrustList header")
     }
+
 
     // Set TL chunks
     for index, chunk := range trustList.TlChunks {
@@ -197,7 +209,7 @@ func (p *DeviceProcessor) SetTrustList() error {
 
     // Set TL Footer
     binBuf.Reset()  // reset buffer
-    if err := binary.Write(&binBuf, binary.LittleEndian, trustList.Footer.TLType); err != nil {
+    if err := binary.Write(&binBuf, binary.BigEndian, trustList.Footer.TLType); err != nil {
         return fmt.Errorf("failed to write TrustList footer tl_type to buffer")
     }
     for index, signature := range trustList.Footer.Signatures {
@@ -211,11 +223,11 @@ func (p *DeviceProcessor) SetTrustList() error {
     }
 
     fmt.Println("Upload TrustList Footer")
-    mac := p.deviceInfo.mac_addr
+
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
 
-    if 0 != C.vs_sdmp_prvs_finalize_tl(nil,
+    if 0 != C.vs_sdmp_prvs_set_tl_footer(nil,
                                        &mac,
                                        dataPtr,
                                        C.uint16_t(len(footerBytes)),

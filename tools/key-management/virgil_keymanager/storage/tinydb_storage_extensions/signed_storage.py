@@ -101,7 +101,7 @@ class SignedByteStorage(Storage):
             if self._get_file_size():
                 self._handle.seek(0)
                 raw_signer_id = self._handle.read(2)
-                signer_id = int.from_bytes(raw_signer_id, byteorder='little', signed=False)
+                signer_id = int.from_bytes(raw_signer_id, byteorder='big', signed=False)
             if signer_id != 0:
                 for key in self._auth:
                     auth_pub_key = self._a_check(self._atmel.get_public_key(key))
@@ -122,7 +122,7 @@ class SignedByteStorage(Storage):
             signature = bytearray(64)
         else:
             self._ui.print_error("Can't sign by Auth Key")
-        signer_id = signer_id.to_bytes(2, byteorder='little', signed=False)
+        signer_id = signer_id.to_bytes(2, byteorder='big', signed=False)
         return serialized, signer_id, signature
 
     def _sign_on_dongle(self, data, device_serial):
@@ -131,7 +131,7 @@ class SignedByteStorage(Storage):
         return self._a_check(self._atmel.sign_by_device(base64.b64encode(data).decode(), device_serial=device_serial))
 
     def _verify(self, data, signer_id, signature_bytes):
-        signer_id = int.from_bytes(signer_id, byteorder='little', signed=False)
+        signer_id = int.from_bytes(signer_id, byteorder='big', signed=False)
         self._plugged_dongles()
 
         base64_data = base64.b64encode(bytes(data)).decode()

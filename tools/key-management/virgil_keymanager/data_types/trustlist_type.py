@@ -28,10 +28,10 @@ class Header:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._whole_tl_size.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self._version.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self._pub_keys_count.to_bytes(2, byteorder='little', signed=False))
-            byte_buffer.write(self._signatures_count.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._whole_tl_size.to_bytes(4, byteorder='big', signed=False))
+            byte_buffer.write(self._version.to_bytes(2, byteorder='big', signed=False))
+            byte_buffer.write(self._pub_keys_count.to_bytes(2, byteorder='big', signed=False))
+            byte_buffer.write(self._signatures_count.to_bytes(1, byteorder='big', signed=False))
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes
 
@@ -61,9 +61,9 @@ class Signature:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._signer_type.to_bytes(1, byteorder='little', signed=False))
-            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='little', signed=False))
-            byte_buffer.write(self._hash_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._signer_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._hash_type.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(self._sign)
             byte_buffer.write(self._signer_pub_key)
             self.__bytes = byte_buffer.getvalue()
@@ -89,7 +89,7 @@ class Footer:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self.tl_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self.tl_type.to_bytes(1, byteorder='big', signed=False))
             for signature in self.signatures:
                 byte_buffer.write(bytes(signature))
             self.__bytes = byte_buffer.getvalue()
@@ -121,10 +121,10 @@ class PubKeyStructure:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._start_date.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self._expiration_date.to_bytes(4, byteorder='little', signed=False))
-            byte_buffer.write(self._key_type.to_bytes(1, byteorder='little', signed=False))
-            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='little', signed=False))
+            byte_buffer.write(self._start_date.to_bytes(4, byteorder='big', signed=False))
+            byte_buffer.write(self._expiration_date.to_bytes(4, byteorder='big', signed=False))
+            byte_buffer.write(self._key_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(self._pub_key)
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes
@@ -231,7 +231,7 @@ class TrustList:
             signatures = []
 
             # Data to sign: header + body + tl_type from footer
-            tl_type_bytes = self._tl_type.to_bytes(1, byteorder='little', signed=False)
+            tl_type_bytes = self._tl_type.to_bytes(1, byteorder='big', signed=False)
             data_to_sign = to_b64(bytes(self.header) + bytes(self.body) + tl_type_bytes)
 
             for key in self._signer_keys:
