@@ -241,18 +241,9 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     sizeof(pre_master_key),
                                     master_key,
                                     sizeof(master_key)) ||
-        VS_HSM_ERR_OK != vs_hsm_aes_encrypt(VS_AES_CBC,
-                                            master_key,
-                                            32 * 8,
-                                            iv_key,
-                                            16,
-                                            NULL,
-                                            0,
-                                            32,
-                                            shared_key,
-                                            encrypted_key,
-                                            NULL,
-                                            0) ||
+        VS_HSM_ERR_OK !=
+                vs_hsm_aes_encrypt(
+                        VS_AES_CBC, master_key, 32 * 8, iv_key, 16, NULL, 0, 32, shared_key, encrypted_key, NULL, 0) ||
         VS_HSM_ERR_OK != vs_hsm_hmac(VS_HASH_SHA_384,
                                      master_key + 32,
                                      sizeof(master_key) - 32,

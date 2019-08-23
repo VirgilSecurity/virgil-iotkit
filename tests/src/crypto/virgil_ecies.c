@@ -61,14 +61,14 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
     uint8_t decrypted_data[128];
     size_t decrypted_data_sz;
 
-    size_t test_data_sz = strlen((char *)data) + 1;
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
-                                                            recipient_id_sz,
-                                                            (uint8_t *)data,
-                                                            data_sz,
-                                                            encrypted_data,
+    BOOL_CHECK_RET(VS_HSM_ERR_OK != vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
+                                                                        recipient_id_sz,
+                                                                        (uint8_t *)data,
                                                                         data_sz,
-                                                            &encrypted_data_sz),"Success call with small output buffer")
+                                                                        encrypted_data,
+                                                                        data_sz,
+                                                                        &encrypted_data_sz),
+                   "Success call with small output buffer")
 
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
                                                                         recipient_id_sz,
@@ -87,7 +87,7 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
                                                                         sizeof(decrypted_data),
                                                                         &decrypted_data_sz),
                    "Error decrypt data")
-    return decrypted_data_sz == test_data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
+    return decrypted_data_sz == data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
 }
 
 /**********************************************************/
