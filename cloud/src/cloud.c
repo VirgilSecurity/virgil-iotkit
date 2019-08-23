@@ -107,10 +107,10 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                      &crypto_answer_b64_len);
         size_t decrypted_data_sz;
 
-        if (VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256((uint8_t *)crypto_answer_b64,
-                                                                 (size_t)crypto_answer_b64_len,
-                                                                 NULL,
+        if (VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256(NULL,
                                                                  0,
+                                                                 (uint8_t *)crypto_answer_b64,
+                                                                 (size_t)crypto_answer_b64_len,
                                                                  (uint8_t *)out_answer,
                                                                  buf_size,
                                                                  &decrypted_data_sz) ||
