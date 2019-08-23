@@ -64,24 +64,24 @@ test_aes_cbc_cases() {
     uint8_t iv_tmp[iv_sz];
     int res;
 
-    memcpy(iv_tmp, iv, iv_sz);
+    VS_IOT_MEMCPY(iv_tmp, iv, iv_sz);
 
     res = vs_hsm_aes_encrypt(VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, data_sz, source, crypted, NULL, 0);
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC encrypt is not implemented");
 
-    MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source))
     VS_HSM_CHECK_RET(res, "Unable to encrypt data")
+    MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source))
 
-    memcpy(iv_tmp, iv, iv_sz);
+    VS_IOT_MEMCPY(iv_tmp, iv, iv_sz);
 
     res = vs_hsm_aes_decrypt(
             VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, sizeof(crypted), crypted, decrypted, NULL, 0);
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
 
-    MEMCMP_CHECK_RET(source, decrypted, data_sz)
     VS_HSM_CHECK_RET(res, "Unable to decrypt with authentication")
+    MEMCMP_CHECK_RET(source, decrypted, data_sz)
 
     return true;
 }
