@@ -107,7 +107,6 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 /******************************************************************/
 int
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-
     const vs_fldt_gfti_fileinfo_response_t *file_info = (const vs_fldt_gfti_fileinfo_response_t *)response;
     const vs_fldt_file_version_t *file_ver = NULL;
     const vs_fldt_file_type_t *file_type = NULL;
@@ -157,12 +156,13 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     file_type = &file_ver->file_type;
     file_type_info = &_client_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Response for file %s. Header : %d bytes, chunks : %d x %d bytes, footer : %d bytes",
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 header->header_size,
-                 header->chunks_amount,
-                 header->chunk_size,
-                 header->footer_size);
+    VS_LOG_DEBUG(
+            "[FLDT:GNFH] Response for file %s. Header : %d bytes data, chunks : %d x %d bytes, footer : %d bytes data",
+            vs_fldt_file_version_descr(file_ver_descr, file_ver),
+            header->header_size,
+            header->chunks_amount,
+            header->chunk_size,
+            header->footer_size);
 
     FLDT_CHECK(file_type_info,
                get_header,
@@ -286,7 +286,7 @@ int
 vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request) {
     char file_type_descr[FLDT_FILEVER_BUF];
 
-    VS_LOG_DEBUG("[FLDT] Ask file header for file type %s",
+    VS_LOG_DEBUG("[FLDT] Ask file header for file version %s",
                  vs_fldt_file_version_descr(file_type_descr, &header_request->version));
 
     CHECK_NOT_ZERO_RET(mac, -1);

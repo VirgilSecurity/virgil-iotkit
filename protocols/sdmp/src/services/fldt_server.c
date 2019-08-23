@@ -127,7 +127,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Header request for file %s. Header : %d bytes, chunks : %d x %d bytes, footer : %d bytes",
+    VS_LOG_DEBUG("[FLDT:GNFH] Header : %d bytes data, chunks : %d x %d bytes, footer : %d bytes data",
                  vs_fldt_file_version_descr(file_ver_descr, file_ver),
                  header_response->header_size,
                  header_response->chunks_amount,
@@ -167,7 +167,7 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
     file_type = &file_ver->file_type;
     file_type_info = &_server_file_type_mapping[file_type->file_type];
 
-    VS_LOG_DEBUG("[FLDT:GNFC] Chunk %d request for file %s",
+    VS_LOG_DEBUG("[FLDT:GNFC] Request for chunk %d for file %s",
                  chunk_request->chunk_id,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
