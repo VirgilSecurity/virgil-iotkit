@@ -449,10 +449,11 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               const uint8_t *public_key,
                                               size_t public_key_sz,
                                               uint8_t *cryptogram,
+                                              size_t cryptogram_buf_sz,
                                               size_t *cryptogram_sz) {
 
-    uint8_t buf[ANS1_BUF_SIZE];
-    int pos = ANS1_BUF_SIZE;
+    uint8_t *buf = cryptogram;
+    int pos = cryptogram_buf_sz;
     size_t total_sz = 0, pkcs7_data_sz = 0, el_sz;
 
     CHECK_NOT_ZERO(recipient_id, VS_HSM_ERR_INVAL);
@@ -564,11 +565,8 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
         return VS_HSM_ERR_FAIL;
 
-    if (*cryptogram_sz < total_sz)
-        return VS_HSM_ERR_FAIL;
-
     *cryptogram_sz = total_sz + encrypted_data_sz;
-    VS_IOT_MEMCPY(cryptogram, &buf[pos], *cryptogram_sz);
+    VS_IOT_MEMMOVE(cryptogram, &buf[pos], *cryptogram_sz);
 
     return VS_HSM_ERR_OK;
 }

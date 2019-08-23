@@ -63,6 +63,14 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
 
     size_t test_data_sz = strlen((char *)data) + 1;
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
+                                                            recipient_id_sz,
+                                                            (uint8_t *)data,
+                                                            data_sz,
+                                                            encrypted_data,
+                                                                        data_sz,
+                                                            &encrypted_data_sz),"Success call with small output buffer")
+
+    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
                                                                         recipient_id_sz,
                                                                         (uint8_t *)data,
                                                                         data_sz,

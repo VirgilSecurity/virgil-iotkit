@@ -292,5 +292,6 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                                          virgil_public_key,
                                                          virgil_public_key_sz,
                                                          cryptogram,
+                                                         buf_sz,
                                                          cryptogram_sz);
 }

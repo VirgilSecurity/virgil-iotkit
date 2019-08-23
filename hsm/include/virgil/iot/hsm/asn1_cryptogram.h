@@ -66,6 +66,7 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               const uint8_t *public_key,
                                               size_t public_key_sz,
                                               uint8_t *cryptogram,
+                                              size_t cryptogram_buf_sz,
                                               size_t *cryptogram_sz);
 #ifdef __cplusplus
 }
