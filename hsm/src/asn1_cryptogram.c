@@ -40,8 +40,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/hsm/hsm_errors.h>
 
-#define ANS1_BUF_SIZE 1024
-
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
 #define INTEGER 0x02
