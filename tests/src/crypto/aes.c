@@ -80,7 +80,7 @@ test_aes_cbc_cases() {
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
 
-    VS_HSM_CHECK_RET(res, "Unable to decrypt with authentication")
+    VS_HSM_CHECK_RET(res, "Unable to decrypt")
     MEMCMP_CHECK_RET(source, decrypted, data_sz)
 
     return true;
