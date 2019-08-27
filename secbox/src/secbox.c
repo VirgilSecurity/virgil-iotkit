@@ -36,6 +36,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     uint8_t *data_load = NULL;
     size_t data_load_sz;
     uint8_t type;
+    int res;
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
@@ -46,9 +47,10 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     CHECK_NOT_ZERO(ctx->impl.load, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
 
-    int res = ctx->impl.size(ctx->storage_ctx, id);
+    int file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
-    CHECK_RET(0 < res, res, "Can't find file")
+    CHECK_RET(0 < file_sz, file_sz, "File not found")
+    CHECK_RET(file_sz > sign_sz + 1, VS_STORAGE_ERROR_GENERAL, "File format error")
 
     f = ctx->impl.open(ctx->storage_ctx, id);
     CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
@@ -56,22 +58,22 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     //read data type
     res = ctx->impl.load(ctx->storage_ctx, f, 0, &type, 1);
     if (VS_STORAGE_OK != res) {
-        res = -1;
+        file_sz = VS_STORAGE_ERROR_READ;
         VS_LOG_ERROR("Can't load data type from file");
         goto terminate;
     }
 
     switch (type) {
     case VS_SECBOX_SIGNED_AND_ENCRYPTED:
-        data_load = VS_IOT_MALLOC(res - sign_sz);
+        data_load = VS_IOT_MALLOC(file_sz - sign_sz - 1);
         if (NULL == data_load) {
-            res = -1;
+            file_sz = VS_STORAGE_ERROR_READ;
             goto terminate;
         }
 
         res = ctx->impl.load(ctx->storage_ctx, f, 1, data_load, res - sign_sz);
         if (VS_STORAGE_OK != res) {
-            res = -1;
+            file_sz = VS_STORAGE_ERROR_READ;
             VS_LOG_ERROR("Can't load data from file");
             VS_IOT_FREE(data_load);
             goto terminate;
@@ -85,26 +87,26 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
                                                                  res - sign_sz,
                                                                  &data_load_sz)) {
             VS_IOT_FREE(data_load);
-            res = -1;
+            file_sz = VS_STORAGE_ERROR_READ;
             goto terminate;
         }
 
         VS_IOT_FREE(data_load);
-        res = data_load_sz;
+        file_sz = data_load_sz;
 
         break;
     case VS_SECBOX_SIGNED:
-        res = res - sign_sz;
+        file_sz -= (sign_sz + 1);
         break;
     default:
-        return -1;
+        return VS_STORAGE_ERROR_READ;
     }
 
 terminate:
     if (f) {
         ctx->impl.close(ctx->storage_ctx, f);
     }
-    return res;
+    return file_sz;
 }
 
 /******************************************************************************/
@@ -200,13 +202,13 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
         goto terminate;
     }
 
-    res = ctx->impl.save(ctx->storage_ctx, f, 0, data_to_save, data_to_save_sz);
+    res = ctx->impl.save(ctx->storage_ctx, f, 1, data_to_save, data_to_save_sz);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't save data to file");
         goto terminate;
     }
 
-    res = ctx->impl.save(ctx->storage_ctx, f, data_to_save_sz, sign, sign_sz);
+    res = ctx->impl.save(ctx->storage_ctx, f, data_to_save_sz + 1, sign, sign_sz);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't save sign to file");
         goto terminate;
@@ -272,7 +274,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
 
     switch (type) {
     case VS_SECBOX_SIGNED_AND_ENCRYPTED:
-        data_load = VS_IOT_MALLOC(file_sz - sign_sz);
+        data_load = VS_IOT_MALLOC(file_sz - sign_sz - 1);
         if (NULL == data_load) {
             res = VS_STORAGE_ERROR_GENERAL;
             goto terminate;
@@ -307,14 +309,14 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
         data_load = data;
         break;
     case VS_SECBOX_SIGNED:
+        data_load_sz = file_sz - sign_sz - 1;
 
-        if(data_sz != file_sz - sign_sz) {
+        if(data_sz != data_load_sz) {
             VS_LOG_ERROR("Can't read requested data quantity");
             goto terminate;
         }
 
         data_load = (uint8_t *)data;
-        data_load_sz = file_sz - sign_sz;
         res = ctx->impl.load(ctx->storage_ctx, f, 1, data_load, data_load_sz);
         if (VS_STORAGE_OK != res) {
             VS_LOG_ERROR("Can't load data from file");
@@ -327,12 +329,11 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     }
 
     //check signature
-
     vs_hsm_sw_sha256_update(&hash_ctx, &type, 1);
     vs_hsm_sw_sha256_update(&hash_ctx, data_load, data_load_sz);
     vs_hsm_sw_sha256_final(&hash_ctx, hash);
 
-    res = ctx->impl.load(ctx->storage_ctx, f, data_load_sz, sign, sign_sz);
+    res = ctx->impl.load(ctx->storage_ctx, f, data_load_sz + 1, sign, sign_sz);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't load signature from file");
         ctx->impl.close(ctx->storage_ctx, f);
@@ -340,7 +341,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     }
 
     if ( VS_HSM_ERR_OK != vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type) ||
-            VS_HSM_ERR_OK != vs_hsm_ecdsa_verify(VS_KEYPAIR_EC_SECP256R1, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz)) {
+            VS_HSM_ERR_OK != vs_hsm_ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz)) {
         res = VS_STORAGE_ERROR_READ;
         goto terminate;
     }
