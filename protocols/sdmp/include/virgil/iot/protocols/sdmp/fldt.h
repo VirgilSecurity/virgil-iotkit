@@ -39,6 +39,7 @@
 extern "C" {
 #endif
 
+#include <fldt-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 #define FLDT_FILEVER_BUF (128)         // buffer for vs_fldt_file_version_descr
@@ -48,11 +49,8 @@ extern "C" {
 
 bool vs_fldt_is_gateway;
 
-// File type
-enum vs_fldt_file_type { VS_FLDT_FIRMWARE = 0, VS_FLDT_TRUSTLIST, VS_FLDT_OTHER, VS_FLDT_FILETYPES_AMOUNT };
-
 typedef struct __attribute__((__packed__)) {
-    uint8_t file_type; // = enum vs_fldt_file_type
+    vs_fldt_file_type_id_t file_type_id;
     uint8_t add_info[FLDT_FILE_TYPE_ADD_INFO_SZ];
 } vs_fldt_file_type_t;
 
@@ -142,7 +140,7 @@ typedef struct __attribute__((__packed__)) {
         CHECK_RET((FILETYPEINFO)->CALLBACK != NULL,                                                                    \
                   FLDT_ERR_CODE,                                                                                       \
                   "There is no " #CALLBACK " callback for file type \"%s\"",                                           \
-                  vs_fldt_file_type_descr(&(FILETYPEINFO)->file_type));                                                \
+                  vs_fldt_file_type_descr((FILETYPEINFO)->file_type.file_type_id));                                    \
         CHECK_RET((FILETYPEINFO)->CALLBACK ARGUMENTS == 0, FLDT_ERR_CODE, (DESCR), ##__VA_ARGS__)                      \
     } while (0)
 
@@ -161,9 +159,6 @@ vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_fil
 
 bool
 vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver);
-
-const char *
-vs_fldt_file_type_descr(const vs_fldt_file_type_t *file_type);
 
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);

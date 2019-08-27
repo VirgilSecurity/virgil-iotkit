@@ -32,20 +32,39 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_H
-#define VIRGIL_IOT_SDK_TESTS_H
+#ifndef VIRGIL_IOT_SDK_PROTOCOL_FLDT_CONFIG_H
+#define VIRGIL_IOT_SDK_PROTOCOL_FLDT_CONFIG_H
 
-#include <stdbool.h>
-#include <fldt-config.h>
-#include <virgil/iot/secbox/secbox.h>
+/*
+ * vs_fldt_file_type_id_t
+ * File type identification. Used to separate different file type to be loaded
+ * by gateway for each device and to be upgrade by each client.
+ * In most cases used as value, not as pointer.
+ * Each file type has it own callbacks.
+ */
 
-uint16_t
-vs_tests_checks(bool print_start_finish_tests,  // print [TESTS-BEGIN] and [TESTS-END] or not
-        vs_fldt_file_type_id_t elem1,       // some FLDT file type 1
-        vs_fldt_file_type_id_t elem2,       // some FLDT file type 2
-        vs_fldt_file_type_id_t elem3);      // some FLDT file type 3
+typedef enum { VS_FLDT_FIRMWARE = 0, VS_FLDT_TRUSTLIST, VS_FLDT_OTHER } vs_fldt_file_type_id_t;
 
-uint16_t
-vs_secbox_test(vs_storage_op_ctx_t *ctx);
+/*
+ * const char *vs_fldt_file_type_descr(const vs_fldt_file_type_id_t *file_type)
+ * File type description.
+ * Provides file type description returned as a pointer to the static ASCIIZ string.
+ */
 
-#endif // VIRGIL_IOT_SDK_TESTS_H
+#include <stdlib-config.h>
+#include <virgil/iot/logger/logger.h>
+
+static inline const char *
+vs_fldt_file_type_descr(vs_fldt_file_type_id_t file_type){
+    switch(*file_type){
+        case VS_FLDT_FIRMWARE : return "firmware";
+        case VS_FLDT_TRUSTLIST : return "trust list";
+        case VS_FLDT_OTHER : return "other type";
+        default:
+            VS_IOT_ASSERT(0 && "Unsupported file type");
+            VS_LOG_ERROR("[FLDT] Unsupported file type %d", (int) *file_type);
+            return "";
+    }
+}
+
+#endif //VIRGIL_IOT_SDK_PROTOCOL_FLDT_CONFIG_H

@@ -51,23 +51,6 @@ const vs_netif_t *vs_fldt_netif = NULL;
 const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
 bool vs_fldt_is_gateway;
 
-/******************************************************************/
-const char *
-vs_fldt_file_type_descr(const vs_fldt_file_type_t *file_type) {
-    switch (file_type->file_type) {
-    case VS_FLDT_FIRMWARE:
-        return "Firmware file";
-    case VS_FLDT_TRUSTLIST:
-        return "Trust list file";
-    case VS_FLDT_OTHER:
-        return "Any file";
-    default:
-        VS_LOG_ERROR("[FLDT] Unsupported file type : %d", file_type->file_type);
-        VS_IOT_ASSERT(false && "Unsupported file type");
-        return "";
-    }
-}
-
 /******************************************************************************/
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
@@ -78,7 +61,7 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
 
     VS_IOT_SPRINTF(buf,
                    "File type \"%s\", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
-                   vs_fldt_file_type_descr(&file_ver->file_type),
+                   vs_fldt_file_type_descr(file_ver->file_type.file_type_id),
                    file_ver->major,
                    file_ver->minor,
                    file_ver->patch,

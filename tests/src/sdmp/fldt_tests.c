@@ -42,7 +42,7 @@
 static vs_netif_t test_netif;
 static const vs_mac_addr_t mac_addr_server = {.bytes = {0xF2, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6}};
 static const vs_mac_addr_t mac_addr_client = {.bytes = {0x12, 0x12, 0x13, 0x14, 0x15, 0x16}};
-vs_fldt_file_version_t new_firmware_file = {
+vs_fldt_file_version_t filetype1 = {
         .major = 1,
         .minor = 2,
         .patch = 3,
@@ -50,7 +50,7 @@ vs_fldt_file_version_t new_firmware_file = {
         .dev_build = 5,
         .timestamp = 6
 };
-vs_fldt_file_version_t new_trustlist_file = {
+vs_fldt_file_version_t filetype2 = {
         .major = 1,
         .minor = 2,
         .patch = 3,
@@ -58,7 +58,7 @@ vs_fldt_file_version_t new_trustlist_file = {
         .dev_build = 5,
         .timestamp = 6
 };
-vs_fldt_file_version_t new_other_file = {
+vs_fldt_file_version_t filetype3 = {
         .major = 1,
         .minor = 2,
         .patch = 3,
@@ -126,13 +126,13 @@ test_INFV(void){
     uint8_t prev_file_type;
     vs_log_level_t prev_loglev;
 
-    new_file_request.version = new_firmware_file;
+    new_file_request.version = filetype1;
 
-    to_set_client_curver = new_firmware_file;
+    to_set_client_curver = filetype1;
     to_set_client_curver.major = 0;
     to_set_client_curver.dev_build = 0;
 
-    to_set_server_curver.version = new_firmware_file;
+    to_set_server_curver.version = filetype1;
     to_set_server_curver.version.major = 1;
     to_set_server_curver.version.dev_build = 1;
     to_set_server_curver.version.timestamp = 145;
@@ -142,20 +142,20 @@ test_INFV(void){
     FLDT_CHECK_GOTO(vs_fldt_broadcast_new_file(&new_file_request), "Unable to send request");
     BOOL_CHECK_RET(calls.client_get_curver && calls.client_update && calls.client_mac, "Not all callbacks have been called");
 
-    to_set_client_curver = new_firmware_file;
+    to_set_client_curver = filetype1;
 
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_broadcast_new_file(&new_file_request), "Unable to send request");
     BOOL_CHECK_RET(calls.client_get_curver && !calls.client_update, "Incorrect callbacks have been called for not needed file type");
 
-    prev_file_type = new_file_request.version.file_type.file_type;
-    new_file_request.version.file_type.file_type = VS_FLDT_OTHER;
+    prev_file_type = new_file_request.version.file_type.file_type_id;
+    new_file_request.version.file_type.file_type_id = VS_FLDT_OTHER;
 
     calls.calls = 0;
     FLDT_CHECK_GOTO_HIDE_ERROR(vs_fldt_broadcast_new_file(&new_file_request), "Incorrect send request for non registered file type processing");
     BOOL_CHECK_RET(!calls.calls, "Incorrect callbacks have been called for non registered file type");
 
-    new_file_request.version.file_type.file_type = prev_file_type;
+    new_file_request.version.file_type.file_type_id = prev_file_type;
 
     return true;
 
@@ -167,19 +167,19 @@ test_INFV(void){
 /**********************************************************/
 // GFTI : Get File Type Information
 static bool
-test_GFTI(void){
+test_GFTI(vs_fldt_file_type_id_t elem){
 
     vs_fldt_gfti_fileinfo_request_t fileinfo_request;
     vs_log_level_t prev_loglev;
 
-    fileinfo_request.file_type = new_trustlist_file.file_type;
+    fileinfo_request.file_type = filetype2.file_type;
     vs_fldt_set_is_gateway(true);
 
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&fileinfo_request), "Unable to send request");
     BOOL_CHECK_RET(calls.server_curver && calls.client_info, "Not all callbacks have been called");
 
-    fileinfo_request.file_type.file_type = VS_FLDT_OTHER;
+    fileinfo_request.file_type.file_type_id = elem;
     calls.calls = 0;
     FLDT_CHECK_GOTO_HIDE_ERROR(vs_fldt_ask_file_type_info(&fileinfo_request), "Incorrect send request for non registered file type processing");
     BOOL_CHECK_RET(!calls.calls, "Incorrect calls were made");
@@ -194,24 +194,24 @@ test_GFTI(void){
 /**********************************************************/
 // GNFH : Get New File Header
 static bool
-test_GNFH(void){
+test_GNFH(vs_fldt_file_type_id_t elem){
 
     vs_fldt_gnfh_header_request_t request;
     vs_log_level_t prev_loglev;
     uint8_t prev_file_type;
 
-    request.version.file_type = new_firmware_file.file_type;
-    to_set_server_curver.version = new_firmware_file;
-    VS_IOT_MEMCPY(&request.version, &new_trustlist_file, sizeof(new_trustlist_file));
+    request.version.file_type = filetype1.file_type;
+    to_set_server_curver.version = filetype1;
+    VS_IOT_MEMCPY(&request.version, &filetype2, sizeof(filetype2));
 
-    prev_file_type = request.version.file_type.file_type;
-    request.version.file_type.file_type = VS_FLDT_OTHER;
+    prev_file_type = request.version.file_type.file_type_id;
+    request.version.file_type.file_type_id = elem;
 
     calls.calls = 0;
     FLDT_CHECK_GOTO_HIDE_ERROR(vs_fldt_ask_file_header(&mac_addr_server, &request), "Incorrect unsupported file type processing");
     BOOL_CHECK_RET(!calls.calls, "Incorrect calls were made");
 
-    request.version.file_type.file_type = prev_file_type;
+    request.version.file_type.file_type_id = prev_file_type;
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_ask_file_header(&mac_addr_server, &request), "Unable to send request");
     BOOL_CHECK_RET(calls.server_header && calls.client_header, "Not all callbacks have been called");
@@ -226,28 +226,28 @@ test_GNFH(void){
 /**********************************************************/
 // GNFC : Get New File Chunk
 static bool
-test_GNFC(void){
+test_GNFC(vs_fldt_file_type_id_t elem){
 
     vs_fldt_gnfc_chunk_request_t request;
     vs_log_level_t prev_loglev;
     uint8_t prev_file_type;
 
-    request.version.file_type = new_firmware_file.file_type;
-    to_set_server_curver.version = new_firmware_file;
-    VS_IOT_MEMCPY(&request.version, &new_trustlist_file, sizeof(new_trustlist_file));
+    request.version.file_type = filetype1.file_type;
+    to_set_server_curver.version = filetype1;
+    VS_IOT_MEMCPY(&request.version, &filetype2, sizeof(filetype2));
 
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_ask_file_chunk(&mac_addr_server, &request), "Unable to send request");
     BOOL_CHECK_RET(calls.server_chunk && calls.client_chunk, "Incorrect not existed file chunk calls");
 
-    prev_file_type = request.version.file_type.file_type;
-    request.version.file_type.file_type = VS_FLDT_OTHER;
+    prev_file_type = request.version.file_type.file_type_id;
+    request.version.file_type.file_type_id = elem;
 
     calls.calls = 0;
     FLDT_CHECK_GOTO_HIDE_ERROR(vs_fldt_ask_file_chunk(&mac_addr_server, &request), "Incorrect unsupported file type processing");
     BOOL_CHECK_RET(!calls.calls, "Incorrect unsupported file type calls");
 
-    request.version.file_type.file_type = prev_file_type;
+    request.version.file_type.file_type_id = prev_file_type;
     server_chunk_funct_ret = -1;
 
     calls.calls = 0;
@@ -266,30 +266,30 @@ test_GNFC(void){
 /**********************************************************/
 // GNFF : Get New File Footer
 static bool
-test_GNFF(void){
+test_GNFF(vs_fldt_file_type_id_t elem){
 
     vs_log_level_t prev_loglev;
     uint8_t prev_file_type;
 
     vs_fldt_gnff_footer_request_t request;
-    request.version.file_type = new_firmware_file.file_type;
+    request.version.file_type = filetype1.file_type;
 
-    to_set_server_curver.version = new_firmware_file;
+    to_set_server_curver.version = filetype1;
 
-    VS_IOT_MEMCPY(&request.version, &new_trustlist_file, sizeof(new_trustlist_file));
+    VS_IOT_MEMCPY(&request.version, &filetype2, sizeof(filetype2));
 
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_ask_file_footer(&mac_addr_server, &request), "Unable to send request");
     BOOL_CHECK_RET(calls.server_footer && calls.client_footer, "Not all callbacks have been called");
 
-    prev_file_type = request.version.file_type.file_type;
-    request.version.file_type.file_type = VS_FLDT_OTHER;
+    prev_file_type = request.version.file_type.file_type_id;
+    request.version.file_type.file_type_id = elem;
 
     calls.calls = 0;
     FLDT_CHECK_GOTO_HIDE_ERROR(vs_fldt_ask_file_footer(&mac_addr_server, &request), "Unable to send request");
     BOOL_CHECK_RET(!calls.calls, "Incorrect unsupported file type calls");
 
-    request.version.file_type.file_type = prev_file_type;
+    request.version.file_type.file_type_id = prev_file_type;
 
     return true;
 
@@ -300,7 +300,7 @@ test_GNFF(void){
 
 /**********************************************************/
 uint16_t
-fldt_tests(void) {
+fldt_tests(vs_fldt_file_type_id_t elem1, vs_fldt_file_type_id_t elem2, vs_fldt_file_type_id_t elem3) {
     uint16_t failed_test_result = 0;
 
     START_TEST("FLDT");
@@ -309,19 +309,19 @@ fldt_tests(void) {
 
     mac_addr_server_call = mac_addr_server;
     mac_addr_client_call = mac_addr_client;
-    new_firmware_file.file_type = make_file_type(VS_FLDT_FIRMWARE);
-    new_trustlist_file.file_type = make_file_type(VS_FLDT_TRUSTLIST);
-    new_other_file.file_type = make_file_type(VS_FLDT_OTHER);
+    filetype1.file_type.file_type_id = elem1;
+    filetype2.file_type.file_type_id = elem2;
+    filetype3.file_type.file_type_id = elem3;
 
     SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
 
     TEST_CASE_OK("register FLDT service", test_fldt_register());
     TEST_CASE_OK("Add file types", test_fldt_add_filetypes());
     TEST_CASE_OK("Test broadcast \"Inform New File Version\" (INFV) call", test_INFV());
-    TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI());
-    TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH());
-    TEST_CASE_OK("Test \"Get New File Chunk\" (GNFC) call", test_GNFC());
-    TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF());
+    TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI(elem3));
+    TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH(elem3));
+    TEST_CASE_OK("Test \"Get New File Chunk\" (GNFC) call", test_GNFC(elem3));
+    TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF(elem3));
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
 

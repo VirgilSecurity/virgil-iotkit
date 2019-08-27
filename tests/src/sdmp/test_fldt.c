@@ -127,21 +127,13 @@ static int server_footer_funct(const vs_fldt_gnff_footer_request_t *request, uin
 }
 
 /**********************************************************/
-vs_fldt_file_type_t
-make_file_type(enum vs_fldt_file_type file_type) {
-    vs_fldt_file_type_t file_type_descriptor = {
-        .file_type = (uint8_t)file_type,
-        .add_info = {0x01, 0x02, 0x03, 0x04}
-    };
-
-    return file_type_descriptor;
-}
-
-/**********************************************************/
 vs_fldt_client_file_type_mapping_t
-get_client_file_mapping(enum vs_fldt_file_type file_type) {
+get_client_file_mapping(vs_fldt_file_type_id_t file_type) {
     vs_fldt_client_file_type_mapping_t file_mapping = {
-            .file_type = make_file_type(file_type),
+            .file_type = {
+                    .file_type_id = file_type,
+                    .add_info = {0}
+                    },
             .get_current_version = client_version_funct,
             .update_file = client_update_funct,
             .get_info = client_info_funct,
@@ -155,9 +147,12 @@ get_client_file_mapping(enum vs_fldt_file_type file_type) {
 }
 /**********************************************************/
 vs_fldt_server_file_type_mapping_t
-get_server_file_mapping(enum vs_fldt_file_type file_type) {
+get_server_file_mapping(vs_fldt_file_type_id_t file_type) {
     vs_fldt_server_file_type_mapping_t file_mapping = {
-            .file_type = make_file_type(file_type),
+            .file_type = {
+                    .file_type_id = file_type,
+                    .add_info = {0}
+            },
             .get_version = server_version_funct,
             .get_header = server_header_funct,
             .get_chunk = server_chunk_funct,

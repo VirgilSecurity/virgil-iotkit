@@ -39,8 +39,17 @@
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <global-hal.h>
+#include <fldt-config.h>
 
-static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[VS_FLDT_FILETYPES_AMOUNT];
+// TODO : make a set!
+static size_t _file_type_mapping_array_size = 0;
+static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[10];
+
+static const vs_fldt_client_file_type_mapping_t *
+vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
+    vs_fldt_get_mapping_elem_impl(
+            vs_fldt_client_file_type_mapping_t, _client_file_type_mapping, _file_type_mapping_array_size, file_type)
+}
 
 /******************************************************************/
 int
@@ -70,7 +79,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
     new_file_ver = &new_file->version;
     file_type = &new_file_ver->file_type;
-    file_type_info = &_client_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -7, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:INFV] Request for new file %s", vs_fldt_file_version_descr(file_ver_descr, new_file_ver));
 
@@ -78,13 +87,13 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                set_gateway_mac,
                (&new_file->gateway_mac),
                "Unable to retrieve present file version for file type %s",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     FLDT_CHECK(file_type_info,
                get_current_version,
                (file_type, &present_file_ver),
                "Unable to retrieve present file version for file type %s",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
 
@@ -98,7 +107,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                    update_file,
                    (new_file),
                    "Unable to notify new file version for file type %s",
-                   vs_fldt_file_type_descr(file_type));
+                   vs_fldt_file_type_descr(file_type->file_type_id));
     }
 
     return 0;
@@ -121,7 +130,7 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &file_info->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_client_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GFTI] Response for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -154,7 +163,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &header->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_client_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
 
     VS_LOG_DEBUG(
             "[FLDT:GNFH] Response for file %s. Header : %d bytes data, chunks : %d x %d bytes, footer : %d bytes data",
@@ -193,7 +202,7 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &chunk->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_client_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFC] Response for file %s. Chunk %d, %d bytes",
                  vs_fldt_file_version_descr(file_ver_descr, file_ver),
@@ -229,7 +238,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &footer->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_client_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFF] Response for file %s. Footer size %d bytes",
                  vs_fldt_file_version_descr(file_ver_descr, file_ver),
@@ -247,17 +256,11 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 /******************************************************************/
 int
 vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem) {
-    uint8_t file_type;
 
     CHECK_NOT_ZERO_RET(mapping_elem, -1);
 
-    file_type = mapping_elem->file_type.file_type;
-
-    CHECK_RET(file_type >= 0 && file_type < VS_FLDT_FILETYPES_AMOUNT,
-              -2,
-              "Client's file type mapping array has no free place");
-
-    VS_IOT_MEMCPY(&_client_file_type_mapping[file_type], mapping_elem, sizeof(*mapping_elem));
+    // TODO : make a set!
+    VS_IOT_MEMCPY(&_client_file_type_mapping[_file_type_mapping_array_size++], mapping_elem, sizeof(*mapping_elem));
 
     return 0;
 }
@@ -268,7 +271,8 @@ vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type) {
 
     CHECK_NOT_ZERO_RET(file_type, -1);
 
-    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", vs_fldt_file_type_descr(&file_type->file_type));
+    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s",
+                 vs_fldt_file_type_descr(file_type->file_type.file_type_id));
 
     CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
                                     vs_fldt_broadcast_mac_addr,

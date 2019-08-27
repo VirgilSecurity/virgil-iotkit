@@ -84,9 +84,7 @@ function(add_sdmp _for_factory)
     #
 
     if (NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-        message(FATAL_ERROR "[sdmp] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-    else ()
-        message(STATUS "[sdmp] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+        message(FATAL_ERROR "[protocols] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
     endif ()
 
     #
@@ -101,6 +99,7 @@ function(add_sdmp _for_factory)
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
+            "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
             )
 
     #

@@ -37,7 +37,15 @@
 #include <virgil/iot/macros/macros.h>
 #include <global-hal.h>
 
-static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[VS_FLDT_FILETYPES_AMOUNT];
+// TODO : make a set!
+static size_t _file_type_mapping_array_size = 0;
+static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[10];
+
+static const vs_fldt_server_file_type_mapping_t *
+vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
+    vs_fldt_get_mapping_elem_impl(
+            vs_fldt_server_file_type_mapping_t, _server_file_type_mapping, _file_type_mapping_array_size, file_type)
+}
 
 /******************************************************************/
 int
@@ -67,15 +75,15 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
               "Response buffer must have enough size to store vs_fldt_gfti_fileinfo_response_t structure");
 
     file_type = &file_info_request->file_type;
-    file_type_info = &_server_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -7, "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:GFTI] Request for file type : %s", vs_fldt_file_type_descr(file_type));
+    VS_LOG_DEBUG("[FLDT:GFTI] Request for file type : %s", vs_fldt_file_type_descr(file_type->file_type_id));
 
     FLDT_CHECK(file_type_info,
                get_version,
                (file_info_request, file_info_response),
                "Unable to get last file version information for file type \"%s\"",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     VS_LOG_DEBUG("[FLDT:GFTI] Server file information : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &file_info_response->version));
@@ -114,7 +122,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
     file_ver = &header_request->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_server_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -7, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
                  vs_fldt_file_version_descr(file_ver_descr, &header_request->version));
@@ -123,7 +131,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
                get_header,
                (header_request, response_buf_sz, header_response),
                "Unable to get last file version information for file type \"%s\"",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
 
@@ -165,7 +173,7 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
 
     file_ver = &chunk_request->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_server_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -7, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFC] Request for chunk %d for file %s",
                  chunk_request->chunk_id,
@@ -175,7 +183,7 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
                get_chunk,
                (chunk_request, response_buf_sz, chunk_response),
                "Unable to get last file version information for file type \"%s\"",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     *response_sz = sizeof(vs_fldt_gnfc_chunk_response_t) + chunk_response->chunk_size;
 
@@ -211,7 +219,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
 
     file_ver = &footer_request->version;
     file_type = &file_ver->file_type;
-    file_type_info = &_server_file_type_mapping[file_type->file_type];
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -7, "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFF] Footer request for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
@@ -219,7 +227,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
                get_footer,
                (footer_request, response_buf_sz, footer_response),
                "Unable to get last file version information for file type \"%s\"",
-               vs_fldt_file_type_descr(file_type));
+               vs_fldt_file_type_descr(file_type->file_type_id));
 
     *response_sz = sizeof(vs_fldt_gnff_footer_response_t) + footer_response->footer_size;
 
@@ -229,18 +237,11 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
 /******************************************************************/
 int
 vs_fldt_add_server_file_type(const vs_fldt_server_file_type_mapping_t *mapping_elem) {
-    uint8_t file_type;
 
     CHECK_NOT_ZERO_RET(mapping_elem, -1);
 
-    file_type = mapping_elem->file_type.file_type;
-
-    CHECK_RET(file_type >= 0 && file_type < VS_FLDT_FILETYPES_AMOUNT,
-              -2,
-              "File type mapping has unsupported type %d",
-              file_type);
-
-    VS_IOT_MEMCPY(&_server_file_type_mapping[file_type], mapping_elem, sizeof(*mapping_elem));
+    // TODO : make a set!
+    VS_IOT_MEMCPY(&_server_file_type_mapping[_file_type_mapping_array_size++], mapping_elem, sizeof(*mapping_elem));
 
     return 0;
 }
