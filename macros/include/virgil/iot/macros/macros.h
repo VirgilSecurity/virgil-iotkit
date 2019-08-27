@@ -37,8 +37,6 @@
 
 #include <virgil/iot/logger/logger.h>
 
-#define VS_UNUSED(x) (void)(x)
-
 #define CHECK(CONDITION, MESSAGE, ...)                                                                    \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
