@@ -147,7 +147,8 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
         return VS_HSM_ERR_CRYPTO;
     }
 
-    if (buf_sz < encrypted_data_sz) {
+    if (encrypted_data_sz < 16 ||
+            buf_sz < (encrypted_data_sz - 16)) {
         return VS_HSM_ERR_INVAL;
     }
 
