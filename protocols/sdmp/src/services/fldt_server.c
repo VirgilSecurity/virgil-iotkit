@@ -80,7 +80,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     VS_LOG_DEBUG("[FLDT:GFTI] Server file information : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &file_info_response->version));
 
-    *response_sz = sizeof(vs_fldt_file_version_t);
+    *response_sz = sizeof(*file_info_response);
 
     return 0;
 }

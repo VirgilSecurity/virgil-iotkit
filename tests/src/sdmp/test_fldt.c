@@ -114,7 +114,7 @@ static int server_chunk_funct(const vs_fldt_gnfc_chunk_request_t *request, uint1
     (void) response_buf_sz;
     (void) response;
     calls.server_chunk = 1;
-    return 0;
+    return server_chunk_funct_ret;
 }
 
 /**********************************************************/

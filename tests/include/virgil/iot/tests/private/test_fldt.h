@@ -57,9 +57,7 @@ vs_fldt_file_version_t new_trustlist_file;
 vs_fldt_file_version_t new_other_file;
 vs_fldt_file_version_t to_set_client_curver;
 vs_fldt_gfti_fileinfo_response_t to_set_server_curver;
-vs_fldt_gnfh_header_response_t to_set_header;
-vs_fldt_gnfc_chunk_response_t to_set_chunk;
-vs_fldt_gnff_footer_response_t to_set_footer;
+int server_chunk_funct_ret;
 
 vs_fldt_file_type_t
 make_file_type(enum vs_fldt_file_type file_type);
@@ -78,10 +76,26 @@ get_client_file_mapping(enum vs_fldt_file_type file_type);
     }
 
 #define FLDT_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)  do {                                                                 \
+        prev_loglev = vs_logger_get_loglev();   \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
     if (!(OPERATION)) {                                                                                            \
         vs_logger_set_loglev(prev_loglev);  \
         VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
+    } else {  \
+        vs_logger_set_loglev(prev_loglev);  \
+    }   \
+    } while(0)
+
+#define FLDT_CHECK_GOTO_HIDE_ERROR(OPERATION, DESCRIPTION, ...)  do {                                                                 \
+        prev_loglev = vs_logger_get_loglev();   \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
+    if ((OPERATION)) {                                                                                            \
+        vs_logger_set_loglev(prev_loglev);  \
+        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
+        goto terminate;                                                                                                \
+    } else {  \
+        vs_logger_set_loglev(prev_loglev);  \
     }   \
     } while(0)
 
