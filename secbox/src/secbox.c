@@ -144,9 +144,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     }
 
 terminate:
-    if (f) {
-        ctx->impl.close(ctx->storage_ctx, f);
-    }
+    ctx->impl.close(ctx->storage_ctx, f);
     return file_sz;
 }
 
@@ -362,10 +360,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     }
 
 terminate:
-    if (f) {
-        ret = ctx->impl.close(ctx->storage_ctx, f);
-    }
-
+    ret = ctx->impl.close(ctx->storage_ctx, f);
     return (VS_STORAGE_OK == res) ? ret : res;
 }
 
