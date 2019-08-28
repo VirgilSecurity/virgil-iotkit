@@ -9,7 +9,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
-
+#include <global-hal.h>
 /******************************************************************************/
 static int
 _secbox_verify_signature(const vs_storage_op_ctx_t *ctx,
@@ -42,8 +42,9 @@ _secbox_verify_signature(const vs_storage_op_ctx_t *ctx,
         return res;
     }
 
-    if ( VS_HSM_ERR_OK != vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type) ||
-         VS_HSM_ERR_OK != vs_hsm_ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz)) {
+    if (VS_HSM_ERR_OK !=
+                vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type) ||
+        VS_HSM_ERR_OK != vs_hsm_ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz)) {
         return VS_STORAGE_ERROR_READ;
     }
     return VS_STORAGE_OK;
@@ -94,7 +95,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     f = ctx->impl.open(ctx->storage_ctx, id);
     CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
 
-    //read data type
+    // read data type
     res = ctx->impl.load(ctx->storage_ctx, f, 0, &type, 1);
     if (VS_STORAGE_OK != res) {
         file_sz = VS_STORAGE_ERROR_READ;
@@ -214,13 +215,12 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     vs_hsm_sw_sha256_update(&hash_ctx, data_to_save, data_to_save_sz);
     vs_hsm_sw_sha256_final(&hash_ctx, hash);
 
-    if (VS_HSM_ERR_OK !=
-                vs_hsm_ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz)) {
+    if (VS_HSM_ERR_OK != vs_hsm_ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz)) {
         res = VS_STORAGE_ERROR_WRITE;
         goto terminate;
     }
 
-    //delete the old file if exists
+    // delete the old file if exists
     if (0 < ctx->impl.size(ctx->storage_ctx, id)) {
         res = ctx->impl.del(ctx->storage_ctx, id);
         if (VS_STORAGE_OK != res) {
@@ -255,7 +255,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     }
 
 terminate:
-    if(VS_SECBOX_SIGNED_AND_ENCRYPTED == type) {
+    if (VS_SECBOX_SIGNED_AND_ENCRYPTED == type) {
         VS_IOT_FREE(data_to_save);
     }
 
@@ -294,7 +294,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     f = ctx->impl.open(ctx->storage_ctx, id);
     CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
 
-    //read data type
+    // read data type
     res = ctx->impl.load(ctx->storage_ctx, f, 0, &type, 1);
     if (VS_STORAGE_OK != res) {
         VS_LOG_ERROR("Can't load data type from file");
@@ -319,7 +319,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
         }
 
         if (VS_STORAGE_OK != _secbox_verify_signature(ctx, f, type, data_load, data_load_sz) ||
-                VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256(id,
+            VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256(id,
                                                                  sizeof(vs_storage_element_id_t),
                                                                  (uint8_t *)data_load,
                                                                  data_load_sz,
@@ -331,7 +331,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
             goto terminate;
         }
 
-        if(data_sz != data_load_sz) {
+        if (data_sz != data_load_sz) {
             VS_LOG_ERROR("Can't read requested data quantity");
             VS_IOT_FREE(data_load);
             goto terminate;
@@ -343,7 +343,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     case VS_SECBOX_SIGNED:
         data_load_sz = file_sz - sign_sz - 1;
 
-        if(data_sz != data_load_sz) {
+        if (data_sz != data_load_sz) {
             VS_LOG_ERROR("Can't read requested data quantity");
             goto terminate;
         }
