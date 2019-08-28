@@ -40,7 +40,7 @@
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_fldt.h>
 
-
+#if 0
 /**********************************************************/
 static int client_version_funct(const vs_fldt_file_type_t *file_type, vs_fldt_file_version_t *cur_file_version){
     (void) file_type;
@@ -128,7 +128,7 @@ static int server_footer_funct(const vs_fldt_gnff_footer_request_t *request, uin
 
 /**********************************************************/
 vs_fldt_client_file_type_mapping_t
-get_client_file_mapping(vs_fldt_file_type_id_t file_type) {
+get_client_file_mapping(vs_fldt_file_type_id_t *file_type) {
     vs_fldt_client_file_type_mapping_t file_mapping = {
             .file_type = {
                     .file_type_id = file_type,
@@ -147,7 +147,7 @@ get_client_file_mapping(vs_fldt_file_type_id_t file_type) {
 }
 /**********************************************************/
 vs_fldt_server_file_type_mapping_t
-get_server_file_mapping(vs_fldt_file_type_id_t file_type) {
+get_server_file_mapping(vs_fldt_file_type_id_t *file_type) {
     vs_fldt_server_file_type_mapping_t file_mapping = {
             .file_type = {
                     .file_type_id = file_type,
@@ -161,3 +161,4 @@ get_server_file_mapping(vs_fldt_file_type_id_t file_type) {
 
     return file_mapping;
 }
+#endif

@@ -124,16 +124,16 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
 #define vs_fldt_get_mapping_elem_impl(MAPPING_ARRAY_TYPE, MAPPING_ARRAY_ELEM, MAPPING_ARRAY_SIZE, FILE_TYPE)           \
     size_t id;                                                                                                         \
-    const MAPPING_ARRAY_TYPE *file_mapping;                                                                            \
+    MAPPING_ARRAY_TYPE *file_mapping;                                                                                  \
                                                                                                                        \
     for (id = 0; id < MAPPING_ARRAY_SIZE; ++id) {                                                                      \
         file_mapping = &(MAPPING_ARRAY_ELEM)[id];                                                                      \
-        if (!VS_IOT_MEMCMP(file_mapping, file_type, sizeof(*file_type))) {                                             \
+        if (!VS_IOT_MEMCMP(&file_mapping->file_type, FILE_TYPE, sizeof(*FILE_TYPE))) {                                 \
             return file_mapping;                                                                                       \
         }                                                                                                              \
     }                                                                                                                  \
                                                                                                                        \
-    VS_LOG_WARNING("[FLDT] Unable to find file type specified. %s", vs_fldt_file_type_descr(file_type->file_type_id)); \
+    VS_LOG_WARNING("[FLDT] Unable to find file type specified %ul", file_type->file_type_id);                          \
     return NULL;
 
 #ifdef __cplusplus

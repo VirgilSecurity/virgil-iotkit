@@ -39,7 +39,6 @@
 extern "C" {
 #endif
 
-#include <fldt-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 #define FLDT_FILEVER_BUF (128)         // buffer for vs_fldt_file_version_descr
@@ -50,8 +49,8 @@ extern "C" {
 bool vs_fldt_is_gateway;
 
 typedef struct __attribute__((__packed__)) {
-    vs_fldt_file_type_id_t file_type_id;
-    uint8_t add_info[FLDT_FILE_TYPE_ADD_INFO_SZ];
+    uint16_t file_type_id; // = vs_update_file_type_id_t
+    uint8_t add_info[32];
 } vs_fldt_file_type_t;
 
 // File version
@@ -137,10 +136,7 @@ typedef struct __attribute__((__packed__)) {
 
 #define FLDT_CHECK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                      \
     do {                                                                                                               \
-        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL,                                                                    \
-                  FLDT_ERR_CODE,                                                                                       \
-                  "There is no " #CALLBACK " callback for file type \"%s\"",                                           \
-                  vs_fldt_file_type_descr((FILETYPEINFO)->file_type.file_type_id));                                    \
+        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, FLDT_ERR_CODE, "There is no " #CALLBACK " callback");              \
         CHECK_RET((FILETYPEINFO)->CALLBACK ARGUMENTS == 0, FLDT_ERR_CODE, (DESCR), ##__VA_ARGS__)                      \
     } while (0)
 

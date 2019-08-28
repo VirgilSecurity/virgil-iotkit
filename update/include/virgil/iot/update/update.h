@@ -37,6 +37,14 @@
 
 #include <global-hal.h>
 
+// User can introduce its own file types with ID >= USER
+enum vs_update_file_type_id_t {VS_UPDATE_FIRMWATE, VS_UPDATE_TRUST_LIST, USER = 256};
+
+typedef struct {
+    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t device_type[DEVICE_TYPE_SIZE];
+} vs_update_firmware_add_data_t;
+
 typedef enum {
     VS_UPDATE_ERR_OK,
     VS_UPDATE_ERR_FAIL = -1,

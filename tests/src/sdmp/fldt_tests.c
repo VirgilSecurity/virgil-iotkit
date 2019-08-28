@@ -38,7 +38,7 @@
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
-
+#if 0
 static vs_netif_t test_netif;
 static const vs_mac_addr_t mac_addr_server = {.bytes = {0xF2, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6}};
 static const vs_mac_addr_t mac_addr_client = {.bytes = {0x12, 0x12, 0x13, 0x14, 0x15, 0x16}};
@@ -75,10 +75,10 @@ calls_t calls;
 /**********************************************************/
 static bool
 test_fldt_add_filetypes(void) {
+
     vs_log_level_t prev_loglev = vs_logger_get_loglev();
     vs_fldt_client_file_type_mapping_t client_file_type;
     vs_fldt_server_file_type_mapping_t server_file_type;
-
     client_file_type = get_client_file_mapping(VS_FLDT_FIRMWARE);
     FLDT_CHECK_GOTO(vs_fldt_add_client_file_type(&client_file_type), "Unable to add Firmware client file mapping");
 
@@ -98,10 +98,11 @@ test_fldt_add_filetypes(void) {
     FLDT_CHECK_ERROR_GOTO(vs_fldt_add_server_file_type(NULL), "Null server file type has been added");
 
     return true;
-    
+
     terminate:
     
     return false;
+    */
 }
 
 /**********************************************************/
@@ -167,7 +168,7 @@ test_INFV(void){
 /**********************************************************/
 // GFTI : Get File Type Information
 static bool
-test_GFTI(vs_fldt_file_type_id_t elem){
+test_GFTI(vs_fldt_file_type_id_t *elem){
 
     vs_fldt_gfti_fileinfo_request_t fileinfo_request;
     vs_log_level_t prev_loglev;
@@ -194,7 +195,7 @@ test_GFTI(vs_fldt_file_type_id_t elem){
 /**********************************************************/
 // GNFH : Get New File Header
 static bool
-test_GNFH(vs_fldt_file_type_id_t elem){
+test_GNFH(vs_fldt_file_type_id_t *elem){
 
     vs_fldt_gnfh_header_request_t request;
     vs_log_level_t prev_loglev;
@@ -226,7 +227,7 @@ test_GNFH(vs_fldt_file_type_id_t elem){
 /**********************************************************/
 // GNFC : Get New File Chunk
 static bool
-test_GNFC(vs_fldt_file_type_id_t elem){
+test_GNFC(vs_fldt_file_type_id_t *elem){
 
     vs_fldt_gnfc_chunk_request_t request;
     vs_log_level_t prev_loglev;
@@ -266,7 +267,7 @@ test_GNFC(vs_fldt_file_type_id_t elem){
 /**********************************************************/
 // GNFF : Get New File Footer
 static bool
-test_GNFF(vs_fldt_file_type_id_t elem){
+test_GNFF(vs_fldt_file_type_id_t *elem){
 
     vs_log_level_t prev_loglev;
     uint8_t prev_file_type;
@@ -300,7 +301,7 @@ test_GNFF(vs_fldt_file_type_id_t elem){
 
 /**********************************************************/
 uint16_t
-fldt_tests(vs_fldt_file_type_id_t elem1, vs_fldt_file_type_id_t elem2, vs_fldt_file_type_id_t elem3) {
+fldt_tests(vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3) {
     uint16_t failed_test_result = 0;
 
     START_TEST("FLDT");
@@ -329,3 +330,4 @@ terminate:
 
     return failed_test_result;
 }
+#endif

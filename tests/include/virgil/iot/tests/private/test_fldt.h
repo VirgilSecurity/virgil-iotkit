@@ -60,10 +60,10 @@ vs_fldt_gfti_fileinfo_response_t to_set_server_curver;
 int server_chunk_funct_ret;
 
 vs_fldt_server_file_type_mapping_t
-get_server_file_mapping(vs_fldt_file_type_id_t file_type);
+get_server_file_mapping(vs_fldt_file_type_id_t *file_type);
 
 vs_fldt_client_file_type_mapping_t
-get_client_file_mapping(vs_fldt_file_type_id_t file_type);
+get_client_file_mapping(vs_fldt_file_type_id_t *file_type);
 
 
 #define FLDT_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \

@@ -60,8 +60,8 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     uint32_t timestamp = file_ver->timestamp + 1566203295; // Jan 01 1970 (UTC)
 
     VS_IOT_SPRINTF(buf,
-                   "File type \"%s\", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
-                   vs_fldt_file_type_descr(file_ver->file_type.file_type_id),
+                   "File type %d, ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
+                   file_ver->file_type.file_type_id,
                    file_ver->major,
                    file_ver->minor,
                    file_ver->patch,
@@ -218,6 +218,8 @@ vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_fil
     VS_IOT_ASSERT(available);
     VS_IOT_ASSERT(current);
     VS_IOT_ASSERT(!vs_fldt_no_file_ver(available));
+    VS_IOT_ASSERT(!VS_IOT_MEMCMP(&available->file_type, &current->file_type, sizeof(available->file_type)) &&
+                  "Different file types");
 
     return vs_fldt_no_file_ver(current) || available->major > current->major || available->minor > current->minor ||
            available->patch > current->patch || available->dev_milestone > current->dev_milestone;
