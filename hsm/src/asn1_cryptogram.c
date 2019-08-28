@@ -166,14 +166,14 @@ _asn1_get_size(int pos, const uint8_t *data) {
 }
 
 /******************************************************************************/
-bool
-asn1_put_array(uint8_t element,
-               int *pos,
-               uint8_t *data,
-               const uint8_t *array,
-               size_t array_size,
-               size_t *res_size,
-               size_t *total_sz) {
+static bool
+_asn1_put_array(uint8_t element,
+                int *pos,
+                uint8_t *data,
+                const uint8_t *array,
+                size_t array_size,
+                size_t *res_size,
+                size_t *total_sz) {
     int prefix_sz = 2;
     uint8_t *w;
 
@@ -480,7 +480,7 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
     pkcs7_data_sz = total_sz;
 
     // AES256-GCM encrypted key
-    if (!asn1_put_array(OCTET_STRING, &pos, buf, encrypted_key, 48, &el_sz, &total_sz) ||
+    if (!_asn1_put_array(OCTET_STRING, &pos, buf, encrypted_key, 48, &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, iv_key, 16, &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, _aes256_cbc, sizeof(_aes256_cbc), &el_sz, &total_sz) ||
         !_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
@@ -516,7 +516,7 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
         return VS_HSM_ERR_FAIL;
 
     // Recipient ID
-    if (!asn1_put_array(OCTET_STRING, &pos, buf, recipient_id, recipient_id_sz, &el_sz, &total_sz))
+    if (!_asn1_put_array(OCTET_STRING, &pos, buf, recipient_id, recipient_id_sz, &el_sz, &total_sz))
         return VS_HSM_ERR_FAIL;
 
     // Zero element
