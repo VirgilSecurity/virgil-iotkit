@@ -47,7 +47,6 @@ target_link_libraries(update
         PUBLIC
         logger
         macros
-        vs-json
         hsm
         trust_list
         )
