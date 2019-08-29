@@ -101,9 +101,6 @@ typedef struct __attribute__((__packed__)) {
 
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
-    uint16_t chunks_amount;
-    uint16_t chunk_size;
-    uint16_t footer_size; // zero if not present
     uint16_t header_size;
     uint8_t header_data[];
 } vs_fldt_gnfh_header_response_t;

@@ -38,7 +38,7 @@
 #include <global-hal.h>
 
 // User can introduce its own file types with ID >= USER
-enum vs_update_file_type_id_t {VS_UPDATE_FIRMWATE, VS_UPDATE_TRUST_LIST, USER = 256};
+enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
 
 typedef struct {
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];

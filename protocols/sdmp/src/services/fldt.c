@@ -60,7 +60,7 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     uint32_t timestamp = file_ver->timestamp + 1566203295; // Jan 01 1970 (UTC)
 
     VS_IOT_SPRINTF(buf,
-                   "File type %d, ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
+                   "file type %d, ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
                    file_ver->file_type.file_type_id,
                    file_ver->major,
                    file_ver->minor,
