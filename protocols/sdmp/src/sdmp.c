@@ -94,7 +94,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     }
 
     // Prepare request
-    memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_packet_t));
+    memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_header_t));
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
 
     // Detect required command
