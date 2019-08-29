@@ -42,6 +42,19 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/hsm/asn1_cryptogram.h>
 
+#define VS_AES_256_KEY_SIZE (32)
+#define VS_AES_256_KEY_BITLEN (VS_AES_256_KEY_SIZE * 8)
+#define VS_AES_256_BLOCK_SIZE (16)
+
+#define VS_AES_256_GCM_IV_SIZE (12)
+#define VS_AES_256_GCM_AUTH_TAG_SIZE (16)
+
+#define VS_AES_256_CBC_IV_SIZE (16)
+
+#define VS_HMAC_SHA384_SIZE (48)
+
+#define VS_VIRGIL_PUBKEY_MAX_SIZE (100)
+
 static const uint8_t _secp256r1_pubkey_prefix[] = {0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48,
                                                    0xCE, 0x3D, 0x02, 0x01, 0x06, 0x08, 0x2A, 0x86, 0x48,
                                                    0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03, 0x42, 0x00, 0x04};
@@ -75,14 +88,14 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz) {
 
-    uint8_t decrypted_key[48];
+    uint8_t decrypted_key[VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE];
     uint8_t *encrypted_data;
     size_t encrypted_data_sz;
 
-    uint8_t pre_master_key[32];
+    uint8_t pre_master_key[VS_AES_256_KEY_SIZE];
     uint16_t pre_master_key_sz;
-    uint8_t master_key[80];
-    uint8_t mac_buf[48];
+    uint8_t master_key[VS_AES_256_KEY_SIZE + VS_HMAC_SHA384_SIZE];
+    uint8_t mac_buf[VS_HMAC_SHA384_SIZE];
     uint16_t mac_sz;
 
     uint8_t *public_key;
@@ -124,22 +137,22 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     master_key,
                                     sizeof(master_key)) ||
         VS_HSM_ERR_OK != vs_hsm_hmac(VS_HASH_SHA_384,
-                                     master_key + 32,
-                                     sizeof(master_key) - 32,
+                                     master_key + VS_AES_256_KEY_SIZE,
+                                     sizeof(master_key) - VS_AES_256_KEY_SIZE,
                                      encrypted_key,
-                                     48,
+                                     VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE,
                                      mac_buf,
                                      sizeof(mac_buf),
                                      &mac_sz) ||
         0 != memcmp(mac_data, mac_buf, mac_sz) ||
         VS_HSM_ERR_OK != vs_hsm_aes_decrypt(VS_AES_CBC,
                                             master_key,
-                                            32 * 8,
+                                            VS_AES_256_KEY_BITLEN,
                                             iv_key,
-                                            16,
+                                            VS_AES_256_CBC_IV_SIZE,
                                             NULL,
                                             0,
-                                            48,
+                                            sizeof(decrypted_key),
                                             encrypted_key,
                                             decrypted_key,
                                             NULL,
@@ -147,24 +160,25 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
         return VS_HSM_ERR_CRYPTO;
     }
 
-    if (encrypted_data_sz < 16 || buf_sz < (encrypted_data_sz - 16)) {
+    if (encrypted_data_sz < VS_AES_256_GCM_AUTH_TAG_SIZE ||
+        buf_sz < (encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE)) {
         return VS_HSM_ERR_INVAL;
     }
 
-    *decrypted_data_sz = encrypted_data_sz - 16;
+    *decrypted_data_sz = encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE;
 
     if (VS_HSM_ERR_OK != vs_hsm_aes_auth_decrypt(VS_AES_GCM,
                                                  decrypted_key,
-                                                 32 * 8,
+                                                 VS_AES_256_KEY_BITLEN,
                                                  iv_data,
-                                                 12,
+                                                 VS_AES_256_GCM_IV_SIZE,
                                                  NULL,
                                                  0,
-                                                 encrypted_data_sz - 16,
+                                                 encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE,
                                                  encrypted_data,
                                                  decrypted_data,
-                                                 &encrypted_data[encrypted_data_sz - 16],
-                                                 16)) {
+                                                 &encrypted_data[encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE],
+                                                 VS_AES_256_GCM_AUTH_TAG_SIZE)) {
         return VS_HSM_ERR_CRYPTO;
     }
 
@@ -202,22 +216,22 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
     uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t pubkey[key_sz];
 
-    uint8_t pre_master_key[32];
+    uint8_t pre_master_key[VS_AES_256_KEY_SIZE];
     uint16_t pre_master_key_sz;
-    uint8_t master_key[80];
+    uint8_t master_key[VS_AES_256_KEY_SIZE + VS_HMAC_SHA384_SIZE];
 
-    uint8_t encrypted_key[48];
+    uint8_t encrypted_key[VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE];
 
-    uint8_t hmac[48];
+    uint8_t hmac[VS_HMAC_SHA384_SIZE];
     uint16_t hmac_sz;
 
-    uint8_t virgil_public_key[100];
+    uint8_t virgil_public_key[VS_VIRGIL_PUBKEY_MAX_SIZE];
     size_t virgil_public_key_sz = sizeof(virgil_public_key);
 
-    uint8_t rnd_buf[16 + 12 + 32];
+    uint8_t rnd_buf[VS_AES_256_CBC_IV_SIZE + VS_AES_256_GCM_IV_SIZE + VS_AES_256_KEY_SIZE];
     uint8_t *iv_key = rnd_buf;
-    uint8_t *iv_data = &rnd_buf[16];
-    uint8_t *shared_key = &rnd_buf[16 + 12];
+    uint8_t *iv_data = &rnd_buf[VS_AES_256_GCM_IV_SIZE];
+    uint8_t *shared_key = &rnd_buf[VS_AES_256_CBC_IV_SIZE + VS_AES_256_GCM_IV_SIZE];
 
     if (VS_HSM_ERR_OK != vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, pubkey, key_sz, &key_sz, &ec_type) ||
         !_tiny_pubkey_to_virgil(&pubkey[1], virgil_public_key, &virgil_public_key_sz)) {
@@ -241,34 +255,43 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     sizeof(pre_master_key),
                                     master_key,
                                     sizeof(master_key)) ||
-        VS_HSM_ERR_OK !=
-                vs_hsm_aes_encrypt(
-                        VS_AES_CBC, master_key, 32 * 8, iv_key, 16, NULL, 0, 32, shared_key, encrypted_key, NULL, 0) ||
+        VS_HSM_ERR_OK != vs_hsm_aes_encrypt(VS_AES_CBC,
+                                            master_key,
+                                            VS_AES_256_KEY_BITLEN,
+                                            iv_key,
+                                            VS_AES_256_CBC_IV_SIZE,
+                                            NULL,
+                                            0,
+                                            VS_AES_256_KEY_SIZE,
+                                            shared_key,
+                                            encrypted_key,
+                                            NULL,
+                                            0) ||
         VS_HSM_ERR_OK != vs_hsm_hmac(VS_HASH_SHA_384,
-                                     master_key + 32,
-                                     sizeof(master_key) - 32,
+                                     master_key + VS_AES_256_KEY_SIZE,
+                                     sizeof(master_key) - VS_AES_256_KEY_SIZE,
                                      encrypted_key,
-                                     48,
+                                     sizeof(encrypted_key),
                                      hmac,
                                      sizeof(hmac),
                                      &hmac_sz)) {
         return VS_HSM_ERR_CRYPTO;
     }
     uint8_t add_data = 0;
-    uint8_t encrypted_data[data_sz + 16];
+    uint8_t encrypted_data[data_sz + VS_AES_256_GCM_AUTH_TAG_SIZE];
 
     if (VS_HSM_ERR_OK != vs_hsm_aes_encrypt(VS_AES_GCM,
                                             shared_key,
-                                            32 * 8,
+                                            VS_AES_256_KEY_BITLEN,
                                             iv_data,
-                                            12,
+                                            VS_AES_256_GCM_IV_SIZE,
                                             &add_data,
                                             0,
                                             data_sz,
                                             data,
                                             encrypted_data,
-                                            &encrypted_data[sizeof(encrypted_data) - 16],
-                                            16)) {
+                                            &encrypted_data[sizeof(encrypted_data) - VS_AES_256_GCM_AUTH_TAG_SIZE],
+                                            VS_AES_256_GCM_AUTH_TAG_SIZE)) {
         return VS_HSM_ERR_CRYPTO;
     }
 
