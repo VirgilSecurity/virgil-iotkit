@@ -49,6 +49,7 @@ target_sources(cloud
 
 target_link_libraries(cloud
         PUBLIC
+        vs-json
         update
         )
 
