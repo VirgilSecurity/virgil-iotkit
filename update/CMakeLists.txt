@@ -49,6 +49,7 @@ target_link_libraries(update
         macros
         hsm
         trust_list
+        storage_hal
         )
 
 target_include_directories(update
