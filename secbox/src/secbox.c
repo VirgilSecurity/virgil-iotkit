@@ -53,8 +53,8 @@ _secbox_verify_signature(const vs_storage_op_ctx_t *ctx,
 /******************************************************************************/
 int
 vs_secbox_init(const vs_storage_op_ctx_t *ctx) {
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
 
     return VS_STORAGE_OK;
 }
@@ -62,9 +62,9 @@ vs_secbox_init(const vs_storage_op_ctx_t *ctx) {
 /******************************************************************************/
 int
 vs_secbox_deinit(const vs_storage_op_ctx_t *ctx) {
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.deinit, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.deinit, VS_STORAGE_ERROR_PARAMS);
 
     return ctx->impl.deinit(ctx->storage_ctx);
 }
@@ -80,12 +80,12 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.load, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.load, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
 
     int file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
@@ -170,14 +170,14 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
 
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(data, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(data, VS_STORAGE_ERROR_PARAMS);
     CHECK_RET(data_sz <= ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big")
 
 
@@ -276,13 +276,13 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.load, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(data, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.load, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(data, VS_STORAGE_ERROR_PARAMS);
 
     int file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
@@ -367,9 +367,9 @@ terminate:
 /******************************************************************************/
 int
 vs_secbox_del(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) {
-    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
-    CHECK_NOT_ZERO(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
 
     return ctx->impl.del(ctx->storage_ctx, id);
 }

@@ -308,14 +308,14 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
     size_t _sz, ar_sz, asn1_sz;
     const uint8_t *_data, *p_ar = 0;
 
-    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(public_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(mac_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(public_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(mac_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_HSM_ERR_INVAL);
 
     _sz = cryptogram_sz;
     _data = cryptogram;
@@ -454,18 +454,18 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
     int pos = cryptogram_buf_sz;
     size_t total_sz = 0, pkcs7_data_sz = 0, el_sz;
 
-    CHECK_NOT_ZERO(recipient_id, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(recipient_id_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_data_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(encrypted_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(iv_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(hmac, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(public_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(public_key_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(recipient_id, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(recipient_id_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(encrypted_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(iv_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(hmac, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(public_key, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(public_key_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram_sz, VS_HSM_ERR_INVAL);
 
     // Put encrypted data
     if (!_asn1_put_raw(&pos, buf, encrypted_data, encrypted_data_sz, &el_sz, 0))
