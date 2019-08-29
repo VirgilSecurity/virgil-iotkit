@@ -68,6 +68,8 @@ uint16_t
 test_pubkeys_converters(void);
 uint16_t
 test_keystorage_and_tl(void);
+uint16_t
+vs_virgil_ecies_test();
 
 /**********************************************************/
 static uint16_t
@@ -83,6 +85,7 @@ crypto_tests(void) {
     failed_test_result += test_keypair();
     failed_test_result += test_ecdsa();
     failed_test_result += test_ecdh();
+    failed_test_result += vs_virgil_ecies_test();
 #if !VIRGIL_IOT_MCU_BUILD
     failed_test_result += test_sign_converters();
     failed_test_result += test_pubkeys_converters();

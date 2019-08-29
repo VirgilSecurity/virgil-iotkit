@@ -35,6 +35,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/private_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
+#include <stdlib-config.h>
 
 #if IOTELIC_MCU_BUILD
 #define SEQUENCE_SIZE 1024
@@ -44,22 +45,30 @@
 
 /******************************************************************************/
 #define STEPS 4
-static bool
+static int
 _generate_random(uint8_t *sequence) {
     static const size_t size_step = SEQUENCE_SIZE / STEPS;
     size_t pos;
+    int res;
 
     for (pos = 0; pos < STEPS; ++pos) {
-        VS_HSM_CHECK_RET(vs_hsm_random(sequence, size_step), "Unable to generate random number, step = %d", pos);
+        res = vs_hsm_random(sequence, size_step);
+
+        if (VS_HSM_ERR_OK != res) {
+            VS_LOG_ERROR("Unable to generate random number, step = %d", pos);
+            return res;
+        }
 
         if (pos) {
-            BOOL_CHECK_RET(memcmp(sequence - size_step, sequence, size_step) != 0, "Sequence is the same as previous");
+            CHECK_RET(VS_IOT_MEMCMP(sequence - size_step, sequence, size_step) != 0,
+                      VS_HSM_ERR_FAIL,
+                      "Sequence is the same as previous")
         }
 
         sequence += size_step;
     }
 
-    return true;
+    return VS_HSM_ERR_OK;
 }
 
 #undef STEPS
@@ -163,15 +172,13 @@ _frequency_2bytes_diff(uint8_t *sequence) {
     int8_t max_amount_pos = 0;
 
     for (pos = 1; pos < SEQUENCE_SIZE; ++pos) {
-        cur_diff = (int)sequence[0] - sequence[-1];
+        cur_diff = (int)sequence[pos] - (int)sequence[pos - 1];
         cur_value = ++diff[256 + cur_diff];
 
         if (cur_value > max_amount) {
             max_amount = cur_value;
             max_amount_pos = cur_diff;
         }
-
-        ++sequence;
     }
 
     max_amount *= 1000; // e-3
@@ -190,21 +197,19 @@ _frequency_2bytes_diff(uint8_t *sequence) {
 uint16_t
 test_random(void) {
     uint16_t failed_test_result = 0;
-
     uint8_t sequence[SEQUENCE_SIZE];
-    uint8_t buf[128];
-    bool not_implemented = false;
+    int res;
 
     START_TEST("Random tests");
-
-    TEST_NOT_IMPLEMENTED(vs_hsm_random(buf, sizeof(buf)));
-
-    if (not_implemented) {
+    START_ELEMENT("Generate random sequence");
+    res = _generate_random(sequence);
+    if (VS_HSM_ERR_NOT_IMPLEMENTED == res) {
         VS_LOG_WARNING("Random function is not implemented");
-        goto terminate;
+        RESULT_OK;
+    } else if (VS_HSM_ERR_OK != res) {
+        RESULT_ERROR;
     }
 
-    TEST_CASE_OK("Generate random sequence", _generate_random(sequence));
     TEST_CASE_OK("\"Bits frequency\" test", _frequency_bits(sequence));
     TEST_CASE_OK("\"Bytes frequency\" test", _frequency_bytes(sequence));
     TEST_CASE_OK("\"Nearby bytes differences frequency\" test", _frequency_2bytes_diff(sequence));

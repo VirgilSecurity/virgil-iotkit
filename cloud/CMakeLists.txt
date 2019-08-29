@@ -41,7 +41,6 @@ add_library(cloud)
 target_sources(cloud
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/cloud.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c"

@@ -15,90 +15,90 @@ static const char *hkdf_info = "Test info";
 static const char *another_hkdf_info = "Another test info";
 
 /******************************************************************************/
-static bool
+static int
 _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uint16_t result_len) {
     uint8_t result_buf[result_len];
     uint8_t another_result_buf[result_len];
+    int res;
 
-    VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len),
-                     "ERROR while execute kdf")
+    res = vs_hsm_kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len);
+    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf")
 
-    MEMCMP_CHECK_RET(result_buf, correct_result, result_len)
+    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is wrong")
 
-    VS_HSM_CHECK_RET(vs_hsm_kdf(VS_KDF_2,
-                                hash_type,
-                                (uint8_t *)another_key_raw,
-                                strlen(another_key_raw),
-                                another_result_buf,
-                                result_len),
-                     "ERROR while execute kdf");
+    res = vs_hsm_kdf(
+            VS_KDF_2, hash_type, (uint8_t *)another_key_raw, strlen(another_key_raw), another_result_buf, result_len);
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf")
 
-    BOOL_CHECK_RET(0 != memcmp(another_result_buf, correct_result, result_len), "kdf is constant")
-    return true;
+    CHECK_RET(0 != VS_IOT_MEMCMP(another_result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is constant")
+    return res;
 }
 
 /******************************************************************************/
-static bool
+static int
 _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uint16_t result_len) {
     uint8_t result_buf[result_len];
-    memset(result_buf, 0, result_len);
+    int res;
+    VS_IOT_MEMSET(result_buf, 0, result_len);
 
-    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
-                                 (uint8_t *)hkdf_input,
-                                 strlen(hkdf_input),
-                                 (uint8_t *)hkdf_salt,
-                                 strlen(hkdf_salt),
-                                 (uint8_t *)hkdf_info,
-                                 strlen(hkdf_info),
-                                 result_buf,
-                                 result_len),
-                     "ERROR while execute hkdf");
+    res = vs_hsm_hkdf(hash_type,
+                      (uint8_t *)hkdf_input,
+                      strlen(hkdf_input),
+                      (uint8_t *)hkdf_salt,
+                      strlen(hkdf_salt),
+                      (uint8_t *)hkdf_info,
+                      strlen(hkdf_info),
+                      result_buf,
+                      result_len);
+    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
 
-    MEMCMP_CHECK_RET(result_buf, correct_result, result_len)
+    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "hkdf is wrong")
 
-    memset(result_buf, 0, result_len);
-    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
-                                 (uint8_t *)hkdf_input,
-                                 strlen(hkdf_input),
-                                 (uint8_t *)another_hkdf_salt,
-                                 strlen(another_hkdf_salt),
-                                 (uint8_t *)hkdf_info,
-                                 strlen(hkdf_info),
-                                 result_buf,
-                                 result_len),
-                     "ERROR while execute hkdf");
+    VS_IOT_MEMSET(result_buf, 0, result_len);
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other salt")
+    res = vs_hsm_hkdf(hash_type,
+                      (uint8_t *)hkdf_input,
+                      strlen(hkdf_input),
+                      (uint8_t *)another_hkdf_salt,
+                      strlen(another_hkdf_salt),
+                      (uint8_t *)hkdf_info,
+                      strlen(hkdf_info),
+                      result_buf,
+                      result_len);
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
 
-    memset(result_buf, 0, result_len);
-    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
-                                 (uint8_t *)another_hkdf_input,
-                                 strlen(another_hkdf_input),
-                                 (uint8_t *)hkdf_salt,
-                                 strlen(hkdf_salt),
-                                 (uint8_t *)hkdf_info,
-                                 strlen(hkdf_info),
-                                 result_buf,
-                                 result_len),
-                     "ERROR while execute hkdf");
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other salt")
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other input")
+    VS_IOT_MEMSET(result_buf, 0, result_len);
+    res = vs_hsm_hkdf(hash_type,
+                      (uint8_t *)another_hkdf_input,
+                      strlen(another_hkdf_input),
+                      (uint8_t *)hkdf_salt,
+                      strlen(hkdf_salt),
+                      (uint8_t *)hkdf_info,
+                      strlen(hkdf_info),
+                      result_buf,
+                      result_len);
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other input")
 
-    memset(result_buf, 0, result_len);
-    VS_HSM_CHECK_RET(vs_hsm_hkdf(hash_type,
-                                 (uint8_t *)hkdf_input,
-                                 strlen(hkdf_input),
-                                 (uint8_t *)hkdf_salt,
-                                 strlen(hkdf_salt),
-                                 (uint8_t *)another_hkdf_info,
-                                 strlen(another_hkdf_info),
-                                 result_buf,
-                                 result_len),
-                     "ERROR while execute hkdf");
+    VS_IOT_MEMSET(result_buf, 0, result_len);
+    res = vs_hsm_hkdf(hash_type,
+                      (uint8_t *)hkdf_input,
+                      strlen(hkdf_input),
+                      (uint8_t *)hkdf_salt,
+                      strlen(hkdf_salt),
+                      (uint8_t *)another_hkdf_info,
+                      strlen(another_hkdf_info),
+                      result_buf,
+                      result_len);
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
 
-    BOOL_CHECK_RET(0 != memcmp(result_buf, correct_result, result_len), "Same hkdf with other info")
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other info")
 
-    return true;
+    return res;
 }
 
 /******************************************************************************/
@@ -106,25 +106,13 @@ uint16_t
 test_kdf2(void) {
     uint16_t failed_test_result = 0;
 
-#define HKDF_TEST_STEP(BITLEN)                                                                                         \
+#define TEST_STEP(COND, BITLEN, FUNC)                                                                                  \
     do {                                                                                                               \
-        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
-                                                                                                                       \
-        TEST_HKDF_NOT_IMPLEMENTED(hash_type);                                                                          \
-                                                                                                                       \
-        if (not_implemented) {                                                                                         \
-            VS_LOG_WARNING("HKDF for SHA_" #BITLEN " algorithm is not implemented");                                   \
-        }                                                                                                              \
-    } while (0)
-
-#define KDF_TEST_STEP(BITLEN)                                                                                          \
-    do {                                                                                                               \
-        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
-                                                                                                                       \
-        TEST_KDF_NOT_IMPLEMENTED(hash_type);                                                                           \
-                                                                                                                       \
-        if (not_implemented) {                                                                                         \
-            VS_LOG_WARNING("KDF for SHA_" #BITLEN " algorithm is not implemented");                                    \
+        int res = COND;                                                                                                \
+        if (VS_HSM_ERR_NOT_IMPLEMENTED == res) {                                                                       \
+            VS_LOG_WARNING(#FUNC " for SHA_" #BITLEN " algorithm is not implemented");                                 \
+        } else {                                                                                                       \
+            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_HSM_ERR_OK == res)                           \
         }                                                                                                              \
     } while (0)
 
@@ -161,37 +149,15 @@ test_kdf2(void) {
             0x9a, 0x43, 0x43, 0x03, 0x14, 0xa5, 0x6a, 0x3d, 0x38, 0x03, 0x26, 0xe8, 0xd9, 0xe5, 0xfe, 0x34,
             0xab, 0xb2, 0x6e, 0x4f, 0x71, 0x0e, 0x9f, 0xd9, 0x7a, 0x34, 0xd8, 0x3d, 0x8f, 0xf0, 0xde, 0xe4,
             0xf9, 0x2a, 0x2d, 0xa4, 0x3b, 0x80, 0x51, 0x95, 0x00, 0xcd, 0xef, 0xbf, 0x35, 0x7c, 0x63, 0x53};
-    bool not_implemented = false;
-
     START_TEST("KDF2 tests");
 
-    KDF_TEST_STEP(256);
-    if (!not_implemented) {
-        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
-                     _test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)))
-    }
-
-    KDF_TEST_STEP(384);
-    if (!not_implemented) {
-        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                     _test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)))
-    }
-
-    KDF_TEST_STEP(512);
-    if (!not_implemented) {
-        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
-                     _test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)))
-    }
+    TEST_STEP(_test_kdf2_step(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)), 256, "KDF");
+    TEST_STEP(_test_kdf2_step(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha256_result_raw)), 384, "KDF");
+    TEST_STEP(_test_kdf2_step(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha256_result_raw)), 512, "KDF");
 
     START_TEST("HKDF tests");
 
-    HKDF_TEST_STEP(256);
-    HKDF_TEST_STEP(384);
-    if (!not_implemented) {
-        TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                     _test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)))
-    }
-    HKDF_TEST_STEP(512);
+    TEST_STEP(_test_hkdf2_step(VS_HASH_SHA_384, hkdf384_result_raw, sizeof(hkdf384_result_raw)), 384, "HKDF");
 
 terminate:
     return failed_test_result;

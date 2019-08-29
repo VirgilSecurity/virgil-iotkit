@@ -32,27 +32,27 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_ASN1_CRYPTOGRAM_H
-#define VS_CLOUD_ASN1_CRYPTOGRAM_H
+#ifndef VS_HSM_VIRGIL_ECIES_H
+#define VS_HSM_VIRGIL_ECIES_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 int
-vs_cloud_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                               size_t cryptogram_sz,
-                                               uint8_t **public_key,
-                                               uint8_t **iv_key,
-                                               uint8_t **encrypted_key,
-                                               uint8_t **mac_data,
-                                               uint8_t **iv_data,
-                                               uint8_t **encrypted_data,
-                                               size_t *encrypted_data_sz);
-#ifdef __cplusplus
-}
-#endif
+vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
+                                    size_t recipient_id_sz,
+                                    uint8_t *cryptogram,
+                                    size_t cryptogram_sz,
+                                    uint8_t *decrypted_data,
+                                    size_t buf_sz,
+                                    size_t *decrypted_data_sz);
 
-#endif // VS_CLOUD_ASN1_CRYPTOGRAM_H
+int
+vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
+                                    size_t recipient_id_sz,
+                                    uint8_t *data,
+                                    size_t data_sz,
+                                    uint8_t *cryptogram,
+                                    size_t buf_sz,
+                                    size_t *cryptogram_sz);
+
+#endif // VS_HSM_VIRGIL_ECIES_H
