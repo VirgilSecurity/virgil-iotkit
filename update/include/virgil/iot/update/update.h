@@ -42,6 +42,33 @@ enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 
 
 #define VS_UPDATE_FIRMWARE_CHUNK_SIZE   512
 
+#define SERIAL_SIZE (32) /*This is size of SHA256 data*/
+#define MANUFACTURE_ID_SIZE 16
+#define DEVICE_TYPE_SIZE (4)
+typedef struct __attribute__((__packed__)) {
+    uint8_t app_type[4];
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint8_t dev_milestone;
+    uint8_t dev_build;
+    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+} vs_firmware_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t device_type[DEVICE_TYPE_SIZE];
+    vs_firmware_version_t version;
+} vs_firmware_info_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_firmware_info_t info;
+    uint8_t padding;
+    uint16_t chunk_size;
+    uint32_t firmware_length;
+    uint32_t app_size; // firmware_length + fill_size + footer
+} vs_firmware_descriptor_t;
+
 typedef struct {
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
     uint8_t device_type[DEVICE_TYPE_SIZE];
