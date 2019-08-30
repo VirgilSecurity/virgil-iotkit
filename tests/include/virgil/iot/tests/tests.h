@@ -36,7 +36,6 @@
 #define VIRGIL_IOT_SDK_TESTS_H
 
 #include <stdbool.h>
-#include <fldt-config.h>
 #include <virgil/iot/secbox/secbox.h>
 
 uint16_t

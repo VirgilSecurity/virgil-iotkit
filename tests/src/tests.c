@@ -34,17 +34,13 @@
 
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
-#include <fldt-config.h>
 
 uint16_t
 sdmp_tests(void);
 uint16_t
 prvs_tests(void);
-uint16_t
-fldt_tests(vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3);
-
-uint16_t
-test_list(void);
+//uint16_t
+//fldt_tests(vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3);
 
 uint16_t
 test_hash(void);
@@ -94,16 +90,6 @@ crypto_tests(void) {
 }
 
 /**********************************************************/
-static uint16_t
-container_tests(void) {
-    uint16_t failed_test_result = 0;
-
-    failed_test_result += test_vector();
-
-    return failed_test_result;
-}
-
-/**********************************************************/
 uint16_t
 vs_tests_checks(bool print_start_finish_tests)//, vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3) {
 {    uint16_t failed_test_result = 0;
@@ -112,7 +98,6 @@ vs_tests_checks(bool print_start_finish_tests)//, vs_fldt_file_type_id_t *elem1,
     	START_TESTS;
     }
 
-    failed_test_result = container_tests();
     failed_test_result = sdmp_tests();
     failed_test_result += prvs_tests();
 //    failed_test_result += fldt_tests(elem1, elem2, elem3);
