@@ -201,7 +201,7 @@ vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
         VS_IOT_MEMCPY(newbuf, (uint8_t *)descriptor, file_sz);
     }
 
-save_data:
+    save_data:
     res = vs_update_write_firmware_descriptor_table_hal(newbuf, file_sz);
     VS_IOT_FREE(newbuf);
 
@@ -249,7 +249,7 @@ vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
         offset += sizeof(vs_firmware_descriptor_t);
     }
 
-terminate:
+    terminate:
     VS_IOT_FREE(buf);
 
     return res;
@@ -306,7 +306,7 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
         res = vs_update_write_firmware_descriptor_table_hal(buf, file_sz);
     }
 
-terminate:
+    terminate:
     VS_IOT_FREE(buf);
 
     return res;
@@ -493,4 +493,11 @@ vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
     }
 
     return vs_update_install_append_data_hal(buf, read_sz);
+}
+
+/*************************************************************************/
+int
+vs_update_restart_application(void){
+    VS_LOG_INFO("Restart application");
+    return vs_update_restart_app_hal();
 }

@@ -40,6 +40,8 @@
 // User can introduce its own file types with ID >= USER
 enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
 
+#define VS_UPDATE_FIRMWARE_CHUNK_SIZE   512
+
 typedef struct {
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
     uint8_t device_type[DEVICE_TYPE_SIZE];
@@ -94,5 +96,8 @@ vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
 
 int
 vs_update_install_firmware(vs_firmware_descriptor_t *descriptor);
+
+int
+vs_update_restart_application(void);
 
 #endif // VS_UPDATE_H

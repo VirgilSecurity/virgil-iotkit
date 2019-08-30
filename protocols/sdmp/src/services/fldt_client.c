@@ -51,6 +51,34 @@ vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
 }
 
 /******************************************************************/
+static int
+_check_download_need(const char *opcode, const vs_fldt_file_version_t *new_file_ver, bool *download) {
+    const vs_fldt_file_type_t *file_type = NULL;
+    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
+    vs_fldt_file_version_t present_file_ver;
+    char file_ver_descr[FLDT_FILEVER_BUF];
+
+    CHECK_NOT_ZERO_RET(new_file_ver, -1);
+
+    file_type = &new_file_ver->file_type;
+
+    FLDT_CHECK(file_type_info,
+               get_current_version,
+               (file_type_info->storage_context, file_type, &present_file_ver),
+               "Unable to retrieve present file version for file type %d",
+               file_type->file_type_id);
+
+    *download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
+
+    VS_LOG_DEBUG("[FLDT:%s] Current file version : %s. %s",
+                 opcode,
+                 vs_fldt_file_version_descr(file_ver_descr, &present_file_ver),
+                 (download ? "Need to download new one." : "No need to download."));
+
+    return 0;
+}
+
+/******************************************************************/
 int
 vs_fldt_INFV_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
@@ -61,7 +89,6 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
     const vs_fldt_file_version_t *new_file_ver = NULL;
     const vs_fldt_file_type_t *file_type = NULL;
-    vs_fldt_file_version_t present_file_ver;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     bool download;
     char file_ver_descr[FLDT_FILEVER_BUF];
@@ -88,17 +115,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                "Unable to retrieve present file version for file type %d",
                file_type->file_type_id);
 
-    FLDT_CHECK(file_type_info,
-               get_current_version,
-               (file_type_info->storage_context, file_type, &present_file_ver),
-               "Unable to retrieve present file version for file type %d",
-               file_type->file_type_id);
-
-    download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
-
-    VS_LOG_DEBUG("[FLDT:INFV] Current file version : %s. %s",
-                 vs_fldt_file_version_descr(file_ver_descr, &present_file_ver),
-                 (download ? "Need to download new one." : "No need to download."));
+    CHECK_RET(!_check_download_need("INFV", new_file_ver, &download), -4, "Unable to check download need");
 
     if (download) {
 
@@ -115,11 +132,13 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 /******************************************************************/
 int
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    vs_fldt_infv_new_file_request_t new_file;
     vs_fldt_gfti_fileinfo_response_t *file_info = (vs_fldt_gfti_fileinfo_response_t *)response;
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    bool download;
 
     (void)is_ack;
 
@@ -134,11 +153,24 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     VS_LOG_DEBUG("[FLDT:GFTI] Response for file : %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
     FLDT_CHECK(file_type_info,
-               get_info,
+               got_info,
                (&file_type_info->storage_context, file_info),
                "Unable to process received file information for file : %s",
                vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
+    CHECK_RET(!_check_download_need("GFTI", file_ver, &download), -3, "Unable to check download need");
+
+    if (download) {
+
+        VS_IOT_MEMCPY(&new_file.gateway_mac, &file_info->gateway_mac, sizeof(new_file.gateway_mac));
+        VS_IOT_MEMCPY(&new_file.version, file_ver, sizeof(*file_ver));
+
+        FLDT_CHECK(file_type_info,
+                   update_file,
+                   (file_type_info->storage_context, &new_file),
+                   "Unable to notify new file version for file type %d",
+                   file_type->file_type_id);
+    }
     return 0;
 }
 
@@ -169,7 +201,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                  header->header_size);
 
     FLDT_CHECK(file_type_info,
-               get_header,
+               got_header,
                (&file_type_info->storage_context, header),
                "Unable to process received file information for file : %s",
                vs_fldt_file_version_descr(file_ver_descr, file_ver));
@@ -205,7 +237,7 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
                  (int)chunk->chunk_size);
 
     FLDT_CHECK(file_type_info,
-               get_chunk,
+               got_chunk,
                (&file_type_info->storage_context, chunk),
                "Unable to process received file information for file : %s",
                vs_fldt_file_version_descr(file_ver_descr, file_ver));
@@ -240,7 +272,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                  footer->footer_size);
 
     FLDT_CHECK(file_type_info,
-               get_footer,
+               got_footer,
                (&file_type_info->storage_context, footer),
                "Unable to process received file information for file : %s",
                vs_fldt_file_version_descr(file_ver_descr, file_ver));

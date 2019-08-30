@@ -69,4 +69,7 @@ vs_update_install_prepare_space_hal(void);
 int
 vs_update_install_append_data_hal(const void *data, uint16_t data_sz);
 
+int
+vs_update_restart_app_hal(void);
+
 #endif // VS_UPDATE_INTERFACE_H
