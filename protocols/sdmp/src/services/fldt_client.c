@@ -52,17 +52,13 @@ vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
 
 /******************************************************************/
 static int
-_check_download_need(vs_fldt_client_file_type_mapping_t *file_type_info,
-                     const char *opcode,
-                     const vs_fldt_file_version_t *new_file_ver,
-                     bool *download) {
+_check_download_need(const char *opcode, const vs_fldt_file_version_t *new_file_ver, bool *download) {
     const vs_fldt_file_type_t *file_type = NULL;
+    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_file_version_t present_file_ver;
     char file_ver_descr[FLDT_FILEVER_BUF];
 
-    CHECK_NOT_ZERO_RET(opcode, -1);
     CHECK_NOT_ZERO_RET(new_file_ver, -1);
-    CHECK_NOT_ZERO_RET(download, -1);
 
     file_type = &new_file_ver->file_type;
 
@@ -119,9 +115,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                "Unable to retrieve present file version for file type %d",
                file_type->file_type_id);
 
-    CHECK_RET(!_check_download_need(file_type_info, "INFV", new_file_ver, &download),
-              -4,
-              "Unable to check download need");
+    CHECK_RET(!_check_download_need("INFV", new_file_ver, &download), -4, "Unable to check download need");
 
     if (download) {
 
@@ -164,7 +158,7 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
                "Unable to process received file information for file : %s",
                vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    CHECK_RET(!_check_download_need(file_type_info, "GFTI", file_ver, &download), -3, "Unable to check download need");
+    CHECK_RET(!_check_download_need("GFTI", file_ver, &download), -3, "Unable to check download need");
 
     if (download) {
 
