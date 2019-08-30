@@ -47,10 +47,10 @@ typedef struct __attribute__((__packed__)) {
     uint8_t patch;
     uint8_t dev_milestone;
     uint8_t dev_build;
-    uint32_t timestamp; //the number of seconds elapsed since January 1, 2015 UTC
+    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
 } vs_firmware_version_t;
 
-typedef struct  __attribute__((__packed__)) {
+typedef struct __attribute__((__packed__)) {
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
     uint8_t device_type[DEVICE_TYPE_SIZE];
     vs_firmware_version_t version;
@@ -61,7 +61,7 @@ typedef struct __attribute__((__packed__)) {
     uint8_t padding;
     uint16_t chunk_size;
     uint32_t firmware_length;
-    uint32_t app_size; //firmware_length + fill_size + footer
+    uint32_t app_size; // firmware_length + fill_size + footer
 } vs_firmware_descriptor_t;
 
 typedef enum {
