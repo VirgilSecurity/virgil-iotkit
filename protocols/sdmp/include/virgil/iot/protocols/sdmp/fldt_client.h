@@ -65,23 +65,23 @@ typedef int (*vs_fldt_client_update_file_funct)(void *storage_context,
 // . "Get file info"
 // .  File header for file file_version has been received
 // .  This is response for the vs_fldt_ask_file_type_info call
-typedef int (*vs_fldt_client_get_info_funct)(void *storage_context, const vs_fldt_gfti_fileinfo_response_t *file_info);
+typedef int (*vs_fldt_client_got_info_funct)(void *storage_context, const vs_fldt_gfti_fileinfo_response_t *file_info);
 
 // . "Get file header"
 // .  File header for file file_version has been received
 // .  This is response for the vs_fldt_ask_file_header call
-typedef int (*vs_fldt_client_get_header_funct)(void *storage_context,
+typedef int (*vs_fldt_client_got_header_funct)(void *storage_context,
                                                const vs_fldt_gnfh_header_response_t *file_header);
 
 // . "Get file chunk"
 // .  File data chunk for file file_version has been received
 // .  This is response for the vs_fldt_ask_file_chunk call
-typedef int (*vs_fldt_client_get_chunk_funct)(void *storage_context, const vs_fldt_gnfc_chunk_response_t *file_chunk);
+typedef int (*vs_fldt_client_got_chunk_funct)(void *storage_context, const vs_fldt_gnfc_chunk_response_t *file_chunk);
 
 // . "Get file footer"
 // .  File footer for file file_version has been received
 // .  This is response for the vs_fldt_ask_file_footer call
-typedef int (*vs_fldt_client_get_footer_funct)(void *storage_context,
+typedef int (*vs_fldt_client_got_footer_funct)(void *storage_context,
                                                const vs_fldt_gnff_footer_response_t *file_footer);
 
 //
@@ -95,10 +95,10 @@ typedef struct {
     vs_fldt_client_set_gateway_mac_funct set_gateway_mac;
     vs_fldt_client_get_version_funct get_current_version;
     vs_fldt_client_update_file_funct update_file;
-    vs_fldt_client_get_info_funct get_info;
-    vs_fldt_client_get_header_funct get_header;
-    vs_fldt_client_get_chunk_funct get_chunk;
-    vs_fldt_client_get_footer_funct get_footer;
+    vs_fldt_client_got_info_funct got_info;
+    vs_fldt_client_got_header_funct got_header;
+    vs_fldt_client_got_chunk_funct got_chunk;
+    vs_fldt_client_got_footer_funct got_footer;
 } vs_fldt_client_file_type_mapping_t;
 
 

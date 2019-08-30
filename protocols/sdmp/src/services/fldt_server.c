@@ -135,9 +135,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Header : %d bytes data",
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 header_response->header_size);
+    VS_LOG_DEBUG("[FLDT:GNFH] Header : %d bytes data", header_response->header_size);
 
     return 0;
 }
