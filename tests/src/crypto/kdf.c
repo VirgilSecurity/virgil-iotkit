@@ -22,16 +22,16 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
     int res;
 
     res = vs_hsm_kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len);
-    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "")
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf")
+    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "");
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf");
 
-    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is wrong")
+    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is wrong");
 
     res = vs_hsm_kdf(
             VS_KDF_2, hash_type, (uint8_t *)another_key_raw, strlen(another_key_raw), another_result_buf, result_len);
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute kdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(another_result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is constant")
+    CHECK_RET(0 != VS_IOT_MEMCMP(another_result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "kdf is constant");
     return res;
 }
 
@@ -51,10 +51,10 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       strlen(hkdf_info),
                       result_buf,
                       result_len);
-    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "")
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
+    CHECK_RET(VS_HSM_ERR_NOT_IMPLEMENTED != res, res, "");
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf");
 
-    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "hkdf is wrong")
+    CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "hkdf is wrong");
 
     VS_IOT_MEMSET(result_buf, 0, result_len);
 
@@ -67,9 +67,9 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       strlen(hkdf_info),
                       result_buf,
                       result_len);
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other salt")
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other salt");
 
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = vs_hsm_hkdf(hash_type,
@@ -81,8 +81,8 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       strlen(hkdf_info),
                       result_buf,
                       result_len);
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other input")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf");
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other input");
 
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = vs_hsm_hkdf(hash_type,
@@ -94,9 +94,9 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       strlen(another_hkdf_info),
                       result_buf,
                       result_len);
-    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf")
+    CHECK_RET(VS_HSM_ERR_OK == res, res, "ERROR while execute hkdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other info")
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_HSM_ERR_FAIL, "Same hkdf with other info");
 
     return res;
 }
@@ -112,7 +112,7 @@ test_kdf2(void) {
         if (VS_HSM_ERR_NOT_IMPLEMENTED == res) {                                                                       \
             VS_LOG_WARNING(#FUNC " for SHA_" #BITLEN " algorithm is not implemented");                                 \
         } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_HSM_ERR_OK == res)                           \
+            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_HSM_ERR_OK == res);                           \
         }                                                                                                              \
     } while (0)
 

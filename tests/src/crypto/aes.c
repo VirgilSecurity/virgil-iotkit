@@ -70,8 +70,8 @@ test_aes_cbc_cases() {
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC encrypt is not implemented");
 
-    VS_HSM_CHECK_RET(res, "Unable to encrypt data")
-    MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source))
+    VS_HSM_CHECK_RET(res, "Unable to encrypt data");
+    MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source), false);
 
     VS_IOT_MEMCPY(iv_tmp, iv, iv_sz);
 
@@ -80,8 +80,8 @@ test_aes_cbc_cases() {
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
 
-    VS_HSM_CHECK_RET(res, "Unable to decrypt")
-    MEMCMP_CHECK_RET(source, decrypted, data_sz)
+    VS_HSM_CHECK_RET(res, "Unable to decrypt");
+    MEMCMP_CHECK_RET(source, decrypted, data_sz, false);
 
     return true;
 }
@@ -128,7 +128,7 @@ test_aes_gcm_cases() {
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM encrypt is not implemented");
 
-    VS_HSM_CHECK_RET(res, "Unable to encrypt data")
+    VS_HSM_CHECK_RET(res, "Unable to encrypt data");
 
 #if 0
     uint8_t decrypted[sizeof(source)];
@@ -145,9 +145,9 @@ test_aes_gcm_cases() {
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM auth decrypt is not implemented");
 
-    MEMCMP_CHECK_RET(source, auth_decrypted, data_sz)
+    MEMCMP_CHECK_RET(source, auth_decrypted, data_sz, false);
 
-    VS_HSM_CHECK_RET(res, "Unable to decrypt with authentication")
+    VS_HSM_CHECK_RET(res, "Unable to decrypt with authentication");
 
     return true;
 }
@@ -159,8 +159,8 @@ test_aes(void) {
 
     START_TEST("AES tests");
 
-    TEST_CASE_OK("GCM", test_aes_gcm_cases())
-    TEST_CASE_OK("CBC", test_aes_cbc_cases())
+    TEST_CASE_OK("GCM", test_aes_gcm_cases());
+    TEST_CASE_OK("CBC", test_aes_cbc_cases());
 
 terminate:
     return failed_test_result;

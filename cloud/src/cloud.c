@@ -514,7 +514,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     sign_len = vs_hsm_get_signature_len(element->ec_type);
                     key_len = vs_hsm_get_pubkey_len(element->ec_type);
 
-                    CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] TL footer parse error")
+                    CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] TL footer parse error");
                     resp->footer_sz = sizeof(vs_tl_footer_t) +
                                       resp->host_header.signatures_count * (sizeof(vs_sign_t) + key_len + sign_len);
 

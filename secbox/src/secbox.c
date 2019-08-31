@@ -89,11 +89,11 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
 
     int file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
-    CHECK_RET(0 < file_sz, file_sz, "File not found")
-    CHECK_RET(file_sz > sign_sz + 1, VS_STORAGE_ERROR_GENERAL, "File format error")
+    CHECK_RET(0 < file_sz, file_sz, "File not found");
+    CHECK_RET(file_sz > sign_sz + 1, VS_STORAGE_ERROR_GENERAL, "File format error");
 
     f = ctx->impl.open(ctx->storage_ctx, id);
-    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
+    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file");
 
     // read data type
     res = ctx->impl.load(ctx->storage_ctx, f, 0, &type, 1);
@@ -178,7 +178,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(data, VS_STORAGE_ERROR_PARAMS);
-    CHECK_RET(data_sz <= ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big")
+    CHECK_RET(data_sz <= ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big");
 
 
     switch (type) {
@@ -286,11 +286,11 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
 
     int file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
-    CHECK_RET(0 < file_sz, VS_STORAGE_ERROR_GENERAL, "Can't find file")
-    CHECK_RET(file_sz > sign_sz + 1, VS_STORAGE_ERROR_GENERAL, "File format error")
+    CHECK_RET(0 < file_sz, VS_STORAGE_ERROR_GENERAL, "Can't find file");
+    CHECK_RET(file_sz > sign_sz + 1, VS_STORAGE_ERROR_GENERAL, "File format error");
 
     f = ctx->impl.open(ctx->storage_ctx, id);
-    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
+    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file");
 
     // read data type
     res = ctx->impl.load(ctx->storage_ctx, f, 0, &type, 1);

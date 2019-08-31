@@ -68,7 +68,7 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
                                                                         encrypted_data,
                                                                         data_sz,
                                                                         &encrypted_data_sz),
-                   "Success call with small output buffer")
+                   "Success call with small output buffer");
 
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
                                                                         recipient_id_sz,
@@ -77,7 +77,7 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
                                                                         encrypted_data,
                                                                         sizeof(encrypted_data),
                                                                         &encrypted_data_sz),
-                   "Error encrypt data")
+                   "Error encrypt data");
 
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_virgil_decrypt_sha384_aes256(recipient_id,
                                                                         recipient_id_sz,
@@ -86,7 +86,8 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
                                                                         decrypted_data,
                                                                         sizeof(decrypted_data),
                                                                         &decrypted_data_sz),
-                   "Error decrypt data")
+                   "Error decrypt data");
+
     return decrypted_data_sz == data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
 }
 
@@ -96,12 +97,13 @@ vs_virgil_ecies_test() {
     uint16_t failed_test_result = 0;
     START_TEST("Virgil ecies encryption");
 
-    TEST_CASE_OK("Create device key", _create_device_key())
+    TEST_CASE_OK("Create device key", _create_device_key());
     TEST_CASE_OK("Encrypt/decrypt data",
                  _ecies_crypt_case((uint8_t *)test_recipient_id,
                                    strlen(test_recipient_id),
                                    (uint8_t *)test_data,
-                                   strlen(test_data) + 1))
+                                   strlen(test_data) + 1));
+
 terminate:
 
     return failed_test_result;
