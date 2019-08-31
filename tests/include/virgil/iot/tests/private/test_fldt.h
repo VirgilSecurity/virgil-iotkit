@@ -65,35 +65,4 @@ int server_chunk_funct_ret;
 //vs_fldt_client_file_type_mapping_t
 //get_client_file_mapping(vs_fldt_file_type_id_t *file_type);
 
-
-#define FLDT_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
-    if ((OPERATION)) {                                                                                            \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    }
-
-#define FLDT_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)  do {                                                                 \
-        prev_loglev = vs_logger_get_loglev();   \
-        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if (!(OPERATION)) {                                                                                            \
-        vs_logger_set_loglev(prev_loglev);  \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    } else {  \
-        vs_logger_set_loglev(prev_loglev);  \
-    }   \
-    } while(0)
-
-#define FLDT_CHECK_GOTO_HIDE_ERROR(OPERATION, DESCRIPTION, ...)  do {                                                                 \
-        prev_loglev = vs_logger_get_loglev();   \
-        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if ((OPERATION)) {                                                                                            \
-        vs_logger_set_loglev(prev_loglev);  \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    } else {  \
-        vs_logger_set_loglev(prev_loglev);  \
-    }   \
-    } while(0)
-
 #endif // VIRGIL_IOT_SDK_TESTS_FLDT_H_

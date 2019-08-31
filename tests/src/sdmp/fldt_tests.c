@@ -32,6 +32,35 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/protocols/sdmp/fldt.h>
+
+#define FLDT_CHECK_GOTO(OPERATION, DESCRIPTION, ...)  CHECK(VS_FLDT_ERR_OK == (OPERATION), DESCRIPTION, ## __VA_ARGS__ )
+
+#define FLDT_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)  do {                                                                 \
+        prev_loglev = vs_logger_get_loglev();   \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
+    if (!(OPERATION)) {                                                                                            \
+        vs_logger_set_loglev(prev_loglev);  \
+        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
+        goto terminate;                                                                                                \
+    } else {  \
+        vs_logger_set_loglev(prev_loglev);  \
+    }   \
+    } while(0)
+
+#define FLDT_CHECK_GOTO_HIDE_ERROR(OPERATION, DESCRIPTION, ...)  do {                                                                 \
+        prev_loglev = vs_logger_get_loglev();   \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
+    if ((OPERATION)) {                                                                                            \
+        vs_logger_set_loglev(prev_loglev);  \
+        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
+        goto terminate;                                                                                                \
+    } else {  \
+        vs_logger_set_loglev(prev_loglev);  \
+    }   \
+    } while(0)
+
 #include <stdbool.h>
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_fldt.h>
