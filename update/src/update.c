@@ -82,13 +82,14 @@ vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor,
 /*************************************************************************/
 int
 vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer) {
+    uint8_t i;
     uint16_t footer_sz = sizeof(vs_update_firmware_footer_t);
     vs_update_firmware_footer_t *f = (vs_update_firmware_footer_t *)footer;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(footer, VS_UPDATE_ERR_INVAL);
 
-    for (uint8_t i = 0; i < f->signatures_count; ++i) {
+    for (i = 0; i < f->signatures_count; ++i) {
         int key_len;
         int sign_len;
         vs_sign_t *sign = (vs_sign_t *)(footer + footer_sz);
