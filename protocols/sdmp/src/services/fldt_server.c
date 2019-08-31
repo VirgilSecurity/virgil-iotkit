@@ -60,37 +60,41 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info;
     vs_fldt_gfti_fileinfo_response_t *file_info_response = (vs_fldt_gfti_fileinfo_response_t *)response;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    int fldt_ret_code;
 
-    CHECK_NOT_ZERO_RET(request, -1);
-    CHECK_NOT_ZERO_RET(request_sz, -1);
-    CHECK_NOT_ZERO_RET(response, -1);
-    CHECK_NOT_ZERO_RET(response_sz, -1);
+    CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     CHECK_RET(request_sz == sizeof(*file_info_request),
-              -2,
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gfti_fileinfo_request_t type");
 
     CHECK_RET(response_buf_sz >= sizeof(*file_info_response),
-              -3,
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gfti_fileinfo_response_t structure");
 
     file_type = &file_info_request->file_type;
-    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
+
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
+              VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
+              "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GFTI] Request for file type %ul", file_type->file_type_id);
 
-    FLDT_CHECK(file_type_info,
-               get_version,
-               (file_type_info->storage_context, file_info_request, file_info_response),
-               "Unable to get last file version information for file type %d",
-               file_type->file_type_id);
+    FLDT_CALLBACK(file_type_info,
+                  get_version,
+                  (file_type_info->storage_context, file_info_request, file_info_response),
+                  "Unable to get last file version information for file type %d",
+                  file_type->file_type_id);
 
     VS_LOG_DEBUG("[FLDT:GFTI] Server file information : %s",
                  vs_fldt_file_version_descr(file_ver_descr, &file_info_response->version));
 
     *response_sz = sizeof(*file_info_response);
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
@@ -107,37 +111,42 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    int fldt_ret_code;
 
-    CHECK_NOT_ZERO_RET(request, -1);
-    CHECK_NOT_ZERO_RET(request_sz, -1);
-    CHECK_NOT_ZERO_RET(response, -1);
-    CHECK_NOT_ZERO_RET(response_sz, -1);
+    CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(
-            request_sz == sizeof(*header_request), -2, "Request buffer must be of vs_fldt_gnfh_header_request_t type");
+    CHECK_RET(request_sz == sizeof(*header_request),
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
+              "Request buffer must be of vs_fldt_gnfh_header_request_t type");
 
     CHECK_RET(response_buf_sz > sizeof(*header_response),
-              -3,
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnfh_header_response_t structure");
 
     file_ver = &header_request->version;
     file_type = &file_ver->file_type;
-    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
+
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
+              VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
+              "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
                  vs_fldt_file_version_descr(file_ver_descr, &header_request->version));
 
-    FLDT_CHECK(file_type_info,
-               get_header,
-               (file_type_info->storage_context, header_request, response_buf_sz, header_response),
-               "Unable to get last file version information for file type %d",
-               file_type->file_type_id);
+    FLDT_CALLBACK(file_type_info,
+                  get_header,
+                  (file_type_info->storage_context, header_request, response_buf_sz, header_response),
+                  "Unable to get last file version information for file type %d",
+                  file_type->file_type_id);
 
     *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
 
     VS_LOG_DEBUG("[FLDT:GNFH] Header : %d bytes data", header_response->header_size);
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
@@ -154,35 +163,41 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfc_chunk_response_t *chunk_response = (vs_fldt_gnfc_chunk_response_t *)response;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    int fldt_ret_code;
 
-    CHECK_NOT_ZERO_RET(request, -1);
-    CHECK_NOT_ZERO_RET(request_sz, -1);
-    CHECK_NOT_ZERO_RET(response, -1);
-    CHECK_NOT_ZERO_RET(response_sz, -1);
+    CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(request_sz == sizeof(*chunk_request), -2, "Request buffer must be of vs_fldt_gnfc_chunk_request_t type");
+    CHECK_RET(request_sz == sizeof(*chunk_request),
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
+              "Request buffer must be of vs_fldt_gnfc_chunk_request_t type");
 
     CHECK_RET(response_buf_sz > sizeof(*chunk_response),
-              -3,
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnfc_chunk_response_t structure");
 
     file_ver = &chunk_request->version;
     file_type = &file_ver->file_type;
-    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
+
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
+              VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
+              "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFC] Request for chunk %d for file %s",
                  chunk_request->chunk_id,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    FLDT_CHECK(file_type_info,
-               get_chunk,
-               (file_type_info->storage_context, chunk_request, response_buf_sz, chunk_response),
-               "Unable to get last file version information for file type %d",
-               file_type->file_type_id);
+    FLDT_CALLBACK(file_type_info,
+                  get_chunk,
+                  (file_type_info->storage_context, chunk_request, response_buf_sz, chunk_response),
+                  "Unable to get last file version information for file type %d",
+                  file_type->file_type_id);
 
     *response_sz = sizeof(vs_fldt_gnfc_chunk_response_t) + chunk_response->chunk_size;
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
@@ -199,34 +214,39 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    int fldt_ret_code;
 
-    CHECK_NOT_ZERO_RET(request, -1);
-    CHECK_NOT_ZERO_RET(request_sz, -1);
-    CHECK_NOT_ZERO_RET(response, -1);
-    CHECK_NOT_ZERO_RET(response_sz, -1);
+    CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(
-            request_sz == sizeof(*footer_request), -2, "Request buffer must be of vs_fldt_gnff_footer_request_t type");
+    CHECK_RET(request_sz == sizeof(*footer_request),
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
+              "Request buffer must be of vs_fldt_gnff_footer_request_t type");
 
     CHECK_RET(response_buf_sz > sizeof(*footer_response),
-              -3,
+              VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnff_footer_response_t structure");
 
     file_ver = &footer_request->version;
     file_type = &file_ver->file_type;
-    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type), -4, "Unregistered file type");
+
+    CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
+              VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
+              "Unregistered file type");
 
     VS_LOG_DEBUG("[FLDT:GNFF] Footer request for file %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
-    FLDT_CHECK(file_type_info,
-               get_footer,
-               (file_type_info->storage_context, footer_request, response_buf_sz, footer_response),
-               "Unable to get last file version information for file type %d",
-               file_type->file_type_id);
+    FLDT_CALLBACK(file_type_info,
+                  get_footer,
+                  (file_type_info->storage_context, footer_request, response_buf_sz, footer_response),
+                  "Unable to get last file version information for file type %d",
+                  file_type->file_type_id);
 
     *response_sz = sizeof(vs_fldt_gnff_footer_response_t) + footer_response->footer_size;
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
@@ -234,10 +254,9 @@ int
 vs_fldt_update_server_file_type(const vs_fldt_server_file_type_mapping_t *mapping_elem) {
 
     vs_log_level_t prev_loglev;
-
     vs_fldt_server_file_type_mapping_t *file_type_mapping = NULL;
 
-    CHECK_NOT_ZERO_RET(mapping_elem, -1);
+    CHECK_NOT_ZERO_RET(mapping_elem, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     prev_loglev = vs_logger_get_loglev();
     vs_logger_set_loglev(VS_LOGLEV_ERROR);
@@ -250,7 +269,7 @@ vs_fldt_update_server_file_type(const vs_fldt_server_file_type_mapping_t *mappin
 
     VS_IOT_MEMCPY(file_type_mapping, mapping_elem, sizeof(*mapping_elem));
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
@@ -261,15 +280,15 @@ vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
     VS_LOG_DEBUG("[FLDT] Broadcast new file version present for file %s",
                  vs_fldt_file_version_descr(filever_descr, &new_file->version));
 
-    CHECK_NOT_ZERO_RET(new_file, -1);
+    CHECK_NOT_ZERO_RET(new_file, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
                                     vs_fldt_broadcast_mac_addr,
                                     VS_FLDT_INFV,
                                     (const uint8_t *)new_file,
                                     sizeof(*new_file)),
-              -2,
+              VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
               "Unable to send FLDT \"INFV\" broadcast request");
 
-    return 0;
+    return VS_FLDT_ERR_OK;
 }

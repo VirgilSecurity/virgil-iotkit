@@ -42,7 +42,6 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 #define FLDT_FILEVER_BUF (128)         // buffer for vs_fldt_file_version_descr
-#define FLDT_ERR_CODE (-127)           // FLDT internal calls error
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
@@ -63,6 +62,16 @@ typedef struct __attribute__((__packed__)) {
     uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
     vs_fldt_file_type_t file_type;
 } vs_fldt_file_version_t;
+
+// Return codes
+typedef enum {
+    VS_FLDT_ERR_OK = 0,
+    VS_FLDT_ERR_INCORRECT_ARGUMENT = -1,
+    VS_FLDT_ERR_UNSUPPORTED_PARAMETER = -2,
+    VS_FLDT_ERR_NO_CALLBACK = -3,
+    VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE = -4,
+    VS_FLDT_ERR_INCORRECT_SEND_REQUEST = -5
+} vs_fldt_ret_code_e;
 
 // Commands
 typedef enum {
@@ -130,12 +139,6 @@ typedef struct __attribute__((__packed__)) {
 } vs_fldt_gnff_footer_response_t;
 
 // Utilities
-
-#define FLDT_CHECK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                      \
-    do {                                                                                                               \
-        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, FLDT_ERR_CODE, "There is no " #CALLBACK " callback");              \
-        CHECK_RET((FILETYPEINFO)->CALLBACK ARGUMENTS == 0, FLDT_ERR_CODE, (DESCR), ##__VA_ARGS__)                      \
-    } while (0)
 
 static inline void
 vs_fldt_set_is_gateway(bool is_gateway) {

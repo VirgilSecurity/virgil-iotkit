@@ -97,7 +97,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
         if (vs_fldt_get_is_gateway()) {
             return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
         } else {
-            return 0;
+            return VS_FLDT_ERR_OK;
         }
 
     case VS_FLDT_GNFH:
@@ -111,7 +111,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
 
     default:
         VS_IOT_ASSERT(false && "Unsupported command");
-        return -1;
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
     }
 }
 
@@ -126,7 +126,7 @@ _fldt_service_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return 0;
+        return VS_FLDT_ERR_OK;
 
     case VS_FLDT_GFTI:
         return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
@@ -142,7 +142,7 @@ _fldt_service_response_processor(const struct vs_netif_t *netif,
 
     default:
         VS_IOT_ASSERT(false && "Unsupported command");
-        return -1;
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
     }
 }
 
