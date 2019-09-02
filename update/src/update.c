@@ -50,7 +50,8 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 
 /*************************************************************************/
 int
-vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
                               uint16_t buff_sz,
@@ -67,7 +68,8 @@ vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
 
 /*************************************************************************/
 int
-vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
                               uint8_t *chunk,
                               uint16_t chunk_sz,
                               uint32_t offset) {
@@ -81,7 +83,7 @@ vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor,
 
 /*************************************************************************/
 int
-vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer) {
+vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor, uint8_t *footer) {
     uint8_t i;
     uint16_t footer_sz = sizeof(vs_update_firmware_footer_t);
     vs_update_firmware_footer_t *f = (vs_update_firmware_footer_t *)footer;
@@ -111,7 +113,8 @@ vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *fo
 
 /*************************************************************************/
 int
-vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
+vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
+                               vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                uint16_t buff_sz,
                                uint16_t *data_sz) {
@@ -144,7 +147,7 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
 
 /*************************************************************************/
 int
-vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
+vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int file_sz;
     uint8_t *buf = NULL;
     uint8_t *newbuf = NULL;
@@ -211,7 +214,8 @@ save_data:
 
 /*************************************************************************/
 int
-vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
+                                   uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                    uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor) {
 
@@ -258,7 +262,7 @@ terminate:
 
 /*************************************************************************/
 int
-vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor) {
+vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int res = VS_UPDATE_ERR_FAIL;
     int file_sz;
     uint8_t *buf = NULL;
@@ -327,14 +331,14 @@ _is_rule_equal_to(vs_key_type_e type) {
 
 /*************************************************************************/
 int
-vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
+vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int file_sz;
     uint8_t *pubkey;
     uint16_t sign_len;
     uint16_t key_len;
     uint8_t sign_rules = 0;
     uint16_t i;
-    vs_hsm_sw_sha256_ctx ctx;
+    vs_hsm_sw_sha256_ctx hash_ctx;
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
@@ -354,18 +358,19 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     uint32_t offset = 0;
     uint16_t read_sz;
 
-    vs_hsm_sw_sha256_init(&ctx);
+    vs_hsm_sw_sha256_init(&hash_ctx);
 
     // Update hash by firmware
     while (offset < descriptor->firmware_length) {
         uint32_t fw_rest = descriptor->firmware_length - offset;
         uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
 
-        if (VS_UPDATE_ERR_OK != vs_update_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
+        if (VS_UPDATE_ERR_OK !=
+            vs_update_load_firmware_chunk(ctx, descriptor, offset, buf, required_chunk_size, &read_sz)) {
             return VS_UPDATE_ERR_FAIL;
         }
 
-        vs_hsm_sw_sha256_update(&ctx, buf, required_chunk_size);
+        vs_hsm_sw_sha256_update(&hash_ctx, buf, required_chunk_size);
         offset += required_chunk_size;
     }
 
@@ -378,17 +383,17 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
     // Update hash by fill
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
-        vs_hsm_sw_sha256_update(&ctx, buf, sz);
+        vs_hsm_sw_sha256_update(&hash_ctx, buf, sz);
         fill_sz -= sz;
     }
 
     // Update hash by footer
-    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(descriptor, buf, footer_sz, &read_sz)) {
+    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(ctx, descriptor, buf, footer_sz, &read_sz)) {
         return VS_UPDATE_ERR_FAIL;
     }
 
-    vs_hsm_sw_sha256_update(&ctx, buf, sizeof(vs_update_firmware_footer_t));
-    vs_hsm_sw_sha256_final(&ctx, hash);
+    vs_hsm_sw_sha256_update(&hash_ctx, buf, sizeof(vs_update_firmware_footer_t));
+    vs_hsm_sw_sha256_final(&hash_ctx, hash);
 
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
@@ -434,7 +439,7 @@ vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor) {
 
 /*************************************************************************/
 int
-vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
+vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int file_sz;
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
 
@@ -460,7 +465,8 @@ vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
         uint32_t fw_rest = descriptor->firmware_length - offset;
         uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
 
-        if (VS_UPDATE_ERR_OK != vs_update_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
+        if (VS_UPDATE_ERR_OK !=
+            vs_update_load_firmware_chunk(ctx, descriptor, offset, buf, required_chunk_size, &read_sz)) {
             return VS_UPDATE_ERR_FAIL;
         }
 
@@ -489,7 +495,7 @@ vs_update_install_firmware(vs_firmware_descriptor_t *descriptor) {
     }
 
     // Update image by footer
-    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(descriptor, buf, footer_sz, &read_sz)) {
+    if (VS_UPDATE_ERR_OK != vs_update_load_firmware_footer(ctx, descriptor, buf, footer_sz, &read_sz)) {
         return VS_UPDATE_ERR_FAIL;
     }
 

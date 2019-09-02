@@ -216,12 +216,13 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
 
 /*************************************************************************/
 static bool
-_is_member_for_vendor_and_model_present(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+_is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
+                                        uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                         uint8_t device_type[DEVICE_TYPE_SIZE],
                                         vs_firmware_version_t *cur_version) {
     // TODO: Need to arrange models table with current version of devices
     vs_firmware_descriptor_t desc;
-    int res = vs_update_load_firmware_descriptor(manufacture_id, device_type, &desc);
+    int res = vs_update_load_firmware_descriptor(fw_storage, manufacture_id, device_type, &desc);
 
     if (VS_UPDATE_ERR_NOT_FOUND == res) {
         VS_IOT_MEMSET(cur_version, 0, sizeof(vs_firmware_version_t));
@@ -236,12 +237,13 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[MANUFACTURE_ID_SI
 
 /*************************************************************************/
 int
-vs_cloud_is_new_firmware_version_available(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
+                                           uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],
                                            vs_firmware_version_t *new_ver) {
     vs_firmware_version_t current_ver;
 
-    if (!_is_member_for_vendor_and_model_present(manufacture_id, device_type, &current_ver) ||
+    if (!_is_member_for_vendor_and_model_present(fw_storage, manufacture_id, device_type, &current_ver) ||
         0 <= VS_IOT_MEMCMP(&current_ver.major,
                            &new_ver->major,
                            sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))) {
@@ -253,7 +255,8 @@ vs_cloud_is_new_firmware_version_available(uint8_t manufacture_id[MANUFACTURE_ID
 
 /*************************************************************************/
 static int
-_is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t *fm_entry) {
+_is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
+                                         vs_firmware_manifest_entry_t *fm_entry) {
     vs_firmware_version_t current_ver;
     vs_firmware_version_t new_ver;
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
@@ -263,12 +266,15 @@ _is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t *fm_entry)
         return VS_CLOUD_ERR_FAIL;
     }
 
-    return vs_cloud_is_new_firmware_version_available(manufacture_id, fm_entry->device_type.id, &new_ver);
+    return vs_cloud_is_new_firmware_version_available(fw_storage, manufacture_id, fm_entry->device_type.id, &new_ver);
 }
 
 /*************************************************************************/
 int
-vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url) {
+vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
+                                 void *payload,
+                                 size_t payload_len,
+                                 char *fw_url) {
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
 
@@ -311,7 +317,7 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
         VS_LOG_INFO("[FW] version = %s", fm_entry.version);
         VS_LOG_INFO("[FW] timestamp = %s", fm_entry.timestamp);
 
-        res = _is_new_fw_version_available_in_manifest(&fm_entry);
+        res = _is_new_fw_version_available_in_manifest(fw_storage, &fm_entry);
         if (VS_CLOUD_ERR_OK == res) {
             VS_IOT_STRCPY(fw_url, fm_entry.fw_file_url);
         }

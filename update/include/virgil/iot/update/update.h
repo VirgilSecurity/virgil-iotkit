@@ -36,6 +36,7 @@
 #define VS_UPDATE_H
 
 #include <global-hal.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
@@ -79,39 +80,46 @@ typedef struct __attribute__((__packed__)) {
 } vs_update_firmware_footer_t;
 
 int
-vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
+vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
+                              uint8_t *chunk,
+                              uint16_t chunk_sz,
+                              uint32_t offset);
 
 int
-vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
+vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor, uint8_t *footer);
 
 int
-vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
                               uint16_t buff_sz,
                               uint16_t *data_sz);
 
 int
-vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
+vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
+                               vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                uint16_t buff_sz,
                                uint16_t *data_sz);
 int
-vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
+vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 
 int
-vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
+                                   uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                    uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_install_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 #endif // VS_UPDATE_H

@@ -50,6 +50,7 @@ target_link_libraries(cloud
         PUBLIC
         vs-json
         update
+        storage_hal
         )
 
 target_include_directories(cloud
