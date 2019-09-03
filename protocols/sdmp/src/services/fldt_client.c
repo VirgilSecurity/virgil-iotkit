@@ -52,12 +52,14 @@ vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
 
 /******************************************************************/
 static int
-_check_download_need(const char *opcode, const vs_fldt_file_version_t *new_file_ver, bool *download) {
+_check_download_need(const char *opcode,
+                     vs_fldt_client_file_type_mapping_t *file_type_info,
+                     const vs_fldt_file_version_t *new_file_ver,
+                     bool *download) {
     const vs_fldt_file_type_t *file_type = NULL;
-    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_file_version_t present_file_ver;
-    char file_ver_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(new_file_ver, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
@@ -65,16 +67,23 @@ _check_download_need(const char *opcode, const vs_fldt_file_version_t *new_file_
 
     FLDT_CALLBACK(file_type_info,
                   get_current_version,
-                  (file_type_info->storage_context, file_type, &present_file_ver),
+                  (&file_type_info->storage_context, file_type, &present_file_ver),
                   "Unable to retrieve present file version for file type %d",
                   file_type->file_type_id);
 
+
+    VS_LOG_DEBUG(
+            "[FLDT:%s] Present file version : %s", opcode, vs_fldt_file_version_descr(file_descr, &present_file_ver));
+
+    VS_LOG_DEBUG("[FLDT:%s] New file version : %s", opcode, vs_fldt_file_version_descr(file_descr, new_file_ver));
+
     *download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
 
-    VS_LOG_DEBUG("[FLDT:%s] Current file version : %s. %s",
-                 opcode,
-                 vs_fldt_file_version_descr(file_ver_descr, &present_file_ver),
-                 (*download ? "Need to download new one." : "No need to download."));
+    if (*download) {
+        VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
+    } else {
+        VS_LOG_DEBUG("[FLDT:%s] No need to download new version", opcode);
+    }
 
     return VS_FLDT_ERR_OK;
 }
@@ -92,8 +101,8 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     const vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     bool download;
-    char file_ver_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -106,13 +115,14 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
               "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
 
     new_file_ver = &new_file->version;
+
+    VS_LOG_DEBUG("[FLDT:INFV] Request for new file : %s", vs_fldt_file_version_descr(file_descr, new_file_ver));
+
     file_type = &new_file_ver->file_type;
 
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
-
-    VS_LOG_DEBUG("[FLDT:INFV] Request for new file : %s", vs_fldt_file_version_descr(file_ver_descr, new_file_ver));
 
     FLDT_CALLBACK(file_type_info,
                   set_gateway_mac,
@@ -120,13 +130,13 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                   "Unable to retrieve present file version for file type %d",
                   file_type->file_type_id);
 
-    FLDT_CHECK(_check_download_need("INFV", new_file_ver, &download), "Unable to check download need");
+    FLDT_CHECK(_check_download_need("INFV", file_type_info, new_file_ver, &download), "Unable to check download need");
 
     if (download) {
 
         FLDT_CALLBACK(file_type_info,
                       update_file,
-                      (file_type_info->storage_context, new_file),
+                      (&file_type_info->storage_context, new_file),
                       "Unable to notify new file version for file type %d",
                       file_type->file_type_id);
     }
@@ -142,11 +152,15 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    char file_ver_descr[FLDT_FILEVER_BUF];
+    char file_descr[FLDT_FILEVER_BUF];
     bool download;
-    int fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
 
     (void)is_ack;
+
+    file_ver = &file_info->version;
+
+    VS_LOG_DEBUG("[FLDT:GFTI] Response for file : %s", vs_fldt_file_version_descr(file_descr, file_ver));
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -154,21 +168,19 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gfti_fileinfo_response_t type");
 
-    file_ver = &file_info->version;
     file_type = &file_ver->file_type;
+
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
-
-    VS_LOG_DEBUG("[FLDT:GFTI] Response for file : %s", vs_fldt_file_version_descr(file_ver_descr, file_ver));
 
     FLDT_CALLBACK(file_type_info,
                   got_info,
                   (&file_type_info->storage_context, file_info),
                   "Unable to process received file information for file : %s",
-                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
+                  vs_fldt_file_version_descr(file_descr, file_ver));
 
-    FLDT_CHECK(_check_download_need("GFTI", file_ver, &download), "Unable to check download need");
+    FLDT_CHECK(_check_download_need("GFTI", file_type_info, file_ver, &download), "Unable to check download need");
 
     if (download) {
 
@@ -177,7 +189,7 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
         FLDT_CALLBACK(file_type_info,
                       update_file,
-                      (file_type_info->storage_context, &new_file),
+                      (&file_type_info->storage_context, &new_file),
                       "Unable to notify new file version for file type %d",
                       file_type->file_type_id);
     }
@@ -192,10 +204,16 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    char file_ver_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_fldt_ret_code_e fldt_ret_code;
 
     (void)is_ack;
+
+    file_ver = &header->version;
+
+    VS_LOG_DEBUG("[FLDT:GNFH] Response for file : %s. Header : %d bytes data",
+                 vs_fldt_file_version_descr(file_descr, file_ver),
+                 header->header_size);
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -204,21 +222,16 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfh_header_response_t type");
 
-    file_ver = &header->version;
     file_type = &file_ver->file_type;
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Response for file : %s. Header : %d bytes data",
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 header->header_size);
-
     FLDT_CALLBACK(file_type_info,
                   got_header,
                   (&file_type_info->storage_context, header),
                   "Unable to process received file information for file : %s",
-                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
+                  vs_fldt_file_version_descr(file_descr, file_ver));
 
     return VS_FLDT_ERR_OK;
 }
@@ -230,10 +243,17 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    char file_ver_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_fldt_ret_code_e fldt_ret_code;
 
     (void)is_ack;
+
+    file_ver = &chunk->version;
+
+    VS_LOG_DEBUG("[FLDT:GNFC] Response for file : %s. Chunk %d, %d bytes",
+                 vs_fldt_file_version_descr(file_descr, file_ver),
+                 chunk->chunk_id,
+                 (int)chunk->chunk_size);
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -242,22 +262,18 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfc_chunk_response_t type");
 
-    file_ver = &chunk->version;
     file_type = &file_ver->file_type;
+
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:GNFC] Response for file : %s. Chunk %d, %d bytes",
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 chunk->chunk_id,
-                 (int)chunk->chunk_size);
 
     FLDT_CALLBACK(file_type_info,
                   got_chunk,
                   (&file_type_info->storage_context, chunk),
                   "Unable to process received file information for file : %s",
-                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
+                  vs_fldt_file_version_descr(file_descr, file_ver));
 
     return VS_FLDT_ERR_OK;
 }
@@ -269,10 +285,16 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    char file_ver_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_fldt_ret_code_e fldt_ret_code;
 
     (void)is_ack;
+
+    file_ver = &footer->version;
+
+    VS_LOG_DEBUG("[FLDT:GNFF] Response for file : %s. Footer size %d bytes",
+                 vs_fldt_file_version_descr(file_descr, file_ver),
+                 footer->footer_size);
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -281,45 +303,60 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnff_footer_response_t type");
 
-    file_ver = &footer->version;
     file_type = &file_ver->file_type;
 
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:GNFF] Response for file : %s. Footer size %d bytes",
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver),
-                 footer->footer_size);
-
     FLDT_CALLBACK(file_type_info,
                   got_footer,
                   (&file_type_info->storage_context, footer),
                   "Unable to process received file information for file : %s",
-                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
+                  vs_fldt_file_version_descr(file_descr, file_ver));
 
     return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
-int
-vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem) {
+vs_fldt_ret_code_e
+vs_fldt_update_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem) {
+    vs_log_level_t prev_loglev;
+    vs_fldt_client_file_type_mapping_t *file_type_mapping = NULL;
+    char file_descr[FLDT_FILEVER_BUF];
 
     CHECK_NOT_ZERO_RET(mapping_elem, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    // TODO : make a set!
-    VS_IOT_MEMCPY(&_client_file_type_mapping[_file_type_mapping_array_size++], mapping_elem, sizeof(*mapping_elem));
+    VS_LOG_DEBUG("[FLDT] Update file type %s", vs_fldt_file_type_descr(file_descr, &mapping_elem->file_type));
+
+    prev_loglev = vs_logger_get_loglev();
+    vs_logger_set_loglev(VS_LOGLEV_ERROR);
+    file_type_mapping = vs_fldt_get_mapping_elem(&mapping_elem->file_type);
+    vs_logger_set_loglev(prev_loglev);
+
+    if (!file_type_mapping) {
+        file_type_mapping = &_client_file_type_mapping[_file_type_mapping_array_size++];
+        VS_LOG_DEBUG("[FLDT] File type is not found, add new entry. Array size = %d", _file_type_mapping_array_size);
+    } else {
+        VS_IOT_ASSERT(file_type_mapping->destroy && "Destroy function must be specified");
+        file_type_mapping->destroy(&file_type_mapping->storage_context);
+        VS_LOG_DEBUG("[FLDT] File type is already present, update");
+    }
+
+    VS_IOT_MEMCPY(file_type_mapping, mapping_elem, sizeof(*mapping_elem));
 
     return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
-int
+vs_fldt_ret_code_e
 vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type) {
+    char file_descr[FLDT_FILEVER_BUF];
 
     CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %d", file_type->file_type.file_type_id);
+    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s",
+                 vs_fldt_file_type_descr(file_descr, &file_type->file_type));
 
     CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
                                     vs_fldt_broadcast_mac_addr,
@@ -333,12 +370,12 @@ vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type) {
 }
 
 /******************************************************************/
-int
+vs_fldt_ret_code_e
 vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request) {
-    char file_type_descr[FLDT_FILEVER_BUF];
+    char file_descr[FLDT_FILEVER_BUF];
 
     VS_LOG_DEBUG("[FLDT] Ask file header for file : %s",
-                 vs_fldt_file_version_descr(file_type_descr, &header_request->version));
+                 vs_fldt_file_version_descr(file_descr, &header_request->version));
 
     CHECK_NOT_ZERO_RET(mac, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(header_request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -352,13 +389,13 @@ vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_requ
 }
 
 /******************************************************************/
-int
+vs_fldt_ret_code_e
 vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *file_chunk) {
-    char file_type_descr[FLDT_FILEVER_BUF];
+    char file_descr[FLDT_FILEVER_BUF];
 
     VS_LOG_DEBUG("[FLDT] Ask file chunk %d for file : %s",
                  file_chunk->chunk_id,
-                 vs_fldt_file_version_descr(file_type_descr, &file_chunk->version));
+                 vs_fldt_file_version_descr(file_descr, &file_chunk->version));
 
     CHECK_NOT_ZERO_RET(mac, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_chunk, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -371,12 +408,11 @@ vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *f
 }
 
 /******************************************************************/
-int
+vs_fldt_ret_code_e
 vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_request_t *file_footer) {
-    char file_type_descr[FLDT_FILEVER_BUF];
+    char file_descr[FLDT_FILEVER_BUF];
 
-    VS_LOG_DEBUG("[FLDT] Ask file footer for file : %s",
-                 vs_fldt_file_version_descr(file_type_descr, &file_footer->version));
+    VS_LOG_DEBUG("[FLDT] Ask file footer for file : %s", vs_fldt_file_version_descr(file_descr, &file_footer->version));
 
     CHECK_NOT_ZERO_RET(mac, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_footer, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -387,4 +423,31 @@ vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_requ
             "Unable to send FLDT \"GNFF\" server request");
 
     return VS_FLDT_ERR_OK;
+}
+
+/******************************************************************/
+vs_fldt_ret_code_e
+vd_fldt_init_client(void) {
+    vd_fldt_destroy_client();
+
+    vs_fldt_is_gateway = false;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/******************************************************************/
+void
+vd_fldt_destroy_client(void) {
+    size_t pos;
+    vs_fldt_client_file_type_mapping_t *elem;
+
+    for (pos = 0; pos < _file_type_mapping_array_size; ++pos) {
+        elem = &_client_file_type_mapping[pos];
+
+        VS_IOT_ASSERT(elem->destroy && "Destroy function must be specified");
+
+        elem->destroy(&elem->storage_context);
+    }
+
+    _file_type_mapping_array_size = 0;
 }

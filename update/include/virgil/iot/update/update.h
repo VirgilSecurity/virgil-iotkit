@@ -88,6 +88,9 @@ typedef struct __attribute__((__packed__)) {
     uint8_t signatures[];
 } vs_update_firmware_footer_t;
 
+#define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
+    CHECK_RET((update_ret_code = (OPERATION)) == VS_UPDATE_ERR_OK, update_ret_code, MESSAGE, ##__VA_ARGS__)
+
 int
 vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
 

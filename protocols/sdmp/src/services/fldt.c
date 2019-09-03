@@ -53,15 +53,45 @@ bool vs_fldt_is_gateway;
 
 /******************************************************************************/
 char *
+vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type) {
+    char *out = buf;
+    const uint8_t *src;
+    size_t pos;
+
+    CHECK_NOT_ZERO(buf);
+    CHECK_NOT_ZERO(file_type);
+
+    VS_IOT_SPRINTF(out, "file type %d (add_info = \"", file_type->file_type_id);
+
+    out += VS_IOT_STRLEN(buf);
+    src = (const uint8_t *)&file_type->add_info;
+    for (pos = 0; pos < sizeof(file_type->add_info); ++pos, ++out, ++src) {
+        *out = (*src >= ' ') ? *src : '.';
+    }
+
+    VS_IOT_STRCPY(out, "\")");
+
+    return buf;
+
+terminate:
+
+    return NULL;
+}
+
+/******************************************************************************/
+char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
+    char *out = buf;
 
     uint32_t timestamp = file_ver->timestamp + 1566203295; // Jan 01 1970 (UTC)
 
-    VS_IOT_SPRINTF(buf,
-                   "file type %d, ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
-                   file_ver->file_type.file_type_id,
+    vs_fldt_file_type_descr(out, &file_ver->file_type);
+
+    out += VS_IOT_STRLEN(buf);
+    VS_IOT_SPRINTF(out,
+                   ", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
                    file_ver->major,
                    file_ver->minor,
                    file_ver->patch,
@@ -94,7 +124,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
         return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GFTI:
-        if (vs_fldt_get_is_gateway()) {
+        if (vs_fldt_is_gateway) {
             return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
         } else {
             return VS_FLDT_ERR_OK;

@@ -59,9 +59,9 @@ typedef struct {
     //    size_t file_sz_limit;
 } vs_fldt_storage_ctx_t;
 
-typedef uint16_t vs_fldt_storage_id_t;
 const vs_netif_t *vs_fldt_netif;
 const vs_mac_addr_t *vs_fldt_broadcast_mac_addr;
+bool vs_fldt_is_gateway;
 
 int
 vs_fldt_send_request(const vs_netif_t *netif,
@@ -136,14 +136,16 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     VS_LOG_WARNING("[FLDT] Unable to find file type specified %ul", file_type->file_type_id);                          \
     return NULL;
 
-#define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((fldt_ret_code = (OPERATION)) != VS_FLDT_ERR_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
-
 #define FLDT_CALLBACK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                   \
     do {                                                                                                               \
         CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, VS_FLDT_ERR_NO_CALLBACK, "There is no " #CALLBACK " callback");    \
         FLDT_CHECK((FILETYPEINFO)->CALLBACK ARGUMENTS, (DESCR), ##__VA_ARGS__);                                        \
     } while (0)
+
+static inline bool
+vs_fldt_get_is_gateway(void) {
+    return vs_fldt_is_gateway;
+}
 
 #ifdef __cplusplus
 }

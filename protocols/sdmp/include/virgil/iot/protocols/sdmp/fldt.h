@@ -45,8 +45,6 @@ extern "C" {
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
-bool vs_fldt_is_gateway;
-
 typedef struct __attribute__((__packed__)) {
     uint16_t file_type_id; // = vs_update_file_type_id_t
     uint8_t add_info[32];
@@ -70,7 +68,9 @@ typedef enum {
     VS_FLDT_ERR_UNSUPPORTED_PARAMETER = -2,
     VS_FLDT_ERR_NO_CALLBACK = -3,
     VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE = -4,
-    VS_FLDT_ERR_INCORRECT_SEND_REQUEST = -5
+    VS_FLDT_ERR_INCORRECT_SEND_REQUEST = -5,
+    VS_FLDT_ERR_NO_MEMORY = -6,
+    VS_FDTL_ERR_AMBIGUOUS_INIT_CALL = -7
 } vs_fldt_ret_code_e;
 
 // Commands
@@ -139,16 +139,8 @@ typedef struct __attribute__((__packed__)) {
 } vs_fldt_gnff_footer_response_t;
 
 // Utilities
-
-static inline void
-vs_fldt_set_is_gateway(bool is_gateway) {
-    vs_fldt_is_gateway = is_gateway;
-}
-
-static inline bool
-vs_fldt_get_is_gateway(void) {
-    return vs_fldt_is_gateway;
-}
+#define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
+    CHECK_RET((fldt_ret_code = (OPERATION)) == VS_FLDT_ERR_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
 
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
@@ -158,6 +150,9 @@ vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver);
 
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);
+
+char *
+vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type);
 
 #ifdef __cplusplus
 }
