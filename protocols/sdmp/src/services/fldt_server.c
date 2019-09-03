@@ -60,7 +60,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info;
     vs_fldt_gfti_fileinfo_response_t *file_info_response = (vs_fldt_gfti_fileinfo_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -111,7 +111,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -164,7 +164,7 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfc_chunk_response_t *chunk_response = (vs_fldt_gnfc_chunk_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -216,7 +216,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    int fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
