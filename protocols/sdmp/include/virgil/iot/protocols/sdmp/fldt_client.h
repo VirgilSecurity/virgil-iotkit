@@ -119,7 +119,7 @@ vs_fldt_ret_code_e
 vd_fldt_init_client(void);
 
 vs_fldt_ret_code_e
-vs_fldt_add_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem);
+vs_fldt_update_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem);
 
 vs_fldt_ret_code_e
 vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type);

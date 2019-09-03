@@ -145,13 +145,20 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t buf[512];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
+    int res;
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
-        if (!_get_pubkey_slot_num(key_type, i, &slot) ||
-            VS_HSM_ERR_OK != vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz)) {
-            return false;
-        }
+        res = _get_pubkey_slot_num(key_type, i, &slot);
+        VS_LOG_DEBUG("_get_pubkey_slot_num : key_type = %d, slot = %d, res = %d", key_type, slot, res);
+
+        res = vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz);
+        VS_LOG_DEBUG("vs_hsm_slot_load sz = %d, res = %d", _sz, res);
+
+//        if (!_get_pubkey_slot_num(key_type, i, &slot) ||
+//            VS_HSM_ERR_OK != vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz)) {
+//            return false;
+//        }
 
         ref_key_sz = vs_hsm_get_pubkey_len(ref_key->pubkey.ec_type);
 
