@@ -40,6 +40,7 @@
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
 static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[10];
+static vs_fldt_server_add_filetype _add_filetype_callback = NULL;
 
 static vs_fldt_server_file_type_mapping_t *
 vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
@@ -78,6 +79,19 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     CHECK_RET(response_buf_sz >= sizeof(*file_info_response),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gfti_fileinfo_response_t structure");
+
+    file_type_info = vs_fldt_get_mapping_elem(file_type);
+
+    if (!file_type_info) {
+        CHECK_RET(_add_filetype_callback,
+                  VS_FLDT_ERR_NO_CALLBACK,
+                  "No add_filetype callback for file type requested by user : %s",
+                  vs_fldt_file_type_descr(file_descr, file_type));
+
+        FLDT_CHECK(_add_filetype_callback(file_type),
+                   "Unable to add file type requested by user : %s",
+                   vs_fldt_file_type_descr(file_descr, file_type));
+    }
 
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
@@ -305,8 +319,13 @@ vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
 
 /******************************************************************/
 vs_fldt_ret_code_e
-vd_fldt_init_server(void) {
+vd_fldt_init_server(vs_fldt_server_add_filetype add_filetype) {
+
+    CHECK_NOT_ZERO_RET(add_filetype, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
     vd_fldt_destroy_server();
+
+    _add_filetype_callback = add_filetype;
 
     vs_fldt_is_gateway = true;
 
