@@ -65,19 +65,17 @@ typedef struct __attribute__((__packed__)) {
     uint32_t app_size; // firmware_length + fill_size + footer
 } vs_firmware_descriptor_t;
 
-typedef enum {
-    VS_UPDATE_ERR_OK,
-    VS_UPDATE_ERR_FAIL = -1,
-    VS_UPDATE_ERR_INVAL = -2,
-    VS_UPDATE_ERR_NOMEM = -3,
-    VS_UPDATE_ERR_NOT_FOUND = -4,
-} vs_update_err_code_e;
-
 typedef struct __attribute__((__packed__)) {
     uint8_t signatures_count;
     vs_firmware_descriptor_t descriptor;
     uint8_t signatures[];
 } vs_update_firmware_footer_t;
+
+int
+vs_update_init(const vs_storage_op_ctx_t *ctx);
+
+int
+vs_update_deinit(const vs_storage_op_ctx_t *ctx);
 
 int
 vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
