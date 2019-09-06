@@ -36,34 +36,6 @@
 #define VS_UPDATE_INTERFACE_H
 
 int
-vs_update_read_firmware_data_hal(uint8_t *manufacture_id,
-                                 uint8_t *device_type,
-                                 uint32_t offset,
-                                 uint8_t *data,
-                                 uint16_t buf_sz,
-                                 uint16_t *read_sz);
-int
-vs_update_write_firmware_data_hal(uint8_t *manufacture_id,
-                                  uint8_t *device_type,
-                                  uint32_t offset,
-                                  const void *data,
-                                  uint16_t data_sz);
-int
-vs_update_remove_firmware_data_hal(uint8_t *manufacture_id, uint8_t *device_type);
-
-int
-vs_update_read_firmware_descriptor_table_hal(uint8_t *data, uint16_t buf_sz, uint16_t *read_sz);
-int
-vs_update_write_firmware_descriptor_table_hal(const void *data, uint16_t data_sz);
-int
-vs_update_remove_firmware_descriptor_table_hal(void);
-int
-vs_update_get_firmware_descriptor_table_len_hal(void);
-
-int
-vs_update_get_firmware_image_len_hal(uint8_t *manufacture_id, uint8_t *device_type);
-
-int
 vs_update_install_prepare_space_hal(void);
 
 int

@@ -220,6 +220,7 @@ static size_t
 _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
     fw_resp_buff_t *resp = (fw_resp_buff_t *)userdata;
     size_t rest_data_sz = chunksize;
+    vs_firmware_descriptor_t old_desc;
 
     if (NULL == resp->buff) {
         return 0;
@@ -250,8 +251,14 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
                 return 0;
             }
 
-            vs_update_remove_firmware_data_hal(resp->header.descriptor.info.manufacture_id,
-                                               resp->header.descriptor.info.device_type);
+
+            // Remove old version from fw storage
+            if (VS_UPDATE_ERR_OK == vs_update_load_firmware_descriptor(resp->fw_storage,
+                                                                       resp->header.descriptor.info.manufacture_id,
+                                                                       resp->header.descriptor.info.device_type,
+                                                                       &old_desc)) {
+                vs_update_delete_firmware(resp->fw_storage, &old_desc);
+            }
 
             if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(resp->fw_storage, &resp->header.descriptor)) {
                 return 0;

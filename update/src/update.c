@@ -40,6 +40,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/update/update_interface.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/hsm/hsm_interface.h>
@@ -47,6 +48,92 @@
 #include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 
 static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_TYPE_LIST;
+
+#define DESCRIPTORS_FILENAME "firmware_descriptors"
+
+/*************************************************************************/
+static void
+_create_data_filename(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                      uint8_t device_type[DEVICE_TYPE_SIZE],
+                      vs_storage_element_id_t id) {
+    VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
+    VS_IOT_MEMCPY(&id[0], manufacture_id, MANUFACTURE_ID_SIZE);
+    VS_IOT_MEMCPY(&id[MANUFACTURE_ID_SIZE], device_type, DEVICE_TYPE_SIZE);
+}
+
+/*************************************************************************/
+static void
+_create_descriptors_filename(vs_storage_element_id_t id) {
+    VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
+    VS_IOT_MEMCPY(&id[0], DESCRIPTORS_FILENAME, sizeof(DESCRIPTORS_FILENAME));
+}
+
+/*************************************************************************/
+int
+_read_data(const vs_storage_op_ctx_t *ctx,
+           vs_storage_element_id_t id,
+           uint32_t offset,
+           uint8_t *data,
+           uint16_t buff_sz,
+           uint16_t *data_sz) {
+    vs_storage_file_t f = NULL;
+    int file_sz;
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.open, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.load, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.close, VS_UPDATE_ERR_INVAL);
+
+    *data_sz = 0;
+    file_sz = ctx->impl.size(ctx->storage_ctx, id);
+
+    CHECK_RET(0 < file_sz, VS_UPDATE_ERR_FAIL, "Can't find file")
+    CHECK_RET(file_sz >= offset + buff_sz, VS_UPDATE_ERR_FAIL, "File format error")
+
+    f = ctx->impl.open(ctx->storage_ctx, id);
+    CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file")
+
+    if (VS_STORAGE_OK != ctx->impl.load(ctx->storage_ctx, f, offset, data, buff_sz)) {
+        VS_LOG_ERROR("Can't load data from file");
+        ctx->impl.close(ctx->storage_ctx, f);
+        return VS_UPDATE_ERR_FAIL;
+    }
+    *data_sz = buff_sz;
+    return (VS_STORAGE_OK == ctx->impl.close(ctx->storage_ctx, f)) ? VS_UPDATE_ERR_OK : VS_UPDATE_ERR_FAIL;
+}
+
+/******************************************************************************/
+int
+_write_data(const vs_storage_op_ctx_t *ctx,
+            vs_storage_element_id_t id,
+            uint32_t offset,
+            const void *data,
+            uint16_t data_sz) {
+    vs_storage_file_t f = NULL;
+
+    CHECK_NOT_ZERO(ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->storage_ctx, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
+    CHECK_RET(data_sz <= ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big")
+
+    f = ctx->impl.open(ctx->storage_ctx, id);
+    if (NULL == f) {
+        VS_LOG_ERROR("Can't open file");
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    if (VS_STORAGE_OK != ctx->impl.save(ctx->storage_ctx, f, offset, data, data_sz)) {
+        ctx->impl.close(ctx->storage_ctx, f);
+        VS_LOG_ERROR("Can't save data to file");
+        return VS_UPDATE_ERR_FAIL;
+    }
+
+    return (VS_STORAGE_OK == ctx->impl.close(ctx->storage_ctx, f)) ? VS_UPDATE_ERR_OK : VS_UPDATE_ERR_FAIL;
+}
 
 /*************************************************************************/
 int
@@ -57,13 +144,14 @@ vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
                               uint16_t buff_sz,
                               uint16_t *data_sz) {
 
-
+    vs_storage_element_id_t data_id;
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
-    return vs_update_read_firmware_data_hal(
-            descriptor->info.manufacture_id, descriptor->info.device_type, offset, data, buff_sz, data_sz);
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
+
+    return _read_data(ctx, data_id, offset, data, buff_sz, data_sz);
 }
 
 /*************************************************************************/
@@ -74,22 +162,27 @@ vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
                               uint16_t chunk_sz,
                               uint32_t offset) {
 
+    vs_storage_element_id_t data_id;
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(chunk, VS_UPDATE_ERR_INVAL);
 
-    return vs_update_write_firmware_data_hal(
-            descriptor->info.manufacture_id, descriptor->info.device_type, offset, chunk, chunk_sz);
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
+
+    return _write_data(ctx, data_id, offset, chunk, chunk_sz);
 }
 
 /*************************************************************************/
 int
 vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor, uint8_t *footer) {
     uint8_t i;
+    vs_storage_element_id_t data_id;
     uint16_t footer_sz = sizeof(vs_update_firmware_footer_t);
     vs_update_firmware_footer_t *f = (vs_update_firmware_footer_t *)footer;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(footer, VS_UPDATE_ERR_INVAL);
+
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     for (i = 0; i < f->signatures_count; ++i) {
         int key_len;
@@ -104,11 +197,7 @@ vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descr
         footer_sz += sizeof(vs_sign_t) + sign_len + key_len;
     }
 
-    return vs_update_write_firmware_data_hal(descriptor->info.manufacture_id,
-                                             descriptor->info.device_type,
-                                             descriptor->firmware_length,
-                                             footer,
-                                             footer_sz);
+    return _write_data(ctx, data_id, descriptor->firmware_length, footer, footer_sz);
 }
 
 /*************************************************************************/
@@ -119,13 +208,16 @@ vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
                                uint16_t buff_sz,
                                uint16_t *data_sz) {
     int file_sz;
+    vs_storage_element_id_t data_id;
+
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
     *data_sz = 0;
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
+    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
 
     if (file_sz > 0) {
 
@@ -135,12 +227,7 @@ vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
         *data_sz = (uint16_t)footer_sz;
         CHECK_RET(footer_sz <= buff_sz, VS_UPDATE_ERR_INVAL, "Buffer to small")
 
-        return vs_update_read_firmware_data_hal(descriptor->info.manufacture_id,
-                                                descriptor->info.device_type,
-                                                descriptor->firmware_length,
-                                                data,
-                                                footer_sz,
-                                                data_sz);
+        return _read_data(ctx, data_id, descriptor->firmware_length, data, footer_sz, data_sz);
     }
     return VS_UPDATE_ERR_FAIL;
 }
@@ -149,21 +236,26 @@ vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
 int
 vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int file_sz;
+    vs_storage_element_id_t desc_id;
     uint8_t *buf = NULL;
     uint8_t *newbuf = NULL;
     uint32_t offset = 0;
     int res;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
-    file_sz = vs_update_get_firmware_descriptor_table_len_hal();
+    _create_descriptors_filename(desc_id);
+
+    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
     if (file_sz > 0) {
         uint16_t read_sz;
         buf = VS_IOT_CALLOC(1, file_sz);
         CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
 
-        if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
+        if (VS_UPDATE_ERR_OK != _read_data(ctx, desc_id, 0, buf, file_sz, &read_sz)) {
             VS_IOT_FREE(buf);
             return VS_UPDATE_ERR_FAIL;
         }
@@ -206,7 +298,7 @@ vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_d
     }
 
 save_data:
-    res = vs_update_write_firmware_descriptor_table_hal(newbuf, file_sz);
+    res = _write_data(ctx, desc_id, 0, newbuf, file_sz);
     VS_IOT_FREE(newbuf);
 
     return res;
@@ -219,14 +311,19 @@ vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
                                    uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor) {
 
+    vs_storage_element_id_t desc_id;
     int res = VS_UPDATE_ERR_NOT_FOUND;
     int file_sz;
     uint8_t *buf = NULL;
     uint32_t offset = 0;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
-    file_sz = vs_update_get_firmware_descriptor_table_len_hal();
+    _create_descriptors_filename(desc_id);
+
+    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
     if (file_sz <= 0) {
         goto terminate;
@@ -236,7 +333,7 @@ vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
     buf = VS_IOT_CALLOC(1, file_sz);
     CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
 
-    if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
+    if (VS_UPDATE_ERR_OK != _read_data(ctx, desc_id, 0, buf, file_sz, &read_sz)) {
         res = VS_UPDATE_ERR_FAIL;
         goto terminate;
     }
@@ -265,16 +362,24 @@ int
 vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
     int res = VS_UPDATE_ERR_FAIL;
     int file_sz;
+    vs_storage_element_id_t desc_id;
+    vs_storage_element_id_t data_id;
+
     uint8_t *buf = NULL;
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.del, VS_UPDATE_ERR_INVAL);
 
-    if (VS_UPDATE_ERR_OK !=
-        vs_update_remove_firmware_data_hal(descriptor->info.manufacture_id, descriptor->info.device_type)) {
+    _create_descriptors_filename(desc_id);
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
+
+    if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, data_id)) {
         goto terminate;
     }
 
-    file_sz = vs_update_get_firmware_descriptor_table_len_hal();
+    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
     if (file_sz <= 0) {
         goto terminate;
@@ -285,7 +390,7 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     buf = VS_IOT_CALLOC(1, file_sz);
     CHECK_NOT_ZERO(buf, VS_UPDATE_ERR_FAIL);
 
-    if (VS_UPDATE_ERR_OK != vs_update_read_firmware_descriptor_table_hal(buf, file_sz, &read_sz)) {
+    if (VS_UPDATE_ERR_OK != _read_data(ctx, desc_id, 0, buf, file_sz, &read_sz)) {
         goto terminate;
     }
 
@@ -303,12 +408,12 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
         offset += sizeof(vs_firmware_descriptor_t);
     }
 
-    if (VS_UPDATE_ERR_OK != vs_update_remove_firmware_descriptor_table_hal()) {
+    if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, desc_id)) {
         goto terminate;
     }
 
     if (file_sz) {
-        res = vs_update_write_firmware_descriptor_table_hal(buf, file_sz);
+        res = _write_data(ctx, desc_id, 0, buf, file_sz);
     }
 
 terminate:
@@ -332,6 +437,7 @@ _is_rule_equal_to(vs_key_type_e type) {
 /*************************************************************************/
 int
 vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
+    vs_storage_element_id_t data_id;
     int file_sz;
     uint8_t *pubkey;
     uint16_t sign_len;
@@ -344,7 +450,12 @@ vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     uint8_t hash[32];
 
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
-    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
+
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
+
+    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
 
     if (file_sz <= 0) {
         return VS_UPDATE_ERR_FAIL;
@@ -440,14 +551,20 @@ vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
 /*************************************************************************/
 int
 vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
+    vs_storage_element_id_t data_id;
     int file_sz;
+
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_FAIL);
+    CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
+    CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
     CHECK_RET(VS_UPDATE_ERR_OK == vs_update_install_prepare_space_hal(),
               VS_UPDATE_ERR_FAIL,
               "Unable to prepare the install space");
 
-    file_sz = vs_update_get_firmware_image_len_hal(descriptor->info.manufacture_id, descriptor->info.device_type);
+    _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
+
+    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
 
     if (file_sz <= 0) {
         return VS_UPDATE_ERR_FAIL;
