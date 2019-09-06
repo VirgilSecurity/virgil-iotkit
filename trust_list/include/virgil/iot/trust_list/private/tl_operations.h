@@ -21,7 +21,7 @@ typedef struct {
     tl_keys_qty_t keys_qty;
 } vs_tl_context_t;
 
-void
+bool
 vs_tl_storage_init_internal();
 int
 vs_tl_invalidate(size_t storage_type);

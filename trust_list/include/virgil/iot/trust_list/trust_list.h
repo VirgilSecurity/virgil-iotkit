@@ -19,7 +19,7 @@ typedef struct vs_tl_element_info_s {
     size_t index;
 } vs_tl_element_info_t;
 
-void
+bool
 vs_tl_init_storage();
 
 int

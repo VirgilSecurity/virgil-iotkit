@@ -244,18 +244,26 @@ vs_tl_verify_storage(size_t storage_type) {
     return VS_TL_OK;
 }
 /******************************************************************************/
-void
+bool
 vs_tl_storage_init_internal() {
+
     _init_tl_ctx(TL_STORAGE_TYPE_DYNAMIC, &_tl_dynamic_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, &_tl_static_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_TMP, &_tl_tmp_ctx);
 
-    if (!_verify_tl(&_tl_dynamic_ctx) && _verify_tl(&_tl_static_ctx)) {
+    if(_verify_tl(&_tl_dynamic_ctx)) {
+        return true;
+    }
+
+    if(_verify_tl(&_tl_static_ctx)){
         if (VS_TL_OK == _copy_tl_file(&_tl_dynamic_ctx, &_tl_static_ctx)) {
-            _verify_tl(&_tl_dynamic_ctx);
+            return _verify_tl(&_tl_dynamic_ctx);
         }
     }
+
+    return false;
 }
+
 /******************************************************************************/
 int
 vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {

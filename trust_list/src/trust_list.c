@@ -40,9 +40,9 @@
 #include "virgil/iot/trust_list/trust_list.h"
 
 /******************************************************************************/
-void
+bool
 vs_tl_init_storage() {
-    vs_tl_storage_init_internal();
+    return vs_tl_storage_init_internal();
 }
 
 /******************************************************************************/
