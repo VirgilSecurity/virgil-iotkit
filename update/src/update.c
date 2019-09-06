@@ -251,7 +251,7 @@ vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_d
     CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
     // cppcheck-suppress uninitvar
-    _create_descriptors_filename(desc_id); // cppcheck-suppress UninitializedVariable
+    _create_descriptors_filename(desc_id);
 
     file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
