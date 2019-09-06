@@ -32,18 +32,28 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_H
-#define VIRGIL_IOT_SDK_TESTS_H
+#include <stdlib.h>
 
-#include <stdbool.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
+#include <global-hal.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/macros/macros.h>
 
+#include <virgil/iot/update/update.h>
+
+
+/**********************************************************/
 uint16_t
-vs_tests_checks();
+vs_update_test(vs_storage_op_ctx_t *ctx) {
+    uint16_t failed_test_result = 0;
 
-uint16_t
-vs_secbox_test(vs_storage_op_ctx_t *ctx);
+    START_TEST("Update tests");
 
-uint16_t
-vs_update_test(vs_storage_op_ctx_t *ctx);
-#endif // VIRGIL_IOT_SDK_TESTS_H
+    if (VS_STORAGE_OK != vs_update_init(ctx)) {
+        RESULT_ERROR;
+    }
+
+terminate:;
+
+    vs_update_deinit(ctx);
+    return failed_test_result;
+}
