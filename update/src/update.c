@@ -149,6 +149,7 @@ vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO(data, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     return _read_data(ctx, data_id, offset, data, buff_sz, data_sz);
@@ -166,6 +167,7 @@ vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(chunk, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     return _write_data(ctx, data_id, offset, chunk, chunk_sz);
@@ -182,6 +184,7 @@ vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descr
     CHECK_NOT_ZERO(descriptor, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(footer, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     for (i = 0; i < f->signatures_count; ++i) {
@@ -215,6 +218,7 @@ vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO(data_sz, VS_UPDATE_ERR_INVAL);
 
     *data_sz = 0;
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
@@ -246,7 +250,8 @@ vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_d
     CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
-    _create_descriptors_filename(desc_id);
+    // cppcheck-suppress uninitvar
+    _create_descriptors_filename(desc_id); // cppcheck-suppress UninitializedVariable
 
     file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
@@ -321,6 +326,7 @@ vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
 
     file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
@@ -372,7 +378,9 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(ctx->impl.del, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, data_id)) {
@@ -453,6 +461,7 @@ vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     CHECK_NOT_ZERO(ctx, VS_UPDATE_ERR_INVAL);
     CHECK_NOT_ZERO(ctx->impl.size, VS_UPDATE_ERR_INVAL);
 
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
@@ -562,6 +571,7 @@ vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descripto
               VS_UPDATE_ERR_FAIL,
               "Unable to prepare the install space");
 
+    // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
     file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
