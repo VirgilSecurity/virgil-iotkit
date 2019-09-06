@@ -109,12 +109,12 @@ vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                uint16_t buff_sz,
                                uint16_t *data_sz);
+
 int
 vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor);
 
 int
 vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
-
 
 int
 vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
