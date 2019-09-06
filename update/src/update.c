@@ -336,7 +336,7 @@ vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
                                    vs_firmware_descriptor_t *descriptor) {
 
     vs_storage_element_id_t desc_id;
-    int res = VS_STORAGE_ERROR_GENERAL;
+    int res = VS_STORAGE_ERROR_NOT_FOUND;
     int file_sz;
     uint8_t *buf = NULL;
     uint32_t offset = 0;
@@ -537,7 +537,9 @@ vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
 
-    CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY, VS_STORAGE_ERROR_GENERAL, "There are not enough signatures")
+    CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY,
+              VS_STORAGE_ERROR_GENERAL,
+              "There are not enough signatures")
 
     for (i = 0; i < footer->signatures_count; ++i) {
         CHECK_RET(sign->hash_type == VS_HASH_SHA_256, VS_STORAGE_ERROR_GENERAL, "Unsupported hash size for sign FW")
