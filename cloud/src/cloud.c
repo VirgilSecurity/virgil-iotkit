@@ -243,7 +243,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             _ntoh_fw_header(&resp->header);
 
             if (!_check_firmware_header(&resp->header) ||
-                VS_UPDATE_ERR_OK !=
+                VS_CLOUD_ERR_OK !=
                         vs_cloud_is_new_firmware_version_available(resp->fw_storage,
                                                                    resp->header.descriptor.info.manufacture_id,
                                                                    resp->header.descriptor.info.device_type,
@@ -253,14 +253,14 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
 
             // Remove old version from fw storage
-            if (VS_UPDATE_ERR_OK == vs_update_load_firmware_descriptor(resp->fw_storage,
-                                                                       resp->header.descriptor.info.manufacture_id,
-                                                                       resp->header.descriptor.info.device_type,
-                                                                       &old_desc)) {
+            if (VS_STORAGE_OK == vs_update_load_firmware_descriptor(resp->fw_storage,
+                                                                    resp->header.descriptor.info.manufacture_id,
+                                                                    resp->header.descriptor.info.device_type,
+                                                                    &old_desc)) {
                 vs_update_delete_firmware(resp->fw_storage, &old_desc);
             }
 
-            if (VS_UPDATE_ERR_OK != vs_update_save_firmware_descriptor(resp->fw_storage, &resp->header.descriptor)) {
+            if (VS_STORAGE_OK != vs_update_save_firmware_descriptor(resp->fw_storage, &resp->header.descriptor)) {
                 return 0;
             }
             resp->is_descriptor_stored = true;
@@ -307,11 +307,11 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
-                if (VS_UPDATE_ERR_OK != vs_update_save_firmware_chunk(resp->fw_storage,
-                                                                      &resp->header.descriptor,
-                                                                      resp->buff,
-                                                                      required_chunk_size,
-                                                                      resp->file_offset)) {
+                if (VS_STORAGE_OK != vs_update_save_firmware_chunk(resp->fw_storage,
+                                                                   &resp->header.descriptor,
+                                                                   resp->buff,
+                                                                   required_chunk_size,
+                                                                   resp->file_offset)) {
                     return 0;
                 }
 
@@ -353,10 +353,10 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
                 VS_LOG_ERROR("Invalid firmware descriptor");
-                return VS_UPDATE_ERR_INVAL;
+                return VS_CLOUD_ERR_INVAL;
             }
 
-            if (VS_UPDATE_ERR_OK !=
+            if (VS_STORAGE_OK !=
                 vs_update_save_firmware_footer(resp->fw_storage, &resp->header.descriptor, resp->buff)) {
                 return 0;
             }

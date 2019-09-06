@@ -224,9 +224,9 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
     vs_firmware_descriptor_t desc;
     int res = vs_update_load_firmware_descriptor(fw_storage, manufacture_id, device_type, &desc);
 
-    if (VS_UPDATE_ERR_NOT_FOUND == res) {
+    if (VS_STORAGE_ERROR_NOT_FOUND == res) {
         VS_IOT_MEMSET(cur_version, 0, sizeof(vs_firmware_version_t));
-    } else if (VS_UPDATE_ERR_OK == res) {
+    } else if (VS_STORAGE_OK == res) {
         VS_IOT_MEMCPY(cur_version, &desc.info.version, sizeof(vs_firmware_version_t));
     } else {
         return false;
