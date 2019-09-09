@@ -23,6 +23,6 @@ extern const unsigned char tl_service1_pub[];
 extern const size_t tl_service1_pub_len;
 
 extern const unsigned char tl_service2_pub[];
-extern const size_t tl_service2_pub_len ;
+extern const size_t tl_service2_pub_len;
 
 #endif // TEST_HL_KEYS_DATA_H

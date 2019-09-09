@@ -86,7 +86,6 @@ vs_test_erase_otp_provision() {
         return false;
     }
     return true;
-
 }
 
 /**********************************************************/
