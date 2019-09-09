@@ -109,7 +109,7 @@ typedef struct {
 //
 
 vs_fldt_ret_code_e
-vd_fldt_init_server(vs_fldt_server_add_filetype add_filetype);
+vs_fldt_init_server(vs_fldt_server_add_filetype add_filetype);
 
 vs_fldt_ret_code_e
 vs_fldt_update_server_file_type(const vs_fldt_server_file_type_mapping_t *mapping_elem);

@@ -319,7 +319,7 @@ vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file) {
 
 /******************************************************************/
 vs_fldt_ret_code_e
-vd_fldt_init_server(vs_fldt_server_add_filetype add_filetype) {
+vs_fldt_init_server(vs_fldt_server_add_filetype add_filetype) {
 
     CHECK_NOT_ZERO_RET(add_filetype, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
