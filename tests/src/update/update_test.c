@@ -39,7 +39,8 @@
 #include <virgil/iot/macros/macros.h>
 
 #include <virgil/iot/update/update.h>
-
+#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 /**********************************************************/
 uint16_t
@@ -47,6 +48,8 @@ vs_update_test(vs_storage_op_ctx_t *ctx) {
     uint16_t failed_test_result = 0;
 
     START_TEST("Update tests");
+
+    TEST_CASE_OK("Prepare keystorage for test", vs_test_erase_otp_provision() && vs_test_create_device_key() && vs_test_save_hl_keys())
 
     if (VS_STORAGE_OK != vs_update_init(ctx)) {
         RESULT_ERROR;

@@ -98,9 +98,7 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx) {
     char *_big_test_data = NULL;
     START_TEST("Secbox tests");
 
-    if (VS_STORAGE_OK != vs_secbox_init(ctx)) {
-        RESULT_ERROR;
-    }
+    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision() && vs_test_create_device_key())
 
     TEST_CASE_OK("Init secbox", VS_STORAGE_OK == vs_secbox_init(ctx))
 
