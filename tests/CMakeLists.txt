@@ -62,6 +62,8 @@ target_sources(virgil-iot-sdk-tests
         src/secbox/secbox_test.c
         src/crypto/virgil_ecies.c
         src/update/update_test.c
+        src/test_data/test_hl_keys_data.c
+        src/test_data/test_tl_data.c
         )
 
 if (NOT VIRGIL_IOT_MCU_BUILD)
