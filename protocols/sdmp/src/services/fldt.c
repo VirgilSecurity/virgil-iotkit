@@ -66,7 +66,7 @@ vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type) {
     out += VS_IOT_STRLEN(buf);
     src = (const uint8_t *)&file_type->add_info;
     for (pos = 0; pos < sizeof(file_type->add_info); ++pos, ++out, ++src) {
-        *out = (*src >= ' ') ? *src : '.';
+        *out = !*src ? ' ' : (*src >= ' ' ? *src : '.');
     }
 
     VS_IOT_STRCPY(out, "\")");
