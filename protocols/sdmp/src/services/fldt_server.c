@@ -323,7 +323,7 @@ vs_fldt_init_server(vs_fldt_server_add_filetype add_filetype) {
 
     CHECK_NOT_ZERO_RET(add_filetype, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    vd_fldt_destroy_server();
+    vs_fldt_destroy_server();
 
     _add_filetype_callback = add_filetype;
 
@@ -334,7 +334,7 @@ vs_fldt_init_server(vs_fldt_server_add_filetype add_filetype) {
 
 /******************************************************************/
 void
-vd_fldt_destroy_server(void) {
+vs_fldt_destroy_server(void) {
     size_t pos;
     vs_fldt_server_file_type_mapping_t *elem;
 

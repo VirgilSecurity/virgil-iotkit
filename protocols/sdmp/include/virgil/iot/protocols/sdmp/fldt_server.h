@@ -118,7 +118,7 @@ vs_fldt_ret_code_e
 vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file);
 
 void
-vd_fldt_destroy_server(void);
+vs_fldt_destroy_server(void);
 
 #ifdef __cplusplus
 }

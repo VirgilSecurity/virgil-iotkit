@@ -125,11 +125,11 @@ test_fldt_add_filetypes(void) {
                     "Unable to ask for new file while it is present on the server(vs_fldt_ask_file_type_info call)");
 
     calls.calls = 0;
-    vd_fldt_destroy_client();
+    vs_fldt_destroy_client();
     FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.client_destroy == 1, "Unable to destroy FLDT client");
 
     calls.calls = 0;
-    vd_fldt_destroy_server();
+    vs_fldt_destroy_server();
     FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.server_destroy == 2, "Unable to destroy FLDT server");
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");

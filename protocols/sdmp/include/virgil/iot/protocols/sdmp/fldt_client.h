@@ -134,7 +134,7 @@ vs_fldt_ret_code_e
 vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_request_t *file_footer);
 
 void
-vd_fldt_destroy_client(void);
+vs_fldt_destroy_client(void);
 
 #ifdef __cplusplus
 }
