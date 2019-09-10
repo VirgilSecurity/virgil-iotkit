@@ -39,7 +39,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <stdio.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 
 // For the simplest implementation of os_event
 static pthread_mutex_t _wait_mutex = PTHREAD_MUTEX_INITIALIZER;
