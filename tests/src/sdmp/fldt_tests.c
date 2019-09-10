@@ -44,10 +44,10 @@
 
 #define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_FLDT_ERR_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
 
-#define FLDT_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)  do {                                                                 \
+#define FLDT_CHECK_ERROR_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  do {                                                                 \
         prev_loglev = vs_logger_get_loglev();   \
         vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if (!(OPERATION)) {                                                                                            \
+    if (VS_FLDT_ERR_OK != (OPERATION) || !(CALLS)) {                                                                                            \
         vs_logger_set_loglev(prev_loglev);  \
         VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
@@ -98,6 +98,7 @@ test_fldt_add_filetypes(void) {
     vs_fldt_client_file_type_mapping_t client_file_type;
     vs_fldt_server_file_type_mapping_t server_file_type;
     vs_fldt_gfti_fileinfo_request_t ask_file;
+    vs_log_level_t prev_loglev;
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
@@ -114,12 +115,12 @@ test_fldt_add_filetypes(void) {
 
     server_add_filetype_to_copy = make_server_mapping(&file_type_1);
     calls.calls = 0;
-    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&ask_file),
+    FLDT_CHECK_ERROR_GOTO(vs_fldt_ask_file_type_info(&ask_file),
                     calls.server_add_filetype,
                     "Unable to ask for new file while it is absent on the server(vs_fldt_ask_file_type_info call)");
 
     calls.calls = 0;
-    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&ask_file),
+    FLDT_CHECK_ERROR_GOTO(vs_fldt_ask_file_type_info(&ask_file),
                     !calls.server_add_filetype && calls.server_version,
                     "Unable to ask for new file while it is present on the server(vs_fldt_ask_file_type_info call)");
 
@@ -149,7 +150,7 @@ static bool
 test_INFV(void){
     vs_fldt_infv_new_file_request_t new_file;
     vs_fldt_client_file_type_mapping_t client_file_type;
-/*
+
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
     vs_fldt_set_is_gateway(true);
@@ -168,14 +169,22 @@ test_INFV(void){
 
     calls.calls = 0;
     FLDT_CHECK_GOTO(vs_fldt_broadcast_new_file(&new_file),
-            calls.client_set_gateway_mac && calls.client_get_current_version,
-    "Unable to broadcast new file (vs_fldt_broadcast_new_file call");
-*/
+            calls.client_set_gateway_mac && calls.client_get_current_version && calls.client_update_file,
+    "Unable to broadcast new file while client has older version (vs_fldt_broadcast_new_file call)");
+
+    client_get_current_file_version.major = 10;
+    client_get_current_file_version.timestamp = 2;
+
+    calls.calls = 0;
+    FLDT_CHECK_GOTO(vs_fldt_broadcast_new_file(&new_file),
+                    calls.client_set_gateway_mac && calls.client_get_current_version && !calls.client_update_file,
+                    "Unable to broadcast new file while client has the same one (vs_fldt_broadcast_new_file call)");
+
     return true;
 
-//    terminate:
+    terminate:
 
-//    return false;
+    return false;
 }
 
 #if 0
