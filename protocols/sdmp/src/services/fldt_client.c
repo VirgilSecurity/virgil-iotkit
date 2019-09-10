@@ -427,7 +427,7 @@ vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_requ
 
 /******************************************************************/
 vs_fldt_ret_code_e
-vd_fldt_init_client(void) {
+vs_fldt_init_client(void) {
     vd_fldt_destroy_client();
 
     vs_fldt_is_gateway = false;

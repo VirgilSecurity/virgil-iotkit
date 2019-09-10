@@ -39,8 +39,8 @@ uint16_t
 sdmp_tests(void);
 uint16_t
 prvs_tests(void);
-//uint16_t
-//fldt_tests(vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3);
+uint16_t
+fldt_tests(void);
 
 uint16_t
 test_hash(void);
@@ -91,8 +91,8 @@ crypto_tests(void) {
 
 /**********************************************************/
 uint16_t
-vs_tests_checks(bool print_start_finish_tests)//, vs_fldt_file_type_id_t *elem1, vs_fldt_file_type_id_t *elem2, vs_fldt_file_type_id_t *elem3) {
-{    uint16_t failed_test_result = 0;
+vs_tests_checks(bool print_start_finish_tests){
+    uint16_t failed_test_result = 0;
 
     if(print_start_finish_tests){
     	START_TESTS;
@@ -100,7 +100,7 @@ vs_tests_checks(bool print_start_finish_tests)//, vs_fldt_file_type_id_t *elem1,
 
     failed_test_result = sdmp_tests();
     failed_test_result += prvs_tests();
-//    failed_test_result += fldt_tests(elem1, elem2, elem3);
+    failed_test_result += fldt_tests();
 
     failed_test_result += crypto_tests();
 

@@ -52,9 +52,9 @@ typedef vs_fldt_ret_code_e (*vs_fldt_client_set_gateway_mac_funct)(const vs_mac_
 
 // . "Get Current Version"
 // .  Get file_type current file version and store it to the file_info
-typedef vs_fldt_ret_code_e (*vs_fldt_client_get_version_funct)(void **storage_context,
-                                                               const vs_fldt_file_type_t *file_type,
-                                                               vs_fldt_file_version_t *file_version);
+typedef vs_fldt_ret_code_e (*vs_fldt_client_get_current_version_funct)(void **storage_context,
+                                                                       const vs_fldt_file_type_t *file_type,
+                                                                       vs_fldt_file_version_t *file_version);
 
 // . "Update file"
 // .  Current file specified by file_version_request is older than gateway one, so need to call
@@ -100,7 +100,7 @@ typedef struct {
     void *storage_context;
 
     vs_fldt_client_set_gateway_mac_funct set_gateway_mac;
-    vs_fldt_client_get_version_funct get_current_version;
+    vs_fldt_client_get_current_version_funct get_current_version;
     vs_fldt_client_update_file_funct update_file;
     vs_fldt_client_got_info_funct got_info;
     vs_fldt_client_got_header_funct got_header;
@@ -116,7 +116,7 @@ typedef struct {
 //
 
 vs_fldt_ret_code_e
-vd_fldt_init_client(void);
+vs_fldt_init_client(void);
 
 vs_fldt_ret_code_e
 vs_fldt_update_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem);

@@ -181,7 +181,10 @@ static void
 _prepare_fldt_service() {
 
     _fldt_service.user_data = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
     _fldt_service.id = HTONL_IN_COMPILE_TIME('FLDT');
+#pragma GCC diagnostic pop
     _fldt_service.request_process = _fldt_service_request_processor;
     _fldt_service.response_process = _fldt_service_response_processor;
 }

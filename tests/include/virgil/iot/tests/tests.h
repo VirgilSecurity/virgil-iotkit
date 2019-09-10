@@ -39,11 +39,7 @@
 #include <virgil/iot/secbox/secbox.h>
 
 uint16_t
-vs_tests_checks(bool print_start_finish_tests);//,  // print [TESTS-BEGIN] and [TESTS-END] or not
-//        vs_fldt_file_type_id_t *elem1,       // some FLDT file type 1
-//        vs_fldt_file_type_id_t *elem2,       // some FLDT file type 2
-//        vs_fldt_file_type_id_t *elem3);      // some FLDT file type 3
-
+vs_tests_checks(bool print_start_finish_tests);
 uint16_t
 vs_secbox_test(vs_storage_op_ctx_t *ctx);
 

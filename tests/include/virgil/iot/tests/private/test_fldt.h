@@ -43,26 +43,25 @@
 
 typedef struct {
     union {
-        uint16_t calls;
+        uint32_t calls;
         struct {
-            uint16_t server_curver : 1, server_header : 1, server_chunk : 1, server_footer : 1,
-            client_get_curver : 1, client_update : 1, client_info : 1, client_header : 1, client_chunk : 1, client_footer : 1, client_mac : 1;
+            uint32_t server_version : 1, server_header : 1, server_chunk : 1, server_footer : 1, server_destroy : 3,
+            server_add_filetype : 1, client_set_gateway_mac : 1, client_get_current_version : 1, client_update_file : 1,
+            client_got_info : 1, client_got_header : 1, client_got_chunk : 1, client_got_footer : 1, client_destroy : 3;
         };
     };
 } calls_t;
 calls_t calls;
+vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
+vs_fldt_file_version_t client_get_current_file_version;
 
-vs_fldt_file_version_t filetype1;
-vs_fldt_file_version_t filetype2;
-vs_fldt_file_version_t filetype3;
-vs_fldt_file_version_t to_set_client_curver;
-vs_fldt_gfti_fileinfo_response_t to_set_server_curver;
-int server_chunk_funct_ret;
+vs_fldt_client_file_type_mapping_t
+make_client_mapping(const vs_fldt_file_type_t *file_type);
 
-//vs_fldt_server_file_type_mapping_t
-//get_server_file_mapping(vs_fldt_file_type_id_t *file_type);
-//
-//vs_fldt_client_file_type_mapping_t
-//get_client_file_mapping(vs_fldt_file_type_id_t *file_type);
+vs_fldt_server_file_type_mapping_t
+make_server_mapping(const vs_fldt_file_type_t *file_type);
+
+vs_fldt_ret_code_e
+server_add_filetype(const vs_fldt_file_type_t *file_type);
 
 #endif // VIRGIL_IOT_SDK_TESTS_FLDT_H_
