@@ -187,19 +187,47 @@ test_INFV(void){
     return false;
 }
 
-#if 0
 /**********************************************************/
 // GFTI : Get File Type Information
 static bool
 test_GFTI(void){
+    vs_fldt_gfti_fileinfo_request_t file_request;
+    vs_fldt_client_file_type_mapping_t client_file_type;
+
+    FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
+    FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
+    vs_fldt_set_is_gateway(true);
+
+    client_file_type = make_client_mapping(&file_type_1);
+    FLDT_CHECK_GOTO(vs_fldt_update_client_file_type(&client_file_type), true, "Unable to add Firmware client file mapping for the first time (vs_fldt_update_client_file_type call)");
+
+    VS_IOT_MEMCPY(&file_request.file_type, &client_file_type.file_type, sizeof(client_file_type.file_type));
+    VS_IOT_MEMSET(&server_get_version_file, 0, sizeof(server_get_version_file));
+    server_get_version_file.version.file_type = client_file_type.file_type;
+    server_get_version_file.version.major = 10;
+    server_get_version_file.version.timestamp = 10;
+
+    calls.calls = 0;
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&file_request),
+                    calls.server_version && calls.server_add_filetype && calls.client_get_current_version && calls.client_got_info,
+                    "Unable to request gateway's file version which is the same as local one (vs_fldt_ask_file_type_info call)");
+
+    client_get_current_file_version.major = 9;
+    client_get_current_file_version.timestamp = 9;
+
+    calls.calls = 0;
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_type_info(&file_request),
+                    calls.server_version && !calls.server_add_filetype && calls.client_get_current_version && calls.client_got_info && calls.client_update_file,
+                    "Unable to request gateway's file version which is newer then local one (vs_fldt_ask_file_type_info call)");
 
     return true;
 
-//    terminate:
+    terminate:
 
-//    return false;
+    return false;
 }
 
+#if 0
 /**********************************************************/
 // GNFH : Get New File Header
 static bool
@@ -252,7 +280,7 @@ fldt_tests(void) {
     TEST_CASE_OK("Add file types", test_fldt_add_filetypes());
 
     TEST_CASE_OK("Test broadcast \"Inform New File Version\" (INFV) call", test_INFV());
-//    TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI(elem3));
+    TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI());
 //    TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH(elem3));
 //    TEST_CASE_OK("Test \"Get New File Chunk\" (GNFC) call", test_GNFC(elem3));
 //    TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF(elem3));

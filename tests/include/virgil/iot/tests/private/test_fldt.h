@@ -54,6 +54,7 @@ typedef struct {
 calls_t calls;
 vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
 vs_fldt_file_version_t client_get_current_file_version;
+vs_fldt_gfti_fileinfo_response_t server_get_version_file;
 
 vs_fldt_client_file_type_mapping_t
 make_client_mapping(const vs_fldt_file_type_t *file_type);

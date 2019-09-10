@@ -42,6 +42,7 @@
 
 vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
 vs_fldt_file_version_t client_get_current_file_version;
+vs_fldt_gfti_fileinfo_response_t server_get_version_file;
 
 /**********************************************************/
 static vs_fldt_ret_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
@@ -128,6 +129,8 @@ static vs_fldt_ret_code_e server_get_version(void **storage_context, const vs_fl
     (void) response;
 
     calls.server_version = 1;
+
+    VS_IOT_MEMCPY(response, &server_get_version_file, sizeof(server_get_version_file));
 
     return VS_FLDT_ERR_OK;
 }
