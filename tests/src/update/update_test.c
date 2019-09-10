@@ -280,7 +280,12 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
 
     BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_verify_firmware(ctx, &_test_descriptor), "Error verify firmware")
 
+    BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_install_firmware(ctx, &_test_descriptor), "Error install firmware")
+
     BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_delete_firmware(ctx, &_test_descriptor), "Error delete firmware")
+
+    BOOL_CHECK_RET(VS_STORAGE_OK != vs_update_install_firmware(ctx, &_test_descriptor),
+                   "The install firmware function has returned OK but image has already been deleted")
 
     return true;
 }
