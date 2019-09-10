@@ -35,7 +35,7 @@
 #ifndef KUNLUN_HAL_PRVS_IMPLEMENTATION_H
 #define KUNLUN_HAL_PRVS_IMPLEMENTATION_H
 
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 
 vs_sdmp_prvs_impl_t
 vs_prvs_impl();
