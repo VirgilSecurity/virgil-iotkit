@@ -257,7 +257,6 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
 static int
 _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
                                          vs_firmware_manifest_entry_t *fm_entry) {
-    vs_firmware_version_t current_ver;
     vs_firmware_version_t new_ver;
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
 
