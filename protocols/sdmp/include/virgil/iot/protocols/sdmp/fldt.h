@@ -74,6 +74,9 @@ typedef enum {
 } vs_fldt_ret_code_e;
 
 // Commands
+// mute "error: multi-character character constant" message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
 typedef enum {
     VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
     VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
@@ -81,6 +84,7 @@ typedef enum {
     VS_FLDT_GNFC = HTONL_IN_COMPILE_TIME('GNFC'), /* Get New File Chunk */
     VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
 } vs_sdmp_fldt_element_e;
+#pragma GCC diagnostic pop
 
 // Get Service descriptor
 const vs_sdmp_service_t *
