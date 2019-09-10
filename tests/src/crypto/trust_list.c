@@ -30,8 +30,6 @@ static uint16_t test_key_max_size = 0;
 static const vs_tl_footer_t *test_footer = NULL;
 static uint16_t test_footer_sz;
 
-#define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
-
 #define BOOL_CHECK_RET_LOGLEV_RESTORE(CONDITION)                                                                       \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_SET_LOGLEVEL(prev_loglevel);                                                                            \

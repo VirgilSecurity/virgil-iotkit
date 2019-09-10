@@ -385,7 +385,7 @@ terminate:
 /*************************************************************************/
 int
 vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor) {
-    int res = VS_STORAGE_ERROR_GENERAL;
+    int res = VS_STORAGE_ERROR_NOT_FOUND;
     int file_sz;
     vs_storage_element_id_t desc_id;
     vs_storage_element_id_t data_id;
@@ -402,10 +402,6 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, data_id)) {
-        goto terminate;
-    }
-
     file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
 
     if (file_sz <= 0) {
@@ -418,6 +414,7 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     CHECK_NOT_ZERO(buf, VS_STORAGE_ERROR_GENERAL);
 
     if (VS_STORAGE_OK != _read_data(ctx, desc_id, 0, buf, file_sz, &read_sz)) {
+        res = VS_STORAGE_ERROR_GENERAL;
         goto terminate;
     }
 
@@ -436,15 +433,23 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
     }
 
     if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, desc_id)) {
+        res = VS_STORAGE_ERROR_GENERAL;
         goto terminate;
     }
 
+    res = VS_STORAGE_OK;
     if (file_sz) {
         res = _write_data(ctx, desc_id, 0, buf, file_sz);
     }
 
 terminate:
-    VS_IOT_FREE(buf);
+    if (buf) {
+        VS_IOT_FREE(buf);
+    }
+
+    if (VS_STORAGE_OK != ctx->impl.del(ctx->storage_ctx, data_id)) {
+        return VS_STORAGE_ERROR_GENERAL;
+    }
 
     return res;
 }
