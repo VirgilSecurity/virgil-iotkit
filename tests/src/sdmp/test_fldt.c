@@ -43,6 +43,7 @@
 vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
 vs_fldt_file_version_t client_get_current_file_version;
 vs_fldt_gfti_fileinfo_response_t server_get_version_file;
+vs_fldt_file_version_t file_ver;
 
 /**********************************************************/
 static vs_fldt_ret_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
@@ -144,6 +145,8 @@ static vs_fldt_ret_code_e server_get_header(void **storage_context, const vs_fld
 
     calls.server_header = 1;
 
+    response->version = file_ver;
+
     return VS_FLDT_ERR_OK;
 }
 
@@ -157,6 +160,8 @@ static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt
 
     calls.server_chunk = 1;
 
+    response->version = file_ver;
+
     return VS_FLDT_ERR_OK;
 }
 
@@ -168,6 +173,8 @@ static vs_fldt_ret_code_e server_get_footer(void **storage_context, const vs_fld
     (void) response;
 
     calls.server_footer = 1;
+
+    response->version = file_ver;
 
     return VS_FLDT_ERR_OK;
 }
