@@ -66,7 +66,7 @@ vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type) {
     out += VS_IOT_STRLEN(buf);
     src = (const uint8_t *)&file_type->add_info;
     for (pos = 0; pos < sizeof(file_type->add_info); ++pos, ++out, ++src) {
-        *out = (*src >= ' ') ? *src : '.';
+        *out = !*src ? ' ' : (*src >= ' ' ? *src : '.');
     }
 
     VS_IOT_STRCPY(out, "\")");
@@ -181,7 +181,10 @@ static void
 _prepare_fldt_service() {
 
     _fldt_service.user_data = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
     _fldt_service.id = HTONL_IN_COMPILE_TIME('FLDT');
+#pragma GCC diagnostic pop
     _fldt_service.request_process = _fldt_service_request_processor;
     _fldt_service.response_process = _fldt_service_response_processor;
 }

@@ -40,125 +40,188 @@
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_fldt.h>
 
-#if 0
-/**********************************************************/
-static int client_version_funct(const vs_fldt_file_type_t *file_type, vs_fldt_file_version_t *cur_file_version){
-    (void) file_type;
-    (void) cur_file_version;
-    calls.client_get_curver = 1;
-    VS_IOT_MEMCPY(cur_file_version, &to_set_client_curver, sizeof (to_set_client_curver));
-    return 0;
-}
+vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
+vs_fldt_file_version_t client_get_current_file_version;
+vs_fldt_gfti_fileinfo_response_t server_get_version_file;
 
 /**********************************************************/
-static int client_update_funct(const vs_fldt_infv_new_file_request_t *file_version_request){
-    (void) file_version_request;
-    calls.client_update = 1;
-    return 0;
-}
-
-/**********************************************************/
-static int client_info_funct(const vs_fldt_gfti_fileinfo_response_t *file_info){
-    (void) file_info;
-    calls.client_info = 1;
-    return 0;
-}
-
-/**********************************************************/
-static int client_header_funct(const vs_fldt_gnfh_header_response_t *file_header){
-    (void) file_header;
-    calls.client_header = 1;
-    return 0;
-}
-
-/**********************************************************/
-static int client_chunk_funct(const vs_fldt_gnfc_chunk_response_t *file_chunk){
-    (void) file_chunk;
-    calls.client_chunk = 1;
-    return 0;
-}
-
-/**********************************************************/
-static int client_footer_funct(const vs_fldt_gnff_footer_response_t *file_footer){
-    (void) file_footer;
-    calls.client_footer = 1;
-    return 0;
-}
-
-/**********************************************************/
-static int client_set_gateway_mac_funct(const vs_mac_addr_t *mac){
+static vs_fldt_ret_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
     (void) mac;
-    calls.client_mac = 1;
-    return 0;}
 
-/**********************************************************/
-static int server_version_funct(const vs_fldt_gfti_fileinfo_request_t *request, vs_fldt_gfti_fileinfo_response_t *response){
-    (void) request;
-    calls.server_curver = 1;
-    VS_IOT_MEMCPY(response, &to_set_client_curver, sizeof (to_set_client_curver));
-    return 0;
+    calls.client_set_gateway_mac = 1;
+
+    return VS_FLDT_ERR_OK;
 }
 
 /**********************************************************/
-static int server_header_funct(const vs_fldt_gnfh_header_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfh_header_response_t *response){
+static vs_fldt_ret_code_e client_get_current_version(void **storage_context, const vs_fldt_file_type_t *file_type, vs_fldt_file_version_t *file_version){
+    (void) storage_context;
+    (void) file_type;
+    (void) file_version;
+
+    calls.client_get_current_version = 1;
+    VS_IOT_MEMCPY(file_version, &client_get_current_file_version, sizeof(client_get_current_file_version));
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e client_update_file(void **storage_context, const vs_fldt_infv_new_file_request_t *file_version_request){
+    (void) storage_context;
+    (void) file_version_request;
+
+    calls.client_update_file = 1;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e client_got_info(void **storage_context, const vs_fldt_gfti_fileinfo_response_t *file_info){
+    (void) storage_context;
+    (void) file_info;
+
+    calls.client_got_info = 1;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e client_got_header(void **storage_context, const vs_fldt_gnfh_header_response_t *file_header){
+    (void) storage_context;
+    (void) file_header;
+
+    calls.client_got_header = 1;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e client_got_chunk(void **storage_context, const vs_fldt_gnfc_chunk_response_t *file_chunk){
+    (void) storage_context;
+    (void) file_chunk;
+
+    calls.client_got_chunk = 1;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e client_got_footer(void **storage_context, const vs_fldt_gnff_footer_response_t *file_footer){
+    (void) storage_context;
+    (void) file_footer;
+
+    calls.client_got_footer = 1;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static void client_destroy(void **storage_context){
+    (void) storage_context;
+
+    ++calls.client_destroy;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e server_get_version(void **storage_context, const vs_fldt_gfti_fileinfo_request_t *request, vs_fldt_gfti_fileinfo_response_t *response){
+    (void) storage_context;
+    (void) request;
+    (void) response;
+
+    calls.server_version = 1;
+
+    VS_IOT_MEMCPY(response, &server_get_version_file, sizeof(server_get_version_file));
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static vs_fldt_ret_code_e server_get_header(void **storage_context, const vs_fldt_gnfh_header_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfh_header_response_t *response){
+    (void) storage_context;
     (void) request;
     (void) response_buf_sz;
     (void) response;
+
     calls.server_header = 1;
-    return 0;
+
+    return VS_FLDT_ERR_OK;
 }
 
+
 /**********************************************************/
-static int server_chunk_funct(const vs_fldt_gnfc_chunk_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfc_chunk_response_t *response) {
+static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfc_chunk_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfc_chunk_response_t *response){
+    (void) storage_context;
     (void) request;
     (void) response_buf_sz;
     (void) response;
+
     calls.server_chunk = 1;
-    return server_chunk_funct_ret;
+
+    return VS_FLDT_ERR_OK;
 }
 
 /**********************************************************/
-static int server_footer_funct(const vs_fldt_gnff_footer_request_t *request, uint16_t response_buf_sz, vs_fldt_gnff_footer_response_t *response){
+static vs_fldt_ret_code_e server_get_footer(void **storage_context, const vs_fldt_gnff_footer_request_t *request, uint16_t response_buf_sz, vs_fldt_gnff_footer_response_t *response){
+    (void) storage_context;
     (void) request;
     (void) response_buf_sz;
     (void) response;
+
     calls.server_footer = 1;
-    return 0;
+
+    return VS_FLDT_ERR_OK;
+}
+
+/**********************************************************/
+static void server_destroy(void **storage_get_context){
+    (void) storage_get_context;
+
+    ++calls.server_destroy;
+}
+
+
+/**********************************************************/
+vs_fldt_ret_code_e server_add_filetype(const vs_fldt_file_type_t *file_type){
+    (void) file_type;
+
+    calls.server_add_filetype = 1;
+
+    return vs_fldt_update_server_file_type(&server_add_filetype_to_copy);
 }
 
 /**********************************************************/
 vs_fldt_client_file_type_mapping_t
-get_client_file_mapping(vs_fldt_file_type_id_t *file_type) {
-    vs_fldt_client_file_type_mapping_t file_mapping = {
-            .file_type = {
-                    .file_type_id = file_type,
-                    .add_info = {0}
-                    },
-            .get_current_version = client_version_funct,
-            .update_file = client_update_funct,
-            .get_info = client_info_funct,
-            .get_header = client_header_funct,
-            .get_chunk = client_chunk_funct,
-            .get_footer = client_footer_funct,
-            .set_gateway_mac = client_set_gateway_mac_funct
+make_client_mapping(const vs_fldt_file_type_t *file_type){
+    vs_fldt_client_file_type_mapping_t mapping = {
+            .storage_context = NULL,
+            .set_gateway_mac = client_set_gateway_mac,
+            .get_current_version = client_get_current_version,
+            .update_file = client_update_file,
+            .got_info = client_got_info,
+            .got_header = client_got_header,
+            .got_chunk = client_got_chunk,
+            .got_footer = client_got_footer,
+            .destroy = client_destroy
     };
 
-    return file_mapping;
+    VS_IOT_MEMCPY(&mapping.file_type, file_type, sizeof(*file_type));
+
+    return mapping;
 }
+
 /**********************************************************/
 vs_fldt_server_file_type_mapping_t
-get_server_file_mapping(vs_fldt_file_type_id_t *file_type) {
-    vs_fldt_server_file_type_mapping_t file_mapping = {
-            .file_type = {
-                    .file_type_id = file_type,
-                    .add_info = {0}
-            },
-            .get_version = server_version_funct,
-            .get_header = server_header_funct,
-            .get_chunk = server_chunk_funct,
-            .get_footer = server_footer_funct
+make_server_mapping(const vs_fldt_file_type_t *file_type){
+    vs_fldt_server_file_type_mapping_t mapping = {
+            .storage_context = NULL,
+            .get_version = server_get_version,
+            .get_header = server_get_header,
+            .get_chunk = server_get_chunk,
+            .get_footer = server_get_footer,
+            .destroy = server_destroy,
     };
 
-    return file_mapping;
+    VS_IOT_MEMCPY(&mapping.file_type, file_type, sizeof(*file_type));
+
+    return mapping;
 }
-#endif

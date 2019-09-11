@@ -142,6 +142,11 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
         FLDT_CHECK((FILETYPEINFO)->CALLBACK ARGUMENTS, (DESCR), ##__VA_ARGS__);                                        \
     } while (0)
 
+static inline void
+vs_fldt_set_is_gateway(bool is_gateway) {
+    vs_fldt_is_gateway = is_gateway;
+}
+
 #ifdef __cplusplus
 }
 #endif
