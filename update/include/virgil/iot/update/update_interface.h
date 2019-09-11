@@ -35,6 +35,8 @@
 #ifndef VS_UPDATE_INTERFACE_H
 #define VS_UPDATE_INTERFACE_H
 
+extern char app_self_path[FILENAME_MAX];
+
 int
 vs_update_read_firmware_data_hal(uint8_t *manufacture_id,
                                  uint8_t *device_type,
