@@ -95,7 +95,6 @@ _udp_bcast_receive_processor(void *sock_desc) {
 
         // Pass received data to upper level via callback
         if (_netif_udp_bcast_rx_cb) {
-            printf("UDP broadcast: recv %d bytes\n", (int)recv_sz);
             _netif_udp_bcast_rx_cb(&_netif_udp_bcast, received_data, recv_sz);
         }
     }
@@ -170,8 +169,6 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
     broadcast_addr.sin_port = htons(UDP_BCAST_PORT);
-
-    printf("Send %d bytes\n", (int)data_sz);
 
     sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
 
