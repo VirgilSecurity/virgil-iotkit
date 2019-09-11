@@ -118,4 +118,12 @@
 
 #define TEST_CASE_NOT_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true != (TEST_ELEMENT));
 
+#define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
+
+bool
+vs_test_erase_otp_provision();
+bool
+vs_test_create_device_key();
+bool
+vs_test_save_hl_keys();
 #endif // VIRGIL_IOT_SDK_TESTS_HELPERS_H_

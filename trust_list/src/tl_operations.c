@@ -291,8 +291,9 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     CHECK_RET(NULL != tl_ctx, VS_TL_ERROR_PARAMS, "Invalid storage type")
     CHECK_RET(tl_ctx->ready, VS_TL_ERROR_GENERAL, "TL Storage is not ready")
 
-    CHECK_RET(
-            0 == vs_tl_load_hal(&el, (uint8_t *)header, sizeof(vs_tl_header_t)), VS_TL_ERROR_READ, "Error secbox load")
+    CHECK_RET(0 == vs_tl_load_hal(&el, (uint8_t *)header, sizeof(vs_tl_header_t)),
+              VS_TL_ERROR_READ,
+              "Error TL header load")
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_TL_OK;
@@ -308,7 +309,7 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
     CHECK_RET(
             tl_ctx->keys_qty.keys_amount == tl_ctx->keys_qty.keys_count, VS_TL_ERROR_PARAMS, "Keys amount is not equal")
 
-    CHECK_RET(0 == vs_tl_save_hal(&el, footer, footer_sz), VS_TL_ERROR_WRITE, "Error secbox write")
+    CHECK_RET(0 == vs_tl_save_hal(&el, footer, footer_sz), VS_TL_ERROR_WRITE, "Error TL footer write")
 
     return VS_TL_OK;
 }
@@ -339,7 +340,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         // Add meta info size of current signature
         _sz += sizeof(vs_sign_t);
 
-        CHECK_RET(0 == vs_tl_load_hal(&el, buf, _sz), VS_TL_ERROR_READ, "Error secbox load")
+        CHECK_RET(0 == vs_tl_load_hal(&el, buf, _sz), VS_TL_ERROR_READ, "Error TL footer load")
 
         sign_len = vs_hsm_get_signature_len(element->ec_type);
         key_len = vs_hsm_get_pubkey_len(element->ec_type);
@@ -355,7 +356,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 
     CHECK_RET(buf_sz >= _sz, VS_TL_ERROR_SMALL_BUFFER, "Out buffer too small")
 
-    CHECK_RET(0 == vs_tl_load_hal(&el, footer, _sz), VS_TL_ERROR_READ, "Error secbox load")
+    CHECK_RET(0 == vs_tl_load_hal(&el, footer, _sz), VS_TL_ERROR_READ, "Error TL footer load")
 
     *footer_sz = _sz;
 
@@ -408,7 +409,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     // First, we need to load a meta info of required key to determine a full size
     CHECK_RET(0 == vs_tl_load_hal(&el, (uint8_t *)&element, sizeof(vs_pubkey_dated_t)),
               VS_TL_ERROR_READ,
-              "Error secbox load")
+              "Error TL key load")
 
     key_len = vs_hsm_get_pubkey_len(element.pubkey.ec_type);
 
@@ -419,7 +420,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 
     CHECK_RET(key_len <= buf_sz, VS_TL_ERROR_SMALL_BUFFER, "Out buffer too small")
 
-    CHECK_RET(0 == vs_tl_load_hal(&el, key, key_len), VS_TL_ERROR_READ, "Error secbox load")
+    CHECK_RET(0 == vs_tl_load_hal(&el, key, key_len), VS_TL_ERROR_READ, "Error TL key load")
 
     *key_sz = key_len;
 
