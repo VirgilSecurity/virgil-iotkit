@@ -127,7 +127,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     FLDT_CALLBACK(file_type_info,
                   set_gateway_mac,
                   (&new_file->gateway_mac),
-                  "Unable to retrieve present file version for file type %d",
+                  "Unable to save MAC address",
                   file_type->file_type_id);
 
     FLDT_CHECK(_check_download_need("INFV", file_type_info, new_file_ver, &download), "Unable to check download need");
@@ -183,6 +183,12 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     FLDT_CHECK(_check_download_need("GFTI", file_type_info, file_ver, &download), "Unable to check download need");
 
     if (download) {
+
+        FLDT_CALLBACK(file_type_info,
+                      set_gateway_mac,
+                      (&file_info->gateway_mac),
+                      "Unable to save MAC address",
+                      file_type->file_type_id);
 
         VS_IOT_MEMCPY(&new_file.gateway_mac, &file_info->gateway_mac, sizeof(new_file.gateway_mac));
         VS_IOT_MEMCPY(&new_file.version, file_ver, sizeof(*file_ver));
