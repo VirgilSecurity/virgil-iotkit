@@ -68,10 +68,11 @@ _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 static bool
-_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
-    bool is_broadcast = _is_broadcast(mac_addr);
-    bool is_my_mac = _is_my_mac(netif, mac_addr);
-    return is_broadcast || is_my_mac;
+_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+    bool dst_is_broadcast = _is_broadcast(dest_mac);
+    bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
+    bool src_is_my_mac = _is_my_mac(netif, src_mac);
+    return !src_is_my_mac && (dst_is_broadcast || dst_is_my_mac);
 }
 
 /******************************************************************************/
@@ -91,7 +92,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     // Check packet
 
     // Check is my packet
-    if (!_accept_packet(netif, &packet->eth_header.dest)) {
+    if (!_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
         return -1;
     }
 
