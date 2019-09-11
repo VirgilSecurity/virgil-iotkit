@@ -93,4 +93,4 @@ add_custom_target(${LIBS_TARGET}
 #   Virgil IoT Initializer
 #
 
-add_go_executable(${PROJECT_NAME} netif_plc_sim converters ${LIBS_TARGET})
+add_go_executable(${PROJECT_NAME} netif_factory converters ${LIBS_TARGET})

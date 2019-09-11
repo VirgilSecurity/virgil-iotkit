@@ -34,10 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(netif_plc_sim VERSION 0.1.0 LANGUAGES C)
+project(netif_factory VERSION 0.1.0 LANGUAGES C)
 
 set(NETIF_PLC_SIM
         src/hal/ti_netif_plc_sim.c
+        src/hal/ti_netif_udp_bcast.c
         src/hal/ti_hal.c
         src/hal/sdmp/ti_prvs_implementation.c
         )

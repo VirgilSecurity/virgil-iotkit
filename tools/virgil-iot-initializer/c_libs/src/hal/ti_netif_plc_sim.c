@@ -116,7 +116,7 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb, const struct vs_netif_t *netif) {
 
     // Connect to remote server
     if (connect(_plc_sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
-        perror("Connect failed. Error\n");
+        perror("Connection failed. Error\n");
         return 1;
     }
 
