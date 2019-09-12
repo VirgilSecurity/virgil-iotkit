@@ -224,6 +224,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(header->file_size, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     CHECK_RET(response_sz >= sizeof(*header),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
@@ -264,6 +265,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(data->data_size, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     CHECK_RET(response_sz >= sizeof(*data) && (response_sz == sizeof(*data) + data->data_size),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
