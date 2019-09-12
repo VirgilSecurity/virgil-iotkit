@@ -50,6 +50,11 @@ typedef struct __attribute__((__packed__)) {
     uint8_t add_info[32];
 } vs_fldt_file_type_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[16];
+    uint8_t device_type[4];
+} vs_update_firmware_add_data_t;
+
 // File version
 typedef struct __attribute__((__packed__)) {
     uint8_t major;

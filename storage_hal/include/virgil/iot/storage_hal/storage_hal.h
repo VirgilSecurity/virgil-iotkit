@@ -44,6 +44,7 @@ typedef enum {
     VS_STORAGE_ERROR_SMALL_BUFFER = -3,
     VS_STORAGE_ERROR_WRITE = -4,
     VS_STORAGE_ERROR_READ = -5,
+    VS_STORAGE_ERROR_NOT_FOUND = -6,
 } vs_storage_result_e;
 
 typedef uint8_t vs_storage_element_id_t[VS_STORAGE_ELEMENT_ID_MAX];

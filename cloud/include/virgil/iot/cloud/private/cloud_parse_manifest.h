@@ -82,7 +82,8 @@ typedef struct {
 int
 vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
 int
-vs_cloud_is_new_firmware_version_available(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
+                                           uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],
                                            vs_firmware_version_t *new_ver);
 

@@ -45,14 +45,6 @@ const char *test_data = "this string will be encrypted";
 
 /**********************************************************/
 static bool
-_create_device_key() {
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create device key");
-    return true;
-}
-
-/**********************************************************/
-static bool
 _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uint8_t *data, size_t data_sz) {
 
     uint8_t encrypted_data[1024];
@@ -97,7 +89,7 @@ vs_virgil_ecies_test() {
     uint16_t failed_test_result = 0;
     START_TEST("Virgil ecies encryption");
 
-    TEST_CASE_OK("Create device key", _create_device_key());
+    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision() && vs_test_create_device_key());
     TEST_CASE_OK("Encrypt/decrypt data",
                  _ecies_crypt_case((uint8_t *)test_recipient_id,
                                    strlen(test_recipient_id),
