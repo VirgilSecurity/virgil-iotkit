@@ -126,7 +126,4 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
 int
 vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
-int
-vs_update_restart_application(void);
-
 #endif // VS_UPDATE_H
