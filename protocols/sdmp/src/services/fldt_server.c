@@ -132,6 +132,10 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
+    *response_sz = 0;
+    header_response->header_size = 0;
+    header_response->file_size = 0;
+
     CHECK_RET(request_sz == sizeof(*header_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfh_header_request_t type");
@@ -186,6 +190,9 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
+    *response_sz = 0;
+    data_response->data_size = 0;
 
     CHECK_RET(request_sz == sizeof(*data_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
@@ -243,6 +250,9 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
+    *response_sz = 0;
+    footer_response->footer_size = 0;
 
     CHECK_RET(request_sz == sizeof(*footer_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
