@@ -63,13 +63,13 @@ typedef vs_fldt_ret_code_e (*vs_fldt_server_header_funct)(void **storage_context
                                                           uint16_t response_buf_sz,
                                                           vs_fldt_gnfh_header_response_t *response);
 
-// . "Get File Chunk"
-// .  Get file chunk for request and try to store it to the header_response buffer if response_buf_size is enough
+// . "Get File Data"
+// .  Get file data for request and try to store it to the header_response buffer if response_buf_size is enough
 // .  Check that response's size is enough (check response_buf_sz value)
-typedef vs_fldt_ret_code_e (*vs_fldt_server_chunk_funct)(void **storage_context,
-                                                         const vs_fldt_gnfc_chunk_request_t *request,
-                                                         uint16_t response_buf_sz,
-                                                         vs_fldt_gnfc_chunk_response_t *response);
+typedef vs_fldt_ret_code_e (*vs_fldt_server_data_funct)(void **storage_context,
+                                                        const vs_fldt_gnfd_data_request_t *request,
+                                                        uint16_t response_buf_sz,
+                                                        vs_fldt_gnfd_data_response_t *response);
 
 // . "Get File Footer"
 // .  Get file footer for request and try to store it to the header_response buffer if response_buf_size is enough
@@ -98,7 +98,7 @@ typedef struct {
 
     vs_fldt_server_version_funct get_version;
     vs_fldt_server_header_funct get_header;
-    vs_fldt_server_chunk_funct get_chunk;
+    vs_fldt_server_data_funct get_data;
     vs_fldt_server_footer_funct get_footer;
     vs_fldt_server_destroy_funct destroy;
 } vs_fldt_server_file_type_mapping_t;

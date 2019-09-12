@@ -86,7 +86,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
 int
-vs_fldt_GNFC_request_processing(const uint8_t *request,
+vs_fldt_GNFD_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
@@ -115,7 +115,7 @@ int
 vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
 int
-vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
+vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
 int
 vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);

@@ -41,8 +41,6 @@
 // User can introduce its own file types with ID >= USER
 enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
 
-#define VS_UPDATE_FIRMWARE_CHUNK_SIZE   512
-
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
 #define DEVICE_TYPE_SIZE (4)
@@ -100,7 +98,7 @@ vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
                               vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
-                              uint16_t buff_sz,
+                              uint16_t buf_sz,
                               uint16_t *data_sz);
 
 int

@@ -217,14 +217,15 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &header->version;
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Response for file : %s. Header : %d bytes data",
+    VS_LOG_DEBUG("[FLDT:GNFH] Response for file : %s. File size %d bytes, %s",
                  vs_fldt_file_version_descr(file_descr, file_ver),
-                 header->header_size);
+                 header->file_size,
+                 header->has_footer ? "has footer" : "no footer");
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(response_sz >= sizeof(*header) && (response_sz == sizeof(*header) + header->header_size),
+    CHECK_RET(response_sz >= sizeof(*header),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfh_header_response_t type");
 
@@ -244,8 +245,8 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
 /******************************************************************/
 int
-vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-    vs_fldt_gnfc_chunk_response_t *chunk = (vs_fldt_gnfc_chunk_response_t *)response;
+vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    vs_fldt_gnfd_data_response_t *data = (vs_fldt_gnfd_data_response_t *)response;
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
@@ -254,19 +255,19 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
 
     (void)is_ack;
 
-    file_ver = &chunk->version;
+    file_ver = &data->version;
 
-    VS_LOG_DEBUG("[FLDT:GNFC] Response for file : %s. Chunk %d, %d bytes",
+    VS_LOG_DEBUG("[FLDT:GNFD] Response for file : %s. Data offset %d, size %d",
                  vs_fldt_file_version_descr(file_descr, file_ver),
-                 chunk->chunk_id,
-                 (int)chunk->chunk_size);
+                 data->offset,
+                 (int)data->data_size);
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(response_sz >= sizeof(*chunk) && (response_sz == sizeof(*chunk) + chunk->chunk_size),
+    CHECK_RET(response_sz >= sizeof(*data) && (response_sz == sizeof(*data) + data->data_size),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
-              "Response must be of vs_fldt_gnfc_chunk_response_t type");
+              "Response must be of vs_fldt_gnfd_data_response_t type");
 
     file_type = &file_ver->file_type;
 
@@ -274,10 +275,9 @@ vs_fldt_GNFC_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-
     FLDT_CALLBACK(file_type_info,
-                  got_chunk,
-                  (&file_type_info->storage_context, chunk),
+                  got_data,
+                  (&file_type_info->storage_context, data),
                   "Unable to process received file information for file : %s",
                   vs_fldt_file_version_descr(file_descr, file_ver));
 
@@ -396,19 +396,19 @@ vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_requ
 
 /******************************************************************/
 vs_fldt_ret_code_e
-vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *file_chunk) {
+vs_fldt_ask_file_data(const vs_mac_addr_t *mac, vs_fldt_gnfd_data_request_t *file_data) {
     char file_descr[FLDT_FILEVER_BUF];
 
-    VS_LOG_DEBUG("[FLDT] Ask file chunk %d for file : %s",
-                 file_chunk->chunk_id,
-                 vs_fldt_file_version_descr(file_descr, &file_chunk->version));
+    VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file : %s",
+                 file_data->offset,
+                 vs_fldt_file_version_descr(file_descr, &file_data->version));
 
     CHECK_NOT_ZERO_RET(mac, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(file_chunk, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(file_data, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GNFC, (const uint8_t *)file_chunk, sizeof(*file_chunk)),
+    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif, mac, VS_FLDT_GNFD, (const uint8_t *)file_data, sizeof(*file_data)),
               VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
-              "Unable to send FLDT \"GNFC\" server request");
+              "Unable to send FLDT \"GNFD\" server request");
 
     return VS_FLDT_ERR_OK;
 }

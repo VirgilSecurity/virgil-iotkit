@@ -97,9 +97,9 @@ static vs_fldt_ret_code_e client_got_header(void **storage_context, const vs_fld
 }
 
 /**********************************************************/
-static vs_fldt_ret_code_e client_got_chunk(void **storage_context, const vs_fldt_gnfc_chunk_response_t *file_chunk){
+static vs_fldt_ret_code_e client_got_data(void **storage_context, const vs_fldt_gnfd_data_response_t *file_data){
     (void) storage_context;
-    (void) file_chunk;
+    (void) file_data;
 
     calls.client_got_chunk = 1;
 
@@ -152,7 +152,7 @@ static vs_fldt_ret_code_e server_get_header(void **storage_context, const vs_fld
 
 
 /**********************************************************/
-static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfc_chunk_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfc_chunk_response_t *response){
+static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfd_data_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfd_data_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response_buf_sz;

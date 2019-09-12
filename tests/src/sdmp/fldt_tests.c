@@ -248,17 +248,17 @@ test_GNFH(void){
 }
 
 /**********************************************************/
-// GNFC : Get New File Chunk
+// GNFD : Get New File Data
 static bool
-test_GNFC(void){
-    vs_fldt_gnfc_chunk_request_t request;
+test_GNFD(void){
+    vs_fldt_gnfd_data_request_t request;
 
     file_ver.file_type = make_client_mapping(&file_type_1).file_type;
     request.version.file_type = file_ver.file_type;
     calls.calls = 0;
 
-    FLDT_CHECK_GOTO(vs_fldt_ask_file_chunk(&mac_addr_server_call, &request),
-                    calls.client_got_chunk && calls.server_chunk,
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_data(&mac_addr_server_call, &request),
+                    calls.client_got_data && calls.server_data,
                     "Unable to get firmware chunk (vs_fldt_ask_file_chunk call)");
 
     return true;
@@ -306,7 +306,7 @@ fldt_tests(void) {
     TEST_CASE_OK("Test broadcast \"Inform New File Version\" (INFV) call", test_INFV());
     TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI());
     TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH());
-    TEST_CASE_OK("Test \"Get New File Chunk\" (GNFC) call", test_GNFC());
+    TEST_CASE_OK("Test \"Get New File Data\" (GNFD) call", test_GNFD());
     TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF());
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");

@@ -75,11 +75,11 @@ typedef vs_fldt_ret_code_e (*vs_fldt_client_got_info_funct)(void **storage_conte
 typedef vs_fldt_ret_code_e (*vs_fldt_client_got_header_funct)(void **storage_context,
                                                               const vs_fldt_gnfh_header_response_t *file_header);
 
-// . "Get file chunk"
-// .  File data chunk for file file_version has been received
+// . "Get file data"
+// .  File data for file file_version has been received
 // .  This is response for the vs_fldt_ask_file_chunk call
-typedef vs_fldt_ret_code_e (*vs_fldt_client_got_chunk_funct)(void **storage_context,
-                                                             const vs_fldt_gnfc_chunk_response_t *file_chunk);
+typedef vs_fldt_ret_code_e (*vs_fldt_client_got_data_funct)(void **storage_context,
+                                                            const vs_fldt_gnfd_data_response_t *file_data);
 
 // . "Get file footer"
 // .  File footer for file file_version has been received
@@ -104,7 +104,7 @@ typedef struct {
     vs_fldt_client_update_file_funct update_file;
     vs_fldt_client_got_info_funct got_info;
     vs_fldt_client_got_header_funct got_header;
-    vs_fldt_client_got_chunk_funct got_chunk;
+    vs_fldt_client_got_data_funct got_data;
     vs_fldt_client_got_footer_funct got_footer;
     vs_fldt_client_destroy_funct destroy;
 
@@ -128,7 +128,7 @@ vs_fldt_ret_code_e
 vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request);
 
 vs_fldt_ret_code_e
-vs_fldt_ask_file_chunk(const vs_mac_addr_t *mac, vs_fldt_gnfc_chunk_request_t *file_chunk);
+vs_fldt_ask_file_data(const vs_mac_addr_t *mac, vs_fldt_gnfd_data_request_t *file_data);
 
 vs_fldt_ret_code_e
 vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_request_t *file_footer);
