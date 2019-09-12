@@ -116,8 +116,8 @@ vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_d
 
 int
 vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor);
 
 int
@@ -125,5 +125,8 @@ vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor
 
 int
 vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
+
+int
+vs_update_restart_application(void);
 
 #endif // VS_UPDATE_H

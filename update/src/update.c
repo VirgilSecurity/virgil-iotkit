@@ -331,8 +331,8 @@ save_data:
 /*************************************************************************/
 int
 vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor) {
 
     vs_storage_element_id_t desc_id;
