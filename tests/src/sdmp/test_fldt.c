@@ -43,6 +43,7 @@
 vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
 vs_fldt_file_version_t client_get_current_file_version;
 vs_fldt_gfti_fileinfo_response_t server_get_version_file;
+vs_fldt_file_version_t file_ver;
 
 /**********************************************************/
 static vs_fldt_ret_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
@@ -96,9 +97,9 @@ static vs_fldt_ret_code_e client_got_header(void **storage_context, const vs_fld
 }
 
 /**********************************************************/
-static vs_fldt_ret_code_e client_got_chunk(void **storage_context, const vs_fldt_gnfc_chunk_response_t *file_chunk){
+static vs_fldt_ret_code_e client_got_data(void **storage_context, const vs_fldt_gnfd_data_response_t *file_data){
     (void) storage_context;
-    (void) file_chunk;
+    (void) file_data;
 
     calls.client_got_chunk = 1;
 
@@ -144,18 +145,22 @@ static vs_fldt_ret_code_e server_get_header(void **storage_context, const vs_fld
 
     calls.server_header = 1;
 
+    response->version = file_ver;
+
     return VS_FLDT_ERR_OK;
 }
 
 
 /**********************************************************/
-static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfc_chunk_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfc_chunk_response_t *response){
+static vs_fldt_ret_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfd_data_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfd_data_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response_buf_sz;
     (void) response;
 
     calls.server_chunk = 1;
+
+    response->version = file_ver;
 
     return VS_FLDT_ERR_OK;
 }
@@ -168,6 +173,8 @@ static vs_fldt_ret_code_e server_get_footer(void **storage_context, const vs_fld
     (void) response;
 
     calls.server_footer = 1;
+
+    response->version = file_ver;
 
     return VS_FLDT_ERR_OK;
 }

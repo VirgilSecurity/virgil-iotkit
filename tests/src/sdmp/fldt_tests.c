@@ -73,7 +73,6 @@ calls_t calls;
 static vs_netif_t test_netif;
 static vs_fldt_file_type_t file_type_1 = { .file_type_id = 1, .add_info = {"1"} };
 static vs_fldt_file_type_t file_type_2 = { .file_type_id = 1, .add_info = {"2"} };
-//static vs_fldt_file_type_t file_type_3 = { .file_type_id = 3, .add_info = {"1"} };
 
 /**********************************************************/
 static bool
@@ -227,43 +226,68 @@ test_GFTI(void){
     return false;
 }
 
-#if 0
 /**********************************************************/
 // GNFH : Get New File Header
 static bool
 test_GNFH(void){
+    vs_fldt_gnfh_header_request_t request;
+
+    file_ver.file_type = make_client_mapping(&file_type_1).file_type;
+    request.version.file_type = file_ver.file_type;
+    calls.calls = 0;
+
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_header(&mac_addr_server_call, &request),
+            calls.client_got_header && calls.server_header,
+            "Unable to get firmware header (vs_fldt_ask_file_header call)");
 
     return true;
 
-//    terminate:
+    terminate:
 
-//    return false;
+    return false;
 }
 
 /**********************************************************/
-// GNFC : Get New File Chunk
+// GNFD : Get New File Data
 static bool
-test_GNFC(void){
+test_GNFD(void){
+    vs_fldt_gnfd_data_request_t request;
+
+    file_ver.file_type = make_client_mapping(&file_type_1).file_type;
+    request.version.file_type = file_ver.file_type;
+    calls.calls = 0;
+
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_data(&mac_addr_server_call, &request),
+                    calls.client_got_data && calls.server_data,
+                    "Unable to get firmware chunk (vs_fldt_ask_file_chunk call)");
 
     return true;
 
-//    terminate:
+    terminate:
 
-//    return false;
+    return false;
 }
 
 /**********************************************************/
 // GNFF : Get New File Footer
 static bool
 test_GNFF(void){
+    vs_fldt_gnff_footer_request_t request;
+
+    file_ver.file_type = make_client_mapping(&file_type_1).file_type;
+    request.version.file_type = file_ver.file_type;
+    calls.calls = 0;
+
+    FLDT_CHECK_GOTO(vs_fldt_ask_file_footer(&mac_addr_server_call, &request),
+                    calls.client_got_footer && calls.server_footer,
+                    "Unable to get firmware footer (vs_fldt_ask_file_footer call)");
 
     return true;
 
-//    terminate:
+    terminate:
 
-//    return false;
+    return false;
 }
-#endif
 
 /**********************************************************/
 uint16_t
@@ -281,9 +305,9 @@ fldt_tests(void) {
 
     TEST_CASE_OK("Test broadcast \"Inform New File Version\" (INFV) call", test_INFV());
     TEST_CASE_OK("Test \"Get File Type Information\" (GFTI) call", test_GFTI());
-//    TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH(elem3));
-//    TEST_CASE_OK("Test \"Get New File Chunk\" (GNFC) call", test_GNFC(elem3));
-//    TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF(elem3));
+    TEST_CASE_OK("Test \"Get New File Header\" (GNFH) call", test_GNFH());
+    TEST_CASE_OK("Test \"Get New File Data\" (GNFD) call", test_GNFD());
+    TEST_CASE_OK("Test \"Get New File Footer\" (GNFF) call", test_GNFF());
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
 

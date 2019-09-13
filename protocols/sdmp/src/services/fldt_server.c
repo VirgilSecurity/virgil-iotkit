@@ -132,6 +132,10 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
+    *response_sz = 0;
+    header_response->header_size = 0;
+    header_response->file_size = 0;
+
     CHECK_RET(request_sz == sizeof(*header_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfh_header_request_t type");
@@ -157,26 +161,28 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
                   "Unable to get last file version information for file type %d",
                   file_type->file_type_id);
 
-    *response_sz = sizeof(vs_fldt_gnfh_header_response_t) + header_response->header_size;
+    *response_sz = sizeof(*header_response) + header_response->header_size;
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Header : %d bytes data", header_response->header_size);
+    VS_LOG_DEBUG("[FLDT:GNFH] File size %d bytes, %s",
+                 header_response->file_size,
+                 header_response->has_footer ? "has footer" : "no footer");
 
     return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
 int
-vs_fldt_GNFC_request_processing(const uint8_t *request,
+vs_fldt_GNFD_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
 
-    const vs_fldt_gnfc_chunk_request_t *chunk_request = (const vs_fldt_gnfc_chunk_request_t *)request;
+    const vs_fldt_gnfd_data_request_t *data_request = (const vs_fldt_gnfd_data_request_t *)request;
     const vs_fldt_file_version_t *file_ver = NULL;
     const vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
-    vs_fldt_gnfc_chunk_response_t *chunk_response = (vs_fldt_gnfc_chunk_response_t *)response;
+    vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
 
@@ -185,19 +191,22 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-    CHECK_RET(request_sz == sizeof(*chunk_request),
+    *response_sz = 0;
+    data_response->data_size = 0;
+
+    CHECK_RET(request_sz == sizeof(*data_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
-              "Request buffer must be of vs_fldt_gnfc_chunk_request_t type");
+              "Request buffer must be of vs_fldt_gnfd_data_request_t type");
 
-    file_ver = &chunk_request->version;
+    file_ver = &data_request->version;
 
-    VS_LOG_DEBUG("[FLDT:GNFC] Request for chunk %d for file %s",
-                 chunk_request->chunk_id,
+    VS_LOG_DEBUG("[FLDT:GNFD] Request for data offset %d for file %s",
+                 data_request->offset,
                  vs_fldt_file_version_descr(file_descr, file_ver));
 
-    CHECK_RET(response_buf_sz > sizeof(*chunk_response),
+    CHECK_RET(response_buf_sz > sizeof(*data_response),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
-              "Response buffer must have enough size to store vs_fldt_gnfc_chunk_response_t structure");
+              "Response buffer must have enough size to store vs_fldt_gnfd_data_response_t structure");
 
     file_type = &file_ver->file_type;
 
@@ -206,12 +215,17 @@ vs_fldt_GNFC_request_processing(const uint8_t *request,
               "Unregistered file type");
 
     FLDT_CALLBACK(file_type_info,
-                  get_chunk,
-                  (&file_type_info->storage_context, chunk_request, response_buf_sz, chunk_response),
+                  get_data,
+                  (&file_type_info->storage_context, data_request, response_buf_sz, data_response),
                   "Unable to get last file version information for file type %d",
                   file_type->file_type_id);
 
-    *response_sz = sizeof(vs_fldt_gnfc_chunk_response_t) + chunk_response->chunk_size;
+    *response_sz = sizeof(vs_fldt_gnfd_data_response_t) + data_response->data_size;
+
+    VS_LOG_DEBUG("[FLDT:GNFD] File data offset %d size %d has been sent for file %s",
+                 data_response->offset,
+                 data_response->data_size,
+                 vs_fldt_file_version_descr(file_descr, file_ver));
 
     return VS_FLDT_ERR_OK;
 }
@@ -236,6 +250,9 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
+    *response_sz = 0;
+    footer_response->footer_size = 0;
 
     CHECK_RET(request_sz == sizeof(*footer_request),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,

@@ -133,8 +133,8 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
-    case VS_FLDT_GNFC:
-        return vs_fldt_GNFC_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GNFF:
         return vs_fldt_GNFF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
@@ -164,8 +164,8 @@ _fldt_service_response_processor(const struct vs_netif_t *netif,
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
 
-    case VS_FLDT_GNFC:
-        return vs_fldt_GNFC_response_processor(is_ack, response, response_sz);
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_response_processor(is_ack, response, response_sz);
 
     case VS_FLDT_GNFF:
         return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);

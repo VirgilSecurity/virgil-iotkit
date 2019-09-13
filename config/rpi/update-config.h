@@ -35,7 +35,7 @@
 #ifndef VS_IOT_SDK_UPDATE_CONFIG_H
 #define VS_IOT_SDK_UPDATE_CONFIG_H
 
-#define VS_MAX_FIRMWARE_UPDATE_SIZE (1048576 * 2)
+#define VS_MAX_FIRMWARE_UPDATE_SIZE (2 * 1024 * 1024)
 /*Firmware signature rules*/
 
 /*

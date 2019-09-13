@@ -47,8 +47,13 @@ extern "C" {
 
 typedef struct __attribute__((__packed__)) {
     uint16_t file_type_id; // = vs_update_file_type_id_t
-    uint8_t add_info[32];
+    uint8_t add_info[32];  // = vs_fldt_fw_add_info_t for VS_UPDATE_FIRMWARE
 } vs_fldt_file_type_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[16];
+    uint8_t device_type[4];
+} vs_fldt_fw_add_info_t;
 
 // File version
 typedef struct __attribute__((__packed__)) {
@@ -81,7 +86,7 @@ typedef enum {
     VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
     VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
     VS_FLDT_GNFH = HTONL_IN_COMPILE_TIME('GNFH'), /* Get New File Header */
-    VS_FLDT_GNFC = HTONL_IN_COMPILE_TIME('GNFC'), /* Get New File Chunk */
+    VS_FLDT_GNFD = HTONL_IN_COMPILE_TIME('GNFD'), /* Get New File Data */
     VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
 } vs_sdmp_fldt_element_e;
 #pragma GCC diagnostic pop
@@ -114,22 +119,24 @@ typedef struct __attribute__((__packed__)) {
 
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
+    uint32_t file_size;
+    uint8_t has_footer;
     uint16_t header_size;
     uint8_t header_data[];
 } vs_fldt_gnfh_header_response_t;
 
-// "Get New File Chunk"
+// "Get New File Data"
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
-    uint16_t chunk_id;
-} vs_fldt_gnfc_chunk_request_t;
+    uint32_t offset;
+} vs_fldt_gnfd_data_request_t;
 
 typedef struct __attribute__((__packed__)) {
     vs_fldt_file_version_t version;
-    uint16_t chunk_id;
-    uint16_t chunk_size;
-    uint8_t chunk_data[];
-} vs_fldt_gnfc_chunk_response_t;
+    uint32_t offset;
+    uint16_t data_size;
+    uint8_t data[];
+} vs_fldt_gnfd_data_response_t;
 
 // "Get New File Footer"
 typedef struct __attribute__((__packed__)) {

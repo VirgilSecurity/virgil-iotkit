@@ -30,14 +30,11 @@ static uint16_t test_key_max_size = 0;
 static const vs_tl_footer_t *test_footer = NULL;
 static uint16_t test_footer_sz;
 
-#define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
-
-#define BOOL_CHECK_RET_LOGLEV_RESTORE(CONDITION) do {                                                                      \
+#define BOOL_CHECK_RET_LOGLEV_RESTORE(CONDITION)                                                                       \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_SET_LOGLEVEL(prev_loglevel);                                                                            \
         return false;                                                                                                  \
-    } \
-    } while(0)
+    }
 
 /******************************************************************************/
 static bool
@@ -119,40 +116,11 @@ _load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t *data, uint16_t size, 
 
 /******************************************************************************/
 static bool
-_save_hl_key(size_t slot, const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
-
-    VS_HSM_CHECK_RET(vs_hsm_slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
-
-    return true;
-}
-
-/******************************************************************************/
-static bool
 _verify_hl_key(const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
 
     CHECK_RET(vs_provision_verify_hl_key(in_data, data_sz), false, "Error verify key %s", id_str);
 
     return true;
-}
-
-/******************************************************************************/
-static bool
-_test_save_hl_keys(void) {
-    bool res = true;
-
-    res &= _save_hl_key(REC1_KEY_SLOT, "PBR1", recovery1_pub, recovery1_pub_len);
-    res &= _save_hl_key(REC2_KEY_SLOT, "PBR2", recovery2_pub, recovery2_pub_len);
-
-    res &= _save_hl_key(AUTH1_KEY_SLOT, "PBA1", auth1_pub, auth1_pub_len);
-    res &= _save_hl_key(AUTH2_KEY_SLOT, "PBA2", auth2_pub, auth2_pub_len);
-
-    res &= _save_hl_key(FW1_KEY_SLOT, "PBF1", firmware1_pub, firmware1_pub_len);
-    res &= _save_hl_key(FW2_KEY_SLOT, "PBF2", firmware2_pub, firmware2_pub_len);
-
-    res &= _save_hl_key(TL1_KEY_SLOT, "PBT1", tl_service1_pub, tl_service1_pub_len);
-    res &= _save_hl_key(TL2_KEY_SLOT, "PBT2", tl_service2_pub, tl_service2_pub_len);
-
-    return res;
 }
 
 /******************************************************************************/
@@ -452,7 +420,8 @@ test_keystorage_and_tl(void) {
         RESULT_ERROR;
     }
 
-    TEST_CASE_OK("TL save hl keys", _test_save_hl_keys());
+    TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision());
+    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_keys());
     TEST_CASE_OK("TL verify hl keys", _test_verify_hl_keys());
 
     TEST_CASE_OK("TL save", _test_tl_save_pass());

@@ -36,11 +36,10 @@
 #define VS_UPDATE_H
 
 #include <global-hal.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 // User can introduce its own file types with ID >= USER
 enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
-
-#define VS_UPDATE_FIRMWARE_CHUNK_SIZE   512
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
@@ -69,19 +68,6 @@ typedef struct __attribute__((__packed__)) {
     uint32_t app_size; // firmware_length + fill_size + footer
 } vs_firmware_descriptor_t;
 
-typedef struct {
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
-    uint8_t device_type[DEVICE_TYPE_SIZE];
-} vs_update_firmware_add_data_t;
-
-typedef enum {
-    VS_UPDATE_ERR_OK,
-    VS_UPDATE_ERR_FAIL = -1,
-    VS_UPDATE_ERR_INVAL = -2,
-    VS_UPDATE_ERR_NOMEM = -3,
-    VS_UPDATE_ERR_NOT_FOUND = -4,
-} vs_update_err_code_e;
-
 typedef struct __attribute__((__packed__)) {
     uint8_t signatures_count;
     vs_firmware_descriptor_t descriptor;
@@ -89,43 +75,56 @@ typedef struct __attribute__((__packed__)) {
 } vs_update_firmware_footer_t;
 
 #define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((update_ret_code = (OPERATION)) == VS_UPDATE_ERR_OK, update_ret_code, MESSAGE, ##__VA_ARGS__)
+    CHECK_RET((update_ret_code = (OPERATION)) == 0, update_ret_code, MESSAGE, ##__VA_ARGS__)
 
 int
-vs_update_save_firmware_chunk(vs_firmware_descriptor_t *descriptor, uint8_t *chunk, uint16_t chunk_sz, uint32_t offset);
+vs_update_init(const vs_storage_op_ctx_t *ctx);
 
 int
-vs_update_save_firmware_footer(vs_firmware_descriptor_t *descriptor, uint8_t *footer);
+vs_update_deinit(const vs_storage_op_ctx_t *ctx);
 
 int
-vs_update_load_firmware_chunk(vs_firmware_descriptor_t *descriptor,
+vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
+                              uint8_t *chunk,
+                              uint16_t chunk_sz,
+                              uint32_t offset);
+
+int
+vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor, uint8_t *footer);
+
+int
+vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
+                              vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
-                              uint16_t buff_sz,
+                              uint16_t buf_sz,
                               uint16_t *data_sz);
 
 int
-vs_update_load_firmware_footer(vs_firmware_descriptor_t *descriptor,
+vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
+                               vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                uint16_t buff_sz,
                                uint16_t *data_sz);
 
 int
-vs_update_verify_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_save_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
+vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_load_firmware_descriptor(uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   uint8_t device_type[DEVICE_TYPE_SIZE],
+vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
+                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
+                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_delete_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
-vs_update_install_firmware(vs_firmware_descriptor_t *descriptor);
+vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
 
 int
 vs_update_restart_application(void);
