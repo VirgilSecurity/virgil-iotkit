@@ -117,6 +117,7 @@ function(add_sdmp _for_factory)
             PUBLIC
             logger
             provision
+            update
             $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
             $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
 
