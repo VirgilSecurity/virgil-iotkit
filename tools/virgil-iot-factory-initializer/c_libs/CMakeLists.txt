@@ -34,26 +34,47 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(netif_factory VERSION 0.1.0 LANGUAGES C)
+project(netif-factory VERSION 0.1.0 LANGUAGES C)
 
-set(NETIF_PLC_SIM
-        src/hal/ti_netif_plc_sim.c
-        src/hal/ti_netif_udp_bcast.c
-        src/hal/ti_hal.c
-        src/hal/sdmp/ti_prvs_implementation.c
+#
+#   Network interfaces for Factory Inittializer
+#
+add_library(netif-factory)
+
+#
+#   Sources
+#
+target_sources(netif-factory
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_plc_sim.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_udp_bcast.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_plc_sim.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_implementation.c
         )
-
-add_library(${PROJECT_NAME}
-        ${NETIF_PLC_SIM}
-        )
-
-target_link_libraries (${PROJECT_NAME} sdmp-factory)
-
-target_include_directories(${PROJECT_NAME}
+#
+#   Includes
+#
+target_include_directories(netif-factory
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
         ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
         )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+#
+#   Libraries
+#
+target_link_libraries(netif-factory
+        PUBLIC
+        sdmp-factory
+
+        PRIVATE
+        enable_pedantic_mode
+        )

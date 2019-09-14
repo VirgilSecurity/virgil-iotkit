@@ -34,24 +34,23 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-iot-initializer VERSION 0.1.0 LANGUAGES Go C)
+project(virgil-iot-factory-initializer VERSION 0.1.0 LANGUAGES Go C)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
 
+#
+#   Check required CMake variables
+#
 if(NOT VIRGIL_IOT_DIRECTORY)
-    message(FATAL_ERROR "[virgil-iot-initializer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
-else()
-    message(STATUS "[virgil-iot-initializer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
+    message(FATAL_ERROR "[virgil-iot-factory-initializer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
 endif()
 
 if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[virgil-iot-initializer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
-else()
-    message(STATUS "[virgil-iot-initializer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
+    message(FATAL_ERROR "[virgil-iot-factory-initializer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
 endif()
 
 #
-# CFLAGS for CGO
+#   CFLAGS for CGO
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
@@ -63,12 +62,12 @@ set(CMAKE_CGO_CFLAGS
         )
 
 #
-# LDFLAGS for CGO
+#   LDFLAGS for CGO
 #
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-initializer/c_libs
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-factory-initializer/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
         )
 
@@ -76,21 +75,13 @@ set(CMAKE_CGO_LDFLAGS
 # Workaround target
 # Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
 #
-set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
-set(LIBS_TARGET ${PROJECT_NAME}-libs)
-
-add_custom_target(${LIBS_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a"
-        ${INITIALIZER_LIB_DIR}/
-        COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a"
-        ${INITIALIZER_LIB_DIR}
+add_custom_target(factory-initializer-mbedtls
+        COMMAND ${CMAKE_COMMAND} -E make_directory {CMAKE_CURRENT_LIST_DIR}/lib
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a" {CMAKE_CURRENT_LIST_DIR}/lib/
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" {CMAKE_CURRENT_LIST_DIR}/lib/
         )
 
 #
 #   Virgil IoT Initializer
 #
-
-add_go_executable(${PROJECT_NAME} netif_factory converters ${LIBS_TARGET})
+add_go_executable(${PROJECT_NAME} netif-factory converters factory-initializer-mbedtls)
