@@ -105,7 +105,7 @@ _json_str_to_float(jobj_t *jobj, jsontok_t *t, float *value) {
     *value = wm_strtof(start_ptr, &endptr);
     if (endptr != &(jobj->js[t->end]))
         return -WM_E_JSON_INVALID_TYPE;
-    return GATEWAY_OK;
+    return 0;
 }
 #endif /* CONFIG_JSON_FLOAT */
 
@@ -124,7 +124,7 @@ _json_str_to_str(jobj_t *jobj, jsontok_t *t, char *value, int maxlen) {
 
 /******************************************************************************/
 /* Searches for json element inside an object based on the key and populates
- * the val_t token if element is found and returns GATEWAY_OK.
+ * the val_t token if element is found and returns 0.
  * If not found, returns error.
  */
 static int
@@ -219,7 +219,7 @@ int
 json_get_val_float(jobj_t *jobj, char *key, float *value) {
     jsontok_t *t;
     int ret = json_get_value(jobj, key, &t);
-    if (ret != GATEWAY_OK)
+    if (ret != 0)
         return ret;
     return _json_str_to_float(jobj, t, value);
 }
@@ -321,7 +321,7 @@ json_array_get_num_elements(jobj_t *jobj) {
 /******************************************************************************/
 /* Fetch the JSON value from an array based on index.
  * val_t is appropriately populated if the element is found
- * and GATEWAY_OK is returned. Else error is returned.
+ * and 0 is returned. Else error is returned.
  */
 static int
 _json_get_array_index(jobj_t *jobj, uint16_t index, jsontok_t **val_t) {
@@ -392,7 +392,7 @@ int
 json_array_get_float(jobj_t *jobj, uint16_t index, float *value) {
     jsontok_t *t;
     int ret = json_get_array_index(jobj, index, &t);
-    if (ret != GATEWAY_OK)
+    if (ret != 0)
         return ret;
     return json_str_to_float(jobj, t, value);
 }

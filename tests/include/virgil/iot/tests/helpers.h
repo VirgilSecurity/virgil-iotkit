@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_HELPERS_H_
-#define VIRGIL_IOT_SDK_TESTS_HELPERS_H_
+#ifndef VS_IOT_SDK_TESTS_HELPERS_H_
+#define VS_IOT_SDK_TESTS_HELPERS_H_
 
 #include <stdbool.h>
 #include <virgil/iot/logger/logger.h>
@@ -126,4 +126,4 @@ bool
 vs_test_create_device_key();
 bool
 vs_test_save_hl_keys();
-#endif // VIRGIL_IOT_SDK_TESTS_HELPERS_H_
+#endif // VS_IOT_SDK_TESTS_HELPERS_H_

@@ -32,12 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_HAL_PRVS_IMPLEMENTATION_H
-#define KUNLUN_HAL_PRVS_IMPLEMENTATION_H
+#ifndef VS_HAL_PRVS_IMPLEMENTATION_H
+#define VS_HAL_PRVS_IMPLEMENTATION_H
 
 #include <virgil/iot/protocols/sdmp/prvs.h>
 
 vs_sdmp_prvs_impl_t
 vs_prvs_impl();
 
-#endif // KUNLUN_HAL_PRVS_IMPLEMENTATION_H
+#endif // VS_HAL_PRVS_IMPLEMENTATION_H

@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_PRVS_H
-#define KUNLUN_PRVS_H
+#ifndef VS_PRVS_H
+#define VS_PRVS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -172,4 +172,4 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
 }
 #endif
 
-#endif // KUNLUN_PRVS_H
+#endif // VS_PRVS_H

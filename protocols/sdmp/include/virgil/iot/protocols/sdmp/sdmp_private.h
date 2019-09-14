@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_SDMP_PRIVATE_H
-#define KUNLUN_SDMP_PRIVATE_H
+#ifndef VS_SDMP_PRIVATE_H
+#define VS_SDMP_PRIVATE_H
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
@@ -43,4 +43,4 @@ _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet);
 vs_sdmp_transaction_id_t
 _sdmp_transaction_id();
 
-#endif // KUNLUN_SDMP_PRIVATE_H
+#endif // VS_SDMP_PRIVATE_H

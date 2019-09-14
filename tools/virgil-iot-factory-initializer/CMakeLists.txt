@@ -84,4 +84,4 @@ add_custom_target(factory-initializer-mbedtls
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(${PROJECT_NAME} netif-factory converters factory-initializer-mbedtls)
+add_go_executable(${PROJECT_NAME} factory-initializer-hal converters factory-initializer-mbedtls)

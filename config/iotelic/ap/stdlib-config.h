@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#ifndef VS_IOT_SDK_STDLIB_CONFIG_H
+#define VS_IOT_SDK_STDLIB_CONFIG_H
 
 
 
@@ -59,4 +59,4 @@
 
 
 
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#endif // VS_IOT_SDK_STDLIB_CONFIG_H

@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_VIRGIL_ECIES_H
-#define VS_HSM_VIRGIL_ECIES_H
+#ifndef VS_HSM_VS_ECIES_H
+#define VS_HSM_VS_ECIES_H
 
 #include <stdint.h>
 
@@ -55,4 +55,4 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t buf_sz,
                                     size_t *cryptogram_sz);
 
-#endif // VS_HSM_VIRGIL_ECIES_H
+#endif // VS_HSM_VS_ECIES_H

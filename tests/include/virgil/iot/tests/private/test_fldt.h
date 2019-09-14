@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_FLDT_H_
-#define VIRGIL_IOT_SDK_TESTS_FLDT_H_
+#ifndef VS_IOT_SDK_TESTS_FLDT_H_
+#define VS_IOT_SDK_TESTS_FLDT_H_
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
@@ -66,4 +66,4 @@ make_server_mapping(const vs_fldt_file_type_t *file_type);
 vs_fldt_ret_code_e
 server_add_filetype(const vs_fldt_file_type_t *file_type);
 
-#endif // VIRGIL_IOT_SDK_TESTS_FLDT_H_
+#endif // VS_IOT_SDK_TESTS_FLDT_H_

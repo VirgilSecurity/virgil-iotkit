@@ -34,17 +34,17 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(netif-factory VERSION 0.1.0 LANGUAGES C)
+project(factory-initializer-hal VERSION 0.1.0 LANGUAGES C)
 
 #
 #   Network interfaces for Factory Inittializer
 #
-add_library(netif-factory)
+add_library(factory-initializer-hal)
 
 #
 #   Sources
 #
-target_sources(netif-factory
+target_sources(factory-initializer-hal
         PRIVATE
 
         # Headers
@@ -61,7 +61,7 @@ target_sources(netif-factory
 #
 #   Includes
 #
-target_include_directories(netif-factory
+target_include_directories(factory-initializer-hal
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
@@ -71,7 +71,7 @@ target_include_directories(netif-factory
 #
 #   Libraries
 #
-target_link_libraries(netif-factory
+target_link_libraries(factory-initializer-hal
         PUBLIC
         sdmp-factory
 

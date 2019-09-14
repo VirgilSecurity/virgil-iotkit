@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_NETIF_UDP_BCAST_H
-#define KUNLUN_NETIF_UDP_BCAST_H
+#ifndef VS_NETIF_UDP_BCAST_H
+#define VS_NETIF_UDP_BCAST_H
 
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
@@ -49,4 +49,4 @@ vs_hal_netif_udp_bcast();
 }
 #endif
 
-#endif // KUNLUN_NETIF_UDP_BCAST_H
+#endif // VS_NETIF_UDP_BCAST_H

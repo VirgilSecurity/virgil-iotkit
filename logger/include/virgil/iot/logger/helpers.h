@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HELPERS_H_
-#define VIRGIL_IOT_SDK_LOGGER_HELPERS_H_
+#ifndef VS_IOT_SDK_LOGGER_HELPERS_H_
+#define VS_IOT_SDK_LOGGER_HELPERS_H_
 
 #include <virgil/iot/logger/logger.h>
 
@@ -46,4 +46,4 @@
     } while (0)
 
 
-#endif // VIRGIL_IOT_SDK_LOGGER_HELPERS_H_
+#endif // VS_IOT_SDK_LOGGER_HELPERS_H_

@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_PRVS_H_
-#define VIRGIL_IOT_SDK_TESTS_PRVS_H_
+#ifndef VS_IOT_SDK_TESTS_PRVS_H_
+#define VS_IOT_SDK_TESTS_PRVS_H_
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
@@ -112,4 +112,4 @@ make_prvs_implementation(void);
 
 #define PRVS_OP_CHECK_GOTO(OPERATION) CHECK_GOTO((OPERATION) != 0, "prvs operation " #OPERATION " has not been called");
 
-#endif // VIRGIL_IOT_SDK_TESTS_PRVS_H_
+#endif // VS_IOT_SDK_TESTS_PRVS_H_

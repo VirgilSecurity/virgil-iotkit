@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_CLOUD_CONFIG_H
-#define VIRGIL_IOT_SDK_CLOUD_CONFIG_H
+#ifndef VS_IOT_SDK_CLOUD_CONFIG_H
+#define VS_IOT_SDK_CLOUD_CONFIG_H
 
 #define VS_MSG_BIN_MQTT_PORT 8883
 
@@ -61,4 +61,4 @@
 #define VS_TL_VERSION_FIELD "version"
 #define VS_TL_TYPE_FILE "type"
 
-#endif //VIRGIL_IOT_SDK_CLOUD_CONFIG_H
+#endif //VS_IOT_SDK_CLOUD_CONFIG_H

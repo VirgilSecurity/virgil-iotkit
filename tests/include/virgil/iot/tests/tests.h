@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_H
-#define VIRGIL_IOT_SDK_TESTS_H
+#ifndef VS_IOT_SDK_TESTS_H
+#define VS_IOT_SDK_TESTS_H
 
 #include <stdbool.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
@@ -45,4 +45,4 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx);
 
 uint16_t
 vs_update_test(vs_storage_op_ctx_t *ctx);
-#endif // VIRGIL_IOT_SDK_TESTS_H
+#endif // VS_IOT_SDK_TESTS_H

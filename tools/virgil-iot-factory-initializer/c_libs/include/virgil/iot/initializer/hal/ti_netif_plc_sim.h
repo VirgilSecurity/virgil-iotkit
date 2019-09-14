@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef KUNLUN_NETIF_PLC_SIM_H
-#define KUNLUN_NETIF_PLC_SIM_H
+#ifndef VS_NETIF_PLC_SIM_H
+#define VS_NETIF_PLC_SIM_H
 
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
@@ -49,4 +49,4 @@ vs_hal_netif_plc_sim();
 }
 #endif
 
-#endif // KUNLUN_NETIF_PLC_SIM_H
+#endif // VS_NETIF_PLC_SIM_H

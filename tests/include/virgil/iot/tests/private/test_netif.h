@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_SDMP_H_
-#define VIRGIL_IOT_SDK_TESTS_SDMP_H_
+#ifndef VS_IOT_SDK_TESTS_SDMP_H_
+#define VS_IOT_SDK_TESTS_SDMP_H_
 
 #include <stdbool.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
@@ -82,4 +82,4 @@ prepare_test_netif(vs_netif_t *netif);
         goto terminate;                                                                                                \
     }
 
-#endif // VIRGIL_IOT_SDK_TESTS_SDMP_H_
+#endif // VS_IOT_SDK_TESTS_SDMP_H_

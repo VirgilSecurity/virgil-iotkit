@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_HAL_H_
-#define VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#ifndef VS_IOT_SDK_LOGGER_HAL_H_
+#define VS_IOT_SDK_LOGGER_HAL_H_
 
 #include <stdbool.h>
 
@@ -57,4 +57,4 @@ bool
 vs_logger_current_time_hal(void);
 #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
-#endif // VIRGIL_IOT_SDK_LOGGER_HAL_H_
+#endif // VS_IOT_SDK_LOGGER_HAL_H_

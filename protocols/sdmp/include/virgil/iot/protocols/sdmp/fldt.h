@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_H
-#define VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -169,4 +169,4 @@ vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type);
 }
 #endif
 
-#endif // VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_H

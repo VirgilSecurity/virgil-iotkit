@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <virgil/iot/hsm/hsm_structs.h>
-#include <virgil/iot/trust_list/tl_hal.h>
+#include <virgil/iot/trust_list/rpi-tl-hal.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,

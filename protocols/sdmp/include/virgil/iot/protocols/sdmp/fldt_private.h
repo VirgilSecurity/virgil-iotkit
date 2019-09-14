@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
-#define VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -151,4 +151,4 @@ vs_fldt_set_is_gateway(bool is_gateway) {
 }
 #endif
 
-#endif // VIRGIL_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
