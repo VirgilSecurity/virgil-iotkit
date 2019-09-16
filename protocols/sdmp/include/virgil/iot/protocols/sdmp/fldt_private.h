@@ -77,6 +77,17 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
 // Server request/response processing
 
+// . "Destroy"
+// .  Called to destroy current file type that was initialized during vs_fldt_update_server_file_type call
+typedef void (*vs_fldt_server_destroy_funct)(void **storage_context);
+
+typedef struct {
+    vs_fldt_file_type_t file_type;
+    vs_firmware_descriptor_t file_descr;
+    vs_storage_op_ctx_t *storage_ctx;
+
+} vs_fldt_server_file_type_mapping_t;
+
 int
 vs_fldt_GFTI_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
@@ -159,6 +170,11 @@ static inline void
 vs_fldt_set_is_gateway(bool is_gateway) {
     vs_fldt_is_gateway = is_gateway;
 }
+
+vs_fldt_ret_code_e
+vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
+                                           const vs_fldt_file_type_t *file_type,
+                                           const vs_firmware_version_t *src);
 
 #ifdef __cplusplus
 }

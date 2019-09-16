@@ -51,6 +51,28 @@ const vs_netif_t *vs_fldt_netif = NULL;
 const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
 bool vs_fldt_is_gateway;
 
+/******************************************************************/
+vs_fldt_ret_code_e
+vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
+                                           const vs_fldt_file_type_t *file_type,
+                                           const vs_firmware_version_t *src) {
+
+    CHECK_NOT_ZERO_RET(dst, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(src, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
+    dst->file_type = *file_type;
+
+    dst->major = src->major;
+    dst->minor = src->minor;
+    dst->patch = src->patch;
+    dst->dev_milestone = src->dev_milestone;
+    dst->dev_build = src->dev_build;
+    dst->timestamp = src->timestamp;
+
+    return VS_FLDT_ERR_OK;
+}
+
 /******************************************************************************/
 char *
 vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type) {
