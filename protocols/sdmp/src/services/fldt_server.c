@@ -117,7 +117,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     switch (update_ret_code) {
     case VS_STORAGE_OK:
         FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
-                &file_info_response->version, file_type, &file_type_info->file_descr.info.version),
+                           &file_info_response->version, file_type, &file_type_info->file_descr.info.version),
                    "Unable to convert file version");
         break;
 

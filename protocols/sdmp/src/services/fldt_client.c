@@ -69,12 +69,12 @@ _check_download_need(const char *opcode,
 
     file_type = &new_file_ver->file_type;
 
-    FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(&current_file_ver, fw_ver),
+    FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(current_file_ver, file_type, fw_ver),
                "Unable to convert file description");
 
     current_file_ver->file_type = *file_type;
 
-    VS_LOG_DEBUG("[FLDT:%s] Present file version : %s",
+    VS_LOG_DEBUG("[FLDT:%s] Current file version : %s",
                  opcode,
                  vs_fldt_file_version_descr(file_ver_descr, current_file_ver));
 
@@ -109,11 +109,12 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
 
+    (void)response;
+    (void)response_buf_sz;
+    (void)response_sz;
+
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_buf_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     CHECK_RET(request_sz == sizeof(*new_file),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
@@ -121,8 +122,8 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
     new_file_ver = &new_file->version;
 
-    VS_LOG_DEBUG("[FLDT:INFV] Request for new file from gateway " GATEWAY_TEMPLATE " : %s",
-                 GATEWAY_ARG(new_file->gateway_mac),
+    VS_LOG_DEBUG("[FLDT:INFV] Request for new file from gateway " FLDT_GATEWAY_TEMPLATE " : %s",
+                 FLDT_GATEWAY_ARG(new_file->gateway_mac),
                  vs_fldt_file_version_descr(file_descr, new_file_ver));
 
     file_type = &new_file_ver->file_type;
@@ -133,7 +134,8 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
     file_type_info->gateway_mac = new_file->gateway_mac;
 
-    FLDT_CHECK(_check_download_need("INFV", file_type_info, &current_file_ver, new_file_ver, &download), "Unable to check download need");
+    FLDT_CHECK(_check_download_need("INFV", file_type_info, &current_file_ver, new_file_ver, &download),
+               "Unable to check download need");
 
     if (download) {
 
@@ -159,7 +161,8 @@ int
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     vs_fldt_gnfh_header_request_t new_file;
     vs_fldt_gfti_fileinfo_response_t *file_info = (vs_fldt_gfti_fileinfo_response_t *)response;
-    vs_fldt_file_version_t *file_ver = NULL;
+    vs_fldt_file_version_t current_file_ver;
+    vs_fldt_file_version_t *new_file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
@@ -175,13 +178,13 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gfti_fileinfo_response_t type");
 
-    file_ver = &file_info->version;
+    new_file_ver = &file_info->version;
 
-    VS_LOG_DEBUG("[FLDT:GFTI] Response for file from gateway " GATEWAY_TEMPLATE " : %s",
-                 GATEWAY_ARG(file_info->gateway_mac),
-                 vs_fldt_file_version_descr(file_descr, file_ver));
+    VS_LOG_DEBUG("[FLDT:GFTI] Response for file from gateway " FLDT_GATEWAY_TEMPLATE " : %s",
+                 FLDT_GATEWAY_ARG(file_info->gateway_mac),
+                 vs_fldt_file_version_descr(file_descr, new_file_ver));
 
-    file_type = &file_ver->file_type;
+    file_type = &new_file_ver->file_type;
 
     CHECK_RET(file_type_info = vs_fldt_get_mapping_elem(file_type),
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
@@ -189,13 +192,14 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_type_info->gateway_mac = file_info->gateway_mac;
 
-    FLDT_CHECK(_check_download_need("GFTI", file_type_info, file_ver, &download), "Unable to check download need");
+    FLDT_CHECK(_check_download_need("GFTI", file_type_info, &current_file_ver, new_file_ver, &download),
+               "Unable to check download need");
 
     if (download) {
 
-        new_file.version = *file_ver;
+        new_file.version = *new_file_ver;
 
-        VS_LOG_DEBUG("[FLDT] Ask file header for file : %s", vs_fldt_file_version_descr(file_descr, file_ver));
+        VS_LOG_DEBUG("[FLDT] Ask file header for file : %s", vs_fldt_file_version_descr(file_descr, new_file_ver));
 
         CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
                                         &file_type_info->gateway_mac,
@@ -418,11 +422,10 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_descr = &file_type_info->file_descr;
 
-    CHECK_RET(0 == vs_update_save_firmware_footer(
-                           file_type_info->storage_ctx, file_descr, (uint8_t *)file_footer->footer_data),
-              -2,
-              "Unable to save footer for file %s",
-              vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+    UPDATE_CHECK(vs_update_save_firmware_footer(
+                         file_type_info->storage_ctx, file_descr, (uint8_t *)file_footer->footer_data),
+                 "Unable to save footer for file %s",
+                 vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
 
     if (0 != vs_update_verify_firmware(file_type_info->storage_ctx, file_descr)) {
 
@@ -446,7 +449,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                          vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
         }
 
-        _got_file_callback(&file_type_info->previous_ver, file_ver, file_type_info->gateway_mac, 0 == update_ret_code);
+        _got_file_callback(&file_type_info->previous_ver, file_ver, &file_type_info->gateway_mac, 0 == update_ret_code);
     }
 
     return VS_FLDT_ERR_OK;
@@ -484,7 +487,8 @@ vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage
             storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->file_descr);
 
     if (0 == update_ret_code) {
-        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(&file_ver, &file_type_info->file_descr.info.version),
+        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                           &file_ver, file_type, &file_type_info->file_descr.info.version),
                    "Unable to convert file version");
         VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
     } else {
@@ -519,5 +523,4 @@ void
 vs_fldt_destroy_client(void) {
 
     _file_type_mapping_array_size = 0;
-
 }
