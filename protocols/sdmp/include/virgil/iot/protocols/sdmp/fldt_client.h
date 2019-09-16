@@ -47,10 +47,16 @@ extern "C" {
 //
 
 // . File has been downloaded
-// . file_ver - file version and its type
+// . prev_file_ver - previous file version and its type
+// . cur_file_ver - sent file version and its type
+// . gateway - gateway that has sent this file
 // . successfully_updated - true while file vas updated else false
 
-typedef void (*vs_fldt_got_file)(const vs_fldt_file_version_t *file_ver, bool successfully_updated);
+typedef void (*vs_fldt_got_file)(
+        const vs_fldt_file_version_t *prev_file_ver,
+        const vs_fldt_file_version_t *cur_file_ver,
+        const vs_mac_addr_t *gateway,
+        bool successfully_updated);
 
 //
 //  Customer API

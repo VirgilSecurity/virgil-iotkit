@@ -45,6 +45,11 @@ extern "C" {
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
+#define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
+#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                          \
+    (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
+            (MAC_ADDR).bytes[5]
+
 typedef struct __attribute__((__packed__)) {
     uint16_t file_type_id; // = vs_update_file_type_id_t
     uint8_t add_info[32];  // = vs_fldt_fw_add_info_t for VS_UPDATE_FIRMWARE

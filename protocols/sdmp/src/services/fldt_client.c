@@ -54,32 +54,14 @@ vs_fldt_get_mapping_elem(const vs_fldt_file_type_t *file_type) {
 
 /******************************************************************/
 static int
-_vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst, const vs_firmware_version_t *src) {
-
-    CHECK_NOT_ZERO_RET(dst, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(src, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-
-    dst->major = src->major;
-    dst->minor = src->minor;
-    dst->patch = src->patch;
-    dst->dev_milestone = src->dev_milestone;
-    dst->dev_build = src->dev_build;
-    dst->timestamp = src->timestamp;
-
-    return VS_FLDT_ERR_OK;
-}
-
-
-/******************************************************************/
-static int
 _check_download_need(const char *opcode,
                      vs_fldt_client_file_type_mapping_t *file_type_info,
+                     vs_fldt_file_version_t *current_file_ver,
                      const vs_fldt_file_version_t *new_file_ver,
                      bool *download) {
     const vs_firmware_descriptor_t *file_descr = &file_type_info->file_descr;
     const vs_firmware_version_t *fw_ver = &file_descr->info.version;
     const vs_fldt_file_type_t *file_type = NULL;
-    vs_fldt_file_version_t present_file_ver;
     char file_ver_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
 
@@ -87,18 +69,18 @@ _check_download_need(const char *opcode,
 
     file_type = &new_file_ver->file_type;
 
-    FLDT_CHECK(_vs_firmware_version_2_vs_fldt_file_version(&present_file_ver, fw_ver),
+    FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(&current_file_ver, fw_ver),
                "Unable to convert file description");
 
-    present_file_ver.file_type = *file_type;
+    current_file_ver->file_type = *file_type;
 
     VS_LOG_DEBUG("[FLDT:%s] Present file version : %s",
                  opcode,
-                 vs_fldt_file_version_descr(file_ver_descr, &present_file_ver));
+                 vs_fldt_file_version_descr(file_ver_descr, current_file_ver));
 
     VS_LOG_DEBUG("[FLDT:%s] New file version : %s", opcode, vs_fldt_file_version_descr(file_ver_descr, new_file_ver));
 
-    *download = vs_fldt_file_is_newer(new_file_ver, &present_file_ver);
+    *download = vs_fldt_file_is_newer(new_file_ver, current_file_ver);
 
     if (*download) {
         VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
@@ -118,6 +100,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                                 uint16_t *response_sz) {
 
     const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
+    vs_fldt_file_version_t current_file_ver;
     const vs_fldt_file_version_t *new_file_ver = NULL;
     const vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_gnfh_header_request_t header_request;
@@ -150,10 +133,11 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
     file_type_info->gateway_mac = new_file->gateway_mac;
 
-    FLDT_CHECK(_check_download_need("INFV", file_type_info, new_file_ver, &download), "Unable to check download need");
+    FLDT_CHECK(_check_download_need("INFV", file_type_info, &current_file_ver, new_file_ver, &download), "Unable to check download need");
 
     if (download) {
 
+        file_type_info->previous_ver = current_file_ver;
         header_request.version = new_file->version;
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file : %s", vs_fldt_file_version_descr(file_descr, new_file_ver));
@@ -462,7 +446,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                          vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
         }
 
-        _got_file_callback(file_ver, 0 == update_ret_code);
+        _got_file_callback(&file_type_info->previous_ver, file_ver, file_type_info->gateway_mac, 0 == update_ret_code);
     }
 
     return VS_FLDT_ERR_OK;
@@ -472,7 +456,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 vs_fldt_ret_code_e
 vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage_op_ctx_t *storage_ctx) {
     const vs_fldt_fw_add_info_t *fw_add_data = (vs_fldt_fw_add_info_t *)file_type->add_info;
-    vs_fldt_client_file_type_mapping_t *file_type_mapping = NULL;
+    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gfti_fileinfo_request_t file_type_request;
     vs_fldt_file_version_t file_ver;
     char file_descr[FLDT_FILEVER_BUF];
@@ -484,35 +468,34 @@ vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage
 
     VS_LOG_DEBUG("[FLDT] Update file type %s", vs_fldt_file_type_descr(file_descr, file_type));
 
-    file_type_mapping = vs_fldt_get_mapping_elem(file_type);
+    file_type_info = vs_fldt_get_mapping_elem(file_type);
 
-    if (!file_type_mapping) {
-        file_type_mapping = &_client_file_type_mapping[_file_type_mapping_array_size++];
+    if (!file_type_info) {
+        file_type_info = &_client_file_type_mapping[_file_type_mapping_array_size++];
         VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
                      _file_type_mapping_array_size);
     } else {
         VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
     }
 
-    file_type_mapping->file_type = *file_type;
-    file_type_mapping->storage_ctx = storage_ctx;
+    file_type_info->file_type = *file_type;
+    file_type_info->storage_ctx = storage_ctx;
     update_ret_code = vs_update_load_firmware_descriptor(
-            storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_mapping->file_descr);
+            storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->file_descr);
 
     if (0 == update_ret_code) {
-        FLDT_CHECK(_vs_firmware_version_2_vs_fldt_file_version(&file_ver, &file_type_mapping->file_descr.info.version),
+        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(&file_ver, &file_type_info->file_descr.info.version),
                    "Unable to convert file version");
         VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
     } else {
         VS_LOG_WARNING("[FLDT] File type was not found by Update library");
-        VS_IOT_MEMSET(&file_type_mapping->file_descr, 0, sizeof(file_type_mapping->file_descr));
+        VS_IOT_MEMSET(&file_type_info->file_descr, 0, sizeof(file_type_info->file_descr));
     }
 
-    VS_IOT_MEMSET(&file_type_mapping->gateway_mac, 0, sizeof(file_type_mapping->gateway_mac));
+    VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
 
     file_type_request.file_type = *file_type;
     FLDT_CHECK(vs_fldt_ask_file_type_info(&file_type_request), "Unable to ask current file information");
-    file_type_mapping->storage_ctx = storage_ctx;
 
     return VS_FLDT_ERR_OK;
 }
@@ -536,4 +519,5 @@ void
 vs_fldt_destroy_client(void) {
 
     _file_type_mapping_array_size = 0;
+
 }

@@ -43,10 +43,6 @@ extern "C" {
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 
-#define GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
-#define GATEWAY_ARG(MAC_ADDR)                                                                                          \
-    (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
-            (MAC_ADDR).bytes[5]
 //
 //  Internal structures
 //
@@ -121,6 +117,7 @@ typedef struct {
     vs_fldt_file_type_t file_type;
     vs_firmware_descriptor_t file_descr;
     vs_storage_op_ctx_t *storage_ctx;
+    vs_fldt_file_version_t previous_ver;
     vs_mac_addr_t gateway_mac;
 
 } vs_fldt_client_file_type_mapping_t;
