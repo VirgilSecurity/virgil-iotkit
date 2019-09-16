@@ -96,7 +96,7 @@ terminate:
 /******************************************************************************/
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
-    static const uint32_t START_EPOCH = 1566203295; // Jan 01 1970 (UTC)
+    static const uint32_t START_EPOCH = 1566203295; // January 1, 2015 UTC
     char *out = buf;
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
