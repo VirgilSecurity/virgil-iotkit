@@ -33,9 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/macros/macros.h>
-#include <global-hal.h>
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -189,7 +186,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
     header_response->version = header_request->version;
     header_response->file_size = file_type_info->file_descr.firmware_length;
-    // TODO : check footer presence for not-firmware type !!!
+    // TODO : check footer presence for non-firmware type !!!
     header_response->has_footer = true;
     fw_header_size = sizeof(file_type_info->file_descr);
     header_response->header_size = fw_header_size;
