@@ -191,16 +191,14 @@ _prepare_fldt_service() {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_fldt_service(const vs_netif_t *netif) {
-
-    CHECK_NOT_ZERO_RET(netif, NULL);
+vs_sdmp_fldt_service() {
 
     if (!_fldt_service_ready) {
         _prepare_fldt_service();
         _fldt_service_ready = true;
     }
 
-    vs_fldt_netif = netif;
+    vs_fldt_netif = NULL;
 
     return &_fldt_service;
 }

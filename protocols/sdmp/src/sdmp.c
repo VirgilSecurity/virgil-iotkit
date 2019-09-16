@@ -236,7 +236,7 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
     _sdmp_default_netif = default_netif;
 
     // Init default network interface
-    default_netif->init(_sdmp_rx_cb, default_netif);
+    default_netif->init(_sdmp_rx_cb);
 
     return 0;
 }
