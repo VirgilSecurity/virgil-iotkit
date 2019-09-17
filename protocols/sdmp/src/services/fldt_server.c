@@ -347,7 +347,7 @@ vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
     const vs_fldt_fw_add_info_t *fw_add_data = (vs_fldt_fw_add_info_t *)file_type->add_info;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_sdmp_fldt_element_e fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
     vs_fldt_infv_new_file_request_t new_file;
     int update_ret_code;
     vs_fldt_file_version_t file_ver;

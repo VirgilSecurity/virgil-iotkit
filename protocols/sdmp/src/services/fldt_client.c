@@ -463,7 +463,7 @@ vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage
     vs_fldt_gfti_fileinfo_request_t file_type_request;
     vs_fldt_file_version_t file_ver;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_sdmp_fldt_element_e fldt_ret_code;
+    vs_fldt_ret_code_e fldt_ret_code;
     int update_ret_code;
 
     CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
