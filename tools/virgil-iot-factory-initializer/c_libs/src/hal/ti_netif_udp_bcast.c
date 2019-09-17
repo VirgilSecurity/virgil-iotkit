@@ -124,11 +124,19 @@ _udp_bcast_connect() {
         goto terminate;
     }
 
+#if __APPLE__
+    // Set SO_REUSEPORT
+    if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
+        printf("UDP Broadcast: Cannot set SO_REUSEPORT. %s\n", strerror(errno));
+        goto terminate;
+    }
+#else
     // Set SO_REUSEADDR
     if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
         printf("UDP Broadcast: Cannot set SO_REUSEADDR. %s\n", strerror(errno));
         goto terminate;
     }
+#endif
 
     // Set SO_BROADCAST
     if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_BROADCAST, &enable, sizeof(int)) < 0) {
