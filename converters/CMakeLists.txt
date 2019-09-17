@@ -49,6 +49,7 @@ set(CONV_SRC
 # Include and build external libraries
 include (${CMAKE_CURRENT_SOURCE_DIR}/../cmake/virgil_depends.cmake)
 
+set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
         CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs_ext/mbedtls"
