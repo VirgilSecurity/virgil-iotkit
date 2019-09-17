@@ -41,6 +41,7 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/update/update.h>
 
 //
 //  Internal structures
@@ -72,6 +73,17 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
 // Server request/response processing
 
+// . "Destroy"
+// .  Called to destroy current file type that was initialized during vs_fldt_update_server_file_type call
+typedef void (*vs_fldt_server_destroy_funct)(void **storage_context);
+
+typedef struct {
+    vs_fldt_file_type_t file_type;
+    vs_firmware_descriptor_t file_descr;
+    vs_storage_op_ctx_t *storage_ctx;
+
+} vs_fldt_server_file_type_mapping_t;
+
 int
 vs_fldt_GFTI_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
@@ -100,6 +112,15 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
                                 uint16_t *response_sz);
 
 // Client request/response processing
+
+typedef struct {
+    vs_fldt_file_type_t file_type;
+    vs_firmware_descriptor_t file_descr;
+    vs_storage_op_ctx_t *storage_ctx;
+    vs_fldt_file_version_t previous_ver;
+    vs_mac_addr_t gateway_mac;
+
+} vs_fldt_client_file_type_mapping_t;
 
 int
 vs_fldt_INFV_request_processing(const uint8_t *request,
@@ -133,7 +154,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
         }                                                                                                              \
     }                                                                                                                  \
                                                                                                                        \
-    VS_LOG_WARNING("[FLDT] Unable to find file type specified %ul", file_type->file_type_id);                          \
+    VS_LOG_WARNING("[FLDT] Unable to find file type specified %d", file_type->file_type_id);                           \
     return NULL;
 
 #define FLDT_CALLBACK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                   \
@@ -146,6 +167,11 @@ static inline void
 vs_fldt_set_is_gateway(bool is_gateway) {
     vs_fldt_is_gateway = is_gateway;
 }
+
+vs_fldt_ret_code_e
+vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
+                                           const vs_fldt_file_type_t *file_type,
+                                           const vs_firmware_version_t *src);
 
 #ifdef __cplusplus
 }

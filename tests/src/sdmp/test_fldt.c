@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if 0
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
@@ -232,3 +233,5 @@ make_server_mapping(const vs_fldt_file_type_t *file_type){
 
     return mapping;
 }
+
+#endif

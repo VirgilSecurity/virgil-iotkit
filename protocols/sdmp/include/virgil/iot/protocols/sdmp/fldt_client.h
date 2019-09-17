@@ -46,92 +46,26 @@ extern "C" {
 //  Callbacks
 //
 
-// . "Set Gateway MAC address"
-// .  Set gateway MAC address
-typedef vs_fldt_ret_code_e (*vs_fldt_client_set_gateway_mac_funct)(const vs_mac_addr_t *mac);
+// . File has been downloaded
+// . prev_file_ver - previous file version and its type
+// . cur_file_ver - sent file version and its type
+// . gateway - gateway that has sent this file
+// . successfully_updated - true while file vas updated else false
 
-// . "Get Current Version"
-// .  Get file_type current file version and store it to the file_info
-typedef vs_fldt_ret_code_e (*vs_fldt_client_get_current_version_funct)(void **storage_context,
-                                                                       const vs_fldt_file_type_t *file_type,
-                                                                       vs_fldt_file_version_t *file_version);
-
-// . "Update file"
-// .  Current file specified by file_version_request is older than gateway one, so need to call
-//    get_file_header, get_file_chunk, ..., get_file_footer (if footer is present)
-typedef vs_fldt_ret_code_e (*vs_fldt_client_update_file_funct)(
-        void **storage_context,
-        const vs_fldt_infv_new_file_request_t *file_version_request);
-
-// . "Get file info"
-// .  File header for file file_version has been received
-// .  This is response for the vs_fldt_ask_file_type_info call
-typedef vs_fldt_ret_code_e (*vs_fldt_client_got_info_funct)(void **storage_context,
-                                                            const vs_fldt_gfti_fileinfo_response_t *file_info);
-
-// . "Get file header"
-// .  File header for file file_version has been received
-// .  This is response for the vs_fldt_ask_file_header call
-typedef vs_fldt_ret_code_e (*vs_fldt_client_got_header_funct)(void **storage_context,
-                                                              const vs_fldt_gnfh_header_response_t *file_header);
-
-// . "Get file data"
-// .  File data for file file_version has been received
-// .  This is response for the vs_fldt_ask_file_chunk call
-typedef vs_fldt_ret_code_e (*vs_fldt_client_got_data_funct)(void **storage_context,
-                                                            const vs_fldt_gnfd_data_response_t *file_data);
-
-// . "Get file footer"
-// .  File footer for file file_version has been received
-// .  This is response for the vs_fldt_ask_file_footer call
-typedef vs_fldt_ret_code_e (*vs_fldt_client_got_footer_funct)(void **storage_context,
-                                                              const vs_fldt_gnff_footer_response_t *file_footer);
-
-// . "Destroy"
-// .  Called to desctroy current file type that was initialized during vs_fldt_add_client_file_type call
-typedef void (*vs_fldt_client_destroy_funct)(void **storage_context);
-
-//
-//  Internal structures
-//
-
-typedef struct {
-    vs_fldt_file_type_t file_type;
-    void *storage_context;
-
-    vs_fldt_client_set_gateway_mac_funct set_gateway_mac;
-    vs_fldt_client_get_current_version_funct get_current_version;
-    vs_fldt_client_update_file_funct update_file;
-    vs_fldt_client_got_info_funct got_info;
-    vs_fldt_client_got_header_funct got_header;
-    vs_fldt_client_got_data_funct got_data;
-    vs_fldt_client_got_footer_funct got_footer;
-    vs_fldt_client_destroy_funct destroy;
-
-} vs_fldt_client_file_type_mapping_t;
-
+typedef void (*vs_fldt_got_file)(const vs_fldt_file_version_t *prev_file_ver,
+                                 const vs_fldt_file_version_t *cur_file_ver,
+                                 const vs_mac_addr_t *gateway,
+                                 bool successfully_updated);
 
 //
 //  Customer API
 //
 
 vs_fldt_ret_code_e
-vs_fldt_init_client(void);
+vs_fldt_init_client(vs_fldt_got_file got_file_callback);
 
 vs_fldt_ret_code_e
-vs_fldt_update_client_file_type(const vs_fldt_client_file_type_mapping_t *mapping_elem);
-
-vs_fldt_ret_code_e
-vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type);
-
-vs_fldt_ret_code_e
-vs_fldt_ask_file_header(const vs_mac_addr_t *mac, const vs_fldt_gnfh_header_request_t *header_request);
-
-vs_fldt_ret_code_e
-vs_fldt_ask_file_data(const vs_mac_addr_t *mac, vs_fldt_gnfd_data_request_t *file_data);
-
-vs_fldt_ret_code_e
-vs_fldt_ask_file_footer(const vs_mac_addr_t *mac, const vs_fldt_gnff_footer_request_t *file_footer);
+vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage_op_ctx_t *storage_ctx);
 
 void
 vs_fldt_destroy_client(void);

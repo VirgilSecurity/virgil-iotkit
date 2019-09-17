@@ -35,6 +35,7 @@
 #ifndef VS_IOT_SDK_TESTS_FLDT_H_
 #define VS_IOT_SDK_TESTS_FLDT_H_
 
+#if 0
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
@@ -65,5 +66,7 @@ make_server_mapping(const vs_fldt_file_type_t *file_type);
 
 vs_fldt_ret_code_e
 server_add_filetype(const vs_fldt_file_type_t *file_type);
+
+#endif
 
 #endif // VS_IOT_SDK_TESTS_FLDT_H_
