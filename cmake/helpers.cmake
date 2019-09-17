@@ -108,3 +108,74 @@ target_link_libraries(enable_ubsan_mode
         $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
             -fsanitize=undefined>
     )
+
+# ---------------------------------------------------------------------------
+#   Thread sanitizer flags
+# ---------------------------------------------------------------------------
+message("-- Thread Sanitizer: ${USE_TSAN}")
+
+add_library(enable_tsan_mode INTERFACE)
+
+target_compile_options(enable_tsan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=thread>
+        )
+
+target_link_libraries(enable_tsan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=thread>
+        )
+
+# ---------------------------------------------------------------------------
+#   Memory sanitizer flags
+# ---------------------------------------------------------------------------
+message("-- Memory Sanitizer: ${USE_MSAN}")
+
+add_library(enable_msan_mode INTERFACE)
+
+target_compile_options(enable_msan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=memory>
+        )
+
+target_link_libraries(enable_msan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=memory>
+        )
+
+# ---------------------------------------------------------------------------
+#   Leak sanitizer flags
+# ---------------------------------------------------------------------------
+message("-- Leak Sanitizer: ${USE_LSAN}")
+
+add_library(enable_lsan_mode INTERFACE)
+
+target_compile_options(enable_lsan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=leak>
+        )
+
+target_link_libraries(enable_lsan_mode
+        INTERFACE
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
+        -fno-omit-frame-pointer -fsanitize=leak>
+        )
+
+# ---------------------------------------------------------------------------
+#   Sanitizer target
+# ---------------------------------------------------------------------------
+add_library(enable_sanitizers INTERFACE)
+
+target_link_libraries(enable_sanitizers
+        INTERFACE
+        $<$<BOOL:${USE_ASAN}>:enable_asan_mode>
+        $<$<BOOL:${USE_TSAN}>:enable_tsan_mode>
+        $<$<BOOL:${USE_MSAN}>:enable_msan_mode>
+        $<$<BOOL:${USE_LSAN}>:enable_lsan_mode>
+        $<$<BOOL:${USE_UBSAN}>:enable_ubsan_mode>
+        )
