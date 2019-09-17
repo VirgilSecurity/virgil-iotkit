@@ -32,17 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/logger/logger.h>
-#include <stdlib-config.h>
-#include <global-hal.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdio.h>
 
 static vs_sdmp_service_t _fldt_service = {0};
 static bool _fldt_service_ready = false;
@@ -50,6 +43,28 @@ static bool _fldt_service_ready = false;
 const vs_netif_t *vs_fldt_netif = NULL;
 const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
 bool vs_fldt_is_gateway;
+
+/******************************************************************/
+vs_fldt_ret_code_e
+vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
+                                           const vs_fldt_file_type_t *file_type,
+                                           const vs_firmware_version_t *src) {
+
+    CHECK_NOT_ZERO_RET(dst, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(src, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+
+    dst->file_type = *file_type;
+
+    dst->major = src->major;
+    dst->minor = src->minor;
+    dst->patch = src->patch;
+    dst->dev_milestone = src->dev_milestone;
+    dst->dev_build = src->dev_build;
+    dst->timestamp = src->timestamp;
+
+    return VS_FLDT_ERR_OK;
+}
 
 /******************************************************************************/
 char *
@@ -81,11 +96,12 @@ terminate:
 /******************************************************************************/
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
+    static const uint32_t START_EPOCH = 1566203295; // January 1, 2015 UTC
+    char *out = buf;
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
-    char *out = buf;
 
-    uint32_t timestamp = file_ver->timestamp + 1566203295; // Jan 01 1970 (UTC)
+    uint32_t timestamp = file_ver->timestamp + START_EPOCH;
 
     vs_fldt_file_type_descr(out, &file_ver->file_type);
 

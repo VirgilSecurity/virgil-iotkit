@@ -49,59 +49,10 @@ struct vs_fldt_server_file_type_mapping_t;
 //  Callbacks
 //
 
-// . "Get File Version"
-// .  Get file version for request and store it to the response
-typedef vs_fldt_ret_code_e (*vs_fldt_server_version_funct)(void **storage_context,
-                                                           const vs_fldt_gfti_fileinfo_request_t *request,
-                                                           vs_fldt_gfti_fileinfo_response_t *response);
-
-// . "Get File Header"
-// .  Get file header for request and try to store it to the header_response buffer if response_buf_size is enough
-// .  Check that response's size is enough (check response_buf_sz value)
-typedef vs_fldt_ret_code_e (*vs_fldt_server_header_funct)(void **storage_context,
-                                                          const vs_fldt_gnfh_header_request_t *request,
-                                                          uint16_t response_buf_sz,
-                                                          vs_fldt_gnfh_header_response_t *response);
-
-// . "Get File Data"
-// .  Get file data for request and try to store it to the header_response buffer if response_buf_size is enough
-// .  Check that response's size is enough (check response_buf_sz value)
-typedef vs_fldt_ret_code_e (*vs_fldt_server_data_funct)(void **storage_context,
-                                                        const vs_fldt_gnfd_data_request_t *request,
-                                                        uint16_t response_buf_sz,
-                                                        vs_fldt_gnfd_data_response_t *response);
-
-// . "Get File Footer"
-// .  Get file footer for request and try to store it to the header_response buffer if response_buf_size is enough
-// .  Check that response's size is enough (check response_buf_sz value)
-typedef vs_fldt_ret_code_e (*vs_fldt_server_footer_funct)(void **storage_context,
-                                                          const vs_fldt_gnff_footer_request_t *request,
-                                                          uint16_t response_buf_sz,
-                                                          vs_fldt_gnff_footer_response_t *response);
-
-// . "Destroy"
-// .  Called to destroy current file type that was initialized during vs_fldt_update_server_file_type call
-typedef void (*vs_fldt_server_destroy_funct)(void **storage_context);
-
 // . "Add file type"
 // .  Add file type asked by client
-typedef vs_fldt_ret_code_e (*vs_fldt_server_add_filetype)(const vs_fldt_file_type_t *file_type);
-
-
-//
-//  Internal structures
-//
-
-typedef struct {
-    vs_fldt_file_type_t file_type;
-    void *storage_context;
-
-    vs_fldt_server_version_funct get_version;
-    vs_fldt_server_header_funct get_header;
-    vs_fldt_server_data_funct get_data;
-    vs_fldt_server_footer_funct get_footer;
-    vs_fldt_server_destroy_funct destroy;
-} vs_fldt_server_file_type_mapping_t;
+typedef vs_fldt_ret_code_e (*vs_fldt_server_add_filetype)(const vs_fldt_file_type_t *file_type,
+                                                          vs_storage_op_ctx_t **storage_ctx);
 
 
 //
@@ -109,13 +60,12 @@ typedef struct {
 //
 
 vs_fldt_ret_code_e
-vs_fldt_init_server(vs_fldt_server_add_filetype add_filetype);
+vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
 vs_fldt_ret_code_e
-vs_fldt_update_server_file_type(const vs_fldt_server_file_type_mapping_t *mapping_elem);
-
-vs_fldt_ret_code_e
-vs_fldt_broadcast_new_file(const vs_fldt_infv_new_file_request_t *new_file);
+vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
+                                vs_storage_op_ctx_t *storage_ctx,
+                                bool broadcast_file_info);
 
 void
 vs_fldt_destroy_server(void);
