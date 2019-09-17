@@ -154,7 +154,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
         }                                                                                                              \
     }                                                                                                                  \
                                                                                                                        \
-    VS_LOG_WARNING("[FLDT] Unable to find file type specified %ul", file_type->file_type_id);                          \
+    VS_LOG_WARNING("[FLDT] Unable to find file type specified %d", file_type->file_type_id);                           \
     return NULL;
 
 #define FLDT_CALLBACK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                   \

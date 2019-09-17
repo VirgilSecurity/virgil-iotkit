@@ -99,7 +99,7 @@ typedef enum {
 
 // Get Service descriptor
 const vs_sdmp_service_t *
-vs_sdmp_fldt_service();
+vs_sdmp_fldt_service(const vs_netif_t *fldt_netif);
 
 // "Inform New File Version"
 typedef struct __attribute__((__packed__)) {

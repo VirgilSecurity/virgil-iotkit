@@ -207,14 +207,14 @@ _prepare_fldt_service() {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_fldt_service() {
+vs_sdmp_fldt_service(const vs_netif_t *netif) {
 
     if (!_fldt_service_ready) {
         _prepare_fldt_service();
         _fldt_service_ready = true;
     }
 
-    vs_fldt_netif = NULL;
+    vs_fldt_netif = netif;
 
     return &_fldt_service;
 }
@@ -230,7 +230,6 @@ vs_fldt_send_request(const vs_netif_t *netif,
     uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
     vs_sdmp_packet_t *packet;
 
-    VS_IOT_ASSERT(netif);
     VS_IOT_ASSERT(data);
     VS_IOT_ASSERT(data_sz);
 
