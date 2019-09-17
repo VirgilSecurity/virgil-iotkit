@@ -97,10 +97,8 @@ _plc_tx_sim(const uint8_t *data, const uint16_t data_sz) {
 
 /******************************************************************************/
 static int
-_plc_init_sim(const vs_netif_rx_cb_t rx_cb, const struct vs_netif_t *netif) {
+_plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
     struct sockaddr_in server;
-
-    (void)netif;
 
     _netif_plc_rx_cb_sim = rx_cb;
 
