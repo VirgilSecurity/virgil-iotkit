@@ -40,6 +40,7 @@
 #include <virgil/iot/update/update.h>
 #include <stdlib-config.h>
 #include <global-hal.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -59,8 +60,6 @@ _check_download_need(const char *opcode,
                      vs_fldt_file_version_t *current_file_ver,
                      const vs_fldt_file_version_t *new_file_ver,
                      bool *download) {
-    const vs_firmware_descriptor_t *file_descr = &file_type_info->file_descr;
-    const vs_firmware_version_t *fw_ver = &file_descr->info.version;
     const vs_fldt_file_type_t *file_type = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
@@ -69,8 +68,18 @@ _check_download_need(const char *opcode,
 
     file_type = &new_file_ver->file_type;
 
-    FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(current_file_ver, file_type, fw_ver),
-               "Unable to convert file description");
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                           current_file_ver, file_type, &file_type_info->fw_descr.info.version),
+                   "Unable to convert file description");
+        break;
+    case VS_UPDATE_TRUST_LIST:
+        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                           current_file_ver, file_type, &file_type_info->tl_descr.version),
+                   "Unable to convert file description");
+        break;
+    }
 
     current_file_ver->file_type = *file_type;
 
@@ -220,10 +229,11 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_file_version_t *file_ver = NULL;
     vs_fldt_file_type_t *file_type = NULL;
     vs_fldt_gnfd_data_request_t data_request;
-    vs_firmware_descriptor_t *file_descr = NULL;
+    vs_firmware_descriptor_t *fw_descr = NULL;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_ver_descr[FLDT_FILEVER_BUF];
     int update_ret_code;
+    vs_tl_element_info_t elem_info;
 
     (void)is_ack;
 
@@ -237,9 +247,6 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_header->file_size, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(file_header->header_size == sizeof(*file_descr),
-              VS_FLDT_ERR_INCORRECT_ARGUMENT,
-              "Response must store vs_firmware_descriptor_t data");
 
     CHECK_RET(response_sz >= sizeof(*file_header),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
@@ -251,12 +258,23 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    file_descr = (vs_firmware_descriptor_t *)file_header->header_data;
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        fw_descr = (vs_firmware_descriptor_t *)file_header->header_data;
+        file_type_info->fw_descr = *fw_descr;
 
-    file_type_info->file_descr = *file_descr;
+        UPDATE_CHECK(vs_update_save_firmware_descriptor(file_type_info->storage_ctx, fw_descr),
+                     "Unable to save new firmware descriptor");
+        break;
 
-    UPDATE_CHECK(vs_update_save_firmware_descriptor(file_type_info->storage_ctx, file_descr),
-                 "Unable to save new firmware descriptor");
+    case VS_UPDATE_TRUST_LIST:
+        elem_info.id = VS_TL_ELEMENT_TLH;
+        file_type_info->tl_descr = *(vs_tl_header_t *)file_header->header_data;
+        CHECK_RET(0 == vs_tl_save_part(&elem_info, file_header->header_data, file_header->header_size),
+                  -1,
+                  "Unable to save Trust List's header");
+        break;
+    }
 
     VS_IOT_MEMSET(&data_request, 0, sizeof(data_request));
 
@@ -288,10 +306,12 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_gnfd_data_request_t data_request;
     vs_fldt_gnff_footer_request_t footer_request;
     char file_ver_descr[FLDT_FILEVER_BUF];
+    uint32_t total_size;
     uint32_t offset;
     uint16_t data_sz;
     int update_ret_code;
-    vs_firmware_descriptor_t *file_descr = NULL;
+    vs_firmware_descriptor_t *fw_descr = NULL;
+    vs_tl_element_info_t elem_info;
 
     (void)is_ack;
 
@@ -316,19 +336,47 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    file_descr = &file_type_info->file_descr;
     offset = file_data->offset;
     data_sz = file_data->data_size;
 
-    UPDATE_CHECK(vs_update_save_firmware_chunk(
-                         file_type_info->storage_ctx, file_descr, (uint8_t *)file_data->data, data_sz, offset),
-                 "Unable to save data offset %d size %d for file version %s",
-                 offset,
-                 data_sz,
-                 vs_fldt_file_version_descr(file_ver_descr, file_ver));
-    offset += data_sz;
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        fw_descr = &file_type_info->fw_descr;
+        total_size = fw_descr->firmware_length;
 
-    if (offset < file_descr->firmware_length) {
+        UPDATE_CHECK(vs_update_save_firmware_chunk(
+                             file_type_info->storage_ctx, fw_descr, (uint8_t *)file_data->data, data_sz, offset),
+                     "Unable to save data offset %d size %d for file version %s",
+                     offset,
+                     data_sz,
+                     vs_fldt_file_version_descr(file_ver_descr, file_ver));
+
+        offset += data_sz;
+
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        total_size = ntohs(file_type_info->tl_descr.pub_keys_count);
+
+        elem_info.id = VS_TL_ELEMENT_TLC;
+        elem_info.index = offset;
+
+        CHECK_RET(0 == vs_tl_save_part(&elem_info, file_data->data, data_sz),
+                  -1,
+                  "Unable to save Trust List's public key %d",
+                  offset);
+
+        ++offset;
+
+        break;
+
+    default:
+        VS_IOT_ASSERT(false && "Unsupported type");
+        return VS_FLDT_ERR_INCORRECT_ARGUMENT;
+    }
+
+
+    if (offset < total_size) {
 
         // Load next data
 
@@ -396,8 +444,10 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     char file_ver_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
     int update_ret_code;
-    vs_firmware_descriptor_t *file_descr = NULL;
+    vs_firmware_descriptor_t *fw_descr = NULL;
     vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_tl_element_info_t elem_info;
+    bool installed_successfuly;
 
     (void)is_ack;
 
@@ -420,36 +470,58 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    file_descr = &file_type_info->file_descr;
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        fw_descr = &file_type_info->fw_descr;
 
-    UPDATE_CHECK(vs_update_save_firmware_footer(
-                         file_type_info->storage_ctx, file_descr, (uint8_t *)file_footer->footer_data),
-                 "Unable to save footer for file %s",
-                 vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+        UPDATE_CHECK(vs_update_save_firmware_footer(
+                             file_type_info->storage_ctx, fw_descr, (uint8_t *)file_footer->footer_data),
+                     "Unable to save footer for file %s",
+                     vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+        if (0 != vs_update_verify_firmware(file_type_info->storage_ctx, fw_descr)) {
 
-    if (0 != vs_update_verify_firmware(file_type_info->storage_ctx, file_descr)) {
+            VS_LOG_WARNING("Error while verifying firmware for file %s",
+                           vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
 
-        VS_LOG_WARNING("Error while verifying firmware for file %s",
-                       vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+            if (0 != vs_update_delete_firmware(file_type_info->storage_ctx, fw_descr)) {
+                VS_LOG_ERROR("Unable to delete firmware for file %s",
+                             vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+            }
 
-        if (0 != vs_update_delete_firmware(file_type_info->storage_ctx, file_descr)) {
-            VS_LOG_ERROR("Unable to delete firmware for file %s",
-                         vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+            file_type_request.file_type = file_footer->version.file_type;
+
+            FLDT_CHECK(vs_fldt_ask_file_type_info(&file_type_request), "Unable to ask current file information");
+
+        } else {
+            update_ret_code = vs_update_install_firmware(file_type_info->storage_ctx, fw_descr);
+
+            if (update_ret_code) {
+                VS_LOG_ERROR("Unable to install firmware for file %s",
+                             vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
+                installed_successfuly = false;
+            } else {
+                installed_successfuly = true;
+            }
+
+            _got_file_callback(
+                    &file_type_info->previous_ver, file_ver, &file_type_info->gateway_mac, installed_successfuly);
+        }
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        elem_info.id = VS_TL_ELEMENT_TLF;
+
+        if (0 != vs_tl_save_part(&elem_info, file_footer->footer_data, file_footer->footer_size)) {
+            VS_LOG_ERROR("Unable to save Trust List's footer");
+            installed_successfuly = false;
+        } else {
+            installed_successfuly = true;
         }
 
-        file_type_request.file_type = file_footer->version.file_type;
+        _got_file_callback(
+                &file_type_info->previous_ver, file_ver, &file_type_info->gateway_mac, installed_successfuly);
 
-        FLDT_CHECK(vs_fldt_ask_file_type_info(&file_type_request), "Unable to ask current file information");
-
-    } else {
-        update_ret_code = vs_update_install_firmware(file_type_info->storage_ctx, file_descr);
-
-        if (update_ret_code) {
-            VS_LOG_ERROR("Unable to install firmware for file %s",
-                         vs_fldt_file_version_descr(file_ver_descr, &file_footer->version));
-        }
-
-        _got_file_callback(&file_type_info->previous_ver, file_ver, &file_type_info->gateway_mac, 0 == update_ret_code);
+        break;
     }
 
     return VS_FLDT_ERR_OK;
@@ -461,10 +533,12 @@ vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage
     const vs_fldt_fw_add_info_t *fw_add_data = (vs_fldt_fw_add_info_t *)file_type->add_info;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_tl_element_info_t elem;
     vs_fldt_file_version_t file_ver;
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
     int update_ret_code;
+    uint16_t buf_sz;
 
     CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -483,18 +557,33 @@ vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage
 
     file_type_info->file_type = *file_type;
     file_type_info->storage_ctx = storage_ctx;
-    update_ret_code = vs_update_load_firmware_descriptor(
-            storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->file_descr);
 
-    if (0 == update_ret_code) {
-        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
-                           &file_ver, file_type, &file_type_info->file_descr.info.version),
-                   "Unable to convert file version");
-        VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
-    } else {
-        VS_LOG_WARNING("[FLDT] File type was not found by Update library");
-        VS_IOT_MEMSET(&file_type_info->file_descr, 0, sizeof(file_type_info->file_descr));
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        update_ret_code = vs_update_load_firmware_descriptor(
+                storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->fw_descr);
+
+        if (0 == update_ret_code) {
+            FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                               &file_ver, file_type, &file_type_info->fw_descr.info.version),
+                       "Unable to convert file version");
+            VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
+        } else {
+            VS_LOG_WARNING("[FLDT] File type was not found by Update library");
+            VS_IOT_MEMSET(&file_type_info->fw_descr, 0, sizeof(file_type_info->fw_descr));
+        }
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        elem.id = VS_TL_ELEMENT_TLH;
+        buf_sz = sizeof(file_type_info->tl_descr);
+        CHECK_RET(0 == vs_tl_load_part(&elem, (uint8_t *)&file_type_info->tl_descr, buf_sz, &buf_sz) &&
+                          buf_sz == sizeof(file_type_info->tl_descr),
+                  -1,
+                  "Unable to load Trust List's header");
+        break;
     }
+
 
     VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
 

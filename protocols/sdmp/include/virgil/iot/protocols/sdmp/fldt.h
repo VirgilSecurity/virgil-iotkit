@@ -42,7 +42,7 @@ extern "C" {
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#define FLDT_FILEVER_BUF (128)         // buffer for vs_fldt_file_version_descr
+#define FLDT_FILEVER_BUF (196)         // buffer for vs_fldt_file_version_descr
 #define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
 #define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
@@ -63,12 +63,18 @@ typedef struct __attribute__((__packed__)) {
 
 // File version
 typedef struct __attribute__((__packed__)) {
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+    union {
+        struct {
+            uint8_t major;
+            uint8_t minor;
+            uint8_t patch;
+            uint8_t dev_milestone;
+            uint8_t dev_build;
+            uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+        } fw_ver;
+
+        uint16_t tl_ver;
+    };
     vs_fldt_file_type_t file_type;
 } vs_fldt_file_version_t;
 
@@ -161,9 +167,6 @@ typedef struct __attribute__((__packed__)) {
 
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
-
-bool
-vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver);
 
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);

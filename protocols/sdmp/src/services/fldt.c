@@ -48,7 +48,10 @@ bool vs_fldt_is_gateway;
 vs_fldt_ret_code_e
 vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
                                            const vs_fldt_file_type_t *file_type,
-                                           const vs_firmware_version_t *src) {
+                                           const void *src) {
+
+    const vs_firmware_version_t *fw_src = (const vs_firmware_version_t *)src;
+    const uint16_t *tl_src = (const uint16_t *)src;
 
     CHECK_NOT_ZERO_RET(dst, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -56,12 +59,20 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
 
     dst->file_type = *file_type;
 
-    dst->major = src->major;
-    dst->minor = src->minor;
-    dst->patch = src->patch;
-    dst->dev_milestone = src->dev_milestone;
-    dst->dev_build = src->dev_build;
-    dst->timestamp = src->timestamp;
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        dst->fw_ver.major = fw_src->major;
+        dst->fw_ver.minor = fw_src->minor;
+        dst->fw_ver.patch = fw_src->patch;
+        dst->fw_ver.dev_milestone = fw_src->dev_milestone;
+        dst->fw_ver.dev_build = fw_src->dev_build;
+        dst->fw_ver.timestamp = fw_src->timestamp;
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        dst->tl_ver = ntohs(*tl_src);
+        break;
+    }
 
     return VS_FLDT_ERR_OK;
 }
@@ -101,19 +112,28 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
 
-    uint32_t timestamp = file_ver->timestamp + START_EPOCH;
-
     vs_fldt_file_type_descr(out, &file_ver->file_type);
-
     out += VS_IOT_STRLEN(buf);
-    VS_IOT_SPRINTF(out,
-                   ", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
-                   file_ver->major,
-                   file_ver->minor,
-                   file_ver->patch,
-                   file_ver->dev_milestone,
-                   file_ver->dev_build,
-                   timestamp);
+
+    // TODO : remove file type description!
+    switch (file_ver->file_type.file_type_id) {
+    case VS_UPDATE_FIRMWARE: {
+        uint32_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
+
+        VS_IOT_SPRINTF(out,
+                       ", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
+                       file_ver->fw_ver.major,
+                       file_ver->fw_ver.minor,
+                       file_ver->fw_ver.patch,
+                       file_ver->fw_ver.dev_milestone,
+                       file_ver->fw_ver.dev_build,
+                       timestamp);
+    } break;
+
+    case VS_UPDATE_TRUST_LIST:
+        VS_IOT_SPRINTF(out, ", ver %d", ntohs(file_ver->tl_ver));
+        break;
+    }
 
     return buf;
 
@@ -253,20 +273,33 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
 /******************************************************************************/
 bool
-vs_fldt_no_file_ver(const vs_fldt_file_version_t *file_ver) {
-    return !file_ver->timestamp;
-}
-
-/******************************************************************************/
-bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current) {
 
     VS_IOT_ASSERT(available);
     VS_IOT_ASSERT(current);
-    VS_IOT_ASSERT(!vs_fldt_no_file_ver(available));
     VS_IOT_ASSERT(!VS_IOT_MEMCMP(&available->file_type, &current->file_type, sizeof(available->file_type)) &&
                   "Different file types");
 
-    return vs_fldt_no_file_ver(current) || available->major > current->major || available->minor > current->minor ||
-           available->patch > current->patch || available->dev_milestone > current->dev_milestone;
+    // TODO : compare versions like this !
+
+    //    0 <= VS_IOT_MEMCMP(&current_ver.major,
+    //                       &new_ver->major,
+    //                       sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type)))
+
+    // TODO : remove file type description!
+    switch (available->file_type.file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        VS_IOT_ASSERT(available->fw_ver.timestamp);
+
+        return !current->fw_ver.timestamp || available->fw_ver.major > current->fw_ver.major ||
+               available->fw_ver.minor > current->fw_ver.minor || available->fw_ver.patch > current->fw_ver.patch ||
+               available->fw_ver.dev_milestone > current->fw_ver.dev_milestone;
+
+    case VS_UPDATE_TRUST_LIST:
+        return ntohs(available->tl_ver) > ntohs(current->tl_ver);
+
+    default:
+        // TODO : process any file type!
+        return true;
+    }
 }

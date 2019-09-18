@@ -42,6 +42,7 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
+#include <virgil/iot/trust_list/tl_structs.h>
 
 //
 //  Internal structures
@@ -79,7 +80,12 @@ typedef void (*vs_fldt_server_destroy_funct)(void **storage_context);
 
 typedef struct {
     vs_fldt_file_type_t file_type;
-    vs_firmware_descriptor_t file_descr;
+
+    union {
+        vs_firmware_descriptor_t fw_descr;
+        vs_tl_header_t tl_descr;
+    };
+
     vs_storage_op_ctx_t *storage_ctx;
 
 } vs_fldt_server_file_type_mapping_t;
@@ -115,7 +121,12 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
 
 typedef struct {
     vs_fldt_file_type_t file_type;
-    vs_firmware_descriptor_t file_descr;
+
+    union {
+        vs_firmware_descriptor_t fw_descr;
+        vs_tl_header_t tl_descr;
+    };
+
     vs_storage_op_ctx_t *storage_ctx;
     vs_fldt_file_version_t previous_ver;
     vs_mac_addr_t gateway_mac;
@@ -171,7 +182,7 @@ vs_fldt_set_is_gateway(bool is_gateway) {
 vs_fldt_ret_code_e
 vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
                                            const vs_fldt_file_type_t *file_type,
-                                           const vs_firmware_version_t *src);
+                                           const void *src);
 
 #ifdef __cplusplus
 }
