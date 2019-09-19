@@ -48,7 +48,7 @@ vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
         return VS_CLOUD_ERR_INVAL;
     }
 
-    if (VS_TL_OK != vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz)) {
+    if (VS_STORAGE_OK != vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz)) {
         return VS_CLOUD_ERR_FAIL;
     }
 
@@ -56,7 +56,7 @@ vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     info.id = VS_TL_ELEMENT_TLF;
-    if (VS_TL_OK != vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz)) {
+    if (VS_STORAGE_OK != vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz)) {
         return VS_CLOUD_ERR_FAIL;
     }
 

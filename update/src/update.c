@@ -69,7 +69,7 @@ _create_descriptors_filename(vs_storage_element_id_t id) {
 }
 
 /*************************************************************************/
-int
+static int
 _read_data(const vs_storage_op_ctx_t *ctx,
            vs_storage_element_id_t id,
            uint32_t offset,
@@ -103,7 +103,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
 }
 
 /******************************************************************************/
-int
+static int
 _write_data(const vs_storage_op_ctx_t *ctx,
             vs_storage_element_id_t id,
             uint32_t offset,

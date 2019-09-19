@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/trust_list/rpi-tl-hal.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
@@ -20,8 +21,11 @@ typedef struct vs_tl_element_info_s {
     size_t index;
 } vs_tl_element_info_t;
 
-bool
-vs_tl_init_storage();
+int
+vs_tl_init(const vs_storage_op_ctx_t *op_ctx);
+
+int
+vs_tl_deinit();
 
 int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
