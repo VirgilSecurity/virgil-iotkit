@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <virgil/iot/hsm/hsm_structs.h>
-#include <virgil/iot/trust_list/rpi-tl-hal.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 typedef enum {

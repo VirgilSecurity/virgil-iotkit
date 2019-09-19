@@ -4,7 +4,6 @@
 #include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
-#include <virgil/iot/trust_list/rpi-tl-hal.h>
 
 typedef struct {
     size_t storage_type;
