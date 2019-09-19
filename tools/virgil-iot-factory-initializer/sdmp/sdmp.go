@@ -78,7 +78,7 @@ type DeviceProcessor struct {
 
     DeviceID               [32]uint8
     DeviceMacAddr          [6]byte
-    Manufacturer           uint32
+    Manufacturer           [16]uint8
     Model                  uint32
     DevicePublicKey        common.Go_vs_pubkey_t
     Signature              common.Go_vs_sign_t
