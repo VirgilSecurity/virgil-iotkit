@@ -86,6 +86,7 @@ target_link_libraries(trust_list
         hsm
         macros
         provision
+        storage_hal
         )
 #
 #   Common include directories

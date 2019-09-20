@@ -185,8 +185,8 @@ test_device_info(void) {
 
     CHECK_GOTO(!VS_IOT_MEMCMP(dev_resp->mac.bytes, serv_resp->mac.bytes, sizeof(serv_resp->mac.bytes)),
                "Incorrect MAC address");
-    CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model,
-               "Incorrect response");
+    MEMCMP_CHECK(dev_resp->manufacturer, serv_resp->manufacturer, sizeof(dev_resp->manufacturer));
+    CHECK_GOTO(dev_resp->model == serv_resp->model, "Incorrect response");
 
     return true;
 

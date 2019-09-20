@@ -88,7 +88,6 @@ vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
 void
 vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
     src_data->data_sz = VS_IOT_HTONS(src_data->data_sz);
-    src_data->manufacturer = VS_IOT_HTONL(src_data->manufacturer);
     src_data->model = VS_IOT_HTONL(src_data->model);
 }
 
@@ -97,6 +96,5 @@ vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
 void
 vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
     src_data->data_sz = VS_IOT_NTOHS(src_data->data_sz);
-    src_data->manufacturer = VS_IOT_NTOHL(src_data->manufacturer);
     src_data->model = VS_IOT_NTOHL(src_data->model);
 }

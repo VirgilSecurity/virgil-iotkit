@@ -56,7 +56,7 @@ typedef struct {
 } vs_sdmp_prvs_dnid_list_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t manufacturer;
+    uint8_t manufacturer[16];
     uint32_t model;
     vs_mac_addr_t mac;
     uint8_t udid_of_device[32];

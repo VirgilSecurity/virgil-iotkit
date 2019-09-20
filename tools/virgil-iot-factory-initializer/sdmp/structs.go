@@ -46,7 +46,7 @@ import (
 // Otherwise there could be problems if device/initializer are using different byte order
 
 type Go_vs_sdmp_prvs_devi_t struct {
-    Manufacturer uint32
+    Manufacturer [16]uint8
     Model        uint32
     MacAddress   [6]byte
     UdidOfDevice [32]uint8
