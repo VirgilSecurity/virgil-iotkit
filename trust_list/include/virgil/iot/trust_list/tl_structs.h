@@ -21,7 +21,7 @@ typedef enum {
 typedef size_t vs_tl_key_handle;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t tl_size;
+    uint32_t tl_size;   // header + public keys + footer
     uint16_t version;
     uint16_t pub_keys_count;
     uint8_t signatures_count;

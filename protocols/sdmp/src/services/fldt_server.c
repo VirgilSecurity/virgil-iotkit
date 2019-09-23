@@ -33,6 +33,9 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/protocols/sdmp/fldt.h>
+#include <virgil/iot/trust_list/tl_structs.h>
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -61,7 +64,10 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     vs_fldt_gfti_fileinfo_response_t *file_info_response = (vs_fldt_gfti_fileinfo_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
+    vs_tl_element_info_t elem_info;
+    vs_tl_header_t tl_header;
     int update_ret_code;
+    uint16_t data_sz;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -104,30 +110,48 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
                    vs_fldt_file_type_descr(file_descr, file_type));
     }
 
-    update_ret_code = vs_update_load_firmware_descriptor(file_type_info->storage_ctx,
-                                                         fw_add_data->manufacture_id,
-                                                         fw_add_data->device_type,
-                                                         &file_type_info->file_descr);
-
     VS_IOT_MEMSET(file_info_response, 0, sizeof(*file_info_response));
 
-    switch (update_ret_code) {
-    case VS_STORAGE_OK:
-        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
-                           &file_info_response->version, file_type, &file_type_info->file_descr.info.version),
-                   "Unable to convert file version");
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        update_ret_code = vs_update_load_firmware_descriptor(file_type_info->storage_ctx,
+                                                             fw_add_data->manufacture_id,
+                                                             fw_add_data->device_type,
+                                                             &file_type_info->fw_descr);
+
+        switch (update_ret_code) {
+        case VS_STORAGE_OK:
+            FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                               &file_info_response->version, file_type, &file_type_info->fw_descr.info.version),
+                       "Unable to convert file version");
+            break;
+
+        case VS_STORAGE_ERROR_NOT_FOUND:
+            VS_LOG_WARNING("Unable to obtain information for file type : %s",
+                           vs_fldt_file_type_descr(file_descr, file_type));
+            break;
+
+        default:
+            VS_LOG_ERROR("Error while obtaining information for file type : %s",
+                         vs_fldt_file_type_descr(file_descr, file_type));
+            *response_sz = 0;
+            return update_ret_code;
+        }
         break;
 
-    case VS_STORAGE_ERROR_NOT_FOUND:
-        VS_LOG_WARNING("Unable to obtain information for file type : %s",
-                       vs_fldt_file_type_descr(file_descr, file_type));
-        break;
+    case VS_UPDATE_TRUST_LIST:
+        elem_info.id = VS_TL_ELEMENT_TLH;
+        data_sz = sizeof(tl_header);
 
-    default:
-        VS_LOG_ERROR("Error while obtaining information for file type : %s",
-                     vs_fldt_file_type_descr(file_descr, file_type));
-        *response_sz = 0;
-        return update_ret_code;
+        CHECK_RET(0 == vs_tl_load_part(&elem_info, (uint8_t *)&tl_header, data_sz, &data_sz) &&
+                          data_sz == sizeof(tl_header),
+                  -1,
+                  "Unable to read Trust List's header");
+
+        file_info_response->version.file_type = *file_type;
+        file_info_response->version.tl_ver = htons(tl_header.version);
+
+        break;
     }
 
     file_info_response->gateway_mac = _gateway_mac;
@@ -154,7 +178,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    size_t fw_header_size;
+    size_t header_size;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -185,12 +209,24 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
               "Unregistered file type");
 
     header_response->version = header_request->version;
-    header_response->file_size = file_type_info->file_descr.firmware_length;
     // TODO : check footer presence for non-firmware type !!!
     header_response->has_footer = true;
-    fw_header_size = sizeof(file_type_info->file_descr);
-    header_response->header_size = fw_header_size;
-    VS_IOT_MEMCPY(header_response->header_data, &file_type_info->file_descr, fw_header_size);
+
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        header_size = sizeof(file_type_info->fw_descr);
+        header_response->file_size = file_type_info->fw_descr.firmware_length;
+        header_response->header_size = header_size;
+        VS_IOT_MEMCPY(header_response->header_data, &file_type_info->fw_descr, header_size);
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        header_size = sizeof(file_type_info->tl_descr);
+        header_response->file_size = ntohl(file_type_info->tl_descr.tl_size);
+        header_response->header_size = header_size;
+        VS_IOT_MEMCPY(header_response->header_data, &file_type_info->tl_descr, header_size);
+        break;
+    }
 
     *response_sz = sizeof(*header_response) + header_response->header_size;
 
@@ -216,6 +252,7 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const uint16_t DATA_SZ = 512;
+    vs_tl_element_info_t elem_info;
     uint16_t data_sz;
     int update_ret_code;
 
@@ -252,16 +289,40 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
 
     // TODO : make size dependant on buffer size !!!
     data_sz = DATA_SZ;
-    UPDATE_CHECK(vs_update_load_firmware_chunk(file_type_info->storage_ctx,
-                                               &file_type_info->file_descr,
-                                               data_request->offset,
-                                               data_response->data,
-                                               data_sz,
-                                               &data_sz),
-                 "Unable to get firmware data with offset %d size %d for file version %s",
-                 data_request->offset,
-                 response_buf_sz,
-                 vs_fldt_file_version_descr(file_descr, &data_request->version));
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        if (data_request->offset >= file_type_info->fw_descr.firmware_length) {
+            data_sz = 0;
+            break;
+        }
+
+        UPDATE_CHECK(vs_update_load_firmware_chunk(file_type_info->storage_ctx,
+                                                   &file_type_info->fw_descr,
+                                                   data_request->offset,
+                                                   data_response->data,
+                                                   data_sz,
+                                                   &data_sz),
+                     "Unable to get firmware data with offset %d size %d for file version %s",
+                     data_request->offset,
+                     response_buf_sz,
+                     vs_fldt_file_version_descr(file_descr, &data_request->version));
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        if (data_request->offset >= file_type_info->tl_descr.pub_keys_count) {
+            data_sz = 0;
+            break;
+        }
+
+        elem_info.id = VS_TL_ELEMENT_TLC;
+        elem_info.index = data_request->offset;
+
+        CHECK_RET(0 == vs_tl_load_part(&elem_info, data_response->data, data_sz, &data_sz) && data_sz > 0,
+                  -1,
+                  "Unable to load Trust List's public key %d",
+                  data_request->offset);
+        break;
+    }
 
     data_response->data_size = data_sz;
 
@@ -292,6 +353,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     static const uint16_t DATA_SZ = 512;
     uint16_t data_sz = 0;
     int update_ret_code;
+    vs_tl_element_info_t elem_info;
 
     CHECK_NOT_ZERO_RET(request, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -324,13 +386,25 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
     // TODO : need a way to detect data size !!!
     data_sz = DATA_SZ;
 
-    UPDATE_CHECK(vs_update_load_firmware_footer(file_type_info->storage_ctx,
-                                                &file_type_info->file_descr,
-                                                footer_response->footer_data,
-                                                data_sz,
-                                                &data_sz),
-                 "Unable to get firmware footer for file version %s",
-                 vs_fldt_file_version_descr(file_descr, &footer_request->version));
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        UPDATE_CHECK(vs_update_load_firmware_footer(file_type_info->storage_ctx,
+                                                    &file_type_info->fw_descr,
+                                                    footer_response->footer_data,
+                                                    data_sz,
+                                                    &data_sz),
+                     "Unable to get firmware footer for file version %s",
+                     vs_fldt_file_version_descr(file_descr, &footer_request->version));
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        elem_info.id = VS_TL_ELEMENT_TLF;
+
+        CHECK_RET(0 == vs_tl_load_part(&elem_info, footer_response->footer_data, data_sz, &data_sz),
+                  -1,
+                  "Unable to load Trust List's footer");
+        break;
+    }
 
     footer_response->footer_size = data_sz;
 
@@ -351,9 +425,10 @@ vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
     vs_fldt_infv_new_file_request_t new_file;
     int update_ret_code;
     vs_fldt_file_version_t file_ver;
+    vs_tl_element_info_t elem_info;
+    uint16_t data_sz;
 
     CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
     VS_LOG_DEBUG("[FLDT] Update file type %s", vs_fldt_file_type_descr(file_descr, file_type));
 
@@ -369,36 +444,60 @@ vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
 
     file_type_info->file_type = *file_type;
     file_type_info->storage_ctx = storage_ctx;
-    update_ret_code = vs_update_load_firmware_descriptor(
-            storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->file_descr);
 
-    if (0 == update_ret_code) {
-        FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
-                           &file_ver, file_type, &file_type_info->file_descr.info.version),
-                   "Unable to convert file version");
-        VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
+    VS_IOT_MEMSET(&file_ver, 0, sizeof(file_ver));
 
-        if (broadcast_file_info) {
-            memset(&new_file, 0, sizeof(new_file));
+    switch (file_type->file_type_id) {
+    case VS_UPDATE_FIRMWARE:
+        CHECK_NOT_ZERO_RET(storage_ctx, VS_FLDT_ERR_INCORRECT_ARGUMENT);
 
-            new_file.version = file_ver;
-            new_file.gateway_mac = _gateway_mac;
+        update_ret_code = vs_update_load_firmware_descriptor(
+                storage_ctx, fw_add_data->manufacture_id, fw_add_data->device_type, &file_type_info->fw_descr);
 
-            VS_LOG_DEBUG("[FLDT] Broadcast new file information. File version : %s",
-                         vs_fldt_file_version_descr(file_descr, &file_ver));
+        if (0 == update_ret_code) {
+            FLDT_CHECK(vs_firmware_version_2_vs_fldt_file_version(
+                               &file_ver, file_type, &file_type_info->fw_descr.info.version),
+                       "Unable to convert file version");
+            VS_LOG_INFO("[FLDT] Current file version : %s", vs_fldt_file_version_descr(file_descr, &file_ver));
 
-            CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
-                                            vs_fldt_broadcast_mac_addr,
-                                            VS_FLDT_INFV,
-                                            (const uint8_t *)&new_file,
-                                            sizeof(new_file)),
-                      VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
-                      "Unable to send FLDT \"INFV\" broadcast request");
+        } else {
+            VS_LOG_WARNING("[FLDT] File type was not found by Update library");
+            VS_IOT_MEMSET(&file_type_info->fw_descr, 0, sizeof(file_type_info->fw_descr));
+
+            broadcast_file_info = false;
         }
 
-    } else {
-        VS_LOG_WARNING("[FLDT] File type was not found by Update library");
-        VS_IOT_MEMSET(&file_type_info->file_descr, 0, sizeof(file_type_info->file_descr));
+        break;
+
+    case VS_UPDATE_TRUST_LIST:
+        elem_info.id = VS_TL_ELEMENT_TLH;
+
+        data_sz = sizeof(file_type_info->tl_descr);
+        CHECK_RET(0 == vs_tl_load_part(&elem_info, (uint8_t *)&file_type_info->tl_descr, data_sz, &data_sz) &&
+                          data_sz == sizeof(file_type_info->tl_descr),
+                  -1,
+                  "Unable to load Trust List's header");
+
+        file_ver.file_type.file_type_id = VS_UPDATE_TRUST_LIST;
+        file_ver.tl_ver = file_type_info->tl_descr.version;
+    }
+
+    if (broadcast_file_info) {
+        memset(&new_file, 0, sizeof(new_file));
+
+        new_file.version = file_ver;
+        new_file.gateway_mac = _gateway_mac;
+
+        VS_LOG_DEBUG("[FLDT] Broadcast new file information. File version : %s",
+                     vs_fldt_file_version_descr(file_descr, &file_ver));
+
+        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+                                        vs_fldt_broadcast_mac_addr,
+                                        VS_FLDT_INFV,
+                                        (const uint8_t *)&new_file,
+                                        sizeof(new_file)),
+                  VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
+                  "Unable to send FLDT \"INFV\" broadcast request");
     }
 
     return VS_FLDT_ERR_OK;
