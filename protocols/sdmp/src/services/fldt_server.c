@@ -150,7 +150,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
                   "Unable to read Trust List's header");
 
         file_info_response->version.file_type = *file_type;
-        file_info_response->version.tl_ver = VS_IOT_NTOHS(tl_header.version);
+        file_info_response->version.tl_ver = VS_IOT_HTONS(tl_header.version);
 
         break;
     }
