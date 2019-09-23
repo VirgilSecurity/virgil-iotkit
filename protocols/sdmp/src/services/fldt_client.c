@@ -40,6 +40,7 @@
 #include <virgil/iot/update/update.h>
 #include <stdlib-config.h>
 #include <global-hal.h>
+#include <endian-config.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
 // TODO : make a set!
@@ -356,7 +357,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         break;
 
     case VS_UPDATE_TRUST_LIST:
-        total_size = ntohs(file_type_info->tl_descr.pub_keys_count);
+        total_size = VS_IOT_NTOHS(file_type_info->tl_descr.pub_keys_count);
 
         elem_info.id = VS_TL_ELEMENT_TLC;
         elem_info.index = offset;

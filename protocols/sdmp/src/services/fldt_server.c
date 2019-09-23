@@ -36,6 +36,7 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/trust_list/tl_structs.h>
+#include <endian-config.h>
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -149,7 +150,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
                   "Unable to read Trust List's header");
 
         file_info_response->version.file_type = *file_type;
-        file_info_response->version.tl_ver = htons(tl_header.version);
+        file_info_response->version.tl_ver = VS_IOT_NTOHS(tl_header.version);
 
         break;
     }
@@ -222,7 +223,7 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
     case VS_UPDATE_TRUST_LIST:
         header_size = sizeof(file_type_info->tl_descr);
-        header_response->file_size = ntohl(file_type_info->tl_descr.tl_size);
+        header_response->file_size = VS_IOT_NTOHL(file_type_info->tl_descr.tl_size);
         header_response->header_size = header_size;
         VS_IOT_MEMCPY(header_response->header_data, &file_type_info->tl_descr, header_size);
         break;
