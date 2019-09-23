@@ -66,7 +66,7 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_ret_code_e fldt_ret_code;
     vs_tl_element_info_t elem_info;
-    vs_tl_header_t tl_header;
+    vs_tl_header_t *tl_header = NULL;
     int update_ret_code;
     uint16_t data_sz;
 
@@ -142,15 +142,16 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
 
     case VS_UPDATE_TRUST_LIST:
         elem_info.id = VS_TL_ELEMENT_TLH;
-        data_sz = sizeof(tl_header);
+        data_sz = sizeof(*tl_header);
+        tl_header = &file_type_info->tl_descr;
 
-        CHECK_RET(0 == vs_tl_load_part(&elem_info, (uint8_t *)&tl_header, data_sz, &data_sz) &&
-                          data_sz == sizeof(tl_header),
+        CHECK_RET(0 == vs_tl_load_part(&elem_info, (uint8_t *)tl_header, data_sz, &data_sz) &&
+                          data_sz == sizeof(*tl_header),
                   -1,
                   "Unable to read Trust List's header");
 
         file_info_response->version.file_type = *file_type;
-        file_info_response->version.tl_ver = VS_IOT_HTONS(tl_header.version);
+        file_info_response->version.tl_ver = VS_IOT_HTONS(tl_header->version);
 
         break;
     }

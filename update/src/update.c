@@ -69,12 +69,12 @@ _create_descriptors_filename(vs_storage_element_id_t id) {
 }
 
 /*************************************************************************/
-int
+static int
 _read_data(const vs_storage_op_ctx_t *ctx,
            vs_storage_element_id_t id,
            uint32_t offset,
            uint8_t *data,
-           uint16_t buff_sz,
+           size_t buff_sz,
            uint16_t *data_sz) {
     vs_storage_file_t f = NULL;
     int file_sz;
@@ -103,12 +103,12 @@ _read_data(const vs_storage_op_ctx_t *ctx,
 }
 
 /******************************************************************************/
-int
+static int
 _write_data(const vs_storage_op_ctx_t *ctx,
             vs_storage_element_id_t id,
             uint32_t offset,
             const void *data,
-            uint16_t data_sz) {
+            size_t data_sz) {
     vs_storage_file_t f = NULL;
 
     CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);

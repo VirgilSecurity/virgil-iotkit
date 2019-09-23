@@ -449,7 +449,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
 
-            if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
+            if (VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
                 return 0;
             }
             resp->step = VS_CLOUD_FETCH_Tl_STEP_KEYS;
@@ -490,7 +490,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
             if (curr_key_sz != 0 && resp->used_size == curr_key_sz) {
                 resp->used_size = 0;
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLC, .index = 0};
-                if (VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
+                if (VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
                     return 0;
                 }
 
@@ -552,7 +552,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                                         .version = resp->host_header.version};
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
                 if (VS_CLOUD_ERR_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
-                    VS_TL_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
+                    VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
                     return 0;
                 }
                 resp->step = VS_CLOUD_FETCH_Tl_STEP_DONE;
