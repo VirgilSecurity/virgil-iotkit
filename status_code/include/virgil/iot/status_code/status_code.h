@@ -32,46 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
+#ifndef VS_IOT_SDK_STATUS_CODE
+#define VS_IOT_SDK_STATUS_CODE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef enum {
+    VS_CODE_OK = 0,
+    VS_CODE_ERR_INCORRECT_ARGUMENT,
+    VS_CODE_ERR_UNSUPPORTED_PARAMETER,
+    VS_CODE_ERR_NO_CALLBACK,
+    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
+    VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+    VS_CODE_ERR_NO_MEMORY,
+    VS_CODE_ERR_AMBIGUOUS_INIT_CALL,
+    VS_CODE_AMOUNT_OF_CODES    // Amount of VS IoT status codes
+} vs_status_code_e;
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
+const char *vs_code_descr(vs_status_code_e status_code);
 
-//
-//  Callbacks
-//
-
-// . File has been downloaded
-// . prev_file_ver - previous file version and its type
-// . new_file_ver - sent file version and its type
-// . gateway - gateway that has sent this file
-// . successfully_updated - true while file vas updated else false
-
-typedef void (*vs_fldt_got_file)(const vs_fldt_file_version_t *prev_file_ver,
-                                 const vs_fldt_file_version_t *new_file_ver,
-                                 const vs_mac_addr_t *gateway,
-                                 bool successfully_updated);
-
-//
-//  Customer API
-//
-
-vs_status_code_e
-vs_fldt_init_client(vs_fldt_got_file got_file_callback);
-
-vs_status_code_e
-vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage_op_ctx_t *storage_ctx);
-
-void
-vs_fldt_destroy_client(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
+#endif // VS_IOT_SDK_STATUS_CODE

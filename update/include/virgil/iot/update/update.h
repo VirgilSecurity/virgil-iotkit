@@ -75,7 +75,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_update_firmware_footer_t;
 
 #define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((update_ret_code = (OPERATION)) == 0, update_ret_code, MESSAGE, ##__VA_ARGS__)
+    CHECK_RET((ret_code = (OPERATION)) == VS_CODE_OK, ret_code, MESSAGE, ##__VA_ARGS__)
 
 int
 vs_update_init(const vs_storage_op_ctx_t *ctx);

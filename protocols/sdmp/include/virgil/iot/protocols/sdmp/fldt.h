@@ -78,18 +78,6 @@ typedef struct __attribute__((__packed__)) {
     vs_fldt_file_type_t file_type;
 } vs_fldt_file_version_t;
 
-// Return codes
-typedef enum {
-    VS_FLDT_ERR_OK = 0,
-    VS_FLDT_ERR_INCORRECT_ARGUMENT = -1,
-    VS_FLDT_ERR_UNSUPPORTED_PARAMETER = -2,
-    VS_FLDT_ERR_NO_CALLBACK = -3,
-    VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE = -4,
-    VS_FLDT_ERR_INCORRECT_SEND_REQUEST = -5,
-    VS_FLDT_ERR_NO_MEMORY = -6,
-    VS_FDTL_ERR_AMBIGUOUS_INIT_CALL = -7
-} vs_fldt_ret_code_e;
-
 // Commands
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
@@ -163,7 +151,7 @@ typedef struct __attribute__((__packed__)) {
 
 // Utilities
 #define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((fldt_ret_code = (OPERATION)) == VS_FLDT_ERR_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
+    CHECK_RET((ret_code = (OPERATION)) == VS_CODE_OK, ret_code, MESSAGE, ##__VA_ARGS__)
 
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);

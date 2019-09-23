@@ -149,6 +149,11 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
 
 #
+#   Status codes
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/status_code)
+
+#
 #   Data storage hal interface
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)

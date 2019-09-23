@@ -32,46 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
+#include <virgil/iot/status_code/status_code.h>
+#include <stdbool.h>
+#include <stdlib-config.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/*************************************************************************/
+const char *
+vs_code_descr(vs_status_code_e status_code){
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
-
-//
-//  Callbacks
-//
-
-// . File has been downloaded
-// . prev_file_ver - previous file version and its type
-// . new_file_ver - sent file version and its type
-// . gateway - gateway that has sent this file
-// . successfully_updated - true while file vas updated else false
-
-typedef void (*vs_fldt_got_file)(const vs_fldt_file_version_t *prev_file_ver,
-                                 const vs_fldt_file_version_t *new_file_ver,
-                                 const vs_mac_addr_t *gateway,
-                                 bool successfully_updated);
-
-//
-//  Customer API
-//
-
-vs_status_code_e
-vs_fldt_init_client(vs_fldt_got_file got_file_callback);
-
-vs_status_code_e
-vs_fldt_update_client_file_type(const vs_fldt_file_type_t *file_type, vs_storage_op_ctx_t *storage_ctx);
-
-void
-vs_fldt_destroy_client(void);
-
-#ifdef __cplusplus
+    switch(status_code){
+        case VS_CODE_OK : return "Success";
+        case VS_CODE_ERR_INCORRECT_ARGUMENT : return "Incorrect argument";
+        case VS_CODE_ERR_UNSUPPORTED_PARAMETER : return "Unsupported parameter";
+        case VS_CODE_ERR_NO_CALLBACK : return "No callback function";
+        case VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE : return "Unregistered mapping type";
+        case VS_CODE_ERR_INCORRECT_SEND_REQUEST : return "Incorrect send request";
+        case VS_CODE_ERR_NO_MEMORY : return "No memory";
+        case VS_CODE_ERR_AMBIGUOUS_INIT_CALL : return "Ambigious init call";
+        case VS_CODE_AMOUNT_OF_CODES : VS_IOT_ASSERT(false && "Must not be returned"); return "Amount of VS IoT status codes";
+        default : VS_IOT_ASSERT(false && "Unsupported code");   return "";
+    }
 }
-#endif
-
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H

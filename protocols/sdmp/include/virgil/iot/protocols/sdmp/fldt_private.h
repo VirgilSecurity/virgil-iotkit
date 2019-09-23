@@ -43,6 +43,7 @@ extern "C" {
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/status_code/status_code.h>
 
 //
 //  Internal structures
@@ -65,7 +66,7 @@ const vs_netif_t *vs_fldt_netif;
 const vs_mac_addr_t *vs_fldt_broadcast_mac_addr;
 bool vs_fldt_is_gateway;
 
-int
+vs_status_code_e
 vs_fldt_send_request(const vs_netif_t *netif,
                      const vs_mac_addr_t *mac,
                      vs_sdmp_fldt_element_e element,
@@ -90,27 +91,27 @@ typedef struct {
 
 } vs_fldt_server_file_type_mapping_t;
 
-int
+vs_status_code_e
 vs_fldt_GFTI_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GNFH_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
-int
+vs_status_code_e
 vs_fldt_GNFD_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GNFF_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
@@ -133,23 +134,23 @@ typedef struct {
 
 } vs_fldt_client_file_type_mapping_t;
 
-int
+vs_status_code_e
 vs_fldt_INFV_request_processing(const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
-int
+vs_status_code_e
 vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz);
 
 // Utilities
@@ -170,7 +171,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
 #define FLDT_CALLBACK(FILETYPEINFO, CALLBACK, ARGUMENTS, DESCR, ...)                                                   \
     do {                                                                                                               \
-        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, VS_FLDT_ERR_NO_CALLBACK, "There is no " #CALLBACK " callback");    \
+        CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, VS_CODE_ERR_NO_CALLBACK, "There is no " #CALLBACK " callback");    \
         FLDT_CHECK((FILETYPEINFO)->CALLBACK ARGUMENTS, (DESCR), ##__VA_ARGS__);                                        \
     } while (0)
 
@@ -179,7 +180,7 @@ vs_fldt_set_is_gateway(bool is_gateway) {
     vs_fldt_is_gateway = is_gateway;
 }
 
-vs_fldt_ret_code_e
+vs_status_code_e
 vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
                                            const vs_fldt_file_type_t *file_type,
                                            const void *src);

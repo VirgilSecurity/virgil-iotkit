@@ -51,18 +51,18 @@ struct vs_fldt_server_file_type_mapping_t;
 
 // . "Add file type"
 // .  Add file type asked by client
-typedef vs_fldt_ret_code_e (*vs_fldt_server_add_filetype)(const vs_fldt_file_type_t *file_type,
-                                                          vs_storage_op_ctx_t **storage_ctx);
+typedef vs_status_code_e (*vs_fldt_server_add_filetype)(const vs_fldt_file_type_t *file_type,
+                                                        vs_storage_op_ctx_t **storage_ctx);
 
 
 //
 //  Customer API
 //
 
-vs_fldt_ret_code_e
+vs_status_code_e
 vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
-vs_fldt_ret_code_e
+vs_status_code_e
 vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
                                 vs_storage_op_ctx_t *storage_ctx,
                                 bool broadcast_file_info);

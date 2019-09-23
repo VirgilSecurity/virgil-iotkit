@@ -46,12 +46,12 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 
-#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_FLDT_ERR_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
+#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_CODE_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
 
 #define FLDT_CHECK_ERROR_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  do {                                                                 \
         prev_loglev = vs_logger_get_loglev();   \
         vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if (VS_FLDT_ERR_OK != (OPERATION) || !(CALLS)) {                                                                                            \
+    if (VS_CODE_OK != (OPERATION) || !(CALLS)) {                                                                                            \
         vs_logger_set_loglev(prev_loglev);  \
         VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
@@ -129,11 +129,11 @@ test_fldt_add_filetypes(void) {
 
     calls.calls = 0;
     vs_fldt_destroy_client();
-    FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.client_destroy == 1, "Unable to destroy FLDT client");
+    FLDT_CHECK_GOTO(VS_CODE_OK, calls.client_destroy == 1, "Unable to destroy FLDT client");
 
     calls.calls = 0;
     vs_fldt_destroy_server();
-    FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.server_destroy == 2, "Unable to destroy FLDT server");
+    FLDT_CHECK_GOTO(VS_CODE_OK, calls.server_destroy == 2, "Unable to destroy FLDT server");
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");

@@ -64,7 +64,7 @@ make_client_mapping(const vs_fldt_file_type_t *file_type);
 vs_fldt_server_file_type_mapping_t
 make_server_mapping(const vs_fldt_file_type_t *file_type);
 
-vs_fldt_ret_code_e
+vs_status_code_e
 server_add_filetype(const vs_fldt_file_type_t *file_type);
 
 #endif

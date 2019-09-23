@@ -45,7 +45,7 @@ const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
 bool vs_fldt_is_gateway;
 
 /******************************************************************/
-vs_fldt_ret_code_e
+vs_status_code_e
 vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
                                            const vs_fldt_file_type_t *file_type,
                                            const void *src) {
@@ -53,9 +53,9 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
     const vs_firmware_version_t *fw_src = (const vs_firmware_version_t *)src;
     const uint16_t *tl_src = (const uint16_t *)src;
 
-    CHECK_NOT_ZERO_RET(dst, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(file_type, VS_FLDT_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(src, VS_FLDT_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(dst, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(src, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     dst->file_type = *file_type;
 
@@ -74,7 +74,7 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
         break;
     }
 
-    return VS_FLDT_ERR_OK;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -163,7 +163,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
         if (vs_fldt_is_gateway) {
             return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
         } else {
-            return VS_FLDT_ERR_OK;
+            return VS_CODE_OK;
         }
 
     case VS_FLDT_GNFH:
@@ -177,7 +177,7 @@ _fldt_service_request_processor(const struct vs_netif_t *netif,
 
     default:
         VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
     }
 }
 
@@ -192,7 +192,7 @@ _fldt_service_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return VS_FLDT_ERR_OK;
+        return VS_CODE_OK;
 
     case VS_FLDT_GFTI:
         return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
@@ -208,7 +208,7 @@ _fldt_service_response_processor(const struct vs_netif_t *netif,
 
     default:
         VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
     }
 }
 
@@ -240,7 +240,7 @@ vs_sdmp_fldt_service(const vs_netif_t *netif) {
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_fldt_send_request(const vs_netif_t *netif,
                      const vs_mac_addr_t *mac,
                      vs_sdmp_fldt_element_e element,
@@ -268,7 +268,9 @@ vs_fldt_send_request(const vs_netif_t *netif,
     _sdmp_fill_header(mac, packet);
 
     // Send request
-    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
+    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size) == 0
+                   ? VS_CODE_OK
+                   : VS_CODE_ERR_INCORRECT_SEND_REQUEST;
 }
 
 /******************************************************************************/
