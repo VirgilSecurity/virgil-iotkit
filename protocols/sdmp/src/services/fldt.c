@@ -36,6 +36,7 @@
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <endian-config.h>
 
 static vs_sdmp_service_t _fldt_service = {0};
 static bool _fldt_service_ready = false;
@@ -70,7 +71,7 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
         break;
 
     case VS_UPDATE_TRUST_LIST:
-        dst->tl_ver = ntohs(*tl_src);
+        dst->tl_ver = VS_IOT_NTOHS(*tl_src);
         break;
     }
 
@@ -131,7 +132,7 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     } break;
 
     case VS_UPDATE_TRUST_LIST:
-        VS_IOT_SPRINTF(out, ", ver %d", ntohs(file_ver->tl_ver));
+        VS_IOT_SPRINTF(out, ", ver %d", VS_IOT_NTOHS(file_ver->tl_ver));
         break;
     }
 
@@ -296,7 +297,7 @@ vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_fil
                available->fw_ver.dev_milestone > current->fw_ver.dev_milestone;
 
     case VS_UPDATE_TRUST_LIST:
-        return ntohs(available->tl_ver) > ntohs(current->tl_ver);
+        return VS_IOT_NTOHS(available->tl_ver) > VS_IOT_NTOHS(current->tl_ver);
 
     default:
         // TODO : process any file type!
