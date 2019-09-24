@@ -310,7 +310,7 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
                                                    &data_sz),
                      "Unable to get firmware data with offset %d size %d for file version %s",
                      data_request->offset,
-                     response_buf_sz,
+                     data_sz,
                      vs_fldt_file_version_descr(file_descr, &data_request->version));
         break;
 

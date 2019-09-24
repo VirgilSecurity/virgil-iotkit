@@ -88,7 +88,8 @@ _read_data(const vs_storage_op_ctx_t *ctx,
     file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
     CHECK_RET(0 < file_sz, VS_STORAGE_ERROR_GENERAL, "Can't find file");
-    CHECK_RET(file_sz >= offset + buff_sz, VS_STORAGE_ERROR_GENERAL, "File format error");
+    CHECK_RET(file_sz >= offset + buff_sz, VS_STORAGE_ERROR_GENERAL, "File format error. Size: %ld   Offset: %ld DataSz: %ld",
+            (long)file_sz, (long)offset, (long)buff_sz);
 
     f = ctx->impl.open(ctx->storage_ctx, id);
     CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file");
