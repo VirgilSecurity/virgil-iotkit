@@ -81,6 +81,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
     uint16_t response_sz = 0;
+    int res;
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
     bool processed = false;
 
@@ -115,21 +116,26 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                 // Process request
             } else {
                 processed = true;
-                if (0 == _sdmp_services[i]->request_process(netif,
-                                                            packet->header.element_id,
-                                                            packet->content,
-                                                            packet->header.content_size,
-                                                            response_packet->content,
-                                                            RESPONSE_SZ_MAX,
-                                                            &response_sz)) {
+                res = _sdmp_services[i]->request_process(netif,
+                                                         packet->header.element_id,
+                                                         packet->content,
+                                                         packet->header.content_size,
+                                                         response_packet->content,
+                                                         RESPONSE_SZ_MAX,
+                                                         &response_sz);
+                if (0 == res) {
                     // Send response
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
                 } else {
-                    // Send response with error code
-                    // TODO: Fill structure with error code here
-                    response_packet->header.flags |= VS_SDMP_FLAG_NACK;
-                    response_packet->header.content_size = 0;
+                    if (VS_SDMP_COMMAND_NOT_SUPPORTED == res) {
+                        processed = false;
+                    } else {
+                        // Send response with error code
+                        // TODO: Fill structure with error code here
+                        response_packet->header.flags |= VS_SDMP_FLAG_NACK;
+                        response_packet->header.content_size = 0;
+                    }
                 }
             }
         }
