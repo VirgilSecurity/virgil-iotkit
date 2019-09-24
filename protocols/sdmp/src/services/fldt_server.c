@@ -274,10 +274,11 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
               "Request buffer must be of vs_fldt_gnfd_data_request_t type");
 
     file_ver = &data_request->version;
-
+#if 0
     VS_LOG_DEBUG("[FLDT:GNFD] Request for data offset %d for file %s",
                  data_request->offset,
                  vs_fldt_file_version_descr(file_descr, file_ver));
+#endif
 
     CHECK_RET(response_buf_sz > sizeof(*data_response),
               VS_FLDT_ERR_INCORRECT_ARGUMENT,
@@ -333,11 +334,12 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
 
     *response_sz = sizeof(vs_fldt_gnfd_data_response_t) + data_response->data_size;
 
+#if 0
     VS_LOG_DEBUG("[FLDT:GNFD] File data offset %d size %d has been sent for file %s",
                  data_response->offset,
                  data_response->data_size,
                  vs_fldt_file_version_descr(file_descr, file_ver));
-
+#endif
     return VS_FLDT_ERR_OK;
 }
 
