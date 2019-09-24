@@ -281,7 +281,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     data_request.offset = 0;
     data_request.version = file_header->version;
 
-    VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file : %s",
+    VS_LOG_TRACE("[FLDT] Ask file data offset %d for file : %s",
                  data_request.offset,
                  vs_fldt_file_version_descr(file_ver_descr, &data_request.version));
 
@@ -317,7 +317,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
     file_ver = &file_data->version;
 
-    VS_LOG_DEBUG("[FLDT:GNFD] Response data offset %d, size %d for file : %s",
+    VS_LOG_TRACE("[FLDT:GNFD] Response data offset %d, size %d for file : %s",
                  file_data->offset,
                  (int)file_data->data_size,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
@@ -383,7 +383,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         data_request.offset = offset;
         data_request.version = file_data->version;
 
-        VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file : %s",
+        VS_LOG_TRACE("[FLDT] Ask file data offset %d for file : %s",
                      data_request.offset,
                      vs_fldt_file_version_descr(file_ver_descr, &data_request.version));
 
