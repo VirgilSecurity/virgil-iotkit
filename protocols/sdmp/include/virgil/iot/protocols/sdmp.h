@@ -61,6 +61,9 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service);
 int
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
 
+const vs_mac_addr_t *
+vs_sdmp_broadcast_mac(void);
+
 #ifdef __cplusplus
 }
 #endif

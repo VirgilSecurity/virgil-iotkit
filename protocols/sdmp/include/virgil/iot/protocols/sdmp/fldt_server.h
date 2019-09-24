@@ -39,8 +39,6 @@
 extern "C" {
 #endif
 
-
-#include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 
 struct vs_fldt_server_file_type_mapping_t;
@@ -54,6 +52,9 @@ struct vs_fldt_server_file_type_mapping_t;
 typedef vs_fldt_ret_code_e (*vs_fldt_server_add_filetype)(const vs_fldt_file_type_t *file_type,
                                                           vs_storage_op_ctx_t **storage_ctx);
 
+
+const vs_sdmp_service_t *
+vs_sdmp_fldt_server(void);
 
 //
 //  Customer API

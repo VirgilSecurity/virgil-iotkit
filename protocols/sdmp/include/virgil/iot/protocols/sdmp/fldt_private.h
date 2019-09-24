@@ -39,10 +39,13 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
+#include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/macros/macros.h>
+
+#define VS_FLDT_SERVICE_ID (HTONL_IN_COMPILE_TIME('FLDT'))
 
 //
 //  Internal structures
@@ -61,9 +64,135 @@ typedef struct {
     //    size_t file_sz_limit;
 } vs_fldt_storage_ctx_t;
 
-const vs_netif_t *vs_fldt_netif;
-const vs_mac_addr_t *vs_fldt_broadcast_mac_addr;
-bool vs_fldt_is_gateway;
+#define FLDT_FILEVER_BUF (196)         // buffer for vs_fldt_file_version_descr
+#define FLDT_FILE_TYPE_ADD_INFO_SZ (4) // vs_fldt_file_type_t.add_info field size
+#define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
+
+#define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
+#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                     \
+    (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
+            (MAC_ADDR).bytes[5]
+
+typedef struct __attribute__((__packed__)) {
+    uint16_t file_type_id; // = vs_update_file_type_id_t
+    uint8_t add_info[32];  // = vs_fldt_fw_add_info_t for VS_UPDATE_FIRMWARE
+} vs_fldt_file_type_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[16];
+    uint8_t device_type[4];
+} vs_fldt_fw_add_info_t;
+
+// File version
+typedef struct __attribute__((__packed__)) {
+    union {
+        struct {
+            uint8_t major;
+            uint8_t minor;
+            uint8_t patch;
+            uint8_t dev_milestone;
+            uint8_t dev_build;
+            uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+        } fw_ver;
+
+        uint16_t tl_ver;
+    };
+    vs_fldt_file_type_t file_type;
+} vs_fldt_file_version_t;
+
+// Return codes
+typedef enum {
+    VS_FLDT_ERR_OK = 0,
+    VS_FLDT_ERR_INCORRECT_ARGUMENT = -1,
+    VS_FLDT_ERR_UNSUPPORTED_PARAMETER = -2,
+    VS_FLDT_ERR_NO_CALLBACK = -3,
+    VS_FLDT_ERR_UNREGISTERED_MAPPING_TYPE = -4,
+    VS_FLDT_ERR_INCORRECT_SEND_REQUEST = -5,
+    VS_FLDT_ERR_NO_MEMORY = -6,
+    VS_FDTL_ERR_AMBIGUOUS_INIT_CALL = -7
+} vs_fldt_ret_code_e;
+
+// Commands
+// mute "error: multi-character character constant" message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum {
+    VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
+    VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
+    VS_FLDT_GNFH = HTONL_IN_COMPILE_TIME('GNFH'), /* Get New File Header */
+    VS_FLDT_GNFD = HTONL_IN_COMPILE_TIME('GNFD'), /* Get New File Data */
+    VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
+} vs_sdmp_fldt_element_e;
+#pragma GCC diagnostic pop
+
+// Get Service descriptor
+
+// "Inform New File Version"
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+    vs_mac_addr_t gateway_mac;
+    // TODO : is it necessary???
+    uint8_t file_specific_info[FLDT_FILE_SPEC_INFO_SZ];
+} vs_fldt_infv_new_file_request_t;
+
+typedef void vs_fldt_infv_new_file_response_t;
+
+// "Get File Type Information"
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_type_t file_type;
+} vs_fldt_gfti_fileinfo_request_t;
+
+typedef vs_fldt_infv_new_file_request_t vs_fldt_gfti_fileinfo_response_t;
+
+// "Get New File Header"
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+} vs_fldt_gnfh_header_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+    uint32_t file_size;
+    uint8_t has_footer;
+    uint16_t header_size;
+    uint8_t header_data[];
+} vs_fldt_gnfh_header_response_t;
+
+// "Get New File Data"
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+    uint32_t offset;
+} vs_fldt_gnfd_data_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+    uint32_t offset;
+    uint16_t data_size;
+    uint8_t data[];
+} vs_fldt_gnfd_data_response_t;
+
+// "Get New File Footer"
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+} vs_fldt_gnff_footer_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_fldt_file_version_t version;
+    uint16_t footer_size;
+    uint8_t footer_data[];
+} vs_fldt_gnff_footer_response_t;
+
+// Utilities
+#define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
+    CHECK_RET((fldt_ret_code = (OPERATION)) == VS_FLDT_ERR_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
+
+bool
+vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
+
+char *
+vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);
+
+char *
+vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type);
 
 int
 vs_fldt_send_request(const vs_netif_t *netif,
@@ -173,11 +302,6 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
         CHECK_RET((FILETYPEINFO)->CALLBACK != NULL, VS_FLDT_ERR_NO_CALLBACK, "There is no " #CALLBACK " callback");    \
         FLDT_CHECK((FILETYPEINFO)->CALLBACK ARGUMENTS, (DESCR), ##__VA_ARGS__);                                        \
     } while (0)
-
-static inline void
-vs_fldt_set_is_gateway(bool is_gateway) {
-    vs_fldt_is_gateway = is_gateway;
-}
 
 vs_fldt_ret_code_e
 vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,

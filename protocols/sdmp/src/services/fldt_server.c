@@ -34,9 +34,12 @@
 
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
 #include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/sdmp/fldt_private.h>
+#include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
+
+static vs_sdmp_service_t _fldt_server = {0};
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -493,11 +496,8 @@ vs_fldt_update_server_file_type(const vs_fldt_file_type_t *file_type,
         VS_LOG_DEBUG("[FLDT] Broadcast new file information. File version : %s",
                      vs_fldt_file_version_descr(file_descr, &file_ver));
 
-        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
-                                        vs_fldt_broadcast_mac_addr,
-                                        VS_FLDT_INFV,
-                                        (const uint8_t *)&new_file,
-                                        sizeof(new_file)),
+        CHECK_RET(!vs_fldt_send_request(
+                          NULL, vs_sdmp_broadcast_mac(), VS_FLDT_INFV, (const uint8_t *)&new_file, sizeof(new_file)),
                   VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
                   "Unable to send FLDT \"INFV\" broadcast request");
     }
@@ -516,14 +516,93 @@ vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
     _gateway_mac = *gateway_mac;
     _add_filetype_callback = add_filetype;
 
-    vs_fldt_is_gateway = true;
-
     return VS_FLDT_ERR_OK;
 }
 
 /******************************************************************/
 void
 vs_fldt_destroy_server(void) {
-
     _file_type_mapping_array_size = 0;
 }
+
+/******************************************************************************/
+static int
+_fldt_server_request_processor(const struct vs_netif_t *netif,
+                               vs_sdmp_element_t element_id,
+                               const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
+
+    *response_sz = 0;
+
+    switch (element_id) {
+
+    case VS_FLDT_INFV:
+        return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GFTI:
+        return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GNFH:
+        return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GNFF:
+        return vs_fldt_GNFF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    default:
+        VS_IOT_ASSERT(false && "Unsupported command");
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+    }
+}
+
+/******************************************************************************/
+static int
+_fldt_server_response_processor(const struct vs_netif_t *netif,
+                                vs_sdmp_element_t element_id,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
+
+    switch (element_id) {
+
+    case VS_FLDT_INFV:
+        return VS_FLDT_ERR_OK;
+
+    case VS_FLDT_GFTI:
+        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFH:
+        return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFF:
+        return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);
+
+    default:
+        VS_IOT_ASSERT(false && "Unsupported command");
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+    }
+}
+
+/******************************************************************************/
+const vs_sdmp_service_t *
+vs_sdmp_fldt_server(void) {
+    _fldt_server.user_data = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+    _fldt_server.id = HTONL_IN_COMPILE_TIME('FLDT');
+#pragma GCC diagnostic pop
+    _fldt_server.request_process = _fldt_server_request_processor;
+    _fldt_server.response_process = _fldt_server_response_processor;
+
+    return &_fldt_server;
+}
+
+/******************************************************************************/

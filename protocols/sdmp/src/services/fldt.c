@@ -32,18 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
-
-static vs_sdmp_service_t _fldt_service = {0};
-static bool _fldt_service_ready = false;
-
-const vs_netif_t *vs_fldt_netif = NULL;
-const vs_mac_addr_t *vs_fldt_broadcast_mac_addr = NULL;
-bool vs_fldt_is_gateway;
 
 /******************************************************************/
 vs_fldt_ret_code_e
@@ -143,102 +136,6 @@ terminate:
     return NULL;
 }
 
-/******************************************************************************/
-static int
-_fldt_service_request_processor(const struct vs_netif_t *netif,
-                                vs_sdmp_element_t element_id,
-                                const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
-
-    *response_sz = 0;
-
-    switch (element_id) {
-
-    case VS_FLDT_INFV:
-        return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    case VS_FLDT_GFTI:
-        if (vs_fldt_is_gateway) {
-            return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-        } else {
-            return VS_FLDT_ERR_OK;
-        }
-
-    case VS_FLDT_GNFH:
-        return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    case VS_FLDT_GNFD:
-        return vs_fldt_GNFD_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    case VS_FLDT_GNFF:
-        return vs_fldt_GNFF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    default:
-        VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
-    }
-}
-
-/******************************************************************************/
-static int
-_fldt_service_response_processor(const struct vs_netif_t *netif,
-                                 vs_sdmp_element_t element_id,
-                                 bool is_ack,
-                                 const uint8_t *response,
-                                 const uint16_t response_sz) {
-
-    switch (element_id) {
-
-    case VS_FLDT_INFV:
-        return VS_FLDT_ERR_OK;
-
-    case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
-
-    case VS_FLDT_GNFH:
-        return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
-
-    case VS_FLDT_GNFD:
-        return vs_fldt_GNFD_response_processor(is_ack, response, response_sz);
-
-    case VS_FLDT_GNFF:
-        return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);
-
-    default:
-        VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
-    }
-}
-
-/******************************************************************************/
-static void
-_prepare_fldt_service() {
-
-    _fldt_service.user_data = 0;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-    _fldt_service.id = HTONL_IN_COMPILE_TIME('FLDT');
-#pragma GCC diagnostic pop
-    _fldt_service.request_process = _fldt_service_request_processor;
-    _fldt_service.response_process = _fldt_service_response_processor;
-}
-
-/******************************************************************************/
-const vs_sdmp_service_t *
-vs_sdmp_fldt_service(const vs_netif_t *netif) {
-
-    if (!_fldt_service_ready) {
-        _prepare_fldt_service();
-        _fldt_service_ready = true;
-    }
-
-    vs_fldt_netif = netif;
-
-    return &_fldt_service;
-}
 
 /******************************************************************************/
 int
@@ -261,7 +158,7 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
     // Prepare request
     packet->header.element_id = element;
-    packet->header.service_id = _fldt_service.id;
+    packet->header.service_id = VS_FLDT_SERVICE_ID;
     packet->header.content_size = data_sz;
     if (data_sz) {
         VS_IOT_MEMCPY(packet->content, data, data_sz);
@@ -304,3 +201,5 @@ vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_fil
         return true;
     }
 }
+
+/******************************************************************************/

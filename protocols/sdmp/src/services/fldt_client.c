@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/logger/logger.h>
@@ -42,6 +41,8 @@
 #include <global-hal.h>
 #include <endian-config.h>
 #include <virgil/iot/trust_list/trust_list.h>
+
+static vs_sdmp_service_t _fldt_client = {0};
 
 // TODO : make a set!
 static size_t _file_type_mapping_array_size = 0;
@@ -154,7 +155,7 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file : %s", vs_fldt_file_version_descr(file_descr, new_file_ver));
 
-        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+        CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_GNFH,
                                         (const uint8_t *)&header_request,
@@ -211,13 +212,11 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file : %s", vs_fldt_file_version_descr(file_descr, new_file_ver));
 
-        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
-                                        &file_type_info->gateway_mac,
-                                        VS_FLDT_GNFH,
-                                        (const uint8_t *)&new_file,
-                                        sizeof(new_file)),
-                  VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
-                  "Unable to send FLDT \"GNFH\" server request");
+        CHECK_RET(
+                !vs_fldt_send_request(
+                        NULL, &file_type_info->gateway_mac, VS_FLDT_GNFH, (const uint8_t *)&new_file, sizeof(new_file)),
+                VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
+                "Unable to send FLDT \"GNFH\" server request");
     }
 
     return VS_FLDT_ERR_OK;
@@ -286,7 +285,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                  data_request.offset,
                  vs_fldt_file_version_descr(file_ver_descr, &data_request.version));
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+    CHECK_RET(!vs_fldt_send_request(NULL,
                                     &file_type_info->gateway_mac,
                                     VS_FLDT_GNFD,
                                     (const uint8_t *)&data_request,
@@ -388,7 +387,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                      data_request.offset,
                      vs_fldt_file_version_descr(file_ver_descr, &data_request.version));
 
-        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+        CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_GNFD,
                                         (const uint8_t *)&data_request,
@@ -402,7 +401,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
         footer_request.version = file_data->version;
 
-        CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
+        CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_GNFF,
                                         (const uint8_t *)&footer_request,
@@ -424,11 +423,8 @@ vs_fldt_ask_file_type_info(const vs_fldt_gfti_fileinfo_request_t *file_type) {
     VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s",
                  vs_fldt_file_type_descr(file_descr, &file_type->file_type));
 
-    CHECK_RET(!vs_fldt_send_request(vs_fldt_netif,
-                                    vs_fldt_broadcast_mac_addr,
-                                    VS_FLDT_GFTI,
-                                    (const uint8_t *)file_type,
-                                    sizeof(*file_type)),
+    CHECK_RET(!vs_fldt_send_request(
+                      NULL, vs_sdmp_broadcast_mac(), VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
               VS_FLDT_ERR_INCORRECT_SEND_REQUEST,
               "Unable to send FLDT \"GFTI\" server request");
 
@@ -603,7 +599,6 @@ vs_fldt_init_client(vs_fldt_got_file got_file_callback) {
     vs_fldt_destroy_client();
 
     _got_file_callback = got_file_callback;
-    vs_fldt_is_gateway = false;
 
     return VS_FLDT_ERR_OK;
 }
@@ -611,6 +606,88 @@ vs_fldt_init_client(vs_fldt_got_file got_file_callback) {
 /******************************************************************/
 void
 vs_fldt_destroy_client(void) {
-
     _file_type_mapping_array_size = 0;
 }
+
+/******************************************************************************/
+static int
+_fldt_client_request_processor(const struct vs_netif_t *netif,
+                               vs_sdmp_element_t element_id,
+                               const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
+
+    *response_sz = 0;
+
+    switch (element_id) {
+
+    case VS_FLDT_INFV:
+        return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GFTI:
+        return VS_FLDT_ERR_OK;
+
+    case VS_FLDT_GNFH:
+        return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_FLDT_GNFF:
+        return vs_fldt_GNFF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    default:
+        VS_IOT_ASSERT(false && "Unsupported command");
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+    }
+}
+
+/******************************************************************************/
+static int
+_fldt_client_response_processor(const struct vs_netif_t *netif,
+                                vs_sdmp_element_t element_id,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
+
+    switch (element_id) {
+
+    case VS_FLDT_INFV:
+        return VS_FLDT_ERR_OK;
+
+    case VS_FLDT_GFTI:
+        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFH:
+        return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFD:
+        return vs_fldt_GNFD_response_processor(is_ack, response, response_sz);
+
+    case VS_FLDT_GNFF:
+        return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);
+
+    default:
+        VS_IOT_ASSERT(false && "Unsupported command");
+        return VS_FLDT_ERR_UNSUPPORTED_PARAMETER;
+    }
+}
+
+/******************************************************************************/
+const vs_sdmp_service_t *
+vs_sdmp_fldt_client(void) {
+
+    _fldt_client.user_data = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+    _fldt_client.id = HTONL_IN_COMPILE_TIME('FLDT');
+#pragma GCC diagnostic pop
+    _fldt_client.request_process = _fldt_client_request_processor;
+    _fldt_client.response_process = _fldt_client_response_processor;
+
+    return &_fldt_client;
+}
+
+/******************************************************************************/

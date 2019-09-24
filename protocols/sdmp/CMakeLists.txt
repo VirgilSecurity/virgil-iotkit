@@ -61,7 +61,6 @@ function(add_sdmp _for_factory)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_structs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_private.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_private.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_server.h
