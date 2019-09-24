@@ -154,10 +154,10 @@ _udp_bcast_connect() {
         goto terminate;
     }
 
-    printf("Opened connection for UDP broadcast\n");
-
     // Start receive thread
     pthread_create(&receive_thread, NULL, _udp_bcast_receive_processor, NULL);
+
+    printf("Opened connection for UDP broadcast\n");
 
     return 0;
 
@@ -196,7 +196,11 @@ _udp_bcast_init(const vs_netif_rx_cb_t rx_cb) {
 /******************************************************************************/
 static int
 _udp_bcast_deinit() {
+    printf("Stop UDP broadcast\n");
     if (_udp_bcast_sock >= 0) {
+#if !defined(__APPLE__)
+        shutdown(_udp_bcast_sock, SHUT_RDWR);
+#endif
         close(_udp_bcast_sock);
     }
     _udp_bcast_sock = -1;

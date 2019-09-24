@@ -39,7 +39,6 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 
 //
@@ -56,6 +55,9 @@ typedef void (*vs_fldt_got_file)(const vs_fldt_file_version_t *prev_file_ver,
                                  const vs_fldt_file_version_t *new_file_ver,
                                  const vs_mac_addr_t *gateway,
                                  bool successfully_updated);
+
+const vs_sdmp_service_t *
+vs_sdmp_fldt_client(void);
 
 //
 //  Customer API

@@ -49,12 +49,12 @@ static const vs_netif_t *_sdmp_default_netif = 0;
 #define SERVICES_CNT_MAX (10)
 static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
 static uint32_t _sdmp_services_num = 0;
-static uint8_t _sdmp_broadcast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+static vs_mac_addr_t _sdmp_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
 /******************************************************************************/
 static bool
 _is_broadcast(const vs_mac_addr_t *mac_addr) {
-    return 0 == memcmp(mac_addr->bytes, _sdmp_broadcast_mac, ETH_ADDR_LEN);
+    return 0 == memcmp(mac_addr->bytes, _sdmp_broadcast_mac.bytes, ETH_ADDR_LEN);
 }
 
 /******************************************************************************/
@@ -336,6 +336,12 @@ _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) 
     packet->header.transaction_id = _sdmp_transaction_id();
 
     return 0;
+}
+
+/******************************************************************************/
+const vs_mac_addr_t *
+vs_sdmp_broadcast_mac(void) {
+    return &_sdmp_broadcast_mac;
 }
 
 /******************************************************************************/
