@@ -80,14 +80,12 @@ add_library(enable_asan_mode INTERFACE)
 
 target_compile_options(enable_asan_mode
     INTERFACE
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
-            -fno-omit-frame-pointer -fsanitize=address>
+        -fno-omit-frame-pointer -fsanitize=address
     )
 
 target_link_libraries(enable_asan_mode
     INTERFACE
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
-            -fno-omit-frame-pointer -fsanitize=address>
+        -fno-omit-frame-pointer -fsanitize=address
     )
 
 # ---------------------------------------------------------------------------
@@ -99,14 +97,12 @@ add_library(enable_ubsan_mode INTERFACE)
 
 target_compile_options(enable_ubsan_mode
     INTERFACE
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
-            -fsanitize=undefined>
+        -fsanitize=undefined>
     )
 
 target_link_libraries(enable_ubsan_mode
     INTERFACE
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>, $<C_COMPILER_ID:GNU>>:
-            -fsanitize=undefined>
+        -fsanitize=undefined>
     )
 
 # ---------------------------------------------------------------------------
