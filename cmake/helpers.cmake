@@ -97,12 +97,12 @@ add_library(enable_ubsan_mode INTERFACE)
 
 target_compile_options(enable_ubsan_mode
     INTERFACE
-        -fsanitize=undefined>
+        -fsanitize=undefined
     )
 
 target_link_libraries(enable_ubsan_mode
     INTERFACE
-        -fsanitize=undefined>
+        -fsanitize=undefined
     )
 
 # ---------------------------------------------------------------------------
