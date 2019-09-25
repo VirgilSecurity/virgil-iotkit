@@ -101,7 +101,7 @@ terminate:
 /******************************************************************************/
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
-    static const uint32_t START_EPOCH = 1566203295; // January 1, 2015 UTC
+    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
     char *out = buf;
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
@@ -115,7 +115,7 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
         uint32_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
 
         VS_IOT_SPRINTF(out,
-                       ", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
+                       ", ver %d.%d.%d.%c.%d, UNIX timestamp %u",
                        file_ver->fw_ver.major,
                        file_ver->fw_ver.minor,
                        file_ver->fw_ver.patch,
