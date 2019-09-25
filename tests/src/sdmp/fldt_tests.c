@@ -75,8 +75,8 @@
 calls_t calls;
 
 static vs_netif_t test_netif;
-static vs_fldt_file_type_t file_type_1 = { .file_type_id = 1, .add_info = {"1"} };
-static vs_fldt_file_type_t file_type_2 = { .file_type_id = 1, .add_info = {"2"} };
+static vs_update_file_type_t file_type_1 = { .file_type_id = 1, .add_info = {"1"} };
+static vs_update_file_type_t file_type_2 = { .file_type_id = 1, .add_info = {"2"} };
 
 /**********************************************************/
 static bool
@@ -98,8 +98,8 @@ test_fldt_initialize(void) {
 static bool
 test_fldt_add_filetypes(void) {
 
-    vs_fldt_client_file_type_mapping_t client_file_type;
-    vs_fldt_server_file_type_mapping_t server_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t server_file_type;
     vs_fldt_gfti_fileinfo_request_t ask_file;
     vs_log_level_t prev_loglev;
 
@@ -152,7 +152,7 @@ test_fldt_add_filetypes(void) {
 static bool
 test_INFV(void){
     vs_fldt_infv_new_file_request_t new_file;
-    vs_fldt_client_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
@@ -195,7 +195,7 @@ test_INFV(void){
 static bool
 test_GFTI(void){
     vs_fldt_gfti_fileinfo_request_t file_request;
-    vs_fldt_client_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");

@@ -37,93 +37,68 @@
 
 #include <global-hal.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
-
-// User can introduce its own file types with ID >= USER
-enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
+#include <virgil/iot/status_code/status_code.h>
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
 #define DEVICE_TYPE_SIZE (4)
-typedef struct __attribute__((__packed__)) {
-    uint8_t app_type[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
-} vs_firmware_version_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
-    uint8_t device_type[DEVICE_TYPE_SIZE];
-    vs_firmware_version_t version;
-} vs_firmware_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_firmware_info_t info;
-    uint8_t padding;
-    uint16_t chunk_size;
-    uint32_t firmware_length;
-    uint32_t app_size; // firmware_length + fill_size + footer
-} vs_firmware_descriptor_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t signatures_count;
-    vs_firmware_descriptor_t descriptor;
-    uint8_t signatures[];
-} vs_update_firmware_footer_t;
+#define FILE_TYPE_ADD_INFO_SZ (32) // vs_update_file_type_t.add_info field size
+#define FILE_VERSION_INFO_SZ (32) // vs_update_file_version_t.version field size
 
 #define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
     CHECK_RET((ret_code = (OPERATION)) == VS_CODE_OK, ret_code, MESSAGE, ##__VA_ARGS__)
 
-int
-vs_update_init(const vs_storage_op_ctx_t *ctx);
+enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
 
-int
-vs_update_deinit(const vs_storage_op_ctx_t *ctx);
+typedef struct __attribute__((__packed__)) {
+    uint16_t file_type_id;
+    uint8_t add_info[FILE_TYPE_ADD_INFO_SZ];
+} vs_update_file_type_t;
 
-int
-vs_update_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              vs_firmware_descriptor_t *descriptor,
-                              uint8_t *chunk,
-                              uint16_t chunk_sz,
-                              uint32_t offset);
+typedef struct __attribute__((__packed__)) {
+    uint8_t version[FILE_VERSION_INFO_SZ];
+} vs_update_file_version_t;
 
-int
-vs_update_save_firmware_footer(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor, uint8_t *footer);
+struct vs_update_interface_t;
 
-int
-vs_update_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              vs_firmware_descriptor_t *descriptor,
-                              uint32_t offset,
-                              uint8_t *data,
-                              uint16_t buf_sz,
-                              uint16_t *data_sz);
+char *
+vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size);
 
-int
-vs_update_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
-                               vs_firmware_descriptor_t *descriptor,
-                               uint8_t *data,
-                               uint16_t buff_sz,
-                               uint16_t *data_sz);
+typedef vs_status_code_e (*vs_update_get_version_callback)(void *context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version);
+typedef vs_status_code_e (*vs_update_get_header_size_callback)(void *context, const vs_update_file_type_t *file_type, size_t *header_size);
+typedef vs_status_code_e (*vs_update_has_footer_callback)(void *context, const vs_update_file_type_t *file_type, bool *has_footer);
+typedef vs_status_code_e (*vs_update_get_header_callback)(void *context, const vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
+typedef vs_status_code_e (*vs_update_get_data_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
+typedef vs_status_code_e (*vs_update_get_footer_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
+typedef vs_status_code_e (*vs_update_set_header_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
+typedef vs_status_code_e (*vs_update_set_data_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
+typedef vs_status_code_e (*vs_update_set_footer_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
+typedef bool (*vs_update_file_is_newer_callback)(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file);
+typedef void (*vs_update_free_callback)(void *context, const vs_update_file_type_t *file_type);
+typedef char* (*vs_update_describe_type_callback)(void *context, const vs_update_file_type_t *file_type, char *buffer, size_t buf_size);
+typedef char* (*vs_update_describe_version_callback)(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description);
 
-int
-vs_update_verify_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
+typedef struct __attribute__((__packed__)) vs_update_interface_t {
+    vs_update_get_version_callback        get_version;
+    vs_update_get_header_size_callback    get_header_size;
+    vs_update_has_footer_callback         has_footer;
 
-int
-vs_update_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
+    vs_update_get_header_callback         get_header;
+    vs_update_get_data_callback           get_data;
+    vs_update_get_footer_callback         get_footer;
 
-int
-vs_update_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
-                                   vs_firmware_descriptor_t *descriptor);
+    vs_update_set_header_callback         set_header;
+    vs_update_set_data_callback           set_data;
+    vs_update_set_footer_callback         set_footer;
 
-int
-vs_update_delete_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
+    vs_update_free_callback               free;
 
-int
-vs_update_install_firmware(const vs_storage_op_ctx_t *ctx, vs_firmware_descriptor_t *descriptor);
+    vs_update_file_is_newer_callback      file_is_newer;
+    vs_update_describe_type_callback      describe_type;
+    vs_update_describe_version_callback   describe_version;
+
+    void *file_context;
+
+} vs_update_interface_t;
 
 #endif // VS_UPDATE_H

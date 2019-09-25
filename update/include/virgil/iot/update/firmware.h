@@ -32,36 +32,53 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_STATUS_CODE
-#define VS_IOT_SDK_STATUS_CODE
+#ifndef VS_UPDATE_FIRMWARE_H
+#define VS_UPDATE_FIRMWARE_H
 
-#include <virgil/iot/macros/macros.h>
+#include <global-hal.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/update/update.h>
 
-typedef enum {
-    VS_CODE_OK = 0,
-    VS_CODE_ERR_NULLPTR_ARGUMENT,
-    VS_CODE_ERR_ZERO_ARGUMENT,
-    VS_CODE_ERR_INCORRECT_ARGUMENT,
-    VS_CODE_ERR_INCORRECT_PARAMETER,
-    VS_CODE_ERR_UNSUPPORTED_PARAMETER,
-    VS_CODE_ERR_NO_CALLBACK,
-    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
-    VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-    VS_CODE_ERR_NO_MEMORY,
-    VS_CODE_ERR_TOO_SMALL_BUFFER,
-    VS_CODE_ERR_AMBIGUOUS_INIT_CALL,
-    VS_CODE_ERR_VERIFY,
-    VS_CODE_ERR_FILE,
-    VS_CODE_ERR_FILE_READ,
-    VS_CODE_ERR_FILE_WRITE,
-    VS_CODE_ERR_FILE_DELETE,
-    VS_CODE_ERR_UINT32_T,
-    VS_CODE_AMOUNT_OF_CODES    // Amount of VS IoT status codes
-} vs_status_code_e;
+#define MANUFACTURE_ID_SIZE 16
+#define DEVICE_TYPE_SIZE (4)
 
-const char *vs_status_code_descr(vs_status_code_e status_code);
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[16];
+    uint8_t device_type[4];
+} vs_update_fw_add_info_t;
 
-#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
-#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
+typedef struct __attribute__((__packed__)) {
+    uint8_t app_type[4];
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint8_t dev_milestone;
+    uint8_t dev_build;
+    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+} vs_update_fw_version_t;
 
-#endif // VS_IOT_SDK_STATUS_CODE
+typedef struct __attribute__((__packed__)) {
+    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t device_type[DEVICE_TYPE_SIZE];
+    vs_update_fw_version_t version;
+} vs_update_fw_info_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_update_fw_info_t info;
+    uint8_t padding;
+    uint16_t chunk_size;
+    uint32_t firmware_length;
+    uint32_t app_size; // firmware_length + fill_size + footer
+} vs_update_fw_descriptor_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t signatures_count;
+    vs_update_fw_descriptor_t descriptor;
+    uint8_t signatures[];
+} vs_update_fw_footer_t;
+
+vs_status_code_e
+vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
+
+#endif // VS_UPDATE_FIRMWARE_H

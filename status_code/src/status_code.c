@@ -38,18 +38,50 @@
 
 /*************************************************************************/
 const char *
-vs_code_descr(vs_status_code_e status_code){
+vs_status_code_descr(vs_status_code_e status_code){
 
     switch(status_code){
-        case VS_CODE_OK : return "Success";
-        case VS_CODE_ERR_INCORRECT_ARGUMENT : return "Incorrect argument";
-        case VS_CODE_ERR_UNSUPPORTED_PARAMETER : return "Unsupported parameter";
-        case VS_CODE_ERR_NO_CALLBACK : return "No callback function";
-        case VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE : return "Unregistered mapping type";
-        case VS_CODE_ERR_INCORRECT_SEND_REQUEST : return "Incorrect send request";
-        case VS_CODE_ERR_NO_MEMORY : return "No memory";
-        case VS_CODE_ERR_AMBIGUOUS_INIT_CALL : return "Ambigious init call";
-        case VS_CODE_AMOUNT_OF_CODES : VS_IOT_ASSERT(false && "Must not be returned"); return "Amount of VS IoT status codes";
-        default : VS_IOT_ASSERT(false && "Unsupported code");   return "";
+        case VS_CODE_OK :
+            return "Success";
+
+        case VS_CODE_ERR_NULLPTR_ARGUMENT :
+            return "Null pointer argument";
+        case VS_CODE_ERR_ZERO_ARGUMENT :
+            return "Zero argument";
+        case VS_CODE_ERR_INCORRECT_ARGUMENT :
+            return "Incorrect argument";
+        case VS_CODE_ERR_INCORRECT_PARAMETER :
+            return "Incorrect parameter";
+        case VS_CODE_ERR_UNSUPPORTED_PARAMETER :
+            return "Unsupported parameter";
+        case VS_CODE_ERR_NO_CALLBACK :
+            return "No callback function";
+        case VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE :
+            return "Unregistered mapping type";
+        case VS_CODE_ERR_INCORRECT_SEND_REQUEST :
+            return "Incorrect send request";
+        case VS_CODE_ERR_NO_MEMORY :
+            return "No memory";
+        case VS_CODE_ERR_AMBIGUOUS_INIT_CALL :
+            return "Ambiguous init call";
+        case VS_CODE_ERR_VERIFY :
+            return "Verify error";
+        case VS_CODE_ERR_FILE:
+            return "File processing error";
+        case VS_CODE_ERR_FILE_READ:
+            return "File read error";
+        case VS_CODE_ERR_FILE_WRITE:
+            return "File write error";
+        case VS_CODE_ERR_FILE_DELETE:
+            return "File delete error";
+        case VS_CODE_ERR_UINT32_T :
+            return "Value is bigger than uint32_t";
+
+        case VS_CODE_AMOUNT_OF_CODES :
+            VS_IOT_ASSERT(false && "Must not be returned");
+            return "Amount of VS IoT status codes";
+        default :
+            VS_IOT_ASSERT(false && "Unsupported code");
+            return "";
     }
 }

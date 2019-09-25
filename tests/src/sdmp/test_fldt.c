@@ -41,10 +41,10 @@
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_fldt.h>
 
-vs_fldt_server_file_type_mapping_t server_add_filetype_to_copy;
-vs_fldt_file_version_t client_get_current_file_version;
+vs_fldt_file_type_mapping_t server_add_filetype_to_copy;
+vs_update_file_version_t client_get_current_file_version;
 vs_fldt_gfti_fileinfo_response_t server_get_version_file;
-vs_fldt_file_version_t file_ver;
+vs_update_file_version_t file_ver;
 
 /**********************************************************/
 static vs_status_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
@@ -56,7 +56,7 @@ static vs_status_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
 }
 
 /**********************************************************/
-static vs_status_code_e client_get_current_version(void **storage_context, const vs_fldt_file_type_t *file_type, vs_fldt_file_version_t *file_version){
+static vs_status_code_e client_get_current_version(void **storage_context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
     (void) storage_context;
     (void) file_type;
     (void) file_version;
@@ -189,7 +189,7 @@ static void server_destroy(void **storage_get_context){
 
 
 /**********************************************************/
-vs_status_code_e server_add_filetype(const vs_fldt_file_type_t *file_type){
+vs_status_code_e server_add_filetype(const vs_update_file_type_t *file_type){
     (void) file_type;
 
     calls.server_add_filetype = 1;
@@ -198,9 +198,9 @@ vs_status_code_e server_add_filetype(const vs_fldt_file_type_t *file_type){
 }
 
 /**********************************************************/
-vs_fldt_client_file_type_mapping_t
-make_client_mapping(const vs_fldt_file_type_t *file_type){
-    vs_fldt_client_file_type_mapping_t mapping = {
+vs_fldt_file_type_mapping_t
+make_client_mapping(const vs_update_file_type_t *file_type){
+    vs_fldt_file_type_mapping_t mapping = {
             .storage_context = NULL,
             .set_gateway_mac = client_set_gateway_mac,
             .get_current_version = client_get_current_version,
@@ -218,9 +218,9 @@ make_client_mapping(const vs_fldt_file_type_t *file_type){
 }
 
 /**********************************************************/
-vs_fldt_server_file_type_mapping_t
-make_server_mapping(const vs_fldt_file_type_t *file_type){
-    vs_fldt_server_file_type_mapping_t mapping = {
+vs_fldt_file_type_mapping_t
+make_server_mapping(const vs_update_file_type_t *file_type){
+    vs_fldt_file_type_mapping_t mapping = {
             .storage_context = NULL,
             .get_version = server_get_version,
             .get_header = server_get_header,

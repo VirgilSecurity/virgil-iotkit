@@ -61,7 +61,7 @@ static uint8_t *_fw_footer = NULL;
 #define TEST_APP_TYPE                                                                                                  \
     { 'A', 'P', 'P', '0' }
 
-static vs_firmware_descriptor_t _test_descriptor = {
+static vs_update_fw_descriptor_t _test_descriptor = {
         .info.manufacture_id = TEST_MANUFACTURE_ID,
         .info.device_type = TEST_DEVICE_TYPE,
         .info.version.app_type = TEST_APP_TYPE,
@@ -180,7 +180,7 @@ _create_test_firmware_signature(vs_key_type_e signer_type,
 /**********************************************************/
 static bool
 _create_test_firmware_footer() {
-    vs_update_firmware_footer_t *footer;
+    vs_update_fw_footer_t *footer;
     int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
@@ -189,7 +189,7 @@ _create_test_firmware_footer() {
 
     VS_HEADER_SUBCASE("Create test firmware footer");
     uint16_t footer_sz =
-            sizeof(vs_update_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+            sizeof(vs_update_fw_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     _fw_footer = VS_IOT_MALLOC(footer_sz);
     _test_descriptor.app_size += footer_sz;
     if (NULL == _fw_footer) {
@@ -197,18 +197,18 @@ _create_test_firmware_footer() {
         return false;
     }
 
-    footer = (vs_update_firmware_footer_t *)_fw_footer;
+    footer = (vs_update_fw_footer_t *)_fw_footer;
 
     vs_hsm_sw_sha256_ctx hash_ctx;
     uint8_t hash[32];
     vs_hsm_sw_sha256_init(&hash_ctx);
 
     footer->signatures_count = VS_FW_SIGNATURES_QTY;
-    VS_IOT_MEMCPY(&footer->descriptor, &_test_descriptor, sizeof(vs_firmware_descriptor_t));
+    VS_IOT_MEMCPY(&footer->descriptor, &_test_descriptor, sizeof(vs_update_fw_descriptor_t));
 
     vs_hsm_sw_sha256_update(&hash_ctx, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA));
     vs_hsm_sw_sha256_update(&hash_ctx, fill, sizeof(fill));
-    vs_hsm_sw_sha256_update(&hash_ctx, _fw_footer, sizeof(vs_update_firmware_footer_t));
+    vs_hsm_sw_sha256_update(&hash_ctx, _fw_footer, sizeof(vs_update_fw_footer_t));
     vs_hsm_sw_sha256_final(&hash_ctx, hash);
 
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
@@ -226,16 +226,16 @@ _create_test_firmware_footer() {
 /**********************************************************/
 static bool
 _test_firmware_save_load_descriptor(vs_storage_op_ctx_t *ctx) {
-    vs_firmware_descriptor_t desc;
+    vs_update_fw_descriptor_t desc;
     BOOL_CHECK_RET(VS_STORAGE_OK ==
-                           vs_update_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
+                           vs_update_save_firmware_descriptor(ctx, (vs_update_fw_descriptor_t *)&_test_descriptor),
                    "Error save descriptor");
     BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_load_firmware_descriptor(ctx,
                                                                        (uint8_t *)_test_descriptor.info.manufacture_id,
                                                                        (uint8_t *)_test_descriptor.info.device_type,
                                                                        &desc),
                    "Error load descriptor");
-    MEMCMP_CHECK_RET(&desc, &_test_descriptor, sizeof(vs_firmware_descriptor_t), false);
+    MEMCMP_CHECK_RET(&desc, &_test_descriptor, sizeof(vs_update_fw_descriptor_t), false);
 
     BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_delete_firmware(ctx, &desc), "Error delete descriptor");
     BOOL_CHECK_RET(VS_STORAGE_ERROR_NOT_FOUND ==
@@ -256,7 +256,7 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
     int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint16_t footer_sz =
-            sizeof(vs_update_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+            sizeof(vs_update_fw_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     uint8_t footer_buf[footer_sz];
 
     BOOL_CHECK_RET(VS_STORAGE_OK == vs_update_save_firmware_descriptor(ctx, &_test_descriptor), "Error save descriptor");

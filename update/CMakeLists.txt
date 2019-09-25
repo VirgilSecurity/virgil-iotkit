@@ -40,7 +40,14 @@ add_library(update)
 
 target_sources(update
         PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/update/update.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/update/firmware.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/update/firmware_hal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/update/trust_list.h"
+
         "${CMAKE_CURRENT_LIST_DIR}/src/update.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/firmware.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/trust_list.c"
         )
 
 target_link_libraries(update
@@ -50,6 +57,7 @@ target_link_libraries(update
         hsm
         trust_list
         storage_hal
+        virgil-iot-status-code
         )
 
 target_include_directories(update

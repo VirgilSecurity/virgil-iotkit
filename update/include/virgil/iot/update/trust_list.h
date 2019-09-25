@@ -32,36 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_STATUS_CODE
-#define VS_IOT_SDK_STATUS_CODE
+#ifndef VS_UPDATE_FIRMWARE_H
+#define VS_UPDATE_FIRMWARE_H
 
-#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/update/update.h>
 
-typedef enum {
-    VS_CODE_OK = 0,
-    VS_CODE_ERR_NULLPTR_ARGUMENT,
-    VS_CODE_ERR_ZERO_ARGUMENT,
-    VS_CODE_ERR_INCORRECT_ARGUMENT,
-    VS_CODE_ERR_INCORRECT_PARAMETER,
-    VS_CODE_ERR_UNSUPPORTED_PARAMETER,
-    VS_CODE_ERR_NO_CALLBACK,
-    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
-    VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-    VS_CODE_ERR_NO_MEMORY,
-    VS_CODE_ERR_TOO_SMALL_BUFFER,
-    VS_CODE_ERR_AMBIGUOUS_INIT_CALL,
-    VS_CODE_ERR_VERIFY,
-    VS_CODE_ERR_FILE,
-    VS_CODE_ERR_FILE_READ,
-    VS_CODE_ERR_FILE_WRITE,
-    VS_CODE_ERR_FILE_DELETE,
-    VS_CODE_ERR_UINT32_T,
-    VS_CODE_AMOUNT_OF_CODES    // Amount of VS IoT status codes
-} vs_status_code_e;
+vs_status_code_e
+vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
 
-const char *vs_status_code_descr(vs_status_code_e status_code);
-
-#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
-#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
-
-#endif // VS_IOT_SDK_STATUS_CODE
+#endif // VS_UPDATE_FIRMWARE_H

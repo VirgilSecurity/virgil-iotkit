@@ -98,7 +98,7 @@ typedef struct __attribute__((__packed__)) {
     uint32_t footer_offset; // code_offset + code_length
     uint32_t footer_length;
     uint8_t signatures_count;
-    vs_firmware_descriptor_t descriptor;
+    vs_update_fw_descriptor_t descriptor;
 } vs_cloud_firmware_header_t;
 
 typedef int (*vs_cloud_mb_init_func)(const char *host,

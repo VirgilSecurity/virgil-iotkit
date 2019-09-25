@@ -46,7 +46,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/update/update_interface.h>
+#include <virgil/iot/update/update_hal.h>
 #include <virgil/iot/hsm/asn1_cryptogram.h>
 #include <virgil/iot/hsm/hsm_virgil_ecies.h>
 #include <virgil/iot/hsm/hsm_interface.h>
