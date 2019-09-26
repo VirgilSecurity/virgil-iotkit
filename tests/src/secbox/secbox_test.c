@@ -109,6 +109,10 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx) {
 
     size_t big_test_size = (ctx->file_sz_limit > (3 * 256 + 128 - 1)) ? 3 * 256 + 128 - 1 : ctx->file_sz_limit;
     _big_test_data = VS_IOT_MALLOC(big_test_size);
+    if(!_big_test_data) {
+        VS_LOG_ERROR("Allocation memory for _big_test_data error");
+        goto  terminate;
+    }
     for (uint32_t i = 0; i < big_test_size; i++) {
         _big_test_data[i] = (uint8_t)i;
     }
