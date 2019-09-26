@@ -53,6 +53,8 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
 
     dst->file_type = *file_type;
 
+    VS_LOG_INFO(">>> DEBUG 4.6.1.1");
+
     switch (file_type->file_type_id) {
     case VS_UPDATE_FIRMWARE:
         dst->fw_ver.major = fw_src->major;
@@ -67,6 +69,8 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
         dst->tl_ver = VS_IOT_NTOHS(*tl_src);
         break;
     }
+
+    VS_LOG_INFO(">>> DEBUG 4.6.1.2");
 
     return VS_FLDT_ERR_OK;
 }
@@ -106,12 +110,17 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
 
+    VS_LOG_INFO(">>> DEBUG 4.6.3.1");
+
     vs_fldt_file_type_descr(out, &file_ver->file_type);
     out += VS_IOT_STRLEN(buf);
+
+    VS_LOG_INFO(">>> DEBUG 4.6.3.2");
 
     // TODO : remove file type description!
     switch (file_ver->file_type.file_type_id) {
     case VS_UPDATE_FIRMWARE: {
+        VS_LOG_INFO(">>> DEBUG 4.6.3.3");
         uint32_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
 
         VS_IOT_SPRINTF(out,
@@ -122,12 +131,17 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
                        file_ver->fw_ver.dev_milestone,
                        file_ver->fw_ver.dev_build,
                        timestamp);
+
+        VS_LOG_INFO(">>> DEBUG 4.6.3.4");
     } break;
 
     case VS_UPDATE_TRUST_LIST:
+        VS_LOG_INFO(">>> DEBUG 4.6.3.5");
         VS_IOT_SPRINTF(out, ", ver %d", VS_IOT_NTOHS(file_ver->tl_ver));
         break;
     }
+
+    VS_LOG_INFO(">>> DEBUG 4.6.3.6");
 
     return buf;
 
