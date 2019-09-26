@@ -37,6 +37,7 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
+#include <stdlib-config.h>
 
 /******************************************************************/
 vs_fldt_ret_code_e
@@ -109,7 +110,6 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     char *out = buf;
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
-
     VS_LOG_INFO(">>> DEBUG 4.6.3.1");
 
     vs_fldt_file_type_descr(out, &file_ver->file_type);
@@ -121,18 +121,29 @@ vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
     switch (file_ver->file_type.file_type_id) {
     case VS_UPDATE_FIRMWARE: {
         VS_LOG_INFO(">>> DEBUG 4.6.3.3");
+#ifdef VS_IOT_ASCTIME
+        time_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
+#else
         uint32_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
+#endif //   VS_IOT_ASCTIME
 
         VS_IOT_SPRINTF(out,
+#ifdef VS_IOT_ASCTIME
+                       ", ver %d.%d.%d.%c.%d, %s",
+#else
                        ", ver %d.%d.%d.%c.%d, UNIX timestamp %u",
+#endif //   VS_IOT_ASCTIME
                        file_ver->fw_ver.major,
                        file_ver->fw_ver.minor,
                        file_ver->fw_ver.patch,
                        file_ver->fw_ver.dev_milestone,
                        file_ver->fw_ver.dev_build,
-                       timestamp);
-
-        VS_LOG_INFO(">>> DEBUG 4.6.3.4");
+#ifdef VS_IOT_ASCTIME
+                       VS_IOT_ASCTIME(timestamp)
+#else
+                       timestamp
+#endif //   VS_IOT_ASCTIME
+        );
     } break;
 
     case VS_UPDATE_TRUST_LIST:
