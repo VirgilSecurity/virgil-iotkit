@@ -79,28 +79,29 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
 /******************************************************************************/
 char *
 vs_fldt_file_type_descr(char *buf, const vs_fldt_file_type_t *file_type) {
-    char *out = buf;
-    const uint8_t *src;
-    size_t pos;
-
-    CHECK_NOT_ZERO(buf);
-    CHECK_NOT_ZERO(file_type);
-
-    VS_IOT_SPRINTF(out, "file type %d (add_info = \"", file_type->file_type_id);
-
-    out += VS_IOT_STRLEN(buf);
-    src = (const uint8_t *)&file_type->add_info;
-    for (pos = 0; pos < sizeof(file_type->add_info); ++pos, ++out, ++src) {
-        *out = !*src ? ' ' : (*src >= ' ' ? *src : '.');
-    }
-
-    VS_IOT_STRCPY(out, "\")");
-
-    return buf;
-
-terminate:
-
-    return NULL;
+    //    char *out = buf;
+    //    const uint8_t *src;
+    //    size_t pos;
+    //
+    //    CHECK_NOT_ZERO(buf);
+    //    CHECK_NOT_ZERO(file_type);
+    //
+    //    VS_IOT_SPRINTF(out, "file type %d (add_info = \"", file_type->file_type_id);
+    //
+    //    out += VS_IOT_STRLEN(buf);
+    //    src = (const uint8_t *)&file_type->add_info;
+    //    for (pos = 0; pos < sizeof(file_type->add_info); ++pos, ++out, ++src) {
+    //        *out = !*src ? ' ' : (*src >= ' ' ? *src : '.');
+    //    }
+    //
+    //    VS_IOT_STRCPY(out, "\")");
+    //
+    //    return buf;
+    //
+    // terminate:
+    //
+    //    return NULL;
+    return (char *)"descr";
 }
 
 /******************************************************************************/
