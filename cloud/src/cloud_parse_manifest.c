@@ -244,12 +244,10 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
     vs_firmware_version_t current_ver;
 
     if (!_is_member_for_vendor_and_model_present(fw_storage, manufacture_id, device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&current_ver.major,
-                           &new_ver->major,
-                           sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))) {
+        0 <= VS_IOT_MEMCMP(&(current_ver.major),&(new_ver->major),
+                                            sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))) {
         return VS_CLOUD_ERR_NOT_FOUND;
     }
-
     return VS_CLOUD_ERR_OK;
 }
 

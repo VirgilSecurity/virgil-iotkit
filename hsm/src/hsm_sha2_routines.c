@@ -183,7 +183,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
         if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
             return (ret);
 
-        VS_IOT_MEMSET(ctx->buffer, 0, 56);
+        VS_IOT_MEMSET(ctx->buffer, 0, sizeof(ctx->buffer));
     }
 
     /*

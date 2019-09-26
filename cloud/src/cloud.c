@@ -92,7 +92,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
 
     int crypto_answer_b64_len;
 
-    if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK)
+    if (! crypto_answer_b64 ||  json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK)
         return VS_CLOUD_ERR_FAIL;
     else {
         crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)strlen(crypto_answer_b64));
