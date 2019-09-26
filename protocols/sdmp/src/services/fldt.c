@@ -37,6 +37,7 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
+#include <stdlib-config.h>
 
 /******************************************************************/
 vs_fldt_ret_code_e
@@ -101,27 +102,39 @@ terminate:
 /******************************************************************************/
 char *
 vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver) {
-    static const uint32_t START_EPOCH = 1566203295; // January 1, 2015 UTC
+    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
     char *out = buf;
     CHECK_NOT_ZERO(buf);
     CHECK_NOT_ZERO(file_ver);
-
     vs_fldt_file_type_descr(out, &file_ver->file_type);
     out += VS_IOT_STRLEN(buf);
 
     // TODO : remove file type description!
     switch (file_ver->file_type.file_type_id) {
     case VS_UPDATE_FIRMWARE: {
+#ifdef VS_IOT_ASCTIME
+        time_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
+#else
         uint32_t timestamp = file_ver->fw_ver.timestamp + START_EPOCH;
+#endif //   VS_IOT_ASCTIME
 
         VS_IOT_SPRINTF(out,
-                       ", ver %d.%d, patch %d, milestone %d, build %d, UNIX timestamp %u",
+#ifdef VS_IOT_ASCTIME
+                       ", ver %d.%d.%d.%c.%d, %s",
+#else
+                       ", ver %d.%d.%d.%c.%d, UNIX timestamp %u",
+#endif //   VS_IOT_ASCTIME
                        file_ver->fw_ver.major,
                        file_ver->fw_ver.minor,
                        file_ver->fw_ver.patch,
                        file_ver->fw_ver.dev_milestone,
                        file_ver->fw_ver.dev_build,
-                       timestamp);
+#ifdef VS_IOT_ASCTIME
+                       VS_IOT_ASCTIME(timestamp)
+#else
+                       timestamp
+#endif //   VS_IOT_ASCTIME
+        );
     } break;
 
     case VS_UPDATE_TRUST_LIST:
