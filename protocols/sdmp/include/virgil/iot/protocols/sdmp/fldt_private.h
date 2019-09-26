@@ -51,8 +51,8 @@ extern "C" {
 //  Internal structures
 //
 
-#define FLDT_FILEVER_BUF (196)         // buffer for vs_fldt_file_version_descr
-#define FLDT_FILE_SPEC_INFO_SZ (64)    // vs_fldt_infv_new_file_request_t.file_specific_info field size
+#define FLDT_FILEVER_BUF (196)      // buffer for vs_fldt_file_version_descr
+#define FLDT_FILE_SPEC_INFO_SZ (64) // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
 #define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
 #define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                     \
@@ -88,7 +88,7 @@ typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
 } vs_fldt_gfti_fileinfo_request_t;
 
-typedef vs_fldt_infv_new_file_request_t vs_fldt_gfti_fileinfo_response_t;
+typedef void vs_fldt_gfti_fileinfo_response_t;
 
 // "Get New File Header"
 typedef struct __attribute__((__packed__)) {
@@ -116,6 +116,7 @@ typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
     vs_update_file_version_t version;
     uint32_t offset;
+    uint32_t next_offset;
     uint16_t data_size;
     uint8_t data[];
 } vs_fldt_gnfd_data_response_t;
@@ -135,10 +136,10 @@ typedef struct __attribute__((__packed__)) {
 
 typedef struct {
     vs_update_file_type_t type;
-    vs_update_file_version_t prev_file_version;     // for client only
+    vs_update_file_version_t prev_file_version; // for client only
     vs_update_file_version_t cur_file_version;
     vs_update_interface_t update_context;
-    vs_mac_addr_t gateway_mac;     // for client only
+    vs_mac_addr_t gateway_mac; // for client only
 } vs_fldt_file_type_mapping_t;
 
 // Utilities
@@ -189,9 +190,6 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz);
-
-int
-vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
 
 int
 vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);

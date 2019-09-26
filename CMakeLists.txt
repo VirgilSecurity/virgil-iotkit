@@ -169,6 +169,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
 
 #
+#   firmware
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/firmware)
+
+#
 #   update
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)

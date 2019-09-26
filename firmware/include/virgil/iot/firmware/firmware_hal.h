@@ -32,53 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_UPDATE_FIRMWARE_H
-#define VS_UPDATE_FIRMWARE_H
+#ifndef VS_FIRMWARE_INTERFACE_H
+#define VS_FIRMWARE_INTERFACE_H
 
-#include <global-hal.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
-#include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/update/update.h>
+int
+vs_firmware_install_prepare_space_hal(void);
 
-#define MANUFACTURE_ID_SIZE 16
-#define DEVICE_TYPE_SIZE (4)
+int
+vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[16];
-    uint8_t device_type[4];
-} vs_update_fw_add_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t app_type[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
-} vs_update_fw_version_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
-    uint8_t device_type[DEVICE_TYPE_SIZE];
-    vs_update_fw_version_t version;
-} vs_update_fw_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_update_fw_info_t info;
-    uint8_t padding;
-    uint16_t chunk_size;
-    uint32_t firmware_length;
-    uint32_t app_size; // firmware_length + fill_size + footer
-} vs_update_fw_descriptor_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t signatures_count;
-    vs_update_fw_descriptor_t descriptor;
-    uint8_t signatures[];
-} vs_update_fw_footer_t;
-
-vs_status_code_e
-vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
-
-#endif // VS_UPDATE_FIRMWARE_H
+#endif // VS_FIRMWARE_INTERFACE_H

@@ -32,13 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_UPDATE_FIRMWARE_H
-#define VS_UPDATE_FIRMWARE_H
+#ifndef VS_FIRMWARE_UPDATE_INTERFACE_H
+#define VS_FIRMWARE_UPDATE_INTERFACE_H
 
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
 
 vs_status_code_e
-vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
+vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
 
-#endif // VS_UPDATE_FIRMWARE_H
+#endif // VS_FIRMWARE_UPDATE_INTERFACE_H

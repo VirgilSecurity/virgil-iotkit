@@ -71,7 +71,7 @@ vs_status_code_e
 vs_fldt_init_client(vs_fldt_got_file got_file_callback);
 
 vs_status_code_e
-vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, void *update_ctx);
+vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);
 
 void
 vs_fldt_destroy_client(void);

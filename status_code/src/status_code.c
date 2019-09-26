@@ -74,6 +74,8 @@ vs_status_code_descr(vs_status_code_e status_code){
             return "File write error";
         case VS_CODE_ERR_FILE_DELETE:
             return "File delete error";
+        case VS_CODE_ERR_UINT16_T:
+            return "Value is bigger than uint16_t";
         case VS_CODE_ERR_UINT32_T :
             return "Value is bigger than uint32_t";
 

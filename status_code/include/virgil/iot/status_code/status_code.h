@@ -55,6 +55,7 @@ typedef enum {
     VS_CODE_ERR_FILE_READ,
     VS_CODE_ERR_FILE_WRITE,
     VS_CODE_ERR_FILE_DELETE,
+    VS_CODE_ERR_UINT16_T,
     VS_CODE_ERR_UINT32_T,
     VS_CODE_AMOUNT_OF_CODES    // Amount of VS IoT status codes
 } vs_status_code_e;

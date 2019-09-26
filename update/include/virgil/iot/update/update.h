@@ -66,22 +66,30 @@ vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_upd
 
 typedef vs_status_code_e (*vs_update_get_version_callback)(void *context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version);
 typedef vs_status_code_e (*vs_update_get_header_size_callback)(void *context, const vs_update_file_type_t *file_type, size_t *header_size);
+typedef vs_status_code_e (*vs_update_get_file_size_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 typedef vs_status_code_e (*vs_update_has_footer_callback)(void *context, const vs_update_file_type_t *file_type, bool *has_footer);
+typedef vs_status_code_e (*vs_update_inc_data_offset_callback)(void *context, const vs_update_file_type_t *file_type, size_t offset, size_t loaded_data_size, size_t *inc_size);
+
 typedef vs_status_code_e (*vs_update_get_header_callback)(void *context, const vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
 typedef vs_status_code_e (*vs_update_get_data_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
 typedef vs_status_code_e (*vs_update_get_footer_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
+
 typedef vs_status_code_e (*vs_update_set_header_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
 typedef vs_status_code_e (*vs_update_set_data_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
 typedef vs_status_code_e (*vs_update_set_footer_callback)(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
+
 typedef bool (*vs_update_file_is_newer_callback)(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file);
 typedef void (*vs_update_free_callback)(void *context, const vs_update_file_type_t *file_type);
+
 typedef char* (*vs_update_describe_type_callback)(void *context, const vs_update_file_type_t *file_type, char *buffer, size_t buf_size);
 typedef char* (*vs_update_describe_version_callback)(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description);
 
 typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_get_version_callback        get_version;
     vs_update_get_header_size_callback    get_header_size;
+    vs_update_get_file_size_callback      get_file_size;
     vs_update_has_footer_callback         has_footer;
+    vs_update_inc_data_offset_callback    inc_data_offset;
 
     vs_update_get_header_callback         get_header;
     vs_update_get_data_callback           get_data;

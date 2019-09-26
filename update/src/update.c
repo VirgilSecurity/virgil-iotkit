@@ -41,7 +41,7 @@ vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_upd
     if(update_context){
         return update_context->describe_type(update_context->file_context, file_type, buf, buf_size);
     } else {
-        VS_IOT_SNPRINTF(buf, buf_size, "type id = %d", file_type->file_type_id);
+        VS_IOT_SNPRINTF(buf, buf_size, "id = %d", file_type->file_type_id);
         return buf;
     }
 }

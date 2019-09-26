@@ -34,25 +34,35 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-iot-status-code VERSION 0.1.0 LANGUAGES C)
+project(firmware VERSION 0.1.0 LANGUAGES C)
 
-add_library(virgil-iot-status-code)
+add_library(firmware)
 
-target_sources(virgil-iot-status-code
+target_sources(firmware
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/status_code/status_code.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/status_code.c"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/update_interface.h"
+
+        "${CMAKE_CURRENT_LIST_DIR}/src/firmware.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/update_interface.c"
         )
 
-target_include_directories(virgil-iot-status-code
+target_link_libraries(firmware
+        PUBLIC
+        logger
+        macros
+        hsm
+        update
+        trust_list
+        storage_hal
+        virgil-iot-status-code
+        )
+
+target_include_directories(firmware
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        )
-
-target_link_libraries(virgil-iot-status-code
-        PRIVATE
-        macros
         )
