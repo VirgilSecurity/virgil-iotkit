@@ -188,8 +188,8 @@ typedef struct __attribute__((__packed__)) {
 bool
 vs_fldt_file_is_newer(const vs_fldt_file_version_t *available, const vs_fldt_file_version_t *current);
 
-char *
-vs_fldt_file_version_descr(char *buf, const vs_fldt_file_version_t *file_ver);
+const char *
+vs_fldt_file_version_descr(char buf[FLDT_FILEVER_BUF], const vs_fldt_file_version_t *file_ver);
 
 const char *
 vs_fldt_file_type_descr(char buf[FLDT_FILEVER_BUF], const vs_fldt_file_type_t *file_type);
