@@ -88,7 +88,7 @@ vs_fldt_file_type_descr(char buf[FLDT_FILEVER_BUF], const vs_fldt_file_type_t *f
 
     out += VS_IOT_SPRINTF(out, "file type %d (add_info = \"", (int)file_type->file_type_id);
 
-    src = (const uint8_t *)&file_type->add_info;
+    src = (const uint8_t *)file_type->add_info;
     for (i = 0; i < sizeof(file_type->add_info); ++i, ++out, ++src) {
         if (*src >= 32 && *src <= 126) {
             *out = *src;
