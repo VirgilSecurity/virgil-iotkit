@@ -277,9 +277,11 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
+#if DEBUG_CHUNKS
     VS_LOG_DEBUG("[FLDT:GNFD] Request for data offset %d for file %s",
                  data_request->offset,
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+#endif
 
     CHECK_RET(response_buf_sz > sizeof(*data_response),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
@@ -330,11 +332,12 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     }
 
     *response_sz = sizeof(vs_fldt_gnfd_data_response_t) + data_response->data_size;
-
+#if DEBUG_CHUNKS
     VS_LOG_DEBUG("[FLDT:GNFD] File data offset %d data items of %d data items size has been sent for file %s",
                  data_response->offset,
                  data_response->data_size,
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+#endif
 
     return VS_CODE_OK;
 }

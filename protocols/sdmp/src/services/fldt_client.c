@@ -289,10 +289,12 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
+#if DEBUG_CHUNKS
     VS_LOG_DEBUG("[FLDT:GNFD] Response data offset %d, size %d for file %s",
                  file_data->offset,
                  (int)file_data->data_size,
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+#endif
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -319,9 +321,11 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         data_request.type = *file_type;
         data_request.version = file_data->version;
 
+#if DEBUG_CHUNKS
         VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file %s",
                      data_request.offset,
                      _filever_descr(file_type_info, &data_request.version, file_descr, sizeof(file_descr)));
+#endif
 
         CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
