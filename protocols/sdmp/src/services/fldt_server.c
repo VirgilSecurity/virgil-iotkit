@@ -40,6 +40,8 @@
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>
 
+#define DEBUG_CHUNKS (1)
+
 static vs_sdmp_service_t _fldt_server = {0};
 
 // TODO : make a set!
@@ -254,7 +256,7 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const size_t DATA_SZ = 512;
-    size_t max_data_size_to_read;
+    ssize_t max_data_size_to_read;
     size_t data_size_read;
     vs_status_code_e ret_code;
     size_t cur_offset;
@@ -299,7 +301,7 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     data_response->type = data_request->type;
     data_response->offset = data_request->offset;
 
-    max_data_size_to_read = response_buf_sz - sizeof(data_response);
+    max_data_size_to_read = response_buf_sz - sizeof(*data_response);
     if (max_data_size_to_read > DATA_SZ) {
         max_data_size_to_read = DATA_SZ;
     }

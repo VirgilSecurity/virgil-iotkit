@@ -52,7 +52,8 @@ _fw_update_describe_type(void *context, const vs_update_file_type_t *file_type, 
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
 
-    VS_IOT_SNPRINTF(buffer, buf_size, "Firmware (manufacturer = \"%s\", device = \"%s\")", fw_add_info->manufacture_id, fw_add_info->device_type);
+    VS_IOT_SNPRINTF(buffer, buf_size, "Firmware (manufacturer = \"%s\", device = \"%c%c%c%c\")", fw_add_info->manufacture_id,
+            (char)&fw_add_info->device_type[0], (char)&fw_add_info->device_type[1], (char)&fw_add_info->device_type[2], (char)&fw_add_info->device_type[3]);
 
     return buffer;
 
