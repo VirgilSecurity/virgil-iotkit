@@ -252,10 +252,11 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const size_t DATA_SZ = 512;
-    size_t data_size_to_read;
+    size_t max_data_size_to_read;
     size_t data_size_read;
     vs_status_code_e ret_code;
-    size_t offset;
+    size_t cur_offset;
+    size_t next_offset;
 
     CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -294,37 +295,38 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
     data_response->type = data_request->type;
     data_response->offset = data_request->offset;
 
-    data_size_to_read = response_buf_sz - sizeof(data_response);
-    if (data_size_to_read > DATA_SZ) {
-        data_size_to_read = DATA_SZ;
+    max_data_size_to_read = response_buf_sz - sizeof(data_response);
+    if (max_data_size_to_read > DATA_SZ) {
+        max_data_size_to_read = DATA_SZ;
     }
-    offset = data_request->offset;
+    cur_offset = data_request->offset;
 
     STATUS_CHECK_RET(file_type_info->update_context->get_data(file_type_info->update_context->file_context,
                                                               file_type,
                                                               file_type_info->file_header,
                                                               data_response->data,
-                                                              data_size_to_read,
+                                                              max_data_size_to_read,
                                                               &data_size_read,
-                                                              offset),
+                                                              cur_offset),
                      "Unable to read %d (%Xh) data items starting from offset %d (%Xh) data items for file %s",
-                     data_size_to_read,
-                     offset,
+                     max_data_size_to_read,
+                     cur_offset,
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
     data_response->data_size = data_size_read;
 
-    STATUS_CHECK_RET(file_type_info->update_context->inc_data_offset(
-                             file_type_info->update_context->file_context, file_type, offset, data_size_read, &offset),
-                     "Unable to retrieve offset for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+    STATUS_CHECK_RET(
+            file_type_info->update_context->inc_data_offset(
+                    file_type_info->update_context->file_context, file_type, cur_offset, data_size_read, &next_offset),
+            "Unable to retrieve offset for file %s",
+            _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
-    if (offset > UINT32_MAX) {
+    if (next_offset > UINT32_MAX) {
         VS_LOG_ERROR("Offset %d is bigger that vs_fldt_gnfd_data_response_t.next_offset %d can transmit",
-                     offset,
+                     next_offset,
                      UINT32_MAX);
     } else {
-        data_response->next_offset = data_request->offset + offset;
+        data_response->next_offset = next_offset;
     }
 
     *response_sz = sizeof(vs_fldt_gnfd_data_response_t) + data_response->data_size;

@@ -181,7 +181,7 @@ _tl_set_header(void *context, const vs_update_file_type_t *file_type, const void
     elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_save_part(&elem_info, file_header, header_size), "Unable to set header");
 
-    *file_size = tl_header->pub_keys_count;
+    *file_size = VS_IOT_NTOHS(tl_header->pub_keys_count);
 
     return VS_CODE_OK;
 }
@@ -312,15 +312,13 @@ _tl_has_footer(void *context, const vs_update_file_type_t *file_type, bool *has_
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_t offset, size_t loaded_data_size, size_t *inc_size){
+_tl_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset){
     (void) context;
     (void) file_type;
-    (void) offset;
+    (void) next_offset;
     (void) loaded_data_size;
 
-    CHECK_NOT_ZERO_RET(inc_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    *inc_size = 1;
+    *next_offset = current_offset + 1;
 
     return VS_CODE_OK;
 }

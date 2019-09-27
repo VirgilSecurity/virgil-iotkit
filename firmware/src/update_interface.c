@@ -321,14 +321,13 @@ _fw_update_has_footer(void *context, const vs_update_file_type_t *file_type, boo
 
 /*************************************************************************/
 static vs_status_code_e
-_fw_update_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_t offset, size_t loaded_data_size, size_t *inc_size){
+_fw_update_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset){
     (void) context;
     (void) file_type;
-    (void) offset;
 
-    CHECK_NOT_ZERO_RET(inc_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(next_offset, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    *inc_size = loaded_data_size;
+    *next_offset = current_offset + loaded_data_size;
 
     return VS_CODE_OK;
 }

@@ -278,7 +278,6 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_gnfd_data_request_t data_request;
     vs_fldt_gnff_footer_request_t footer_request;
     char file_descr[FLDT_FILEVER_BUF];
-    uint32_t offset;
     vs_status_code_e ret_code;
 
     (void)is_ack;
@@ -303,8 +302,6 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfd_data_response_t type");
 
-    offset = file_data->offset;
-
     STATUS_CHECK_RET(file_type_info->update_context->set_data(file_type_info->update_context->file_context,
                                                               file_type,
                                                               file_type_info->file_header,
@@ -314,11 +311,12 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                      "Unable to set header for file %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
-    if (offset < file_type_info->file_size) {
+    if (file_data->next_offset < file_type_info->file_size) {
 
         // Load next data
 
-        data_request.offset = offset;
+        data_request.offset = file_data->next_offset;
+        data_request.type = *file_type;
         data_request.version = file_data->version;
 
         VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file %s",
@@ -337,6 +335,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
         // Load footer
 
+        footer_request.type = *file_type;
         footer_request.version = file_data->version;
 
         CHECK_RET(!vs_fldt_send_request(NULL,
