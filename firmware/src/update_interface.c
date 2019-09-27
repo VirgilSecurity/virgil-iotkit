@@ -64,6 +64,7 @@ _fw_update_describe_type(void *context, const vs_update_file_type_t *file_type, 
 /*************************************************************************/
 static char *
 _fw_update_describe_version(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
+    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
     char *output = buffer;
     size_t string_space = buf_size;
     size_t type_descr_size;
@@ -87,9 +88,29 @@ _fw_update_describe_version(void *context, const vs_update_file_type_t *file_typ
         }
     }
 
-    VS_IOT_SNPRINTF(output, string_space, "version %d.%d, build %d, patch %d, milestone %d, timestamp %lu",
-                    fw_ver->major, fw_ver->minor, fw_ver->dev_build, fw_ver->patch, fw_ver->dev_milestone,
-                    (long unsigned) fw_ver->timestamp);
+#ifdef VS_IOT_ASCTIME
+    time_t timestamp = fw_ver->timestamp + START_EPOCH;
+#else
+    uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
+#endif //   VS_IOT_ASCTIME
+
+    VS_IOT_SNPRINTF(output, string_space,
+                   #ifdef VS_IOT_ASCTIME
+                           "ver %d.%d.%d.%c.%d, %s",
+                   #else
+                           "ver %d.%d.%d.%c.%d, UNIX timestamp %u",
+                   #endif //   VS_IOT_ASCTIME
+                   fw_ver->major,
+                   fw_ver->minor,
+                   fw_ver->patch,
+                   fw_ver->dev_milestone,
+                   fw_ver->dev_build,
+#ifdef VS_IOT_ASCTIME
+                   fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
+#else
+                   timestamp
+#endif //   VS_IOT_ASCTIME
+    );
 
     return buffer;
 
@@ -248,32 +269,23 @@ _fw_update_file_is_newer(void *context, const vs_update_file_type_t *file_type, 
 /*************************************************************************/
 static void
 _fw_update_free_item(void *context, const vs_update_file_type_t *file_type){
-    vs_storage_op_ctx_t *ctx = (vs_storage_op_ctx_t *) context;
+    (void) context;
     (void) file_type;
-
-    CHECK_NOT_ZERO(ctx);
-
-    ctx->impl.deinit(ctx->storage_ctx);
-
-    terminate:;
 }
 
 /*************************************************************************/
 static vs_status_code_e
 _fw_update_get_version(void *context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
-    vs_firmware_descriptor_t fw_header;
-    vs_status_code_e ret_code;
-    size_t fw_header_size = sizeof(fw_header);
+    (void) context;
 
-    CHECK_NOT_ZERO_RET(context, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    const vs_firmware_descriptor_t *fw_descriptor = (const vs_firmware_descriptor_t *) file_type->add_info;
+
     CHECK_NOT_ZERO_RET(file_version, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(_fw_update_get_header(context, file_type, &fw_header, fw_header_size, &fw_header_size),     "Unable to get Firmware header");
-            VS_IOT_ASSERT(fw_header_size == sizeof(fw_header));
-
-    VS_IOT_MEMSET(&file_version->version, 0, sizeof(file_version->version));
-    VS_IOT_MEMCPY(&file_version->version, &fw_header.info.version, sizeof(fw_header.info.version));
+    VS_IOT_MEMSET(file_version->version, 0, sizeof(file_version->version));
+    VS_IOT_MEMCPY(file_version->version, &fw_descriptor->info.version, sizeof(fw_descriptor->info.version));
 
     return VS_CODE_OK;
 }
@@ -333,6 +345,28 @@ _fw_update_inc_data_offset(void *context, const vs_update_file_type_t *file_type
 }
 
 /*************************************************************************/
+static bool
+_fw_equal_file_type(void *context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+    (void) context;
+    CHECK_NOT_ZERO(file_type);
+    CHECK_NOT_ZERO(unknown_file_type);
+
+    if(unknown_file_type->file_type_id != VS_UPDATE_FIRMWARE) {
+        return false;
+    }
+
+    const vs_firmware_info_t *first_file_add_info = (const vs_firmware_info_t *) file_type->add_info;
+    const vs_firmware_info_t *second_file_add_info = (const vs_firmware_info_t *) unknown_file_type->add_info;
+
+    return !VS_IOT_MEMCMP(first_file_add_info->manufacture_id, second_file_add_info->manufacture_id, sizeof(second_file_add_info->manufacture_id)) &&
+           !VS_IOT_MEMCMP(first_file_add_info->device_type, second_file_add_info->device_type, sizeof(second_file_add_info->device_type));
+
+    terminate:
+
+    return false;
+}
+
+/*************************************************************************/
 vs_status_code_e
 vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
 
@@ -352,6 +386,7 @@ vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *
     update_ctx->get_file_size = _fw_update_get_file_size;
     update_ctx->has_footer = _fw_update_has_footer;
     update_ctx->inc_data_offset = _fw_update_inc_data_offset;
+    update_ctx->equal_file_type = _fw_equal_file_type;
     update_ctx->get_header = _fw_update_get_header;
     update_ctx->get_data = _fw_update_get_data;
     update_ctx->get_footer = _fw_update_get_footer;

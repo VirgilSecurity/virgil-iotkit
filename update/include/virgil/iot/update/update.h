@@ -42,8 +42,8 @@
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE 16
 #define DEVICE_TYPE_SIZE (4)
-#define FILE_TYPE_ADD_INFO_SZ (32) // vs_update_file_type_t.add_info field size
-#define FILE_VERSION_INFO_SZ (32) // vs_update_file_version_t.version field size
+#define FILE_TYPE_ADD_INFO_SZ (64) // vs_update_file_type_t.add_info field size
+#define FILE_VERSION_INFO_SZ (64) // vs_update_file_version_t.version field size
 
 #define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
     CHECK_RET((ret_code = (OPERATION)) == VS_CODE_OK, ret_code, MESSAGE, ##__VA_ARGS__)
@@ -64,11 +64,15 @@ struct vs_update_interface_t;
 char *
 vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size);
 
+bool
+vs_update_equal_file_type(struct vs_update_interface_t *update_context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
+
 typedef vs_status_code_e (*vs_update_get_version_cb_t)(void *context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version);
 typedef vs_status_code_e (*vs_update_get_header_size_cb_t)(void *context, const vs_update_file_type_t *file_type, size_t *header_size);
 typedef vs_status_code_e (*vs_update_get_file_size_cb_t)(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 typedef vs_status_code_e (*vs_update_has_footer_cb_t)(void *context, const vs_update_file_type_t *file_type, bool *has_footer);
 typedef vs_status_code_e (*vs_update_inc_data_offset_cb_t)(void *context, const vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
+typedef bool (*vs_update_equal_file_type_cb_t)(void *context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
 typedef vs_status_code_e (*vs_update_get_header_cb_t)(void *context, const vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
 typedef vs_status_code_e (*vs_update_get_data_cb_t)(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
@@ -90,6 +94,7 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_get_file_size_cb_t      get_file_size;
     vs_update_has_footer_cb_t         has_footer;
     vs_update_inc_data_offset_cb_t    inc_data_offset;
+    vs_update_equal_file_type_cb_t    equal_file_type;
 
     vs_update_get_header_cb_t         get_header;
     vs_update_get_data_cb_t           get_data;

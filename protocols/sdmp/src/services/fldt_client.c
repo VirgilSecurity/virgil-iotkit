@@ -66,7 +66,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
     size_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-        if (!VS_IOT_MEMCMP(&file_type_info->type, file_type, sizeof(*file_type))) {
+        if (vs_update_equal_file_type(file_type_info->update_context, &file_type_info->type, file_type)) {
             return file_type_info;
         }
     }
@@ -218,7 +218,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:GNFH] Response file size %d bytes, %s for file %s",
+    VS_LOG_DEBUG("[FLDT:GNFH] Response file size %d bytes, %s, for file %s",
                  file_header->file_size,
                  file_header->has_footer ? "has footer" : "no footer",
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));

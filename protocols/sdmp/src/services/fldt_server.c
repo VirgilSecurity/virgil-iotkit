@@ -63,7 +63,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
     size_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-        if (!VS_IOT_MEMCMP(&file_type_info->type, file_type, sizeof(*file_type))) {
+        if (vs_update_equal_file_type(file_type_info->update_context, &file_type_info->type, file_type)) {
             return file_type_info;
         }
     }
