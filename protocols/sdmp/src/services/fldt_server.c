@@ -91,7 +91,7 @@ _filever_descr(const vs_fldt_server_file_type_mapping_t *file_type_info,
 /******************************************************************/
 static const char *
 _filetype_descr(const vs_fldt_server_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
-    if (file_type_info) {
+    if (!file_type_info) {
         return "";
     }
     return vs_update_type_descr(&file_type_info->type, file_type_info->update_context, file_descr, descr_buff_size);
