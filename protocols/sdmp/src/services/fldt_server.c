@@ -40,7 +40,7 @@
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>
 
-#define DEBUG_CHUNKS (1)
+#define DEBUG_CHUNKS (0)
 
 static vs_sdmp_service_t _fldt_server = {0};
 
