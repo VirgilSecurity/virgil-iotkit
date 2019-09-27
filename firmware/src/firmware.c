@@ -259,7 +259,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
 /*************************************************************************/
 int
 vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
-    size_t file_sz;
+    ssize_t file_sz;
     vs_storage_element_id_t desc_id;
     uint8_t *buf = NULL;
     uint8_t *newbuf = NULL;
@@ -338,7 +338,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 
     vs_storage_element_id_t desc_id;
     int res = VS_STORAGE_ERROR_NOT_FOUND;
-    size_t file_sz;
+    ssize_t file_sz;
     uint8_t *buf = NULL;
     uint32_t offset = 0;
 
