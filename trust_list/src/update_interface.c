@@ -324,6 +324,20 @@ _tl_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_
 }
 
 /*************************************************************************/
+static bool
+_tl_equal_file_type(void *context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+    (void) context;
+    (void) file_type;
+
+    if(unknown_file_type) {
+        return unknown_file_type->file_type_id == VS_UPDATE_TRUST_LIST;
+    } else {
+        VS_LOG_ERROR("unknown_file_type argument must not be NULL");
+        return false;
+    }
+}
+
+/*************************************************************************/
 vs_status_code_e
 vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
 
@@ -343,6 +357,7 @@ vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t
     update_ctx->get_file_size = _tl_get_file_size;
     update_ctx->has_footer = _tl_has_footer;
     update_ctx->inc_data_offset = _tl_inc_data_offset;
+    update_ctx->equal_file_type = _tl_equal_file_type;
     update_ctx->get_header = _tl_get_header;
     update_ctx->get_data = _tl_get_data;
     update_ctx->get_footer = _tl_get_footer;

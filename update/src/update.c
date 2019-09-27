@@ -45,3 +45,16 @@ vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_upd
         return buf;
     }
 }
+
+/*************************************************************************/
+bool
+vs_update_equal_file_type(struct vs_update_interface_t *update_context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+
+    if(update_context){
+        return update_context->equal_file_type(update_context, file_type, unknown_file_type);
+    } else if (file_type->file_type_id != unknown_file_type->file_type_id){
+        return false;
+    } else {
+        return !VS_IOT_MEMCMP(file_type->add_info, unknown_file_type->add_info, sizeof(file_type->add_info));
+    }
+}

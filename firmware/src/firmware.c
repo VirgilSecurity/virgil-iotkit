@@ -77,7 +77,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
            size_t buff_sz,
            size_t *data_sz) {
     vs_storage_file_t f = NULL;
-    size_t file_sz;
+    int file_sz;
 
     CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
@@ -230,7 +230,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
                                uint8_t *data,
                                  size_t buff_sz,
                                  size_t *data_sz) {
-    size_t file_sz;
+    int file_sz;
     vs_storage_element_id_t data_id;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_STORAGE_ERROR_PARAMS);
@@ -259,7 +259,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
 /*************************************************************************/
 int
 vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
-    size_t file_sz;
+    int file_sz;
     vs_storage_element_id_t desc_id;
     uint8_t *buf = NULL;
     uint8_t *newbuf = NULL;
@@ -338,7 +338,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 
     vs_storage_element_id_t desc_id;
     int res = VS_STORAGE_ERROR_NOT_FOUND;
-    size_t file_sz;
+    int file_sz;
     uint8_t *buf = NULL;
     uint32_t offset = 0;
 
@@ -387,7 +387,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 int
 vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     int res = VS_STORAGE_ERROR_NOT_FOUND;
-    size_t file_sz;
+    int file_sz;
     vs_storage_element_id_t desc_id;
     vs_storage_element_id_t data_id;
 
@@ -471,7 +471,7 @@ _is_rule_equal_to(vs_key_type_e type) {
 int
 vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
-    size_t file_sz;
+    int file_sz;
     uint8_t *pubkey;
     uint16_t sign_len;
     uint16_t key_len;
@@ -588,7 +588,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 int
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
-    size_t file_sz;
+    int file_sz;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
