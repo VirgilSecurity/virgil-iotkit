@@ -32,46 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
+#ifndef VS_IOT_SDK_STATUS_CODE
+#define VS_IOT_SDK_STATUS_CODE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <virgil/iot/macros/macros.h>
 
-#include <virgil/iot/update/update.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/status_code/status_code.h>
+typedef enum {
+    VS_CODE_OK = 0,
+    VS_CODE_ERR_NULLPTR_ARGUMENT,
+    VS_CODE_ERR_ZERO_ARGUMENT,
+    VS_CODE_ERR_INCORRECT_ARGUMENT,
+    VS_CODE_ERR_INCORRECT_PARAMETER,
+    VS_CODE_ERR_UNSUPPORTED_PARAMETER,
+    VS_CODE_ERR_NO_CALLBACK,
+    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
+    VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+    VS_CODE_ERR_NO_MEMORY,
+    VS_CODE_ERR_TOO_SMALL_BUFFER,
+    VS_CODE_ERR_AMBIGUOUS_INIT_CALL,
+    VS_CODE_ERR_VERIFY,
+    VS_CODE_ERR_FILE,
+    VS_CODE_ERR_FILE_READ,
+    VS_CODE_ERR_FILE_WRITE,
+    VS_CODE_ERR_FILE_DELETE,
+    VS_CODE_ERR_UINT16_T,
+    VS_CODE_ERR_UINT32_T,
+    VS_CODE_AMOUNT_OF_CODES    // Amount of VS IoT status codes
+} vs_status_code_e;
 
-//
-//  Callbacks
-//
+const char *vs_status_code_descr(vs_status_code_e status_code);
 
-// . "Add file type"
-// .  Add file type asked by client
-typedef vs_status_code_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
-                                                        vs_update_interface_t **update_ctx);
+#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
+#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 
-const vs_sdmp_service_t *
-vs_sdmp_fldt_server(void);
-
-//
-//  Customer API
-//
-
-vs_status_code_e
-vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
-
-vs_status_code_e
-vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
-                                vs_update_interface_t *update_context,
-                                bool broadcast_file_info);
-
-void
-vs_fldt_destroy_server(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
+#endif // VS_IOT_SDK_STATUS_CODE

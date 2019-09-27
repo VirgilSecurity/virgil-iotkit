@@ -32,46 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
+#ifndef VS_UPDATE_TRUST_LIST_INTERFACE_H
+#define VS_UPDATE_TRUST_LIST_INTERFACE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <virgil/iot/update/update.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/status_code/status_code.h>
-
-//
-//  Callbacks
-//
-
-// . "Add file type"
-// .  Add file type asked by client
-typedef vs_status_code_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
-                                                        vs_update_interface_t **update_ctx);
-
-const vs_sdmp_service_t *
-vs_sdmp_fldt_server(void);
-
-//
-//  Customer API
-//
+#include <virgil/iot/firmware/firmware.h>
 
 vs_status_code_e
-vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
+vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
 
-vs_status_code_e
-vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
-                                vs_update_interface_t *update_context,
-                                bool broadcast_file_info);
-
-void
-vs_fldt_destroy_server(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
+#endif // VS_UPDATE_TRUST_LIST_INTERFACE_H

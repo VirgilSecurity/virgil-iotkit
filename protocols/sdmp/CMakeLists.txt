@@ -114,6 +114,7 @@ function(add_sdmp _for_factory)
     #
     target_link_libraries(${_targetname}
             PUBLIC
+            virgil-iot-status-code
             logger
             provision
             update

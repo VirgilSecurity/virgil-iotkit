@@ -32,16 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_UPDATE_INTERFACE_H
-#define VS_UPDATE_INTERFACE_H
+#ifndef VS_FIRMWARE_INTERFACE_H
+#define VS_FIRMWARE_INTERFACE_H
 
 int
-vs_update_install_prepare_space_hal(void);
+vs_firmware_install_prepare_space_hal(void);
 
 int
-vs_update_install_append_data_hal(const void *data, uint16_t data_sz);
+vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
-int
-vs_update_restart_app_hal(void);
-
-#endif // VS_UPDATE_INTERFACE_H
+#endif // VS_FIRMWARE_INTERFACE_H

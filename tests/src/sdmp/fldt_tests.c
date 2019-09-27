@@ -46,12 +46,12 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 
-#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_FLDT_ERR_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
+#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_CODE_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
 
 #define FLDT_CHECK_ERROR_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  do {                                                                 \
         prev_loglev = vs_logger_get_loglev();   \
         vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if (VS_FLDT_ERR_OK != (OPERATION) || !(CALLS)) {                                                                                            \
+    if (VS_CODE_OK != (OPERATION) || !(CALLS)) {                                                                                            \
         vs_logger_set_loglev(prev_loglev);  \
         VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
         goto terminate;                                                                                                \
@@ -75,8 +75,8 @@
 calls_t calls;
 
 static vs_netif_t test_netif;
-static vs_fldt_file_type_t file_type_1 = { .file_type_id = 1, .add_info = {"1"} };
-static vs_fldt_file_type_t file_type_2 = { .file_type_id = 1, .add_info = {"2"} };
+static vs_update_file_type_t file_type_1 = { .file_type_id = 1, .add_info = {"1"} };
+static vs_update_file_type_t file_type_2 = { .file_type_id = 1, .add_info = {"2"} };
 
 /**********************************************************/
 static bool
@@ -98,8 +98,8 @@ test_fldt_initialize(void) {
 static bool
 test_fldt_add_filetypes(void) {
 
-    vs_fldt_client_file_type_mapping_t client_file_type;
-    vs_fldt_server_file_type_mapping_t server_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t server_file_type;
     vs_fldt_gfti_fileinfo_request_t ask_file;
     vs_log_level_t prev_loglev;
 
@@ -129,11 +129,11 @@ test_fldt_add_filetypes(void) {
 
     calls.calls = 0;
     vs_fldt_destroy_client();
-    FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.client_destroy == 1, "Unable to destroy FLDT client");
+    FLDT_CHECK_GOTO(VS_CODE_OK, calls.client_destroy == 1, "Unable to destroy FLDT client");
 
     calls.calls = 0;
     vs_fldt_destroy_server();
-    FLDT_CHECK_GOTO(VS_FLDT_ERR_OK, calls.server_destroy == 2, "Unable to destroy FLDT server");
+    FLDT_CHECK_GOTO(VS_CODE_OK, calls.server_destroy == 2, "Unable to destroy FLDT server");
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
@@ -152,7 +152,7 @@ test_fldt_add_filetypes(void) {
 static bool
 test_INFV(void){
     vs_fldt_infv_new_file_request_t new_file;
-    vs_fldt_client_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");
@@ -195,7 +195,7 @@ test_INFV(void){
 static bool
 test_GFTI(void){
     vs_fldt_gfti_fileinfo_request_t file_request;
-    vs_fldt_client_file_type_mapping_t client_file_type;
+    vs_fldt_file_type_mapping_t client_file_type;
 
     FLDT_CHECK_GOTO(vs_fldt_init_client(), true, "Unable to initialize FLDT as client");
     FLDT_CHECK_GOTO(vs_fldt_init_server(server_add_filetype), true, "Unable to initialize FLDT as server");

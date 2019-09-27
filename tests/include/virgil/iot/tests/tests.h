@@ -44,5 +44,5 @@ uint16_t
 vs_secbox_test(vs_storage_op_ctx_t *ctx);
 
 uint16_t
-vs_update_test(vs_storage_op_ctx_t *ctx);
+vs_firmware_test(vs_storage_op_ctx_t *ctx);
 #endif // VS_IOT_SDK_TESTS_H
