@@ -316,11 +316,13 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     (void)is_ack;
 
     file_ver = &file_data->version;
-
+    
+#if 0
     VS_LOG_TRACE("[FLDT:GNFD] Response data offset %d, size %d for file : %s",
                  file_data->offset,
                  (int)file_data->data_size,
                  vs_fldt_file_version_descr(file_ver_descr, file_ver));
+#endif
 
     CHECK_NOT_ZERO_RET(response, VS_FLDT_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_FLDT_ERR_INCORRECT_ARGUMENT);
@@ -383,9 +385,11 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         data_request.offset = offset;
         data_request.version = file_data->version;
 
+#if 0
         VS_LOG_TRACE("[FLDT] Ask file data offset %d for file : %s",
                      data_request.offset,
                      vs_fldt_file_version_descr(file_ver_descr, &data_request.version));
+#endif
 
         CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
