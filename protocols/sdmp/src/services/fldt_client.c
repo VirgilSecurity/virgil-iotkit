@@ -78,7 +78,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
 
 /******************************************************************/
 static const char *
-_filever_descr(const vs_fldt_client_file_type_mapping_t *file_type_info,
+_filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
                const vs_update_file_version_t *file_ver,
                char *file_descr,
                size_t descr_buff_size) {
@@ -93,7 +93,7 @@ _filever_descr(const vs_fldt_client_file_type_mapping_t *file_type_info,
 
 /******************************************************************/
 static const char *
-_filetype_descr(const vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
+_filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
     return vs_update_type_descr(&file_type_info->type, file_type_info->update_context, file_descr, descr_buff_size);
 }
@@ -447,7 +447,7 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
     VS_LOG_DEBUG("[FLDT] Update file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
     STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
-                             file_type_info->update_context->file_context, file_type, &header_size),
+                             file_type_info->update_context->file_context, &file_type_info->type, &header_size),
                      "Unable to calculate header size for file type %s",
                      file_descr);
     if (header_size) {
@@ -457,14 +457,14 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
     file_type_info->file_size = 0;
 
     ret_code = file_type_info->update_context->get_header(file_type_info->update_context->file_context,
-                                                          file_type,
+                                                          &file_type_info->type,
                                                           file_type_info->file_header,
                                                           header_size,
                                                           &header_size);
     if (VS_CODE_OK == ret_code) {
         STATUS_CHECK_RET(
                 file_type_info->update_context->get_version(
-                        file_type_info->update_context->file_context, file_type, &file_ver),
+                        file_type_info->update_context->file_context, &file_type_info->type, &file_ver),
                 "Unable to get version for file %s",
                 _filever_descr(file_type_info, &file_type_info->cur_file_version, file_descr, sizeof(file_descr)));
 

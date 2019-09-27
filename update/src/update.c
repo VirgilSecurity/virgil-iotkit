@@ -37,7 +37,7 @@
 
 /*************************************************************************/
 char *
-vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size){
+vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size){
     if(update_context){
         return update_context->describe_type(update_context->file_context, file_type, buf, buf_size);
     } else {
@@ -48,7 +48,7 @@ vs_update_type_descr(const vs_update_file_type_t *file_type, const struct vs_upd
 
 /*************************************************************************/
 bool
-vs_update_equal_file_type(struct vs_update_interface_t *update_context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+vs_update_equal_file_type(struct vs_update_interface_t *update_context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
 
     if(update_context){
         return update_context->equal_file_type(update_context, file_type, unknown_file_type);

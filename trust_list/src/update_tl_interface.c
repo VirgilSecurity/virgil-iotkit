@@ -52,7 +52,7 @@ _tl_ver(const vs_update_file_version_t *version){
 
 /*************************************************************************/
 static char *
-_tl_describe_type(void *context, const vs_update_file_type_t *file_type, char *buffer, size_t buf_size){
+_tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, size_t buf_size){
     (void) context;
     (void) file_type;
 
@@ -70,7 +70,7 @@ _tl_describe_type(void *context, const vs_update_file_type_t *file_type, char *b
 
 /*************************************************************************/
 static char *
-_tl_describe_version(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
+_tl_describe_version(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
     char *output = buffer;
     size_t type_descr_size;
     size_t string_space = buf_size;
@@ -103,7 +103,7 @@ _tl_describe_version(void *context, const vs_update_file_type_t *file_type, cons
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_header_size(void *context, const vs_update_file_type_t *file_type, size_t *header_size){
+_tl_get_header_size(void *context, vs_update_file_type_t *file_type, size_t *header_size){
     (void) context;
     (void) file_type;
 
@@ -116,7 +116,7 @@ _tl_get_header_size(void *context, const vs_update_file_type_t *file_type, size_
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_data(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset){
+_tl_get_data(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset){
     vs_tl_element_info_t elem_info;
     vs_status_code_e ret_code;
     uint16_t out_size = *data_size;
@@ -141,7 +141,7 @@ _tl_get_data(void *context, const vs_update_file_type_t *file_type, const void *
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_footer(void *context, const vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size){
+_tl_get_footer(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size){
     vs_tl_element_info_t elem_info;
     vs_status_code_e ret_code;
     uint16_t out_size = *footer_size;
@@ -164,7 +164,7 @@ _tl_get_footer(void *context, const vs_update_file_type_t *file_type, const void
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_set_header(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size){
+_tl_set_header(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size){
     vs_tl_element_info_t elem_info;
     const vs_tl_header_t *tl_header = file_header;
     vs_status_code_e ret_code;
@@ -188,7 +188,7 @@ _tl_set_header(void *context, const vs_update_file_type_t *file_type, const void
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_set_data(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset){
+_tl_set_data(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset){
     vs_tl_element_info_t elem_info;
     vs_status_code_e ret_code;
     (void) file_header;
@@ -209,7 +209,7 @@ _tl_set_data(void *context, const vs_update_file_type_t *file_type, const void *
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_set_footer(void *context, const vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size){
+_tl_set_footer(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size){
     vs_tl_element_info_t elem_info;
     vs_status_code_e ret_code;
     (void) file_header;
@@ -229,7 +229,7 @@ _tl_set_footer(void *context, const vs_update_file_type_t *file_type, const void
 
 /*************************************************************************/
 static bool
-_tl_file_is_newer(void *context, const vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file){
+_tl_file_is_newer(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file){
     (void) context;
     (void) file_type;
 
@@ -238,14 +238,14 @@ _tl_file_is_newer(void *context, const vs_update_file_type_t *file_type, const v
 
 /*************************************************************************/
 static void
-_tl_free_item(void *context, const vs_update_file_type_t *file_type){
+_tl_free_item(void *context, vs_update_file_type_t *file_type){
     (void) context;
     (void) file_type;
 }
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_header(void *context, const vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size){
+_tl_get_header(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size){
     vs_tl_element_info_t elem_info;
     vs_status_code_e ret_code;
     uint16_t out_size = *header_size;
@@ -266,7 +266,7 @@ _tl_get_header(void *context, const vs_update_file_type_t *file_type, void *head
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_file_size(void *context, const vs_update_file_type_t *file_type, const void *file_header, size_t *file_size){
+_tl_get_file_size(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size){
     const vs_tl_header_t *tl_header = file_header;
     (void) context;
     (void) file_type;
@@ -281,7 +281,7 @@ _tl_get_file_size(void *context, const vs_update_file_type_t *file_type, const v
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_get_version(void *context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
+_tl_get_version(void *context, vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
     vs_tl_header_t tl_header;
     size_t header_size = sizeof(tl_header);
     vs_status_code_e ret_code;
@@ -299,7 +299,7 @@ _tl_get_version(void *context, const vs_update_file_type_t *file_type, vs_update
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_has_footer(void *context, const vs_update_file_type_t *file_type, bool *has_footer){
+_tl_has_footer(void *context, vs_update_file_type_t *file_type, bool *has_footer){
     (void) context;
     (void) file_type;
 
@@ -312,7 +312,7 @@ _tl_has_footer(void *context, const vs_update_file_type_t *file_type, bool *has_
 
 /*************************************************************************/
 static vs_status_code_e
-_tl_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset){
+_tl_inc_data_offset(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset){
     (void) context;
     (void) file_type;
     (void) next_offset;
@@ -325,7 +325,7 @@ _tl_inc_data_offset(void *context, const vs_update_file_type_t *file_type, size_
 
 /*************************************************************************/
 static bool
-_tl_equal_file_type(void *context, const vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+_tl_equal_file_type(void *context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
     (void) context;
     (void) file_type;
 

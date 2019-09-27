@@ -54,7 +54,7 @@ extern "C" {
 // . gateway - gateway that has sent this file
 // . successfully_updated - true while file vas updated else false
 
-typedef void (*vs_fldt_got_file)(const vs_update_file_type_t *file_type,
+typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
                                  const vs_update_file_version_t *prev_file_ver,
                                  const vs_update_file_version_t *new_file_ver,
                                  const vs_mac_addr_t *gateway,
