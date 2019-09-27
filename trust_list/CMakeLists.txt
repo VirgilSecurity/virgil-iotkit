@@ -50,11 +50,11 @@ target_sources(trust_list
         include/virgil/iot/trust_list/private/tl_operations.h
         include/virgil/iot/trust_list/tl_structs.h
         include/virgil/iot/trust_list/trust_list.h
-        include/virgil/iot/trust_list/update_interface.h
+        include/virgil/iot/trust_list/update_tl_interface.h
 
         src/tl_operations.c
         src/trust_list.c
-        src/update_interface.c
+        src/update_tl_interface.c
         )
 
 #

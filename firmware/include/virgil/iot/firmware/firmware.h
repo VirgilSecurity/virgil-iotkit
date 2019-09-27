@@ -39,7 +39,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
-#define MANUFACTURE_ID_SIZE 16
+#define MANUFACTURE_ID_SIZE (16)
 #define DEVICE_TYPE_SIZE (4)
 typedef struct __attribute__((__packed__)) {
     uint8_t app_type[4];
