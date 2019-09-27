@@ -57,7 +57,10 @@ vs_fldt_send_request(const vs_netif_t *netif,
 
     // Prepare request
     packet->header.element_id = element;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
     packet->header.service_id = VS_FLDT_SERVICE_ID;
+#pragma GCC diagnostic pop
     packet->header.content_size = data_sz;
     if (data_sz) {
         VS_IOT_MEMCPY(packet->content, data, data_sz);
