@@ -78,6 +78,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
            size_t *data_sz) {
     vs_storage_file_t f = NULL;
     int file_sz;
+    size_t bytes_left;
 
     CHECK_NOT_ZERO_RET(ctx, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
@@ -89,17 +90,19 @@ _read_data(const vs_storage_op_ctx_t *ctx,
     file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
     CHECK_RET(0 < file_sz, VS_STORAGE_ERROR_GENERAL, "Can't find file");
-    CHECK_RET(file_sz >= offset + buff_sz, VS_STORAGE_ERROR_GENERAL, "File format error");
+    CHECK_RET(file_sz >= offset, VS_STORAGE_ERROR_GENERAL, "File format error");
 
     f = ctx->impl.open(ctx->storage_ctx, id);
     CHECK_RET(NULL != f, VS_STORAGE_ERROR_GENERAL, "Can't open file");
 
-    if (VS_STORAGE_OK != ctx->impl.load(ctx->storage_ctx, f, offset, data, buff_sz)) {
+    bytes_left = file_sz - offset;
+    *data_sz = bytes_left > buff_sz ? buff_sz : bytes_left;
+    if (VS_STORAGE_OK != ctx->impl.load(ctx->storage_ctx, f, offset, data, *data_sz)) {
+
         VS_LOG_ERROR("Can't load data from file");
         ctx->impl.close(ctx->storage_ctx, f);
         return VS_STORAGE_ERROR_GENERAL;
     }
-    *data_sz = buff_sz;
     return ctx->impl.close(ctx->storage_ctx, f);
 }
 
