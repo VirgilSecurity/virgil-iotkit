@@ -54,8 +54,6 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
 
     dst->file_type = *file_type;
 
-    VS_LOG_INFO(">>> DEBUG 4.6.1.1");
-
     switch (file_type->file_type_id) {
     case VS_UPDATE_FIRMWARE:
         dst->fw_ver.major = fw_src->major;
@@ -70,8 +68,6 @@ vs_firmware_version_2_vs_fldt_file_version(vs_fldt_file_version_t *dst,
         dst->tl_ver = VS_IOT_NTOHS(*tl_src);
         break;
     }
-
-    VS_LOG_INFO(">>> DEBUG 4.6.1.2");
 
     return VS_FLDT_ERR_OK;
 }
