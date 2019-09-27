@@ -507,8 +507,8 @@ vs_fldt_destroy_client(void) {
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
-        file_type_mapping->update_context->free(file_type_mapping->update_context->file_context,
-                                                &file_type_mapping->type);
+        file_type_mapping->update_context->free_item(file_type_mapping->update_context->file_context,
+                                                     &file_type_mapping->type);
         VS_IOT_FREE(file_type_mapping->file_header);
     }
 

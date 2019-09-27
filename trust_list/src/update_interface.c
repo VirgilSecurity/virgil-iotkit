@@ -238,7 +238,7 @@ _tl_file_is_newer(void *context, const vs_update_file_type_t *file_type, const v
 
 /*************************************************************************/
 static void
-_tl_free(void *context, const vs_update_file_type_t *file_type){
+_tl_free_item(void *context, const vs_update_file_type_t *file_type){
     (void) context;
     (void) file_type;
 }
@@ -352,7 +352,7 @@ vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t
     update_ctx->set_data = _tl_set_data;
     update_ctx->set_footer = _tl_set_footer;
     update_ctx->file_is_newer = _tl_file_is_newer;
-    update_ctx->free = _tl_free;
+    update_ctx->free_item = _tl_free_item;
     update_ctx->describe_type = _tl_describe_type;
     update_ctx->describe_version = _tl_describe_version;
     update_ctx->file_context = storage_ctx;

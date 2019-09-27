@@ -247,7 +247,7 @@ _fw_update_file_is_newer(void *context, const vs_update_file_type_t *file_type, 
 
 /*************************************************************************/
 static void
-_fw_update_free(void *context, const vs_update_file_type_t *file_type){
+_fw_update_free_item(void *context, const vs_update_file_type_t *file_type){
     vs_storage_op_ctx_t *ctx = (vs_storage_op_ctx_t *) context;
     (void) file_type;
 
@@ -360,7 +360,7 @@ vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *
     update_ctx->set_data = _fw_update_set_data;
     update_ctx->set_footer = _fw_update_set_footer;
     update_ctx->file_is_newer = _fw_update_file_is_newer;
-    update_ctx->free = _fw_update_free;
+    update_ctx->free_item = _fw_update_free_item;
     update_ctx->describe_type = _fw_update_describe_type;
     update_ctx->describe_version = _fw_update_describe_version;
     update_ctx->file_context = storage_ctx;
