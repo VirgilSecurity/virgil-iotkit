@@ -462,10 +462,14 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
 
     ret_code = file_type_info->update_context->get_header(file_type_info->update_context->file_context,
                                                           file_type,
-                                                          file_type_info->file_header,
+                                                          file_type_info->file_header, // Version is here
                                                           header_size,
                                                           &header_size);
     if (VS_CODE_OK == ret_code) {
+
+        // TODO: Remove it !!! Dirty Hack
+        VS_IOT_MEMCPY((void *)&file_type->add_info[0], file_type_info->file_header, header_size);
+
         STATUS_CHECK_RET(
                 file_type_info->update_context->get_version(
                         file_type_info->update_context->file_context, file_type, &file_ver),
