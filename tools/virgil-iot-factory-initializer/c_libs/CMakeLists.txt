@@ -48,12 +48,10 @@ target_sources(factory-initializer-hal
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_plc_sim.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_udp_bcast.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_plc_sim.c
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_implementation.c
