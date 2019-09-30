@@ -427,24 +427,7 @@ vs_fldt_GNFF_request_processing(const uint8_t *request,
 
     return VS_CODE_OK;
 }
-#include <stdio.h>
-#include <stdlib.h>
 
-/* Paste this on the file you want to debug. */
-#include <execinfo.h>
-static void
-print_trace(void) {
-    char **strings;
-    size_t i, size;
-    enum Constexpr { MAX_SIZE = 1024 };
-    void *array[MAX_SIZE];
-    size = backtrace(array, MAX_SIZE);
-    strings = backtrace_symbols(array, size);
-    for (i = 0; i < size; i++)
-        printf("%s\n", strings[i]);
-    puts("");
-    free(strings);
-}
 /******************************************************************/
 vs_status_code_e
 vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
@@ -457,8 +440,6 @@ vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
     size_t file_header_size;
 
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
-
-    print_trace();
 
     file_type_info = _get_mapping_elem(file_type);
 
