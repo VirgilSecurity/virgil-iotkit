@@ -327,8 +327,6 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    static bool skip = true;
-
     const vs_fldt_gnfd_data_request_t *data_request = (const vs_fldt_gnfd_data_request_t *)request;
     const vs_update_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
@@ -346,11 +344,6 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-
-    if (skip) {
-        skip = false;
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
-    }
 
     *response_sz = 0;
     VS_IOT_MEMSET(data_response, 0, sizeof(*data_response));
