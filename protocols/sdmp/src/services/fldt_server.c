@@ -632,6 +632,7 @@ vs_sdmp_fldt_server(void) {
 #pragma GCC diagnostic pop
     _fldt_server.request_process = _fldt_server_request_processor;
     _fldt_server.response_process = _fldt_server_response_processor;
+    _fldt_server.periodical_process = NULL;
 
     return &_fldt_server;
 }

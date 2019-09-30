@@ -44,20 +44,99 @@
 
 static vs_sdmp_service_t _fldt_client = {0};
 
+#define VS_FLDT_RETRY_MAX (5)
+#define VS_FLDT_WAIT_MAX (10) // Seconds
+
+#define VS_FLDT_REQUEST_SZ_MAX (150)
+
+typedef struct {
+    bool in_progress;
+    int retry_used;
+    int tick_cnt;
+    uint32_t expected_offset;
+
+    vs_mac_addr_t gateway_mac;
+    uint32_t command;
+    uint8_t data[VS_FLDT_REQUEST_SZ_MAX];
+    uint16_t data_sz;
+} vs_fldt_update_ctx_t;
+
 // TODO : make a set!
 typedef struct {
     vs_update_file_type_t type;
     vs_update_file_version_t prev_file_version;
     vs_update_file_version_t cur_file_version;
-    vs_update_interface_t *update_context;
+    vs_update_interface_t *update_interface;
     void *file_header;
     size_t file_size;
     vs_mac_addr_t gateway_mac;
+    vs_fldt_update_ctx_t update_ctx;
 } vs_fldt_client_file_type_mapping_t;
 
 static size_t _file_type_mapping_array_size = 0;
 static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[10];
 static vs_fldt_got_file _got_file_callback = NULL;
+
+/******************************************************************/
+static void
+_update_process_reset(vs_fldt_update_ctx_t *update_ctx) {
+    CHECK_NOT_ZERO(update_ctx);
+    memset(update_ctx, 0, sizeof(*update_ctx));
+terminate:;
+}
+
+/******************************************************************/
+static vs_status_code_e
+_update_process_set(vs_fldt_update_ctx_t *update_ctx,
+                    vs_mac_addr_t mac,
+                    uint32_t command,
+                    uint32_t expected_offset,
+                    const uint8_t *request_data,
+                    size_t request_data_sz) {
+    CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_RET(
+            request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
+
+    update_ctx->in_progress = true;
+    update_ctx->tick_cnt = 0;
+    update_ctx->retry_used = 0;
+    update_ctx->command = command;
+    update_ctx->gateway_mac = mac;
+    update_ctx->expected_offset = expected_offset;
+    memcpy(update_ctx->data, request_data, request_data_sz);
+    update_ctx->data_sz = request_data_sz;
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static vs_status_code_e
+_update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
+    vs_status_code_e res = VS_CODE_ERR_INCORRECT_ARGUMENT; // ???
+    CHECK_NOT_ZERO(update_ctx);
+
+    if (!update_ctx->in_progress) {
+        return VS_CODE_OK;
+    }
+
+    update_ctx->retry_used++;
+
+    if (update_ctx->retry_used > VS_FLDT_RETRY_MAX) {
+        _update_process_reset(update_ctx);
+        VS_LOG_ERROR("Update process has been stopped, because of retry limit");
+        return VS_CODE_OK;
+    }
+
+    CHECK_RET(!vs_fldt_send_request(
+                      NULL, &update_ctx->gateway_mac, update_ctx->command, update_ctx->data, update_ctx->data_sz),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Unable to re-send FLDT request");
+
+    res = VS_CODE_OK;
+
+terminate:;
+    return res;
+}
 
 /******************************************************************/
 static vs_fldt_client_file_type_mapping_t *
@@ -66,7 +145,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
     size_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-        if (vs_update_equal_file_type(file_type_info->update_context, &file_type_info->type, file_type)) {
+        if (vs_update_equal_file_type(file_type_info->update_interface, &file_type_info->type, file_type)) {
             return file_type_info;
         }
     }
@@ -83,19 +162,19 @@ _filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
                char *file_descr,
                size_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
-    return file_type_info->update_context->describe_version(file_type_info->update_context->file_context,
-                                                            &file_type_info->type,
-                                                            file_ver,
-                                                            file_descr,
-                                                            descr_buff_size,
-                                                            true);
+    return file_type_info->update_interface->describe_version(file_type_info->update_interface->file_context,
+                                                              &file_type_info->type,
+                                                              file_ver,
+                                                              file_descr,
+                                                              descr_buff_size,
+                                                              true);
 }
 
 /******************************************************************/
 static const char *
 _filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
-    return vs_update_type_descr(&file_type_info->type, file_type_info->update_context, file_descr, descr_buff_size);
+    return vs_update_type_descr(&file_type_info->type, file_type_info->update_interface, file_descr, descr_buff_size);
 }
 
 /******************************************************************/
@@ -120,8 +199,8 @@ _check_download_need(const char *opcode,
                  opcode,
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
-    *download = file_type_info->update_context->file_is_newer(
-            file_type_info->update_context->file_context, &file_type_info->type, current_file_ver, new_file_ver);
+    *download = file_type_info->update_interface->file_is_newer(
+            file_type_info->update_interface->file_context, &file_type_info->type, current_file_ver, new_file_ver);
 
     if (*download) {
         VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
@@ -174,6 +253,13 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file %s",
                      _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
+
+        _update_process_set(&file_type_info->update_ctx,
+                            file_type_info->gateway_mac,
+                            VS_FLDT_GNFH,
+                            0,
+                            (const uint8_t *)&header_request,
+                            sizeof(header_request));
 
         CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -268,11 +354,11 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfh_header_response_t type");
 
-    STATUS_CHECK_RET(file_type_info->update_context->set_header(file_type_info->update_context->file_context,
-                                                                file_type,
-                                                                file_header->header_data,
-                                                                file_header->header_size,
-                                                                &file_type_info->file_size),
+    STATUS_CHECK_RET(file_type_info->update_interface->set_header(file_type_info->update_interface->file_context,
+                                                                  file_type,
+                                                                  file_header->header_data,
+                                                                  file_header->header_size,
+                                                                  &file_type_info->file_size),
                      "Unable to set header for file %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
@@ -293,6 +379,13 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file %s",
                  data_request.offset,
                  _filever_descr(file_type_info, &data_request.version, file_descr, sizeof(file_descr)));
+
+    _update_process_set(&file_type_info->update_ctx,
+                        file_type_info->gateway_mac,
+                        VS_FLDT_GNFD,
+                        data_request.offset,
+                        (const uint8_t *)&data_request,
+                        sizeof(data_request));
 
     CHECK_RET(!vs_fldt_send_request(NULL,
                                     &file_type_info->gateway_mac,
@@ -341,12 +434,12 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfd_data_response_t type");
 
-    STATUS_CHECK_RET(file_type_info->update_context->set_data(file_type_info->update_context->file_context,
-                                                              file_type,
-                                                              file_type_info->file_header,
-                                                              file_data->data,
-                                                              file_data->data_size,
-                                                              file_data->offset),
+    STATUS_CHECK_RET(file_type_info->update_interface->set_data(file_type_info->update_interface->file_context,
+                                                                file_type,
+                                                                file_type_info->file_header,
+                                                                file_data->data,
+                                                                file_data->data_size,
+                                                                file_data->offset),
                      "Unable to set header for file %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
@@ -363,6 +456,12 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                      data_request.offset,
                      _filever_descr(file_type_info, &data_request.version, file_descr, sizeof(file_descr)));
 #endif
+        _update_process_set(&file_type_info->update_ctx,
+                            file_type_info->gateway_mac,
+                            VS_FLDT_GNFD,
+                            data_request.offset,
+                            (const uint8_t *)&data_request,
+                            sizeof(data_request));
 
         CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -378,6 +477,13 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
         footer_request.type = *file_type;
         footer_request.version = file_data->version;
+
+        _update_process_set(&file_type_info->update_ctx,
+                            file_type_info->gateway_mac,
+                            VS_FLDT_GNFF,
+                            0,
+                            (const uint8_t *)&footer_request,
+                            sizeof(footer_request));
 
         CHECK_RET(!vs_fldt_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -437,11 +543,11 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnff_footer_response_t type");
 
-    ret_code = file_type_info->update_context->set_footer(file_type_info->update_context->file_context,
-                                                          file_type,
-                                                          file_type_info->file_header,
-                                                          file_footer->footer_data,
-                                                          file_footer->footer_size);
+    ret_code = file_type_info->update_interface->set_footer(file_type_info->update_interface->file_context,
+                                                            file_type,
+                                                            file_type_info->file_header,
+                                                            file_footer->footer_data,
+                                                            file_footer->footer_size);
     successfully_updated = ret_code == VS_CODE_OK;
 
     if (!successfully_updated) {
@@ -478,17 +584,18 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
         VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
                      _file_type_mapping_array_size);
         VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
+        _update_process_reset(&file_type_info->update_ctx);
     } else {
         VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
     }
 
     file_type_info->type = *file_type;
-    file_type_info->update_context = update_context;
+    file_type_info->update_interface = update_context;
 
     VS_LOG_DEBUG("[FLDT] Update file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
-    STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
-                             file_type_info->update_context->file_context, &file_type_info->type, &header_size),
+    STATUS_CHECK_RET(file_type_info->update_interface->get_header_size(
+                             file_type_info->update_interface->file_context, &file_type_info->type, &header_size),
                      "Unable to calculate header size for file type %s",
                      file_descr);
     if (header_size) {
@@ -497,19 +604,19 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
 
     file_type_info->file_size = 0;
 
-    ret_code = file_type_info->update_context->get_header(file_type_info->update_context->file_context,
-                                                          &file_type_info->type,
-                                                          file_type_info->file_header, // Version is here
-                                                          header_size,
-                                                          &header_size);
+    ret_code = file_type_info->update_interface->get_header(file_type_info->update_interface->file_context,
+                                                            &file_type_info->type,
+                                                            file_type_info->file_header, // Version is here
+                                                            header_size,
+                                                            &header_size);
     if (VS_CODE_OK == ret_code) {
 
         // TODO: Remove it !!! Dirty Hack
         VS_IOT_MEMCPY((void *)&file_type->add_info[0], file_type_info->file_header, header_size);
 
         STATUS_CHECK_RET(
-                file_type_info->update_context->get_version(
-                        file_type_info->update_context->file_context, &file_type_info->type, &file_ver),
+                file_type_info->update_interface->get_version(
+                        file_type_info->update_interface->file_context, &file_type_info->type, &file_ver),
                 "Unable to get version for file %s",
                 _filever_descr(file_type_info, &file_type_info->cur_file_version, file_descr, sizeof(file_descr)));
 
@@ -551,8 +658,8 @@ vs_fldt_destroy_client(void) {
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
-        file_type_mapping->update_context->free_item(file_type_mapping->update_context->file_context,
-                                                     &file_type_mapping->type);
+        file_type_mapping->update_interface->free_item(file_type_mapping->update_interface->file_context,
+                                                       &file_type_mapping->type);
         VS_IOT_FREE(file_type_mapping->file_header);
     }
 
@@ -625,6 +732,26 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
+static int
+_fldt_client_periodical_processor(void) {
+    vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
+    vs_fldt_update_ctx_t *_update_ctx;
+    size_t id;
+
+    for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
+        _update_ctx = &file_type_info->update_ctx;
+        if (_update_ctx->in_progress) {
+            _update_ctx->tick_cnt++;
+            if (_update_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
+                _update_process_retry(_update_ctx);
+            }
+        }
+    }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
 const vs_sdmp_service_t *
 vs_sdmp_fldt_client(void) {
 
@@ -635,6 +762,7 @@ vs_sdmp_fldt_client(void) {
 #pragma GCC diagnostic pop
     _fldt_client.request_process = _fldt_client_request_processor;
     _fldt_client.response_process = _fldt_client_response_processor;
+    _fldt_client.periodical_process = _fldt_client_periodical_processor;
 
     return &_fldt_client;
 }
