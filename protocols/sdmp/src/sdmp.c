@@ -87,16 +87,6 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 
     memset(response, 0, sizeof(response));
 
-    // Normalize byte order
-    vs_sdmp_packet_t_decode(packet);
-
-    // Check packet
-
-    // Check is my packet
-    if (!_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
-        return -1;
-    }
-
     // Prepare request
     memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_header_t));
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
@@ -241,9 +231,22 @@ _sdmp_rx_cb(vs_netif_t *netif,
         }
 
         if (packet) {
-            *packet_data = (uint8_t *)packet;
-            *packet_data_sz = packet_sz;
-            return 0;
+
+            // Normalize byte order
+            vs_sdmp_packet_t_decode(packet);
+
+            // Check is my packet
+            if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
+
+                // Prepare for processing
+                *packet_data = (uint8_t *)packet;
+                *packet_data_sz = packet_sz;
+                return 0;
+            }
+
+            // TODO: Check it
+            packet = 0;
+            netif->packet_buf_filled = 0;
         }
     }
 
@@ -253,78 +256,9 @@ _sdmp_rx_cb(vs_netif_t *netif,
 /******************************************************************************/
 static int
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-#define LEFT_INCOMING ((int)data_sz - bytes_processed)
-    int bytes_processed = 0;
-    int need_bytes_for_header;
-    int need_bytes_for_packet;
-    uint16_t packet_sz;
-    uint16_t copy_bytes;
-
-    // TODO: Fix it
-    if (!data && !data_sz) {
-        _sdmp_periodical();
-        return 0;
-    }
-
-    vs_sdmp_packet_t *packet = 0;
-
-    while (LEFT_INCOMING) {
-
-        if (!netif->packet_buf_filled) {
-            if (LEFT_INCOMING >= sizeof(vs_sdmp_packet_t)) {
-                packet_sz = _packet_sz(&data[bytes_processed]);
-
-                if (LEFT_INCOMING < packet_sz) {
-                    memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
-                    netif->packet_buf_filled += LEFT_INCOMING;
-                    bytes_processed += LEFT_INCOMING;
-                } else {
-                    packet = (vs_sdmp_packet_t *)&data[bytes_processed];
-                    bytes_processed += packet_sz;
-                }
-            } else {
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
-                netif->packet_buf_filled += LEFT_INCOMING;
-                bytes_processed += LEFT_INCOMING;
-            }
-
-        } else {
-
-            // Fill packet struct
-            if (netif->packet_buf_filled < sizeof(vs_sdmp_packet_t)) {
-                need_bytes_for_header = sizeof(vs_sdmp_packet_t) - netif->packet_buf_filled;
-
-                copy_bytes = LEFT_INCOMING >= need_bytes_for_header ? need_bytes_for_header : LEFT_INCOMING;
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
-                bytes_processed += copy_bytes;
-                netif->packet_buf_filled += copy_bytes;
-            }
-
-            // Fill content
-            if (netif->packet_buf_filled >= sizeof(vs_sdmp_packet_t)) {
-                packet_sz = _packet_sz(netif->packet_buf);
-
-                need_bytes_for_packet = packet_sz - netif->packet_buf_filled;
-
-                copy_bytes = LEFT_INCOMING >= need_bytes_for_packet ? need_bytes_for_packet : LEFT_INCOMING;
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
-                bytes_processed += copy_bytes;
-                netif->packet_buf_filled += copy_bytes;
-
-                if (netif->packet_buf_filled >= packet_sz) {
-                    packet = (vs_sdmp_packet_t *)netif->packet_buf;
-                }
-            }
-        }
-
-        if (packet) {
-            _process_packet(netif, packet);
-            packet = 0;
-            netif->packet_buf_filled = 0;
-        }
-    }
-
-    return 0;
+    vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+    VS_IOT_ASSERT(packet);
+    return _process_packet(netif, packet);
 }
 
 /******************************************************************************/
