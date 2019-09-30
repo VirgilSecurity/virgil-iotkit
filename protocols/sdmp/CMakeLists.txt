@@ -120,6 +120,7 @@ function(add_sdmp _for_factory)
             logger
             provision
             update
+            firmware
             $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
             $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
 

@@ -41,6 +41,10 @@
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define MANUFACTURE_ID_SIZE (16)
 #define DEVICE_TYPE_SIZE (4)
+
+typedef uint8_t vs_fw_manufacture_id_t[MANUFACTURE_ID_SIZE];
+typedef uint8_t vs_fw_device_type_t[DEVICE_TYPE_SIZE];
+
 typedef struct __attribute__((__packed__)) {
     uint8_t app_type[4];
     uint8_t major;
@@ -52,8 +56,8 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_version_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
-    uint8_t device_type[DEVICE_TYPE_SIZE];
+    vs_fw_manufacture_id_t manufacture_id;
+    vs_fw_device_type_t device_type;
     vs_firmware_version_t version;
 } vs_firmware_info_t;
 

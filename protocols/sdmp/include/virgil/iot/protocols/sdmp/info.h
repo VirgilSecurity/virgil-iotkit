@@ -41,9 +41,13 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/firmware/firmware.h>
 
 const vs_sdmp_service_t *
-vs_sdmp_info(void);
+vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
+             vs_storage_op_ctx_t *fw_ctx,
+             const vs_fw_manufacture_id_t manufacturer_id,
+             const vs_fw_device_type_t device_type);
 
 #ifdef __cplusplus
 }
