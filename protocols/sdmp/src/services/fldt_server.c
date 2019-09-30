@@ -99,13 +99,89 @@ _filetype_descr(vs_fldt_server_file_type_mapping_t *file_type_info, char *file_d
     return vs_update_type_descr(&file_type_info->type, file_type_info->update_context, file_descr, descr_buff_size);
 }
 
+
+/******************************************************************/
+static vs_status_code_e
+_file_info(const vs_update_file_type_t *file_type,
+           vs_update_interface_t *update_context,
+           vs_fldt_server_file_type_mapping_t **file_type_info_ptr,
+           vs_fldt_file_info_t *file_info) {
+    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_status_code_e ret_code;
+    size_t file_header_size;
+
+    VS_IOT_ASSERT(file_type);
+    VS_IOT_ASSERT(file_type_info_ptr);
+
+    file_type_info = _get_mapping_elem(file_type);
+
+    if (!file_type_info) {
+        file_type_info = &_server_file_type_mapping[_file_type_mapping_array_size++];
+        VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
+                     _file_type_mapping_array_size);
+        VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
+    } else {
+        VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
+    }
+
+    file_type_info->type = *file_type;
+    file_type_info->update_context = update_context;
+
+    STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
+                             file_type_info->update_context->file_context, &file_type_info->type, &file_header_size),
+                     "Unable to get header size for file type %s",
+                     _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+
+    if (file_header_size) {
+        file_type_info->file_header = VS_IOT_MALLOC(file_header_size);
+
+        STATUS_CHECK_RET(file_type_info->update_context->get_header(file_type_info->update_context->file_context,
+                                                                    &file_type_info->type,
+                                                                    file_type_info->file_header,
+                                                                    file_header_size,
+                                                                    &file_header_size),
+                         "Unable to get header for file type %s",
+                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+
+        STATUS_CHECK_RET(file_type_info->update_context->get_file_size(file_type_info->update_context->file_context,
+                                                                       &file_type_info->type,
+                                                                       file_type_info->file_header,
+                                                                       &file_type_info->file_size),
+                         "Unable to get header size for file type %s",
+                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+
+        STATUS_CHECK_RET(file_type_info->update_context->get_version(file_type_info->update_context->file_context,
+                                                                     &file_type_info->type,
+                                                                     &file_type_info->current_version),
+                         "Unable to get file version for file type %s",
+                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+    } else {
+        VS_LOG_WARNING("There is no header data for file type %s",
+                       _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+    }
+
+    VS_LOG_DEBUG("[FLDT] Update file %s",
+                 _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
+
+    memset(file_info, 0, sizeof(*file_info));
+
+    file_info->type = *file_type;
+    file_info->version = file_type_info->current_version;
+    file_info->gateway_mac = _gateway_mac;
+
+    *file_type_info_ptr = file_type_info;
+
+    return VS_CODE_OK;
+}
+
 /******************************************************************/
 int
-vs_fldt_GFTI_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+vs_fldt_GFTI_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
 
     const vs_fldt_gfti_fileinfo_request_t *file_info_request = (const vs_fldt_gfti_fileinfo_request_t *)request;
     const vs_update_file_type_t *file_type = NULL;
@@ -113,17 +189,19 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_code_e ret_code;
     vs_update_interface_t *update_context;
+    vs_fldt_file_info_t *file_info = (vs_fldt_file_info_t *)response;
 
     (void)response_buf_sz;
 
     CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-
     CHECK_RET(request_sz == sizeof(*file_info_request),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gfti_fileinfo_request_t type");
+    CHECK_RET(response_buf_sz >= sizeof(*file_info),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Response buffer must be of vs_fldt_file_info_t type");
 
     file_type = &file_info_request->type;
     file_type_info = _get_mapping_elem(file_type);
@@ -142,22 +220,22 @@ vs_fldt_GFTI_request_processing(const uint8_t *request,
         update_context = file_type_info->update_context;
     }
 
-    STATUS_CHECK_RET(vs_fldt_update_server_file_type(file_type, update_context, true),
-                     "Unable to add and broadcast file type %s",
+    STATUS_CHECK_RET(_file_info(file_type, update_context, &file_type_info, file_info),
+                     "Unable to get information for file %s",
                      _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
-    *response_sz = 0;
+    *response_sz = sizeof(*file_info);
 
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 int
-vs_fldt_GNFH_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+vs_fldt_GNFH_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
 
     const vs_fldt_gnfh_header_request_t *header_request = (const vs_fldt_gnfh_header_request_t *)request;
     const vs_update_file_version_t *file_ver = NULL;
@@ -243,11 +321,11 @@ vs_fldt_GNFH_request_processing(const uint8_t *request,
 
 /******************************************************************/
 int
-vs_fldt_GNFD_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+vs_fldt_GNFD_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
 
     const vs_fldt_gnfd_data_request_t *data_request = (const vs_fldt_gnfd_data_request_t *)request;
     const vs_update_file_version_t *file_ver = NULL;
@@ -350,11 +428,11 @@ vs_fldt_GNFD_request_processing(const uint8_t *request,
 
 /******************************************************************/
 int
-vs_fldt_GNFF_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+vs_fldt_GNFF_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
 
     const vs_fldt_gnff_footer_request_t *footer_request = (const vs_fldt_gnff_footer_request_t *)request;
     const vs_update_file_version_t *file_ver = NULL;
@@ -435,69 +513,17 @@ vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
                                 bool broadcast_file_info) {
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_fldt_infv_new_file_request_t new_file;
+    vs_fldt_file_info_t new_file;
     vs_status_code_e ret_code;
-    size_t file_header_size;
 
-    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(update_context, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    file_type_info = _get_mapping_elem(file_type);
-
-    if (!file_type_info) {
-        file_type_info = &_server_file_type_mapping[_file_type_mapping_array_size++];
-        VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
-                     _file_type_mapping_array_size);
-        VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
-    } else {
-        VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
-    }
-
-    file_type_info->type = *file_type;
-    file_type_info->update_context = update_context;
-
-    STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
-                             file_type_info->update_context->file_context, &file_type_info->type, &file_header_size),
-                     "Unable to get header size for file type %s",
-                     _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-
-    if (file_header_size) {
-        file_type_info->file_header = VS_IOT_MALLOC(file_header_size);
-
-        STATUS_CHECK_RET(file_type_info->update_context->get_header(file_type_info->update_context->file_context,
-                                                                    &file_type_info->type,
-                                                                    file_type_info->file_header,
-                                                                    file_header_size,
-                                                                    &file_header_size),
-                         "Unable to get header for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-
-        STATUS_CHECK_RET(file_type_info->update_context->get_file_size(file_type_info->update_context->file_context,
-                                                                       &file_type_info->type,
-                                                                       file_type_info->file_header,
-                                                                       &file_type_info->file_size),
-                         "Unable to get header size for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-
-        STATUS_CHECK_RET(file_type_info->update_context->get_version(file_type_info->update_context->file_context,
-                                                                     &file_type_info->type,
-                                                                     &file_type_info->current_version),
-                         "Unable to get file version for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-    } else {
-        VS_LOG_WARNING("There is no header data for file type %s",
-                       _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-    }
-
-    VS_LOG_DEBUG("[FLDT] Update file %s",
-                 _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
+    STATUS_CHECK_RET(_file_info(file_type, update_context, &file_type_info, &new_file),
+                     "Unable to prepare information about file %s",
+                     _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
 
     if (broadcast_file_info) {
-        memset(&new_file, 0, sizeof(new_file));
-
-        new_file.type = *file_type;
-        new_file.version = file_type_info->current_version;
-        new_file.gateway_mac = _gateway_mac;
-
         VS_LOG_DEBUG("[FLDT] Broadcast new file information : %s",
                      _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
 
@@ -557,16 +583,16 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
         return VS_SDMP_COMMAND_NOT_SUPPORTED;
 
     case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_GFTI_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GNFH:
-        return vs_fldt_GNFH_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_GNFH_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GNFD:
-        return vs_fldt_GNFD_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_GNFD_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GNFF:
-        return vs_fldt_GNFF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_GNFF_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     default:
         return VS_SDMP_COMMAND_NOT_SUPPORTED;

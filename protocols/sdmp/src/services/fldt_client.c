@@ -133,14 +133,9 @@ _check_download_need(const char *opcode,
 }
 
 /******************************************************************/
-int
-vs_fldt_INFV_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+static vs_status_code_e
+_file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_info) {
 
-    const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
     const vs_update_file_version_t *new_file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_gnfh_header_request_t header_request;
@@ -149,39 +144,33 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_code_e fldt_ret_code;
 
-    (void)response;
-    (void)response_buf_sz;
-    (void)response_sz;
+    VS_IOT_ASSERT(cmd_prefix);
+    VS_IOT_ASSERT(file_info);
 
-    CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_ZERO_ARGUMENT);
-
-    CHECK_RET(request_sz == sizeof(*new_file),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
-
-    new_file_ver = &new_file->version;
-    file_type = &new_file->type;
+    new_file_ver = &file_info->version;
+    file_type = &file_info->type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:INFV] Request for new file from gateway " FLDT_GATEWAY_TEMPLATE " for %s",
-                 FLDT_GATEWAY_ARG(new_file->gateway_mac),
+    VS_LOG_DEBUG("[FLDT:%s] Request for new file from gateway " FLDT_GATEWAY_TEMPLATE " for %s",
+                 cmd_prefix,
+                 FLDT_GATEWAY_ARG(file_info->gateway_mac),
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
-    file_type_info->gateway_mac = new_file->gateway_mac;
+    file_type_info->gateway_mac = file_info->gateway_mac;
 
-    FLDT_CHECK(_check_download_need("INFV", file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
+    FLDT_CHECK(_check_download_need(
+                       cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
                "Unable to check download need");
 
     if (download) {
 
         file_type_info->prev_file_version = file_type_info->cur_file_version;
-        file_type_info->cur_file_version = new_file->version;
+        file_type_info->cur_file_version = file_info->version;
         header_request.type = *file_type;
-        header_request.version = new_file->version;
+        header_request.version = file_info->version;
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file %s",
                      _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
@@ -194,6 +183,54 @@ vs_fldt_INFV_request_processing(const uint8_t *request,
                   VS_CODE_ERR_INCORRECT_SEND_REQUEST,
                   "Unable to send FLDT \"GNFH\" server request");
     }
+
+    return VS_CODE_OK;
+}
+
+
+/******************************************************************/
+int
+vs_fldt_INFV_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
+
+    const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
+    vs_status_code_e ret_code;
+
+    (void)response;
+    (void)response_buf_sz;
+    (void)response_sz;
+
+    CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_ZERO_ARGUMENT);
+
+    CHECK_RET(request_sz == sizeof(*new_file),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
+
+    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+int
+vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+
+    const vs_fldt_gfti_fileinfo_response_t *new_file = (const vs_fldt_infv_new_file_request_t *)response;
+    vs_status_code_e ret_code;
+
+    (void)is_ack;
+    (void)response_sz;
+
+    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(response_sz == sizeof(*new_file),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
+
+    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;
 }
@@ -538,7 +575,7 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_INFV_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GFTI:
     case VS_FLDT_GNFH:
@@ -565,8 +602,10 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-    case VS_FLDT_GFTI:
         return VS_SDMP_COMMAND_NOT_SUPPORTED;
+
+    case VS_FLDT_GFTI:
+        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
 
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
