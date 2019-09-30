@@ -173,12 +173,6 @@ _sdmp_rx_cb(vs_netif_t *netif,
     uint16_t packet_sz;
     uint16_t copy_bytes;
 
-    // TODO: Fix it
-    if (!data && !data_sz) {
-        _sdmp_periodical();
-        return 0;
-    }
-
     vs_sdmp_packet_t *packet = 0;
 
     while (LEFT_INCOMING) {
@@ -257,6 +251,13 @@ _sdmp_rx_cb(vs_netif_t *netif,
 static int
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+
+    // TODO: Fix it
+    if (!data && !data_sz) {
+        _sdmp_periodical();
+        return 0;
+    }
+
     VS_IOT_ASSERT(packet);
     return _process_packet(netif, packet);
 }
