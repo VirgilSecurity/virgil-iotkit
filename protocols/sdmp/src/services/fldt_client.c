@@ -556,21 +556,11 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
 
     *response_sz = 0;
 
-    switch (element_id) {
-
-    case VS_FLDT_INFV:
+    if (VS_FLDT_INFV == element_id) {
         return vs_fldt_INFV_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    case VS_FLDT_GFTI:
-    case VS_FLDT_GNFH:
-    case VS_FLDT_GNFD:
-    case VS_FLDT_GNFF:
-        return VS_CODE_OK;
-
-    default:
-        VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
     }
+
+    return VS_SDMP_COMMAND_NOT_SUPPORTED;
 }
 
 /******************************************************************************/
@@ -584,10 +574,6 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
 
     switch (element_id) {
 
-    case VS_FLDT_INFV:
-    case VS_FLDT_GFTI:
-        return VS_CODE_OK;
-
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
 
@@ -598,8 +584,7 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
         return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);
 
     default:
-        VS_IOT_ASSERT(false && "Unsupported command");
-        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
     }
 }
 
