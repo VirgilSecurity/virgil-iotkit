@@ -476,6 +476,7 @@ _prepare_prvs_service() {
 #pragma GCC diagnostic pop
     _prvs_service.request_process = _prvs_service_request_processor;
     _prvs_service.response_process = _prvs_service_response_processor;
+    _prvs_service.periodical_process = NULL;
 }
 
 /******************************************************************************/

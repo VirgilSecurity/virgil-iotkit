@@ -157,6 +157,20 @@ _packet_sz(const uint8_t *packet_data) {
 
 /******************************************************************************/
 static int
+_sdmp_periodical(void) {
+    int i;
+    // Detect required command
+    for (i = 0; i < _sdmp_services_num; i++) {
+        if (_sdmp_services[i]->periodical_process) {
+            _sdmp_services[i]->periodical_process();
+        }
+    }
+
+    return 0;
+}
+
+/******************************************************************************/
+static int
 _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
 #define LEFT_INCOMING ((int)data_sz - bytes_processed)
     static uint8_t packet_buf[1024];
@@ -167,6 +181,12 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz
     int need_bytes_for_packet;
     uint16_t packet_sz;
     uint16_t copy_bytes;
+
+    // TODO: Fix it
+    if (!data && !data_sz) {
+        _sdmp_periodical();
+        return 0;
+    }
 
     vs_sdmp_packet_t *packet = 0;
 

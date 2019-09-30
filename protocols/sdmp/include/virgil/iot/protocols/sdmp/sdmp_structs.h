@@ -73,6 +73,8 @@ typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *net
                                                     const uint8_t *response,
                                                     const uint16_t response_sz);
 
+typedef int (*vs_sdmp_service_periodical_processor_t)(void);
+
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
 #define ETH_CRC_LEN (4)
@@ -134,6 +136,7 @@ typedef struct {
     vs_sdmp_service_id_t id;
     vs_sdmp_service_request_processor_t request_process;
     vs_sdmp_service_response_processor_t response_process;
+    vs_sdmp_service_periodical_processor_t periodical_process;
 } vs_sdmp_service_t;
 
 

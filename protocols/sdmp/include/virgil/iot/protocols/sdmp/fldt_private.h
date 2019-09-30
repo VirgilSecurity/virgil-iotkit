@@ -74,12 +74,15 @@ typedef enum {
 
 // Get Service descriptor
 
-// "Inform New File Version"
+// File Information
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
     vs_update_file_version_t version;
     vs_mac_addr_t gateway_mac;
-} vs_fldt_infv_new_file_request_t;
+} vs_fldt_file_info_t;
+
+// "Inform New File Version"
+typedef vs_fldt_file_info_t vs_fldt_infv_new_file_request_t;
 
 typedef void vs_fldt_infv_new_file_response_t;
 
@@ -88,7 +91,7 @@ typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
 } vs_fldt_gfti_fileinfo_request_t;
 
-typedef void vs_fldt_gfti_fileinfo_response_t;
+typedef vs_fldt_file_info_t vs_fldt_gfti_fileinfo_response_t;
 
 // "Get New File Header"
 typedef struct __attribute__((__packed__)) {
