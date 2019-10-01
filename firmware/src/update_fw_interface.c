@@ -139,7 +139,7 @@ _fw_update_get_header(void *context, vs_update_file_type_t *file_type, void *hea
     *header_size = sizeof(vs_firmware_descriptor_t);
     CHECK_RET(buffer_size >= *header_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store header %d bytes size", buffer_size, *header_size);
 
-    VS_IOT_MEMCPY(file_type->add_info, &fw_descr->info, sizeof(fw_descr->info));
+    VS_IOT_MEMCPY(file_type->add_info, &fw_descr->info, sizeof(fw_descr->info)); //-V512 (PVS_IGNORE)
 
     return VS_CODE_OK;
 }
