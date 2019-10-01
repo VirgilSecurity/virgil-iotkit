@@ -64,10 +64,14 @@ terminate:
 /**********************************************************/
 static bool
 test_sdmp_send(void) {
+    const uint16_t data_sz = sizeof(vs_sdmp_packet_t);
+    uint8_t data[data_sz];
 
+    memset(data, 0, data_sz);
     netif_state.membuf = 0;
 
-    SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
+    netif_state.sent = 0;
+    vs_sdmp_send(NULL, data, data_sz);
     NETIF_OP_CHECK_GOTO(netif_state.sent);
 
     return true;
