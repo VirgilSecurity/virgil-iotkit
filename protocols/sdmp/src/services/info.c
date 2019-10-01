@@ -65,7 +65,7 @@ static vs_storage_op_ctx_t *_tl_ctx;
 static vs_storage_op_ctx_t *_fw_ctx;
 static vs_fw_manufacture_id_t _manufacture_id;
 static vs_fw_device_type_t _device_type;
-#define FW_DESCR_BUF    128
+#define FW_DESCR_BUF 128
 
 /******************************************************************/
 int
