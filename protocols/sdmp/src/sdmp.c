@@ -141,7 +141,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 
-    return -1;
+    return 0;
 }
 
 /******************************************************************************/
@@ -334,6 +334,9 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif->tx);
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
 
+    if (data_sz < sizeof(vs_sdmp_packet_t)) {
+        return -1;
+    }
 
     // Normalize byte order
     if (packet) {
