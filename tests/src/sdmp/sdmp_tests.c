@@ -67,6 +67,7 @@ test_sdmp_send(void) {
     const uint16_t data_sz = sizeof(vs_sdmp_packet_t);
     uint8_t data[data_sz];
 
+    memset(data, 0, data_sz);
     netif_state.membuf = 0;
 
     netif_state.sent = 0;
