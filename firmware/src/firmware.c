@@ -658,3 +658,39 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
 
     return vs_firmware_install_append_data_hal(buf, read_sz);
 }
+
+/*************************************************************************/
+char *
+vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size){
+    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
+
+    CHECK_NOT_ZERO_RET(fw_ver, NULL);
+    CHECK_NOT_ZERO_RET(buffer, NULL);
+    CHECK_NOT_ZERO_RET(buf_size, NULL);
+
+#ifdef VS_IOT_ASCTIME
+    time_t timestamp = fw_ver->timestamp + START_EPOCH;
+#else
+    uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
+#endif //   VS_IOT_ASCTIME
+
+    VS_IOT_SNPRINTF(buffer, buf_size,
+                    #ifdef VS_IOT_ASCTIME
+                            "ver %d.%d.%d.%c.%d, %s",
+                    #else
+                            "ver %d.%d.%d.%c.%d, UNIX timestamp %u",
+                    #endif //   VS_IOT_ASCTIME
+                            fw_ver->major,
+                    fw_ver->minor,
+                    fw_ver->patch,
+                    fw_ver->dev_milestone,
+                    fw_ver->dev_build,
+                    #ifdef VS_IOT_ASCTIME
+                            fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
+#else
+            timestamp
+#endif //   VS_IOT_ASCTIME
+    );
+
+    return buffer;
+}
