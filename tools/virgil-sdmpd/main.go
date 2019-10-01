@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/hpcloud/tail"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
+	"time"
 )
 
 var upgrader = websocket.Upgrader{
@@ -17,262 +15,161 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+type DeviceInfo struct {
+	ID            string `json:"id"`
+	ManufactureID string `json:"manufacture_id"`
+	DeviceType    string `json:"device_type"`
+	Version       string `json:"version"`
+	MAC           string `json:"mac"`
+}
+
+var devices []DeviceInfo
+
 func main() {
 
-	if len(os.Args) < 2 {
-		fmt.Println("config file is not specified")
-		return
+	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
+	listeningPort := readListeningPort(os.Args)
+
+	devices = []DeviceInfo{
+		{ID: "1", ManufactureID: "manuf 1", Version: "1.0.3", DeviceType: "df", MAC: "45:e2:86:a3:2a:84"},
+		{ID: "3", ManufactureID: "manuf sn,anm", Version: "1.0.43mn", MAC: "90:e2:23:a3:231:99"},
 	}
-	confData, err := ioutil.ReadFile(os.Args[1])
-	if err != nil {
-		panicError("error reading config file", err)
-	}
-	var conf Config
-	err = json.Unmarshal(confData, &conf)
-	if err != nil {
-		panicError("error parsing config file", err)
-	}
-	dropDownDescriber := ""
-	for i, f := range conf.LogFiles {
-		dropDownDescriber += fmt.Sprintf(` <option value="%d">%s</option> `, i, f.Name)
-	}
-	http.HandleFunc("/log/", func(w http.ResponseWriter, r *http.Request) {
+
+	http.HandleFunc("/ws/devices", func(w http.ResponseWriter, r *http.Request) {
 
 		conn, err := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
 		if err != nil {
-			fmt.Println("can't upgrade connection %s to int")
 			fmt.Println(err)
 			return
 		}
 
-		id := strings.TrimPrefix(r.URL.Path, "/log/")
+		for t := range time.NewTicker(2 * time.Second).C {
 
-		i, err := strconv.Atoi(id)
-		if err != nil {
-			fmt.Println(fmt.Sprintf("can't convert %s to int", id))
-			fmt.Println(err)
-			return
-		}
-		ll, err := fileTail(conf.LogFiles[i%len(conf.LogFiles)].Path)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		for s := range ll {
-			if err = conn.WriteMessage(1, []byte(s.Text)); err != nil {
+			table := createStatusTable(t)
+			if err = conn.WriteMessage(1, []byte(table)); err != nil {
+				fmt.Println(err)
 				return
 			}
 		}
+
 	})
 
-	template := strings.Replace(HtmlPage, "{{dd}}", dropDownDescriber, 4)
+	http.HandleFunc("/devices", func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method == "GET" {
+			keys, ok := r.URL.Query()["key"]
+
+			if ok {
+				respBody, err := json.Marshal(keys)
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				_, err = w.Write(respBody)
+				if err != nil {
+					fmt.Println("err writing resp  body: " + err.Error())
+				}
+				return
+			}
+
+
+			respBody, err := json.Marshal(devices)
+			if err != nil {
+				fmt.Println(err)
+			}
+			_, err = w.Write(respBody)
+			if err != nil {
+				fmt.Println("err writing resp  body: " + err.Error())
+			}
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+
+	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, err := fmt.Fprint(w, template)
+		_, err := fmt.Fprint(w, HtmlPage)
 		if err != nil {
 			fmt.Println(err)
 		}
 	})
 
-	fmt.Println("Service started. Web log located here: http://localhost:8080")
+	fmt.Println(fmt.Sprintf("Service started. Web SDMPD interface located here: http://localhost:%d", listeningPort))
 
-	err = http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", listeningPort), nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-type Config struct {
-	LogFiles []LogFile `json:"log_files"`
-}
-type LogFile struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
-}
+func createStatusTable(t time.Time) string {
+	table := "<tr> <td>ID</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>MAC</td> </tr>"
+	for _, d := range devices {
 
-func fileTail(filePath string) (chan *tail.Line, error) {
-	t, err := tail.TailFile(filePath, tail.Config{
-		Follow: true,
-		ReOpen: true,
-	})
-	if err != nil {
-		return nil, err
+		table += fmt.Sprintf("<tr> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> </tr>",
+			d.ID,
+			d.ManufactureID,
+			d.DeviceType,
+			d.Version,
+			d.MAC,
+		)
 	}
-	return t.Lines, nil
+	// some random data
+	table += fmt.Sprintf("<tr> <td>%v</td> <td>%v</td> <td>%v</td> <td>%v</td> <td>%v</td> </tr>",
+		t.String(),
+		t.Nanosecond(),
+		t.Minute(),
+		"hello",
+		t.Minute(),
+	)
+	return table
 }
 
-//
-// panicError panics with an error.
-//
-func panicError(msg string, err error) {
-	panic(fmt.Sprintf("%s: %+v", msg, err))
+func readListeningPort(args []string) int {
+	if len(args) > 2 {
+		intPort, err := strconv.Atoi(os.Args[1])
+		if err == nil {
+			return intPort
+		}
+		fmt.Println("err reading port from args : " + err.Error())
+
+	}
+	port, ok := os.LookupEnv("SDMPD_SERVICE_PORT")
+	if ok {
+		intPort, err := strconv.Atoi(port)
+		if err == nil {
+			return intPort
+		}
+		fmt.Println("err reading port from env : " + err.Error())
+
+	}
+	return 8080
 }
+
 
 var HtmlPage = `
-<div class="row1">
-    <select id="upper_left_dropdown"
-            style="float: left;height:4%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;"
-            onchange="send1()"
-    >
-        {{dd}}
-    </select>
-    <select id="upper_right_dropdown"
-            style="float: right;height:4%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;"
-            onchange="send2()"
-    >
-        {{dd}}
-    </select>
 
-    <div id="upper_left_log" align="left"
-         style="float: left;white-space: pre-wrap;height:45.5%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;">
-    </div>
-
-    <div id="upper_right_log" align="left"
-         style="float: right;white-space: pre-wrap;height:45.5%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;"
-    >
-    </div>
-</div>
-
-<div class="row2">
-    <select id="lower_left_dropdown"
-            style="float: left;height:4%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans;overflow:auto;"
-            onchange="send3()"
-    >
-        {{dd}}
-    </select>
-    <select id="lower_right_dropdown"
-            style="float: right;height:4%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans;overflow:auto;"
-            onchange="send4()"
-    >
-        {{dd}}
-    </select>
-    <div id="lower_left_log" align="left"
-         style="float: left;white-space: pre-wrap;height:45.5%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;">
-    </div>
+<table id='tbl' border=1></table>
 
 
-    <div id="lower_right_log" align="left"
-         style="float: right;white-space: pre-wrap;height:45.5%;width:49.5%;border:1px solid #ccc;font:16px/26px Open Sans, Serif;overflow:auto;"
-    >
-    </div>
-</div>
-
-<pre id="output"></pre>
 <script>
-    function updateScroll() {
-        var element = document.getElementById("first_log");
-        element.scrollTop = element.scrollHeight;
-    }
 
-    var max_log_size = 1000
+    tbl = document.getElementById('tbl');
+
     var url = document.URL
     url = url.replace("http","ws")
     
     
-    var upper_left_output = document.getElementById("upper_left_log");
-    upper_left_output.innerHTML = ""
-    var upper_right_output = document.getElementById("upper_right_log");
-    upper_right_output.innerHTML = ""
-    var lower_left_output = document.getElementById("lower_left_log");
-    lower_left_output.innerHTML = ""
-    var lower_right_output = document.getElementById("lower_right_log");
-    lower_right_output.innerHTML = ""
-
-    var upper_left_socket = new WebSocket(url + "log/0");
-    var upper_right_socket = new WebSocket(url + "log/1");
-    var lower_left_socket = new WebSocket(url + "log/2");
-    var lower_right_socket = new WebSocket(url + "log/3");
-
-    upper_left_socket.onmessage = function (e) {
-        while (upper_left_output.getElementsByTagName("a").length > max_log_size) {
-            fl = upper_left_output.getElementsByTagName("a").item(0)
-            fl.parentNode.removeChild(fl)
-        }
-        upper_left_output.innerHTML += "<a> " + e.data + "\n</a>";
+    var table_output = document.getElementById("tbl");
+    table_output.innerHTML = "<tr> <td>ID</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>MAC</td> </tr>"
+  
+    var device_table_socket = new WebSocket(url + "ws/devices");
+   
+    device_table_socket.onmessage = function (e) {
+        table_output.innerHTML = e.data;
     };
 
-    upper_right_socket.onmessage = function (e) {
-        while (upper_right_output.getElementsByTagName("a").length > max_log_size) {
-            fl = upper_right_output.getElementsByTagName("a").item(0)
-            fl.parentNode.removeChild(fl)
-        }
-        upper_right_output.innerHTML += "<a> " + e.data + "\n</a>";
-    };
-
-    lower_left_socket.onmessage = function (e) {
-        while (lower_left_output.getElementsByTagName("a").length > max_log_size) {
-            fl = lower_left_output.getElementsByTagName("a").item(0)
-            fl.parentNode.removeChild(fl)
-        }
-        lower_left_output.innerHTML += "<a> " + e.data + "\n</a>";
-    };
-
-    lower_right_socket.onmessage = function (e) {
-        while (lower_right_output.getElementsByTagName("a").length > max_log_size) {
-            fl = lower_right_output.getElementsByTagName("a").item(0)
-            fl.parentNode.removeChild(fl)
-        }
-        lower_right_output.innerHTML += "<a> " + e.data + "\n</a>";
-    };
-
-    dd1 = document.getElementById("upper_left_dropdown")
-    dd2 = document.getElementById("upper_right_dropdown")
-    dd2.selectedIndex = 1 % dd2.length
-    dd3 = document.getElementById("lower_left_dropdown")
-    dd3.selectedIndex = 2 % dd3.length
-    dd4 = document.getElementById("lower_right_dropdown")
-    dd4.selectedIndex = 3 % dd4.length
-
-
-    function send1() {
-        upper_left_output.innerHTML = ""
-        upper_left_socket = new WebSocket(url + "log/" + dd1.selectedIndex);
-        upper_left_socket.onmessage = function (e) {
-            while (upper_left_output.getElementsByTagName("a").length > max_log_size) {
-                fl = upper_left_output.getElementsByTagName("a").item(0)
-                fl.parentNode.removeChild(fl)
-            }
-            upper_left_output.innerHTML += "<a> " + e.data + "\n</a>";
-        };
-    }
-
-    function send2() {
-        upper_right_output.innerHTML = ""
-        upper_right_socket = new WebSocket(url + "log/" + dd2.selectedIndex);
-        upper_right_socket.onmessage = function (e) {
-            while (upper_right_output.getElementsByTagName("a").length > max_log_size) {
-                fl = upper_right_output.getElementsByTagName("a").item(0)
-                fl.parentNode.removeChild(fl)
-            }
-            upper_right_output.innerHTML += "<a> " + e.data + "\n</a>";
-        };
-    }
-
-    function send3() {
-        lower_left_output.innerHTML = ""
-        lower_left_socket = new WebSocket(url + "log/" + dd3.selectedIndex);
-        lower_left_socket.onmessage = function (e) {
-            while (lower_left_output.getElementsByTagName("a").length > max_log_size) {
-                fl = lower_left_output.getElementsByTagName("a").item(0)
-                fl.parentNode.removeChild(fl)
-            }
-            lower_left_output.innerHTML += "<a> " + e.data + "\n</a>";
-        };
-    }
-
-    function send4() {
-        lower_right_output.innerHTML = ""
-        lower_right_socket = new WebSocket(url + "log/" + dd4.selectedIndex);
-        lower_right_socket.onmessage = function (e) {
-            while (lower_right_output.getElementsByTagName("a").length > max_log_size) {
-                fl = lower_right_output.getElementsByTagName("a").item(0)
-                fl.parentNode.removeChild(fl)
-            }
-            lower_right_output.innerHTML += "<a> " + e.data + "\n</a>";
-        };
-
-    }
+   
 
 </script>
 
