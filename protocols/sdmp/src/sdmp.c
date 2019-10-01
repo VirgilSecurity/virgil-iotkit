@@ -51,6 +51,12 @@ static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
 static uint32_t _sdmp_services_num = 0;
 static vs_mac_addr_t _sdmp_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
+#if VS_SDMP_PROFILE
+#include <sys/time.h>
+static long long _processing_time_us = 0;
+static long _calls_counter = 0;
+#endif
+
 /******************************************************************************/
 static bool
 _is_broadcast(const vs_mac_addr_t *mac_addr) {
@@ -248,18 +254,46 @@ _sdmp_rx_cb(vs_netif_t *netif,
 }
 
 /******************************************************************************/
+#if VS_SDMP_PROFILE
+#include <sys/time.h>
+static long long
+current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);                        // get current time
+    long long us = te.tv_sec * 1000LL + te.tv_usec; // calculate us
+    return us;
+}
+#endif
+
+/******************************************************************************/
 static int
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+    int res;
+
+#if VS_SDMP_PROFILE
+    long long t;
+    _calls_counter++;
+    t = current_timestamp();
+#endif
 
     // TODO: Fix it
     if (!data && !data_sz) {
         _sdmp_periodical();
+#if VS_SDMP_PROFILE
+        _processing_time += current_timestamp() - t;
+#endif
         return 0;
     }
 
     VS_IOT_ASSERT(packet);
-    return _process_packet(netif, packet);
+    res = _process_packet(netif, packet);
+#if VS_SDMP_PROFILE
+    _processing_time += current_timestamp() - t;
+    VS_LOG_INFO("Processing Time: %lld ms  Calls: %ld", _processing_time, _calls_counter);
+#endif
+
+    return res;
 }
 
 /******************************************************************************/
