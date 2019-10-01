@@ -40,7 +40,7 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 
 #define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
@@ -88,7 +88,7 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
     size_t index;
     const size_t *ptr;
 
-    BOOL_CHECK_RET(NULL != slot, "Invalid args")
+    BOOL_CHECK_RET(NULL != slot, "Invalid args");
 
     switch (id) {
     case VS_PROVISION_PBR1:
@@ -180,8 +180,8 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint8_t *pubkey;
     vs_sign_t *sign;
 
-    BOOL_CHECK_RET(NULL != key_to_check, "Invalid args")
-    BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small")
+    BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
+    BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
 
     vs_pubkey_dated_t *key = (vs_pubkey_dated_t *)key_to_check;
 
@@ -192,42 +192,42 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     key_len = vs_hsm_get_pubkey_len(key->pubkey.ec_type);
 
-    BOOL_CHECK_RET(key_len > 0, "Unsupported key ec_type")
+    BOOL_CHECK_RET(key_len > 0, "Unsupported key ec_type");
 
     // Determine stuff size under signature
     signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
 
-    BOOL_CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), "key stuff is too small")
+    BOOL_CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), "key stuff is too small");
 
     // Signature pointer
     sign = (vs_sign_t *)(key_to_check + signed_data_sz);
 
-    BOOL_CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, "Signer type must be RECOVERY")
+    BOOL_CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, "Signer type must be RECOVERY");
 
     sign_len = vs_hsm_get_signature_len(sign->ec_type);
     key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
     BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
-    BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong")
+    BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong");
 
     // Calculate hash of stuff under signature
     hash_size = vs_hsm_get_hash_len(sign->hash_type);
-    BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type")
+    BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type");
 
     uint8_t hash[hash_size];
 
     VS_HSM_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
-                     "Error hash create")
+                     "Error hash create");
 
     // Signer raw key pointer
     pubkey = sign->raw_sign_pubkey + sign_len;
 
     BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                   "Signer key is not present")
+                   "Signer key is not present");
 
     VS_HSM_CHECK_RET(
             vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
-            "Signature is wrong")
+            "Signature is wrong");
 
     return true;
 }

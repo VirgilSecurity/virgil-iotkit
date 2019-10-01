@@ -49,12 +49,18 @@ static const vs_netif_t *_sdmp_default_netif = 0;
 #define SERVICES_CNT_MAX (10)
 static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
 static uint32_t _sdmp_services_num = 0;
-static uint8_t _sdmp_broadcast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+static vs_mac_addr_t _sdmp_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
+
+#if VS_SDMP_PROFILE
+#include <sys/time.h>
+static long long _processing_time_us = 0;
+static long _calls_counter = 0;
+#endif
 
 /******************************************************************************/
 static bool
 _is_broadcast(const vs_mac_addr_t *mac_addr) {
-    return 0 == memcmp(mac_addr->bytes, _sdmp_broadcast_mac, ETH_ADDR_LEN);
+    return 0 == memcmp(mac_addr->bytes, _sdmp_broadcast_mac.bytes, ETH_ADDR_LEN);
 }
 
 /******************************************************************************/
@@ -68,8 +74,11 @@ _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 static bool
-_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
-    return _is_broadcast(mac_addr) || _is_my_mac(netif, mac_addr);
+_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+    bool dst_is_broadcast = _is_broadcast(dest_mac);
+    bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
+    bool src_is_my_mac = _is_my_mac(netif, src_mac);
+    return !src_is_my_mac && (dst_is_broadcast || dst_is_my_mac);
 }
 
 /******************************************************************************/
@@ -78,20 +87,11 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
     uint16_t response_sz = 0;
+    int res;
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
     bool processed = false;
 
     memset(response, 0, sizeof(response));
-
-    // Normalize byte order
-    vs_sdmp_packet_t_decode(packet);
-
-    // Check packet
-
-    // Check is my packet
-    if (!_accept_packet(netif, &packet->eth_header.dest)) {
-        return -1;
-    }
 
     // Prepare request
     memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_header_t));
@@ -112,21 +112,26 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                 // Process request
             } else {
                 processed = true;
-                if (0 == _sdmp_services[i]->request_process(netif,
-                                                            packet->header.element_id,
-                                                            packet->content,
-                                                            packet->header.content_size,
-                                                            response_packet->content,
-                                                            RESPONSE_SZ_MAX,
-                                                            &response_sz)) {
+                res = _sdmp_services[i]->request_process(netif,
+                                                         packet->header.element_id,
+                                                         packet->content,
+                                                         packet->header.content_size,
+                                                         response_packet->content,
+                                                         RESPONSE_SZ_MAX,
+                                                         &response_sz);
+                if (0 == res) {
                     // Send response
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
                 } else {
-                    // Send response with error code
-                    // TODO: Fill structure with error code here
-                    response_packet->header.flags |= VS_SDMP_FLAG_NACK;
-                    response_packet->header.content_size = 0;
+                    if (VS_SDMP_COMMAND_NOT_SUPPORTED == res) {
+                        processed = false;
+                    } else {
+                        // Send response with error code
+                        // TODO: Fill structure with error code here
+                        response_packet->header.flags |= VS_SDMP_FLAG_NACK;
+                        response_packet->header.content_size = 0;
+                    }
                 }
             }
         }
@@ -136,7 +141,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 
-    return -1;
+    return 0;
 }
 
 /******************************************************************************/
@@ -148,11 +153,26 @@ _packet_sz(const uint8_t *packet_data) {
 
 /******************************************************************************/
 static int
-_sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-#define LEFT_INCOMING ((int)data_sz - bytes_processed)
-    static uint8_t packet_buf[1024];
-    static uint16_t packet_buf_filled = 0;
+_sdmp_periodical(void) {
+    int i;
+    // Detect required command
+    for (i = 0; i < _sdmp_services_num; i++) {
+        if (_sdmp_services[i]->periodical_process) {
+            _sdmp_services[i]->periodical_process();
+        }
+    }
 
+    return 0;
+}
+
+/******************************************************************************/
+static int
+_sdmp_rx_cb(vs_netif_t *netif,
+            const uint8_t *data,
+            const uint16_t data_sz,
+            const uint8_t **packet_data,
+            uint16_t *packet_data_sz) {
+#define LEFT_INCOMING ((int)data_sz - bytes_processed)
     int bytes_processed = 0;
     int need_bytes_for_header;
     int need_bytes_for_packet;
@@ -163,66 +183,122 @@ _sdmp_rx_cb(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz
 
     while (LEFT_INCOMING) {
 
-        if (!packet_buf_filled) {
+        if (!netif->packet_buf_filled) {
             if (LEFT_INCOMING >= sizeof(vs_sdmp_packet_t)) {
                 packet_sz = _packet_sz(&data[bytes_processed]);
 
                 if (LEFT_INCOMING < packet_sz) {
-                    memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
-                    packet_buf_filled += LEFT_INCOMING;
+                    memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                    netif->packet_buf_filled += LEFT_INCOMING;
                     bytes_processed += LEFT_INCOMING;
                 } else {
                     packet = (vs_sdmp_packet_t *)&data[bytes_processed];
                     bytes_processed += packet_sz;
                 }
             } else {
-                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
-                packet_buf_filled += LEFT_INCOMING;
+                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                netif->packet_buf_filled += LEFT_INCOMING;
                 bytes_processed += LEFT_INCOMING;
             }
 
         } else {
 
             // Fill packet struct
-            if (packet_buf_filled < sizeof(vs_sdmp_packet_t)) {
-                need_bytes_for_header = sizeof(vs_sdmp_packet_t) - packet_buf_filled;
+            if (netif->packet_buf_filled < sizeof(vs_sdmp_packet_t)) {
+                need_bytes_for_header = sizeof(vs_sdmp_packet_t) - netif->packet_buf_filled;
 
                 copy_bytes = LEFT_INCOMING >= need_bytes_for_header ? need_bytes_for_header : LEFT_INCOMING;
-                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], copy_bytes);
+                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
                 bytes_processed += copy_bytes;
-                packet_buf_filled += copy_bytes;
+                netif->packet_buf_filled += copy_bytes;
             }
 
             // Fill content
-            if (packet_buf_filled >= sizeof(vs_sdmp_packet_t)) {
-                packet_sz = _packet_sz(packet_buf);
+            if (netif->packet_buf_filled >= sizeof(vs_sdmp_packet_t)) {
+                packet_sz = _packet_sz(netif->packet_buf);
 
-                need_bytes_for_packet = packet_sz - packet_buf_filled;
+                need_bytes_for_packet = packet_sz - netif->packet_buf_filled;
 
                 copy_bytes = LEFT_INCOMING >= need_bytes_for_packet ? need_bytes_for_packet : LEFT_INCOMING;
-                memcpy(&packet_buf[packet_buf_filled], &data[bytes_processed], copy_bytes);
+                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
                 bytes_processed += copy_bytes;
-                packet_buf_filled += copy_bytes;
+                netif->packet_buf_filled += copy_bytes;
 
-                if (packet_buf_filled >= packet_sz) {
-                    packet = (vs_sdmp_packet_t *)packet_buf;
+                if (netif->packet_buf_filled >= packet_sz) {
+                    packet = (vs_sdmp_packet_t *)netif->packet_buf;
                 }
             }
         }
 
         if (packet) {
-            _process_packet(netif, packet);
+
+            // Normalize byte order
+            vs_sdmp_packet_t_decode(packet);
+
+            // Check is my packet
+            if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
+
+                // Prepare for processing
+                *packet_data = (uint8_t *)packet;
+                *packet_data_sz = packet_sz;
+                return 0;
+            }
+
+            // TODO: Check it
             packet = 0;
-            packet_buf_filled = 0;
+            netif->packet_buf_filled = 0;
         }
     }
 
-    return 0;
+    return -1;
+}
+
+/******************************************************************************/
+#if VS_SDMP_PROFILE
+#include <sys/time.h>
+static long long
+current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);                        // get current time
+    long long us = te.tv_sec * 1000LL + te.tv_usec; // calculate us
+    return us;
+}
+#endif
+
+/******************************************************************************/
+static int
+_sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+    vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
+    int res;
+
+#if VS_SDMP_PROFILE
+    long long t;
+    _calls_counter++;
+    t = current_timestamp();
+#endif
+
+    // TODO: Fix it
+    if (!data && !data_sz) {
+        _sdmp_periodical();
+#if VS_SDMP_PROFILE
+        _processing_time += current_timestamp() - t;
+#endif
+        return 0;
+    }
+
+    VS_IOT_ASSERT(packet);
+    res = _process_packet(netif, packet);
+#if VS_SDMP_PROFILE
+    _processing_time += current_timestamp() - t;
+    VS_LOG_INFO("Processing Time: %lld ms  Calls: %ld", _processing_time, _calls_counter);
+#endif
+
+    return res;
 }
 
 /******************************************************************************/
 int
-vs_sdmp_init(const vs_netif_t *default_netif) {
+vs_sdmp_init(vs_netif_t *default_netif) {
 
     // Check input data
     VS_IOT_ASSERT(default_netif);
@@ -233,7 +309,7 @@ vs_sdmp_init(const vs_netif_t *default_netif) {
     _sdmp_default_netif = default_netif;
 
     // Init default network interface
-    default_netif->init(_sdmp_rx_cb);
+    default_netif->init(_sdmp_rx_cb, _sdmp_process_cb);
 
     return 0;
 }
@@ -258,6 +334,9 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif->tx);
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
 
+    if (data_sz < sizeof(vs_sdmp_packet_t)) {
+        return -1;
+    }
 
     // Normalize byte order
     if (packet) {
@@ -333,6 +412,12 @@ _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) 
     packet->header.transaction_id = _sdmp_transaction_id();
 
     return 0;
+}
+
+/******************************************************************************/
+const vs_mac_addr_t *
+vs_sdmp_broadcast_mac(void) {
+    return &_sdmp_broadcast_mac;
 }
 
 /******************************************************************************/

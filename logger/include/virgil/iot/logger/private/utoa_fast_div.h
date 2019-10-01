@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
-#define VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
+#ifndef VS_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
+#define VS_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
 
 #include <logger-config.h>
 #include <stdint.h>
@@ -41,4 +41,4 @@
 char *
 utoa_fast_div(uint32_t value, char *buffer);
 
-#endif // VIRGIL_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_
+#endif // VS_IOT_SDK_LOGGER_UTOA_FAST_DIV_H_

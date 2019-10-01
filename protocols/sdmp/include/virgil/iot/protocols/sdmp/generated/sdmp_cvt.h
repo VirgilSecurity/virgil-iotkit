@@ -36,7 +36,7 @@
 #define SDMP_CVT_H
 
 #include <endian-config.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 

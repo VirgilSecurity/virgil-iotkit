@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TESTS_HELPERS_H_
-#define VIRGIL_IOT_SDK_TESTS_HELPERS_H_
+#ifndef VS_IOT_SDK_TESTS_HELPERS_H_
+#define VS_IOT_SDK_TESTS_HELPERS_H_
 
 #include <stdbool.h>
 #include <virgil/iot/logger/logger.h>
@@ -49,11 +49,11 @@
 
 #define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
-#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...) do {                                                                       \
     if (!(OPERATION)) {                                                                                                \
         VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
         goto terminate;                                                                                                \
-    }
+    } } while(0)
 
 #define RESULT_BUF_SIZE (1024)
 #define HASH_MAX_BUF_SIZE (64)
@@ -114,9 +114,9 @@
         }                                                                                                              \
     } while (0)
 
-#define TEST_CASE_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true == (TEST_ELEMENT));
+#define TEST_CASE_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true == (TEST_ELEMENT))
 
-#define TEST_CASE_NOT_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true != (TEST_ELEMENT));
+#define TEST_CASE_NOT_OK(NAME, TEST_ELEMENT) TEST_CASE(NAME, true != (TEST_ELEMENT))
 
 #define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
 
@@ -126,4 +126,4 @@ bool
 vs_test_create_device_key();
 bool
 vs_test_save_hl_keys();
-#endif // VIRGIL_IOT_SDK_TESTS_HELPERS_H_
+#endif // VS_IOT_SDK_TESTS_HELPERS_H_

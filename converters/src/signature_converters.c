@@ -153,7 +153,7 @@ vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
         return _raw_ec_sign_to_mbedtls(keypair_type, raw, raw_sz, signature, buf_sz, signature_sz);
     }
 
-    CHECK_BOOL_GOTO(buf_sz >= raw_sz, -1);
+    CHECK_BOOL_GOTO(buf_sz >= raw_sz, false);
     VS_IOT_MEMCPY(signature, raw, raw_sz);
     *signature_sz = raw_sz;
 
@@ -190,18 +190,18 @@ _mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
     mbedtls_mpi_init(&r);
     mbedtls_mpi_init(&s);
 
-    MBEDTLS_CHECK(mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE), -1);
+    MBEDTLS_CHECK(mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE), false);
 
     if (p + len != end) {
         goto terminate;
     }
 
-    MBEDTLS_CHECK(mbedtls_asn1_get_mpi(&p, end, &r), -1);
-    MBEDTLS_CHECK(mbedtls_asn1_get_mpi(&p, end, &s), -1);
+    MBEDTLS_CHECK(mbedtls_asn1_get_mpi(&p, end, &r), false);
+    MBEDTLS_CHECK(mbedtls_asn1_get_mpi(&p, end, &s), false);
 
     // Save r, s to buffer
-    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&r, raw_sign, component_sz), -1);
-    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&s, &raw_sign[component_sz], component_sz), -1);
+    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&r, raw_sign, component_sz), false);
+    MBEDTLS_CHECK(mbedtls_mpi_write_binary(&s, &raw_sign[component_sz], component_sz), false);
 
     *raw_sz = component_sz * 2;
 

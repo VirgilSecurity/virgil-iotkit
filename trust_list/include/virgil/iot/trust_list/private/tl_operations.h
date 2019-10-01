@@ -3,8 +3,8 @@
 
 #include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/macros/macros.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
-#include <virgil/iot/trust_list/tl_hal.h>
 typedef struct {
     size_t storage_type;
 } vs_tl_storage_ctx_t;
@@ -16,13 +16,17 @@ typedef struct {
 
 typedef struct {
     bool ready;
+    const vs_storage_op_ctx_t *storage_ctx;
     vs_tl_storage_ctx_t storage;
     vs_tl_header_t header;
     tl_keys_qty_t keys_qty;
 } vs_tl_context_t;
 
-void
-vs_tl_storage_init_internal();
+int
+vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx);
+int
+vs_tl_storage_deinit_internal();
+
 int
 vs_tl_invalidate(size_t storage_type);
 int

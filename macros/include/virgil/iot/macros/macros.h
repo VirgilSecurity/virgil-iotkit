@@ -35,27 +35,35 @@
 #ifndef VS_MACROS_H
 #define VS_MACROS_H
 
-#define VS_UNUSED(x) (void)(x)
+#include <virgil/iot/logger/logger.h>
 
-#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...)                                                                    \
+#define CHECK(CONDITION, MESSAGE, ...) do {                                                                   \
+    if (!(CONDITION)) {                                                                                                \
+        VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
+        goto terminate;                                                                                             \
+    } \
+    } while(0)
+
+#define CHECK_RET(CONDITION, RETCODE, MESSAGE, ...) do {                                                                   \
     if (!(CONDITION)) {                                                                                                \
         VS_LOG_ERROR((MESSAGE), ##__VA_ARGS__);                                                                        \
         return (RETCODE);                                                                                              \
-    }
+    } \
+    } while(0)
 
-#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET(CONDITION, false, MESSAGE, ##__VA_ARGS__)
+#define BOOL_CHECK(CONDITION, MESSAGE, ...) CHECK((CONDITION), (MESSAGE), ##__VA_ARGS__)
+#define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET((CONDITION), false, (MESSAGE), ##__VA_ARGS__)
 
-#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE)                                                                             \
-    BOOL_CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+#define MEMCMP_CHECK(BUF1, BUF2, SIZE)                                                                             \
+    CHECK(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+                   #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
+                   (int)(SIZE))
+#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RET)                                                                             \
+    CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
-#define CHECK_NOT_ZERO(ARG, RETCODE)                                                                                   \
-    do {                                                                                                               \
-        if (!(ARG)) {                                                                                                  \
-            VS_LOG_ERROR("Argument " #ARG " must not be zero");                                                        \
-            return RETCODE;                                                                                            \
-        }                                                                                                              \
-    } while (0)
+#define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero")
+#define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
 
 #endif // VS_MACROS_H

@@ -38,7 +38,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <virgil/iot/update/update.h>
+#include <virgil/iot/firmware/firmware.h>
 #include <global-hal.h>
 
 typedef struct {

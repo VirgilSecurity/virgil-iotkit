@@ -68,7 +68,7 @@ _mb_mqtt_ctx_free(vs_cloud_mb_mqtt_ctx_t *ctx) {
 /******************************************************************************/
 static int
 _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
-    CHECK_NOT_ZERO(ctx, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
 
     if (ctx->is_filled) {
         return VS_CLOUD_ERR_OK;
@@ -181,6 +181,10 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             len = 0;
 
             ctx->topic_list.topic_len_list = (uint16_t *)VS_IOT_MALLOC(ctx->topic_list.topic_count * sizeof(uint16_t));
+            if (! ctx->topic_list.topic_len_list) {
+                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_len_list] allocation error");
+                goto clean;
+            }
 
             for (i = 0; i < ctx->topic_list.topic_count; i++) {
                 json_array_get_str_len(&jobj, i, &len);
@@ -195,6 +199,10 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             }
 
             ctx->topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
+            if (! ctx->topic_list.topic_list) {
+                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_list] allocation error");
+                goto clean;
+            }
 
             int offset = 0;
 
@@ -223,7 +231,7 @@ clean:
 /******************************************************************************/
 int
 vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
-    CHECK_NOT_ZERO(ctx, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
     _mb_mqtt_ctx_free(ctx);
     return VS_CLOUD_ERR_OK;
 }
@@ -236,11 +244,11 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process) {
 
-    CHECK_NOT_ZERO(ctx, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(root_ca_crt, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(init, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(connect_subscribe, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO(process, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(init, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(connect_subscribe, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(process, VS_CLOUD_ERR_INVAL);
 
     bool provision_is_present = ctx->is_filled || (VS_CLOUD_ERR_OK == _get_message_bin_credentials(ctx));
 

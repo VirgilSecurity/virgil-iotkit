@@ -42,6 +42,8 @@ uint16_t
 sdmp_tests(void);
 uint16_t
 prvs_tests(void);
+uint16_t
+fldt_tests(void);
 
 uint16_t
 test_hash(void);
@@ -72,7 +74,7 @@ vs_virgil_ecies_test();
 static bool
 _save_hl_key(size_t slot, const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
 
-    VS_HSM_CHECK_RET(vs_hsm_slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str)
+    VS_HSM_CHECK_RET(vs_hsm_slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
 
     return true;
 }
@@ -141,13 +143,22 @@ crypto_tests(void) {
 
 /**********************************************************/
 uint16_t
-vs_tests_checks() {
+vs_tests_checks(bool print_start_finish_tests) {
     uint16_t failed_test_result = 0;
+
+    if (print_start_finish_tests) {
+        START_TESTS;
+    }
 
     failed_test_result = sdmp_tests();
     failed_test_result += prvs_tests();
+    failed_test_result += fldt_tests();
 
     failed_test_result += crypto_tests();
+
+    if (print_start_finish_tests) {
+        FINISH_TESTS;
+    }
 
     return failed_test_result;
 }

@@ -133,14 +133,14 @@ _test_case_converters_pubkey_pass(vs_hsm_keypair_type_e keypair_type,
                    "ERROR while convert pubkey virgil to raw");
 
     BOOL_CHECK_RET(result_sz == raw_pubkey_sz, "ERROR raw pubkey has wrong size");
-    MEMCMP_CHECK_RET(result_buf, raw_pubkey, raw_pubkey_sz);
+    MEMCMP_CHECK_RET(result_buf, raw_pubkey, raw_pubkey_sz, false);
 
     BOOL_CHECK_RET(vs_converters_pubkey_to_virgil(
                            keypair_type, raw_pubkey, raw_pubkey_sz, result_buf, sizeof(result_buf), &result_sz),
                    "ERROR while convert pubkey raw to virgil");
 
     BOOL_CHECK_RET(result_sz == virgil_pubkey_sz, "ERROR virgil signature has wrong size");
-    MEMCMP_CHECK_RET(result_buf, virgil_pubkey, virgil_pubkey_sz);
+    MEMCMP_CHECK_RET(result_buf, virgil_pubkey, virgil_pubkey_sz, false);
 
     return true;
 }
@@ -160,44 +160,49 @@ test_pubkeys_converters(void) {
                                 virgil_RSA2048_pubkey,
                                 sizeof(virgil_RSA2048_pubkey),
                                 raw_RSA2048_pubkey,
-                                sizeof(raw_RSA2048_pubkey))
+                                sizeof(raw_RSA2048_pubkey));
 
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_SECP192R1,
                                 virgil_SECP192R1_pubkey,
                                 sizeof(virgil_SECP192R1_pubkey),
                                 raw_SECP192R1_pubkey,
-                                sizeof(raw_SECP192R1_pubkey))
+                                sizeof(raw_SECP192R1_pubkey));
 
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_SECP224R1,
                                 virgil_SECP224R1_pubkey,
                                 sizeof(virgil_SECP224R1_pubkey),
                                 raw_SECP224R1_pubkey,
-                                sizeof(raw_SECP224R1_pubkey))
+                                sizeof(raw_SECP224R1_pubkey));
+
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_SECP256R1,
                                 virgil_SECP256R1_pubkey,
                                 sizeof(virgil_SECP256R1_pubkey),
                                 raw_SECP256R1_pubkey,
-                                sizeof(raw_SECP256R1_pubkey))
+                                sizeof(raw_SECP256R1_pubkey));
+
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_SECP384R1,
                                 virgil_SECP384R1_pubkey,
                                 sizeof(virgil_SECP384R1_pubkey),
                                 raw_SECP384R1_pubkey,
-                                sizeof(raw_SECP384R1_pubkey))
+                                sizeof(raw_SECP384R1_pubkey));
+
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_SECP521R1,
                                 virgil_SECP521R1_pubkey,
                                 sizeof(virgil_SECP521R1_pubkey),
                                 raw_SECP521R1_pubkey,
-                                sizeof(raw_SECP521R1_pubkey))
+                                sizeof(raw_SECP521R1_pubkey));
+
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_ED25519,
                                 virgil_ED25519_pubkey,
                                 sizeof(virgil_ED25519_pubkey),
                                 raw_ED25519_pubkey,
-                                sizeof(raw_ED25519_pubkey))
+                                sizeof(raw_ED25519_pubkey));
+
     TEST_CONVERTERS_PUBKEY_PASS(VS_KEYPAIR_EC_CURVE25519,
                                 virgil_CURVE25519_pubkey,
                                 sizeof(virgil_CURVE25519_pubkey),
                                 raw_CURVE25519_pubkey,
-                                sizeof(raw_CURVE25519_pubkey))
+                                sizeof(raw_CURVE25519_pubkey));
 
 terminate:
     return failed_test_result;

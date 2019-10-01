@@ -36,7 +36,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_prvs.h>
-#include <virgil/iot/protocols/sdmp/PRVS.h>
+#include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
@@ -185,8 +185,8 @@ test_device_info(void) {
 
     CHECK_GOTO(!VS_IOT_MEMCMP(dev_resp->mac.bytes, serv_resp->mac.bytes, sizeof(serv_resp->mac.bytes)),
                "Incorrect MAC address");
-    CHECK_GOTO(dev_resp->manufacturer == serv_resp->manufacturer && dev_resp->model == serv_resp->model,
-               "Incorrect response");
+    MEMCMP_CHECK(dev_resp->manufacturer, serv_resp->manufacturer, sizeof(dev_resp->manufacturer));
+    CHECK_GOTO(dev_resp->model == serv_resp->model, "Incorrect response");
 
     return true;
 

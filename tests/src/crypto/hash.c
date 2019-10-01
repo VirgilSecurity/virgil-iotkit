@@ -49,9 +49,9 @@ _test_long_sha_pass(vs_hsm_hash_type_e hash_type,
     BOOL_CHECK_RET(VS_HSM_ERR_OK ==
                            vs_hsm_hash_create(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
                    "Error execute hash op");
-    BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result")
+    BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result");
 
-    MEMCMP_CHECK_RET(ref_result, result_buf, result_sz);
+    MEMCMP_CHECK_RET(ref_result, result_buf, result_sz, false);
 
     return true;
 }
@@ -70,9 +70,9 @@ _test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, 
                                                        sizeof(result_buf),
                                                        &result_sz),
                    "Error execute hash op");
-    BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result")
+    BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
 
-    MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz);
+    MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz, false);
 
     BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_hash_create(hash_type,
                                                        (uint8_t *)another_test_data,
@@ -101,7 +101,7 @@ _test_partial_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_resu
         vs_hsm_sw_sha256_update(&ctx, (uint8_t *)test_data, strlen(test_data));
         vs_hsm_sw_sha256_final(&ctx, result_buf);
 
-        MEMCMP_CHECK_RET(correct_result_raw, result_buf, sizeof(result_buf));
+        MEMCMP_CHECK_RET(correct_result_raw, result_buf, sizeof(result_buf), false);
 
         vs_hsm_sw_sha256_init(&ctx);
         vs_hsm_sw_sha256_update(&ctx, (uint8_t *)another_test_data, strlen(another_test_data));

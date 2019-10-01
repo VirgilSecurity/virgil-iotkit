@@ -32,20 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-#define VIRGIL_IOT_SDK_STDLIB_CONFIG_H
-
-
+#ifndef VS_IOT_SDK_STDLIB_CONFIG_H
+#define VS_IOT_SDK_STDLIB_CONFIG_H
 
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+
+#include <global-hal.h>
 
 #define VS_IOT_ASSERT    assert
-#define VS_IOT_CALLOC    platform_calloc
-#define VS_IOT_FREE      platform_free
-#define VS_IOT_MALLOC    platform_malloc
+#define VS_IOT_CALLOC    calloc
+#define VS_IOT_FREE      free
+#define VS_IOT_MALLOC    malloc
 #define VS_IOT_MEMCMP    memcmp
 #define VS_IOT_MEMCPY    memcpy
 #define VS_IOT_MEMSET    memset
@@ -55,7 +56,7 @@
 #define VS_IOT_STRCPY    strcpy
 #define VS_IOT_STRLEN    strlen
 #define VS_IOT_VSNPRINTF vsnprintf
+#define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))
 
 
-
-#endif // VIRGIL_IOT_SDK_STDLIB_CONFIG_H
+#endif // VS_IOT_SDK_STDLIB_CONFIG_H

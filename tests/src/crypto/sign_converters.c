@@ -133,14 +133,14 @@ _test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
                    "ERROR while convert signature virgil to raw");
 
     BOOL_CHECK_RET(result_sz == raw_sign_sz, "ERROR raw signature has wrong size");
-    MEMCMP_CHECK_RET(result_buf, raw_sign, raw_sign_sz);
+    MEMCMP_CHECK_RET(result_buf, raw_sign, raw_sign_sz, false);
 
     BOOL_CHECK_RET(vs_converters_raw_sign_to_virgil(
                            keypair_type, hash_alg, raw_sign, raw_sign_sz, result_buf, sizeof(result_buf), &result_sz),
                    "ERROR while convert signature raw to virgil");
 
     BOOL_CHECK_RET(result_sz == virgil_sign_sz, "ERROR virgil signature has wrong size");
-    MEMCMP_CHECK_RET(result_buf, virgil_sign, virgil_sign_sz);
+    MEMCMP_CHECK_RET(result_buf, virgil_sign, virgil_sign_sz, false);
 
     return true;
 }

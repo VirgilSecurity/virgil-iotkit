@@ -48,7 +48,7 @@ add_go_executable(sdmp-codgen)
 
 set (SDMP_SRC_TYPES
         -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp_structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/PRVS.h
+        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs.h
         )
 
 add_custom_command(TARGET sdmp-codgen POST_BUILD

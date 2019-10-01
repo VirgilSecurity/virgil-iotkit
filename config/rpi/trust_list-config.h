@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_TL_CONFIG_H
-#define VIRGIL_IOT_SDK_TL_CONFIG_H
+#ifndef VS_IOT_SDK_TL_CONFIG_H
+#define VS_IOT_SDK_TL_CONFIG_H
 
 /*
  * VS_TL_STORAGE_SIZE
@@ -73,4 +73,4 @@
     VS_KEY_TRUSTLIST                                                                                                \
 };
 
-#endif // VIRGIL_IOT_SDK_TL_CONFIG_H
+#endif // VS_IOT_SDK_TL_CONFIG_H

@@ -130,26 +130,6 @@ set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
 set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
 
-
-
-# ---------------------------------------------------------------------------
-#   Format code
-# ---------------------------------------------------------------------------
-clangformat_folder(
-        ${CMAKE_CURRENT_SOURCE_DIR}/cloud
-        ${CMAKE_CURRENT_SOURCE_DIR}/protocols
-        ${CMAKE_CURRENT_SOURCE_DIR}/provision
-        ${CMAKE_CURRENT_SOURCE_DIR}/secbox
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests
-        ${CMAKE_CURRENT_SOURCE_DIR}/tools
-        ${CMAKE_CURRENT_SOURCE_DIR}/update
-        ${CMAKE_CURRENT_SOURCE_DIR}/trust_list
-        ${CMAKE_CURRENT_SOURCE_DIR}/logger
-        ${CMAKE_CURRENT_SOURCE_DIR}/hsm
-        ${CMAKE_CURRENT_SOURCE_DIR}/converters
-)
-
-
 # ---------------------------------------------------------------------------
 #   Tools
 # ---------------------------------------------------------------------------
@@ -169,6 +149,11 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
 
 #
+#   Status codes
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/status_code)
+
+#
 #   Data storage hal interface
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)
@@ -182,6 +167,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
 #   vs-json
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+
+#
+#   firmware
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/firmware)
 
 #
 #   update

@@ -55,19 +55,20 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
                                         hash_buf,
                                         sizeof(hash_buf),
                                         &result_sz),
-                     "ERROR while creating hash")
+                     "ERROR while creating hash");
 
     signature_sz = sizeof(sign_buf);
 
     VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
-                     "ERROR while signing hash")
-    BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size")
+                     "ERROR while signing hash");
+
+    BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size");
 
     VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
-                     "ERROR while importing public key from slot")
+                     "ERROR while importing public key from slot");
 
     VS_HSM_CHECK_RET(vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
-                     "ERROR while verifying hash")
+                     "ERROR while verifying hash");
 
     return true;
 }

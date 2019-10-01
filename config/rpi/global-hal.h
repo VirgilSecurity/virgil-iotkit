@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_GLOBAL_HAL_H
-#define VIRGIL_IOT_SDK_GLOBAL_HAL_H
+#ifndef VS_IOT_SDK_GLOBAL_HAL_H
+#define VS_IOT_SDK_GLOBAL_HAL_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -55,4 +55,4 @@ vs_global_hal_msleep(size_t msec);
 void
 vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
 
-#endif // VIRGIL_IOT_SDK_GLOBAL_HAL_H
+#endif // VS_IOT_SDK_GLOBAL_HAL_H

@@ -37,7 +37,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #
 #   Factory initalizer
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-initializer)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-factory-initializer)
 
 #
 #   Registrar

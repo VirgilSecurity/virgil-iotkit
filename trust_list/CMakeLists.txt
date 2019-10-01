@@ -36,21 +36,25 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(trust_list VERSION 0.1.0 LANGUAGES C)
 
-set(TRUST_LIST_LIB trust_list)
+#
+#   Trust List library
+#
+add_library(trust_list)
 
 #
 #   Source code
 #
-set(TRUST_LIST_SRC
+
+target_sources(trust_list
+        PRIVATE
+        include/virgil/iot/trust_list/private/tl_operations.h
+        include/virgil/iot/trust_list/tl_structs.h
+        include/virgil/iot/trust_list/trust_list.h
+        include/virgil/iot/trust_list/update_tl_interface.h
+
         src/tl_operations.c
         src/trust_list.c
-        )
-
-#
-#   Trust List library
-#
-add_library(${TRUST_LIST_LIB}
-        ${TRUST_LIST_SRC}
+        src/update_tl_interface.c
         )
 
 #
@@ -63,7 +67,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(${TRUST_LIST_LIB}
+target_compile_options(trust_list
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -86,6 +90,8 @@ target_link_libraries(trust_list
         hsm
         macros
         provision
+        storage_hal
+        update
         )
 #
 #   Common include directories

@@ -104,10 +104,10 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
     uint8_t *mac_data;
     uint8_t *iv_data;
 
-    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(decrypted_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(decrypted_data_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(decrypted_data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(decrypted_data_sz, VS_HSM_ERR_INVAL);
 
     if (VS_HSM_ERR_OK != vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
                                                                       cryptogram_sz,
@@ -208,9 +208,9 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     uint8_t *cryptogram,
                                     size_t buf_sz,
                                     size_t *cryptogram_sz) {
-    CHECK_NOT_ZERO(data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO(cryptogram_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(data, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram_sz, VS_HSM_ERR_INVAL);
 
     vs_hsm_keypair_type_e ec_type;
     uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);

@@ -47,10 +47,30 @@ function(add_sdmp _for_factory)
     #
     #   SDMP library
     #
-    add_library(${_targetname}
-            src/sdmp.c
-            src/services/PRVS.c
-            src/generated/sdmp_cvt.c
+
+    add_library(${_targetname})
+
+    #
+    #   Sources
+    #
+
+    target_sources(${_targetname}
+            PRIVATE
+
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_server.h
+
+            ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/generated/sdmp_cvt.c
             )
 
     #
@@ -63,9 +83,7 @@ function(add_sdmp _for_factory)
     #
 
     if (NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-        message(FATAL_ERROR "[sdmp] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-    else ()
-        message(STATUS "[sdmp] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+        message(FATAL_ERROR "[protocols] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
     endif ()
 
     #
@@ -80,6 +98,7 @@ function(add_sdmp _for_factory)
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
+            "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
             )
 
     #
@@ -95,10 +114,15 @@ function(add_sdmp _for_factory)
     #
     target_link_libraries(${_targetname}
             PUBLIC
+            virgil-iot-status-code
             logger
             provision
+            update
             $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
             $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
+
+            PRIVATE
+            macros
             )
     #
     # Format code

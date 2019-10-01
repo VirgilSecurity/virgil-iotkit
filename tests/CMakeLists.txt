@@ -46,8 +46,10 @@ target_sources(virgil-iot-sdk-tests
         PRIVATE
         src/tests.c
         src/sdmp/prvs_tests.c
+        src/sdmp/fldt_tests.c
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
+        src/sdmp/test_fldt.c
         src/sdmp/test_netif.c
         src/crypto/aes.c
         src/crypto/ecdh.c
@@ -61,7 +63,7 @@ target_sources(virgil-iot-sdk-tests
         src/crypto/trust_list.c
         src/secbox/secbox_test.c
         src/crypto/virgil_ecies.c
-        src/update/update_test.c
+        src/firmware/firmware_test.c
         src/test_data/test_hl_keys_data.c
         src/test_data/test_tl_data.c
         )
@@ -84,6 +86,7 @@ target_link_libraries(virgil-iot-sdk-tests
         trust_list
         macros
         update
+        firmware
         )
 
 #

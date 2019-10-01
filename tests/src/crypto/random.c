@@ -62,7 +62,7 @@ _generate_random(uint8_t *sequence) {
         if (pos) {
             CHECK_RET(VS_IOT_MEMCMP(sequence - size_step, sequence, size_step) != 0,
                       VS_HSM_ERR_FAIL,
-                      "Sequence is the same as previous")
+                      "Sequence is the same as previous");
         }
 
         sequence += size_step;

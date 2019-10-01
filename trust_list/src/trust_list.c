@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib-config.h>
+#include <trust_list-config.h>
 #include <logger-config.h>
 
 #include "virgil/iot/trust_list/tl_structs.h"
@@ -40,9 +41,15 @@
 #include "virgil/iot/trust_list/trust_list.h"
 
 /******************************************************************************/
-void
-vs_tl_init_storage() {
-    vs_tl_storage_init_internal();
+int
+vs_tl_init(const vs_storage_op_ctx_t *op_ctx) {
+    return vs_tl_storage_init_internal(op_ctx);
+}
+
+/******************************************************************************/
+int
+vs_tl_deinit() {
+    return vs_tl_storage_deinit_internal();
 }
 
 /******************************************************************************/
@@ -50,10 +57,10 @@ int
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
     if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return VS_TL_ERROR_PARAMS;
+        return VS_STORAGE_ERROR_PARAMS;
     }
 
-    int res = VS_TL_ERROR_GENERAL;
+    int res = VS_STORAGE_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
@@ -65,9 +72,9 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 
         res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
 
-        if (VS_TL_OK == res) {
+        if (VS_STORAGE_OK == res) {
             res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
-            if (VS_TL_OK == res && VS_TL_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
+            if (VS_STORAGE_OK == res && VS_STORAGE_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
                 res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
             }
         }
@@ -89,10 +96,10 @@ int
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz) {
     if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
-        return VS_TL_ERROR_PARAMS;
+        return VS_STORAGE_ERROR_PARAMS;
     }
 
-    int res = VS_TL_ERROR_GENERAL;
+    int res = VS_STORAGE_ERROR_GENERAL;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:

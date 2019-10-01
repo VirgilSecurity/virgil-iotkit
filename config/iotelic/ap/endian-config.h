@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
-#define VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
+#ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
+#define VS_IOT_SDK_ENDIAN_CONFIG_H
 
 #include <iot_ntoh_api.h>
 
@@ -42,4 +42,4 @@
 #define VS_IOT_HTONS iot_htons
 #define VS_IOT_HTONL iot_htonl
 
-#endif //VIRGIL_IOT_SDK_ENDIAN_CONFIG_H
+#endif //VS_IOT_SDK_ENDIAN_CONFIG_H
