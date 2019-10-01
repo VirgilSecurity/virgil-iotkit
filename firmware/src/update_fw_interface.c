@@ -89,29 +89,7 @@ _fw_update_describe_version(void *context, vs_update_file_type_t *file_type, con
         }
     }
 
-#ifdef VS_IOT_ASCTIME
-    time_t timestamp = fw_ver->timestamp + START_EPOCH;
-#else
-    uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
-#endif //   VS_IOT_ASCTIME
-
-    VS_IOT_SNPRINTF(output, string_space,
-                   #ifdef VS_IOT_ASCTIME
-                           "ver %d.%d.%d.%c.%d, %s",
-                   #else
-                           "ver %d.%d.%d.%c.%d, UNIX timestamp %u",
-                   #endif //   VS_IOT_ASCTIME
-                   fw_ver->major,
-                   fw_ver->minor,
-                   fw_ver->patch,
-                   fw_ver->dev_milestone,
-                   fw_ver->dev_build,
-#ifdef VS_IOT_ASCTIME
-                   fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
-#else
-                   timestamp
-#endif //   VS_IOT_ASCTIME
-    );
+    vs_firmware_describe_version(fw_ver, output, string_space);
 
     return buffer;
 

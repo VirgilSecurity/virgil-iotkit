@@ -124,4 +124,7 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 int
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
 
+char *
+vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size);
+
 #endif // VS_FIRMWARE_H

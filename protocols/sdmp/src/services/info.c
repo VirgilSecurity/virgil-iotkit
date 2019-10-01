@@ -42,6 +42,7 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <endian-config.h>
+#include <virgil/iot/protocols/sdmp/fldt_private.h>
 
 // Commands
 // mute "error: multi-character character constant" message
@@ -64,6 +65,7 @@ static vs_storage_op_ctx_t *_tl_ctx;
 static vs_storage_op_ctx_t *_fw_ctx;
 static vs_fw_manufacture_id_t _manufacture_id;
 static vs_fw_device_type_t _device_type;
+#define FW_DESCR_BUF    128
 
 /******************************************************************/
 int
@@ -79,6 +81,7 @@ vs_info_GINF_request_processing(const uint8_t *request,
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
     vs_status_code_e ret_code;
+    char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -86,7 +89,7 @@ vs_info_GINF_request_processing(const uint8_t *request,
 
     defautl_netif = vs_sdmp_default_netif();
 
-    CHECK_RET(defautl_netif->mac_addr(&general_info->default_netif_mac),
+    CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
@@ -103,6 +106,18 @@ vs_info_GINF_request_processing(const uint8_t *request,
     general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
 
     *response_sz = sizeof(vs_info_ginf_response_t);
+
+    VS_LOG_DEBUG(
+            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
+            "%s, trust list "
+            "version = %d",
+            general_info->manufacture_id,
+            general_info->device_type[0],
+            general_info->device_type[1],
+            general_info->device_type[2],
+            general_info->device_type[3],
+            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
+            general_info->tl_version);
 
     return VS_CODE_OK;
 }
