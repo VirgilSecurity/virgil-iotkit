@@ -32,43 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdint.h>
-
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define VS_SDMP_COMMAND_NOT_SUPPORTED (100)
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/firmware/firmware.h>
 
-int
-vs_sdmp_init(vs_netif_t *default_netif);
-
-int
-vs_sdmp_deinit();
-
-#if 0
-int
-vs_sdmp_add_netif(const vs_netif_t *netif);
-#endif
-
-const vs_netif_t *
-vs_sdmp_default_netif(void);
-
-int
-vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
-
-int
-vs_sdmp_register_service(const vs_sdmp_service_t *service);
-
-int
-vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
-
-const vs_mac_addr_t *
-vs_sdmp_broadcast_mac(void);
+const vs_sdmp_service_t *
+vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
+             vs_storage_op_ctx_t *fw_ctx,
+             const vs_fw_manufacture_id_t manufacturer_id,
+             const vs_fw_device_type_t device_type);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_H

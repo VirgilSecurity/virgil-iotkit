@@ -328,6 +328,13 @@ vs_sdmp_deinit() {
 }
 
 /******************************************************************************/
+const vs_netif_t *
+vs_sdmp_default_netif(void) {
+    VS_IOT_ASSERT(_sdmp_default_netif);
+    return _sdmp_default_netif;
+}
+
+/******************************************************************************/
 int
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif);
