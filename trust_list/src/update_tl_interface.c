@@ -46,7 +46,7 @@
 /*************************************************************************/
 static uint16_t
 _tl_ver(const vs_update_file_version_t *version){
-    const uint16_t *tl_ver = (const uint16_t *)version;
+    const uint16_t *tl_ver = (const uint16_t *)version; //-V1032 (PVS_IGNORE)
     return VS_IOT_NTOHS(*tl_ver);
 }
 

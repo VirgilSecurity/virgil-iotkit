@@ -48,12 +48,19 @@ typedef uint32_t vs_sdmp_service_id_t;
 typedef uint32_t vs_sdmp_element_t;
 
 // Callback for Received data
-typedef int (*vs_netif_rx_cb_t)(const struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+typedef int (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
+                                const uint8_t *data,
+                                const uint16_t data_sz,
+                                const uint8_t **packet_data,
+                                uint16_t *packet_data_sz);
+
+// Callback for Preprocessed data
+typedef int (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 typedef int (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
 typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
-typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb);
+typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 typedef int (*vs_netif_deinit_t)(void);
 
@@ -128,6 +135,10 @@ typedef struct vs_netif_t {
     vs_netif_deinit_t deinit;
     vs_netif_tx_t tx;
     vs_netif_mac_t mac_addr;
+
+    // Incoming packet
+    uint8_t packet_buf[1024];
+    uint16_t packet_buf_filled;
 } vs_netif_t;
 
 /******************************************************************************/

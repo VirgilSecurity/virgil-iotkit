@@ -44,7 +44,7 @@ extern "C" {
 #define VS_SDMP_COMMAND_NOT_SUPPORTED (100)
 
 int
-vs_sdmp_init(const vs_netif_t *default_netif);
+vs_sdmp_init(vs_netif_t *default_netif);
 
 int
 vs_sdmp_deinit();
