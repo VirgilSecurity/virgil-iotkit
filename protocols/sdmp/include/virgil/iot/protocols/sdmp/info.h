@@ -32,21 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_NETIF_PLC_SIM_H
-#define VS_NETIF_PLC_SIM_H
-
-
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-const vs_netif_t *
-vs_hal_netif_plc_sim();
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/firmware/firmware.h>
+
+const vs_sdmp_service_t *
+vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
+             vs_storage_op_ctx_t *fw_ctx,
+             const vs_fw_manufacture_id_t manufacturer_id,
+             const vs_fw_device_type_t device_type);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // VS_NETIF_PLC_SIM_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
