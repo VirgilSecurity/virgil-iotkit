@@ -82,6 +82,15 @@ typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *net
 
 typedef int (*vs_sdmp_service_periodical_processor_t)(void);
 
+typedef enum {
+    VS_SDMP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002),
+    VS_SDMP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004),
+    VS_SDMP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008),
+    VS_SDMP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010),
+    VS_SDMP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020)
+} vs_sdmp_device_role_e;
+
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
 #define ETH_CRC_LEN (4)

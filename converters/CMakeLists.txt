@@ -44,7 +44,7 @@ set(CONV_LIB converters)
 set(CONV_SRC
         src/signature_converters.c
         src/pubkey_converters.c
-        )
+        ../protocols/sdmp/include/virgil/iot/protocols/sdmp/info-structs.h)
 
 # Include and build external libraries
 include (${CMAKE_CURRENT_SOURCE_DIR}/../cmake/virgil_depends.cmake)

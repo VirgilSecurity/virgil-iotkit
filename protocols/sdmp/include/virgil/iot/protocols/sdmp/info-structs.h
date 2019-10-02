@@ -32,25 +32,38 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/info-server.h>
+#include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-const vs_sdmp_service_t *
-vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
-             vs_storage_op_ctx_t *fw_ctx,
-             const vs_fw_manufacture_id_t manufacturer_id,
-             const vs_fw_device_type_t device_type);
+typedef struct __attribute__((__packed__)) {
+    uint32_t device_roles; // vs_sdmp_device_role_e
+    vs_mac_addr_t mac;
+} vs_sdmp_info_device_t;
 
-#ifdef __cplusplus
-}
-#endif
+typedef struct __attribute__((__packed__)) {
+    vs_fw_manufacture_id_t manufacture_id;
+    vs_fw_device_type_t device_type;
+    vs_mac_addr_t default_netif_mac;
+    vs_firmware_version_t fw_version;
+    uint16_t tl_version;
+} vs_info_ginf_response_t;
 
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_H
+typedef struct __attribute__((__packed__)) {
+    uint32_t sent;
+    uint32_t received;
+} vs_info_stat_response_t;
+
+typedef enum {
+    VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002),
+} vs_sdmp_info_element_mask_e;
+
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H

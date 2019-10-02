@@ -428,3 +428,36 @@ vs_sdmp_broadcast_mac(void) {
 }
 
 /******************************************************************************/
+int
+vs_sdmp_send_request(const vs_netif_t *netif,
+                     const vs_mac_addr_t *mac,
+                     vs_sdmp_service_id_t service_id,
+                     vs_sdmp_element_t element_id,
+                     const uint8_t *data,
+                     uint16_t data_sz) {
+
+    uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
+    vs_sdmp_packet_t *packet;
+
+    VS_IOT_ASSERT(data);
+    VS_IOT_ASSERT(data_sz);
+
+    VS_IOT_MEMSET(buffer, 0, sizeof(buffer));
+
+    // Prepare pointers
+    packet = (vs_sdmp_packet_t *)buffer;
+
+    // Prepare request
+    packet->header.service_id = service_id;
+    packet->header.element_id = element_id;
+    packet->header.content_size = data_sz;
+    if (data_sz) {
+        VS_IOT_MEMCPY(packet->content, data, data_sz);
+    }
+    _sdmp_fill_header(mac, packet);
+
+    // Send request
+    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
+}
+
+/******************************************************************************/

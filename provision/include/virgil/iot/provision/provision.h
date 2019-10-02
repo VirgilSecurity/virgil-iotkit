@@ -52,6 +52,8 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
+#define VS_PRVS_SERVICE_ID (HTONL_IN_COMPILE_TIME('PRVS'))
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
 typedef enum {

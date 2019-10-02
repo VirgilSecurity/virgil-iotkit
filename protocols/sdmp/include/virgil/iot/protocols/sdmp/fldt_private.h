@@ -149,13 +149,6 @@ typedef struct {
 #define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
     CHECK_RET((fldt_ret_code = (OPERATION)) == VS_CODE_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
 
-int
-vs_fldt_send_request(const vs_netif_t *netif,
-                     const vs_mac_addr_t *mac,
-                     vs_sdmp_fldt_element_e element,
-                     const uint8_t *data,
-                     uint16_t data_sz);
-
 // Server request/response processing
 
 int

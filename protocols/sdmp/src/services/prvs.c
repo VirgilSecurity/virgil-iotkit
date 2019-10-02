@@ -472,7 +472,7 @@ _prepare_prvs_service() {
     _prvs_service.user_data = 0;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-    _prvs_service.id = HTONL_IN_COMPILE_TIME('PRVS');
+    _prvs_service.id = VS_PRVS_SERVICE_ID;
 #pragma GCC diagnostic pop
     _prvs_service.request_process = _prvs_service_request_processor;
     _prvs_service.response_process = _prvs_service_response_processor;
@@ -491,33 +491,6 @@ vs_sdmp_prvs_service() {
 }
 
 /******************************************************************************/
-static int
-_send_request(const vs_netif_t *netif,
-              const vs_mac_addr_t *mac,
-              vs_sdmp_prvs_element_e element,
-              const uint8_t *data,
-              uint16_t data_sz) {
-    uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
-    vs_sdmp_packet_t *packet;
-
-    memset(buffer, 0, sizeof(buffer));
-
-    // Prepare pointers
-    packet = (vs_sdmp_packet_t *)buffer;
-
-    // Prepare request
-    packet->header.element_id = element;
-    packet->header.service_id = _prvs_service.id;
-    packet->header.content_size = data_sz;
-    if (data_sz) {
-        memcpy(packet->content, data, data_sz);
-    }
-    _sdmp_fill_header(mac, packet);
-
-    // Send request
-    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
-}
-/******************************************************************************/
 int
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms) {
 
@@ -528,7 +501,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
 
     // Send request
-    if (0 != _send_request(netif, 0, VS_PRVS_DNID, 0, 0)) {
+    if (0 != vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0)) {
         return -1;
     }
 
@@ -574,7 +547,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, mac, element, data, data_sz)) {
+    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz)) {
         return -1;
     }
 
@@ -599,7 +572,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, mac, element, 0, 0)) {
+    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, 0, 0)) {
         return -1;
     }
 
@@ -645,7 +618,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != _send_request(netif, mac, VS_PRVS_ASGN, data, data_sz)) {
+    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz)) {
         return -1;
     }
 

@@ -32,41 +32,28 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
-#include <virgil/iot/protocols/sdmp/sdmp_private.h>
-#include <virgil/iot/macros/macros.h>
 
-/******************************************************************************/
-int
-vs_fldt_send_request(const vs_netif_t *netif,
-                     const vs_mac_addr_t *mac,
-                     vs_sdmp_fldt_element_e element,
-                     const uint8_t *data,
-                     uint16_t data_sz) {
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 
-    uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
-    vs_sdmp_packet_t *packet;
+#include <virgil/iot/protocols/sdmp/info-server.h>
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-    VS_IOT_ASSERT(data);
-    VS_IOT_ASSERT(data_sz);
+#define VS_INFO_SERVICE_ID (HTONL_IN_COMPILE_TIME('INFO'))
 
-    VS_IOT_MEMSET(buffer, 0, sizeof(buffer));
-
-    // Prepare pointers
-    packet = (vs_sdmp_packet_t *)buffer;
-
-    // Prepare request
-    packet->header.element_id = element;
+typedef enum {
+// mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-    packet->header.service_id = VS_FLDT_SERVICE_ID;
+    VS_INFO_ENUM = HTONL_IN_COMPILE_TIME('ENUM'), /* ENUMerate devices*/
+    VS_INFO_GINF = HTONL_IN_COMPILE_TIME('GINF'), /* General INFormation */
+    VS_INFO_STAT = HTONL_IN_COMPILE_TIME('STAT'), /* STATistics */
+    VS_INFO_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing of INFO elements by mask */
 #pragma GCC diagnostic pop
-    packet->header.content_size = data_sz;
-    if (data_sz) {
-        VS_IOT_MEMCPY(packet->content, data, data_sz);
-    }
-    _sdmp_fill_header(mac, packet);
+} vs_sdmp_info_element_e;
 
-    // Send request
-    return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
-}
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H

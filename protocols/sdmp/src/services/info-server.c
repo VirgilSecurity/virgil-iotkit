@@ -32,34 +32,18 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/info.h>
+#include <virgil/iot/protocols/sdmp/info-server.h>
+#include <virgil/iot/protocols/sdmp/info-private.h>
+#include <virgil/iot/protocols/sdmp/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <global-hal.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
 #include <endian-config.h>
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
 
 // Commands
-// mute "error: multi-character character constant" message
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-typedef enum {
-    VS_INFO_GINF = HTONL_IN_COMPILE_TIME('GINF'), /* General INFormation */
-} vs_sdmp_info_element_e;
-#pragma GCC diagnostic pop
-
-typedef struct __attribute__((__packed__)) {
-    vs_fw_manufacture_id_t manufacture_id;
-    vs_fw_device_type_t device_type;
-    vs_mac_addr_t default_netif_mac;
-    vs_firmware_version_t fw_version;
-    uint16_t tl_version;
-} vs_info_ginf_response_t;
 
 static vs_storage_op_ctx_t *_tl_ctx;
 static vs_storage_op_ctx_t *_fw_ctx;
@@ -149,10 +133,10 @@ _info_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
-             vs_storage_op_ctx_t *fw_ctx,
-             const vs_fw_manufacture_id_t manufacturer_id,
-             const vs_fw_device_type_t device_type) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
+                    vs_storage_op_ctx_t *fw_ctx,
+                    const vs_fw_manufacture_id_t manufacturer_id,
+                    const vs_fw_device_type_t device_type) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -167,10 +151,11 @@ vs_sdmp_info(vs_storage_op_ctx_t *tl_ctx,
     _info.user_data = NULL;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-    _info.id = HTONL_IN_COMPILE_TIME('INFO');
+    _info.id = VS_INFO_SERVICE_ID;
 #pragma GCC diagnostic pop
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
+    _info.periodical_process = NULL;
 
     return &_info;
 }

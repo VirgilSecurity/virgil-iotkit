@@ -527,8 +527,12 @@ vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
         VS_LOG_DEBUG("[FLDT] Broadcast new file information : %s",
                      _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
 
-        CHECK_RET(!vs_fldt_send_request(
-                          NULL, vs_sdmp_broadcast_mac(), VS_FLDT_INFV, (const uint8_t *)&new_file, sizeof(new_file)),
+        CHECK_RET(!vs_sdmp_send_request(NULL,
+                                        vs_sdmp_broadcast_mac(),
+                                        VS_FLDT_SERVICE_ID,
+                                        VS_FLDT_INFV,
+                                        (const uint8_t *)&new_file,
+                                        sizeof(new_file)),
                   VS_CODE_ERR_INCORRECT_SEND_REQUEST,
                   "Unable to send FLDT \"INFV\" broadcast request");
     }

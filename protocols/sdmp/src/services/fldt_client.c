@@ -127,8 +127,12 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
         return VS_CODE_OK;
     }
 
-    CHECK_RET(!vs_fldt_send_request(
-                      NULL, &update_ctx->gateway_mac, update_ctx->command, update_ctx->data, update_ctx->data_sz),
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    &update_ctx->gateway_mac,
+                                    VS_FLDT_SERVICE_ID,
+                                    update_ctx->command,
+                                    update_ctx->data,
+                                    update_ctx->data_sz),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to re-send FLDT request");
 
@@ -261,8 +265,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
                             (const uint8_t *)&header_request,
                             sizeof(header_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFH,
                                         (const uint8_t *)&header_request,
                                         sizeof(header_request)),
@@ -387,8 +392,9 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                         (const uint8_t *)&data_request,
                         sizeof(data_request));
 
-    CHECK_RET(!vs_fldt_send_request(NULL,
+    CHECK_RET(!vs_sdmp_send_request(NULL,
                                     &file_type_info->gateway_mac,
+                                    VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GNFD,
                                     (const uint8_t *)&data_request,
                                     sizeof(data_request)),
@@ -463,8 +469,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFD,
                                         (const uint8_t *)&data_request,
                                         sizeof(data_request)),
@@ -485,8 +492,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             (const uint8_t *)&footer_request,
                             sizeof(footer_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFF,
                                         (const uint8_t *)&footer_request,
                                         sizeof(footer_request)),
@@ -504,8 +512,12 @@ vs_fldt_ask_file_type_info(const char *file_type_descr, const vs_fldt_gfti_filei
 
     VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
 
-    CHECK_RET(!vs_fldt_send_request(
-                      NULL, vs_sdmp_broadcast_mac(), VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    vs_sdmp_broadcast_mac(),
+                                    VS_FLDT_SERVICE_ID,
+                                    VS_FLDT_GFTI,
+                                    (const uint8_t *)file_type,
+                                    sizeof(*file_type)),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to send FLDT \"GFTI\" server request");
 
