@@ -35,6 +35,11 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
+#   C library for HAL implementation
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
+
+#
 #   Factory initalizer
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-factory-initializer)
@@ -48,6 +53,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-registrar)
 #   Signer
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
+
+#
+#   SDMPD
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-sdmpd)
 
 #
 #   SDMP convert function generator

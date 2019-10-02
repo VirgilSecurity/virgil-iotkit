@@ -65,7 +65,7 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
 int
 vs_sdmp_info_get_general(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
-                         vs_info_ginf_response_t *response,
+                         vs_info_general_t *response,
                          uint32_t wait_ms);
 
 int

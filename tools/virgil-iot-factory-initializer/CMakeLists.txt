@@ -36,8 +36,6 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil-iot-factory-initializer VERSION 0.1.0 LANGUAGES Go C)
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
-
 #
 #   Check required CMake variables
 #
@@ -58,7 +56,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
-        -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
         )
 
 #
@@ -70,17 +68,6 @@ set(CMAKE_CGO_LDFLAGS
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-factory-initializer/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
         )
-
-#
-# Workaround target
-# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
-#
-add_custom_target(factory-initializer-mbedtls
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_LIST_DIR}/lib
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
-        )
-add_dependencies(factory-initializer-mbedtls converters)
 
 #
 #   Virgil IoT Initializer

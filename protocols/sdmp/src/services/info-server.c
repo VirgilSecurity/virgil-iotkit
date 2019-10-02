@@ -49,15 +49,64 @@ static vs_storage_op_ctx_t *_tl_ctx;
 static vs_storage_op_ctx_t *_fw_ctx;
 static vs_fw_manufacture_id_t _manufacture_id;
 static vs_fw_device_type_t _device_type;
+static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
 #define FW_DESCR_BUF 128
 
 /******************************************************************/
-int
-vs_info_GINF_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz) {
+static int
+_enum_request_processing(const uint8_t *request,
+                         const uint16_t request_sz,
+                         uint8_t *response,
+                         const uint16_t response_buf_sz,
+                         uint16_t *response_sz) {
+    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+    const vs_netif_t *defautl_netif;
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
+
+    // Set MAC address for default network interface
+    defautl_netif = vs_sdmp_default_netif();
+    CHECK_RET(!defautl_netif->mac_addr(&enum_response->mac), -1, "Cannot get MAC for Default Network Interface");
+
+    // Set current device roles
+    enum_response->device_roles = _device_roles;
+
+    // Set response size
+    *response_sz = sizeof(vs_info_enum_response_t);
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
+_poll_request_processing(const uint8_t *request,
+                         const uint16_t request_sz,
+                         uint8_t *response,
+                         const uint16_t response_buf_sz,
+                         uint16_t *response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
+_stat_request_processing(const uint8_t *request,
+                         const uint16_t request_sz,
+                         uint8_t *response,
+                         const uint16_t response_buf_sz,
+                         uint16_t *response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
+_ginf_request_processing(const uint8_t *request,
+                         const uint16_t request_sz,
+                         uint8_t *response,
+                         const uint16_t response_buf_sz,
+                         uint16_t *response_sz) {
     vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
     vs_firmware_descriptor_t fw_descr;
     const vs_netif_t *defautl_netif;
@@ -121,8 +170,17 @@ _info_request_processor(const struct vs_netif_t *netif,
 
     switch (element_id) {
 
+    case VS_INFO_ENUM:
+        return _enum_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_INFO_POLL:
+        return _poll_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
     case VS_INFO_GINF:
-        return vs_info_GINF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return _ginf_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_INFO_STAT:
+        return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     default:
         VS_LOG_ERROR("Unsupported INFO command");
@@ -136,7 +194,8 @@ const vs_sdmp_service_t *
 vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
                     const vs_fw_manufacture_id_t manufacturer_id,
-                    const vs_fw_device_type_t device_type) {
+                    const vs_fw_device_type_t device_type,
+                    uint32_t device_roles) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -147,12 +206,10 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
     _fw_ctx = fw_ctx;
     VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
     VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
+    _device_roles = device_roles;
 
     _info.user_data = NULL;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
     _info.id = VS_INFO_SERVICE_ID;
-#pragma GCC diagnostic pop
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = NULL;

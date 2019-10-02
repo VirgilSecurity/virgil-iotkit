@@ -34,78 +34,56 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(trust_list VERSION 0.1.0 LANGUAGES C)
+project(factory-initializer-hal VERSION 0.1.0 LANGUAGES C)
 
 #
-#   Trust List library
+#   Network interfaces for Factory Inittializer
 #
-add_library(trust_list)
+add_library(factory-initializer-hal)
 
 #
-#   Source code
+#   Sources
 #
-
-target_sources(trust_list
+target_sources(factory-initializer-hal
         PRIVATE
-        include/virgil/iot/trust_list/private/tl_operations.h
-        include/virgil/iot/trust_list/tl_structs.h
-        include/virgil/iot/trust_list/trust_list.h
-        include/virgil/iot/trust_list/update_tl_interface.h
 
-        src/tl_operations.c
-        src/trust_list.c
-        src/update_tl_interface.c
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_udp_bcast.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_implementation.c
         )
-
 #
-#   Set additional compiler flags
+#   Includes
 #
-if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("-- No CFLAGS_PLATFORM")
-else()
-    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
-    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
-endif()
-
-target_compile_options(trust_list
-        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
-
-#
-#   Config path
-#
-
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[trust_list] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-else()
-    message(STATUS "[trust_list] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
-endif()
-
-target_compile_definitions(${PROJECT_NAME}
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
-        )
-
-target_link_libraries(trust_list
+target_include_directories(factory-initializer-hal
         PUBLIC
-        logger
-        hsm
-        macros
-        provision
-        storage_hal
-        update
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
         )
+
 #
-#   Common include directories
+#   Libraries
 #
-target_include_directories(${PROJECT_NAME}
+target_link_libraries(factory-initializer-hal
+        PUBLIC
+        sdmp-factory
+
         PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-
-        PUBLIC
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
-
-        INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<INSTALL_INTERFACE:include>"
+        enable_pedantic_mode
         )
 
+#
+# Workaround target
+# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
+#
+add_custom_target(factory-initializer-mbedtls
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_LIST_DIR}/lib
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
+        )
+add_dependencies(factory-initializer-mbedtls converters)

@@ -37,6 +37,7 @@
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 
 #include <virgil/iot/protocols/sdmp/info-server.h>
+#include <virgil/iot/protocols/sdmp/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust_list.h>
@@ -55,5 +56,9 @@ typedef enum {
     VS_INFO_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing of INFO elements by mask */
 #pragma GCC diagnostic pop
 } vs_sdmp_info_element_e;
+
+// Structures aliases
+typedef vs_info_general_t vs_info_ginf_response_t;
+typedef vs_sdmp_info_device_t vs_info_enum_response_t;
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H

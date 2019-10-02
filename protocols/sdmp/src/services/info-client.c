@@ -47,6 +47,8 @@
 // External functions for access to upper level implementations
 static vs_sdmp_info_impl_t _info_impl = {0};
 
+static vs_sdmp_service_t _info_client = {0};
+
 static vs_sdmp_info_device_t *_devices_list = 0;
 static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
@@ -84,7 +86,7 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
 int
 vs_sdmp_info_get_general(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
-                         vs_info_ginf_response_t *response,
+                         vs_info_general_t *response,
                          uint32_t wait_ms) {
     return -1;
 }
@@ -109,6 +111,149 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
+static int
+_ginf_request_processor(const uint8_t *request,
+                        const uint16_t request_sz,
+                        uint8_t *response,
+                        const uint16_t response_buf_sz,
+                        uint16_t *response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_stat_request_processor(const uint8_t *request,
+                        const uint16_t request_sz,
+                        uint8_t *response,
+                        const uint16_t response_buf_sz,
+                        uint16_t *response_sz) {
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+
+    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+
+    CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_PARAMETER, "ENUM error on a remote device");
+    CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
+    CHECK_RET(sizeof(vs_info_enum_response_t) == response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
+
+    if (_devices_list && _devices_list_cnt < _devices_list_max) {
+        _devices_list[_devices_list_cnt].mac = enum_response->mac;
+        VS_IOT_MEMCPY(_devices_list[_devices_list_cnt].mac.bytes, enum_response->mac.bytes, ETH_ADDR_LEN);
+        _devices_list[_devices_list_cnt].device_roles = enum_response->device_roles;
+        _devices_list_cnt++;
+
+        return 0;
+    }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_ginf_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_stat_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static int
+_info_client_request_processor(const struct vs_netif_t *netif,
+                               vs_sdmp_element_t element_id,
+                               const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
+    (void)netif;
+
+    *response_sz = 0;
+
+    switch (element_id) {
+
+    case VS_INFO_ENUM:
+    case VS_INFO_POLL:
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+
+    case VS_INFO_GINF:
+        return _ginf_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_INFO_STAT:
+        return _stat_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
+    default:
+        VS_LOG_ERROR("Unsupported INFO command");
+        VS_IOT_ASSERT(false);
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+    }
+}
+
+/******************************************************************************/
+static int
+_info_client_response_processor(const struct vs_netif_t *netif,
+                                vs_sdmp_element_t element_id,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
+    (void)netif;
+
+    switch (element_id) {
+
+    case VS_INFO_ENUM:
+        return _enum_response_processor(is_ack, response, response_sz);
+
+    case VS_INFO_POLL:
+        return _poll_response_processor(is_ack, response, response_sz);
+
+    case VS_INFO_GINF:
+        return _ginf_response_processor(is_ack, response, response_sz);
+
+    case VS_INFO_STAT:
+        return _stat_response_processor(is_ack, response, response_sz);
+
+    default:
+        VS_LOG_ERROR("Unsupported INFO command");
+        VS_IOT_ASSERT(false);
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+    }
+}
+
+/******************************************************************************/
+static int
+_info_client_periodical_processor(void) {
+    //    vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
+    //    vs_fldt_update_ctx_t *_update_ctx;
+    //    size_t id;
+    //
+    //    for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
+    //        _update_ctx = &file_type_info->update_ctx;
+    //        if (_update_ctx->in_progress) {
+    //            _update_ctx->tick_cnt++;
+    //            if (_update_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
+    //                _update_process_retry(_update_ctx);
+    //            }
+    //        }
+    //    }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
 const vs_sdmp_service_t *
 vs_sdmp_info_client(vs_sdmp_info_impl_t *impl) {
     CHECK_NOT_ZERO_RET(impl, NULL);
@@ -116,62 +261,13 @@ vs_sdmp_info_client(vs_sdmp_info_impl_t *impl) {
     // Save implementation
     VS_IOT_MEMCPY(&_info_impl, impl, sizeof(_info_impl));
 
+    _info_client.user_data = 0;
+    _info_client.id = VS_INFO_SERVICE_ID;
+    _info_client.request_process = _info_client_request_processor;
+    _info_client.response_process = _info_client_response_processor;
+    _info_client.periodical_process = _info_client_periodical_processor;
 
-    return 0;
+    return NULL;
 }
 
 /******************************************************************************/
-// static int
-//_info_request_processor(const struct vs_netif_t *netif,
-//                        vs_sdmp_element_t element_id,
-//                        const uint8_t *request,
-//                        const uint16_t request_sz,
-//                        uint8_t *response,
-//                        const uint16_t response_buf_sz,
-//                        uint16_t *response_sz) {
-//    (void)netif;
-//
-//    *response_sz = 0;
-//
-//    switch (element_id) {
-//
-//    case VS_INFO_GINF:
-//        return vs_info_GINF_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-//
-//    default:
-//        VS_LOG_ERROR("Unsupported INFO command");
-//        VS_IOT_ASSERT(false);
-//        return VS_SDMP_COMMAND_NOT_SUPPORTED;
-//    }
-//}
-
-/******************************************************************************/
-// const vs_sdmp_service_t *
-// vs_sdmp_info_client(vs_storage_op_ctx_t *tl_ctx,
-//                    vs_storage_op_ctx_t *fw_ctx,
-//                    const vs_fw_manufacture_id_t manufacturer_id,
-//                    const vs_fw_device_type_t device_type) {
-//
-//    static vs_sdmp_service_t _info = {0};
-//
-//    CHECK_NOT_ZERO_RET(tl_ctx, NULL);
-//    CHECK_NOT_ZERO_RET(fw_ctx, NULL);
-//
-//    _tl_ctx = tl_ctx;
-//    _fw_ctx = fw_ctx;
-//    VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
-//    VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
-//
-//    _info.user_data = NULL;
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wmultichar"
-//    _info.id = HTONL_IN_COMPILE_TIME('INFO');
-//#pragma GCC diagnostic pop
-//    _info.request_process = NULL;
-//    _info.response_process = NULL;
-//    _info.periodical_process = NULL;
-//
-//    return &_info;
-//}
-//
-///******************************************************************************/

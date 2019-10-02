@@ -47,7 +47,8 @@ const vs_sdmp_service_t *
 vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
                     const vs_fw_manufacture_id_t manufacturer_id,
-                    const vs_fw_device_type_t device_type);
+                    const vs_fw_device_type_t device_type,
+                    uint32_t device_roles);
 
 #ifdef __cplusplus
 }

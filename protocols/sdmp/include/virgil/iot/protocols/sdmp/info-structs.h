@@ -54,7 +54,7 @@ typedef struct __attribute__((__packed__)) {
     vs_mac_addr_t default_netif_mac;
     vs_firmware_version_t fw_version;
     uint16_t tl_version;
-} vs_info_ginf_response_t;
+} vs_info_general_t;
 
 typedef struct __attribute__((__packed__)) {
     uint32_t sent;

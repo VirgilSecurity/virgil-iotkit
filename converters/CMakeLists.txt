@@ -69,9 +69,9 @@ add_library(${CONV_LIB}
 #   Set additional compiler flags
 #
 if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("No CFLAGS_PLATFORM")
+    message("-- No CFLAGS_PLATFORM")
 else()
-    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 

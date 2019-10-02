@@ -34,45 +34,41 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(factory-initializer-hal VERSION 0.1.0 LANGUAGES C)
+project(virgil-sdmpd VERSION 0.1.0 LANGUAGES Go C)
 
 #
-#   Network interfaces for Factory Inittializer
+#   Check required CMake variables
 #
-add_library(factory-initializer-hal)
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+endif()
+
+if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
+    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+endif()
 
 #
-#   Sources
+#   CFLAGS for CGO
 #
-target_sources(factory-initializer-hal
-        PRIVATE
-
-        # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_udp_bcast.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h
-
-        # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_implementation.c
-        )
-#
-#   Includes
-#
-target_include_directories(factory-initializer-hal
-        PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
+set(CMAKE_CGO_CFLAGS
+        ${CMAKE_CGO_CFLAGS}
+        -I${VIRGIL_IOT_DIRECTORY}/protocols/sdmp/include
+        -I${VIRGIL_IOT_DIRECTORY}/provision/include
+        -I${VIRGIL_IOT_DIRECTORY}/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/hsm/include
+        -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
         )
 
 #
-#   Libraries
+#   LDFLAGS for CGO
 #
-target_link_libraries(factory-initializer-hal
-        PUBLIC
-        sdmp-factory
-
-        PRIVATE
-        enable_pedantic_mode
+set(CMAKE_CGO_LDFLAGS
+        ${CMAKE_CGO_LDFLAGS}
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-factory-initializer/c_libs
         )
+
+#
+#   Virgil IoT Initializer
+#
+add_go_executable(virgil-sdmpd factory-initializer-hal factory-initializer-mbedtls)
