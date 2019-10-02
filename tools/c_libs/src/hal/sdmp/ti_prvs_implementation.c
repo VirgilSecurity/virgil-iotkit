@@ -40,6 +40,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/protocols/sdmp/info-client.h>
 
 // For the simplest implementation of os_event
 static pthread_mutex_t _wait_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -117,3 +118,18 @@ vs_prvs_impl() {
 
     return res;
 }
+
+/******************************************************************************/
+vs_sdmp_info_impl_t
+vs_info_impl() {
+    vs_sdmp_info_impl_t res;
+
+    memset(&res, 0, sizeof(res));
+
+    res.stop_wait_func = vs_prvs_stop_wait_func;
+    res.wait_func = vs_prvs_wait_func;
+
+    return res;
+}
+
+/******************************************************************************/

@@ -56,7 +56,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
-        -I${CMAKE_CURRENT_LIST_DIR}/c_libs/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
         )
 
 #
@@ -65,7 +65,7 @@ set(CMAKE_CGO_CFLAGS
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-factory-initializer/c_libs
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
         )
 
 #

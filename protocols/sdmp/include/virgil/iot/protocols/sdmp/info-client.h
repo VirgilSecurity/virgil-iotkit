@@ -53,7 +53,7 @@ typedef struct {
 
 
 const vs_sdmp_service_t *
-vs_sdmp_info_client(vs_sdmp_info_impl_t *impl);
+vs_sdmp_info_client(vs_sdmp_info_impl_t impl);
 
 int
 vs_sdmp_info_enum_devices(const vs_netif_t *netif,

@@ -1,5 +1,14 @@
 package main
 
+/*
+#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/sdmp/info-client.h>
+#include <virgil/iot/initializer/hal/ti_netif_udp_bcast.h>
+#include <virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h>
+*/
+
+import "C"
 import (
 	"encoding/json"
 	"fmt"
@@ -26,6 +35,28 @@ type DeviceInfo struct {
 var devices []DeviceInfo
 
 func main() {
+
+// Use UDP Broadcast as transport
+    if 0 != C.vs_sdmp_init(C.vs_hal_netif_udp_bcast()) {
+        return fmt.Errorf("can't start SDMP communication")
+    }
+
+    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_info_client(C.vs_info_impl())) {
+        return fmt.Errorf("can't register SDMP:INFO client service")
+    }
+
+    list := C.vs_sdmp_info_device_t[20];
+    cnt := C.size_t;
+
+// const vs_netif_t *netif,
+//                           vs_sdmp_info_device_t *devices,
+//                           size_t devices_max,
+//                           size_t *devices_cnt,
+//                           uint32_t wait_ms
+
+    if 0 != C.vs_sdmp_info_enum_devices(nil, &list, 20, &cnt, DEFAULT_TIMEOUT_MS) {
+        return fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
+    }
 
 	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
 	listeningPort := readListeningPort(os.Args)

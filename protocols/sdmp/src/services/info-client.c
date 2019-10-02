@@ -255,11 +255,9 @@ _info_client_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_client(vs_sdmp_info_impl_t *impl) {
-    CHECK_NOT_ZERO_RET(impl, NULL);
-
+vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
     // Save implementation
-    VS_IOT_MEMCPY(&_info_impl, impl, sizeof(_info_impl));
+    VS_IOT_MEMCPY(&_info_impl, &impl, sizeof(_info_impl));
 
     _info_client.user_data = 0;
     _info_client.id = VS_INFO_SERVICE_ID;

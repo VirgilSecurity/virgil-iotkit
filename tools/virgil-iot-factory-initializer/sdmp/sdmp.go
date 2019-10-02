@@ -153,11 +153,6 @@ func (p Processor ) ConnectToPLCBus() error {
         return fmt.Errorf("can't start SDMP communication")
     }
 
-    // Use PLC simulator as transport
-//     if 0 != C.vs_sdmp_init(C.vs_hal_netif_plc_sim()) {
-//         return fmt.Errorf("can't start SDMP communication")
-//     }
-
     if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_service()) {
         return fmt.Errorf("can't register SDMP:PRVS service")
     }
