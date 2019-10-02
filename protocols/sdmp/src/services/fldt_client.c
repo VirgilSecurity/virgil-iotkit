@@ -548,13 +548,15 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                                                             file_type_info->file_header,
                                                             file_footer->footer_data,
                                                             file_footer->footer_size);
-    successfully_updated = ret_code == VS_CODE_OK;
+    successfully_updated = (ret_code == VS_CODE_OK);
 
     if (!successfully_updated) {
         VS_LOG_ERROR("Error while processing footer for file %s. Error description : %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)),
                      vs_status_code_descr(ret_code));
     }
+
+    file_type_info->update_ctx.in_progress = !successfully_updated;
 
     _got_file_callback(file_type,
                        &file_type_info->prev_file_version,
