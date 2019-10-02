@@ -81,22 +81,22 @@ _plc_receive_processor(void *sock_desc) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _plc_tx_sim(const uint8_t *data, const uint16_t data_sz) {
 
     if (_plc_sock <= 0) {
-        return -1;
+        return VS_CODE_ERR_SOCKET;
     }
 
     if (data_sz == send(_plc_sock, data, data_sz, 0)) {
-        return 0;
+        return VS_CODE_OK;
     }
 
-    return -1;
+    return VS_CODE_ERR_PLC;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
     struct sockaddr_in server;
 
@@ -115,18 +115,18 @@ _plc_init_sim(const vs_netif_rx_cb_t rx_cb) {
     // Connect to remote server
     if (connect(_plc_sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("Connection failed. Error\n");
-        return 1;
+        return VS_CODE_ERR_SOCKET;
     }
 
     printf("Connected to PLC bus\n");
 
     pthread_create(&receive_thread, NULL, _plc_receive_processor, NULL);
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 _plc_deinit_sim() {
 #if !defined(__APPLE__)
     shutdown(_plc_sock, SHUT_RDWR);
@@ -134,19 +134,19 @@ _plc_deinit_sim() {
     close(_plc_sock);
     _plc_sock = -1;
     pthread_join(receive_thread, NULL);
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 _plc_mac_sim(struct vs_mac_addr_t *mac_addr) {
 
     if (mac_addr) {
         memset(mac_addr->bytes, 0x01, sizeof(vs_mac_addr_t));
-        return 0;
+        return VS_CODE_OK;
     }
 
-    return 1;
+    return VS_CODE_ERR_NULLPTR_ARGUMENT;
 }
 
 /******************************************************************************/

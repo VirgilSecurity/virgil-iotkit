@@ -36,8 +36,9 @@
 #define VS_HSM_VS_ECIES_H
 
 #include <stdint.h>
+#include <virgil/iot/status_code/status_code.h>
 
-int
+vs_status_code_e
 vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
                                     uint8_t *cryptogram,
@@ -46,7 +47,7 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t buf_sz,
                                     size_t *decrypted_data_sz);
 
-int
+vs_status_code_e
 vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
                                     uint8_t *data,

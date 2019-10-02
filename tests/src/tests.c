@@ -83,8 +83,8 @@ _save_hl_key(size_t slot, const char *id_str, const uint8_t *in_data, uint16_t d
 bool
 vs_test_erase_otp_provision() {
     VS_HEADER_SUBCASE("Erase otp slots");
-    if (VS_HSM_ERR_OK != vs_hsm_slot_delete(PRIVATE_KEY_SLOT) || VS_HSM_ERR_OK != vs_hsm_slot_delete(REC1_KEY_SLOT) ||
-        VS_HSM_ERR_OK != vs_hsm_slot_delete(REC2_KEY_SLOT)) {
+    if (VS_CODE_OK != vs_hsm_slot_delete(PRIVATE_KEY_SLOT) || VS_CODE_OK != vs_hsm_slot_delete(REC1_KEY_SLOT) ||
+        VS_CODE_OK != vs_hsm_slot_delete(REC2_KEY_SLOT)) {
         VS_LOG_ERROR("[AP] Error. Can't erase OTP slots. ");
         return false;
     }
@@ -95,7 +95,7 @@ vs_test_erase_otp_provision() {
 bool
 vs_test_create_device_key() {
     VS_HEADER_SUBCASE("Create device keypair");
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_create(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
                    "Error create device key");
     return true;
 }

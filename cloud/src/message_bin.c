@@ -66,12 +66,12 @@ _mb_mqtt_ctx_free(vs_cloud_mb_mqtt_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
-    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     if (ctx->is_filled) {
-        return VS_CLOUD_ERR_OK;
+        return VS_CODE_OK;
     }
 
     _mb_mqtt_ctx_free(ctx);
@@ -82,10 +82,10 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
     char *answer = (char *)VS_IOT_MALLOC(answer_size);
     if (!answer) {
         VS_LOG_ERROR("ALLOCATION FAIL in message bin credentials\r\n");
-        return VS_CLOUD_ERR_NOMEM;
+        return VS_CODE_ERR_NO_MEMORY;
     }
 
-    if (VS_CLOUD_ERR_OK == vs_cloud_fetch_message_bin_credentials(answer, &answer_size)) {
+    if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(answer, &answer_size)) {
         jobj_t jobj;
         int len;
 
@@ -219,57 +219,57 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ctx->is_filled = true;
         VS_IOT_FREE(answer);
         VS_LOG_DEBUG("[MB] Credentials are loaded successfully");
-        return VS_CLOUD_ERR_OK;
+        return VS_CODE_OK;
     }
 
 clean:
     _mb_mqtt_ctx_free(ctx);
     VS_IOT_FREE(answer);
-    return VS_CLOUD_ERR_FAIL;
+    return VS_CODE_ERR_CLOUD;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
-    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _mb_mqtt_ctx_free(ctx);
-    return VS_CLOUD_ERR_OK;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     const char *root_ca_crt,
                     vs_cloud_mb_init_func init,
                     vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process) {
 
-    CHECK_NOT_ZERO_RET(ctx, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(init, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(connect_subscribe, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(process, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(init, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(connect_subscribe, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(process, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    bool provision_is_present = ctx->is_filled || (VS_CLOUD_ERR_OK == _get_message_bin_credentials(ctx));
+    bool provision_is_present = ctx->is_filled || (VS_CODE_OK == _get_message_bin_credentials(ctx));
 
     if (provision_is_present) {
         if (!ctx->is_active) {
 
             VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", ctx->host, ctx->port);
 
-            if (VS_CLOUD_ERR_OK == init(ctx->host,
+            if (VS_CODE_OK == init(ctx->host,
                                         ctx->port,
                                         (const char *)ctx->cert,
                                         (const char *)ctx->pk,
                                         (const char *)root_ca_crt) &&
-                VS_CLOUD_ERR_OK == connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list)) {
+                VS_CODE_OK == connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list)) {
                 ctx->is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");
             }
-            return VS_CLOUD_ERR_OK;
+            return VS_CODE_OK;
         }
         return process();
     }
-    return VS_CLOUD_ERR_FAIL;
+    return VS_CODE_ERR_CLOUD;
 }

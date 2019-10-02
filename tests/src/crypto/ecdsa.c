@@ -156,7 +156,7 @@ test_ecdsa(void) {
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_ED25519)
 
 #if USE_RSA
-    if (VS_HSM_ERR_OK != vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
+    if (VS_CODE_OK != vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
         return failed_test_result + 1;
     }
 

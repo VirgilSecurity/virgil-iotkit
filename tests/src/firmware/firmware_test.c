@@ -98,7 +98,7 @@ _create_test_signed_hl_key(vs_key_type_e hl_key_type,
     hl_key->pubkey.ec_type = VS_KEYPAIR_EC_SECP256R1;
     hl_key->pubkey.key_type = hl_key_type;
 
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_get_pubkey(
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_get_pubkey(
                                             slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
                    "Error get test pubkey");
 
@@ -114,17 +114,17 @@ _create_test_signed_hl_key(vs_key_type_e hl_key_type,
         sign->ec_type = VS_KEYPAIR_EC_SECP256R1;
 
         BOOL_CHECK_RET(
-                VS_HSM_ERR_OK ==
+                VS_CODE_OK ==
                         vs_hsm_ecdsa_sign(
                                 TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
                 "Error sign test pubkey");
 
-        BOOL_CHECK_RET(VS_HSM_ERR_OK ==
+        BOOL_CHECK_RET(VS_CODE_OK ==
                                vs_hsm_keypair_get_pubkey(
                                        TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
                        "Error get test RECOVERY pubkey");
     }
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_slot_save(slot_to_save_pubkey, buf, hl_slot_sz), "Error save test pubkey");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_slot_save(slot_to_save_pubkey, buf, hl_slot_sz), "Error save test pubkey");
     return true;
 }
 
@@ -132,11 +132,11 @@ _create_test_signed_hl_key(vs_key_type_e hl_key_type,
 static bool
 _create_test_hl_keys() {
     VS_HEADER_SUBCASE("Create test hl keys");
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(TEST_REC_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_create(TEST_REC_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
                    "Error create test recovery keypair");
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(TEST_AUTH_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_create(TEST_AUTH_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
                    "Error create test auth keypair");
-    BOOL_CHECK_RET(VS_HSM_ERR_OK == vs_hsm_keypair_create(TEST_FW_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_create(TEST_FW_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
                    "Error create fw keypair");
 
     BOOL_CHECK_RET(_create_test_signed_hl_key(VS_KEY_RECOVERY, TEST_REC_KEYPAIR, REC1_KEY_SLOT, false),
@@ -165,12 +165,12 @@ _create_test_firmware_signature(vs_key_type_e signer_type,
     sign_buf->hash_type = VS_HASH_SHA_256;
 
     BOOL_CHECK_RET(
-            VS_HSM_ERR_OK ==
+            VS_CODE_OK ==
                     vs_hsm_ecdsa_sign(
                             slot_with_hl_keypair, VS_HASH_SHA_256, fw_hash, sign_buf->raw_sign_pubkey, sign_len, &_sz),
             "Error sign test firmware by auth key");
     BOOL_CHECK_RET(
-            VS_HSM_ERR_OK ==
+            VS_CODE_OK ==
                     vs_hsm_keypair_get_pubkey(
                             slot_with_hl_keypair, sign_buf->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
             "Error get test aut pubkey");
@@ -227,18 +227,18 @@ _create_test_firmware_footer() {
 static bool
 _test_firmware_save_load_descriptor(vs_storage_op_ctx_t *ctx) {
     vs_firmware_descriptor_t desc;
-    BOOL_CHECK_RET(VS_STORAGE_OK ==
+    BOOL_CHECK_RET(VS_CODE_OK ==
                            vs_firmware_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
                    "Error save descriptor");
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_load_firmware_descriptor(ctx,
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_descriptor(ctx,
                                                                        (uint8_t *)_test_descriptor.info.manufacture_id,
                                                                        (uint8_t *)_test_descriptor.info.device_type,
                                                                        &desc),
                    "Error load descriptor");
     MEMCMP_CHECK_RET(&desc, &_test_descriptor, sizeof(vs_firmware_descriptor_t), false);
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_delete_firmware(ctx, &desc), "Error delete descriptor");
-    BOOL_CHECK_RET(VS_STORAGE_ERROR_NOT_FOUND ==
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &desc), "Error delete descriptor");
+    BOOL_CHECK_RET(VS_CODE_ERR_NOT_FOUND ==
                            vs_firmware_load_firmware_descriptor(ctx,
                                                               (uint8_t *)_test_descriptor.info.manufacture_id,
                                                               (uint8_t *)_test_descriptor.info.device_type,
@@ -259,32 +259,32 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
             sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     uint8_t footer_buf[footer_sz];
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save descriptor");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save descriptor");
 
     BOOL_CHECK_RET(
-            VS_STORAGE_OK ==
+            VS_CODE_OK ==
                     vs_firmware_save_firmware_chunk(
                             ctx, &_test_descriptor, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
             "Error save data");
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_load_firmware_chunk(ctx, &_test_descriptor, 0, buf, sizeof(buf), &_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_chunk(ctx, &_test_descriptor, 0, buf, sizeof(buf), &_sz),
                    "Error read data");
     BOOL_CHECK_RET(_sz == sizeof(VS_TEST_FIRMWARE_DATA), "Error size of reading data");
     MEMCMP_CHECK_RET(buf, VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), false);
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_save_firmware_footer(ctx, &_test_descriptor, _fw_footer),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_footer(ctx, &_test_descriptor, _fw_footer),
                    "Error save footer");
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_load_firmware_footer(ctx, &_test_descriptor, footer_buf, footer_sz, &_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_footer(ctx, &_test_descriptor, footer_buf, footer_sz, &_sz),
                    "Error read footer");
     BOOL_CHECK_RET(_sz == footer_sz, "Error size of reading footer");
     MEMCMP_CHECK_RET(footer_buf, _fw_footer, footer_sz, false);
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_verify_firmware(ctx, &_test_descriptor), "Error verify firmware");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_verify_firmware(ctx, &_test_descriptor), "Error verify firmware");
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_install_firmware(ctx, &_test_descriptor), "Error install firmware");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_install_firmware(ctx, &_test_descriptor), "Error install firmware");
 
-    BOOL_CHECK_RET(VS_STORAGE_OK == vs_firmware_delete_firmware(ctx, &_test_descriptor), "Error delete firmware");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &_test_descriptor), "Error delete firmware");
 
-    BOOL_CHECK_RET(VS_STORAGE_OK != vs_firmware_install_firmware(ctx, &_test_descriptor),
+    BOOL_CHECK_RET(VS_CODE_OK != vs_firmware_install_firmware(ctx, &_test_descriptor),
                    "The install firmware function has returned OK but image has already been deleted");
 
     return true;
@@ -303,7 +303,7 @@ vs_firmware_test(vs_storage_op_ctx_t *ctx) {
     TEST_CASE_OK("Save load firmware descriptor", _test_firmware_save_load_descriptor(ctx));
     TEST_CASE_OK("Save load firmware data", _test_firmware_save_load_data(ctx));
 
-    if (VS_STORAGE_OK != vs_firmware_init(ctx)) {
+    if (VS_CODE_OK != vs_firmware_init(ctx)) {
         RESULT_ERROR;
     }
 

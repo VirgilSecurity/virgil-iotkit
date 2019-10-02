@@ -98,7 +98,7 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
                      vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
-    if (VS_HSM_ERR_OK != vs_hsm_ecdh(bob_slot,
+    if (VS_CODE_OK != vs_hsm_ecdh(bob_slot,
                                      alice_keypair_type,
                                      alice_public_key,
                                      alice_public_key_sz,

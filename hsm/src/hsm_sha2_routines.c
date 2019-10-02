@@ -116,9 +116,8 @@ mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char d
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
-    int ret;
     size_t fill;
     uint32_t left;
 
@@ -137,8 +136,8 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     if (left && len >= fill) {
         memcpy((void *)(ctx->buffer + left), message, fill);
 
-        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-            return (ret);
+        if (mbedtls_internal_sha256_process(ctx, ctx->buffer) != 0)
+            return VS_CODE_ERR_CRYPTO;
 
         message += fill;
         len -= fill;
@@ -146,8 +145,8 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     }
 
     while (len >= 64) {
-        if ((ret = mbedtls_internal_sha256_process(ctx, message)) != 0)
-            return (ret);
+        if (mbedtls_internal_sha256_process(ctx, message) != 0)
+            return VS_CODE_ERR_CRYPTO;
 
         message += 64;
         len -= 64;
@@ -156,13 +155,12 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     if (len > 0)
         memcpy((void *)(ctx->buffer + left), message, len);
 
-    return (0);
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]) {
-    int ret;
     uint32_t used;
     uint32_t high, low;
 
@@ -180,8 +178,8 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
         /* We'll need an extra block */
         VS_IOT_MEMSET(ctx->buffer + used, 0, 64 - used);
 
-        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-            return (ret);
+        if (mbedtls_internal_sha256_process(ctx, ctx->buffer) != 0)
+            return VS_CODE_ERR_CRYPTO;
 
         VS_IOT_MEMSET(ctx->buffer, 0, sizeof(ctx->buffer));
     }
@@ -195,8 +193,8 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
     PUT_UINT32_BE(high, ctx->buffer, 56);
     PUT_UINT32_BE(low, ctx->buffer, 60);
 
-    if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-        return (ret);
+    if (mbedtls_internal_sha256_process(ctx, ctx->buffer) != 0)
+        return VS_CODE_ERR_CRYPTO;
 
     /*
      * Output final state
@@ -213,8 +211,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
 
     VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
 
-
-    return (0);
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

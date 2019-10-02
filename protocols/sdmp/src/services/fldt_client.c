@@ -551,9 +551,8 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     successfully_updated = (ret_code == VS_CODE_OK);
 
     if (!successfully_updated) {
-        VS_LOG_ERROR("Error while processing footer for file %s. Error description : %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)),
-                     vs_status_code_descr(ret_code));
+        VS_LOG_ERROR("Error while processing footer for file %s",
+                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
     }
 
     file_type_info->update_ctx.in_progress = !successfully_updated;

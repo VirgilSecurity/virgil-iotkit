@@ -76,6 +76,7 @@ target_link_libraries(hsm
         PUBLIC
         logger
         macros
+        virgil-iot-status-code
         )
 #
 #   Common include directories
