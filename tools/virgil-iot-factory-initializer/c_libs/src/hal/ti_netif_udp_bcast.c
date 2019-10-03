@@ -54,14 +54,12 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
 static int
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
-static vs_netif_t _netif_udp_bcast = {
-        .user_data = NULL,
-        .init = _udp_bcast_init,
-        .deinit = _udp_bcast_deinit,
-        .tx = _udp_bcast_tx,
-        .mac_addr = _udp_bcast_mac,
-        .packet_buf_filled = 0
-};
+static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
+                                      .init = _udp_bcast_init,
+                                      .deinit = _udp_bcast_deinit,
+                                      .tx = _udp_bcast_tx,
+                                      .mac_addr = _udp_bcast_mac,
+                                      .packet_buf_filled = 0};
 
 static vs_netif_rx_cb_t _netif_udp_bcast_rx_cb = 0;
 static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;

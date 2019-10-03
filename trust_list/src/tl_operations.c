@@ -113,6 +113,7 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
     CHECK_NOT_ZERO_RET(op_ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(op_ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(op_ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(op_ctx->impl.sync, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(op_ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
     CHECK_RET(data_sz <= op_ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big");
 
@@ -127,6 +128,9 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
         VS_LOG_ERROR("Can't save data to file");
         return VS_STORAGE_ERROR_WRITE;
     }
+
+    int res = op_ctx->impl.sync(op_ctx->storage_ctx, f);
+    CHECK_RET(VS_STORAGE_OK == res, res, "Can't sync file");
 
     return op_ctx->impl.close(op_ctx->storage_ctx, f);
 }
