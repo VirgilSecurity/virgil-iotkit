@@ -64,8 +64,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 32;
     default:
-        VS_LOG_DEBUG("Unsupported keypair type");
-        VS_IOT_ASSERT(false);
+        VS_LOG_WARNING("Unsupported keypair type");
         return VS_CODE_ERR_CRYPTO;
     }
 }
@@ -94,8 +93,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_ED25519:
         return 64;
     default:
-        VS_LOG_DEBUG("Unsupported signature type");
-        VS_IOT_ASSERT(false);
+        VS_LOG_WARNING("Unsupported signature type");
         return VS_CODE_ERR_CRYPTO;
     }
 }
@@ -111,8 +109,7 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
     case VS_HASH_SHA_512:
         return 64;
     default:
-        VS_LOG_DEBUG("Unsupported hash type");
-        VS_IOT_ASSERT(false);
+        VS_LOG_WARNING("Unsupported hash type");
         return VS_CODE_ERR_CRYPTO;
     }
 }
@@ -144,8 +141,7 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type) {
     case VS_KEYPAIR_RSA_2048:
         return "RSA 2048 bit";
     default:
-        VS_LOG_DEBUG("Unsupported keypair type");
-        VS_IOT_ASSERT(false);
+        VS_LOG_WARNING("Unsupported keypair type");
         return NULL;
     }
 }
@@ -161,8 +157,7 @@ vs_hsm_hash_type_descr(vs_hsm_hash_type_e type) {
     case VS_HASH_SHA_512:
         return "SHA 512";
     default:
-        VS_LOG_DEBUG("Unsupported hash type");
-        VS_IOT_ASSERT(false);
+        VS_LOG_WARNING("Unsupported hash type");
         return NULL;
     }
 }

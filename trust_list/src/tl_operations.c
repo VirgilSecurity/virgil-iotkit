@@ -281,8 +281,8 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
         return VS_CODE_ERR_CTX_NOT_READY;
     }
 
-    if (VS_CODE_ERR_FILE_READ != vs_tl_header_load(src->storage.storage_type, &header) ||
-            VS_CODE_ERR_FILE_WRITE != vs_tl_header_save(dst->storage.storage_type, &header)) {
+    if (VS_CODE_OK != vs_tl_header_load(src->storage.storage_type, &header) ||
+            VS_CODE_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
         dst->ready = false;
         return VS_CODE_ERR_FILE_WRITE;
     }

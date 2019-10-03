@@ -97,7 +97,6 @@ test_keypair(void) {
 
     START_TEST("Keypair tests");
 
-
     for (pos = 0; pos < cases_amount; ++pos) {
         _test_case_t *test_case = &test_cases[pos];
 

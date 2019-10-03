@@ -164,7 +164,7 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
 
     if (encrypted_data_sz < VS_AES_256_GCM_AUTH_TAG_SIZE ||
         buf_sz < (encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE)) {
-        return VS_CODE_OK;
+        return VS_CODE_ERR_CRYPTO;
     }
 
     *decrypted_data_sz = encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE;

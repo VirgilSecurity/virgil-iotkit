@@ -59,7 +59,7 @@
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 #define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RET)                                                                             \
-    CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
+    CHECK_RET(VS_IOT_MEMCMP((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 

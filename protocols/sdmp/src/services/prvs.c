@@ -305,8 +305,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
     // Normalize byte order
     vs_sdmp_prvs_devi_t_encode(devi_response);
 
-
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

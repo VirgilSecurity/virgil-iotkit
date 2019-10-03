@@ -363,7 +363,7 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 
     VS_IOT_ASSERT(service);
 
-    CHECK_RET(_sdmp_services_num >= SERVICES_CNT_MAX,
+    CHECK_RET(_sdmp_services_num < SERVICES_CNT_MAX,
               VS_CODE_ERR_SDMP_TOO_MUCH_SERVICES,
               "SDMP services amount exceed maximum sllowed %d",
               SERVICES_CNT_MAX);

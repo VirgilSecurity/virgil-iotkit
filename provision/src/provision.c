@@ -72,6 +72,7 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *s
         break;
     default:
         VS_LOG_ERROR("Incorrect key type %d", key_type);
+        VS_IOT_ASSERT(false);
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
@@ -126,6 +127,7 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
         return VS_CODE_OK;
     default:
         VS_LOG_ERROR("Incorrect provision element %d", id);
+        VS_IOT_ASSERT(false);
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
