@@ -113,7 +113,13 @@ _fw_update_get_header(void *context, vs_update_file_type_t *file_type, void *hea
 
     CHECK_RET(buffer_size >= sizeof(vs_firmware_descriptor_t), VS_CODE_ERR_NO_MEMORY, "Buffer size %d is lower that sizeof(vs_firmware_descriptor_t) = %d", buffer_size, sizeof(vs_firmware_descriptor_t));
 
-    STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(ctx, manufacture_id, device_type, fw_descr), "Unable to load Firmware's header");
+    if(VS_CODE_OK != vs_firmware_load_firmware_descriptor(ctx, manufacture_id, device_type, fw_descr)){
+        VS_LOG_WARNING("Unable to load Firmware's header");
+        VS_IOT_MEMSET(fw_descr, 0, sizeof(*fw_descr));
+        VS_IOT_MEMCPY(&fw_descr->info.manufacture_id, manufacture_id, sizeof(fw_descr->info.manufacture_id));
+        VS_IOT_MEMCPY(&fw_descr->info.device_type, device_type, sizeof(fw_descr->info.device_type));
+    }
+
     *header_size = sizeof(vs_firmware_descriptor_t);
     CHECK_RET(buffer_size >= *header_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store header %d bytes size", buffer_size, *header_size);
 
