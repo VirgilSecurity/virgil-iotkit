@@ -428,7 +428,6 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
 
     default:
         VS_LOG_ERROR("Unsupported PRVS request %d", element_id);
-        VS_IOT_ASSERT(false);
         return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
     }
 }
