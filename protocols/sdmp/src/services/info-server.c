@@ -52,6 +52,16 @@ static vs_fw_device_type_t _device_type;
 static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
 #define FW_DESCR_BUF 128
 
+// Polling
+typedef struct {
+    uint32_t elements_mask;
+    uint16_t period_seconds;
+    uint16_t time_counter;
+    vs_mac_addr_t dest_mac;
+} vs_poll_ctx_t;
+
+static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+
 /******************************************************************/
 static int
 _enum_request_processing(const uint8_t *request,
@@ -87,7 +97,27 @@ _poll_request_processing(const uint8_t *request,
                          uint8_t *response,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
-    return VS_CODE_OK;
+
+    vs_status_code_e res = VS_CODE_ERR_INCORRECT_ARGUMENT;
+    vs_info_poll_request_t *poll_request = (vs_info_poll_request_t *)request;
+
+    CHECK_NOT_ZERO(request);
+    CHECK_NOT_ZERO(response_sz);
+    CHECK(sizeof(vs_info_poll_request_t) == request_sz, "Wrong data size");
+
+    if (poll_request->enable) {
+        _poll_ctx.period_seconds = poll_request->period_seconds;
+        _poll_ctx.elements_mask |= poll_request->elements;
+        _poll_ctx.time_counter = _poll_ctx.period_seconds;
+        VS_IOT_MEMCPY(&_poll_ctx.dest_mac, &poll_request->recipient_mac, sizeof(poll_request->recipient_mac));
+    } else {
+        _poll_ctx.elements_mask &= ~poll_request->elements;
+    }
+
+    *response_sz = 0;
+
+terminate:
+    return res;
 }
 
 /******************************************************************/
@@ -102,12 +132,7 @@ _stat_request_processing(const uint8_t *request,
 
 /******************************************************************/
 static int
-_ginf_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
+_fill_ginf_data(vs_info_ginf_response_t *general_info) {
     vs_firmware_descriptor_t fw_descr;
     const vs_netif_t *defautl_netif;
     vs_tl_element_info_t tl_elem_info;
@@ -116,9 +141,7 @@ _ginf_request_processing(const uint8_t *request,
     vs_status_code_e ret_code;
     char filever_descr[FW_DESCR_BUF];
 
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
+    CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     defautl_netif = vs_sdmp_default_netif();
 
@@ -138,8 +161,6 @@ _ginf_request_processing(const uint8_t *request,
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
     general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
 
-    *response_sz = sizeof(vs_info_ginf_response_t);
-
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
             "%s, trust list "
@@ -151,6 +172,27 @@ _ginf_request_processing(const uint8_t *request,
             general_info->device_type[3],
             vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
             general_info->tl_version);
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
+_ginf_request_processing(const uint8_t *request,
+                         const uint16_t request_sz,
+                         uint8_t *response,
+                         const uint16_t response_buf_sz,
+                         uint16_t *response_sz) {
+    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
+    vs_status_code_e ret_code;
+
+    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
+
+    STATUS_CHECK_RET(_fill_ginf_data(general_info), 0);
+
+    *response_sz = sizeof(vs_info_ginf_response_t);
 
     return VS_CODE_OK;
 }
@@ -190,6 +232,31 @@ _info_request_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
+static int
+_info_server_periodical_processor(void) {
+    vs_status_code_e ret_code;
+
+    _poll_ctx.time_counter++;
+    if (_poll_ctx.time_counter >= _poll_ctx.period_seconds) {
+        _poll_ctx.time_counter = 0;
+        if (_poll_ctx.elements_mask & VS_SDMP_INFO_GENERAL) {
+            vs_info_ginf_response_t general_info;
+            STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
+            return vs_sdmp_send_request(NULL,
+                                        &_poll_ctx.dest_mac,
+                                        VS_INFO_SERVICE_ID,
+                                        VS_INFO_GINF,
+                                        (uint8_t *)&general_info,
+                                        sizeof(general_info));
+
+        } else if (_poll_ctx.elements_mask & VS_SDMP_INFO_STATISTICS) {
+        }
+    }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
 const vs_sdmp_service_t *
 vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
@@ -212,7 +279,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
     _info.id = VS_INFO_SERVICE_ID;
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
-    _info.periodical_process = NULL;
+    _info.periodical_process = _info_server_periodical_processor;
 
     return &_info;
 }

@@ -57,7 +57,6 @@ typedef enum {
 #pragma GCC diagnostic pop
 } vs_sdmp_info_element_e;
 
-// Structures aliases
 typedef struct __attribute__((__packed__)) {
     vs_fw_manufacture_id_t manufacture_id;
     vs_fw_device_type_t device_type;
@@ -70,5 +69,12 @@ typedef struct __attribute__((__packed__)) {
     uint32_t device_roles; // vs_sdmp_device_role_e
     vs_mac_addr_t mac;
 } vs_info_enum_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t elements;
+    uint8_t enable;
+    uint16_t period_seconds;
+    vs_mac_addr_t recipient_mac;
+} vs_info_poll_request_t;
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H

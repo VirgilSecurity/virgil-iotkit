@@ -64,7 +64,7 @@ typedef struct {
 typedef struct {
     uint32_t sent;
     uint32_t received;
-} vs_info_stat_response_t;
+} vs_info_statistics_t;
 
 typedef enum {
     VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),

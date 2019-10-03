@@ -103,14 +103,16 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
-                _sdmp_services[i]->response_process(netif,
-                                                    packet->header.element_id,
-                                                    !!(packet->header.flags & VS_SDMP_FLAG_ACK),
-                                                    packet->content,
-                                                    packet->header.content_size);
+                if (_sdmp_services[i]->response_process) {
+                    _sdmp_services[i]->response_process(netif,
+                                                        packet->header.element_id,
+                                                        !!(packet->header.flags & VS_SDMP_FLAG_ACK),
+                                                        packet->content,
+                                                        packet->header.content_size);
+                }
 
                 // Process request
-            } else {
+            } else if (_sdmp_services[i]->request_process) {
                 processed = true;
                 res = _sdmp_services[i]->request_process(netif,
                                                          packet->header.element_id,

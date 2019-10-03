@@ -46,6 +46,9 @@ extern "C" {
 typedef int (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
 typedef int (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
 
+typedef int (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
+typedef int (*vs_sdmp_info_statistics_cb_t)(const vs_info_statistics_t *statistics);
+
 typedef struct {
     vs_sdmp_info_wait_t wait_func;
     vs_sdmp_info_stop_wait_t stop_wait_func;
@@ -71,7 +74,7 @@ vs_sdmp_info_get_general(const vs_netif_t *netif,
 int
 vs_sdmp_info_get_stat(const vs_netif_t *netif,
                       const vs_mac_addr_t *mac,
-                      vs_info_stat_response_t *response,
+                      vs_info_statistics_t *response,
                       uint32_t wait_ms);
 
 int
@@ -79,7 +82,9 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
                          bool enable,
-                         uint16_t period_seconds);
+                         uint16_t period_seconds,
+                         vs_sdmp_info_general_cb_t general_info_cb,
+                         vs_sdmp_info_statistics_cb_t statistics_cb);
 
 
 #ifdef __cplusplus

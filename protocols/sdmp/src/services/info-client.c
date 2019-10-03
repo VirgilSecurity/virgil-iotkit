@@ -53,6 +53,10 @@ static vs_sdmp_info_device_t *_devices_list = 0;
 static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
 
+// Callbacks for devices polling
+static vs_sdmp_info_general_cb_t _general_info_cb = NULL;
+static vs_sdmp_info_statistics_cb_t _statistics_cb = NULL;
+
 /******************************************************************************/
 int
 vs_sdmp_info_enum_devices(const vs_netif_t *netif,
@@ -95,19 +99,49 @@ vs_sdmp_info_get_general(const vs_netif_t *netif,
 int
 vs_sdmp_info_get_stat(const vs_netif_t *netif,
                       const vs_mac_addr_t *mac,
-                      vs_info_stat_response_t *response,
+                      vs_info_statistics_t *response,
                       uint32_t wait_ms) {
     return -1;
 }
 
 /******************************************************************************/
+
 int
 vs_sdmp_info_set_polling(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
                          bool enable,
-                         uint16_t period_seconds) {
-    return -1;
+                         uint16_t period_seconds,
+                         vs_sdmp_info_general_cb_t general_info_cb,
+                         vs_sdmp_info_statistics_cb_t statistics_cb) {
+    vs_info_poll_request_t request;
+    const vs_netif_t *default_netif = vs_sdmp_default_netif();
+    const vs_mac_addr_t *dst_mac;
+
+    // Save callbacks for devices polling
+    _general_info_cb = general_info_cb;
+    _statistics_cb = statistics_cb;
+
+    // Set destination mac
+    dst_mac = mac ? mac : vs_sdmp_broadcast_mac();
+
+    // Fill request fields
+    request.elements = elements;
+    request.enable = enable ? 1 : 0;
+    request.period_seconds = period_seconds;
+    if (default_netif && default_netif->mac_addr) {
+        default_netif->mac_addr(&request.recipient_mac);
+    } else {
+        VS_IOT_MEMSET(request.recipient_mac.bytes, 0xFF, ETH_ADDR_LEN);
+    }
+
+    // Send request
+    if (0 !=
+        vs_sdmp_send_request(netif, dst_mac, VS_INFO_SERVICE_ID, VS_INFO_POLL, (uint8_t *)&request, sizeof(request))) {
+        return -1;
+    }
+
+    return 0;
 }
 
 /******************************************************************************/
@@ -117,6 +151,37 @@ _ginf_request_processor(const uint8_t *request,
                         uint8_t *response,
                         const uint16_t response_buf_sz,
                         uint16_t *response_sz) {
+
+    vs_info_ginf_response_t *ginf_request = (vs_info_ginf_response_t *)request;
+    vs_info_general_t general_info;
+
+    // Check is callback present
+    if (!_general_info_cb) {
+        return VS_CODE_OK;
+    }
+
+    // Check input parameters
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SDMP:GINF error on a remote device");
+    CHECK_RET(sizeof(vs_info_ginf_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
+
+    // Get data from packed structure
+    VS_IOT_MEMSET(&general_info, 0, sizeof(general_info));
+    VS_IOT_MEMCPY(general_info.manufacture_id, ginf_request->manufacture_id, MANUFACTURE_ID_SIZE);
+    VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, DEVICE_TYPE_SIZE);
+    VS_IOT_MEMCPY(general_info.default_netif_mac, ginf_request->default_netif_mac.bytes, ETH_ADDR_LEN);
+    general_info.fw_major = ginf_request->fw_version.major;
+    general_info.fw_minor = ginf_request->fw_version.minor;
+    general_info.fw_patch = ginf_request->fw_version.patch;
+    general_info.fw_dev_milestone = ginf_request->fw_version.dev_milestone;
+    general_info.fw_dev_build = ginf_request->fw_version.dev_build;
+    general_info.fw_timestamp = ginf_request->fw_version.timestamp;
+    general_info.tl_version = ginf_request->tl_version;
+
+    // Invoke callback function
+    _general_info_cb(&general_info);
+
+    *response_sz = 0;
+
     return VS_CODE_OK;
 }
 
@@ -233,26 +298,6 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static int
-_info_client_periodical_processor(void) {
-    //    vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
-    //    vs_fldt_update_ctx_t *_update_ctx;
-    //    size_t id;
-    //
-    //    for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-    //        _update_ctx = &file_type_info->update_ctx;
-    //        if (_update_ctx->in_progress) {
-    //            _update_ctx->tick_cnt++;
-    //            if (_update_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
-    //                _update_process_retry(_update_ctx);
-    //            }
-    //        }
-    //    }
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
 const vs_sdmp_service_t *
 vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
     // Save implementation
@@ -262,7 +307,7 @@ vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
     _info_client.id = VS_INFO_SERVICE_ID;
     _info_client.request_process = _info_client_request_processor;
     _info_client.response_process = _info_client_response_processor;
-    _info_client.periodical_process = _info_client_periodical_processor;
+    _info_client.periodical_process = NULL;
 
     return &_info_client;
 }
