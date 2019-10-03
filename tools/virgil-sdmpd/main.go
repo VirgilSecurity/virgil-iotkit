@@ -88,7 +88,7 @@ func main() {
 			keys, ok := r.URL.Query()["key"]
 
 			if ok {
-				respBody, err := json.Marshal(keys)
+				respBody, err := json.Marshal(devicesInfo.Items[keys[0]])
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -101,7 +101,7 @@ func main() {
 			}
 
 
-			respBody, err := json.Marshal(devicesInfo)
+			respBody, err := json.Marshal(devicesInfo.Items)
 			if err != nil {
 				fmt.Println(err)
 			}
