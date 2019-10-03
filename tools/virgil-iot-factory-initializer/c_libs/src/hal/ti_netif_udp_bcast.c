@@ -46,7 +46,7 @@
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 static vs_status_code_e
-_udp_bcast_init(const vs_netif_rx_cb_t rx_cb);
+_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 static vs_status_code_e
 _udp_bcast_deinit();
@@ -57,15 +57,15 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
 static vs_status_code_e
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
-static const vs_netif_t _netif_udp_bcast = {
-        .user_data = NULL,
-        .init = _udp_bcast_init,
-        .deinit = _udp_bcast_deinit,
-        .tx = _udp_bcast_tx,
-        .mac_addr = _udp_bcast_mac,
-};
+static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
+                                      .init = _udp_bcast_init,
+                                      .deinit = _udp_bcast_deinit,
+                                      .tx = _udp_bcast_tx,
+                                      .mac_addr = _udp_bcast_mac,
+                                      .packet_buf_filled = 0};
 
 static vs_netif_rx_cb_t _netif_udp_bcast_rx_cb = 0;
+static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;
 
 static int _udp_bcast_sock = -1;
 static pthread_t receive_thread;
@@ -81,6 +81,8 @@ _udp_bcast_receive_processor(void *sock_desc) {
     struct sockaddr_in client_addr;
     ssize_t recv_sz;
     socklen_t addr_sz = sizeof(struct sockaddr_in);
+    const uint8_t *packet_data = NULL;
+    uint16_t packet_data_sz = 0;
 
     while (1) {
         memset(received_data, 0, RX_BUF_SZ);
@@ -98,7 +100,12 @@ _udp_bcast_receive_processor(void *sock_desc) {
 
         // Pass received data to upper level via callback
         if (_netif_udp_bcast_rx_cb) {
-            _netif_udp_bcast_rx_cb(&_netif_udp_bcast, received_data, recv_sz);
+            if (0 == _netif_udp_bcast_rx_cb(&_netif_udp_bcast, received_data, recv_sz, &packet_data, &packet_data_sz)) {
+                // Ready to process packet
+                if (_netif_udp_bcast_process_cb) {
+                    _netif_udp_bcast_process_cb(&_netif_udp_bcast, packet_data, packet_data_sz);
+                }
+            }
         }
     }
 
@@ -188,9 +195,11 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
 
 /******************************************************************************/
 static vs_status_code_e
-_udp_bcast_init(const vs_netif_rx_cb_t rx_cb) {
+_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
+    _netif_udp_bcast_process_cb = process_cb;
+    _netif_udp_bcast.packet_buf_filled = 0;
     _udp_bcast_connect();
 
     return VS_CODE_OK;

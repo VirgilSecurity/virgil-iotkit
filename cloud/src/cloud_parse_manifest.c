@@ -198,7 +198,7 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     uint8_t timestamp[sizeof(uint32_t)];
     CHECK_RET(_hex_str_to_bin((char *)fm_entry->timestamp, timestamp, sizeof(timestamp)), VS_CODE_ERR_JSON, "Incorrect timestamp field");
 
-    fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t *)timestamp);
+    fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t *)timestamp); //-V1032 (PVS_IGNORE)
 
     return VS_CODE_OK;
 }
@@ -230,12 +230,14 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
                                            uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],
                                            vs_firmware_version_t *new_ver) {
+
+#define VS_VERSION_CMP_SIZE (sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))
     vs_firmware_version_t current_ver;
 
     if (!_is_member_for_vendor_and_model_present(fw_storage, manufacture_id, device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&(current_ver.major),&(new_ver->major),
-                                            sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))) {
-        return VS_CODE_ERR_JSON;
+        0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_ver->major), VS_VERSION_CMP_SIZE)) { //-V512 (PVS_IGNORE)
+
+        return VS_CODE_ERR_NOT_FOUND;
     }
     return VS_CODE_OK;
 }
