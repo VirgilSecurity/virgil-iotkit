@@ -95,7 +95,7 @@ vs_info_GINF_request_processing(const uint8_t *request,
               -1,
               "Cannot get MAC for Default Network Interface");
 
-    if(VS_CODE_OK != vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr)){
+    if (VS_CODE_OK != vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr)) {
         VS_LOG_WARNING("Unable to obtain Firmware's descriptor");
         VS_IOT_MEMCPY(fw_descr.info.manufacture_id, _manufacture_id, sizeof(_manufacture_id));
         VS_IOT_MEMCPY(fw_descr.info.device_type, _device_type, sizeof(_device_type));
