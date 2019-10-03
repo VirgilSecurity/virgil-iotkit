@@ -35,20 +35,18 @@
 #include <pthread.h>
 #include <errno.h>
 #include <time.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/time.h>
 #include <stdio.h>
-#include <virgil/iot/protocols/sdmp/prvs.h>
-#include <virgil/iot/protocols/sdmp/info-client.h>
+#include <stdbool.h>
+#include <virgil/iot/tools/helpers/ti_wait_functionality.h>
 
 // For the simplest implementation of os_event
 static pthread_mutex_t _wait_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 
 /******************************************************************************/
-static int
-vs_prvs_stop_wait_func(int *condition, int expect) {
+int
+vs_wait_stop_func(int *condition, int expect) {
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
         fprintf(stderr, "pthread_mutex_lock 1 %s %d\n", strerror(errno), errno);
     }
@@ -77,8 +75,8 @@ _is_greater_timespec(struct timespec a, struct timespec b) {
 }
 
 /******************************************************************************/
-static int
-vs_prvs_wait_func(uint32_t wait_ms, int *condition, int idle) {
+int
+vs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     struct timespec time_to_wait;
     struct timespec ts_now;
 
@@ -104,32 +102,6 @@ vs_prvs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     pthread_mutex_unlock(&_wait_mutex);
 
     return 0;
-}
-
-/******************************************************************************/
-vs_sdmp_prvs_impl_t
-vs_prvs_impl() {
-    vs_sdmp_prvs_impl_t res;
-
-    memset(&res, 0, sizeof(res));
-
-    res.stop_wait_func = vs_prvs_stop_wait_func;
-    res.wait_func = vs_prvs_wait_func;
-
-    return res;
-}
-
-/******************************************************************************/
-vs_sdmp_info_impl_t
-vs_info_impl() {
-    vs_sdmp_info_impl_t res;
-
-    memset(&res, 0, sizeof(res));
-
-    res.stop_wait_func = vs_prvs_stop_wait_func;
-    res.wait_func = vs_prvs_wait_func;
-
-    return res;
 }
 
 /******************************************************************************/

@@ -439,9 +439,6 @@ vs_sdmp_send_request(const vs_netif_t *netif,
     uint8_t buffer[sizeof(vs_sdmp_packet_t) + data_sz];
     vs_sdmp_packet_t *packet;
 
-    VS_IOT_ASSERT(data);
-    VS_IOT_ASSERT(data_sz);
-
     VS_IOT_MEMSET(buffer, 0, sizeof(buffer));
 
     // Prepare pointers

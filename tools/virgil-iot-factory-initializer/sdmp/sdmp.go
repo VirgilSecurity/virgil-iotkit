@@ -35,11 +35,11 @@
 package sdmp
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal
+#cgo LDFLAGS: -lsdmp-factory -ltools-hal
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
-#include <virgil/iot/initializer/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h>
+#include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
+#include <virgil/iot/tools/hal/sdmp/ti_prvs_impl.h>
 */
 import "C"
 import (

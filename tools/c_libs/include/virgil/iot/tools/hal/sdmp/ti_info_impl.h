@@ -32,25 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
+#ifndef VS_HAL_PRVS_IMPLEMENTATION_H
+#define VS_HAL_PRVS_IMPLEMENTATION_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <virgil/iot/protocols/sdmp/info-client.h>
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/firmware/firmware.h>
+vs_sdmp_info_impl_t
+vs_info_impl();
 
-const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    const vs_fw_manufacture_id_t manufacturer_id,
-                    const vs_fw_device_type_t device_type,
-                    uint32_t device_roles);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
+#endif // VS_HAL_PRVS_IMPLEMENTATION_H

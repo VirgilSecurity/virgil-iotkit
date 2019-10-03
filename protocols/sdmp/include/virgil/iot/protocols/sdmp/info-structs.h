@@ -36,27 +36,32 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/firmware/firmware.h>
 
-typedef struct __attribute__((__packed__)) {
+typedef struct {
     uint32_t device_roles; // vs_sdmp_device_role_e
-    vs_mac_addr_t mac;
+    uint8_t mac[ETH_ADDR_LEN];
 } vs_sdmp_info_device_t;
 
-typedef struct __attribute__((__packed__)) {
-    vs_fw_manufacture_id_t manufacture_id;
-    vs_fw_device_type_t device_type;
-    vs_mac_addr_t default_netif_mac;
-    vs_firmware_version_t fw_version;
+typedef struct {
+    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t device_type[DEVICE_TYPE_SIZE];
+    uint8_t default_netif_mac[ETH_ADDR_LEN];
+    uint8_t fw_major;
+    uint8_t fw_minor;
+    uint8_t fw_patch;
+    uint8_t fw_dev_milestone;
+    uint8_t fw_dev_build;
+    uint32_t fw_timestamp;
     uint16_t tl_version;
 } vs_info_general_t;
 
-typedef struct __attribute__((__packed__)) {
+typedef struct {
     uint32_t sent;
     uint32_t received;
 } vs_info_stat_response_t;

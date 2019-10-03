@@ -56,6 +56,10 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/status_code/include
+        -I${VIRGIL_IOT_DIRECTORY}/firmware/include
+        -I${VIRGIL_IOT_DIRECTORY}/trust_list/include
+        -I${VIRGIL_IOT_DIRECTORY}/storage_hal/include
         -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
         )
 
@@ -65,10 +69,11 @@ set(CMAKE_CGO_CFLAGS
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/logger
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
         )
 
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(virgil-sdmpd factory-initializer-hal factory-initializer-mbedtls)
+add_go_executable(virgil-sdmpd tools-hal logger)

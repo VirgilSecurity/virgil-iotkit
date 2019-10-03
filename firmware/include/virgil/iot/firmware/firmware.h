@@ -35,7 +35,6 @@
 #ifndef VS_FIRMWARE_H
 #define VS_FIRMWARE_H
 
-#include <global-hal.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/

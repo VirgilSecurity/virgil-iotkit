@@ -142,8 +142,7 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
     CHECK_RET(sizeof(vs_info_enum_response_t) == response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 
     if (_devices_list && _devices_list_cnt < _devices_list_max) {
-        _devices_list[_devices_list_cnt].mac = enum_response->mac;
-        VS_IOT_MEMCPY(_devices_list[_devices_list_cnt].mac.bytes, enum_response->mac.bytes, ETH_ADDR_LEN);
+        VS_IOT_MEMCPY(_devices_list[_devices_list_cnt].mac, enum_response->mac.bytes, ETH_ADDR_LEN);
         _devices_list[_devices_list_cnt].device_roles = enum_response->device_roles;
         _devices_list_cnt++;
 
@@ -265,7 +264,7 @@ vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
     _info_client.response_process = _info_client_response_processor;
     _info_client.periodical_process = _info_client_periodical_processor;
 
-    return NULL;
+    return &_info_client;
 }
 
 /******************************************************************************/

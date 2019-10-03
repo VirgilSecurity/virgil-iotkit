@@ -1,14 +1,14 @@
 package main
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal
+#cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/info-client.h>
-#include <virgil/iot/initializer/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h>
+#include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
+#include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
 */
-
 import "C"
+
 import (
 	"encoding/json"
 	"fmt"
@@ -24,6 +24,10 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+const (
+    DEFAULT_TIMEOUT_MS = 7000
+)
+
 type DeviceInfo struct {
 	ID            string `json:"id"`
 	ManufactureID string `json:"manufacture_id"`
@@ -37,26 +41,27 @@ var devices []DeviceInfo
 func main() {
 
 // Use UDP Broadcast as transport
+fmt.Printf(">>> 1\n")
     if 0 != C.vs_sdmp_init(C.vs_hal_netif_udp_bcast()) {
-        return fmt.Errorf("can't start SDMP communication")
+        fmt.Errorf("can't start SDMP communication")
     }
 
+fmt.Printf(">>> 2\n")
     if 0 != C.vs_sdmp_register_service(C.vs_sdmp_info_client(C.vs_info_impl())) {
-        return fmt.Errorf("can't register SDMP:INFO client service")
+        fmt.Errorf("can't register SDMP:INFO client service")
     }
 
-    list := C.vs_sdmp_info_device_t[20];
-    cnt := C.size_t;
+fmt.Printf(">>> 3\n")
+    var list [20]C.vs_sdmp_info_device_t
+    var cnt C.size_t
 
-// const vs_netif_t *netif,
-//                           vs_sdmp_info_device_t *devices,
-//                           size_t devices_max,
-//                           size_t *devices_cnt,
-//                           uint32_t wait_ms
-
-    if 0 != C.vs_sdmp_info_enum_devices(nil, &list, 20, &cnt, DEFAULT_TIMEOUT_MS) {
-        return fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
+fmt.Printf(">>> 4\n")
+    if 0 != C.vs_sdmp_info_enum_devices(nil, &list[0], 20, &cnt, DEFAULT_TIMEOUT_MS) {
+        fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
     }
+
+fmt.Printf(">>> 5\n")
+    fmt.Printf("Found devices: %d\n\n\n", cnt)
 
 	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
 	listeningPort := readListeningPort(os.Args)

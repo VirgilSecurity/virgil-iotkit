@@ -35,8 +35,6 @@
 #ifndef VS_IOT_SDK_STATUS_CODE
 #define VS_IOT_SDK_STATUS_CODE
 
-#include <virgil/iot/macros/macros.h>
-
 typedef enum {
     VS_CODE_OK = 0,
     VS_CODE_ERR_NULLPTR_ARGUMENT,
@@ -61,8 +59,5 @@ typedef enum {
 } vs_status_code_e;
 
 const char *vs_status_code_descr(vs_status_code_e status_code);
-
-#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
-#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 
 #endif // VS_IOT_SDK_STATUS_CODE

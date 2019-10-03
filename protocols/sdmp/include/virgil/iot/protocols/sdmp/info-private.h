@@ -58,7 +58,17 @@ typedef enum {
 } vs_sdmp_info_element_e;
 
 // Structures aliases
-typedef vs_info_general_t vs_info_ginf_response_t;
-typedef vs_sdmp_info_device_t vs_info_enum_response_t;
+typedef struct __attribute__((__packed__)) {
+    vs_fw_manufacture_id_t manufacture_id;
+    vs_fw_device_type_t device_type;
+    vs_mac_addr_t default_netif_mac;
+    vs_firmware_version_t fw_version;
+    uint16_t tl_version;
+} vs_info_ginf_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t device_roles; // vs_sdmp_device_role_e
+    vs_mac_addr_t mac;
+} vs_info_enum_response_t;
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H

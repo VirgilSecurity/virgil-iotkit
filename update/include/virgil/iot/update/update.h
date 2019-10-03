@@ -36,6 +36,7 @@
 #define VS_UPDATE_H
 
 #include <global-hal.h>
+#include <stdbool.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 

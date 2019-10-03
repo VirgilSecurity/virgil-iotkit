@@ -2,7 +2,7 @@
 
 ## Requirmets
 1. Install `clang-format`
-1. Setup git hooks for automatic code fomatting
+1. Setup git hooks for automatic code formatting
 
 ```
 cd <virgil-iot-sdk>

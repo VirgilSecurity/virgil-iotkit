@@ -41,6 +41,7 @@
 #include <virgil/iot/firmware/update_fw_interface.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
+#include <virgil/iot/macros/macros.h>
 
 /*************************************************************************/
 static char *

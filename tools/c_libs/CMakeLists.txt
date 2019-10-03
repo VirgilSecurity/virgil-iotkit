@@ -34,32 +34,35 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(factory-initializer-hal VERSION 0.1.0 LANGUAGES C)
+project(tools-hal VERSION 0.1.0 LANGUAGES C)
 
 #
 #   Network interfaces for Factory Inittializer
 #
-add_library(factory-initializer-hal)
+add_library(tools-hal)
 
 #
 #   Sources
 #
-target_sources(factory-initializer-hal
+target_sources(tools-hal
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/ti_netif_udp_bcast.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_prvs_impl.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_info_impl.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_implementation.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/ti_wait_functionality.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_impl.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_info_impl.c
         )
 #
 #   Includes
 #
-target_include_directories(factory-initializer-hal
+target_include_directories(tools-hal
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
@@ -69,21 +72,10 @@ target_include_directories(factory-initializer-hal
 #
 #   Libraries
 #
-target_link_libraries(factory-initializer-hal
+target_link_libraries(tools-hal
         PUBLIC
         sdmp-factory
 
         PRIVATE
         enable_pedantic_mode
         )
-
-#
-# Workaround target
-# Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
-#
-add_custom_target(factory-initializer-mbedtls
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_LIST_DIR}/lib
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
-        )
-add_dependencies(factory-initializer-mbedtls converters)
