@@ -252,6 +252,12 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
         goto terminate;
     }
 
+    res = ctx->impl.sync(ctx->storage_ctx, f);
+    if (VS_STORAGE_OK != res) {
+        VS_LOG_ERROR("Can't sync secbox file");
+        goto terminate;
+    }
+
 terminate:
     if (VS_SECBOX_SIGNED_AND_ENCRYPTED == type) {
         VS_IOT_FREE(data_to_save);

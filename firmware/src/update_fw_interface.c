@@ -207,8 +207,8 @@ _fw_update_set_footer(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_NOT_ZERO_RET(file_footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(VS_CODE_OK == (res = vs_firmware_save_firmware_footer(ctx, fw_descr, file_footer)), res,
-              "Unable to save footer");
+    res = vs_firmware_save_firmware_footer(ctx, fw_descr, file_footer);
+    CHECK_RET(VS_CODE_OK == res, res, "Unable to save footer");
 
     if(VS_CODE_OK != vs_firmware_verify_firmware(ctx, fw_descr)){
         VS_LOG_WARNING("Error while verifying firmware");
@@ -360,6 +360,7 @@ vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *
     CHECK_NOT_ZERO_RET(storage_ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));

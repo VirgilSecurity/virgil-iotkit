@@ -110,6 +110,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
 static int
 _write_data(const vs_storage_op_ctx_t *ctx,
             vs_storage_element_id_t id,
+            bool need_sync,
             uint32_t offset,
             const void *data,
             size_t data_sz) {
@@ -121,6 +122,7 @@ _write_data(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx->impl.del, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.save, VS_STORAGE_ERROR_PARAMS);
+    CHECK_NOT_ZERO_RET(ctx->impl.sync, VS_STORAGE_ERROR_PARAMS);
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_STORAGE_ERROR_PARAMS);
     CHECK_RET(data_sz <= ctx->file_sz_limit, VS_STORAGE_ERROR_PARAMS, "Requested size is too big");
 
@@ -134,6 +136,11 @@ _write_data(const vs_storage_op_ctx_t *ctx,
         ctx->impl.close(ctx->storage_ctx, f);
         VS_LOG_ERROR("Can't save data to file");
         return VS_STORAGE_ERROR_WRITE;
+    }
+
+    if(need_sync) {
+        int res = ctx->impl.sync(ctx->storage_ctx, f);
+        CHECK_RET(VS_STORAGE_OK == res, res, "Can't sync file");
     }
 
     return ctx->impl.close(ctx->storage_ctx, f);
@@ -193,7 +200,7 @@ vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    return _write_data(ctx, data_id, offset, chunk, chunk_sz);
+    return _write_data(ctx, data_id, false, offset, chunk, chunk_sz);
 }
 
 /*************************************************************************/
@@ -223,7 +230,7 @@ vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmwa
         footer_sz += sizeof(vs_sign_t) + sign_len + key_len;
     }
 
-    return _write_data(ctx, data_id, descriptor->firmware_length, footer, footer_sz);
+    return _write_data(ctx, data_id, true, descriptor->firmware_length, footer, footer_sz);
 }
 
 /*************************************************************************/
@@ -326,7 +333,7 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
     }
 
     save_data:
-    res = _write_data(ctx, desc_id, 0, newbuf, file_sz);
+    res = _write_data(ctx, desc_id, true, 0, newbuf, file_sz);
     VS_IOT_FREE(newbuf);
 
     return res;
@@ -443,7 +450,7 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
     res = VS_STORAGE_OK;
     if (file_sz) {
-        res = _write_data(ctx, desc_id, 0, buf, file_sz);
+        res = _write_data(ctx, desc_id, true, 0, buf, file_sz);
     }
 
     terminate:
