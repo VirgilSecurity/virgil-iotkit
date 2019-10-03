@@ -41,6 +41,7 @@ package sdmp
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
+extern int goDeviceStartNotifCb(vs_sdmp_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
 
 static int _set_polling(void) {
@@ -48,9 +49,17 @@ static int _set_polling(void) {
                                     vs_sdmp_broadcast_mac(),
                                     VS_SDMP_INFO_GENERAL,
                                     true,
-                                    2,
-                                    goGeneralInfoCb,
-                                    NULL);
+                                    2);
+}
+
+static int _register_info_client(void) {
+    vs_sdmp_info_callbacks_t _cb;
+
+    _cb.device_start_cb = goDeviceStartNotifCb;
+    _cb.general_info_cb = goGeneralInfoCb;
+    _cb.statistics_cb = NULL;
+
+    return vs_sdmp_register_service(vs_sdmp_info_client(vs_info_impl(), _cb));
 }
 */
 import "C"
@@ -80,7 +89,7 @@ func ConnectToDeviceNetwork() error {
         return fmt.Errorf("can't start SDMP communication")
     }
 
-    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_info_client(C.vs_info_impl())) {
+    if 0 != C._register_info_client() {
         return fmt.Errorf("can't register SDMP:INFO client service")
     }
 
@@ -118,6 +127,16 @@ func fwVer2string(major C.uint8_t, minor C.uint8_t,
         tm := time.Unix(unixTime, 0)
 
         return fmt.Sprintf("ver %d.%d.%d.%c.%d, %s", major, minor, patch, devMilestone, devBuild, tm.String())
+}
+
+//export goDeviceStartNotifCb
+func goDeviceStartNotifCb(device *C.vs_sdmp_info_device_t) C.int {
+     if 0 != C._set_polling() {
+        fmt.Printf("can't set devices polling. SDMP:INFO:POLL error\n")
+        return -1
+     }
+
+     return C.VS_CODE_OK
 }
 
 //export goGeneralInfoCb

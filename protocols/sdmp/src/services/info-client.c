@@ -54,8 +54,7 @@ static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
 
 // Callbacks for devices polling
-static vs_sdmp_info_general_cb_t _general_info_cb = NULL;
-static vs_sdmp_info_statistics_cb_t _statistics_cb = NULL;
+static vs_sdmp_info_callbacks_t _callbacks = {NULL, NULL, NULL};
 
 /******************************************************************************/
 int
@@ -111,16 +110,10 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
                          bool enable,
-                         uint16_t period_seconds,
-                         vs_sdmp_info_general_cb_t general_info_cb,
-                         vs_sdmp_info_statistics_cb_t statistics_cb) {
+                         uint16_t period_seconds) {
     vs_info_poll_request_t request;
     const vs_netif_t *default_netif = vs_sdmp_default_netif();
     const vs_mac_addr_t *dst_mac;
-
-    // Save callbacks for devices polling
-    _general_info_cb = general_info_cb;
-    _statistics_cb = statistics_cb;
 
     // Set destination mac
     dst_mac = mac ? mac : vs_sdmp_broadcast_mac();
@@ -146,6 +139,36 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
 
 /******************************************************************************/
 static int
+_snot_request_processor(const uint8_t *request,
+                        const uint16_t request_sz,
+                        uint8_t *response,
+                        const uint16_t response_buf_sz,
+                        uint16_t *response_sz) {
+    vs_info_enum_response_t *enum_request = (vs_info_enum_response_t *)request;
+    vs_sdmp_info_device_t device_info;
+
+    // Check is callback present
+    if (!_callbacks.device_start_cb) {
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+    }
+
+    // Check input parameters
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SDMP:SNOT error on a remote device");
+    CHECK_RET(sizeof(vs_info_enum_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
+
+    // Get data from packed structure
+    VS_IOT_MEMSET(&device_info, 0, sizeof(device_info));
+    VS_IOT_MEMCPY(device_info.mac, enum_request->mac.bytes, ETH_ADDR_LEN);
+    device_info.device_roles = enum_request->device_roles;
+
+    // Invoke callback
+    _callbacks.device_start_cb(&device_info);
+
+    return VS_SDMP_COMMAND_NOT_SUPPORTED;
+}
+
+/******************************************************************************/
+static int
 _ginf_request_processor(const uint8_t *request,
                         const uint16_t request_sz,
                         uint8_t *response,
@@ -156,7 +179,7 @@ _ginf_request_processor(const uint8_t *request,
     vs_info_general_t general_info;
 
     // Check is callback present
-    if (!_general_info_cb) {
+    if (!_callbacks.general_info_cb) {
         return VS_CODE_OK;
     }
 
@@ -178,7 +201,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.tl_version = ginf_request->tl_version;
 
     // Invoke callback function
-    _general_info_cb(&general_info);
+    _callbacks.general_info_cb(&general_info);
 
     *response_sz = 0;
 
@@ -250,6 +273,9 @@ _info_client_request_processor(const struct vs_netif_t *netif,
 
     switch (element_id) {
 
+    case VS_INFO_SNOT:
+        return _snot_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
     case VS_INFO_ENUM:
     case VS_INFO_POLL:
         return VS_SDMP_COMMAND_NOT_SUPPORTED;
@@ -278,6 +304,9 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 
     switch (element_id) {
 
+    case VS_INFO_SNOT:
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+
     case VS_INFO_ENUM:
         return _enum_response_processor(is_ack, response, response_sz);
 
@@ -299,7 +328,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
+vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks) {
     // Save implementation
     VS_IOT_MEMCPY(&_info_impl, &impl, sizeof(_info_impl));
 
@@ -308,6 +337,9 @@ vs_sdmp_info_client(vs_sdmp_info_impl_t impl) {
     _info_client.request_process = _info_client_request_processor;
     _info_client.response_process = _info_client_response_processor;
     _info_client.periodical_process = NULL;
+
+    // Save callbacks
+    VS_IOT_MEMCPY(&_callbacks, &callbacks, sizeof(callbacks));
 
     return &_info_client;
 }

@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"sort"
 
 	"./sdmp"
 	"./devices"
@@ -23,6 +24,23 @@ var devicesInfo *devices.ConcurrentDevices
 func GeneralInfoCb(generalInfo devices.DeviceInfo) error {
     return devicesInfo.UpdateDevice(generalInfo)
 }
+
+func CleanupProcessStart() {
+    ticker := time.NewTicker(5 * time.Second)
+    quit := make(chan struct{})
+    go func() {
+        for {
+           select {
+            case <- ticker.C:
+                devicesInfo.CleanList(5)
+            case <- quit:
+                ticker.Stop()
+                return
+            }
+        }
+     }()
+}
+
 
 func main() {
 	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
@@ -42,6 +60,8 @@ func main() {
         fmt.Println(err)
         return
     }
+
+    CleanupProcessStart()
 
 	http.HandleFunc("/ws/devices", func(w http.ResponseWriter, r *http.Request) {
 
@@ -112,8 +132,16 @@ func main() {
 
 func createStatusTable(t time.Time) string {
 	table := "<tr> <td>ID</td>  <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td></tr>"
-	for _, d := range devicesInfo.Items {
 
+    // Sorted keys
+    keys := make([]string, 0, len(devicesInfo.Items))
+    for k := range devicesInfo.Items {
+	    keys = append(keys, k)
+    }
+    sort.Strings(keys)
+
+	for _, k := range keys {
+        d := devicesInfo.Items[k]
 		table += fmt.Sprintf("<tr> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> </tr>",
 			d.ID,
 			d.MAC,

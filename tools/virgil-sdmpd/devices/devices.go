@@ -34,30 +34,10 @@
 
 package devices
 
-/*
-#cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/protocols/sdmp/info-client.h>
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
-extern int goGeneralInfoCb(vs_info_general_t *general_info);
-
-static int _set_polling(void) {
-    return vs_sdmp_info_set_polling(NULL,
-                                    vs_sdmp_broadcast_mac(),
-                                    VS_SDMP_INFO_GENERAL,
-                                    true,
-                                    2,
-                                    goGeneralInfoCb,
-                                    NULL);
-}
-*/
-import "C"
-
 import (
     "fmt"
     "sync"
+    "time"
 )
 
 type DeviceInfo struct {
@@ -66,6 +46,8 @@ type DeviceInfo struct {
 	DeviceType    string `json:"device_type"`
 	Version       string `json:"version"`
 	MAC           string `json:"mac"`
+	lastTime      int32
+
 }
 
 type ConcurrentDevices struct {
@@ -75,7 +57,27 @@ type ConcurrentDevices struct {
 
 func (d *ConcurrentDevices) UpdateDevice(info DeviceInfo) error {
     fmt.Printf("Update device\n")
-    d.Items["test"] = info
+    info.lastTime = int32(time.Now().Unix())
+    d.Items[info.MAC] = info
+    return nil
+}
+
+func (d *ConcurrentDevices) CleanList(cleanTimeout int32) error {
+    utime := int32(time.Now().Unix())
+
+    // Collect keys to delete
+    keyToDelete := []string{};
+    for _, d := range d.Items {
+        if utime - d.lastTime > cleanTimeout {
+            keyToDelete = append(keyToDelete, d.MAC)
+        }
+    }
+
+    // Remove old devices from map
+    for _, k := range keyToDelete {
+        delete(d.Items, k)
+    }
+
     return nil
 }
 

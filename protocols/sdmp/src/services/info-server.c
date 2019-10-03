@@ -64,25 +64,38 @@ static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
 static int
+_fill_enum_data(vs_info_enum_response_t *enum_data) {
+    const vs_netif_t *defautl_netif;
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(enum_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // Set MAC address for default network interface
+    defautl_netif = vs_sdmp_default_netif();
+    CHECK_RET(!defautl_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
+
+    // Set current device roles
+    enum_data->device_roles = _device_roles;
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
 _enum_request_processing(const uint8_t *request,
                          const uint16_t request_sz,
                          uint8_t *response,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
     vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
-    const vs_netif_t *defautl_netif;
+    vs_status_code_e ret_code;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
 
-    // Set MAC address for default network interface
-    defautl_netif = vs_sdmp_default_netif();
-    CHECK_RET(!defautl_netif->mac_addr(&enum_response->mac), -1, "Cannot get MAC for Default Network Interface");
-
-    // Set current device roles
-    enum_response->device_roles = _device_roles;
+    STATUS_CHECK_RET(_fill_enum_data(enum_response), "Cannot fill ENUM data");
 
     // Set response size
     *response_sz = sizeof(vs_info_enum_response_t);
@@ -149,8 +162,12 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
               -1,
               "Cannot get MAC for Default Network Interface");
 
+#if 0
     STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr),
                      "Unable to obtain Firmware's descriptor");
+#else
+    vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr);
+#endif
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
@@ -211,6 +228,9 @@ _info_request_processor(const struct vs_netif_t *netif,
     *response_sz = 0;
 
     switch (element_id) {
+
+    case VS_INFO_SNOT:
+        return VS_SDMP_COMMAND_NOT_SUPPORTED;
 
     case VS_INFO_ENUM:
         return _enum_request_processing(request, request_sz, response, response_buf_sz, response_sz);
@@ -282,6 +302,27 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
     _info.periodical_process = _info_server_periodical_processor;
 
     return &_info;
+}
+
+/******************************************************************************/
+int
+vs_sdmp_info_start_notification(const vs_netif_t *netif) {
+    vs_info_enum_response_t enum_data;
+    vs_status_code_e ret_code;
+
+    STATUS_CHECK_RET(_fill_enum_data(&enum_data), "Cannot fill ENUM data");
+
+    // Send request
+    if (0 != vs_sdmp_send_request(netif,
+                                  vs_sdmp_broadcast_mac(),
+                                  VS_INFO_SERVICE_ID,
+                                  VS_INFO_SNOT,
+                                  (uint8_t *)&enum_data,
+                                  sizeof(enum_data))) {
+        return -1;
+    }
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
