@@ -139,8 +139,8 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
                vs_storage_element_id_t id,
                const uint8_t *data,
                size_t data_sz) {
-    int res = VS_CODE_OK;
-    int ret = VS_CODE_OK;
+    vs_status_code_e res = VS_CODE_OK;
+    vs_status_code_e ret = VS_CODE_OK;
     vs_storage_file_t f = NULL;
     uint8_t *data_to_save = NULL;
     size_t data_to_save_sz;
@@ -160,6 +160,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(data_sz <= ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Requested size is too big");
@@ -201,15 +202,17 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
 
     // delete the old file if exists
     if (0 < ctx->impl.size(ctx->storage_ctx, id)) {
-        STATUS_CHECK(ctx->impl.del(ctx->storage_ctx, id), "Cannot delete file");
+        STATUS_CHECK(res = ctx->impl.del(ctx->storage_ctx, id), "Cannot delete file");
     }
 
     CHECK(f = ctx->impl.open(ctx->storage_ctx, id), "Cannot open file");
 
     // Save data type to file
-    STATUS_CHECK(ctx->impl.save(ctx->storage_ctx, f, 0, &u8_type, 1), "Can't save type to file");
-    STATUS_CHECK(ctx->impl.save(ctx->storage_ctx, f, 1, data_to_save, data_to_save_sz), "Can't save data to file");
-    STATUS_CHECK(ctx->impl.save(ctx->storage_ctx, f, data_to_save_sz + 1, sign, sign_sz), "Can't save sign to file");
+    STATUS_CHECK(res = ctx->impl.save(ctx->storage_ctx, f, 0, &u8_type, 1), "Can't save type to file");
+    STATUS_CHECK(res = ctx->impl.save(ctx->storage_ctx, f, 1, data_to_save, data_to_save_sz), "Can't save data to file");
+    STATUS_CHECK(res = ctx->impl.save(ctx->storage_ctx, f, data_to_save_sz + 1, sign, sign_sz), "Can't save sign to file");
+
+    STATUS_CHECK(res = ctx->impl.sync(ctx->storage_ctx, f), "Can't sync secbox file");
 
 terminate:
     if (VS_SECBOX_SIGNED_AND_ENCRYPTED == type) {

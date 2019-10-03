@@ -113,6 +113,7 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
     CHECK_NOT_ZERO_RET(op_ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(data_sz <= op_ctx->file_sz_limit, VS_CODE_ERR_NULLPTR_ARGUMENT, "Requested size is too big");
 
@@ -127,6 +128,9 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
         VS_LOG_ERROR("Can't save data to file");
         return VS_CODE_ERR_FILE_WRITE;
     }
+
+    int res = op_ctx->impl.sync(op_ctx->storage_ctx, f);
+    CHECK_RET(VS_CODE_OK == res, res, "Can't sync file");
 
     return op_ctx->impl.close(op_ctx->storage_ctx, f);
 }
@@ -210,12 +214,11 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
         BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
-        ;
 
         // Signer raw key pointer
         pubkey = sign->raw_sign_pubkey + sign_len;
 
-        BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+        BOOL_CHECK_RET(VS_CODE_OK == vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
                        "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {

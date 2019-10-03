@@ -111,6 +111,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
 static vs_status_code_e
 _write_data(const vs_storage_op_ctx_t *ctx,
             vs_storage_element_id_t id,
+            bool need_sync,
             uint32_t offset,
             const void *data,
             size_t data_sz) {
@@ -135,6 +136,11 @@ _write_data(const vs_storage_op_ctx_t *ctx,
         ctx->impl.close(ctx->storage_ctx, f);
         VS_LOG_ERROR("Can't save data to file");
         return VS_CODE_ERR_FILE_WRITE;
+    }
+
+    if(need_sync) {
+        int res = ctx->impl.sync(ctx->storage_ctx, f);
+        CHECK_RET(VS_CODE_OK == res, res, "Can't sync file");
     }
 
     return ctx->impl.close(ctx->storage_ctx, f);
@@ -194,7 +200,7 @@ vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    return _write_data(ctx, data_id, offset, chunk, chunk_sz);
+    return _write_data(ctx, data_id, false, offset, chunk, chunk_sz);
 }
 
 /*************************************************************************/
@@ -224,7 +230,7 @@ vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmwa
         footer_sz += sizeof(vs_sign_t) + sign_len + key_len;
     }
 
-    return _write_data(ctx, data_id, descriptor->firmware_length, footer, footer_sz);
+    return _write_data(ctx, data_id, true, descriptor->firmware_length, footer, footer_sz);
 }
 
 /*************************************************************************/
@@ -327,7 +333,7 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
     }
 
     save_data:
-    res = _write_data(ctx, desc_id, 0, newbuf, file_sz);
+    res = _write_data(ctx, desc_id, true, 0, newbuf, file_sz);
     VS_IOT_FREE(newbuf);
 
     return res;
@@ -444,7 +450,7 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
     res = VS_CODE_OK;
     if (file_sz) {
-        res = _write_data(ctx, desc_id, 0, buf, file_sz);
+        res = _write_data(ctx, desc_id, true, 0, buf, file_sz);
     }
 
     terminate:
@@ -482,6 +488,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     uint8_t sign_rules = 0;
     uint16_t i;
     vs_hsm_sw_sha256_ctx hash_ctx;
+    vs_status_code_e ret_code;
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
@@ -562,12 +569,12 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         // Signer raw key pointer
         pubkey = sign->raw_sign_pubkey + sign_len;
 
-        CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+        STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
                   VS_CODE_ERR_VERIFY,
                   "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            CHECK_RET(VS_CODE_OK == vs_hsm_ecdsa_verify(sign->ec_type,
+            STATUS_CHECK_RET(vs_hsm_ecdsa_verify(sign->ec_type,
                                                            pubkey,
                                                            key_len,
                                                            sign->hash_type,

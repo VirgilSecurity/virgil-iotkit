@@ -60,7 +60,11 @@ typedef vs_storage_file_t (*vs_storage_open_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
-typedef vs_status_code_e (*vs_storage_close_hal_t)(
+typedef vs_status_code_e (*vs_rpi_storage_sync_t)(
+        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_file_t file);
+
+typedef int (*vs_storage_close_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         vs_storage_file_t file); // After this call file is incorrect and must be zeroed.
 
@@ -91,6 +95,7 @@ typedef struct {
     vs_storage_deinit_hal_t deinit;
 
     vs_storage_open_hal_t open;
+    vs_rpi_storage_sync_t sync;
     vs_storage_close_hal_t close;
 
     vs_storage_save_hal_t save;

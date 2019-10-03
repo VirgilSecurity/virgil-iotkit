@@ -95,7 +95,7 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t *data, uint16_t size) {
     vs_tl_element_info_t info;
     info.id = el;
@@ -105,7 +105,7 @@ _save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t *data, uint16_t 
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t *data, uint16_t size, uint16_t *readed_bytes) {
     vs_tl_element_info_t info;
     info.id = el;
@@ -118,7 +118,7 @@ _load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t *data, uint16_t size, 
 static bool
 _verify_hl_key(const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
 
-    CHECK_RET(vs_provision_verify_hl_key(in_data, data_sz), false, "Error verify key %s", id_str);
+    BOOL_CHECK_RET(VS_CODE_OK == vs_provision_verify_hl_key(in_data, data_sz), "Error verify key %s", id_str);
 
     return true;
 }

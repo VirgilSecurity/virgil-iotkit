@@ -263,8 +263,8 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
 
     BOOL_CHECK_RET(
             VS_CODE_OK ==
-                    vs_firmware_save_firmware_chunk(
-                            ctx, &_test_descriptor, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
+            vs_firmware_save_firmware_chunk(
+                    ctx, &_test_descriptor, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
             "Error save data");
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_chunk(ctx, &_test_descriptor, 0, buf, sizeof(buf), &_sz),
                    "Error read data");
