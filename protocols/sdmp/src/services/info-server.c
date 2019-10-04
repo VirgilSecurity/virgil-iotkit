@@ -135,12 +135,51 @@ terminate:
 
 /******************************************************************/
 static int
+_fill_stat_data(vs_info_stat_response_t *stat_data) {
+    const vs_netif_t *defautl_netif;
+    vs_sdmp_stat_t stat = vs_sdmp_get_statistics();
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(stat_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // Set MAC address for default network interface
+    defautl_netif = vs_sdmp_default_netif();
+    CHECK_RET(!defautl_netif->mac_addr(&stat_data->mac), -1, "Cannot get MAC for Default Network Interface");
+
+    // Set statistics data
+    stat_data->received = stat.received;
+    stat_data->sent = stat.sent;
+
+    VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
+                 (unsigned long)stat_data->sent,
+                 (unsigned long)stat_data->received);
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+static int
 _stat_request_processing(const uint8_t *request,
                          const uint16_t request_sz,
                          uint8_t *response,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
-    return VS_CODE_OK;
+
+    vs_status_code_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
+    vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
+
+    CHECK_NOT_ZERO(request);
+    CHECK_NOT_ZERO(response_sz);
+    CHECK(response_buf_sz >= sizeof(vs_info_stat_response_t), "Wrong data size");
+
+    STATUS_CHECK_RET(_fill_stat_data(stat), "Cannot fill SDMP statistics");
+
+    *response_sz = sizeof(*stat);
+    ret_code = VS_CODE_OK;
+
+terminate:
+
+    return ret_code;
 }
 
 /******************************************************************/
@@ -262,14 +301,23 @@ _info_server_periodical_processor(void) {
         if (_poll_ctx.elements_mask & VS_SDMP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
-            return vs_sdmp_send_request(NULL,
-                                        &_poll_ctx.dest_mac,
-                                        VS_INFO_SERVICE_ID,
-                                        VS_INFO_GINF,
-                                        (uint8_t *)&general_info,
-                                        sizeof(general_info));
+            vs_sdmp_send_request(NULL,
+                                 &_poll_ctx.dest_mac,
+                                 VS_INFO_SERVICE_ID,
+                                 VS_INFO_GINF,
+                                 (uint8_t *)&general_info,
+                                 sizeof(general_info));
+        }
 
-        } else if (_poll_ctx.elements_mask & VS_SDMP_INFO_STATISTICS) {
+        if (_poll_ctx.elements_mask & VS_SDMP_INFO_STATISTICS) {
+            vs_info_stat_response_t stat_data;
+            STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SDMP statistics");
+            vs_sdmp_send_request(NULL,
+                                 &_poll_ctx.dest_mac,
+                                 VS_INFO_SERVICE_ID,
+                                 VS_INFO_STAT,
+                                 (uint8_t *)&stat_data,
+                                 sizeof(stat_data));
         }
     }
 

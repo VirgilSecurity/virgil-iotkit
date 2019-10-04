@@ -159,5 +159,13 @@ typedef struct {
     vs_sdmp_service_periodical_processor_t periodical_process;
 } vs_sdmp_service_t;
 
+/******************************************************************************/
+typedef struct {
+    uint32_t sent;
+    uint32_t received;
+} vs_sdmp_stat_t;
+
+/******************************************************************************/
+
 
 #endif // VS_SDMP_STRUCTS_H

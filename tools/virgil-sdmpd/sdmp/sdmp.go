@@ -43,11 +43,12 @@ package sdmp
 #include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
 extern int goDeviceStartNotifCb(vs_sdmp_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
+extern int goDeviceStatCb(vs_info_statistics_t *stat);
 
 static int _set_polling(void) {
     return vs_sdmp_info_set_polling(NULL,
                                     vs_sdmp_broadcast_mac(),
-                                    VS_SDMP_INFO_GENERAL,
+                                    VS_SDMP_INFO_GENERAL | VS_SDMP_INFO_STATISTICS,
                                     true,
                                     2);
 }
@@ -57,7 +58,7 @@ static int _register_info_client(void) {
 
     _cb.device_start_cb = goDeviceStartNotifCb;
     _cb.general_info_cb = goGeneralInfoCb;
-    _cb.statistics_cb = NULL;
+    _cb.statistics_cb = goDeviceStatCb;
 
     return vs_sdmp_register_service(vs_sdmp_info_client(vs_info_impl(), _cb));
 }
@@ -78,6 +79,8 @@ const (
 
 var (
     generalInfoCb func(generalInfo devices.DeviceInfo) error
+    statisticsCb func(statistics devices.DeviceInfo) error
+    rolesCb func(roles devices.DeviceInfo) error
 )
 
 func ConnectToDeviceNetwork() error {
@@ -136,6 +139,13 @@ func goDeviceStartNotifCb(device *C.vs_sdmp_info_device_t) C.int {
         return -1
      }
 
+    if nil != rolesCb {
+        var goRoles devices.DeviceInfo
+        goRoles.MAC = mac2string(&device.mac[0])
+        goRoles.Roles = []string{"test_1", "test_2", "test_3"}
+        rolesCb(goRoles)
+    }
+
      return C.VS_CODE_OK
 }
 
@@ -158,13 +168,30 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
     return 0;
 }
 
-func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error) error {
+//export goDeviceStatCb
+func goDeviceStatCb(stat *C.vs_info_statistics_t) C.int {
+    if nil != statisticsCb {
+        var goStat devices.DeviceInfo
+        goStat.MAC = mac2string(&stat.default_netif_mac[0])
+        goStat.Sent = uint32(stat.sent)
+        goStat.Received = uint32(stat.received)
+        statisticsCb(goStat)
+    }
+
+    return C.VS_CODE_OK
+}
+
+func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
+                  _statisticsCb func(statistics devices.DeviceInfo) error,
+                  _rolesCb func(roles devices.DeviceInfo) error) error {
 
     if 0 != C._set_polling() {
         return fmt.Errorf("can't set devices polling. SDMP:INFO:POLL error")
     }
 
     generalInfoCb = _generalInfoCb
+    statisticsCb = _statisticsCb
+    rolesCb = _rolesCb
 
     return nil
 }

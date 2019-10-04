@@ -77,6 +77,9 @@ vs_sdmp_send_request(const vs_netif_t *netif,
                      const uint8_t *data,
                      uint16_t data_sz);
 
+vs_sdmp_stat_t
+vs_sdmp_get_statistics(void);
+
 #ifdef __cplusplus
 }
 #endif

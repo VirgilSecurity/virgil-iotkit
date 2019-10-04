@@ -51,6 +51,8 @@ static const vs_sdmp_service_t *_sdmp_services[SERVICES_CNT_MAX];
 static uint32_t _sdmp_services_num = 0;
 static vs_mac_addr_t _sdmp_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
+static vs_sdmp_stat_t _statistics = {0, 0};
+
 #if VS_SDMP_PROFILE
 #include <sys/time.h>
 static long long _processing_time_us = 0;
@@ -114,6 +116,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                 // Process request
             } else if (_sdmp_services[i]->request_process) {
                 processed = true;
+                _statistics.received++;
                 res = _sdmp_services[i]->request_process(netif,
                                                          packet->header.element_id,
                                                          packet->content,
@@ -456,7 +459,14 @@ vs_sdmp_send_request(const vs_netif_t *netif,
     _sdmp_fill_header(mac, packet);
 
     // Send request
+    _statistics.sent++;
     return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
+}
+
+/******************************************************************************/
+vs_sdmp_stat_t
+vs_sdmp_get_statistics(void) {
+    return _statistics;
 }
 
 /******************************************************************************/

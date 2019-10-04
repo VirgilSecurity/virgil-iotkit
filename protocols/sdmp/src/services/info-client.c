@@ -86,24 +86,6 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-int
-vs_sdmp_info_get_general(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         vs_info_general_t *response,
-                         uint32_t wait_ms) {
-    return -1;
-}
-
-/******************************************************************************/
-int
-vs_sdmp_info_get_stat(const vs_netif_t *netif,
-                      const vs_mac_addr_t *mac,
-                      vs_info_statistics_t *response,
-                      uint32_t wait_ms) {
-    return -1;
-}
-
-/******************************************************************************/
 
 int
 vs_sdmp_info_set_polling(const vs_netif_t *netif,
@@ -216,6 +198,29 @@ _stat_request_processor(const uint8_t *request,
                         const uint16_t response_buf_sz,
                         uint16_t *response_sz) {
 
+    vs_info_stat_response_t *stat_request = (vs_info_stat_response_t *)request;
+    vs_info_statistics_t stat_info;
+
+    // Check is callback present
+    if (!_callbacks.statistics_cb) {
+        return VS_CODE_OK;
+    }
+
+    // Check input parameters
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SDMP:STAT error on a remote device");
+    CHECK_RET(sizeof(vs_info_stat_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
+
+    // Get data from packed structure
+    VS_IOT_MEMSET(&stat_info, 0, sizeof(stat_info));
+    VS_IOT_MEMCPY(stat_info.default_netif_mac, stat_request->mac.bytes, ETH_ADDR_LEN);
+    stat_info.received = stat_request->received;
+    stat_info.sent = stat_request->sent;
+
+    // Invoke callback function
+    _callbacks.statistics_cb(&stat_info);
+
+    *response_sz = 0;
+
     return VS_CODE_OK;
 }
 
@@ -243,18 +248,6 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 /******************************************************************************/
 static int
 _poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-static int
-_ginf_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-static int
-_stat_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     return VS_CODE_OK;
 }
 
@@ -305,6 +298,8 @@ _info_client_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_INFO_SNOT:
+    case VS_INFO_GINF:
+    case VS_INFO_STAT:
         return VS_SDMP_COMMAND_NOT_SUPPORTED;
 
     case VS_INFO_ENUM:
@@ -312,12 +307,6 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_POLL:
         return _poll_response_processor(is_ack, response, response_sz);
-
-    case VS_INFO_GINF:
-        return _ginf_response_processor(is_ack, response, response_sz);
-
-    case VS_INFO_STAT:
-        return _stat_response_processor(is_ack, response, response_sz);
 
     default:
         VS_LOG_ERROR("Unsupported INFO command");

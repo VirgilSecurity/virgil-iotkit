@@ -35,7 +35,6 @@
 package devices
 
 import (
-    "fmt"
     "sync"
     "time"
 )
@@ -44,8 +43,11 @@ type DeviceInfo struct {
 	ID            string `json:"id"`
 	ManufactureID string `json:"manufacture_id"`
 	DeviceType    string `json:"device_type"`
+	Roles       []string `json:"roles"`
 	Version       string `json:"version"`
 	MAC           string `json:"mac"`
+	Sent          uint32 `json:"sent"`
+	Received      uint32 `json:"received"`
 	lastTime      int32
 
 }
@@ -55,10 +57,35 @@ type ConcurrentDevices struct {
 	Items map[string]DeviceInfo
 }
 
-func (d *ConcurrentDevices) UpdateDevice(info DeviceInfo) error {
-    fmt.Printf("Update device\n")
+func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
+    cd := d.Items[info.MAC]
+    cd.ManufactureID = info.ManufactureID
+    cd.DeviceType = info.DeviceType
+    cd.Version = info.Version
+    cd.MAC = info.MAC
+    cd.lastTime = int32(time.Now().Unix())
+    d.Items[info.MAC] = cd
+    return nil
+}
+
+func (d *ConcurrentDevices) UpdateDeviceStatistics(info DeviceInfo) error {
     info.lastTime = int32(time.Now().Unix())
-    d.Items[info.MAC] = info
+    cd := d.Items[info.MAC]
+    cd.MAC = info.MAC
+    cd.Sent = info.Sent
+    cd.Received = info.Received
+    cd.lastTime = int32(time.Now().Unix())
+    d.Items[info.MAC] = cd
+    return nil
+}
+
+func (d *ConcurrentDevices) UpdateDeviceRoles(info DeviceInfo) error {
+    info.lastTime = int32(time.Now().Unix())
+    cd := d.Items[info.MAC]
+    cd.MAC = info.MAC
+    cd.Roles = info.Roles
+    cd.lastTime = int32(time.Now().Unix())
+    d.Items[info.MAC] = cd
     return nil
 }
 

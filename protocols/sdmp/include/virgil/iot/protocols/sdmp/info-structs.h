@@ -64,6 +64,7 @@ typedef struct {
 typedef struct {
     uint32_t sent;
     uint32_t received;
+    uint8_t default_netif_mac[ETH_ADDR_LEN];
 } vs_info_statistics_t;
 
 typedef enum {
