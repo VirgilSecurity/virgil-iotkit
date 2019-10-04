@@ -74,7 +74,7 @@ vs_virgil_ecies_test();
 static bool
 _save_hl_key(size_t slot, const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
 
-    VS_HSM_CHECK_RET(vs_hsm_slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
+    STATUS_CHECK_RET_BOOL(vs_hsm_slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
 
     return true;
 }

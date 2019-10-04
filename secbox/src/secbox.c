@@ -69,12 +69,13 @@ vs_secbox_deinit(const vs_storage_op_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-long
+ssize_t
 vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) {
     vs_storage_file_t f = NULL;
     uint8_t *data_load = NULL;
     size_t data_load_sz;
     uint8_t type;
+    vs_status_code_e ret_code = VS_CODE_ERR_FILE_READ;
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
@@ -85,7 +86,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     CHECK_NOT_ZERO_RET(ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    long file_sz = ctx->impl.size(ctx->storage_ctx, id);
+    ssize_t file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
     CHECK_RET(0 < file_sz, file_sz, "File not found");
     CHECK_RET(file_sz > sign_sz + 1, VS_CODE_ERR_FILE, "File format error");
@@ -101,7 +102,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
         data_load_sz = file_sz - sign_sz - 1;
         data_load = VS_IOT_MALLOC(data_load_sz);
         if (NULL == data_load) {
-            file_sz = VS_CODE_ERR_NO_MEMORY;
+            ret_code = VS_CODE_ERR_NO_MEMORY;
             goto terminate;
         }
 
@@ -120,6 +121,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
 
     case VS_SECBOX_SIGNED:
         file_sz -= (sign_sz + 1);
+        ret_code = VS_CODE_OK;
         break;
     default:
         return VS_CODE_ERR_FILE_READ;
@@ -129,7 +131,7 @@ terminate:
     VS_IOT_FREE(data_load);
 
     ctx->impl.close(ctx->storage_ctx, f);
-    return file_sz;
+    return VS_CODE_OK == ret_code ? file_sz : ret_code;
 }
 
 /******************************************************************************/
@@ -139,7 +141,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
                vs_storage_element_id_t id,
                const uint8_t *data,
                size_t data_sz) {
-    vs_status_code_e res = VS_CODE_OK;
+    vs_status_code_e res = VS_CODE_ERR_FILE_WRITE;
     vs_status_code_e ret = VS_CODE_OK;
     vs_storage_file_t f = NULL;
     uint8_t *data_to_save = NULL;
@@ -173,7 +175,6 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
             return VS_CODE_ERR_NO_MEMORY;
         }
 
-        res = VS_CODE_ERR_FILE_WRITE;
         STATUS_CHECK(vs_hsm_virgil_encrypt_sha384_aes256(id,
                                                                  sizeof(vs_storage_element_id_t),
                                                                  (uint8_t *)data,
@@ -197,7 +198,6 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
     vs_hsm_sw_sha256_update(&hash_ctx, data_to_save, data_to_save_sz);
     vs_hsm_sw_sha256_final(&hash_ctx, hash);
 
-    res = VS_CODE_ERR_FILE_WRITE;
     STATUS_CHECK(vs_hsm_ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz), "Cannot sign");
 
     // delete the old file if exists
@@ -245,7 +245,7 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    int file_sz = ctx->impl.size(ctx->storage_ctx, id);
+    ssize_t file_sz = ctx->impl.size(ctx->storage_ctx, id);
 
     CHECK_RET(0 < file_sz, VS_CODE_ERR_FILE, "Can't find file");
     CHECK_RET(file_sz > sign_sz + 1, VS_CODE_ERR_FILE, "File format error");
@@ -281,8 +281,6 @@ vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8
                                                                  &data_load_sz), "Can't descrypt DHA384 AES256");
 
         CHECK (data_sz == data_load_sz, "Can't read requested data quantity");
-        VS_IOT_FREE(data_load);
-        data_load = NULL;
         break;
 
     case VS_SECBOX_SIGNED:

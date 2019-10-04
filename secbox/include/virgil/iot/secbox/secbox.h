@@ -16,7 +16,7 @@ vs_secbox_init(const vs_storage_op_ctx_t *ctx);
 vs_status_code_e
 vs_secbox_deinit(const vs_storage_op_ctx_t *ctx);
 
-long
+ssize_t
 vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id);
 
 vs_status_code_e

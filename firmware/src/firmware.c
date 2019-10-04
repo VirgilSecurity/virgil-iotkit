@@ -75,10 +75,10 @@ _read_data(const vs_storage_op_ctx_t *ctx,
            vs_storage_element_id_t id,
            uint32_t offset,
            uint8_t *data,
-           size_t buff_sz,
+           ssize_t buff_sz,
            size_t *data_sz) {
     vs_storage_file_t f = NULL;
-    long file_sz;
+    ssize_t file_sz;
     size_t bytes_left;
 
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -241,7 +241,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
                                uint8_t *data,
                                  size_t buff_sz,
                                  size_t *data_sz) {
-    long file_sz;
+    ssize_t file_sz;
     vs_storage_element_id_t data_id;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -257,7 +257,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
     if (file_sz > 0) {
 
         int32_t footer_sz = file_sz - descriptor->firmware_length;
-        CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_UINT16_T, "Incorrect footer size");
+        CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Incorrect footer size");
 
         *data_sz = footer_sz;
         CHECK_RET(footer_sz <= buff_sz, VS_CODE_ERR_FILE, "Buffer to small");
@@ -270,7 +270,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
 /*************************************************************************/
 vs_status_code_e
 vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
-    long file_sz;
+    ssize_t file_sz;
     vs_storage_element_id_t desc_id;
     uint8_t *buf = NULL;
     uint8_t *newbuf = NULL;
@@ -349,7 +349,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 
     vs_storage_element_id_t desc_id;
     int res = VS_CODE_ERR_NOT_FOUND;
-    long file_sz;
+    ssize_t file_sz;
     uint8_t *buf = NULL;
     uint32_t offset = 0;
 
@@ -398,7 +398,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 vs_status_code_e
 vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     int res = VS_CODE_ERR_NOT_FOUND;
-    long file_sz;
+    ssize_t file_sz;
     vs_storage_element_id_t desc_id;
     vs_storage_element_id_t data_id;
 
@@ -482,7 +482,7 @@ _is_rule_equal_to(vs_key_type_e type) {
 vs_status_code_e
 vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
-    long file_sz;
+    ssize_t file_sz;
     uint8_t *pubkey;
     uint16_t sign_len;
     uint16_t key_len;
@@ -508,7 +508,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     }
 
     int32_t footer_sz = file_sz - descriptor->firmware_length;
-    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_UINT16_T, "Incorrect footer size");
+    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Incorrect footer size");
 
     uint8_t buf[descriptor->chunk_size < footer_sz ? footer_sz : descriptor->chunk_size];
     vs_firmware_footer_t *footer = (vs_firmware_footer_t *)buf;
@@ -571,7 +571,6 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         pubkey = sign->raw_sign_pubkey + sign_len;
 
         STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                  VS_CODE_ERR_VERIFY,
                   "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
@@ -582,7 +581,6 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
                                                            hash,
                                                            sign->raw_sign_pubkey,
                                                            sign_len),
-                      VS_CODE_ERR_VERIFY,
                       "Signature is wrong");
             sign_rules++;
         }
@@ -601,7 +599,7 @@ vs_status_code_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
     vs_status_code_e ret_code;
-    long file_sz;
+    ssize_t file_sz;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -621,7 +619,7 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
     }
 
     int32_t footer_sz = file_sz - descriptor->firmware_length;
-    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_UINT16_T, "Incorrect footer size");
+    CHECK_RET(footer_sz > 0 && footer_sz < UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Incorrect footer size");
 
     uint8_t buf[descriptor->chunk_size < footer_sz ? footer_sz : descriptor->chunk_size];
     uint32_t offset = 0;
@@ -632,14 +630,8 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
         uint32_t fw_rest = descriptor->firmware_length - offset;
         uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
 
-        if (VS_CODE_OK !=
-            vs_firmware_load_firmware_chunk(ctx, descriptor, offset, buf, required_chunk_size, &read_sz)) {
-            return VS_CODE_ERR_FILE_READ;
-        }
-
-        if (VS_CODE_OK != vs_firmware_install_append_data_hal(buf, required_chunk_size)) {
-            return VS_CODE_ERR_FILE;
-        }
+        STATUS_CHECK_RET(vs_firmware_load_firmware_chunk(ctx, descriptor, offset, buf, required_chunk_size, &read_sz), "Unable to load data chunk");
+        STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, required_chunk_size), "Unable to append data");
 
         offset += required_chunk_size;
     }

@@ -73,7 +73,7 @@ _read_data(const vs_storage_op_ctx_t *op_ctx,
            uint16_t buff_sz,
            uint16_t *data_sz) {
     vs_storage_file_t f = NULL;
-    long file_sz;
+    ssize_t file_sz;
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -470,7 +470,6 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, buf, _sz, &read_sz),
                   VS_CODE_ERR_FILE_READ,
                   "Error TL footer load");
-        //        CHECK_RET(0 == vs_tl_load_hal(&el, buf, _sz), VS_CODE_ERR_FILE_READ, "Error TL footer load");
 
         sign_len = vs_hsm_get_signature_len(element->ec_type);
         key_len = vs_hsm_get_pubkey_len(element->ec_type);
@@ -489,7 +488,6 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
     CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, footer, _sz, &read_sz),
               VS_CODE_ERR_FILE_READ,
               "Error TL footer load");
-    //    CHECK_RET(0 == vs_tl_load_hal(&el, footer, _sz), VS_CODE_ERR_FILE_READ, "Error TL footer load");
 
     *footer_sz = _sz;
 
@@ -500,7 +498,6 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 vs_status_code_e
 vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     vs_pubkey_dated_t *element = (vs_pubkey_dated_t *)key;
-    //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLC, 0};
     int key_len = vs_hsm_get_pubkey_len(element->pubkey.ec_type);
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
@@ -518,11 +515,9 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
         return VS_CODE_ERR_FILE_WRITE;
     }
 
-    //    el.index = tl_ctx->keys_qty.keys_count;
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLC, tl_ctx->keys_qty.keys_count, file_id);
     if (VS_CODE_OK != _write_data(tl_ctx->storage_ctx, file_id, 0, key, key_sz)) {
-        //    if (0 != vs_tl_save_hal(&el, key, key_sz)) {
         return VS_CODE_ERR_FILE_WRITE;
     }
 
@@ -553,9 +548,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
                       _read_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)&element, sizeof(vs_pubkey_dated_t), &_sz),
               VS_CODE_ERR_FILE_READ,
               "Error TL key load");
-    //    CHECK_RET(0 == vs_tl_load_hal(&el, (uint8_t *)&element, sizeof(vs_pubkey_dated_t)),
-    //              VS_CODE_ERR_FILE_READ,
-    //              "Error TL key load");
 
     key_len = vs_hsm_get_pubkey_len(element.pubkey.ec_type);
 
@@ -569,7 +561,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, key, key_len, &_sz),
               VS_CODE_ERR_FILE_READ,
               "Error TL key load");
-    //    CHECK_RET(0 == vs_tl_load_hal(&el, key, key_len), VS_CODE_ERR_FILE_READ, "Error TL key load");
 
     *key_sz = key_len;
 

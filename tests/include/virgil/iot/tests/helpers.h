@@ -48,8 +48,6 @@
         }                                                                                                              \
     } while (0)
 
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_CODE_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
-
 #define CHECK_GOTO(OPERATION, DESCRIPTION, ...) do {                                                                       \
     if (!(OPERATION)) {                                                                                                \
         VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \

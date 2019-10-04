@@ -141,8 +141,8 @@ _fw_update_get_data(void *context, vs_update_file_type_t *file_type, const void 
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_UINT16_T, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_UINT16_T);
-    CHECK_RET(data_offset <= UINT32_MAX, VS_CODE_ERR_UINT32_T, "Data offset %d is bigger than uint16_t %d", data_offset, VS_CODE_ERR_UINT32_T);
+    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
+    CHECK_RET(data_offset <= UINT32_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Data offset %d is bigger than uint16_t %d", data_offset, VS_CODE_ERR_FORMAT_OVERFLOW);
 
     ret_code = vs_firmware_load_firmware_chunk(ctx, descriptor, data_offset, data_buffer, buffer_size, data_size);
     CHECK_RET(buffer_size >= *data_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store data %d bytes size", buffer_size, *data_size);
@@ -164,7 +164,7 @@ _fw_update_get_footer(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_UINT16_T, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_UINT16_T);
+    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
 
     ret_code = vs_firmware_load_firmware_footer(ctx, descriptor, footer_buffer, buffer_size, footer_size);
     CHECK_RET(buffer_size >= *footer_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store footer %d bytes size", buffer_size, *footer_size);

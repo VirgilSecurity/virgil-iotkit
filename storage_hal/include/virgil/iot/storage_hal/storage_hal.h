@@ -82,7 +82,7 @@ typedef vs_status_code_e (*vs_storage_load_hal_t)(
         uint8_t *out_data,
         size_t data_sz);
 
-typedef long (*vs_storage_file_size_hal_t)(
+typedef ssize_t (*vs_storage_file_size_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 

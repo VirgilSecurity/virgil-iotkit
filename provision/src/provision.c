@@ -42,8 +42,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
 
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_CODE_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
-
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 
 static const size_t auth_key_slot[PROVISION_KEYS_QTY] = {AUTH1_KEY_SLOT, AUTH2_KEY_SLOT};

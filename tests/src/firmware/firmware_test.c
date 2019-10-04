@@ -103,7 +103,7 @@ _create_test_signed_hl_key(vs_key_type_e hl_key_type,
                    "Error get test pubkey");
 
     if (with_signature) {
-        VS_HSM_CHECK_RET(
+        STATUS_CHECK_RET_BOOL(
                 vs_hsm_hash_create(
                         VS_HASH_SHA_256, buf, sizeof(vs_pubkey_dated_t) + key_len, hash_buf, sizeof(hash_buf), &_sz),
                 "ERROR while creating hash for test key");

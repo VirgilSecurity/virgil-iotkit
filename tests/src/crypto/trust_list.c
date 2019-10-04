@@ -147,7 +147,7 @@ _test_verify_hl_keys(void) {
 static bool
 _test_tl_header_save_pass() {
 
-    VS_HSM_CHECK_RET(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)test_header, test_header_sz),
+    STATUS_CHECK_RET_BOOL(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)test_header, test_header_sz),
                      "Error write tl header");
     return true;
 }
