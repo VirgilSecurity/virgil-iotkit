@@ -45,23 +45,24 @@
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-static int
+static vs_status_code_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
-static int
+
+static vs_status_code_e
 _udp_bcast_deinit();
-static int
+
+static vs_status_code_e
 _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
-static int
+
+static vs_status_code_e
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
-static vs_netif_t _netif_udp_bcast = {
-        .user_data = NULL,
-        .init = _udp_bcast_init,
-        .deinit = _udp_bcast_deinit,
-        .tx = _udp_bcast_tx,
-        .mac_addr = _udp_bcast_mac,
-        .packet_buf_filled = 0
-};
+static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
+                                      .init = _udp_bcast_init,
+                                      .deinit = _udp_bcast_deinit,
+                                      .tx = _udp_bcast_tx,
+                                      .mac_addr = _udp_bcast_mac,
+                                      .packet_buf_filled = 0};
 
 static vs_netif_rx_cb_t _netif_udp_bcast_rx_cb = 0;
 static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;
@@ -112,7 +113,7 @@ _udp_bcast_receive_processor(void *sock_desc) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _udp_bcast_connect() {
     struct sockaddr_in server;
     struct timeval tv;
@@ -168,17 +169,17 @@ _udp_bcast_connect() {
 
     printf("Opened connection for UDP broadcast\n");
 
-    return 0;
+    return VS_CODE_OK;
 
 terminate:
 
     _udp_bcast_deinit();
 
-    return -1;
+    return VS_CODE_ERR_SOCKET;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
     struct sockaddr_in broadcast_addr;
 
@@ -189,11 +190,11 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
 
     sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
@@ -201,11 +202,11 @@ _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
     _netif_udp_bcast.packet_buf_filled = 0;
     _udp_bcast_connect();
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _udp_bcast_deinit() {
     printf("Stop UDP broadcast\n");
     if (_udp_bcast_sock >= 0) {
@@ -216,19 +217,19 @@ _udp_bcast_deinit() {
     }
     _udp_bcast_sock = -1;
     pthread_join(receive_thread, NULL);
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr) {
 
     if (mac_addr) {
         memset(mac_addr->bytes, 0x01, sizeof(vs_mac_addr_t));
-        return 0;
+        return VS_CODE_OK;
     }
 
-    return 1;
+    return VS_CODE_ERR_NULLPTR_ARGUMENT;
 }
 
 /******************************************************************************/

@@ -12,7 +12,7 @@ _create_keypairs_() {
         if (not_implemented) {                                                                                         \
             VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));                  \
         } else {                                                                                                       \
-            VS_HSM_CHECK_RET(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                                 \
+            STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                                 \
                              "Unable to create keypair %s for slot %d (%s) while preparing test",                      \
                              vs_hsm_keypair_type_descr(KEYPAIR),                                                       \
                              (SLOT),                                                                                   \
@@ -49,7 +49,7 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
     uint8_t sign_buf[RESULT_BUF_SIZE];
     uint16_t signature_sz;
 
-    VS_HSM_CHECK_RET(vs_hsm_hash_create(hash_alg,
+    STATUS_CHECK_RET_BOOL(vs_hsm_hash_create(hash_alg,
                                         (uint8_t *)input_data_raw,
                                         strlen(input_data_raw),
                                         hash_buf,
@@ -59,15 +59,15 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
 
     signature_sz = sizeof(sign_buf);
 
-    VS_HSM_CHECK_RET(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
+    STATUS_CHECK_RET_BOOL(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
                      "ERROR while signing hash");
 
     BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size");
 
-    VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
+    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
                      "ERROR while importing public key from slot");
 
-    VS_HSM_CHECK_RET(vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
+    STATUS_CHECK_RET_BOOL(vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
                      "ERROR while verifying hash");
 
     return true;
@@ -156,7 +156,7 @@ test_ecdsa(void) {
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_ED25519)
 
 #if USE_RSA
-    if (VS_HSM_ERR_OK != vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
+    if (VS_CODE_OK != vs_hsm_keypair_create(VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
         return failed_test_result + 1;
     }
 

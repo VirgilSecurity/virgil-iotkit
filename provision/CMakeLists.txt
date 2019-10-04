@@ -64,14 +64,14 @@ target_compile_options(provision
 #   Config path
 #
 
-target_compile_definitions(${PROJECT_NAME}
+target_compile_definitions(provision
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
+target_include_directories(provision
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
@@ -82,4 +82,9 @@ target_include_directories(${PROJECT_NAME}
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
+        )
+
+target_link_libraries(provision
+        PRIVATE
+        virgil-iot-status-code
         )

@@ -84,7 +84,7 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
@@ -146,7 +146,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -157,7 +157,7 @@ _packet_sz(const uint8_t *packet_data) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _sdmp_periodical(void) {
     int i;
     // Detect required command
@@ -167,11 +167,11 @@ _sdmp_periodical(void) {
         }
     }
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _sdmp_rx_cb(vs_netif_t *netif,
             const uint8_t *data,
             const uint16_t data_sz,
@@ -255,7 +255,7 @@ _sdmp_rx_cb(vs_netif_t *netif,
         }
     }
 
-    return -1;
+    return VS_CODE_ERR_SDMP_UNKNOWN;
 }
 
 /******************************************************************************/
@@ -271,10 +271,10 @@ current_timestamp() {
 #endif
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
-    int res;
+    vs_status_code_e res;
 
 #if VS_SDMP_PROFILE
     long long t;
@@ -288,7 +288,7 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 #if VS_SDMP_PROFILE
         _processing_time += current_timestamp() - t;
 #endif
-        return 0;
+        return VS_CODE_OK;
     }
 
     VS_IOT_ASSERT(packet);
@@ -302,7 +302,7 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_init(vs_netif_t *default_netif) {
 
     // Check input data
@@ -316,11 +316,11 @@ vs_sdmp_init(vs_netif_t *default_netif) {
     // Init default network interface
     default_netif->init(_sdmp_rx_cb, _sdmp_process_cb);
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_deinit() {
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->deinit);
@@ -329,7 +329,7 @@ vs_sdmp_deinit() {
 
     _sdmp_services_num = 0;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -340,7 +340,7 @@ vs_sdmp_default_netif(void) {
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->tx);
@@ -359,27 +359,28 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
         return _sdmp_default_netif->tx(data, data_sz);
     }
 
-    return -1;
+    return VS_CODE_ERR_SDMP_UNKNOWN;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 
     VS_IOT_ASSERT(service);
 
-    if (_sdmp_services_num >= SERVICES_CNT_MAX) {
-        return -1;
-    }
+    CHECK_RET(_sdmp_services_num < SERVICES_CNT_MAX,
+              VS_CODE_ERR_SDMP_TOO_MUCH_SERVICES,
+              "SDMP services amount exceed maximum sllowed %d",
+              SERVICES_CNT_MAX);
 
     _sdmp_services[_sdmp_services_num] = service;
     _sdmp_services_num++;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
@@ -387,10 +388,10 @@ vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
         VS_IOT_ASSERT(_sdmp_default_netif);
         VS_IOT_ASSERT(_sdmp_default_netif->mac_addr);
         _sdmp_default_netif->mac_addr(mac_addr);
-        return 0;
+        return VS_CODE_OK;
     }
 
-    return -1;
+    return VS_CODE_ERR_SDMP_UNKNOWN;
 }
 
 /******************************************************************************/
@@ -402,7 +403,7 @@ _sdmp_transaction_id() {
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
 
     VS_IOT_ASSERT(packet);
@@ -415,15 +416,15 @@ _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) 
 
     // Fill recipient MAC address
     if (!recipient_mac) {
-        memset(packet->eth_header.dest.bytes, 0xFF, sizeof(vs_mac_addr_t));
+        VS_IOT_MEMSET(packet->eth_header.dest.bytes, 0xFF, sizeof(vs_mac_addr_t));
     } else {
-        memcpy(packet->eth_header.dest.bytes, recipient_mac->bytes, sizeof(vs_mac_addr_t));
+        VS_IOT_MEMCPY(packet->eth_header.dest.bytes, recipient_mac->bytes, sizeof(vs_mac_addr_t));
     }
 
     // Transaction ID
     packet->header.transaction_id = _sdmp_transaction_id();
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

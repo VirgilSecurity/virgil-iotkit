@@ -46,7 +46,7 @@ static vs_netif_rx_cb_t callback_rx_cb;
 static vs_netif_process_cb_t callback_process_cb;
 
 /**********************************************************/
-static int
+static vs_status_code_e
 test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
     int ret_code = -1;
     const uint8_t *packet_data;
@@ -64,7 +64,7 @@ test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
 }
 
 /**********************************************************/
-static int
+static vs_status_code_e
 test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
@@ -72,11 +72,11 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
 
     netif_state.mac_addr_set_up = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_code_e
 test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     VS_IOT_ASSERT(rx_cb);
 
@@ -85,14 +85,14 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
     netif_state.initialized = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_code_e
 test_netif_deinit() {
     netif_state.deinitialized = 1;
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/

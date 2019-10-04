@@ -114,7 +114,13 @@ _fw_update_get_header(void *context, vs_update_file_type_t *file_type, void *hea
 
     CHECK_RET(buffer_size >= sizeof(vs_firmware_descriptor_t), VS_CODE_ERR_NO_MEMORY, "Buffer size %d is lower that sizeof(vs_firmware_descriptor_t) = %d", buffer_size, sizeof(vs_firmware_descriptor_t));
 
-    STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(ctx, manufacture_id, device_type, fw_descr), "Unable to load Firmware's header");
+    if(VS_CODE_OK != vs_firmware_load_firmware_descriptor(ctx, manufacture_id, device_type, fw_descr)){
+        VS_LOG_WARNING("Unable to load Firmware's header");
+        VS_IOT_MEMSET(fw_descr, 0, sizeof(*fw_descr));
+        VS_IOT_MEMCPY(&fw_descr->info.manufacture_id, manufacture_id, sizeof(fw_descr->info.manufacture_id));
+        VS_IOT_MEMCPY(&fw_descr->info.device_type, device_type, sizeof(fw_descr->info.device_type));
+    }
+
     *header_size = sizeof(vs_firmware_descriptor_t);
     CHECK_RET(buffer_size >= *header_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store header %d bytes size", buffer_size, *header_size);
 
@@ -136,8 +142,8 @@ _fw_update_get_data(void *context, vs_update_file_type_t *file_type, const void 
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_UINT16_T, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_UINT16_T);
-    CHECK_RET(data_offset <= UINT32_MAX, VS_CODE_ERR_UINT32_T, "Data offset %d is bigger than uint16_t %d", data_offset, VS_CODE_ERR_UINT32_T);
+    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
+    CHECK_RET(data_offset <= UINT32_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Data offset %d is bigger than uint16_t %d", data_offset, VS_CODE_ERR_FORMAT_OVERFLOW);
 
     ret_code = vs_firmware_load_firmware_chunk(ctx, descriptor, data_offset, data_buffer, buffer_size, data_size);
     CHECK_RET(buffer_size >= *data_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store data %d bytes size", buffer_size, *data_size);
@@ -159,7 +165,7 @@ _fw_update_get_footer(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_UINT16_T, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_UINT16_T);
+    CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
 
     ret_code = vs_firmware_load_firmware_footer(ctx, descriptor, footer_buffer, buffer_size, footer_size);
     CHECK_RET(buffer_size >= *footer_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store footer %d bytes size", buffer_size, *footer_size);
@@ -208,8 +214,8 @@ _fw_update_set_footer(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_NOT_ZERO_RET(file_footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(VS_CODE_OK == (res = vs_firmware_save_firmware_footer(ctx, fw_descr, file_footer)), res,
-              "Unable to save footer");
+    res = vs_firmware_save_firmware_footer(ctx, fw_descr, file_footer);
+    CHECK_RET(VS_CODE_OK == res, res, "Unable to save footer");
 
     if(VS_CODE_OK != vs_firmware_verify_firmware(ctx, fw_descr)){
         VS_LOG_WARNING("Error while verifying firmware");
@@ -361,6 +367,7 @@ vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *
     CHECK_NOT_ZERO_RET(storage_ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));

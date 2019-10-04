@@ -59,6 +59,7 @@
  */
 
 #include <string.h>
+#include <stdbool.h>
 
 /* aaaack but it's fast and const should make it shared text page. */
 static const unsigned char pr2six[256] = {
@@ -92,7 +93,7 @@ base64decode_len(const char *in, int inlen) {
 }
 
 /******************************************************************************/
-int
+bool
 base64decode(const char *in, int inlen, unsigned char *out, int *outlen) {
     int nbytesdecoded;
     register const unsigned char *bufin;
@@ -106,7 +107,7 @@ base64decode(const char *in, int inlen, unsigned char *out, int *outlen) {
     nbytesdecoded = ((nprbytes + 3) / 4) * 3;
 
     if (*outlen < (nbytesdecoded + 1)) /* +1 is for NULL termination byte */
-        return -1;
+        return false;
     bufout = (unsigned char *)out;
     bufin = (const unsigned char *)in;
 
@@ -132,7 +133,7 @@ base64decode(const char *in, int inlen, unsigned char *out, int *outlen) {
     *(bufout++) = '\0';
     nbytesdecoded -= (4 - nprbytes) & 3;
     *outlen = nbytesdecoded;
-    return 0;
+    return true;
 }
 
 static const char basis_64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -144,12 +145,12 @@ base64encode_len(int len) {
 }
 
 /******************************************************************************/
-int
+bool
 base64encode(const unsigned char *in, int inlen, char *out, int *outlen) {
     int i;
     char *p;
     if (*outlen < base64encode_len(inlen))
-        return -1;
+        return false;
 
     p = out;
     for (i = 0; i < inlen - 2; i += 3) {
@@ -172,5 +173,5 @@ base64encode(const unsigned char *in, int inlen, char *out, int *outlen) {
 
     *p++ = '\0';
     *outlen = p - out;
-    return 0;
+    return true;
 }

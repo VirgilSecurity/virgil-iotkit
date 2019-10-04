@@ -38,6 +38,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <global-hal.h>
+#include <virgil/iot/status_code/status_code.h>
 
 #define MANUFACTURE_ID_STR_LEN (32 + 1)
 #define DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
@@ -79,9 +80,10 @@ typedef struct {
 #define VS_TL_VERSION_FIELD "version"
 #define VS_TL_TYPE_FIELD "type"
 
-int
+vs_status_code_e
 vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
-int
+
+vs_status_code_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
                                            uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],

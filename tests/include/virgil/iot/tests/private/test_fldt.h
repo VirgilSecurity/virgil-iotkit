@@ -41,6 +41,7 @@
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
+#include <virgil/iot/status_code/status_code.h>
 
 typedef struct {
     union {

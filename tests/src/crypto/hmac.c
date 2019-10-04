@@ -24,7 +24,7 @@ _test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t c
     res = vs_hsm_hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz);
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "HMAC for %s algorithm is not implemented", vs_hsm_hash_type_descr(hash_type));
-    VS_HSM_CHECK_RET(res, "vs_hsm_hmac incorrect result");
+    STATUS_CHECK_RET_BOOL(res, "vs_hsm_hmac incorrect result");
 
     MEMCMP_CHECK_RET(correct, buf, correct_sz, false);
 

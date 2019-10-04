@@ -79,13 +79,13 @@ _get_serial_number_in_hex_str(char _out_str[SERIAL_SIZE * 2 + 1]) {
 }
 
 /******************************************************************************/
-static int16_t
+static vs_status_code_e
 _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
     size_t buf_size = *in_out_answer_len;
 
     if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     }
 
     char *crypto_answer_b64 = (char *)VS_IOT_MALLOC(buf_size);
@@ -93,7 +93,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     int crypto_answer_b64_len;
 
     if (! crypto_answer_b64 ||  json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK)
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     else {
         crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)strlen(crypto_answer_b64));
 
@@ -107,7 +107,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                      &crypto_answer_b64_len);
         size_t decrypted_data_sz;
 
-        if (VS_HSM_ERR_OK != vs_hsm_virgil_decrypt_sha384_aes256(NULL,
+        if (VS_CODE_OK != vs_hsm_virgil_decrypt_sha384_aes256(NULL,
                                                                  0,
                                                                  (uint8_t *)crypto_answer_b64,
                                                                  (size_t)crypto_answer_b64_len,
@@ -121,23 +121,23 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
         out_answer[*in_out_answer_len] = '\0';
     }
     VS_IOT_FREE(crypto_answer_b64);
-    return VS_CLOUD_ERR_OK;
+    return VS_CODE_OK;
 
 fail:
     VS_IOT_FREE(crypto_answer_b64);
     *in_out_answer_len = 0;
     out_answer[0] = '\0';
-    return VS_CLOUD_ERR_FAIL;
+    return VS_CODE_ERR_JSON;
 }
 
 /******************************************************************************/
-static int
+static vs_status_code_e
 _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
-    int16_t ret;
+    vs_status_code_e ret;
     char serial[SERIAL_SIZE * 2 + 1];
 
-    CHECK_NOT_ZERO_RET(out_answer, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
 
@@ -146,7 +146,7 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
     if (res < 0 || res > MAX_EP_SIZE ||
         vs_cloud_https_hal(VS_HTTP_GET, url, NULL, 0, out_answer, NULL, NULL, in_out_answer_len) != HTTPS_RET_CODE_OK) {
-        ret = VS_CLOUD_ERR_FAIL;
+        ret = VS_CODE_ERR_CLOUD;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
     }
@@ -156,13 +156,13 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
     return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
     return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
 }
@@ -243,7 +243,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             _ntoh_fw_header(&resp->header);
 
             if (!_check_firmware_header(&resp->header) ||
-                VS_CLOUD_ERR_OK !=
+                VS_CODE_OK !=
                         vs_cloud_is_new_firmware_version_available(resp->fw_storage,
                                                                    resp->header.descriptor.info.manufacture_id,
                                                                    resp->header.descriptor.info.device_type,
@@ -253,14 +253,14 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
 
             // Remove old version from fw storage
-            if (VS_STORAGE_OK == vs_firmware_load_firmware_descriptor(resp->fw_storage,
+            if (VS_CODE_OK == vs_firmware_load_firmware_descriptor(resp->fw_storage,
                                                                     resp->header.descriptor.info.manufacture_id,
                                                                     resp->header.descriptor.info.device_type,
                                                                     &old_desc)) {
                 vs_firmware_delete_firmware(resp->fw_storage, &old_desc);
             }
 
-            if (VS_STORAGE_OK != vs_firmware_save_firmware_descriptor(resp->fw_storage, &resp->header.descriptor)) {
+            if (VS_CODE_OK != vs_firmware_save_firmware_descriptor(resp->fw_storage, &resp->header.descriptor)) {
                 return 0;
             }
             resp->is_descriptor_stored = true;
@@ -307,7 +307,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
-                if (VS_STORAGE_OK != vs_firmware_save_firmware_chunk(resp->fw_storage,
+                if (VS_CODE_OK != vs_firmware_save_firmware_chunk(resp->fw_storage,
                                                                    &resp->header.descriptor,
                                                                    resp->buff,
                                                                    required_chunk_size,
@@ -353,10 +353,10 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
                 VS_LOG_ERROR("Invalid firmware descriptor");
-                return VS_CLOUD_ERR_INVAL;
+                return VS_CODE_ERR_INCORRECT_ARGUMENT;
             }
 
-            if (VS_STORAGE_OK !=
+            if (VS_CODE_OK !=
                 vs_firmware_save_firmware_footer(resp->fw_storage, &resp->header.descriptor, resp->buff)) {
                 return 0;
             }
@@ -368,14 +368,14 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 }
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
                                  const char *fw_file_url,
                                  vs_cloud_firmware_header_t *fetched_header) {
-    int res = VS_CLOUD_ERR_OK;
-    CHECK_NOT_ZERO_RET(fw_file_url, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(fetched_header, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(fw_storage, VS_CLOUD_ERR_INVAL);
+    int res = VS_CODE_OK;
+    CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     size_t in_out_answer_len = 0;
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
@@ -387,7 +387,7 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
     if (vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) !=
                 HTTPS_RET_CODE_OK ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
-        res = VS_CLOUD_ERR_FAIL;
+        res = VS_CODE_ERR_CLOUD;
 
         if (resp.is_descriptor_stored) {
             vs_firmware_delete_firmware(fw_storage, &resp.header.descriptor);
@@ -449,7 +449,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
 
-            if (VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
+            if (VS_CODE_OK != vs_tl_save_part(&info, (uint8_t *)&resp->header, sizeof(vs_tl_header_t))) {
                 return 0;
             }
             resp->step = VS_CLOUD_FETCH_Tl_STEP_KEYS;
@@ -490,7 +490,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
             if (curr_key_sz != 0 && resp->used_size == curr_key_sz) {
                 resp->used_size = 0;
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLC, .index = 0};
-                if (VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
+                if (VS_CODE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, curr_key_sz)) {
                     return 0;
                 }
 
@@ -551,8 +551,8 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                 vs_tl_info_t tl_info = {.type = ((vs_tl_footer_t *)resp->buff)->tl_type,
                                         .version = resp->host_header.version};
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
-                if (VS_CLOUD_ERR_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
-                    VS_STORAGE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
+                if (VS_CODE_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
+                    VS_CODE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
                     return 0;
                 }
                 resp->step = VS_CLOUD_FETCH_Tl_STEP_DONE;
@@ -567,10 +567,10 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 }
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
-    int res = VS_CLOUD_ERR_OK;
-    CHECK_NOT_ZERO_RET(tl_file_url, VS_CLOUD_ERR_INVAL);
+    int res = VS_CODE_OK;
+    CHECK_NOT_ZERO_RET(tl_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     size_t in_out_answer_len = 0;
     tl_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
@@ -580,7 +580,7 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     if (vs_cloud_https_hal(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) !=
                 HTTPS_RET_CODE_OK ||
         VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
-        res = VS_CLOUD_ERR_FAIL;
+        res = VS_CODE_ERR_CLOUD;
     }
 
     VS_IOT_FREE(resp.buff);

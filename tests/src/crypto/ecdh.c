@@ -61,11 +61,11 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
 
     // Create key pair for Alice
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(alice_slot, keypair_type),
+    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(alice_slot, keypair_type),
                      "Can't create keypair %s for Alice",
                      vs_hsm_keypair_type_descr(keypair_type));
 
-    VS_HSM_CHECK_RET(
+    STATUS_CHECK_RET_BOOL(
             vs_hsm_keypair_get_pubkey(
                     alice_slot, alice_public_key, sizeof(alice_public_key), &alice_public_key_sz, &alice_keypair_type),
             "Can't load public key from slot %s for Alice",
@@ -76,17 +76,17 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
     }
 
     // Create key pair for Bob
-    VS_HSM_CHECK_RET(vs_hsm_keypair_create(bob_slot, keypair_type),
+    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(bob_slot, keypair_type),
                      "Can't create keypair %s for Bob",
                      vs_hsm_keypair_type_descr(keypair_type));
 
-    VS_HSM_CHECK_RET(vs_hsm_keypair_get_pubkey(
+    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_get_pubkey(
                              bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
                      "Can't load public key from slot %s for Bob",
                      vs_iot_hsm_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
-    VS_HSM_CHECK_RET(vs_hsm_ecdh(alice_slot,
+    STATUS_CHECK_RET_BOOL(vs_hsm_ecdh(alice_slot,
                                  bob_keypair_type,
                                  bob_public_key,
                                  bob_public_key_sz,
@@ -98,7 +98,7 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
                      vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
-    if (VS_HSM_ERR_OK != vs_hsm_ecdh(bob_slot,
+    if (VS_CODE_OK != vs_hsm_ecdh(bob_slot,
                                      alice_keypair_type,
                                      alice_public_key,
                                      alice_public_key_sz,

@@ -33,39 +33,37 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #include <stdint.h>
 
+#include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/cloud/private/cloud_include.h>
 #include <virgil/iot/trust_list/private/tl_operations.h>
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     vs_tl_header_t tl_header;
     uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
     uint16_t res_sz;
+    vs_status_code_e ret_code;
 
     if (tl_info->type < 0 || tl_info->type > 0xFF || (uint32_t)tl_info->version > 0xFFFF) {
-        return VS_CLOUD_ERR_INVAL;
+        return VS_CODE_ERR_INCORRECT_PARAMETER;
     }
 
-    if (VS_STORAGE_OK != vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz), "Unable to load Trust List header");
 
     // Use host endian
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     info.id = VS_TL_ELEMENT_TLF;
-    if (VS_STORAGE_OK != vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
 
     if ((uint8_t)tl_info->type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
         (uint16_t)tl_info->version <= tl_header.version) {
-        return VS_CLOUD_ERR_NOT_FOUND;
+        return VS_CODE_ERR_NOT_FOUND;
     }
 
-    return VS_CLOUD_ERR_OK;
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
@@ -87,28 +85,28 @@ _hex_char_to_num(char input) {
 }
 
 /*************************************************************************/
-static int
+static bool
 _hex_str_to_bin(const char *src, uint8_t *out, uint16_t out_sz) {
     int8_t res[2];
     uint16_t used = 0;
 
     while (*src && src[1]) {
         if ((res[0] = _hex_char_to_num(*src)) < 0 || (res[1] = _hex_char_to_num(src[1])) < 0) {
-            return -1;
+            return false;
         }
         *(out++) = ((uint8_t)res[0] << 4) | (uint8_t)res[1];
 
         src += 2;
 
         if (++used > out_sz) {
-            return -1;
+            return false;
         }
     }
-    return 0;
+    return true;
 }
 
 /*************************************************************************/
-static int
+static bool
 _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
     int8_t i;
     uint8_t deg = 1;
@@ -116,7 +114,7 @@ _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
     *num = 0;
 
     if (str_len <= 0 || str_len > 3) {
-        return -1;
+        return false;
     }
 
     for (i = str_len - 1; i >= 0; i--) {
@@ -128,11 +126,11 @@ _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
     }
 
     if (tmp > 255) {
-        return -1;
+        return false;
     }
 
     *num = (uint8_t)tmp;
-    return 0;
+    return true;
 }
 
 /*************************************************************************/
@@ -151,30 +149,24 @@ _find_symb_in_str(char *str, char symb) {
 }
 
 /*************************************************************************/
-static int
+static vs_status_code_e
 _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_firmware_version_t *fw_version) {
     /*parse major*/
     char *ptr = _find_symb_in_str(fm_entry->version, '.');
-    if (NULL == ptr) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+
+    CHECK_NOT_ZERO_RET(ptr, VS_CODE_ERR_JSON);
 
     int8_t len = (int8_t)(ptr - fm_entry->version);
-    if (0 != _dec_str_to_bin(fm_entry->version, len, &fw_version->major)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+
+    CHECK_RET(_dec_str_to_bin(fm_entry->version, len, &fw_version->major), VS_CODE_ERR_JSON, "Incorrect version field");
     ptr++;
 
     /*parse minor*/
     char *ptr1 = _find_symb_in_str(ptr, '.');
-    if (NULL == ptr1) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    CHECK_NOT_ZERO_RET(ptr1, VS_CODE_ERR_JSON);
 
     len = (int8_t)(ptr1 - ptr);
-    if (0 != _dec_str_to_bin(ptr, len, &fw_version->minor)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->minor), VS_CODE_ERR_JSON, "Incorrect minor field");
     ptr1++;
     ptr = ptr1;
 
@@ -187,9 +179,7 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     }
 
     len = (int8_t)(ptr1 - ptr);
-    if (0 != _dec_str_to_bin(ptr, len, &fw_version->patch)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->patch), VS_CODE_ERR_JSON, "Incorrect patch field");
     ptr = ptr1;
 
     /*parse dev_milestone*/
@@ -199,19 +189,15 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     ptr++;
     ptr1 = fm_entry->version + VS_IOT_STRLEN(fm_entry->version);
     len = (int8_t)(ptr1 - ptr);
-    if (0 != _dec_str_to_bin(ptr, len, &fw_version->dev_build)) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->dev_build), VS_CODE_ERR_JSON, "Incorrect dev_build field");
 
     /*parse build_timestamp*/
     uint8_t timestamp[sizeof(uint32_t)];
-    if (_hex_str_to_bin((char *)fm_entry->timestamp, timestamp, sizeof(timestamp)) < 0) {
-        return VS_CLOUD_ERR_FAIL;
-    }
+    CHECK_RET(_hex_str_to_bin((char *)fm_entry->timestamp, timestamp, sizeof(timestamp)), VS_CODE_ERR_JSON, "Incorrect timestamp field");
 
     fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t *)timestamp); //-V1032 (PVS_IGNORE)
 
-    return VS_CLOUD_ERR_OK;
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
@@ -224,9 +210,9 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
     vs_firmware_descriptor_t desc;
     int res = vs_firmware_load_firmware_descriptor(fw_storage, manufacture_id, device_type, &desc);
 
-    if (VS_STORAGE_ERROR_NOT_FOUND == res) {
+    if (VS_CODE_ERR_NOT_FOUND == res) {
         VS_IOT_MEMSET(cur_version, 0, sizeof(vs_firmware_version_t));
-    } else if (VS_STORAGE_OK == res) {
+    } else if (VS_CODE_OK == res) {
         VS_IOT_MEMCPY(cur_version, &desc.info.version, sizeof(vs_firmware_version_t));
     } else {
         return false;
@@ -236,38 +222,40 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
 }
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
                                            uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],
                                            vs_firmware_version_t *new_ver) {
+
+#define VS_VERSION_CMP_SIZE (sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))
     vs_firmware_version_t current_ver;
 
     if (!_is_member_for_vendor_and_model_present(fw_storage, manufacture_id, device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&(current_ver.major),&(new_ver->major),    //-V512 (PVS_IGNORE)
-                                            sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))) {
-        return VS_CLOUD_ERR_NOT_FOUND;
+        0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_ver->major), VS_VERSION_CMP_SIZE)) { //-V512 (PVS_IGNORE)
+
+        return VS_CODE_ERR_NOT_FOUND;
     }
-    return VS_CLOUD_ERR_OK;
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
-static int
+static vs_status_code_e
 _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
                                          vs_firmware_manifest_entry_t *fm_entry) {
     vs_firmware_version_t new_ver;
     uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
 
-    if (_hex_str_to_bin((char *)fm_entry->manufacturer_id, manufacture_id, sizeof(manufacture_id)) < 0 ||
-        VS_CLOUD_ERR_OK != _get_firmware_version_from_manifest(fm_entry, &new_ver)) {
-        return VS_CLOUD_ERR_FAIL;
+    if (!_hex_str_to_bin((char *)fm_entry->manufacturer_id, manufacture_id, sizeof(manufacture_id)) ||
+            VS_CODE_OK != _get_firmware_version_from_manifest(fm_entry, &new_ver)) {
+        return VS_CODE_ERR_JSON;
     }
 
     return vs_cloud_is_new_firmware_version_available(fw_storage, manufacture_id, fm_entry->device_type.id, &new_ver);
 }
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
                                  void *payload,
                                  size_t payload_len,
@@ -275,28 +263,28 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
 
-    CHECK_NOT_ZERO_RET(payload, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(fw_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(fw_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG("NEW FIRMWARE: %s", (char *)payload);
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[FW] Error. Invalid JSON");
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     }
 
     if (VS_JSON_ERR_OK ==
         json_get_val_str(&jobj, VS_FW_URL_FIELD, fm_entry.fw_file_url, sizeof(fm_entry.fw_file_url))) {
         if (json_get_composite_object(&jobj, VS_MANIFEST_FILED)) {
             VS_LOG_ERROR("[FW] Get composite JSON obj failed");
-            return VS_CLOUD_ERR_FAIL;
+            return VS_CODE_ERR_JSON;
         }
     } else {
         VS_LOG_ERROR("[FW] Get firmware url failed");
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     }
 
-    int res = VS_CLOUD_ERR_FAIL;
+    int res = VS_CODE_ERR_JSON;
 
     if (VS_JSON_ERR_OK == json_get_val_str(&jobj,
                                            VS_FW_MANUFACTURER_ID_FIELD,
@@ -315,7 +303,7 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
         VS_LOG_INFO("[FW] timestamp = %s", fm_entry.timestamp);
 
         res = _is_new_fw_version_available_in_manifest(fw_storage, &fm_entry);
-        if (VS_CLOUD_ERR_OK == res) {
+        if (VS_CODE_OK == res) {
             VS_IOT_STRCPY(fw_url, fm_entry.fw_file_url);
         }
     }
@@ -324,12 +312,12 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
 }
 
 /*************************************************************************/
-int
+vs_status_code_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
 
-    CHECK_NOT_ZERO_RET(payload, VS_CLOUD_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(tl_url, VS_CLOUD_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(tl_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     vs_tl_manifest_entry_t tl_entry;
 
@@ -337,20 +325,20 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[TL] Error. Invalid JSON");
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     }
 
     if (VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_TL_URL_FIELD, tl_entry.file_url, sizeof(tl_entry.file_url))) {
         if (json_get_composite_object(&jobj, "manifest")) {
             VS_LOG_ERROR("[TL] Get composite JSON obj failed");
-            return VS_CLOUD_ERR_FAIL;
+            return VS_CODE_ERR_JSON;
         }
     } else {
         VS_LOG_ERROR("[TL] Get tl url failed");
-        return VS_CLOUD_ERR_FAIL;
+        return VS_CODE_ERR_JSON;
     }
 
-    int res = VS_CLOUD_ERR_FAIL;
+    int res = VS_CODE_ERR_CLOUD;
 
     if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
         VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.info.version)) {
@@ -360,7 +348,7 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
         VS_LOG_INFO("[TL] version = %d", tl_entry.info.version);
 
         res = vs_cloud_is_new_tl_version_available(&tl_entry.info);
-        if (VS_CLOUD_ERR_OK == res) {
+        if (VS_CODE_OK == res) {
             VS_IOT_STRCPY(tl_url, tl_entry.file_url);
         }
     }

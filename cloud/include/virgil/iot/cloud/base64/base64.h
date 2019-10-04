@@ -58,6 +58,8 @@
 #ifndef _BASE64_H_
 #define _BASE64_H_
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -91,7 +93,7 @@ base64decode_len(const char *in, int inlen);
  * \return -1 on failure
  * \return 0 on success
  */
-int
+bool
 base64decode(const char *in, int inlen, unsigned char *out, int *outlen);
 
 /** Get Base64 Encoded len
@@ -121,7 +123,7 @@ base64encode_len(int len);
  * \return -1 on failure
  * \return 0 on success
  */
-int
+bool
 base64encode(const unsigned char *in, int inlen, char *out, int *outlen);
 
 #ifdef __cplusplus
