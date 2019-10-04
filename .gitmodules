@@ -4,6 +4,3 @@
 [submodule "ext/virgil-sdk-cpp"]
 	path = ext/virgil-sdk-cpp
 	url = https://github.com/VirgilSecurity/virgil-sdk-cpp.git
-[submodule "ext/integration_tests_framework"]
-	path = ext/integration_tests_framework
-	url = https://github.com/VirgilSecurity/iot-integration-tests-framework
