@@ -53,10 +53,12 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
-#define VS_PRVS_SERVICE_ID (HTONL_IN_COMPILE_TIME('PRVS'))
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum {
+    VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS')
+} vs_prvs_t;
+
 typedef enum {
     VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */
     VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */

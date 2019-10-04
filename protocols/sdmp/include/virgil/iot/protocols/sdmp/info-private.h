@@ -44,19 +44,21 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#define VS_INFO_SERVICE_ID (HTONL_IN_COMPILE_TIME('INFO'))
-
-typedef enum {
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum {
+    VS_INFO_SERVICE_ID = HTONL_IN_COMPILE_TIME('INFO')
+} vs_info_t;
+
+typedef enum {
     VS_INFO_SNOT = HTONL_IN_COMPILE_TIME('SNOT'), /* Start NOTification */
     VS_INFO_ENUM = HTONL_IN_COMPILE_TIME('ENUM'), /* ENUMerate devices */
     VS_INFO_GINF = HTONL_IN_COMPILE_TIME('GINF'), /* General INFormation */
     VS_INFO_STAT = HTONL_IN_COMPILE_TIME('STAT'), /* STATistics */
     VS_INFO_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing of INFO elements by mask */
-#pragma GCC diagnostic pop
 } vs_sdmp_info_element_e;
+#pragma GCC diagnostic pop
 
 typedef struct __attribute__((__packed__)) {
     vs_fw_manufacture_id_t manufacture_id;
