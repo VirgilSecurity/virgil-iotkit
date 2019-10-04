@@ -145,7 +145,7 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
     if (res < 0 || res > MAX_EP_SIZE ||
-        vs_cloud_https_hal(VS_HTTP_GET, url, NULL, 0, out_answer, NULL, NULL, in_out_answer_len) != HTTPS_RET_CODE_OK) {
+        VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, url, NULL, 0, out_answer, NULL, NULL, in_out_answer_len)) {
         ret = VS_CODE_ERR_CLOUD;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
@@ -384,8 +384,7 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
     resp.buff_sz = sizeof(vs_cloud_firmware_header_t);
     resp.fw_storage = fw_storage;
 
-    if (vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) !=
-                HTTPS_RET_CODE_OK ||
+    if (VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
 
@@ -577,8 +576,7 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
 
     resp.buff = VS_IOT_CALLOC(512, 1);
 
-    if (vs_cloud_https_hal(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) !=
-                HTTPS_RET_CODE_OK ||
+    if (VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
     }
