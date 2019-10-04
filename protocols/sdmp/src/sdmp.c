@@ -435,7 +435,7 @@ vs_sdmp_broadcast_mac(void) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_send_request(const vs_netif_t *netif,
                      const vs_mac_addr_t *mac,
                      vs_sdmp_service_id_t service_id,

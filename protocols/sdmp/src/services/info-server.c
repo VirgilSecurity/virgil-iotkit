@@ -88,7 +88,7 @@ _enum_request_processing(const uint8_t *request,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
     vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -111,7 +111,7 @@ _poll_request_processing(const uint8_t *request,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
 
-    vs_status_code_e res = VS_CODE_ERR_INCORRECT_ARGUMENT;
+    vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT;
     vs_info_poll_request_t *poll_request = (vs_info_poll_request_t *)request;
 
     CHECK_NOT_ZERO(request);
@@ -165,7 +165,7 @@ _stat_request_processing(const uint8_t *request,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
 
-    vs_status_code_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
+    vs_status_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
     vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
 
     CHECK_NOT_ZERO(request);
@@ -190,7 +190,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -241,7 +241,7 @@ _ginf_request_processing(const uint8_t *request,
                          const uint16_t response_buf_sz,
                          uint16_t *response_sz) {
     vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -294,7 +294,7 @@ _info_request_processor(const struct vs_netif_t *netif,
 /******************************************************************************/
 static int
 _info_server_periodical_processor(void) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     _poll_ctx.time_counter++;
     if (_poll_ctx.time_counter >= _poll_ctx.period_seconds) {
@@ -357,7 +357,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
 int
 vs_sdmp_info_start_notification(const vs_netif_t *netif) {
     vs_info_enum_response_t enum_data;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     STATUS_CHECK_RET(_fill_enum_data(&enum_data), "Cannot fill ENUM data");
 
