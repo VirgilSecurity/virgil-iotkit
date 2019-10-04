@@ -153,9 +153,8 @@ static vs_status_code_e
 _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_firmware_version_t *fw_version) {
     /*parse major*/
     char *ptr = _find_symb_in_str(fm_entry->version, '.');
-    if (NULL == ptr) {
-        return VS_CODE_ERR_JSON;
-    }
+
+    CHECK_NOT_ZERO_RET(ptr, VS_CODE_ERR_JSON);
 
     int8_t len = (int8_t)(ptr - fm_entry->version);
 
@@ -164,9 +163,7 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
 
     /*parse minor*/
     char *ptr1 = _find_symb_in_str(ptr, '.');
-    if (NULL == ptr1) {
-        return VS_CODE_ERR_JSON;
-    }
+    CHECK_NOT_ZERO_RET(ptr1, VS_CODE_ERR_JSON);
 
     len = (int8_t)(ptr1 - ptr);
     CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->minor), VS_CODE_ERR_JSON, "Incorrect minor field");

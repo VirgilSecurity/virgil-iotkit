@@ -123,6 +123,7 @@ _write_data(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(data_sz <= ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Requested size is too big");
 
@@ -599,6 +600,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 vs_status_code_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
+    vs_status_code_e ret_code;
     long file_sz;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -652,17 +654,13 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
 
-        if (VS_CODE_OK != vs_firmware_install_append_data_hal(buf, sz)) {
-            return VS_CODE_ERR_FILE;
-        }
+        STATUS_CHECK_RET(VS_CODE_OK != vs_firmware_install_append_data_hal(buf, sz), "Unable to install and append data");
 
         fill_sz -= sz;
     }
 
     // Update image by footer
-    if (VS_CODE_OK != vs_firmware_load_firmware_footer(ctx, descriptor, buf, footer_sz, &read_sz)) {
-        return VS_CODE_ERR_FILE_READ;
-    }
+    STATUS_CHECK_RET(vs_firmware_load_firmware_footer(ctx, descriptor, buf, footer_sz, &read_sz), "Unable to load firmware footer");
 
     return vs_firmware_install_append_data_hal(buf, read_sz);
 }
