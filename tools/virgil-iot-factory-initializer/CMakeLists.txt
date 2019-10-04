@@ -55,6 +55,10 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/protocols/sdmp/include
         -I${VIRGIL_IOT_DIRECTORY}/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/status_code/include
+        -I${VIRGIL_IOT_DIRECTORY}/macros/include
+        -I${VIRGIL_IOT_DIRECTORY}/logger/include
+        -I${VIRGIL_IOT_DIRECTORY}/config/pc
         -I${VIRGIL_IOT_DIRECTORY}/hsm/include
         -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
         )
@@ -67,6 +71,7 @@ set(CMAKE_CGO_LDFLAGS
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/logger
         )
 
 #

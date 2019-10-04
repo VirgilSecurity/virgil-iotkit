@@ -35,6 +35,7 @@
 #include "stdlib-config.h"
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 
@@ -434,7 +435,7 @@ vs_sdmp_broadcast_mac(void) {
 }
 
 /******************************************************************************/
-int
+vs_status_code_e
 vs_sdmp_send_request(const vs_netif_t *netif,
                      const vs_mac_addr_t *mac,
                      vs_sdmp_service_id_t service_id,

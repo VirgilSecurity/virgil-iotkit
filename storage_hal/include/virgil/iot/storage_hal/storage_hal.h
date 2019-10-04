@@ -36,6 +36,7 @@
 #define VS_STORAGE_HAL_H
 
 #include <virgil/iot/status_code/status_code.h>
+#include <sys/types.h>
 
 #define VS_STORAGE_ELEMENT_ID_MAX  (32)
 

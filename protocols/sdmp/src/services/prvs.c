@@ -35,6 +35,7 @@
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
+#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 #include <stdlib-config.h>
@@ -495,9 +496,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
 
     // Send request
-    if (0 != vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0)) {
-        return -1;
-    }
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0), 0);
 
     // Wait request
     vs_global_hal_msleep(wait_ms);
@@ -543,9 +542,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz)) {
-        return -1;
-    }
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz), 0);
 
     // Wait request
     _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
@@ -569,9 +566,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, 0, 0)) {
-        return -1;
-    }
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, 0, 0), 0);
 
     // Wait request
     _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
@@ -616,9 +611,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    if (0 != vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz)) {
-        return -1;
-    }
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz), 0);
 
     // Wait request
     _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);

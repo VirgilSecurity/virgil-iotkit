@@ -60,6 +60,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/firmware/include
         -I${VIRGIL_IOT_DIRECTORY}/trust_list/include
         -I${VIRGIL_IOT_DIRECTORY}/storage_hal/include
+        -I${VIRGIL_IOT_DIRECTORY}/macros/include
         -I${VIRGIL_IOT_DIRECTORY}/logger/include
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
         -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include

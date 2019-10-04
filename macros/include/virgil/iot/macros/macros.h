@@ -66,7 +66,7 @@
 #define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero")
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
 
-#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
-#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
+//#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
+//#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 
 #endif // VS_MACROS_H

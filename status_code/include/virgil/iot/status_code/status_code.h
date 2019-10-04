@@ -35,6 +35,8 @@
 #ifndef VS_IOT_SDK_STATUS_CODE
 #define VS_IOT_SDK_STATUS_CODE
 
+#include <virgil/iot/macros/macros.h>
+
 typedef enum {
     VS_CODE_OK = 0,
     VS_CODE_ERR_NULLPTR_ARGUMENT = -1,
