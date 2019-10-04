@@ -54,6 +54,10 @@ endif()
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
+        -I${VIRGIL_IOT_CONFIG_DIRECTORY}
+        -I${VIRGIL_IOT_DIRECTORY}/logger/include
+        -I${VIRGIL_IOT_DIRECTORY}/macros/include
+        -I${VIRGIL_IOT_DIRECTORY}/status_code/include
         -I${VIRGIL_IOT_DIRECTORY}/protocols/sdmp/include
         -I${VIRGIL_IOT_DIRECTORY}/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
@@ -67,6 +71,7 @@ set(CMAKE_CGO_CFLAGS
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/protocols/sdmp
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/logger
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-iot-factory-initializer/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
         )

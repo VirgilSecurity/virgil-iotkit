@@ -35,7 +35,7 @@
 package sdmp
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal
+#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal -llogger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
 #include <virgil/iot/initializer/hal/ti_netif_udp_bcast.h>

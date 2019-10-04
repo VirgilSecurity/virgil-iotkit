@@ -33,8 +33,23 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <unistd.h>
+#include <stdbool.h>
+#include <stdio.h>
 
+/******************************************************************************/
 void
 vs_global_hal_msleep(size_t msec) {
     usleep(msec * 1000);
+}
+
+/******************************************************************************/
+bool
+vs_logger_output_hal(const char *buffer) {
+    if (!buffer) {
+        return false;
+    }
+
+    int res = printf("%s", buffer) != 0;
+    fflush(stdout);
+    return res != 0;
 }
