@@ -158,9 +158,6 @@ func roles2strings(roles C.uint32_t) []string {
             res = append(res, "DEBUGGER")
         }
 
-fmt.Println(roles)
-        fmt.Println(res)
-
         return res
 }
 
