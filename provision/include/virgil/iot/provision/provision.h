@@ -131,13 +131,13 @@ typedef struct __attribute__((__packed__)) {
  * @return              return true if slot has found for element_id
  */
 
-vs_status_code_e
+vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
 
-vs_status_code_e
+vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
 
-vs_status_code_e
+vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 
 #endif // VS_IOT_PROVISION_H

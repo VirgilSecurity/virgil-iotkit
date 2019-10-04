@@ -70,7 +70,7 @@ _create_descriptors_filename(vs_storage_element_id_t id) {
 }
 
 /*************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _read_data(const vs_storage_op_ctx_t *ctx,
            vs_storage_element_id_t id,
            uint32_t offset,
@@ -108,7 +108,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _write_data(const vs_storage_op_ctx_t *ctx,
             vs_storage_element_id_t id,
             bool need_sync,
@@ -148,7 +148,7 @@ _write_data(const vs_storage_op_ctx_t *ctx,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_init(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -157,7 +157,7 @@ vs_firmware_init(const vs_storage_op_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firnware_deinit(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -167,7 +167,7 @@ vs_firnware_deinit(const vs_storage_op_ctx_t *ctx) {
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
                               const vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
@@ -187,7 +187,7 @@ vs_firmware_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
                               const vs_firmware_descriptor_t *descriptor,
                               const uint8_t *chunk,
@@ -205,7 +205,7 @@ vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor, const uint8_t *footer) {
     uint8_t i;
     vs_storage_element_id_t data_id;
@@ -235,7 +235,7 @@ vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmwa
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
                                const vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
@@ -268,7 +268,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     ssize_t file_sz;
     vs_storage_element_id_t desc_id;
@@ -341,7 +341,7 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
                                    const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                    const uint8_t device_type[DEVICE_TYPE_SIZE],
@@ -395,7 +395,7 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     int res = VS_CODE_ERR_NOT_FOUND;
     ssize_t file_sz;
@@ -479,7 +479,7 @@ _is_rule_equal_to(vs_key_type_e type) {
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
     ssize_t file_sz;
@@ -489,7 +489,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     uint8_t sign_rules = 0;
     uint16_t i;
     vs_hsm_sw_sha256_ctx hash_ctx;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     // TODO: Need to support all hash types
     uint8_t hash[32];
@@ -595,10 +595,10 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     ssize_t file_sz;
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);

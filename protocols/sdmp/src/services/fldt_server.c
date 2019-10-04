@@ -101,14 +101,14 @@ _filetype_descr(vs_fldt_server_file_type_mapping_t *file_type_info, char *file_d
 
 
 /******************************************************************/
-static vs_status_code_e
+static vs_status_e
 _file_info(const vs_update_file_type_t *file_type,
            vs_update_interface_t *update_context,
            vs_fldt_server_file_type_mapping_t **file_type_info_ptr,
            vs_fldt_file_info_t *file_info) {
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     size_t file_header_size;
 
     VS_IOT_ASSERT(file_type);
@@ -187,7 +187,7 @@ vs_fldt_GFTI_request_processor(const uint8_t *request,
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     vs_update_interface_t *update_context;
     vs_fldt_file_info_t *file_info = (vs_fldt_file_info_t *)response;
 
@@ -244,7 +244,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     size_t header_size;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     bool has_footer;
 
     CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -336,7 +336,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     static const size_t DATA_SZ = 512;
     ssize_t max_data_size_to_read;
     size_t data_size_read;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     size_t cur_offset;
     size_t next_offset;
 
@@ -442,7 +442,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     char file_descr[FLDT_FILEVER_BUF];
     static const uint16_t DATA_SZ = 512;
     size_t data_size;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     bool has_footer;
 
     CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -507,14 +507,14 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
 }
 
 /******************************************************************/
-vs_status_code_e
+vs_status_e
 vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
                                 vs_update_interface_t *update_context,
                                 bool broadcast_file_info) {
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_file_info_t new_file;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(update_context, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -541,7 +541,7 @@ vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
 }
 
 /******************************************************************/
-vs_status_code_e
+vs_status_e
 vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
 
     CHECK_NOT_ZERO_RET(add_filetype, VS_CODE_ERR_INCORRECT_ARGUMENT);

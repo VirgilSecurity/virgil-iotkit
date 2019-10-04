@@ -62,10 +62,10 @@ typedef struct {
 void
 vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx);
 
-vs_status_code_e
+vs_status_e
 vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
 
-vs_status_code_e
+vs_status_e
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]);
 
 #ifdef __cplusplus

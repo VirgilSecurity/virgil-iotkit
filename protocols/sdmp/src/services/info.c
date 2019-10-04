@@ -80,7 +80,7 @@ vs_info_GINF_request_processing(const uint8_t *request,
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);

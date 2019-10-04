@@ -114,7 +114,7 @@ mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char d
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
     size_t fill;
     uint32_t left;
@@ -155,7 +155,7 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]) {
     uint32_t used;
     uint32_t high, low;

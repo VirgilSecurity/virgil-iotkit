@@ -65,20 +65,20 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
 bool
 vs_update_equal_file_type(struct vs_update_interface_t *update_context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
-typedef vs_status_code_e (*vs_update_get_version_cb_t)(void *context, vs_update_file_type_t *file_type, vs_update_file_version_t *file_version);
-typedef vs_status_code_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
-typedef vs_status_code_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
-typedef vs_status_code_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
-typedef vs_status_code_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
+typedef vs_status_e (*vs_update_get_version_cb_t)(void *context, vs_update_file_type_t *file_type, vs_update_file_version_t *file_version);
+typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
+typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
+typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
+typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
 typedef bool (*vs_update_equal_file_type_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
-typedef vs_status_code_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
-typedef vs_status_code_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
-typedef vs_status_code_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
+typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
+typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
+typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
 
-typedef vs_status_code_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
-typedef vs_status_code_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
-typedef vs_status_code_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
+typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
+typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
+typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
 
 typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file);
 typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *file_type);

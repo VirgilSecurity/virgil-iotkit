@@ -41,19 +41,19 @@
 #include "virgil/iot/trust_list/trust_list.h"
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_init(const vs_storage_op_ctx_t *op_ctx) {
     return vs_tl_storage_init_internal(op_ctx);
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_deinit() {
     return vs_tl_storage_deinit_internal();
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
     if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
@@ -92,7 +92,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz) {
     if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {

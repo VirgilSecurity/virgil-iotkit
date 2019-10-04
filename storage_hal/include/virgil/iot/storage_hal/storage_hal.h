@@ -54,14 +54,14 @@ typedef void *vs_storage_hal_ctx_t;
  */
 typedef void *vs_storage_file_t;
 
-typedef vs_status_code_e (*vs_storage_deinit_hal_t)(
+typedef vs_status_e (*vs_storage_deinit_hal_t)(
         vs_storage_hal_ctx_t storage_ctx); // After this call storage_ctx is incorrect and must be zeroed.
 
 typedef vs_storage_file_t (*vs_storage_open_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
-typedef vs_status_code_e (*vs_rpi_storage_sync_t)(
+typedef vs_status_e (*vs_rpi_storage_sync_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_file_t file);
 
@@ -69,14 +69,14 @@ typedef int (*vs_storage_close_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         vs_storage_file_t file); // After this call file is incorrect and must be zeroed.
 
-typedef vs_status_code_e (*vs_storage_save_hal_t)(
+typedef vs_status_e (*vs_storage_save_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_file_t file,
         size_t offset,
         const uint8_t *in_data,
         size_t data_sz);
 
-typedef vs_status_code_e (*vs_storage_load_hal_t)(
+typedef vs_status_e (*vs_storage_load_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_file_t file,
         size_t offset,
@@ -87,7 +87,7 @@ typedef ssize_t (*vs_storage_file_size_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
-typedef vs_status_code_e (*vs_storage_del_hal_t)(
+typedef vs_status_e (*vs_storage_del_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 

@@ -46,10 +46,10 @@
 
 #define VS_TL_TOPIC_MASK "tl/"
 
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
 
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
 
 #endif // VS_CLOUD_OPERATIONS_H

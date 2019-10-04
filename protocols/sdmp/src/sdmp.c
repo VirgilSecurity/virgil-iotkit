@@ -85,7 +85,7 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
@@ -158,7 +158,7 @@ _packet_sz(const uint8_t *packet_data) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _sdmp_periodical(void) {
     int i;
     // Detect required command
@@ -172,7 +172,7 @@ _sdmp_periodical(void) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _sdmp_rx_cb(vs_netif_t *netif,
             const uint8_t *data,
             const uint16_t data_sz,
@@ -272,10 +272,10 @@ current_timestamp() {
 #endif
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
-    vs_status_code_e res;
+    vs_status_e res;
 
 #if VS_SDMP_PROFILE
     long long t;
@@ -303,7 +303,7 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_init(vs_netif_t *default_netif) {
 
     // Check input data
@@ -321,7 +321,7 @@ vs_sdmp_init(vs_netif_t *default_netif) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_deinit() {
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->deinit);
@@ -341,7 +341,7 @@ vs_sdmp_default_netif(void) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->tx);
@@ -364,7 +364,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 
     VS_IOT_ASSERT(service);
@@ -381,7 +381,7 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
@@ -404,7 +404,7 @@ _sdmp_transaction_id() {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 _sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet) {
 
     VS_IOT_ASSERT(packet);

@@ -44,7 +44,7 @@
 extern "C" {
 #endif
 
-vs_status_code_e
+vs_status_e
 vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              size_t cryptogram_sz,
                                              const uint8_t *recipient_id,
@@ -57,7 +57,7 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              uint8_t **encrypted_data,
                                              size_t *encrypted_data_sz);
 
-vs_status_code_e
+vs_status_e
 vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               size_t recipient_id_sz,
                                               size_t encrypted_data_sz,

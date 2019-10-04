@@ -44,7 +44,7 @@ server_request_t server_request;
 make_server_response_t make_server_response;
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_dnid() {
 
     prvs_call.dnid = 1;
@@ -53,7 +53,7 @@ prvs_dnid() {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
@@ -70,7 +70,7 @@ prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t 
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     server_request.finalize_storage.buf_sz = buf_sz;
@@ -85,7 +85,7 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     VS_IOT_ASSERT(asav_response);
 
@@ -97,7 +97,7 @@ prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 
     server_request.finalize_tl.data_sz = data_sz;
@@ -113,7 +113,7 @@ prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_stop_wait(int *condition, int expect) {
 
     VS_IOT_ASSERT(condition);
@@ -126,7 +126,7 @@ prvs_stop_wait(int *condition, int expect) {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 
     prvs_call.wait = 1;
@@ -135,7 +135,7 @@ prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 }
 
 /**********************************************************/
-static vs_status_code_e
+static vs_status_e
 sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     VS_IOT_ASSERT(buf_sz >= make_server_response.sign_data.signature_sz);
 

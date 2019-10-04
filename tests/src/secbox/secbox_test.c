@@ -52,7 +52,7 @@ _test_case_secbox_save_load(vs_storage_op_ctx_t *ctx,
                             const char *filename,
                             vs_secbox_type_t type,
                             const char *test_data,
-                            uint32_t data_sz) {
+                            size_t data_sz) {
 
     uint8_t buf[data_sz];
     uint16_t hash_sz;
@@ -128,8 +128,8 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx) {
                                              TEST_FILENAME_LITTLE_DATA,
                                              VS_SECBOX_SIGNED_AND_ENCRYPTED,
                                              _little_test_data,
-                                             sizeof(_little_test_data)))
-;
+                                             sizeof(_little_test_data)));
+
     TEST_CASE_OK("Read/write big piece of data.Signed and encrypted",
                  _test_case_secbox_save_load(
                          ctx, TEST_FILENAME_BIG_DATA, VS_SECBOX_SIGNED_AND_ENCRYPTED, _big_test_data, big_test_size));

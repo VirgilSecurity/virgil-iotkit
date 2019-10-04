@@ -79,7 +79,7 @@ _get_serial_number_in_hex_str(char _out_str[SERIAL_SIZE * 2 + 1]) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
     size_t buf_size = *in_out_answer_len;
@@ -131,9 +131,9 @@ fail:
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
-    vs_status_code_e ret;
+    vs_status_e ret;
     char serial[SERIAL_SIZE * 2 + 1];
 
     CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -156,13 +156,13 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
     return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
     return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
 }
@@ -368,7 +368,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
                                  const char *fw_file_url,
                                  vs_cloud_firmware_header_t *fetched_header) {
@@ -567,7 +567,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     int res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(tl_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);

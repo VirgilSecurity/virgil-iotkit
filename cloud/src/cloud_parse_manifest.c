@@ -38,13 +38,13 @@
 #include <virgil/iot/trust_list/private/tl_operations.h>
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     vs_tl_header_t tl_header;
     uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
     uint16_t res_sz;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     if (tl_info->type < 0 || tl_info->type > 0xFF || (uint32_t)tl_info->version > 0xFFFF) {
         return VS_CODE_ERR_INCORRECT_PARAMETER;
@@ -149,7 +149,7 @@ _find_symb_in_str(char *str, char symb) {
 }
 
 /*************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_firmware_version_t *fw_version) {
     /*parse major*/
     char *ptr = _find_symb_in_str(fm_entry->version, '.');
@@ -222,7 +222,7 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
                                            uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[DEVICE_TYPE_SIZE],
@@ -240,7 +240,7 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
 }
 
 /*************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
                                          vs_firmware_manifest_entry_t *fm_entry) {
     vs_firmware_version_t new_ver;
@@ -255,7 +255,7 @@ _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
                                  void *payload,
                                  size_t payload_len,
@@ -312,7 +312,7 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
 }
 
 /*************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
 
