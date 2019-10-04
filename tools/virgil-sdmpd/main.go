@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 	"sort"
+	"strings"
 
 	"./sdmp"
 	"./devices"
@@ -27,10 +28,6 @@ func GeneralInfoCb(generalInfo devices.DeviceInfo) error {
 
 func StatCb(stat devices.DeviceInfo) error {
     return devicesInfo.UpdateDeviceStatistics(stat)
-}
-
-func RolesCb(roles devices.DeviceInfo) error {
-    return devicesInfo.UpdateDeviceRoles(roles)
 }
 
 func CleanupProcessStart() {
@@ -63,7 +60,7 @@ func main() {
     	return
     }
 
-    err = sdmp.SetupPolling(GeneralInfoCb, StatCb, RolesCb)
+    err = sdmp.SetupPolling(GeneralInfoCb, StatCb)
     if err != nil {
         fmt.Println(err)
         return
@@ -139,7 +136,7 @@ func main() {
 }
 
 func createStatusTable(t time.Time) string {
-	table := "<tr><td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> </tr>"
+	table := "<tr><td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td>  </tr>"
 
     // Sorted keys
     keys := make([]string, 0, len(devicesInfo.Items))
@@ -148,17 +145,16 @@ func createStatusTable(t time.Time) string {
     }
     sort.Strings(keys)
 
-//     fmt.Printf("")
-
 	for _, k := range keys {
         d := devicesInfo.Items[k]
-		table += fmt.Sprintf("<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td>  <td>%d</td> <td>%d</td> </tr>",
+        table += fmt.Sprintf("<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td>  <td>%d</td> <td>%d</td> <td>%s</td>  </tr>",
 			d.MAC,
 			d.ManufactureID,
 			d.DeviceType,
 			d.Version,
 			d.Sent,
 			d.Received,
+			strings.Trim(strings.Join(strings.Fields(fmt.Sprint(d.Roles)), ", "), "[]"),
 		)
 	}
 
@@ -201,7 +197,7 @@ var HtmlPage = `
     
     
     var table_output = document.getElementById("tbl");
-    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> </tr>"
+    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
     var device_table_socket = new WebSocket(url + "ws/devices");
    

@@ -181,6 +181,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.fw_dev_build = ginf_request->fw_version.dev_build;
     general_info.fw_timestamp = ginf_request->fw_version.timestamp;
     general_info.tl_version = ginf_request->tl_version;
+    general_info.device_roles = ginf_request->device_roles;
 
     // Invoke callback function
     _callbacks.general_info_cb(&general_info);

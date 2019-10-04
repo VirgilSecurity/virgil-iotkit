@@ -93,7 +93,7 @@ _enum_request_processing(const uint8_t *request,
     // Check input parameters
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
+    CHECK_RET(response_buf_sz > sizeof(vs_info_enum_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
 
     STATUS_CHECK_RET(_fill_enum_data(enum_response), "Cannot fill ENUM data");
 
@@ -216,6 +216,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     VS_IOT_MEMCPY(general_info->device_type, _device_type, sizeof(_device_type));
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
     general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
+    general_info->device_roles = _device_roles;
 
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "

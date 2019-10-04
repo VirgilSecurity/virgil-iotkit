@@ -80,7 +80,6 @@ const (
 var (
     generalInfoCb func(generalInfo devices.DeviceInfo) error
     statisticsCb func(statistics devices.DeviceInfo) error
-    rolesCb func(roles devices.DeviceInfo) error
 )
 
 func ConnectToDeviceNetwork() error {
@@ -132,19 +131,45 @@ func fwVer2string(major C.uint8_t, minor C.uint8_t,
         return fmt.Sprintf("ver %d.%d.%d.%c.%d, %s", major, minor, patch, devMilestone, devBuild, tm.String())
 }
 
+func roles2strings(roles C.uint32_t) []string {
+        res := []string{}
+
+        if (roles & C.VS_SDMP_DEV_GATEWAY) == C.VS_SDMP_DEV_GATEWAY {
+            res = append(res, "GATEWAY")
+        }
+
+        if (roles & C.VS_SDMP_DEV_THING) == C.VS_SDMP_DEV_THING {
+            res = append(res, "THING")
+        }
+
+        if (roles & C.VS_SDMP_DEV_CONTROL) == C.VS_SDMP_DEV_CONTROL {
+            res = append(res, "CONTROL")
+        }
+
+        if (roles & C.VS_SDMP_DEV_LOGGER) == C.VS_SDMP_DEV_LOGGER {
+            res = append(res, "LOGGER")
+        }
+
+        if (roles & C.VS_SDMP_DEV_SNIFFER) == C.VS_SDMP_DEV_SNIFFER {
+            res = append(res, "SNIFFER")
+        }
+
+        if (roles & C.VS_SDMP_DEV_DEBUGGER) == C.VS_SDMP_DEV_DEBUGGER {
+            res = append(res, "DEBUGGER")
+        }
+
+fmt.Println(roles)
+        fmt.Println(res)
+
+        return res
+}
+
 //export goDeviceStartNotifCb
 func goDeviceStartNotifCb(device *C.vs_sdmp_info_device_t) C.int {
      if 0 != C._set_polling() {
         fmt.Printf("can't set devices polling. SDMP:INFO:POLL error\n")
         return -1
      }
-
-    if nil != rolesCb {
-        var goRoles devices.DeviceInfo
-        goRoles.MAC = mac2string(&device.mac[0])
-        goRoles.Roles = []string{"test_1", "test_2", "test_3"}
-        rolesCb(goRoles)
-    }
 
      return C.VS_CODE_OK
 }
@@ -163,6 +188,8 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
                                         general_info.fw_dev_build,
                                         general_info.fw_timestamp)
         goInfo.MAC = mac2string(&general_info.default_netif_mac[0])
+        goInfo.Roles = roles2strings(general_info.device_roles);
+
         generalInfoCb(goInfo)
     }
     return 0;
@@ -182,8 +209,7 @@ func goDeviceStatCb(stat *C.vs_info_statistics_t) C.int {
 }
 
 func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
-                  _statisticsCb func(statistics devices.DeviceInfo) error,
-                  _rolesCb func(roles devices.DeviceInfo) error) error {
+                  _statisticsCb func(statistics devices.DeviceInfo) error) error {
 
     if 0 != C._set_polling() {
         return fmt.Errorf("can't set devices polling. SDMP:INFO:POLL error")
@@ -191,7 +217,6 @@ func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
 
     generalInfoCb = _generalInfoCb
     statisticsCb = _statisticsCb
-    rolesCb = _rolesCb
 
     return nil
 }

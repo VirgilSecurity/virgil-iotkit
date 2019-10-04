@@ -63,6 +63,7 @@ func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
     cd.DeviceType = info.DeviceType
     cd.Version = info.Version
     cd.MAC = info.MAC
+    cd.Roles = info.Roles
     cd.lastTime = int32(time.Now().Unix())
     d.Items[info.MAC] = cd
     return nil
@@ -74,16 +75,6 @@ func (d *ConcurrentDevices) UpdateDeviceStatistics(info DeviceInfo) error {
     cd.MAC = info.MAC
     cd.Sent = info.Sent
     cd.Received = info.Received
-    cd.lastTime = int32(time.Now().Unix())
-    d.Items[info.MAC] = cd
-    return nil
-}
-
-func (d *ConcurrentDevices) UpdateDeviceRoles(info DeviceInfo) error {
-    info.lastTime = int32(time.Now().Unix())
-    cd := d.Items[info.MAC]
-    cd.MAC = info.MAC
-    cd.Roles = info.Roles
     cd.lastTime = int32(time.Now().Unix())
     d.Items[info.MAC] = cd
     return nil
