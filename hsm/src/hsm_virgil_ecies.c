@@ -80,7 +80,7 @@ _remove_padding_size(uint8_t *data, size_t data_sz) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
                                     uint8_t *cryptogram,
@@ -92,7 +92,7 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
     uint8_t decrypted_key[VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE];
     uint8_t *encrypted_data;
     size_t encrypted_data_sz;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     uint8_t pre_master_key[VS_AES_256_KEY_SIZE];
     uint16_t pre_master_key_sz;
@@ -200,7 +200,7 @@ _tiny_pubkey_to_virgil(uint8_t public_key[64], uint8_t *virgil_public_key, size_
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     size_t recipient_id_sz,
                                     uint8_t *data,
@@ -208,7 +208,7 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
                                     uint8_t *cryptogram,
                                     size_t buf_sz,
                                     size_t *cryptogram_sz) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cryptogram, VS_CODE_ERR_NULLPTR_ARGUMENT);

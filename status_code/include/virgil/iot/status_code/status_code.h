@@ -82,7 +82,7 @@ typedef enum {
     VS_CODE_ERR_SOCKET = -82,
     VS_CODE_ERR_PLC = -83,
 
-} vs_status_code_e;
+} vs_status_e;
 
 #define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (OPERATION), (MESSAGE), ##__VA_ARGS__)
 #define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)

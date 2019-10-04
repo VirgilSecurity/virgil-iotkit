@@ -38,7 +38,7 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
 
-vs_status_code_e
+vs_status_e
 vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx);
 
 #endif // VS_FIRMWARE_UPDATE_INTERFACE_H

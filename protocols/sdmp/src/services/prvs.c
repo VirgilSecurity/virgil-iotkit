@@ -59,16 +59,16 @@ static vs_sdmp_prvs_impl_t _prvs_impl = {0};
 
 // Last result
 #define PRVS_BUF_SZ (1024)
-static vs_status_code_e _last_res = VS_CODE_ERR_PRVS_UNKNOWN;
+static vs_status_e _last_res = VS_CODE_ERR_PRVS_UNKNOWN;
 static uint16_t _last_data_sz = 0;
 static uint8_t _last_data[PRVS_BUF_SZ];
 
 #if !VS_SDMP_FACTORY
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
     uint16_t slot;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     STATUS_CHECK_RET(vs_provision_get_slot_num((vs_provision_element_id_e)element_id, &slot), "Unable to get slot");
 
@@ -76,11 +76,11 @@ vs_prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     uint16_t key_sz = 0;
     vs_hsm_keypair_type_e ec_type;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(asav_response);
     VS_IOT_ASSERT(resp_sz);
@@ -101,7 +101,7 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_start_save_tl(const uint8_t *data, uint16_t data_sz) {
     vs_tl_element_info_t info;
 
@@ -112,7 +112,7 @@ vs_prvs_start_save_tl(const uint8_t *data, uint16_t data_sz) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_save_tl_part(const uint8_t *data, uint16_t data_sz) {
     vs_tl_element_info_t info;
 
@@ -123,7 +123,7 @@ vs_prvs_save_tl_part(const uint8_t *data, uint16_t data_sz) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
     vs_tl_element_info_t info;
 
@@ -134,11 +134,11 @@ vs_prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     uint16_t sign_sz;
     uint16_t pubkey_sz;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(signature_sz);
     VS_IOT_ASSERT(data);
@@ -184,7 +184,7 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
 #endif // !VS_SDMP_FACTORY
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
     VS_IOT_MEMSET(&_prvs_impl, 0, sizeof(_prvs_impl));
 
@@ -234,7 +234,7 @@ vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            const uint8_t *request,
                            const uint16_t request_sz,
@@ -242,7 +242,7 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
     VS_IOT_ASSERT(_prvs_impl.dnid_func);
@@ -260,7 +260,7 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *response, const uint16_t response_sz) {
 
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
@@ -276,7 +276,7 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_key_save_process_request(const struct vs_netif_t *netif,
                                vs_sdmp_element_t element_id,
                                const uint8_t *key,
@@ -286,7 +286,7 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_devi_process_request(const struct vs_netif_t *netif,
                            const uint8_t *request,
                            const uint16_t request_sz,
@@ -294,7 +294,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
 
     VS_IOT_ASSERT(_prvs_impl.device_info_func);
@@ -309,7 +309,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_asav_process_request(const struct vs_netif_t *netif,
                            const uint8_t *request,
                            const uint16_t request_sz,
@@ -325,7 +325,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_asgn_process_request(const struct vs_netif_t *netif,
                            const uint8_t *request,
                            const uint16_t request_sz,
@@ -333,7 +333,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     uint16_t result_sz;
 
     VS_IOT_ASSERT(_prvs_impl.sign_data_func);
@@ -347,9 +347,9 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(_prvs_impl.start_save_tl_func);
     STATUS_CHECK_RET(_prvs_impl.start_save_tl_func(request, request_sz), "Unable to start save Trust List");
@@ -358,9 +358,9 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(_prvs_impl.save_tl_part_func);
     STATUS_CHECK_RET(_prvs_impl.save_tl_part_func(request, request_sz), "Unable to save Trust List part");
@@ -369,9 +369,9 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(_prvs_impl.finalize_tl_func);
     STATUS_CHECK_RET(_prvs_impl.finalize_tl_func(request, request_sz), "Unable to finalize Trust List");
@@ -380,7 +380,7 @@ _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t 
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_service_request_processor(const struct vs_netif_t *netif,
                                 vs_sdmp_element_t element_id,
                                 const uint8_t *request,
@@ -433,7 +433,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _prvs_service_response_processor(const struct vs_netif_t *netif,
                                  vs_sdmp_element_t element_id,
                                  bool is_ack,
@@ -484,7 +484,7 @@ vs_sdmp_prvs_service() {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _send_request(const vs_netif_t *netif,
               const vs_mac_addr_t *mac,
               vs_sdmp_prvs_element_e element,
@@ -511,9 +511,9 @@ _send_request(const vs_netif_t *netif,
     return vs_sdmp_send(netif, buffer, sizeof(vs_sdmp_packet_t) + packet->header.content_size);
 }
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(_prvs_impl.wait_func);
 
@@ -531,7 +531,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_device_info(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          vs_sdmp_prvs_devi_t *device_info,
@@ -554,7 +554,7 @@ _reset_last_result() {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_e element,
@@ -562,7 +562,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
                  uint16_t data_sz,
                  uint32_t wait_ms) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
@@ -577,7 +577,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_get(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_e element,
@@ -586,7 +586,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
                  uint16_t *data_sz,
                  uint32_t wait_ms) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
@@ -608,7 +608,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
                             const vs_mac_addr_t *mac,
                             uint8_t *asav_res,
@@ -621,7 +621,7 @@ vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        const vs_mac_addr_t *mac,
                        const uint8_t *data,
@@ -631,7 +631,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        uint16_t *signature_sz,
                        uint32_t wait_ms) {
 
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
 
     _reset_last_result();
@@ -653,7 +653,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
                            const vs_mac_addr_t *mac,
                            const uint8_t *data,
@@ -663,7 +663,7 @@ vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
                            const vs_mac_addr_t *mac,
                            const uint8_t *data,

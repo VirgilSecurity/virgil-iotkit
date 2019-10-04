@@ -12,13 +12,13 @@
 #include <global-hal.h>
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _secbox_verify_signature(const vs_storage_op_ctx_t *ctx,
                          vs_storage_file_t f,
                          uint8_t data_type,
                          uint8_t *data,
                          size_t data_sz) {
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     uint16_t hash_len = (uint16_t)vs_hsm_get_hash_len(VS_HASH_SHA_256);
     uint8_t hash[hash_len];
 
@@ -50,7 +50,7 @@ _secbox_verify_signature(const vs_storage_op_ctx_t *ctx,
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_secbox_init(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -59,7 +59,7 @@ vs_secbox_init(const vs_storage_op_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_secbox_deinit(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -75,7 +75,7 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
     uint8_t *data_load = NULL;
     size_t data_load_sz;
     uint8_t type;
-    vs_status_code_e ret_code = VS_CODE_ERR_FILE_READ;
+    vs_status_e ret_code = VS_CODE_ERR_FILE_READ;
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
@@ -137,14 +137,14 @@ terminate:
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_secbox_save(const vs_storage_op_ctx_t *ctx,
                vs_secbox_type_t type,
                vs_storage_element_id_t id,
                const uint8_t *data,
                size_t data_sz) {
-    vs_status_code_e res = VS_CODE_ERR_FILE_WRITE;
-    vs_status_code_e ret = VS_CODE_OK;
+    vs_status_e res = VS_CODE_ERR_FILE_WRITE;
+    vs_status_e ret = VS_CODE_OK;
     vs_storage_file_t f = NULL;
     uint8_t *data_to_save = NULL;
     size_t data_to_save_sz;
@@ -229,9 +229,9 @@ terminate:
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_secbox_load(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id, uint8_t *data, size_t data_sz) {
-    vs_status_code_e res;
+    vs_status_e res;
     uint8_t type;
     vs_storage_file_t f = NULL;
     uint8_t *data_load = NULL;
@@ -312,7 +312,7 @@ terminate:
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_secbox_del(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);

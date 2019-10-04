@@ -70,23 +70,23 @@ typedef struct __attribute__((__packed__)) {
     uint8_t data[];
 } vs_sdmp_prvs_sgnp_req_t;
 
-typedef vs_status_code_e (*vs_sdmp_prvs_dnid_t)();
-typedef vs_status_code_e (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_e element_id,
-                                                     const uint8_t *data,
-                                                     uint16_t data_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_load_data_t)();
-typedef vs_status_code_e (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, uint16_t *resp_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_code_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
-typedef vs_status_code_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
-typedef vs_status_code_e (*vs_sdmp_sign_data_t)(const uint8_t *data,
-                                                uint16_t data_sz,
-                                                uint8_t *signature,
-                                                uint16_t buf_sz,
-                                                uint16_t *signature_sz);
+typedef vs_status_e (*vs_sdmp_prvs_dnid_t)();
+typedef vs_status_e (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_e element_id,
+                                                const uint8_t *data,
+                                                uint16_t data_sz);
+typedef vs_status_e (*vs_sdmp_prvs_load_data_t)();
+typedef vs_status_e (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
+typedef vs_status_e (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, uint16_t *resp_sz);
+typedef vs_status_e (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_sdmp_sign_data_t)(const uint8_t *data,
+                                           uint16_t data_sz,
+                                           uint8_t *signature,
+                                           uint16_t buf_sz,
+                                           uint16_t *signature_sz);
 
 typedef struct {
     vs_sdmp_prvs_dnid_t dnid_func;
@@ -108,28 +108,28 @@ const vs_sdmp_service_t *
 vs_sdmp_prvs_service();
 
 // HAL
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl);
 
 // Commands
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
                             const vs_mac_addr_t *mac,
                             uint8_t *asav_res,
                             uint16_t buf_sz,
                             uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_device_info(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          vs_sdmp_prvs_devi_t *device_info,
                          uint16_t buf_sz,
                          uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        const vs_mac_addr_t *mac,
                        const uint8_t *data,
@@ -139,7 +139,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
                        uint16_t *signature_sz,
                        uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_e element,
@@ -147,7 +147,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
                  uint16_t data_sz,
                  uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_get(const vs_netif_t *netif,
                  const vs_mac_addr_t *mac,
                  vs_sdmp_prvs_element_e element,
@@ -156,14 +156,14 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
                  uint16_t *data_sz,
                  uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
                            const vs_mac_addr_t *mac,
                            const uint8_t *data,
                            uint16_t data_sz,
                            uint32_t wait_ms);
 
-vs_status_code_e
+vs_status_e
 vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
                            const vs_mac_addr_t *mac,
                            const uint8_t *data,

@@ -51,7 +51,7 @@ static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLO
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
     const size_t *ptr;
 
@@ -79,7 +79,7 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *s
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
     size_t index;
     const size_t *ptr;
@@ -133,7 +133,7 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz) {
     vs_iot_hsm_slot_e slot;
     uint8_t i = 0;
@@ -142,7 +142,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t buf[512];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
@@ -165,7 +165,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     int key_len;
@@ -175,7 +175,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint16_t res_sz;
     uint8_t *pubkey;
     vs_sign_t *sign;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");

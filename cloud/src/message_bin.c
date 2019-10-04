@@ -66,7 +66,7 @@ _mb_mqtt_ctx_free(vs_cloud_mb_mqtt_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -229,7 +229,7 @@ clean:
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _mb_mqtt_ctx_free(ctx);
@@ -237,7 +237,7 @@ vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     const char *root_ca_crt,
                     vs_cloud_mb_init_func init,

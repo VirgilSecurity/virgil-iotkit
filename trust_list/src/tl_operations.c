@@ -65,7 +65,7 @@ _create_data_filename(size_t storage_type, vs_tl_element_e el_id, size_t index, 
     VS_IOT_MEMCPY(&file_id[sizeof(storage_type) + sizeof(el_id)], &index, sizeof(index));
 }
 /*************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _read_data(const vs_storage_op_ctx_t *op_ctx,
            vs_storage_element_id_t id,
            uint32_t offset,
@@ -99,7 +99,7 @@ _read_data(const vs_storage_op_ctx_t *op_ctx,
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _write_data(const vs_storage_op_ctx_t *op_ctx,
             vs_storage_element_id_t id,
             uint32_t offset,
@@ -272,7 +272,7 @@ _get_tl_ctx(size_t storage_type) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     vs_tl_header_t header;
     vs_tl_header_t host_header;
@@ -314,7 +314,7 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_verify_storage(size_t storage_type) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 
@@ -327,7 +327,7 @@ vs_tl_verify_storage(size_t storage_type) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx) {
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -350,7 +350,7 @@ vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_storage_deinit_internal() {
     const vs_storage_op_ctx_t *op_ctx = _tl_dynamic_ctx.storage_ctx;
 
@@ -367,7 +367,7 @@ vs_tl_storage_deinit_internal() {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_tl_header_t host_header;
@@ -398,7 +398,7 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
@@ -419,7 +419,7 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
@@ -439,7 +439,7 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_t *footer_sz) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
@@ -495,7 +495,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     vs_pubkey_dated_t *element = (vs_pubkey_dated_t *)key;
     int key_len = vs_hsm_get_pubkey_len(element->pubkey.ec_type);
@@ -526,7 +526,7 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint16_t buf_sz, uint16_t *key_sz) {
     int key_len;
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
@@ -568,7 +568,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_invalidate(size_t storage_type) {
     vs_tl_header_t header;
     //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
@@ -612,7 +612,7 @@ vs_tl_invalidate(size_t storage_type) {
 }
 
 /******************************************************************************/
-vs_status_code_e
+vs_status_e
 vs_tl_apply_tmp_to(size_t storage_type) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
 

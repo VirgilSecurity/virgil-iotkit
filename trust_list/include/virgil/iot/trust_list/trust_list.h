@@ -21,16 +21,16 @@ typedef struct vs_tl_element_info_s {
     size_t index;
 } vs_tl_element_info_t;
 
-vs_status_code_e
+vs_status_e
 vs_tl_init(const vs_storage_op_ctx_t *op_ctx);
 
-vs_status_code_e
+vs_status_e
 vs_tl_deinit();
 
-vs_status_code_e
+vs_status_e
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
 
-vs_status_code_e
+vs_status_e
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
 
 #endif // TRUST_LIST_H

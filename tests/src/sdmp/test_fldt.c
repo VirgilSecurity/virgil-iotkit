@@ -47,7 +47,7 @@ vs_fldt_gfti_fileinfo_response_t server_get_version_file;
 vs_update_file_version_t file_ver;
 
 /**********************************************************/
-static vs_status_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
+static vs_status_e client_set_gateway_mac(const vs_mac_addr_t *mac){
     (void) mac;
 
     calls.client_set_gateway_mac = 1;
@@ -56,7 +56,7 @@ static vs_status_code_e client_set_gateway_mac(const vs_mac_addr_t *mac){
 }
 
 /**********************************************************/
-static vs_status_code_e client_get_current_version(void **storage_context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
+static vs_status_e client_get_current_version(void **storage_context, const vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
     (void) storage_context;
     (void) file_type;
     (void) file_version;
@@ -68,7 +68,7 @@ static vs_status_code_e client_get_current_version(void **storage_context, const
 }
 
 /**********************************************************/
-static vs_status_code_e client_update_file(void **storage_context, const vs_fldt_infv_new_file_request_t *file_version_request){
+static vs_status_e client_update_file(void **storage_context, const vs_fldt_infv_new_file_request_t *file_version_request){
     (void) storage_context;
     (void) file_version_request;
 
@@ -78,7 +78,7 @@ static vs_status_code_e client_update_file(void **storage_context, const vs_fldt
 }
 
 /**********************************************************/
-static vs_status_code_e client_got_info(void **storage_context, const vs_fldt_gfti_fileinfo_response_t *file_info){
+static vs_status_e client_got_info(void **storage_context, const vs_fldt_gfti_fileinfo_response_t *file_info){
     (void) storage_context;
     (void) file_info;
 
@@ -88,7 +88,7 @@ static vs_status_code_e client_got_info(void **storage_context, const vs_fldt_gf
 }
 
 /**********************************************************/
-static vs_status_code_e client_got_header(void **storage_context, const vs_fldt_gnfh_header_response_t *file_header){
+static vs_status_e client_got_header(void **storage_context, const vs_fldt_gnfh_header_response_t *file_header){
     (void) storage_context;
     (void) file_header;
 
@@ -98,7 +98,7 @@ static vs_status_code_e client_got_header(void **storage_context, const vs_fldt_
 }
 
 /**********************************************************/
-static vs_status_code_e client_got_data(void **storage_context, const vs_fldt_gnfd_data_response_t *file_data){
+static vs_status_e client_got_data(void **storage_context, const vs_fldt_gnfd_data_response_t *file_data){
     (void) storage_context;
     (void) file_data;
 
@@ -108,7 +108,7 @@ static vs_status_code_e client_got_data(void **storage_context, const vs_fldt_gn
 }
 
 /**********************************************************/
-static vs_status_code_e client_got_footer(void **storage_context, const vs_fldt_gnff_footer_response_t *file_footer){
+static vs_status_e client_got_footer(void **storage_context, const vs_fldt_gnff_footer_response_t *file_footer){
     (void) storage_context;
     (void) file_footer;
 
@@ -125,7 +125,7 @@ static void client_destroy(void **storage_context){
 }
 
 /**********************************************************/
-static vs_status_code_e server_get_version(void **storage_context, const vs_fldt_gfti_fileinfo_request_t *request, vs_fldt_gfti_fileinfo_response_t *response){
+static vs_status_e server_get_version(void **storage_context, const vs_fldt_gfti_fileinfo_request_t *request, vs_fldt_gfti_fileinfo_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response;
@@ -138,7 +138,7 @@ static vs_status_code_e server_get_version(void **storage_context, const vs_fldt
 }
 
 /**********************************************************/
-static vs_status_code_e server_get_header(void **storage_context, const vs_fldt_gnfh_header_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfh_header_response_t *response){
+static vs_status_e server_get_header(void **storage_context, const vs_fldt_gnfh_header_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfh_header_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response_buf_sz;
@@ -153,7 +153,7 @@ static vs_status_code_e server_get_header(void **storage_context, const vs_fldt_
 
 
 /**********************************************************/
-static vs_status_code_e server_get_chunk(void **storage_context, const vs_fldt_gnfd_data_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfd_data_response_t *response){
+static vs_status_e server_get_chunk(void **storage_context, const vs_fldt_gnfd_data_request_t *request, uint16_t response_buf_sz, vs_fldt_gnfd_data_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response_buf_sz;
@@ -167,7 +167,7 @@ static vs_status_code_e server_get_chunk(void **storage_context, const vs_fldt_g
 }
 
 /**********************************************************/
-static vs_status_code_e server_get_footer(void **storage_context, const vs_fldt_gnff_footer_request_t *request, uint16_t response_buf_sz, vs_fldt_gnff_footer_response_t *response){
+static vs_status_e server_get_footer(void **storage_context, const vs_fldt_gnff_footer_request_t *request, uint16_t response_buf_sz, vs_fldt_gnff_footer_response_t *response){
     (void) storage_context;
     (void) request;
     (void) response_buf_sz;
@@ -189,7 +189,7 @@ static void server_destroy(void **storage_get_context){
 
 
 /**********************************************************/
-vs_status_code_e server_add_filetype(const vs_update_file_type_t *file_type){
+vs_status_e server_add_filetype(const vs_update_file_type_t *file_type){
     (void) file_type;
 
     calls.server_add_filetype = 1;

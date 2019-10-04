@@ -45,16 +45,16 @@
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_deinit();
 
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
 
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
 static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
@@ -113,7 +113,7 @@ _udp_bcast_receive_processor(void *sock_desc) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_connect() {
     struct sockaddr_in server;
     struct timeval tv;
@@ -179,7 +179,7 @@ terminate:
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
     struct sockaddr_in broadcast_addr;
 
@@ -194,7 +194,7 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
@@ -206,7 +206,7 @@ _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_deinit() {
     printf("Stop UDP broadcast\n");
     if (_udp_bcast_sock >= 0) {
@@ -221,7 +221,7 @@ _udp_bcast_deinit() {
 }
 
 /******************************************************************************/
-static vs_status_code_e
+static vs_status_e
 _udp_bcast_mac(struct vs_mac_addr_t *mac_addr) {
 
     if (mac_addr) {
