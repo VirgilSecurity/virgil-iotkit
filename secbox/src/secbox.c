@@ -117,12 +117,14 @@ vs_secbox_file_size(const vs_storage_op_ctx_t *ctx, vs_storage_element_id_t id) 
                                                                  &data_load_sz), "Cannot decrypt");
 
         file_sz = data_load_sz;
+        ret_code = VS_CODE_OK;
         break;
 
     case VS_SECBOX_SIGNED:
         file_sz -= (sign_sz + 1);
         ret_code = VS_CODE_OK;
         break;
+
     default:
         return VS_CODE_ERR_FILE_READ;
     }
