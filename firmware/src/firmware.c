@@ -357,6 +357,8 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+    VS_IOT_MEMSET(descriptor, 0, sizeof(*descriptor));
+
     // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
 
@@ -674,14 +676,14 @@ vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, 
 
     VS_IOT_SNPRINTF(buffer, buf_size,
                     #ifdef VS_IOT_ASCTIME
-                            "ver %d.%d.%d.%c.%d, %s",
+                            "ver %d.%d.%d.%d.%d, %s",
                     #else
-                            "ver %d.%d.%d.%c.%d, UNIX timestamp %u",
+                            "ver %d.%d.%d.%d.%d, UNIX timestamp %u",
                     #endif //   VS_IOT_ASCTIME
                     fw_ver->major,
                     fw_ver->minor,
                     fw_ver->patch,
-                    fw_ver->dev_milestone >= ' ' ? fw_ver->dev_milestone : '0',
+                    fw_ver->dev_milestone,
                     fw_ver->dev_build,
                     #ifdef VS_IOT_ASCTIME
                             fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
