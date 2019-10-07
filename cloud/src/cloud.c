@@ -83,22 +83,22 @@ static vs_status_e
 _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
     size_t buf_size = *in_out_answer_len;
+    int crypto_answer_b64_len;
 
     if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
         return VS_CODE_ERR_JSON;
     }
 
     char *crypto_answer_b64 = (char *)VS_IOT_MALLOC(buf_size);
+    CHECK(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", buf_size);
 
-    int crypto_answer_b64_len;
-
-    if (! crypto_answer_b64 ||  json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK)
-        return VS_CODE_ERR_JSON;
-    else {
+    if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK) {
+        goto terminate;
+    } else {
         crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)strlen(crypto_answer_b64));
 
         if (0 >= crypto_answer_b64_len || crypto_answer_b64_len > buf_size) {
-            goto fail;
+            goto terminate;
         }
 
         base64decode(crypto_answer_b64,
@@ -115,16 +115,21 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                                                                  buf_size,
                                                                  &decrypted_data_sz) ||
             decrypted_data_sz > UINT16_MAX) {
-            goto fail;
+            goto terminate;
         }
         *in_out_answer_len = (uint16_t)decrypted_data_sz;
         out_answer[*in_out_answer_len] = '\0';
     }
+    json_parse_stop(&jobj);
     VS_IOT_FREE(crypto_answer_b64);
     return VS_CODE_OK;
 
-fail:
-    VS_IOT_FREE(crypto_answer_b64);
+terminate:
+    json_parse_stop(&jobj);
+    if(crypto_answer_b64) {
+        VS_IOT_FREE(crypto_answer_b64);
+    }
+
     *in_out_answer_len = 0;
     out_answer[0] = '\0';
     return VS_CODE_ERR_JSON;
