@@ -35,11 +35,11 @@
 package sdmp
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -lfactory-initializer-hal
+#cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
-#include <virgil/iot/initializer/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/initializer/hal/sdmp/ti_prvs_implementation.h>
+#include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
+#include <virgil/iot/tools/hal/sdmp/ti_prvs_impl.h>
 */
 import "C"
 import (
@@ -152,11 +152,6 @@ func (p Processor ) ConnectToPLCBus() error {
     if 0 != C.vs_sdmp_init(C.vs_hal_netif_udp_bcast()) {
         return fmt.Errorf("can't start SDMP communication")
     }
-
-    // Use PLC simulator as transport
-//     if 0 != C.vs_sdmp_init(C.vs_hal_netif_plc_sim()) {
-//         return fmt.Errorf("can't start SDMP communication")
-//     }
 
     if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_service()) {
         return fmt.Errorf("can't register SDMP:PRVS service")

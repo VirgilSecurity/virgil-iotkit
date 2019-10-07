@@ -44,6 +44,8 @@
 
 #include <stdint.h>
 
+#include <virgil/iot/status_code/status_code.h>
+
 #define SHA256_DIGEST_SIZE (32)
 #define SHA256_BLOCK_SIZE (64)
 
@@ -59,9 +61,11 @@ typedef struct {
 
 void
 vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx);
-int
+
+vs_status_e
 vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
-int
+
+vs_status_e
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]);
 
 #ifdef __cplusplus

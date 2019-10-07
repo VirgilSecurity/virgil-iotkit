@@ -49,7 +49,6 @@ target_sources(virgil-iot-sdk-tests
         src/sdmp/fldt_tests.c
         src/sdmp/sdmp_tests.c
         src/sdmp/test_prvs.c
-        src/sdmp/test_fldt.c
         src/sdmp/test_netif.c
         src/crypto/aes.c
         src/crypto/ecdh.c
@@ -94,9 +93,9 @@ target_link_libraries(virgil-iot-sdk-tests
 #
 
 if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("No CFLAGS_PLATFORM")
+    message("-- No CFLAGS_PLATFORM")
 else()
-    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 

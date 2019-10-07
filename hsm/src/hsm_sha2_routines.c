@@ -75,7 +75,7 @@ static const uint32_t K[] = {
     }
 
 /******************************************************************************/
-static int
+static void
 mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char data[64]) {
     uint32_t temp1, temp2, W[64];
     uint32_t A[8];
@@ -111,14 +111,11 @@ mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char d
 
     for (i = 0; i < 8; i++)
         ctx->state[i] += A[i];
-
-    return (0);
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
-    int ret;
     size_t fill;
     uint32_t left;
 
@@ -137,8 +134,7 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     if (left && len >= fill) {
         memcpy((void *)(ctx->buffer + left), message, fill);
 
-        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-            return (ret);
+        mbedtls_internal_sha256_process(ctx, ctx->buffer);
 
         message += fill;
         len -= fill;
@@ -146,8 +142,7 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     }
 
     while (len >= 64) {
-        if ((ret = mbedtls_internal_sha256_process(ctx, message)) != 0)
-            return (ret);
+        mbedtls_internal_sha256_process(ctx, message);
 
         message += 64;
         len -= 64;
@@ -156,13 +151,12 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
     if (len > 0)
         memcpy((void *)(ctx->buffer + left), message, len);
 
-    return (0);
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]) {
-    int ret;
     uint32_t used;
     uint32_t high, low;
 
@@ -180,8 +174,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
         /* We'll need an extra block */
         VS_IOT_MEMSET(ctx->buffer + used, 0, 64 - used);
 
-        if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-            return (ret);
+        mbedtls_internal_sha256_process(ctx, ctx->buffer);
 
         VS_IOT_MEMSET(ctx->buffer, 0, sizeof(ctx->buffer));
     }
@@ -195,8 +188,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
     PUT_UINT32_BE(high, ctx->buffer, 56);
     PUT_UINT32_BE(low, ctx->buffer, 60);
 
-    if ((ret = mbedtls_internal_sha256_process(ctx, ctx->buffer)) != 0)
-        return (ret);
+    mbedtls_internal_sha256_process(ctx, ctx->buffer);
 
     /*
      * Output final state
@@ -213,8 +205,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
 
     VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
 
-
-    return (0);
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

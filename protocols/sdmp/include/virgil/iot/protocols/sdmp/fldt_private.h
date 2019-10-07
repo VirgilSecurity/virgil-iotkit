@@ -45,7 +45,6 @@ extern "C" {
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/macros/macros.h>
 
-#define VS_FLDT_SERVICE_ID (HTONL_IN_COMPILE_TIME('FLDT'))
 
 //
 //  Internal structures
@@ -63,6 +62,9 @@ extern "C" {
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
+
+typedef enum { VS_FLDT_SERVICE_ID = HTONL_IN_COMPILE_TIME('FLDT') } vs_fldt_t;
+
 typedef enum {
     VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
     VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
@@ -148,13 +150,6 @@ typedef struct {
 // Utilities
 #define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
     CHECK_RET((fldt_ret_code = (OPERATION)) == VS_CODE_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
-
-int
-vs_fldt_send_request(const vs_netif_t *netif,
-                     const vs_mac_addr_t *mac,
-                     vs_sdmp_fldt_element_e element,
-                     const uint8_t *data,
-                     uint16_t data_sz);
 
 // Server request/response processing
 

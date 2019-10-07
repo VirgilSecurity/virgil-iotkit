@@ -42,8 +42,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/prvs.h>
 
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
-
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 
 static const size_t auth_key_slot[PROVISION_KEYS_QTY] = {AUTH1_KEY_SLOT, AUTH2_KEY_SLOT};
@@ -53,10 +51,8 @@ static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLO
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
 
 /******************************************************************************/
-static bool
+static vs_status_e
 _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
-    bool res = true;
-
     const size_t *ptr;
 
     switch (key_type) {
@@ -73,18 +69,18 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *s
         ptr = fw_key_slot;
         break;
     default:
-        return false;
+        VS_LOG_ERROR("Incorrect key type %d", key_type);
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
     *slot = ptr[index];
 
-    return res;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-bool
+vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
-    bool res = true;
     size_t index;
     const size_t *ptr;
 
@@ -125,18 +121,19 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
         break;
     case VS_PROVISION_SGNP:
         *slot = SIGNATURE_SLOT;
-        return true;
+        return VS_CODE_OK;
     default:
-        return false;
+        VS_LOG_ERROR("Incorrect provision element %d", id);
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
     *slot = ptr[index];
 
-    return res;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
-bool
+vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz) {
     vs_iot_hsm_slot_e slot;
     uint8_t i = 0;
@@ -145,18 +142,17 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t buf[512];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
+    vs_status_e ret_code;
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
-        if (!_get_pubkey_slot_num(key_type, i, &slot) ||
-            VS_HSM_ERR_OK != vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz)) {
-            return false;
-        }
+        STATUS_CHECK_RET(_get_pubkey_slot_num(key_type, i, &slot), "Unable to get public key from slot");
+        STATUS_CHECK_RET(vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
 
         ref_key_sz = vs_hsm_get_pubkey_len(ref_key->pubkey.ec_type);
 
         if (ref_key_sz < 0) {
-            return false;
+            return VS_CODE_ERR_INCORRECT_PARAMETER;
         }
 
         if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz &&
@@ -165,11 +161,11 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
         }
     }
 
-    return false;
+    return VS_CODE_ERR_NOT_FOUND;
 }
 
 /******************************************************************************/
-bool
+vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     int key_len;
@@ -179,6 +175,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint16_t res_sz;
     uint8_t *pubkey;
     vs_sign_t *sign;
+    vs_status_e ret_code;
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
@@ -187,47 +184,48 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     // Recovery key doesn't have signature
     if (VS_KEY_RECOVERY == key->pubkey.key_type) {
-        return true;
+        return VS_CODE_OK;
     }
 
     key_len = vs_hsm_get_pubkey_len(key->pubkey.ec_type);
 
-    BOOL_CHECK_RET(key_len > 0, "Unsupported key ec_type");
+    CHECK_RET(key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported key ec_type");
 
     // Determine stuff size under signature
     signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
 
-    BOOL_CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), "key stuff is too small");
+    CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), VS_CODE_ERR_CRYPTO, "key stuff is too small");
 
     // Signature pointer
     sign = (vs_sign_t *)(key_to_check + signed_data_sz);
 
-    BOOL_CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, "Signer type must be RECOVERY");
+    CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, VS_CODE_ERR_CRYPTO, "Signer type must be RECOVERY");
 
     sign_len = vs_hsm_get_signature_len(sign->ec_type);
     key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
-    BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
-    BOOL_CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, "key stuff is wrong");
+    CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported signature ec_type");
+    CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, VS_CODE_ERR_CRYPTO, "key stuff is wrong");
 
     // Calculate hash of stuff under signature
     hash_size = vs_hsm_get_hash_len(sign->hash_type);
-    BOOL_CHECK_RET(hash_size > 0, "Unsupported hash type");
+    CHECK_RET(hash_size > 0, VS_CODE_ERR_CRYPTO, "Unsupported hash type");
 
     uint8_t hash[hash_size];
 
-    VS_HSM_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
+    STATUS_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
                      "Error hash create");
 
     // Signer raw key pointer
     pubkey = sign->raw_sign_pubkey + sign_len;
 
-    BOOL_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                   "Signer key is not present");
+    STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+              "Signer key is not present");
 
-    VS_HSM_CHECK_RET(
+    STATUS_CHECK_RET(
             vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
             "Signature is wrong");
 
-    return true;
+    return VS_CODE_OK;
+
 }

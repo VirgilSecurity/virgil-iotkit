@@ -86,7 +86,7 @@ terminate:;
 }
 
 /******************************************************************/
-static vs_status_code_e
+static vs_status_e
 _update_process_set(vs_fldt_update_ctx_t *update_ctx,
                     vs_mac_addr_t mac,
                     uint32_t command,
@@ -110,9 +110,9 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
 }
 
 /******************************************************************/
-static vs_status_code_e
+static vs_status_e
 _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
-    vs_status_code_e res = VS_CODE_ERR_INCORRECT_ARGUMENT; // ???
+    vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT; // ???
     CHECK_NOT_ZERO(update_ctx);
 
     if (!update_ctx->in_progress) {
@@ -127,8 +127,12 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
         return VS_CODE_OK;
     }
 
-    CHECK_RET(!vs_fldt_send_request(
-                      NULL, &update_ctx->gateway_mac, update_ctx->command, update_ctx->data, update_ctx->data_sz),
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    &update_ctx->gateway_mac,
+                                    VS_FLDT_SERVICE_ID,
+                                    update_ctx->command,
+                                    update_ctx->data,
+                                    update_ctx->data_sz),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to re-send FLDT request");
 
@@ -212,7 +216,7 @@ _check_download_need(const char *opcode,
 }
 
 /******************************************************************/
-static vs_status_code_e
+static vs_status_e
 _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_info) {
 
     const vs_update_file_version_t *new_file_ver = NULL;
@@ -221,7 +225,7 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     bool download;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e fldt_ret_code;
+    vs_status_e fldt_ret_code;
 
     VS_IOT_ASSERT(cmd_prefix);
     VS_IOT_ASSERT(file_info);
@@ -261,8 +265,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
                             (const uint8_t *)&header_request,
                             sizeof(header_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFH,
                                         (const uint8_t *)&header_request,
                                         sizeof(header_request)),
@@ -283,7 +288,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     (void)response;
     (void)response_buf_sz;
@@ -306,7 +311,7 @@ int
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
 
     const vs_fldt_gfti_fileinfo_response_t *new_file = (const vs_fldt_infv_new_file_request_t *)response;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     (void)is_ack;
     (void)response_sz;
@@ -330,7 +335,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_gnfd_data_request_t data_request;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     (void)is_ack;
 
@@ -387,8 +392,9 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                         (const uint8_t *)&data_request,
                         sizeof(data_request));
 
-    CHECK_RET(!vs_fldt_send_request(NULL,
+    CHECK_RET(!vs_sdmp_send_request(NULL,
                                     &file_type_info->gateway_mac,
+                                    VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GNFD,
                                     (const uint8_t *)&data_request,
                                     sizeof(data_request)),
@@ -408,7 +414,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_gnfd_data_request_t data_request;
     vs_fldt_gnff_footer_request_t footer_request;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     (void)is_ack;
 
@@ -463,8 +469,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFD,
                                         (const uint8_t *)&data_request,
                                         sizeof(data_request)),
@@ -485,8 +492,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             (const uint8_t *)&footer_request,
                             sizeof(footer_request));
 
-        CHECK_RET(!vs_fldt_send_request(NULL,
+        CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFF,
                                         (const uint8_t *)&footer_request,
                                         sizeof(footer_request)),
@@ -498,14 +506,18 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 }
 
 /******************************************************************/
-static vs_status_code_e
+static vs_status_e
 vs_fldt_ask_file_type_info(const char *file_type_descr, const vs_fldt_gfti_fileinfo_request_t *file_type) {
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
 
-    CHECK_RET(!vs_fldt_send_request(
-                      NULL, vs_sdmp_broadcast_mac(), VS_FLDT_GFTI, (const uint8_t *)file_type, sizeof(*file_type)),
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    vs_sdmp_broadcast_mac(),
+                                    VS_FLDT_SERVICE_ID,
+                                    VS_FLDT_GFTI,
+                                    (const uint8_t *)file_type,
+                                    sizeof(*file_type)),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to send FLDT \"GFTI\" server request");
 
@@ -521,7 +533,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     bool successfully_updated;
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
 
     (void)is_ack;
 
@@ -551,9 +563,8 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     successfully_updated = (ret_code == VS_CODE_OK);
 
     if (!successfully_updated) {
-        VS_LOG_ERROR("Error while processing footer for file %s. Error description : %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)),
-                     vs_status_code_descr(ret_code));
+        VS_LOG_ERROR("Error while processing footer for file %s",
+                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
     }
 
     file_type_info->update_ctx.in_progress = !successfully_updated;
@@ -568,13 +579,13 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 }
 
 /******************************************************************/
-vs_status_code_e
+vs_status_e
 vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_context) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gfti_fileinfo_request_t file_type_request;
     vs_update_file_version_t file_ver;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     size_t header_size;
 
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -641,7 +652,7 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
 }
 
 /******************************************************************/
-vs_status_code_e
+vs_status_e
 vs_fldt_init_client(vs_fldt_got_file got_file_callback) {
 
     VS_IOT_ASSERT(got_file_callback);
@@ -690,12 +701,12 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
     case VS_FLDT_GNFH:
     case VS_FLDT_GNFD:
     case VS_FLDT_GNFF:
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     default:
         VS_LOG_ERROR("Unsupported FLDT command");
         VS_IOT_ASSERT(false);
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 
@@ -711,7 +722,7 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_FLDT_GFTI:
         return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
@@ -729,7 +740,7 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
     default:
         VS_LOG_ERROR("Unsupported FLDT command");
         VS_IOT_ASSERT(false);
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 

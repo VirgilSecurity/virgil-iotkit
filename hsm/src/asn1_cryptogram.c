@@ -38,7 +38,7 @@
 
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/hsm/hsm_errors.h>
+#include <virgil/iot/status_code/status_code.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -291,7 +291,7 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              size_t cryptogram_sz,
                                              const uint8_t *recipient_id,
@@ -308,14 +308,14 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
     size_t _sz, ar_sz, asn1_sz;
     const uint8_t *_data, *p_ar = 0;
 
-    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(public_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(iv_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(mac_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(iv_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(iv_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(mac_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(iv_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _sz = cryptogram_sz;
     _data = cryptogram;
@@ -327,18 +327,18 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 
         set_pos = pos;
         if (!_asn1_step_into(SET, &pos, _sz, _data))
-            return VS_HSM_ERR_CRYPTO;
+            return VS_CODE_ERR_CRYPTO;
 
         while (true) {
             saved_pos = pos;
 
             if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data) ||
                 !_asn1_step_into(ZERO_TAG, &pos, _sz, _data))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             if (recipient_id && recipient_id_sz) {
                 if (!_asn1_step_into(OCTET_STRING, &pos, _sz, _data)) {
-                    return VS_HSM_ERR_CRYPTO;
+                    return VS_CODE_ERR_CRYPTO;
                 }
                 // Find out need recipient
                 if (0 != VS_IOT_MEMCMP(&_data[pos], recipient_id, recipient_id_sz)) {
@@ -350,34 +350,34 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 
                 pos += recipient_id_sz;
             } else if (!_asn1_skip(OCTET_STRING, &pos, _sz, _data)) {
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
             }
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(OCTET_STRING, &pos, _sz, _data) ||
                 !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             // Read public key
             if (!_virgil_pubkey_to_tiny_no_copy(&_data[pos], _asn1_get_size(pos, _data), public_key))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data)) //-V501
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             saved_pos = pos;
             // Read mac
             if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
                 !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             if (ar_sz != 48)
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
             *mac_data = (uint8_t *)p_ar;
 
             pos = saved_pos;
 
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
             saved_pos = pos;
 
@@ -387,7 +387,7 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                 return false;
 
             if (ar_sz != 16)
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
             *iv_key = (uint8_t *)p_ar;
 
             pos = saved_pos;
@@ -395,47 +395,47 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
             // Read encrypted_key
             if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
                 !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
 
 
             if (ar_sz != 48)
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
             *encrypted_key = (uint8_t *)p_ar;
 
             pos = set_pos;
             if (!_asn1_skip(SET, &pos, _sz, _data))
-                return VS_HSM_ERR_CRYPTO;
+                return VS_CODE_ERR_CRYPTO;
             break;
         }
 
         if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
             !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data))
-            return VS_HSM_ERR_CRYPTO;
+            return VS_CODE_ERR_CRYPTO;
 
         // Get IV for data (AES)
         if (!_asn1_get_array(OCTET_STRING, &pos, _sz, _data, &p_ar, &ar_sz))
-            return VS_HSM_ERR_CRYPTO;
+            return VS_CODE_ERR_CRYPTO;
 
         if (ar_sz != 12)
-            return VS_HSM_ERR_CRYPTO;
+            return VS_CODE_ERR_CRYPTO;
         *iv_data = (uint8_t *)p_ar;
 
         // Read encrypted data
         asn1_sz = _asn1_get_size(0, _data);
         if (_sz <= asn1_sz)
-            return VS_HSM_ERR_FAIL;
+            return VS_CODE_ERR_CRYPTO;
 
         *encrypted_data_sz = _sz - asn1_sz;
         *encrypted_data = (uint8_t *)&_data[asn1_sz];
 
-        return VS_HSM_ERR_OK;
+        return VS_CODE_OK;
     }
 
-    return VS_HSM_ERR_FAIL;
+    return VS_CODE_ERR_CRYPTO;
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               size_t recipient_id_sz,
                                               size_t encrypted_data_sz,
@@ -454,28 +454,28 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
     int pos = cryptogram_buf_sz;
     size_t total_sz = 0, pkcs7_data_sz = 0, el_sz;
 
-    CHECK_NOT_ZERO_RET(recipient_id, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(recipient_id_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(iv_data, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(encrypted_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(iv_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(hmac, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(public_key, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(public_key_sz, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(cryptogram, VS_HSM_ERR_INVAL);
-    CHECK_NOT_ZERO_RET(cryptogram_sz, VS_HSM_ERR_INVAL);
+    CHECK_NOT_ZERO_RET(recipient_id, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(recipient_id_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(iv_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(encrypted_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(iv_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(hmac, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(public_key_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(cryptogram, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(cryptogram_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Put encrypted data
     if (!_asn1_put_raw(&pos, buf, encrypted_data, encrypted_data_sz, &el_sz, 0))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // PKCS #7 data
     if (!_asn1_put_raw(&pos, buf, iv_data, 12, &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, _aes256_gcm, sizeof(_aes256_gcm), &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, _pkcs7_data, sizeof(_pkcs7_data), &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     pkcs7_data_sz = total_sz;
 
@@ -484,87 +484,87 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
         !_asn1_put_raw(&pos, buf, iv_key, 16, &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, _aes256_cbc, sizeof(_aes256_cbc), &el_sz, &total_sz) ||
         !_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // HMAC
     if (!_asn1_put_raw(&pos, buf, hmac, 48, &el_sz, &total_sz) ||
         !_asn1_put_raw(&pos, buf, _hmac, sizeof(_hmac), &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // hash info
     if (!_asn1_put_raw(&pos, buf, _hash_info, sizeof(_hash_info), &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // public key
     if (!_asn1_put_raw(&pos, buf, public_key, public_key_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // integer
     if (!_asn1_put_uint8(&pos, buf, 0, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // wrap with sequence
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // wrap with octet string
     if (!_asn1_put_header(OCTET_STRING, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // EC type info
     if (!_asn1_put_raw(&pos, buf, _ec_type_info, sizeof(_ec_type_info), &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Recipient ID
     if (!_asn1_put_array(OCTET_STRING, &pos, buf, recipient_id, recipient_id_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Zero element
     if (!_asn1_put_header(ZERO_TAG, &pos, buf, el_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Integer ver
     if (!_asn1_put_uint8(&pos, buf, 2, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with sequence
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with set
     if (!_asn1_put_header(SET, &pos, buf, total_sz - pkcs7_data_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Integer ver
     if (!_asn1_put_uint8(&pos, buf, 2, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with sequence
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with zero tag
     if (!_asn1_put_header(ZERO_TAG, &pos, buf, total_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // PKCS #7 enveloped data
     if (!_asn1_put_raw(&pos, buf, _enveloped_data_oid, sizeof(_enveloped_data_oid), &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with sequence
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Integer
     if (!_asn1_put_uint8(&pos, buf, 0, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     // Wrap with sequence
     if (!_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz))
-        return VS_HSM_ERR_FAIL;
+        return VS_CODE_ERR_CRYPTO;
 
     *cryptogram_sz = total_sz + encrypted_data_sz;
     VS_IOT_MEMMOVE(cryptogram, &buf[pos], *cryptogram_sz);
 
-    return VS_HSM_ERR_OK;
+    return VS_CODE_OK;
 }

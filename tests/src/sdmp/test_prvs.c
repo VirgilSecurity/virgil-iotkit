@@ -44,33 +44,33 @@ server_request_t server_request;
 make_server_response_t make_server_response;
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_dnid() {
 
     prvs_call.dnid = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
     server_request.save_data.data_sz = data_sz;
     if (!(server_request.save_data.data = VS_IOT_MALLOC(data_sz))) {
         VS_IOT_ASSERT(false && "Unable to allocate memory");
-        return -1;
+        return VS_CODE_ERR_NO_MEMORY;
     }
     VS_IOT_MEMCPY(server_request.save_data.data, data, data_sz);
 
     prvs_call.save_data = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     server_request.finalize_storage.buf_sz = buf_sz;
@@ -81,11 +81,11 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     prvs_call.device_info = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     VS_IOT_ASSERT(asav_response);
 
@@ -93,27 +93,27 @@ prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     *resp_sz = make_server_response.finalize_storage.size;
     memcpy(asav_response, &make_server_response.finalize_storage.asav_response, *resp_sz);
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 
     server_request.finalize_tl.data_sz = data_sz;
     if (!(server_request.finalize_tl.data = VS_IOT_MALLOC(data_sz))) {
         VS_IOT_ASSERT(false && "Unable to allocate memory");
-        return -1;
+        return VS_CODE_ERR_NO_MEMORY;
     }
     VS_IOT_MEMCPY(server_request.finalize_tl.data, data, data_sz);
 
     prvs_call.finalize_tl = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_stop_wait(int *condition, int expect) {
 
     VS_IOT_ASSERT(condition);
@@ -122,26 +122,26 @@ prvs_stop_wait(int *condition, int expect) {
 
     prvs_call.stop_wait = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 
     prvs_call.wait = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/
-static int
+static vs_status_e
 sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     VS_IOT_ASSERT(buf_sz >= make_server_response.sign_data.signature_sz);
 
     if (!(server_request.sign_data.data = VS_IOT_MALLOC(data_sz))) {
         VS_IOT_ASSERT(false && "Unable to allocate memory");
-        return -1;
+        return VS_CODE_ERR_NO_MEMORY;
     }
     VS_IOT_MEMCPY(server_request.sign_data.data, data, data_sz);
     server_request.sign_data.data_sz = data_sz;
@@ -152,7 +152,7 @@ sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t bu
 
     prvs_call.sign_data = 1;
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /**********************************************************/

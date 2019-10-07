@@ -40,6 +40,7 @@
 #include <stdbool.h>
 #include <virgil/iot/firmware/firmware.h>
 #include <global-hal.h>
+#include <virgil/iot/status_code/status_code.h>
 
 typedef struct {
     char *topic_list;
@@ -59,16 +60,6 @@ typedef struct {
     bool is_filled;
     bool is_active;
 } vs_cloud_mb_mqtt_ctx_t;
-
-typedef enum {
-    VS_CLOUD_ERR_OK,
-    VS_CLOUD_ERR_FAIL,
-    VS_CLOUD_ERR_INVAL,        // invalid parameters
-    VS_CLOUD_ERR_NOMEM,        // out of memory
-    VS_CLOUD_ERR_DECRYPT_FAIL, //
-    VS_CLOUD_ERR_VALUE_FAIL,   //
-    VS_CLOUD_ERR_NOT_FOUND,
-} vs_cloud_err_code_e;
 
 #define VS_UPD_URL_STR_SIZE 200
 
@@ -101,21 +92,21 @@ typedef struct __attribute__((__packed__)) {
     vs_firmware_descriptor_t descriptor;
 } vs_cloud_firmware_header_t;
 
-typedef int (*vs_cloud_mb_init_func)(const char *host,
+typedef vs_status_e (*vs_cloud_mb_init_func)(const char *host,
                                      uint16_t port,
                                      const char *device_cert,
                                      const char *priv_key,
                                      const char *ca_cert);
-typedef int (*vs_cloud_mb_connect_subscribe_func)(const char *client_id,
+typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func)(const char *client_id,
                                                   const char *login,
                                                   const char *password,
                                                   const vs_cloud_mb_topics_list_t *topic_list);
-typedef int (*vs_cloud_mb_process_func)(void);
+typedef vs_status_e (*vs_cloud_mb_process_func)(void);
 
-int
+vs_status_e
 vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx);
 
-int
+vs_status_e
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     const char *root_ca_crt,
                     vs_cloud_mb_init_func init,
@@ -124,21 +115,21 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
 
 typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
 
-int
+vs_status_e
 vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
                                  void *payload,
                                  size_t payload_len,
                                  char *fw_url);
 
-int
+vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
-int
+vs_status_e
 vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
                                  const char *fw_file_url,
                                  vs_cloud_firmware_header_t *fetched_header);
 
-int
+vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
 
 #endif // VS_CLOUD_H

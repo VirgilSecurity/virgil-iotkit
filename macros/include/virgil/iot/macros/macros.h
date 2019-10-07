@@ -59,11 +59,14 @@
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 #define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RET)                                                                             \
-    CHECK_RET(memcmp((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
+    CHECK_RET(VS_IOT_MEMCMP((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
 #define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero")
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
+
+//#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
+//#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 
 #endif // VS_MACROS_H

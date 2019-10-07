@@ -38,16 +38,15 @@
 #include <stdbool.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
+#include <virgil/iot/status_code/status_code.h>
 
 #define VS_HSM_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                       \
     do {                                                                                                               \
-        if (VS_HSM_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \
             VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
             return true;                                                                                               \
         }                                                                                                              \
     } while (0)
-
-#define VS_HSM_CHECK_RET(OPERATION, MESSAGE, ...) BOOL_CHECK_RET(VS_HSM_ERR_OK == (OPERATION), MESSAGE, ##__VA_ARGS__)
 
 #define CHECK_GOTO(OPERATION, DESCRIPTION, ...) do {                                                                       \
     if (!(OPERATION)) {                                                                                                \

@@ -39,16 +39,18 @@
 #include <stddef.h>
 
 #include <virgil/iot/hsm/hsm_structs.h>
-#include <virgil/iot/hsm/hsm_errors.h>
+#include <virgil/iot/status_code/status_code.h>
 
-int
+vs_status_e
 vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz);
-int
+
+vs_status_e
 vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
-int
+
+vs_status_e
 vs_hsm_slot_delete(vs_iot_hsm_slot_e slot);
 
-int
+vs_status_e
 vs_hsm_hash_create(vs_hsm_hash_type_e hash_type,
                    const uint8_t *data,
                    uint16_t data_sz,
@@ -56,22 +58,23 @@ vs_hsm_hash_create(vs_hsm_hash_type_e hash_type,
                    uint16_t hash_buf_sz,
                    uint16_t *hash_sz);
 
-int
+vs_status_e
 vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
-int
+
+vs_status_e
 vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
                           uint8_t *buf,
                           uint16_t buf_sz,
                           uint16_t *key_sz,
                           vs_hsm_keypair_type_e *keypair_type);
-int
+vs_status_e
 vs_hsm_ecdsa_sign(vs_iot_hsm_slot_e key_slot,
                   vs_hsm_hash_type_e hash_type,
                   const uint8_t *hash,
                   uint8_t *signature,
                   uint16_t signature_buf_sz,
                   uint16_t *signature_sz);
-int
+vs_status_e
 vs_hsm_ecdsa_verify(vs_hsm_keypair_type_e keypair_type,
                     const uint8_t *public_key,
                     uint16_t public_key_sz,
@@ -80,7 +83,7 @@ vs_hsm_ecdsa_verify(vs_hsm_keypair_type_e keypair_type,
                     const uint8_t *signature,
                     uint16_t signature_sz);
 
-int
+vs_status_e
 vs_hsm_hmac(vs_hsm_hash_type_e hash_type,
             const uint8_t *key,
             uint16_t key_sz,
@@ -90,7 +93,7 @@ vs_hsm_hmac(vs_hsm_hash_type_e hash_type,
             uint16_t output_buf_sz,
             uint16_t *output_sz);
 
-int
+vs_status_e
 vs_hsm_kdf(vs_hsm_kdf_type_e kdf_type,
            vs_hsm_hash_type_e hash_type,
            const uint8_t *input,
@@ -98,7 +101,7 @@ vs_hsm_kdf(vs_hsm_kdf_type_e kdf_type,
            uint8_t *output,
            uint16_t output_sz);
 
-int
+vs_status_e
 vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
             const uint8_t *input,
             uint16_t input_sz,
@@ -109,10 +112,10 @@ vs_hsm_hkdf(vs_hsm_hash_type_e hash_type,
             uint8_t *output,
             uint16_t output_sz);
 
-int
+vs_status_e
 vs_hsm_random(uint8_t *output, uint16_t output_sz);
 
-int
+vs_status_e
 vs_hsm_aes_encrypt(vs_iot_aes_type_e aes_type,
                    const uint8_t *key,
                    uint16_t key_bitlen,
@@ -126,7 +129,7 @@ vs_hsm_aes_encrypt(vs_iot_aes_type_e aes_type,
                    uint8_t *tag,
                    uint16_t tag_len);
 
-int
+vs_status_e
 vs_hsm_aes_decrypt(vs_iot_aes_type_e aes_type,
                    const uint8_t *key,
                    uint16_t key_bitlen,
@@ -140,7 +143,7 @@ vs_hsm_aes_decrypt(vs_iot_aes_type_e aes_type,
                    uint8_t *tag,
                    uint16_t tag_len);
 
-int
+vs_status_e
 vs_hsm_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                         const uint8_t *key,
                         uint16_t key_bitlen,
@@ -154,7 +157,7 @@ vs_hsm_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                         const uint8_t *tag,
                         uint16_t tag_len);
 
-int
+vs_status_e
 vs_hsm_ecdh(vs_iot_hsm_slot_e slot,
             vs_hsm_keypair_type_e keypair_type,
             const uint8_t *public_key,

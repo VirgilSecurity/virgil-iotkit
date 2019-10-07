@@ -48,39 +48,48 @@ typedef uint32_t vs_sdmp_service_id_t;
 typedef uint32_t vs_sdmp_element_t;
 
 // Callback for Received data
-typedef int (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
-                                const uint8_t *data,
-                                const uint16_t data_sz,
-                                const uint8_t **packet_data,
-                                uint16_t *packet_data_sz);
+typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
+                                        const uint8_t *data,
+                                        const uint16_t data_sz,
+                                        const uint8_t **packet_data,
+                                        uint16_t *packet_data_sz);
 
 // Callback for Preprocessed data
-typedef int (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
-typedef int (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
-typedef int (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
+typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
-typedef int (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
-typedef int (*vs_netif_deinit_t)(void);
+typedef vs_status_e (*vs_netif_deinit_t)(void);
 
 
 // SDMP Services processor
-typedef int (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
-                                                   vs_sdmp_element_t element_id,
-                                                   const uint8_t *request,
-                                                   const uint16_t request_sz,
-                                                   uint8_t *response,
-                                                   const uint16_t response_buf_sz,
-                                                   uint16_t *response_sz);
+typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
+                                                           vs_sdmp_element_t element_id,
+                                                           const uint8_t *request,
+                                                           const uint16_t request_sz,
+                                                           uint8_t *response,
+                                                           const uint16_t response_buf_sz,
+                                                           uint16_t *response_sz);
 
-typedef int (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
-                                                    vs_sdmp_element_t element_id,
-                                                    bool is_ack,
-                                                    const uint8_t *response,
-                                                    const uint16_t response_sz);
+typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
+                                                            vs_sdmp_element_t element_id,
+                                                            bool is_ack,
+                                                            const uint8_t *response,
+                                                            const uint16_t response_sz);
 
-typedef int (*vs_sdmp_service_periodical_processor_t)(void);
+typedef vs_status_e (*vs_sdmp_service_periodical_processor_t)(void);
+
+typedef enum {
+    VS_SDMP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002),
+    VS_SDMP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004),
+    VS_SDMP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008),
+    VS_SDMP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010),
+    VS_SDMP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020)
+} vs_sdmp_device_role_e;
 
 #define ETH_ADDR_LEN (6)
 #define ETH_TYPE_LEN (2)
@@ -149,6 +158,14 @@ typedef struct {
     vs_sdmp_service_response_processor_t response_process;
     vs_sdmp_service_periodical_processor_t periodical_process;
 } vs_sdmp_service_t;
+
+/******************************************************************************/
+typedef struct {
+    uint32_t sent;
+    uint32_t received;
+} vs_sdmp_stat_t;
+
+/******************************************************************************/
 
 
 #endif // VS_SDMP_STRUCTS_H

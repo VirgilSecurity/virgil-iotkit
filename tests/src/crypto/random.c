@@ -54,21 +54,21 @@ _generate_random(uint8_t *sequence) {
     for (pos = 0; pos < STEPS; ++pos) {
         res = vs_hsm_random(sequence, size_step);
 
-        if (VS_HSM_ERR_OK != res) {
+        if (VS_CODE_OK != res) {
             VS_LOG_ERROR("Unable to generate random number, step = %d", pos);
             return res;
         }
 
         if (pos) {
             CHECK_RET(VS_IOT_MEMCMP(sequence - size_step, sequence, size_step) != 0,
-                      VS_HSM_ERR_FAIL,
+                      VS_CODE_ERR_CRYPTO,
                       "Sequence is the same as previous");
         }
 
         sequence += size_step;
     }
 
-    return VS_HSM_ERR_OK;
+    return VS_CODE_OK;
 }
 
 #undef STEPS
@@ -203,10 +203,10 @@ test_random(void) {
     START_TEST("Random tests");
     START_ELEMENT("Generate random sequence");
     res = _generate_random(sequence);
-    if (VS_HSM_ERR_NOT_IMPLEMENTED == res) {
+    if (VS_CODE_ERR_NOT_IMPLEMENTED == res) {
         VS_LOG_WARNING("Random function is not implemented");
         RESULT_OK;
-    } else if (VS_HSM_ERR_OK != res) {
+    } else if (VS_CODE_OK != res) {
         RESULT_ERROR;
     }
 

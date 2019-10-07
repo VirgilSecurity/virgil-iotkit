@@ -80,7 +80,7 @@ vs_info_GINF_request_processing(const uint8_t *request,
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
-    vs_status_code_e ret_code;
+    vs_status_e ret_code;
     char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -89,12 +89,17 @@ vs_info_GINF_request_processing(const uint8_t *request,
 
     defautl_netif = vs_sdmp_default_netif();
 
+    VS_IOT_MEMSET(general_info, 0, sizeof(*general_info));
+
     CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
-    STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr),
-                     "Unable to obtain Firmware's descriptor");
+    if (VS_CODE_OK != vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr)) {
+        VS_LOG_WARNING("Unable to obtain Firmware's descriptor");
+        VS_IOT_MEMCPY(fw_descr.info.manufacture_id, _manufacture_id, sizeof(_manufacture_id));
+        VS_IOT_MEMCPY(fw_descr.info.device_type, _device_type, sizeof(_device_type));
+    }
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
@@ -143,7 +148,7 @@ _info_request_processor(const struct vs_netif_t *netif,
     default:
         VS_LOG_ERROR("Unsupported INFO command");
         VS_IOT_ASSERT(false);
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 

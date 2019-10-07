@@ -35,39 +35,48 @@
 #include <stdint.h>
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-
+#include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define VS_SDMP_COMMAND_NOT_SUPPORTED (100)
-
-int
+vs_status_e
 vs_sdmp_init(vs_netif_t *default_netif);
 
-int
+vs_status_e
 vs_sdmp_deinit();
 
 #if 0
-int
+vs_status_e
 vs_sdmp_add_netif(const vs_netif_t *netif);
 #endif
 
 const vs_netif_t *
 vs_sdmp_default_netif(void);
 
-int
+vs_status_e
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
 
-int
+vs_status_e
 vs_sdmp_register_service(const vs_sdmp_service_t *service);
 
-int
+vs_status_e
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
 
 const vs_mac_addr_t *
 vs_sdmp_broadcast_mac(void);
+
+vs_status_e
+vs_sdmp_send_request(const vs_netif_t *netif,
+                     const vs_mac_addr_t *mac,
+                     vs_sdmp_service_id_t service_id,
+                     vs_sdmp_element_t element_id,
+                     const uint8_t *data,
+                     uint16_t data_sz);
+
+vs_sdmp_stat_t
+vs_sdmp_get_statistics(void);
 
 #ifdef __cplusplus
 }

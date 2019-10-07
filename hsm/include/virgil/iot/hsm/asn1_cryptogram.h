@@ -38,10 +38,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <virgil/iot/status_code/status_code.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-int
+
+vs_status_e
 vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              size_t cryptogram_sz,
                                              const uint8_t *recipient_id,
@@ -54,7 +57,7 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              uint8_t **encrypted_data,
                                              size_t *encrypted_data_sz);
 
-int
+vs_status_e
 vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               size_t recipient_id_sz,
                                               size_t encrypted_data_sz,
@@ -68,6 +71,7 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               uint8_t *cryptogram,
                                               size_t cryptogram_buf_sz,
                                               size_t *cryptogram_sz);
+
 #ifdef __cplusplus
 }
 #endif

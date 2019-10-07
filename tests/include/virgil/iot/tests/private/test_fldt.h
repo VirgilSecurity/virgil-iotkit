@@ -41,6 +41,7 @@
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
+#include <virgil/iot/status_code/status_code.h>
 
 typedef struct {
     union {
@@ -64,7 +65,7 @@ make_client_mapping(const vs_update_file_type_t *file_type);
 vs_fldt_file_type_mapping_t
 make_server_mapping(const vs_update_file_type_t *file_type);
 
-vs_status_code_e
+vs_status_e
 server_add_filetype(const vs_update_file_type_t *file_type);
 
 #endif

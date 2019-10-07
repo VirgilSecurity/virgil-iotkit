@@ -49,8 +49,8 @@ extern "C" {
 
 // . "Add file type"
 // .  Add file type asked by client
-typedef vs_status_code_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
-                                                        vs_update_interface_t **update_ctx);
+typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
+                                                   vs_update_interface_t **update_ctx);
 
 const vs_sdmp_service_t *
 vs_sdmp_fldt_server(void);
@@ -59,10 +59,10 @@ vs_sdmp_fldt_server(void);
 //  Customer API
 //
 
-vs_status_code_e
+vs_status_e
 vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
-vs_status_code_e
+vs_status_e
 vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
                                 vs_update_interface_t *update_context,
                                 bool broadcast_file_info);

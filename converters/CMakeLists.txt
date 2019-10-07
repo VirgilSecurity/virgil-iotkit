@@ -43,8 +43,7 @@ set(CONV_LIB converters)
 #
 set(CONV_SRC
         src/signature_converters.c
-        src/pubkey_converters.c
-        )
+        src/pubkey_converters.c)
 
 # Include and build external libraries
 include (${CMAKE_CURRENT_SOURCE_DIR}/../cmake/virgil_depends.cmake)
@@ -69,9 +68,9 @@ add_library(${CONV_LIB}
 #   Set additional compiler flags
 #
 if ("${CFLAGS_PLATFORM}" STREQUAL "")
-    message("No CFLAGS_PLATFORM")
+    message("-- No CFLAGS_PLATFORM")
 else()
-    message("CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
