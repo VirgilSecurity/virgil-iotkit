@@ -13,6 +13,7 @@ import (
 
 	"./sdmp"
 	"./devices"
+	"./utils"
 )
 
 var upgrader = websocket.Upgrader{
@@ -48,7 +49,10 @@ func CleanupProcessStart() {
 
 
 func main() {
-	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
+    // Initialize logs
+    utils.NewLog()
+
+   	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
 	listeningPort := readListeningPort(os.Args)
 
 	devicesInfo = devices.NewDevices()
@@ -56,13 +60,13 @@ func main() {
 	// Start SDMP:INFO communication
 	err :=  sdmp.ConnectToDeviceNetwork()
 	if err != nil {
-    	fmt.Println(err)
+    	utils.Log.Println(err)
     	return
     }
 
     err = sdmp.SetupPolling(GeneralInfoCb, StatCb)
     if err != nil {
-        fmt.Println(err)
+        utils.Log.Println(err)
         return
     }
 
@@ -72,7 +76,7 @@ func main() {
 
 		conn, err := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
 		if err != nil {
-			fmt.Println(err)
+			utils.Log.Println(err)
 			return
 		}
 
@@ -80,7 +84,7 @@ func main() {
 
 			table := createStatusTable(t)
 			if err = conn.WriteMessage(1, []byte(table)); err != nil {
-				fmt.Println(err)
+				utils.Log.Println(err)
 				return
 			}
 		}
@@ -95,12 +99,12 @@ func main() {
 			if ok {
 				respBody, err := json.Marshal(devicesInfo.Items[keys[0]])
 				if err != nil {
-					fmt.Println(err)
+					utils.Log.Println(err)
 				}
 
 				_, err = w.Write(respBody)
 				if err != nil {
-					fmt.Println("err writing resp  body: " + err.Error())
+					utils.Log.Println("err writing resp  body: " + err.Error())
 				}
 				return
 			}
@@ -108,11 +112,11 @@ func main() {
 
 			respBody, err := json.Marshal(devicesInfo.Items)
 			if err != nil {
-				fmt.Println(err)
+				utils.Log.Println(err)
 			}
 			_, err = w.Write(respBody)
 			if err != nil {
-				fmt.Println("err writing resp  body: " + err.Error())
+				utils.Log.Println("err writing resp  body: " + err.Error())
 			}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
@@ -127,11 +131,11 @@ func main() {
 		}
 	})
 
-	fmt.Println(fmt.Sprintf("Service started. Web SDMPD interface located here: http://localhost:%d", listeningPort))
+	utils.Log.Println(fmt.Sprintf("Service started. Web SDMPD interface located here: http://localhost:%d", listeningPort))
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", listeningPort), nil)
 	if err != nil {
-		fmt.Println(err)
+		utils.Log.Println(err)
 	}
 }
 
@@ -167,7 +171,7 @@ func readListeningPort(args []string) int {
 		if err == nil {
 			return intPort
 		}
-		fmt.Println("err reading port from args : " + err.Error())
+		utils.Log.Println("err reading port from args : " + err.Error())
 
 	}
 	port, ok := os.LookupEnv("SDMPD_SERVICE_PORT")
@@ -176,7 +180,7 @@ func readListeningPort(args []string) int {
 		if err == nil {
 			return intPort
 		}
-		fmt.Println("err reading port from env : " + err.Error())
+		utils.Log.Println("err reading port from env : " + err.Error())
 
 	}
 	return 8080

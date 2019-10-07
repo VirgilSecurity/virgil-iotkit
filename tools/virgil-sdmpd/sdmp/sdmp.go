@@ -71,6 +71,7 @@ import (
     "unsafe"
 
     "../devices"
+    "../utils"
 )
 
 const (
@@ -99,7 +100,7 @@ func ConnectToDeviceNetwork() error {
 }
 
 func DisconnectDeviceNetwork() {
-    fmt.Printf("DisconnectDeviceNetwork\n")
+    utils.Log.Println("DisconnectDeviceNetwork")
     C.vs_sdmp_deinit()
 }
 
@@ -164,7 +165,7 @@ func roles2strings(roles C.uint32_t) []string {
 //export goDeviceStartNotifCb
 func goDeviceStartNotifCb(device *C.vs_sdmp_info_device_t) C.int {
      if 0 != C._set_polling() {
-        fmt.Printf("can't set devices polling. SDMP:INFO:POLL error\n")
+        utils.Log.Println("can't set devices polling. SDMP:INFO:POLL error")
         return -1
      }
 
