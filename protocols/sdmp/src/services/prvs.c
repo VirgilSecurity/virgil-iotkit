@@ -542,7 +542,8 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz), 0);
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz),
+            "Send request error");
 
     // Wait request
     _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
@@ -611,7 +612,8 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
     _reset_last_result();
 
     // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz), 0);
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz),
+                     "Send request error");
 
     // Wait request
     _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
