@@ -39,29 +39,30 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <virgil/iot/tools/helpers/ti_wait_functionality.h>
+#include <virgil/iot/logger/logger.h>
 
 // For the simplest implementation of os_event
 static pthread_mutex_t _wait_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 
 /******************************************************************************/
-int
+vs_status_e
 vs_wait_stop_func(int *condition, int expect) {
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
-        fprintf(stderr, "pthread_mutex_lock 1 %s %d\n", strerror(errno), errno);
+        VS_LOG_ERROR("pthread_mutex_lock %s %d", strerror(errno), errno);
     }
 
     *condition = expect;
 
     if (0 != pthread_cond_broadcast(&_wait_cond)) {
-        fprintf(stderr, "pthread_cond_signal %s\n", strerror(errno));
+        VS_LOG_ERROR("pthread_cond_signal %s\n", strerror(errno));
     }
 
     if (0 != pthread_mutex_unlock(&_wait_mutex)) {
-        fprintf(stderr, "pthread_mutex_unlock 1 %s\n", strerror(errno));
+        VS_LOG_ERROR("pthread_mutex_unlock %s\n", strerror(errno));
     }
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -75,7 +76,7 @@ _is_greater_timespec(struct timespec a, struct timespec b) {
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     struct timespec time_to_wait;
     struct timespec ts_now;
@@ -91,7 +92,7 @@ vs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     time_to_wait.tv_nsec = ts_now.tv_nsec + 1000000UL * (wait_ms % 1000UL);
 
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
-        fprintf(stderr, "pthread_mutex_lock %s\n", strerror(errno));
+        VS_LOG_ERROR("pthread_mutex_lock %s\n", strerror(errno));
     }
 
     do {
@@ -101,7 +102,7 @@ vs_wait_func(uint32_t wait_ms, int *condition, int idle) {
 
     pthread_mutex_unlock(&_wait_mutex);
 
-    return 0;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

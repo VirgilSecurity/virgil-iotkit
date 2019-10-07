@@ -43,12 +43,12 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
-typedef int (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
-typedef int (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
 
-typedef int (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
-typedef int (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
-typedef int (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
+typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
+typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
+typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
 typedef struct {
     vs_sdmp_info_start_notif_cb_t device_start_cb;

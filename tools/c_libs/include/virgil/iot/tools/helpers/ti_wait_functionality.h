@@ -36,11 +36,12 @@
 #define VS_TOOLS_WAIT_FUNCTIONALITY_H
 
 #include <stdint.h>
+#include <virgil/iot/status_code/status_code.h>
 
-int
+vs_status_e
 vs_wait_func(uint32_t wait_ms, int *condition, int idle);
 
-int
+vs_status_e
 vs_wait_stop_func(int *condition, int expect);
 
 #endif // VS_TOOLS_WAIT_FUNCTIONALITY_H
