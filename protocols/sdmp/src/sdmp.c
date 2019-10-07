@@ -130,7 +130,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
                 } else {
-                    if (VS_SDMP_COMMAND_NOT_SUPPORTED == res) {
+                    if (VS_CODE_COMMAND_NOT_SUPPORTED == res) {
                         processed = false;
                     } else {
                         // Send response with error code

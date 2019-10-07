@@ -64,14 +64,14 @@ typedef struct {
 const vs_sdmp_service_t *
 vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks);
 
-int
+vs_status_e
 vs_sdmp_info_enum_devices(const vs_netif_t *netif,
                           vs_sdmp_info_device_t *devices,
                           size_t devices_max,
                           size_t *devices_cnt,
                           uint32_t wait_ms);
 
-int
+vs_status_e
 vs_sdmp_info_set_polling(const vs_netif_t *netif,
                          const vs_mac_addr_t *mac,
                          uint32_t elements, // Multiple vs_sdmp_info_element_mask_e

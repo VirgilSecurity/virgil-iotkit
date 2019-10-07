@@ -270,7 +270,7 @@ _info_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_INFO_SNOT:
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NOT_SUPPORTED;
 
     case VS_INFO_ENUM:
         return _enum_request_processing(request, request_sz, response, response_buf_sz, response_sz);
@@ -287,7 +287,7 @@ _info_request_processor(const struct vs_netif_t *netif,
     default:
         VS_LOG_ERROR("Unsupported INFO command");
         VS_IOT_ASSERT(false);
-        return VS_SDMP_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NOT_SUPPORTED;
     }
 }
 

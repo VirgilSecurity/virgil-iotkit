@@ -41,8 +41,6 @@
 extern "C" {
 #endif
 
-#define VS_SDMP_COMMAND_NOT_SUPPORTED (100)
-
 vs_status_e
 vs_sdmp_init(vs_netif_t *default_netif);
 
@@ -69,7 +67,7 @@ vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
 const vs_mac_addr_t *
 vs_sdmp_broadcast_mac(void);
 
-int
+vs_status_e
 vs_sdmp_send_request(const vs_netif_t *netif,
                      const vs_mac_addr_t *mac,
                      vs_sdmp_service_id_t service_id,
