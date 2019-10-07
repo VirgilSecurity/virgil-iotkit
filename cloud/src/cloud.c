@@ -372,7 +372,7 @@ vs_status_e
 vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
                                  const char *fw_file_url,
                                  vs_cloud_firmware_header_t *fetched_header) {
-    int res = VS_CODE_OK;
+    vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -568,7 +568,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 /*************************************************************************/
 vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
-    int res = VS_CODE_OK;
+    vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(tl_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     size_t in_out_answer_len = 0;
     tl_resp_buff_t resp;

@@ -79,7 +79,7 @@ _read_data(const vs_storage_op_ctx_t *ctx,
            size_t *data_sz) {
     vs_storage_file_t f = NULL;
     ssize_t file_sz;
-    size_t bytes_left;
+    ssize_t bytes_left;
 
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);

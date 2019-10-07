@@ -144,7 +144,7 @@ vs_secbox_save(const vs_storage_op_ctx_t *ctx,
                const uint8_t *data,
                size_t data_sz) {
     vs_status_e res = VS_CODE_ERR_FILE_WRITE;
-    vs_status_e ret = VS_CODE_OK;
+    vs_status_e res_close = VS_CODE_OK;
     vs_storage_file_t f = NULL;
     uint8_t *data_to_save = NULL;
     size_t data_to_save_sz;
@@ -222,10 +222,10 @@ terminate:
     }
 
     if (f) {
-        ret = ctx->impl.close(ctx->storage_ctx, f);
+        res_close = ctx->impl.close(ctx->storage_ctx, f);
     }
 
-    return (VS_CODE_OK == res) ? ret : res;
+    return (VS_CODE_OK == res) ? res_close : res;
 }
 
 /******************************************************************************/

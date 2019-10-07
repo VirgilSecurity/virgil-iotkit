@@ -65,7 +65,7 @@ typedef vs_status_e (*vs_rpi_storage_sync_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_file_t file);
 
-typedef int (*vs_storage_close_hal_t)(
+typedef vs_status_e (*vs_storage_close_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         vs_storage_file_t file); // After this call file is incorrect and must be zeroed.
 
