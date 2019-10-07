@@ -38,7 +38,7 @@
 #include <virgil/iot/macros/macros.h>
 
 typedef enum {
-    VS_CODE_COMMAND_NOT_SUPPORTED = 100,
+    VS_CODE_COMMAND_NO_RESPONSE = 100,
     VS_CODE_OK = 0,
     VS_CODE_ERR_NULLPTR_ARGUMENT = -1,
     VS_CODE_ERR_ZERO_ARGUMENT = -2,

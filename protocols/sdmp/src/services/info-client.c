@@ -126,7 +126,7 @@ _snot_request_processor(const uint8_t *request,
 
     // Check is callback present
     if (!_callbacks.device_start_cb) {
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
     // Check input parameters
@@ -141,7 +141,7 @@ _snot_request_processor(const uint8_t *request,
     // Invoke callback
     _callbacks.device_start_cb(&device_info);
 
-    return VS_CODE_COMMAND_NOT_SUPPORTED;
+    return VS_CODE_COMMAND_NO_RESPONSE;
 }
 
 /******************************************************************************/
@@ -267,7 +267,7 @@ _info_client_request_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_ENUM:
     case VS_INFO_POLL:
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_INFO_GINF:
         return _ginf_request_processor(request, request_sz, response, response_buf_sz, response_sz);
@@ -278,7 +278,7 @@ _info_client_request_processor(const struct vs_netif_t *netif,
     default:
         VS_LOG_ERROR("Unsupported INFO command");
         VS_IOT_ASSERT(false);
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 
@@ -296,7 +296,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
     case VS_INFO_SNOT:
     case VS_INFO_GINF:
     case VS_INFO_STAT:
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_INFO_ENUM:
         return _enum_response_processor(is_ack, response, response_sz);
@@ -307,7 +307,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
     default:
         VS_LOG_ERROR("Unsupported INFO command");
         VS_IOT_ASSERT(false);
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 

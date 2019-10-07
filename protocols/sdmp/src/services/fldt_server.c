@@ -584,7 +584,7 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_FLDT_GFTI:
         return vs_fldt_GFTI_request_processor(request, request_sz, response, response_buf_sz, response_sz);
@@ -599,7 +599,7 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
         return vs_fldt_GNFF_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     default:
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 
@@ -617,12 +617,12 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
     case VS_FLDT_GFTI:
     case VS_FLDT_GNFD:
     case VS_FLDT_GNFF:
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     default:
         VS_LOG_ERROR("Unsupported FLDT command");
         VS_IOT_ASSERT(false);
-        return VS_CODE_COMMAND_NOT_SUPPORTED;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 

@@ -92,7 +92,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     uint16_t response_sz = 0;
     int res;
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
-    bool processed = false;
+    bool need_response = false;
 
     memset(response, 0, sizeof(response));
 
@@ -116,7 +116,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
 
                 // Process request
             } else if (_sdmp_services[i]->request_process) {
-                processed = true;
+                need_response = true;
                 _statistics.received++;
                 res = _sdmp_services[i]->request_process(netif,
                                                          packet->header.element_id,
@@ -130,8 +130,8 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                     response_packet->header.content_size = response_sz;
                     response_packet->header.flags |= VS_SDMP_FLAG_ACK;
                 } else {
-                    if (VS_CODE_COMMAND_NOT_SUPPORTED == res) {
-                        processed = false;
+                    if (VS_CODE_COMMAND_NO_RESPONSE == res) {
+                        need_response = false;
                     } else {
                         // Send response with error code
                         // TODO: Fill structure with error code here
@@ -143,7 +143,7 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
         }
     }
 
-    if (processed) {
+    if (need_response) {
         vs_sdmp_send(netif, response, sizeof(vs_sdmp_packet_t) + response_packet->header.content_size);
     }
 
