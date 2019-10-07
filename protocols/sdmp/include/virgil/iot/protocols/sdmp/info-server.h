@@ -49,7 +49,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
                     const vs_fw_device_type_t device_type,
                     uint32_t device_roles);
 
-int
+vs_status_e
 vs_sdmp_info_start_notification(const vs_netif_t *netif);
 
 #ifdef __cplusplus

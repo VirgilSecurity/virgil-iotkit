@@ -354,7 +354,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
 }
 
 /******************************************************************************/
-int
+vs_status_e
 vs_sdmp_info_start_notification(const vs_netif_t *netif) {
     vs_info_enum_response_t enum_data;
     vs_status_e ret_code;
@@ -362,14 +362,12 @@ vs_sdmp_info_start_notification(const vs_netif_t *netif) {
     STATUS_CHECK_RET(_fill_enum_data(&enum_data), "Cannot fill ENUM data");
 
     // Send request
-    if (0 != vs_sdmp_send_request(netif,
-                                  vs_sdmp_broadcast_mac(),
-                                  VS_INFO_SERVICE_ID,
-                                  VS_INFO_SNOT,
-                                  (uint8_t *)&enum_data,
-                                  sizeof(enum_data))) {
-        return -1;
-    }
+    STATUS_CHECK_RET(vs_sdmp_send_request(netif,
+                                          vs_sdmp_broadcast_mac(),
+                                          VS_INFO_SERVICE_ID,
+                                          VS_INFO_SNOT,
+                                          (uint8_t *)&enum_data,
+                                          sizeof(enum_data)), "Cannot send data");
 
     return VS_CODE_OK;
 }
