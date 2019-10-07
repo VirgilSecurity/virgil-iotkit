@@ -357,6 +357,8 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+    VS_IOT_MEMSET(descriptor, 0, sizeof(*descriptor));
+
     // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
 
