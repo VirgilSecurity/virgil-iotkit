@@ -60,7 +60,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
-    int res = VS_CODE_ERR_FILE_WRITE;
+    vs_status_e res = VS_CODE_ERR_FILE_WRITE;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
