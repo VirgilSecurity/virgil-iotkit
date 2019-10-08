@@ -131,15 +131,6 @@ set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
 
 # ---------------------------------------------------------------------------
-#   Tools
-# ---------------------------------------------------------------------------
-
-if (NOT GO_DISABLE)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
-endif()
-
-
-# ---------------------------------------------------------------------------
 #   Features
 # ---------------------------------------------------------------------------
 
@@ -233,3 +224,17 @@ endif()
 #   Tests
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+# ---------------------------------------------------------------------------
+#   Tools
+# ---------------------------------------------------------------------------
+
+if (NOT GO_DISABLE)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Examples
+# ---------------------------------------------------------------------------
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples)
