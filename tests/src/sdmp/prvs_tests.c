@@ -53,14 +53,6 @@ static const vs_mac_addr_t mac_addr_server = {.bytes = {0xF2, 0xF2, 0xF3, 0xF4, 
 static const vs_mac_addr_t mac_addr_fake_server = {.bytes = {0xE2, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6}};
 static const vs_mac_addr_t mac_addr_client = {.bytes = {0x12, 0x12, 0x13, 0x14, 0x15, 0x16}};
 
-/******************************************************************************/
-int
-vs_global_hal_get_own_firmware_descriptor(void *descriptor) {
-    CHECK_NOT_ZERO_RET(descriptor, -1);
-
-    return 0;
-}
-
 /**********************************************************/
 static bool
 test_prvs_register(void) {
