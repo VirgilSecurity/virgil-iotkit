@@ -105,11 +105,7 @@ typedef struct {
 // Get Service descriptor
 
 const vs_sdmp_service_t *
-vs_sdmp_prvs_service(); // TODO: Set implementation here and use pointer
-
-// HAL
-vs_status_e
-vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl);
+vs_sdmp_prvs_service(vs_sdmp_prvs_impl_t impl);
 
 // Commands
 vs_status_e
