@@ -38,18 +38,72 @@ project(virgil-iot-examples-common VERSION 0.1.0 LANGUAGES C)
 
 add_library(virgil-iot-examples-common)
 
+#
+#  Path to crypto lib
+#
+if (BIGENDIAN_64_BIT_BUILD)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake/mips64.toolchain.cmake")
+    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/deps/mips64")
+endif ()
+
+if (BIGENDIAN_32_BIT_BUILD)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake/mips32.toolchain.cmake")
+    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../deps/mips32")
+endif ()
+
+if (NOT BIGENDIAN_64_BIT_BUILD AND NOT BIGENDIAN_32_BIT_BUILD)
+    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../deps/host")
+endif()
+
+include(GNUInstallDirs)
+if(EXISTS "${CRYPTO_C_BASE_DIR}")
+    set(CRYPTO_C_INCLUDES "${CRYPTO_C_BASE_DIR}/include")
+    set(CRYPTO_C_LIBS "${CRYPTO_C_BASE_DIR}/lib")
+else()
+    set(CRYPTO_C_INCLUDES "/usr/include/cryptoc-shsm")
+    set(CRYPTO_C_LIBS "/usr/${CMAKE_INSTALL_LIBDIR}/cryptoc-shsm")
+endif ()
+
+#
+#  Source files
+#
 target_sources(virgil-iot-examples-common
         PRIVATE
+        include/virgil/iot/examples/secbox-impl.h
+
+        src/nix-crypto-impl.c
+        src/nix-file-cache-impl.c
+        src/nix-file-io-impl.c
+        src/nix-keypair-impl.c
+        src/nix-global-impl.c
+        src/nix-storage-impl.c
         )
 
+#
+#  Linked libraries
+#
 target_link_libraries(virgil-iot-examples-common
-        PUBLIC
+        PRIVATE
+        secbox
+        virgil-iot-status-code
+        converters
+        ${CRYPTO_C_LIBS}/libvsc_foundation.a
+        ${CRYPTO_C_LIBS}/libvsc_common.a
+        ${CRYPTO_C_LIBS}/libmbedcrypto.a
+        ${CRYPTO_C_LIBS}/libed25519.a
         )
 
+#
+#  Included directories
+#
 target_include_directories(virgil-iot-examples-common
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        ${CRYPTO_C_INCLUDES}
+        ${CRYPTO_C_INCLUDES}/virgil/crypto/common
+        include/virgil/iot/examples
 
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         )
+

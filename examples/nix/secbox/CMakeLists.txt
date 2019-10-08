@@ -34,6 +34,25 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/common)
+project(virgil-iot-example-secbox VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
+add_executable(virgil-iot-example-secbox)
+
+target_sources(virgil-iot-example-secbox
+        PRIVATE
+        src/main.c
+        )
+
+target_include_directories(virgil-iot-example-secbox
+        PRIVATE
+        )
+
+target_link_libraries(virgil-iot-example-secbox
+        PRIVATE
+        virgil-iot-examples-common
+        virgil-iot-status-code
+        storage_hal
+        secbox
+        hsm
+        logger
+        )
