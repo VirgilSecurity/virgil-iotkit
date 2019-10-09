@@ -55,4 +55,7 @@ vs_global_hal_msleep(size_t msec);
 void
 vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
 
+int
+vs_global_hal_get_own_firmware_descriptor(void *descriptor);
+
 #endif // VS_IOT_SDK_GLOBAL_HAL_H

@@ -190,57 +190,6 @@ vs_prvs_sign_data(const uint8_t* data, uint16_t data_sz, uint8_t* signature, uin
 #endif // !VS_SDMP_FACTORY
 
 /******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_configure_hal(vs_sdmp_prvs_impl_t impl)
-{
-    VS_IOT_MEMSET(&_prvs_impl, 0, sizeof(_prvs_impl));
-
-#if !VS_SDMP_FACTORY
-    _prvs_impl.save_data_func = &vs_prvs_save_data;
-    _prvs_impl.finalize_storage_func = &vs_prvs_finalize_storage;
-    _prvs_impl.start_save_tl_func = &vs_prvs_start_save_tl;
-    _prvs_impl.save_tl_part_func = &vs_prvs_save_tl_part;
-    _prvs_impl.finalize_tl_func = &vs_prvs_finalize_tl;
-    _prvs_impl.sign_data_func = &vs_prvs_sign_data;
-#endif // !VS_SDMP_FACTORY
-
-    if (impl.save_data_func) {
-        _prvs_impl.save_data_func = impl.save_data_func;
-    }
-
-    if (impl.load_data_func) {
-        _prvs_impl.load_data_func = impl.load_data_func;
-    }
-
-    if (impl.finalize_storage_func) {
-        _prvs_impl.finalize_storage_func = impl.finalize_storage_func;
-    }
-
-    if (impl.start_save_tl_func) {
-        _prvs_impl.start_save_tl_func = impl.start_save_tl_func;
-    }
-
-    if (impl.save_tl_part_func) {
-        _prvs_impl.save_tl_part_func = impl.save_tl_part_func;
-    }
-
-    if (impl.finalize_tl_func) {
-        _prvs_impl.finalize_tl_func = impl.finalize_tl_func;
-    }
-
-    if (impl.sign_data_func) {
-        _prvs_impl.sign_data_func = impl.sign_data_func;
-    }
-
-    _prvs_impl.dnid_func = impl.dnid_func;
-    _prvs_impl.device_info_func = impl.device_info_func;
-    _prvs_impl.wait_func = impl.wait_func;
-    _prvs_impl.stop_wait_func = impl.stop_wait_func;
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
 static vs_status_e
 _prvs_dnid_process_request(const struct vs_netif_t* netif,
     const uint8_t* request,
@@ -478,6 +427,56 @@ _prvs_service_response_processor(const struct vs_netif_t* netif,
 }
 
 /******************************************************************************/
+static vs_status_e
+_configure_hal(vs_sdmp_prvs_impl_t impl)
+{
+    VS_IOT_MEMSET(&_prvs_impl, 0, sizeof(_prvs_impl));
+
+#if !VS_SDMP_FACTORY
+    _prvs_impl.save_data_func = &vs_prvs_save_data;
+    _prvs_impl.finalize_storage_func = &vs_prvs_finalize_storage;
+    _prvs_impl.start_save_tl_func = &vs_prvs_start_save_tl;
+    _prvs_impl.save_tl_part_func = &vs_prvs_save_tl_part;
+    _prvs_impl.finalize_tl_func = &vs_prvs_finalize_tl;
+    _prvs_impl.sign_data_func = &vs_prvs_sign_data;
+#endif // !VS_SDMP_FACTORY
+
+    if (impl.save_data_func) {
+        _prvs_impl.save_data_func = impl.save_data_func;
+    }
+
+    if (impl.load_data_func) {
+        _prvs_impl.load_data_func = impl.load_data_func;
+    }
+
+    if (impl.finalize_storage_func) {
+        _prvs_impl.finalize_storage_func = impl.finalize_storage_func;
+    }
+
+    if (impl.start_save_tl_func) {
+        _prvs_impl.start_save_tl_func = impl.start_save_tl_func;
+    }
+
+    if (impl.save_tl_part_func) {
+        _prvs_impl.save_tl_part_func = impl.save_tl_part_func;
+    }
+
+    if (impl.finalize_tl_func) {
+        _prvs_impl.finalize_tl_func = impl.finalize_tl_func;
+    }
+
+    if (impl.sign_data_func) {
+        _prvs_impl.sign_data_func = impl.sign_data_func;
+    }
+
+    _prvs_impl.dnid_func = impl.dnid_func;
+    _prvs_impl.device_info_func = impl.device_info_func;
+    _prvs_impl.wait_func = impl.wait_func;
+    _prvs_impl.stop_wait_func = impl.stop_wait_func;
+
+    return VS_CODE_OK;
+}
+/******************************************************************************/
 static void
 _prepare_prvs_service()
 {
@@ -493,10 +492,11 @@ _prepare_prvs_service()
 
 /******************************************************************************/
 const vs_sdmp_service_t*
-vs_sdmp_prvs_service()
+vs_sdmp_prvs_service(vs_sdmp_prvs_impl_t impl)
 {
     if (!_prvs_service_ready) {
         _prepare_prvs_service();
+        _configure_hal(impl);
         _prvs_service_ready = true;
     }
 

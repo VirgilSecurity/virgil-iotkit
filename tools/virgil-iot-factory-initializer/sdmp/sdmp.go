@@ -153,12 +153,8 @@ func (p Processor ) ConnectToPLCBus() error {
         return fmt.Errorf("can't start SDMP communication")
     }
 
-    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_service()) {
+    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_service(C.vs_prvs_impl())) {
         return fmt.Errorf("can't register SDMP:PRVS service")
-    }
-
-    if 0 != C.vs_sdmp_prvs_configure_hal(C.vs_prvs_impl()) {
-        return fmt.Errorf("can't configure SDMP:PRVS HAL")
     }
 
     return nil

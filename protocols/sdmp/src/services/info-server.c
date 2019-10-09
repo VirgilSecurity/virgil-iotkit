@@ -211,7 +211,7 @@ _fill_ginf_data(vs_info_ginf_response_t* general_info)
     STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr),
                      "Unable to obtain Firmware's descriptor");
 #else
-    vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr);
+    vs_global_hal_get_own_firmware_descriptor(&fw_descr);
 #endif
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;

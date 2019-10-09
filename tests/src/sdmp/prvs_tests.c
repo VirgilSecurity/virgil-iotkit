@@ -57,20 +57,7 @@ static const vs_mac_addr_t mac_addr_client = {.bytes = {0x12, 0x12, 0x13, 0x14, 
 static bool
 test_prvs_register(void) {
 
-    SDMP_CHECK_GOTO(vs_sdmp_register_service(vs_sdmp_prvs_service()), "vs_sdmp_init call");
-
-    return true;
-
-terminate:
-
-    return false;
-}
-
-/**********************************************************/
-static bool
-test_configure_hal(void) {
-
-    SDMP_CHECK_GOTO(vs_sdmp_prvs_configure_hal(make_prvs_implementation()), "vs_sdmp_prvs_configure_hal call");
+    SDMP_CHECK_GOTO(vs_sdmp_register_service(vs_sdmp_prvs_service(make_prvs_implementation())), "vs_sdmp_init call");
 
     return true;
 
@@ -319,7 +306,6 @@ prvs_tests(void) {
     mac_addr_client_call = mac_addr_client;
 
     TEST_CASE_OK("register PRVS service", test_prvs_register());
-    TEST_CASE_OK("configure PRVS HAL", test_configure_hal());
     TEST_CASE_OK("set uninitialized devices", test_uninitialized_devices());
     TEST_CASE_OK("save provision", test_save_provision());
     TEST_CASE_OK("device information", test_device_info());
