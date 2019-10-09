@@ -44,17 +44,17 @@ server_request_t server_request;
 make_server_response_t make_server_response;
 
 /**********************************************************/
-static vs_status_e
-prvs_dnid() {
+static bool
+_is_initialized(void) {
 
     prvs_call.dnid = 1;
 
-    return VS_CODE_OK;
+    return false;
 }
 
 /**********************************************************/
 static vs_status_e
-prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
+_prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
 
     server_request.save_data.element_id = element_id;
     server_request.save_data.data_sz = data_sz;
@@ -71,7 +71,7 @@ prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t 
 
 /**********************************************************/
 static vs_status_e
-prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
+_prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     server_request.finalize_storage.buf_sz = buf_sz;
 
@@ -86,7 +86,7 @@ prvs_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
 /**********************************************************/
 static vs_status_e
-prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
+_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     VS_IOT_ASSERT(asav_response);
 
     prvs_call.finalize_storage = 1;
@@ -98,7 +98,7 @@ prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
 
 /**********************************************************/
 static vs_status_e
-prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
+_prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 
     server_request.finalize_tl.data_sz = data_sz;
     if (!(server_request.finalize_tl.data = VS_IOT_MALLOC(data_sz))) {
@@ -114,7 +114,7 @@ prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
 
 /**********************************************************/
 static vs_status_e
-prvs_stop_wait(int *condition, int expect) {
+_prvs_stop_wait(int *condition, int expect) {
 
     VS_IOT_ASSERT(condition);
 
@@ -127,7 +127,7 @@ prvs_stop_wait(int *condition, int expect) {
 
 /**********************************************************/
 static vs_status_e
-prvs_wait(uint32_t wait_ms, int *condition, int idle) {
+_prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 
     prvs_call.wait = 1;
 
@@ -136,7 +136,7 @@ prvs_wait(uint32_t wait_ms, int *condition, int idle) {
 
 /**********************************************************/
 static vs_status_e
-sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
+_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uint16_t buf_sz, uint16_t *signature_sz) {
     VS_IOT_ASSERT(buf_sz >= make_server_response.sign_data.signature_sz);
 
     if (!(server_request.sign_data.data = VS_IOT_MALLOC(data_sz))) {
@@ -160,17 +160,17 @@ vs_sdmp_prvs_impl_t
 make_prvs_implementation(void) {
     vs_sdmp_prvs_impl_t prvs_impl;
 
-    prvs_impl.dnid_func = prvs_dnid;
-    prvs_impl.save_data_func = prvs_save_data;
+    prvs_impl.is_initialized_func = _is_initialized;
+    prvs_impl.save_data_func = _prvs_save_data;
     prvs_impl.load_data_func = NULL;
-    prvs_impl.device_info_func = prvs_device_info;
-    prvs_impl.finalize_storage_func = prvs_finalize_storage;
+    prvs_impl.device_info_func = _prvs_device_info;
+    prvs_impl.finalize_storage_func = _prvs_finalize_storage;
     prvs_impl.start_save_tl_func = NULL;
     prvs_impl.save_tl_part_func = NULL;
-    prvs_impl.finalize_tl_func = prvs_finalize_tl;
-    prvs_impl.sign_data_func = sign_data;
-    prvs_impl.stop_wait_func = prvs_stop_wait;
-    prvs_impl.wait_func = prvs_wait;
+    prvs_impl.finalize_tl_func = _prvs_finalize_tl;
+    prvs_impl.sign_data_func = _sign_data;
+    prvs_impl.stop_wait_func = _prvs_stop_wait;
+    prvs_impl.wait_func = _prvs_wait;
 
     return prvs_impl;
 }

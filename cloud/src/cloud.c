@@ -71,11 +71,11 @@ _data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *
 
 /******************************************************************************/
 static void
-_get_serial_number_in_hex_str(char _out_str[SERIAL_SIZE * 2 + 1]) {
-    uint8_t serial_number[SERIAL_SIZE];
-    uint32_t _in_out_len = SERIAL_SIZE * 2 + 1;
-    vs_global_hal_get_udid_of_device(serial_number);
-    _data_to_hex(serial_number, SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
+_get_serial_number_in_hex_str(char _out_str[VS_DEVICE_SERIAL_SIZE * 2 + 1]) {
+    uint8_t serial_number[VS_DEVICE_SERIAL_SIZE];
+    uint32_t _in_out_len = VS_DEVICE_SERIAL_SIZE * 2 + 1;
+    vs_impl_device_serial(serial_number);
+    _data_to_hex(serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
 }
 
 /******************************************************************************/
@@ -139,7 +139,7 @@ terminate:
 static vs_status_e
 _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
     vs_status_e ret;
-    char serial[SERIAL_SIZE * 2 + 1];
+    char serial[VS_DEVICE_SERIAL_SIZE * 2 + 1];
 
     CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CODE_ERR_NULLPTR_ARGUMENT);

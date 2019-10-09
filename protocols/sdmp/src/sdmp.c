@@ -54,6 +54,11 @@ static vs_mac_addr_t _sdmp_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0x
 
 static vs_sdmp_stat_t _statistics = {0, 0};
 
+static vs_device_manufacture_id_t _manufacture_id;
+static vs_device_type_t _device_type;
+static vs_device_serial_t _device_serial;
+static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
+
 #if VS_SDMP_PROFILE
 #include <sys/time.h>
 static long long _processing_time_us = 0;
@@ -304,12 +309,22 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 
 /******************************************************************************/
 vs_status_e
-vs_sdmp_init(vs_netif_t *default_netif) {
+vs_sdmp_init(vs_netif_t *default_netif,
+             const vs_device_manufacture_id_t manufacturer_id,
+             const vs_device_type_t device_type,
+             const vs_device_serial_t device_serial,
+             uint32_t device_roles) {
 
     // Check input data
     VS_IOT_ASSERT(default_netif);
     VS_IOT_ASSERT(default_netif->init);
     VS_IOT_ASSERT(default_netif->tx);
+
+    // Save device parameters
+    VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
+    VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
+    VS_IOT_MEMCPY(_device_serial, device_serial, sizeof(_device_serial));
+    _device_roles = device_roles;
 
     // Save default network interface
     _sdmp_default_netif = default_netif;
@@ -469,6 +484,30 @@ vs_sdmp_send_request(const vs_netif_t *netif,
 vs_sdmp_stat_t
 vs_sdmp_get_statistics(void) {
     return _statistics;
+}
+
+/******************************************************************************/
+const vs_device_manufacture_id_t *
+vs_sdmp_device_manufacture(void) {
+    return &_manufacture_id;
+}
+
+/******************************************************************************/
+const vs_device_type_t *
+vs_sdmp_device_type(void) {
+    return &_device_type;
+}
+
+/******************************************************************************/
+const vs_device_serial_t *
+vs_sdmp_device_serial(void) {
+    return &_device_serial;
+}
+
+/******************************************************************************/
+uint32_t
+vs_sdmp_device_roles(void) {
+    return _device_roles;
 }
 
 /******************************************************************************/

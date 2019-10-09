@@ -61,8 +61,8 @@ typedef enum {
 #pragma GCC diagnostic pop
 
 typedef struct __attribute__((__packed__)) {
-    vs_fw_manufacture_id_t manufacture_id;
-    vs_fw_device_type_t device_type;
+    vs_device_manufacture_id_t manufacture_id;
+    vs_device_type_t device_type;
     vs_mac_addr_t default_netif_mac;
     vs_firmware_version_t fw_version;
     uint16_t tl_version;

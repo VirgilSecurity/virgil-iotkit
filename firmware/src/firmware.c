@@ -54,12 +54,12 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 
 /*************************************************************************/
 static void
-_create_data_filename(const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                      const uint8_t device_type[DEVICE_TYPE_SIZE],
+_create_data_filename(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                      const uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE],
                       vs_storage_element_id_t id) {
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
-    VS_IOT_MEMCPY(&id[0], manufacture_id, MANUFACTURE_ID_SIZE);
-    VS_IOT_MEMCPY(&id[MANUFACTURE_ID_SIZE], device_type, DEVICE_TYPE_SIZE);
+    VS_IOT_MEMCPY(&id[0], manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE);
+    VS_IOT_MEMCPY(&id[VS_DEVICE_MANUFACTURE_ID_SIZE], device_type, VS_DEVICE_DEVICE_TYPE_SIZE);
 }
 
 /*************************************************************************/
@@ -304,8 +304,8 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
 
             vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-            if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
-                0 == memcmp(ptr->info.device_type, descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
+            if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+                0 == memcmp(ptr->info.device_type, descriptor->info.device_type, VS_DEVICE_DEVICE_TYPE_SIZE)) {
                 VS_IOT_MEMCPY(ptr, descriptor, sizeof(vs_firmware_descriptor_t));
                 newbuf = buf;
                 goto save_data;
@@ -343,8 +343,8 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
 /*************************************************************************/
 vs_status_e
 vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                                   const uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor) {
 
     vs_storage_element_id_t desc_id;
@@ -380,8 +380,8 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
     while (offset + sizeof(vs_firmware_descriptor_t) <= file_sz) {
         vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-        if (0 == memcmp(ptr->info.manufacture_id, manufacture_id, MANUFACTURE_ID_SIZE) &&
-            0 == memcmp(ptr->info.device_type, device_type, DEVICE_TYPE_SIZE)) {
+        if (0 == memcmp(ptr->info.manufacture_id, manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+            0 == memcmp(ptr->info.device_type, device_type, VS_DEVICE_DEVICE_TYPE_SIZE)) {
             VS_IOT_MEMCPY(descriptor, ptr, sizeof(vs_firmware_descriptor_t));
             res = VS_CODE_OK;
             break;
@@ -435,8 +435,8 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     while (offset < file_sz || offset + sizeof(vs_firmware_descriptor_t) > file_sz) {
         vs_firmware_descriptor_t *ptr = (vs_firmware_descriptor_t *)(buf + offset);
 
-        if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
-            0 == memcmp(ptr->info.device_type, descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
+        if (0 == memcmp(ptr->info.manufacture_id, descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+            0 == memcmp(ptr->info.device_type, descriptor->info.device_type, VS_DEVICE_DEVICE_TYPE_SIZE)) {
             VS_IOT_MEMMOVE(buf + offset,
                            buf + offset + sizeof(vs_firmware_descriptor_t),
                            file_sz - offset - sizeof(vs_firmware_descriptor_t));

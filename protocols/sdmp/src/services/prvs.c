@@ -193,19 +193,22 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
-    vs_status_e ret_code;
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
-    VS_IOT_ASSERT(_prvs_impl.dnid_func);
+    // Check input parameters
+    VS_IOT_ASSERT(_prvs_impl.is_initialized_func);
+    VS_IOT_ASSERT(response_buf_sz >= sizeof(vs_sdmp_prvs_dnid_element_t));
 
-    STATUS_CHECK_RET(_prvs_impl.dnid_func(), "Unable to send DNID request");
+    if (_prvs_impl.is_initialized_func()) {
+        // No need in response, because device is initialized already
+        return VS_CODE_COMMAND_NO_RESPONSE;
+    }
 
-    const uint16_t required_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
-    VS_IOT_ASSERT(response_buf_sz >= required_sz);
 
+    // Fill MAC address
     vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
-    dnid_response->device_type = 0;
-    *response_sz = required_sz;
+    dnid_response->device_roles = 0;
+    *response_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
 
     return VS_CODE_OK;
 }
@@ -247,6 +250,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 
     vs_status_e ret_code;
     vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
+
 
     VS_IOT_ASSERT(_prvs_impl.device_info_func);
     STATUS_CHECK_RET(_prvs_impl.device_info_func(devi_response, response_buf_sz), "Unable to get device info");
@@ -452,7 +456,7 @@ _configure_hal(vs_sdmp_prvs_impl_t impl) {
         _prvs_impl.sign_data_func = impl.sign_data_func;
     }
 
-    _prvs_impl.dnid_func = impl.dnid_func;
+    _prvs_impl.is_initialized_func = impl.is_initialized_func;
     _prvs_impl.device_info_func = impl.device_info_func;
     _prvs_impl.wait_func = impl.wait_func;
     _prvs_impl.stop_wait_func = impl.stop_wait_func;
@@ -499,7 +503,7 @@ vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_li
     STATUS_CHECK_RET(vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0), "Send request error");
 
     // Wait request
-    vs_global_hal_msleep(wait_ms);
+    vs_impl_msleep(wait_ms);
 
     return VS_CODE_OK;
 }

@@ -37,13 +37,7 @@
 
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
-
-#define SERIAL_SIZE (32) /*This is size of SHA256 data*/
-#define MANUFACTURE_ID_SIZE (16)
-#define DEVICE_TYPE_SIZE (4)
-
-typedef uint8_t vs_fw_manufacture_id_t[MANUFACTURE_ID_SIZE];
-typedef uint8_t vs_fw_device_type_t[DEVICE_TYPE_SIZE];
+#include <virgil/iot/provision/provision.h>
 
 typedef struct __attribute__((__packed__)) {
     uint8_t app_type[4];
@@ -56,8 +50,8 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_version_t;
 
 typedef struct __attribute__((__packed__)) {
-    vs_fw_manufacture_id_t manufacture_id;
-    vs_fw_device_type_t device_type;
+    vs_device_manufacture_id_t manufacture_id;
+    vs_device_type_t device_type;
     vs_firmware_version_t version;
 } vs_firmware_info_t;
 
@@ -114,8 +108,8 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
 
 vs_status_e
 vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   const uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[DEVICE_TYPE_SIZE],
+                                   const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                                   const uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor);
 
 vs_status_e

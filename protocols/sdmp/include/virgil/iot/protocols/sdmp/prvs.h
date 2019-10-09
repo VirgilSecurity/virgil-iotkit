@@ -40,14 +40,14 @@ extern "C" {
 #endif
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/provision/provision.h>
 
 #define DNID_LIST_SZ_MAX (50)
 #define PUBKEY_MAX_SZ (100)
 
 typedef struct {
     vs_mac_addr_t mac_addr;
-    uint8_t device_type;
-    uint8_t reserved[10];
+    uint32_t device_roles; // vs_sdmp_device_role_e
 } vs_sdmp_prvs_dnid_element_t;
 
 typedef struct {
@@ -56,10 +56,10 @@ typedef struct {
 } vs_sdmp_prvs_dnid_list_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer[16];
-    uint32_t model;
+    uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE];
+    uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE];
+    uint8_t serial[VS_DEVICE_SERIAL_SIZE];
     vs_mac_addr_t mac;
-    uint8_t udid_of_device[32];
     uint16_t data_sz;
 
     uint8_t data[]; // vs_pubkey_t own_key + vs_sign_t signature
@@ -70,10 +70,11 @@ typedef struct __attribute__((__packed__)) {
     uint8_t data[];
 } vs_sdmp_prvs_sgnp_req_t;
 
-typedef vs_status_e (*vs_sdmp_prvs_dnid_t)();
+typedef bool (*vs_sdmp_prvs_dnid_t)(void);
 typedef vs_status_e (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_e element_id,
                                                 const uint8_t *data,
                                                 uint16_t data_sz);
+
 typedef vs_status_e (*vs_sdmp_prvs_load_data_t)();
 typedef vs_status_e (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
 typedef vs_status_e (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, uint16_t *resp_sz);
@@ -89,7 +90,7 @@ typedef vs_status_e (*vs_sdmp_sign_data_t)(const uint8_t *data,
                                            uint16_t *signature_sz);
 
 typedef struct {
-    vs_sdmp_prvs_dnid_t dnid_func;
+    vs_sdmp_prvs_dnid_t is_initialized_func;
     vs_sdmp_prvs_save_data_t save_data_func;
     vs_sdmp_prvs_load_data_t load_data_func;
     vs_sdmp_prvs_device_info_t device_info_func;
