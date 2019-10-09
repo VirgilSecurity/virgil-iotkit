@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-#include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 #include <virgil/iot/tools/helpers/ti_wait_functionality.h>
 
 /******************************************************************************/

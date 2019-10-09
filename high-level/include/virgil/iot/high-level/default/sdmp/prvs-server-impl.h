@@ -35,9 +35,6 @@
 #ifndef VS_DEFAULT_SDMP_PRVS_SERVER_IMPL_H
 #define VS_DEFAULT_SDMP_PRVS_SERVER_IMPL_H
 
-#include <virgil/iot/protocols/sdmp/prvs.h>
 
-vs_sdmp_prvs_impl_t
-vs_prvs_server_default_impl(void);
 
 #endif //VS_DEFAULT_SDMP_PRVS_SERVER_IMPL_H

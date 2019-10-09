@@ -36,7 +36,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/test_netif.h>
 #include <virgil/iot/tests/private/test_prvs.h>
-#include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>

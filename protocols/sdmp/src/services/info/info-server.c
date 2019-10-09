@@ -32,9 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
-#include <virgil/iot/protocols/sdmp/info-private.h>
-#include <virgil/iot/protocols/sdmp/info-structs.h>
+#include <virgil/iot/protocols/sdmp/info/info-server.h>
+#include <virgil/iot/protocols/sdmp/info/info-private.h>
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>

@@ -32,41 +32,22 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef SDMP_CVT_H
-#define SDMP_CVT_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/sdmp/prvs/prvs-private.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/provision/provision.h>
 
+const vs_sdmp_service_t *
+vs_sdmp_prvs_server(void);
 
-/******************************************************************************/
-// Converting functions for (vs_ethernet_header_t)
-void
-vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data);
-void
-vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data);
+#ifdef __cplusplus
+}
+#endif
 
-/******************************************************************************/
-// Converting functions for (vs_sdmp_header_t)
-void
-vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data);
-void
-vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_sdmp_packet_t)
-void
-vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data);
-void
-vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data);
-void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data);
-
-#endif // SDMP_CVT_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H

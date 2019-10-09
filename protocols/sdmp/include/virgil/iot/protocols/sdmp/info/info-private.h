@@ -36,8 +36,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
-#include <virgil/iot/protocols/sdmp/info-structs.h>
+#include <virgil/iot/protocols/sdmp/info/info-server.h>
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust_list.h>
