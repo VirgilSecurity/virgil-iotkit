@@ -40,15 +40,6 @@
 
 #define SERIAL_SIZE (32) /*This is size of SHA256 data*/
 
-void *
-platform_calloc(size_t num, size_t size);
-
-void *
-platform_malloc(size_t size);
-
-void
-platform_free(void *ptr);
-
 void
 vs_global_hal_msleep(size_t msec);
 
