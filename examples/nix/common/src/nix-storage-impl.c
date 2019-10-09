@@ -32,16 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <private/nix-file-cache.h>
 #include <nix-file-io.h>
-#include <private/nix-storage-impl.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 
@@ -64,6 +61,74 @@ current_timestamp() {
 }
 
 #endif
+
+// memory layout for keypair save/load buffer:
+// . uint8_t key_type
+// . uint8_t prvkey_sz
+// . uint8_t prvkey[]
+// . uint8_t pubkey_sz
+// . uint8_t pubkey[]
+
+#define KEYPAIR_BUF_KEYSZ_SIZEOF 1
+
+#define KEYPAIR_BUF_KEYTYPE_OFF 0
+#define KEYPAIR_BUF_KEYTYPE_SIZEOF 1
+
+#define KEYPAIR_BUF_PRVKEYSZ_OFF (KEYPAIR_BUF_KEYTYPE_OFF + KEYPAIR_BUF_KEYTYPE_SIZEOF)
+#define KEYPAIR_BUF_PRVKEYSZ_SIZEOF KEYPAIR_BUF_KEYSZ_SIZEOF
+
+#define KEYPAIR_BUF_PRVKEY_OFF (KEYPAIR_BUF_PRVKEYSZ_OFF + KEYPAIR_BUF_PRVKEYSZ_SIZEOF)
+#define KEYPAIR_BUF_PRVKEY_SIZEOF(BUF) ((BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF])
+
+#define KEYPAIR_BUF_PUBKEYSZ_OFF(BUF) (KEYPAIR_BUF_PRVKEY_OFF + KEYPAIR_BUF_PRVKEY_SIZEOF(BUF))
+#define KEYPAIR_BUF_PUBKEYSZ_SIZEOF KEYPAIR_BUF_KEYSZ_SIZEOF
+
+#define KEYPAIR_BUF_PUBKEY_OFF(BUF) (KEYPAIR_BUF_PUBKEYSZ_OFF(BUF) + KEYPAIR_BUF_PUBKEYSZ_SIZEOF)
+#define KEYPAIR_BUF_PUBKEY_SIZEOF(BUF) ((BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)])
+
+#define KEYPAIR_BUF_SZ ((KEYPAIR_BUF_KEYTYPE_SIZEOF) + ((MAX_KEY_SZ + KEYPAIR_BUF_KEYSZ_SIZEOF) * 2))
+
+#define ADD_KEYTYPE(BUF, KEYRPAIR_BUF, KEYPAIR_TYPE)                                                                   \
+    do {                                                                                                               \
+        (BUF)[KEYPAIR_BUF_KEYTYPE_OFF] = (KEYPAIR_TYPE);                                                               \
+        vsc_buffer_inc_used(&(KEYRPAIR_BUF), KEYPAIR_BUF_KEYTYPE_SIZEOF);                                              \
+    } while (0)
+
+#define ADD_PRVKEYSZ(BUF, KEYPAIR_BUF, KEYSZ)                                                                          \
+    do {                                                                                                               \
+        if ((KEYSZ) > MAX_KEY_SZ) {                                                                                    \
+            VS_LOG_ERROR("Too big private key : %d bytes. Maximum allowed size : %d", (KEYSZ), MAX_KEY_SZ);            \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+        (BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF] = (KEYSZ);                                                                     \
+        vsc_buffer_inc_used(&(KEYPAIR_BUF), KEYPAIR_BUF_PRVKEYSZ_SIZEOF);                                              \
+    } while (0)
+
+#define LOG_PRVKEY(BUF)                                                                                                \
+    do {                                                                                                               \
+        VS_LOG_DEBUG("Private key size : %d", (BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF]);                                        \
+        VS_LOG_HEX(                                                                                                    \
+                VS_LOGLEV_DEBUG, "Private key : ", (BUF) + KEYPAIR_BUF_PRVKEY_OFF, (BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF]);   \
+    } while (0)
+
+#define ADD_PUBKEYSZ(BUF, KEYPAIR_BUF, KEYSZ)                                                                          \
+    do {                                                                                                               \
+        if ((KEYSZ) > MAX_KEY_SZ) {                                                                                    \
+            VS_LOG_ERROR("Too big public key : %d bytes. Maximum allowed size : %d", (KEYSZ), MAX_KEY_SZ);             \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+        (BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)] = (KEYSZ);                                                                \
+        vsc_buffer_inc_used(&(KEYPAIR_BUF), KEYPAIR_BUF_PUBKEYSZ_SIZEOF);                                              \
+    } while (0)
+
+#define LOG_PUBKEY(BUF)                                                                                                \
+    do {                                                                                                               \
+        VS_LOG_DEBUG("Public key size : %d", (BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)]);                                    \
+        VS_LOG_HEX(VS_LOGLEV_DEBUG,                                                                                    \
+                   "Public key : ",                                                                                    \
+                   (BUF) + KEYPAIR_BUF_PUBKEY_OFF(BUF),                                                                \
+                   (BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)]);                                                              \
+    } while (0)
 
 typedef struct {
     char *dir;

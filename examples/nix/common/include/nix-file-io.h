@@ -37,6 +37,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 void
 vs_hal_files_set_mac(uint8_t mac_addr[6]);
@@ -52,9 +53,6 @@ vs_nix_get_keystorage_base_dir(char *dir);
 
 const char *
 vs_nix_get_trust_list_dir(void);
-
-const char *
-vs_nix_get_slots_dir(void);
 
 const char *
 vs_nix_get_firmware_dir(void);

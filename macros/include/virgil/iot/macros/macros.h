@@ -54,6 +54,9 @@
 #define BOOL_CHECK(CONDITION, MESSAGE, ...) CHECK((CONDITION), (MESSAGE), ##__VA_ARGS__)
 #define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET((CONDITION), false, (MESSAGE), ##__VA_ARGS__)
 
+#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) BOOL_CHECK((OPERATION) != NULL, DESCRIPTION, ##__VA_ARGS__)
+#define CHECK_MEM_ALLOC_RET(OPERATION, DESCRIPTION, ...) CHECK_RET((OPERATION) != NULL, VS_CODE_ERR_NO_MEMORY, DESCRIPTION, ##__VA_ARGS__)
+
 #define MEMCMP_CHECK(BUF1, BUF2, SIZE)                                                                             \
     CHECK(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \

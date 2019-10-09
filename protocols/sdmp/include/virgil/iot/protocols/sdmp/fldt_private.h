@@ -39,24 +39,23 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/update/update.h>
-#include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/macros/macros.h>
-
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/update/update.h>
 
 //
 //  Internal structures
 //
 
-#define FLDT_FILEVER_BUF (196)      // buffer for vs_fldt_file_version_descr
+#define FLDT_FILEVER_BUF (196) // buffer for vs_fldt_file_version_descr
 #define FLDT_FILE_SPEC_INFO_SZ (64) // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
 #define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
-#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                     \
-    (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
-            (MAC_ADDR).bytes[5]
+#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                           \
+    (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4], \
+        (MAC_ADDR).bytes[5]
 
 // Commands
 // mute "error: multi-character character constant" message
@@ -148,55 +147,47 @@ typedef struct {
 } vs_fldt_file_type_mapping_t;
 
 // Utilities
-#define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
+#define FLDT_CHECK(OPERATION, MESSAGE, ...) \
     CHECK_RET((fldt_ret_code = (OPERATION)) == VS_CODE_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
 
 // Server request/response processing
 
-int
-vs_fldt_GFTI_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
+int vs_fldt_GFTI_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
 
-int
-vs_fldt_GNFH_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
-int
-vs_fldt_GNFD_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
+int vs_fldt_GNFH_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
+int vs_fldt_GNFD_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
 
-int
-vs_fldt_GNFF_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
+int vs_fldt_GNFF_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
 
 // Client request/response processing
 
-int
-vs_fldt_INFV_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
+int vs_fldt_INFV_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
 
-int
-vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
+int vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t* response, uint16_t response_sz);
 
-int
-vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
+int vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t* response, uint16_t response_sz);
 
-int
-vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
+int vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t* response, uint16_t response_sz);
 
 #ifdef __cplusplus
 }

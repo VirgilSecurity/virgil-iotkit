@@ -43,12 +43,12 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
-typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
-typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int* condition, int idle);
+typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int* condition, int expect);
 
-typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
-typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
-typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
+typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t* device);
+typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t* general_info);
+typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t* statistics);
 
 typedef struct {
     vs_sdmp_info_start_notif_cb_t device_start_cb;
@@ -61,23 +61,22 @@ typedef struct {
     vs_sdmp_info_stop_wait_t stop_wait_func;
 } vs_sdmp_info_impl_t;
 
-const vs_sdmp_service_t *
+const vs_sdmp_service_t*
 vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks);
 
 vs_status_e
-vs_sdmp_info_enum_devices(const vs_netif_t *netif,
-                          vs_sdmp_info_device_t *devices,
-                          size_t devices_max,
-                          size_t *devices_cnt,
-                          uint32_t wait_ms);
+vs_sdmp_info_enum_devices(const vs_netif_t* netif,
+    vs_sdmp_info_device_t* devices,
+    size_t devices_max,
+    size_t* devices_cnt,
+    uint32_t wait_ms);
 
 vs_status_e
-vs_sdmp_info_set_polling(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
-                         bool enable,
-                         uint16_t period_seconds);
-
+vs_sdmp_info_set_polling(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
+    bool enable,
+    uint16_t period_seconds);
 
 #ifdef __cplusplus
 }

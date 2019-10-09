@@ -32,34 +32,35 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <global-hal.h>
+#include <stdlib-config.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/info-client.h>
 #include <virgil/iot/protocols/sdmp/info-private.h>
-#include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/logger/logger.h>
-#include <stdlib-config.h>
-#include <global-hal.h>
 
 // External functions for access to upper level implementations
-static vs_sdmp_info_impl_t _info_impl = {0};
+static vs_sdmp_info_impl_t _info_impl = { 0 };
 
-static vs_sdmp_service_t _info_client = {0};
+static vs_sdmp_service_t _info_client = { 0 };
 
-static vs_sdmp_info_device_t *_devices_list = 0;
+static vs_sdmp_info_device_t* _devices_list = 0;
 static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
 
 // Callbacks for devices polling
-static vs_sdmp_info_callbacks_t _callbacks = {NULL, NULL, NULL};
+static vs_sdmp_info_callbacks_t _callbacks = { NULL, NULL, NULL };
 
 /******************************************************************************/
 vs_status_e
-vs_sdmp_info_enum_devices(const vs_netif_t *netif,
-                          vs_sdmp_info_device_t *devices,
-                          size_t devices_max,
-                          size_t *devices_cnt,
-                          uint32_t wait_ms) {
+vs_sdmp_info_enum_devices(const vs_netif_t* netif,
+    vs_sdmp_info_device_t* devices,
+    size_t devices_max,
+    size_t* devices_cnt,
+    uint32_t wait_ms)
+{
     vs_status_e ret_code;
 
     VS_IOT_ASSERT(_info_impl.wait_func);
@@ -83,14 +84,15 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_status_e
-vs_sdmp_info_set_polling(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
-                         bool enable,
-                         uint16_t period_seconds) {
+vs_sdmp_info_set_polling(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
+    bool enable,
+    uint16_t period_seconds)
+{
     vs_info_poll_request_t request;
-    const vs_netif_t *default_netif = vs_sdmp_default_netif();
-    const vs_mac_addr_t *dst_mac;
+    const vs_netif_t* default_netif = vs_sdmp_default_netif();
+    const vs_mac_addr_t* dst_mac;
     vs_status_e ret_code;
 
     // Set destination mac
@@ -108,20 +110,21 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
 
     // Send request
     STATUS_CHECK_RET(vs_sdmp_send_request(
-                             netif, dst_mac, VS_INFO_SERVICE_ID, VS_INFO_POLL, (uint8_t *)&request, sizeof(request)),
-                     "Cannot send request");
+                         netif, dst_mac, VS_INFO_SERVICE_ID, VS_INFO_POLL, (uint8_t*)&request, sizeof(request)),
+        "Cannot send request");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_snot_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
-    vs_info_enum_response_t *enum_request = (vs_info_enum_response_t *)request;
+_snot_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_enum_response_t* enum_request = (vs_info_enum_response_t*)request;
     vs_sdmp_info_device_t device_info;
 
     // Check is callback present
@@ -146,13 +149,14 @@ _snot_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_ginf_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_ginf_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
-    vs_info_ginf_response_t *ginf_request = (vs_info_ginf_response_t *)request;
+    vs_info_ginf_response_t* ginf_request = (vs_info_ginf_response_t*)request;
     vs_info_general_t general_info;
 
     // Check is callback present
@@ -188,13 +192,14 @@ _ginf_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_stat_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_stat_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
-    vs_info_stat_response_t *stat_request = (vs_info_stat_response_t *)request;
+    vs_info_stat_response_t* stat_request = (vs_info_stat_response_t*)request;
     vs_info_statistics_t stat_info;
 
     // Check is callback present
@@ -222,9 +227,10 @@ _stat_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+_enum_response_processor(bool is_ack, const uint8_t* response, const uint16_t response_sz)
+{
 
-    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+    vs_info_enum_response_t* enum_response = (vs_info_enum_response_t*)response;
 
     CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_PARAMETER, "ENUM error on a remote device");
     CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
@@ -243,19 +249,21 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 
 /******************************************************************************/
 static vs_status_e
-_poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+_poll_response_processor(bool is_ack, const uint8_t* response, const uint16_t response_sz)
+{
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_info_client_request_processor(const struct vs_netif_t *netif,
-                               vs_sdmp_element_t element_id,
-                               const uint8_t *request,
-                               const uint16_t request_sz,
-                               uint8_t *response,
-                               const uint16_t response_buf_sz,
-                               uint16_t *response_sz) {
+_info_client_request_processor(const struct vs_netif_t* netif,
+    vs_sdmp_element_t element_id,
+    const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
     (void)netif;
 
     *response_sz = 0;
@@ -284,11 +292,12 @@ _info_client_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_info_client_response_processor(const struct vs_netif_t *netif,
-                                vs_sdmp_element_t element_id,
-                                bool is_ack,
-                                const uint8_t *response,
-                                const uint16_t response_sz) {
+_info_client_response_processor(const struct vs_netif_t* netif,
+    vs_sdmp_element_t element_id,
+    bool is_ack,
+    const uint8_t* response,
+    const uint16_t response_sz)
+{
     (void)netif;
 
     switch (element_id) {
@@ -312,8 +321,9 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-const vs_sdmp_service_t *
-vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks) {
+const vs_sdmp_service_t*
+vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks)
+{
     // Save implementation
     VS_IOT_MEMCPY(&_info_impl, &impl, sizeof(_info_impl));
 

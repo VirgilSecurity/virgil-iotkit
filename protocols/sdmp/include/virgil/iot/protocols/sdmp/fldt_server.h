@@ -39,9 +39,9 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/update/update.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/update/update.h>
 
 //
 //  Callbacks
@@ -49,10 +49,10 @@ extern "C" {
 
 // . "Add file type"
 // .  Add file type asked by client
-typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
-                                                   vs_update_interface_t **update_ctx);
+typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t* file_type,
+    vs_update_interface_t** update_ctx);
 
-const vs_sdmp_service_t *
+const vs_sdmp_service_t*
 vs_sdmp_fldt_server(void);
 
 //
@@ -60,15 +60,14 @@ vs_sdmp_fldt_server(void);
 //
 
 vs_status_e
-vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
+vs_fldt_init_server(const vs_mac_addr_t* gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
 vs_status_e
-vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
-                                vs_update_interface_t *update_context,
-                                bool broadcast_file_info);
+vs_fldt_update_server_file_type(const vs_update_file_type_t* file_type,
+    vs_update_interface_t* update_context,
+    bool broadcast_file_info);
 
-void
-vs_fldt_destroy_server(void);
+void vs_fldt_destroy_server(void);
 
 #ifdef __cplusplus
 }

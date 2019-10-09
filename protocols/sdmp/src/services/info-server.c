@@ -32,21 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
-#include <virgil/iot/protocols/sdmp/info-private.h>
-#include <virgil/iot/protocols/sdmp/info-structs.h>
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <endian-config.h>
+#include <global-hal.h>
+#include <stdlib-config.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
-#include <stdlib-config.h>
-#include <global-hal.h>
-#include <endian-config.h>
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/sdmp/info-private.h>
+#include <virgil/iot/protocols/sdmp/info-server.h>
+#include <virgil/iot/protocols/sdmp/info-structs.h>
+#include <virgil/iot/status_code/status_code.h>
 
 // Commands
 
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
+static vs_storage_op_ctx_t* _tl_ctx;
+static vs_storage_op_ctx_t* _fw_ctx;
 static vs_fw_manufacture_id_t _manufacture_id;
 static vs_fw_device_type_t _device_type;
 static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
@@ -60,12 +60,13 @@ typedef struct {
     vs_mac_addr_t dest_mac;
 } vs_poll_ctx_t;
 
-static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+static vs_poll_ctx_t _poll_ctx = { 0, 0, 0 };
 
 /******************************************************************/
 static vs_status_e
-_fill_enum_data(vs_info_enum_response_t *enum_data) {
-    const vs_netif_t *default_netif;
+_fill_enum_data(vs_info_enum_response_t* enum_data)
+{
+    const vs_netif_t* default_netif;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(enum_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -82,12 +83,13 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
 /******************************************************************/
 static vs_status_e
-_enum_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+_enum_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_enum_response_t* enum_response = (vs_info_enum_response_t*)response;
     vs_status_e ret_code;
 
     // Check input parameters
@@ -105,14 +107,15 @@ _enum_request_processing(const uint8_t *request,
 
 /******************************************************************/
 static vs_status_e
-_poll_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
+_poll_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
     vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_poll_request_t *poll_request = (vs_info_poll_request_t *)request;
+    vs_info_poll_request_t* poll_request = (vs_info_poll_request_t*)request;
 
     CHECK_NOT_ZERO(request);
     CHECK_NOT_ZERO(response_sz);
@@ -135,8 +138,9 @@ terminate:
 
 /******************************************************************/
 static vs_status_e
-_fill_stat_data(vs_info_stat_response_t *stat_data) {
-    const vs_netif_t *defautl_netif;
+_fill_stat_data(vs_info_stat_response_t* stat_data)
+{
+    const vs_netif_t* defautl_netif;
     vs_sdmp_stat_t stat = vs_sdmp_get_statistics();
 
     // Check input parameters
@@ -151,22 +155,23 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
     stat_data->sent = stat.sent;
 
     VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
-                 (unsigned long)stat_data->sent,
-                 (unsigned long)stat_data->received);
+        (unsigned long)stat_data->sent,
+        (unsigned long)stat_data->received);
 
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 static vs_status_e
-_stat_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
+_stat_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
     vs_status_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
+    vs_info_stat_response_t* stat = (vs_info_stat_response_t*)response;
 
     CHECK_NOT_ZERO(request);
     CHECK_NOT_ZERO(response_sz);
@@ -184,9 +189,10 @@ terminate:
 
 /******************************************************************/
 static vs_status_e
-_fill_ginf_data(vs_info_ginf_response_t *general_info) {
+_fill_ginf_data(vs_info_ginf_response_t* general_info)
+{
     vs_firmware_descriptor_t fw_descr;
-    const vs_netif_t *defautl_netif;
+    const vs_netif_t* defautl_netif;
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
@@ -198,8 +204,8 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     defautl_netif = vs_sdmp_default_netif();
 
     CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+        -1,
+        "Cannot get MAC for Default Network Interface");
 
 #if 0
     STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr),
@@ -209,8 +215,8 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 #endif
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
-    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
+    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t*)&tl_header, tl_header_sz, &tl_header_sz),
+        "Unable to obtain Trust List version");
 
     VS_IOT_MEMCPY(general_info->manufacture_id, _manufacture_id, sizeof(_manufacture_id));
     VS_IOT_MEMCPY(general_info->device_type, _device_type, sizeof(_device_type));
@@ -219,28 +225,29 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     general_info->device_roles = _device_roles;
 
     VS_LOG_DEBUG(
-            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
-            "%s, trust list "
-            "version = %d",
-            general_info->manufacture_id,
-            general_info->device_type[0],
-            general_info->device_type[1],
-            general_info->device_type[2],
-            general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version);
+        "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
+        "%s, trust list "
+        "version = %d",
+        general_info->manufacture_id,
+        general_info->device_type[0],
+        general_info->device_type[1],
+        general_info->device_type[2],
+        general_info->device_type[3],
+        vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
+        general_info->tl_version);
 
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 static vs_status_e
-_ginf_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
+_ginf_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_ginf_response_t* general_info = (vs_info_ginf_response_t*)response;
     vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -256,13 +263,14 @@ _ginf_request_processing(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_info_request_processor(const struct vs_netif_t *netif,
-                        vs_sdmp_element_t element_id,
-                        const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_info_request_processor(const struct vs_netif_t* netif,
+    vs_sdmp_element_t element_id,
+    const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
     (void)netif;
 
     *response_sz = 0;
@@ -293,7 +301,8 @@ _info_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_info_server_periodical_processor(void) {
+_info_server_periodical_processor(void)
+{
     vs_status_e ret_code;
 
     _poll_ctx.time_counter++;
@@ -303,22 +312,22 @@ _info_server_periodical_processor(void) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
             vs_sdmp_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
-                                 VS_INFO_SERVICE_ID,
-                                 VS_INFO_GINF,
-                                 (uint8_t *)&general_info,
-                                 sizeof(general_info));
+                &_poll_ctx.dest_mac,
+                VS_INFO_SERVICE_ID,
+                VS_INFO_GINF,
+                (uint8_t*)&general_info,
+                sizeof(general_info));
         }
 
         if (_poll_ctx.elements_mask & VS_SDMP_INFO_STATISTICS) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SDMP statistics");
             vs_sdmp_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
-                                 VS_INFO_SERVICE_ID,
-                                 VS_INFO_STAT,
-                                 (uint8_t *)&stat_data,
-                                 sizeof(stat_data));
+                &_poll_ctx.dest_mac,
+                VS_INFO_SERVICE_ID,
+                VS_INFO_STAT,
+                (uint8_t*)&stat_data,
+                sizeof(stat_data));
         }
     }
 
@@ -326,14 +335,15 @@ _info_server_periodical_processor(void) {
 }
 
 /******************************************************************************/
-const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    const vs_fw_manufacture_id_t manufacturer_id,
-                    const vs_fw_device_type_t device_type,
-                    uint32_t device_roles) {
+const vs_sdmp_service_t*
+vs_sdmp_info_server(vs_storage_op_ctx_t* tl_ctx,
+    vs_storage_op_ctx_t* fw_ctx,
+    const vs_fw_manufacture_id_t manufacturer_id,
+    const vs_fw_device_type_t device_type,
+    uint32_t device_roles)
+{
 
-    static vs_sdmp_service_t _info = {0};
+    static vs_sdmp_service_t _info = { 0 };
 
     CHECK_NOT_ZERO_RET(tl_ctx, NULL);
     CHECK_NOT_ZERO_RET(fw_ctx, NULL);
@@ -355,7 +365,8 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_sdmp_info_start_notification(const vs_netif_t *netif) {
+vs_sdmp_info_start_notification(const vs_netif_t* netif)
+{
     vs_info_enum_response_t enum_data;
     vs_status_e ret_code;
 
@@ -363,12 +374,12 @@ vs_sdmp_info_start_notification(const vs_netif_t *netif) {
 
     // Send request
     STATUS_CHECK_RET(vs_sdmp_send_request(netif,
-                                          vs_sdmp_broadcast_mac(),
-                                          VS_INFO_SERVICE_ID,
-                                          VS_INFO_SNOT,
-                                          (uint8_t *)&enum_data,
-                                          sizeof(enum_data)),
-                     "Cannot send data");
+                         vs_sdmp_broadcast_mac(),
+                         VS_INFO_SERVICE_ID,
+                         VS_INFO_SNOT,
+                         (uint8_t*)&enum_data,
+                         sizeof(enum_data)),
+        "Cannot send data");
 
     return VS_CODE_OK;
 }

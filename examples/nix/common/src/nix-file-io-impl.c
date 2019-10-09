@@ -39,23 +39,18 @@
 
 #include <pwd.h>
 #include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 
 #include <stdlib-config.h>
 #include <global-hal.h>
-#include <virgil/iot/hsm/hsm_structs.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/logger/helpers.h>
-#include <private/nix-file-cache.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
 
 #include <nix-file-io.h>
+#include <nix-crypto-impl.h>
 
 static char base_dir[FILENAME_MAX] = {0};
 static char *main_storage_dir = 0;
-static const char *slots_dir = "slots";
 static const char *tl_dir = "trust_list";
 static const char *firmware_dir = "firmware";
 static const char *secbox_dir = "secbox";
@@ -120,16 +115,22 @@ _mkdir_recursive(const char *dir) {
     return 0;
 }
 
+/********************************************************************************/
+const char *
+vs_nix_get_secbox_dir() {
+    return secbox_dir;
+}
+
 /******************************************************************************/
 static bool
-_init_fio(void) {
+_init_file_io(void) {
     char tmp[FILENAME_MAX];
 
     vs_nix_get_keystorage_base_dir(base_dir);
 
     VS_LOG_DEBUG("Base directory for slots : %s", base_dir);
 
-    CHECK_SNPRINTF(tmp, "%s/%s", base_dir, slots_dir);
+    CHECK_SNPRINTF(tmp, "%s/%s", base_dir, vs_nix_get_slots_dir());
 
     if (-1 == _mkdir_recursive(tmp)) {
         goto terminate;
@@ -163,7 +164,7 @@ terminate:
 /******************************************************************************/
 static bool
 _check_fio_and_path(const char *folder, const char *file_name, char file_path[FILENAME_MAX]) {
-    if (!initialized && !_init_fio()) {
+    if (!initialized && !_init_file_io()) {
         VS_LOG_ERROR("Unable to initialize file I/O operations");
         return false;
     }
@@ -193,21 +194,13 @@ vs_nix_get_file_len(const char *folder, const char *file_name) {
     NOT_ZERO(folder);
     NOT_ZERO(file_name);
 
-    if (!initialized && !_init_fio()) {
+    if (!initialized && !_init_file_io()) {
         VS_LOG_ERROR("Unable to initialize file I/O operations");
         return 0;
     }
 
     if (!_check_fio_and_path(folder, file_name, file_path)) {
         return 0;
-    }
-
-    // Cached read
-    if (0 == vs_file_cache_open(file_path)) {
-        res = vs_file_cache_get_len(file_path);
-        if (res > 0) {
-            return res;
-        }
     }
 
     fp = fopen(file_path, "rb");
@@ -242,17 +235,13 @@ vs_nix_sync_file(const char *folder, const char *file_name) {
     NOT_ZERO(folder);
     NOT_ZERO(file_name);
 
-    if (!initialized && !_init_fio()) {
+    if (!initialized && !_init_file_io()) {
         VS_LOG_ERROR("Unable to initialize file I/O operations");
         return false;
     }
 
     if (!_check_fio_and_path(folder, file_name, file_path)) {
         return false;
-    }
-
-    if (vs_file_cache_is_enabled()) {
-        res = (0 == vs_file_cache_sync(file_path));
     }
 
 terminate:
@@ -273,7 +262,7 @@ vs_nix_write_file_data(const char *folder, const char *file_name, uint32_t offse
     NOT_ZERO(data);
     NOT_ZERO(data_sz);
 
-    if (!initialized && !_init_fio()) {
+    if (!initialized && !_init_file_io()) {
         VS_LOG_ERROR("Unable to initialize file I/O operations");
         return false;
     }
@@ -282,9 +271,6 @@ vs_nix_write_file_data(const char *folder, const char *file_name, uint32_t offse
         return false;
     }
 
-    if (0 == vs_file_cache_open(file_path)) { // Cached write
-        return (0 == vs_file_cache_write(file_path, offset, data, data_sz)) ? true : false;
-    } else { // Real write file if cache is disabled or file not found
         fp = fopen(file_path, "rb");
         if (fp) {
             ssize_t f_sz;
@@ -319,8 +305,6 @@ vs_nix_write_file_data(const char *folder, const char *file_name, uint32_t offse
             VS_IOT_MEMSET(buf, 0xFF, offset);
             VS_IOT_MEMCPY(buf + offset, data, data_sz);
         }
-    }
-
 
     fp = fopen(file_path, "wb");
 
@@ -335,7 +319,6 @@ vs_nix_write_file_data(const char *folder, const char *file_name, uint32_t offse
                          strerror(errno));
             goto terminate;
         }
-        vs_file_cache_create(file_path, buf, new_file_sz);
 
     } else {
         VS_LOG_ERROR("Unable to open file %s. errno = %d (%s)", file_path, errno, strerror(errno));
@@ -373,13 +356,6 @@ vs_nix_read_file_data(const char *folder,
 
     if (!_check_fio_and_path(folder, file_name, file_path)) {
         goto terminate;
-    }
-
-    // Cached read
-    if (0 == vs_file_cache_open(file_path)) {
-        if (0 == vs_file_cache_read(file_path, offset, data, buf_sz, read_sz)) {
-            return true;
-        }
     }
 
     // Real read in case of cache is absent
@@ -435,8 +411,6 @@ vs_nix_remove_file_data(const char *folder, const char *file_name) {
         return false;
     }
 
-    vs_file_cache_close(file_path);
-
     remove(file_path);
 
     return true;
@@ -471,96 +445,6 @@ vs_nix_get_keystorage_base_dir(char *dir) {
     return true;
 }
 
-/******************************************************************************/
-const char *
-get_slot_name(vs_iot_hsm_slot_e slot) {
-    switch (slot) {
-    case VS_KEY_SLOT_STD_OTP_0:
-        return "STD_OTP_0";
-    case VS_KEY_SLOT_STD_OTP_1:
-        return "STD_OTP_1";
-    case VS_KEY_SLOT_STD_OTP_2:
-        return "STD_OTP_2";
-    case VS_KEY_SLOT_STD_OTP_3:
-        return "STD_OTP_3";
-    case VS_KEY_SLOT_STD_OTP_4:
-        return "STD_OTP_4";
-    case VS_KEY_SLOT_STD_OTP_5:
-        return "STD_OTP_5";
-    case VS_KEY_SLOT_STD_OTP_6:
-        return "STD_OTP_6";
-    case VS_KEY_SLOT_STD_OTP_7:
-        return "STD_OTP_7";
-    case VS_KEY_SLOT_STD_OTP_8:
-        return "STD_OTP_8";
-    case VS_KEY_SLOT_STD_OTP_9:
-        return "STD_OTP_9";
-    case VS_KEY_SLOT_STD_OTP_10:
-        return "STD_OTP_10";
-    case VS_KEY_SLOT_STD_OTP_11:
-        return "STD_OTP_11";
-    case VS_KEY_SLOT_STD_OTP_12:
-        return "STD_OTP_12";
-    case VS_KEY_SLOT_STD_OTP_13:
-        return "STD_OTP_13";
-    case VS_KEY_SLOT_STD_OTP_14:
-        return "STD_OTP_14";
-    case VS_KEY_SLOT_EXT_OTP_0:
-        return "EXT_OTP_0";
-    case VS_KEY_SLOT_STD_MTP_0:
-        return "STD_MTP_0";
-    case VS_KEY_SLOT_STD_MTP_1:
-        return "STD_MTP_1";
-    case VS_KEY_SLOT_STD_MTP_2:
-        return "STD_MTP_2";
-    case VS_KEY_SLOT_STD_MTP_3:
-        return "STD_MTP_3";
-    case VS_KEY_SLOT_STD_MTP_4:
-        return "STD_MTP_4";
-    case VS_KEY_SLOT_STD_MTP_5:
-        return "STD_MTP_5";
-    case VS_KEY_SLOT_STD_MTP_6:
-        return "STD_MTP_6";
-    case VS_KEY_SLOT_STD_MTP_7:
-        return "STD_MTP_7";
-    case VS_KEY_SLOT_STD_MTP_8:
-        return "STD_MTP_8";
-    case VS_KEY_SLOT_STD_MTP_9:
-        return "STD_MTP_9";
-    case VS_KEY_SLOT_STD_MTP_10:
-        return "STD_MTP_10";
-    case VS_KEY_SLOT_STD_MTP_11:
-        return "STD_MTP_11";
-    case VS_KEY_SLOT_STD_MTP_12:
-        return "STD_MTP_12";
-    case VS_KEY_SLOT_STD_MTP_13:
-        return "STD_MTP_13";
-    case VS_KEY_SLOT_STD_MTP_14:
-        return "STD_MTP_14";
-    case VS_KEY_SLOT_EXT_MTP_0:
-        return "EXT_MTP_0";
-    case VS_KEY_SLOT_STD_TMP_0:
-        return "STD_TMP_0";
-    case VS_KEY_SLOT_STD_TMP_1:
-        return "STD_TMP_1";
-    case VS_KEY_SLOT_STD_TMP_2:
-        return "STD_TMP_2";
-    case VS_KEY_SLOT_STD_TMP_3:
-        return "STD_TMP_3";
-    case VS_KEY_SLOT_STD_TMP_4:
-        return "STD_TMP_4";
-    case VS_KEY_SLOT_STD_TMP_5:
-        return "STD_TMP_5";
-    case VS_KEY_SLOT_STD_TMP_6:
-        return "STD_TMP_6";
-    case VS_KEY_SLOT_EXT_TMP_0:
-        return "EXT_TMP_0";
-
-    default:
-        assert(false && "Unsupported slot");
-        return NULL;
-    }
-}
 #undef UNIX_CALL
 #undef CHECK_SNPRINTF
 
@@ -572,50 +456,8 @@ vs_nix_get_trust_list_dir() {
 
 /********************************************************************************/
 const char *
-vs_nix_get_slots_dir() {
-    return slots_dir;
-}
-
-/********************************************************************************/
-const char *
 vs_nix_get_firmware_dir() {
     return firmware_dir;
-}
-
-/********************************************************************************/
-const char *
-vs_nix_get_secbox_dir() {
-    return secbox_dir;
-}
-/********************************************************************************/
-vs_status_e
-vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) {
-    return vs_nix_write_file_data(slots_dir, get_slot_name(slot), 0, data, data_sz) &&
-                           vs_nix_sync_file(slots_dir, get_slot_name(slot))
-                   ? VS_CODE_OK
-                   : VS_CODE_ERR_FILE_WRITE;
-}
-
-/********************************************************************************/
-vs_status_e
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
-    size_t out_sz_size_t = *out_sz;
-    vs_status_e call_res;
-
-    call_res = vs_nix_read_file_data(slots_dir, get_slot_name(slot), 0, data, buf_sz, &out_sz_size_t)
-                       ? VS_CODE_OK
-                       : VS_CODE_ERR_FILE_READ;
-
-    assert(out_sz_size_t <= UINT16_MAX);
-    *out_sz = out_sz_size_t;
-
-    return call_res;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
-    return vs_nix_remove_file_data(slots_dir, get_slot_name(slot)) ? VS_CODE_OK : VS_CODE_ERR_FILE_DELETE;
 }
 
 /******************************************************************************/

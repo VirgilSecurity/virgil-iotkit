@@ -32,11 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOT_SDK_EXAMPLES_SECBOX_IMPL_H
-#define VIRGIL_IOT_SDK_EXAMPLES_SECBOX_IMPL_H
+#ifndef IOT_RPI_STORAGE_HAL_H
+#define IOT_RPI_STORAGE_HAL_H
 
-#include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/status_code/status_code.h>
 
 vs_storage_hal_ctx_t
 vs_nix_storage_init(const char *dir);
@@ -44,4 +44,4 @@ vs_nix_storage_init(const char *dir);
 vs_status_e
 vs_nix_get_storage_impl(vs_storage_op_impl_t *impl);
 
-#endif //VIRGIL_IOT_SDK_EXAMPLES_SECBOX_IMPL_H
+#endif // IOT_RPI_STORAGE_HAL_H

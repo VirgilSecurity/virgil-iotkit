@@ -69,12 +69,13 @@ endif ()
 #
 target_sources(virgil-iot-examples-common
         PRIVATE
-        include/virgil/iot/examples/secbox-impl.h
+        include/nix-crypto-impl.h
+        include/nix-file-io.h
+        include/nix-global-impl.h
+        include/nix-storage-impl.h
 
         src/nix-crypto-impl.c
-        src/nix-file-cache-impl.c
         src/nix-file-io-impl.c
-        src/nix-keypair-impl.c
         src/nix-global-impl.c
         src/nix-storage-impl.c
         )
@@ -101,7 +102,7 @@ target_include_directories(virgil-iot-examples-common
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         ${CRYPTO_C_INCLUDES}
         ${CRYPTO_C_INCLUDES}/virgil/crypto/common
-        include/virgil/iot/examples
+        include
 
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"

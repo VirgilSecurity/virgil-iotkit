@@ -32,17 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef IOT_RPI_STORAGE_HAL_H
-#define IOT_RPI_STORAGE_HAL_H
+#ifndef IOT_RPI_HAL_H
+#define IOT_RPI_HAL_H
 
+#include <stdint.h>
+#include <arpa/inet.h>
+
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
-#include "nix-file-io.h"
-#include <virgil/iot/status_code/status_code.h>
 
-vs_storage_hal_ctx_t
-vs_nix_storage_init(const char *dir);
+extern char *self_path;
 
-vs_status_e
-vs_nix_get_storage_impl(vs_storage_op_impl_t *impl);
+void
+vs_nix_hal_get_udid(uint8_t *udid);
 
-#endif // IOT_RPI_STORAGE_HAL_H
+int
+vs_nix_hal_update(int argc, char *argv[]);
+
+void
+vs_nix_hal_sleep_until_stop(void);
+
+int
+vs_nix_start(const char *devices_dir,
+             const char *app_file,
+             vs_mac_addr_t forced_mac_addr,
+             vs_storage_op_ctx_t *tl_ctx,
+             vs_storage_op_ctx_t *fw_ctx,
+             const char *manufacture_id,
+             const char *device_type,
+             const uint32_t device_roles);
+
+void
+vs_nix_restart(void);
+
+#endif // IOT_RPI_HAL_H

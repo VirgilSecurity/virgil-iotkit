@@ -32,10 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/examples/secbox-impl.h>
+#include <nix-file-io.h>
+
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/secbox/secbox.h>
-#include <virgil/iot/examples/nix-file-io.h>
+#include <nix-storage-impl.h>
 
 #define MAX_FILE_SIZE   1024
 #define FILE_DIR        "secbox-example"
@@ -73,6 +74,7 @@ int main(int argc, char *argv[]){
     STATUS_CHECK_RET(vs_secbox_init(&secbox_ctx), "Unable to initialize secbox");
 
     // Calculate hash for file name
+    // TODO : hash is not necessary, remove it
     STATUS_CHECK_RET(vs_hsm_hash_create(VS_HASH_SHA_256, (uint8_t *)filename, strlen(filename), file_id, sizeof(file_id), &hash_sz),
     "Unable to calculate hash for file name %s", filename);
 

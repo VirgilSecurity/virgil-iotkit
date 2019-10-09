@@ -37,8 +37,7 @@
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-int
-_sdmp_fill_header(const vs_mac_addr_t *recipient_mac, vs_sdmp_packet_t *packet);
+int _sdmp_fill_header(const vs_mac_addr_t* recipient_mac, vs_sdmp_packet_t* packet);
 
 vs_sdmp_transaction_id_t
 _sdmp_transaction_id();

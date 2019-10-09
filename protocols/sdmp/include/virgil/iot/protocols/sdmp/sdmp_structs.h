@@ -35,9 +35,9 @@
 #ifndef VS_SDMP_STRUCTS_H
 #define VS_SDMP_STRUCTS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <virgil/iot/provision/provision.h>
 
 struct vs_netif_t;
@@ -48,37 +48,36 @@ typedef uint32_t vs_sdmp_service_id_t;
 typedef uint32_t vs_sdmp_element_t;
 
 // Callback for Received data
-typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
-                                        const uint8_t *data,
-                                        const uint16_t data_sz,
-                                        const uint8_t **packet_data,
-                                        uint16_t *packet_data_sz);
+typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t* netif,
+    const uint8_t* data,
+    const uint16_t data_sz,
+    const uint8_t** packet_data,
+    uint16_t* packet_data_sz);
 
 // Callback for Preprocessed data
-typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t* netif, const uint8_t* data, const uint16_t data_sz);
 
-typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
-typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
+typedef vs_status_e (*vs_netif_tx_t)(const uint8_t* data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t* mac_addr);
 
 typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 typedef vs_status_e (*vs_netif_deinit_t)(void);
 
-
 // SDMP Services processor
-typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
-                                                           vs_sdmp_element_t element_id,
-                                                           const uint8_t *request,
-                                                           const uint16_t request_sz,
-                                                           uint8_t *response,
-                                                           const uint16_t response_buf_sz,
-                                                           uint16_t *response_sz);
+typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t* netif,
+    vs_sdmp_element_t element_id,
+    const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz);
 
-typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
-                                                            vs_sdmp_element_t element_id,
-                                                            bool is_ack,
-                                                            const uint8_t *response,
-                                                            const uint16_t response_sz);
+typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t* netif,
+    vs_sdmp_element_t element_id,
+    bool is_ack,
+    const uint8_t* response,
+    const uint16_t response_sz);
 
 typedef vs_status_e (*vs_sdmp_service_periodical_processor_t)(void);
 
@@ -105,7 +104,6 @@ typedef enum {
     VS_SDMP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
 } vs_sdmp_flags_e;
 
-
 /******************************************************************************/
 typedef struct __attribute__((__packed__)) vs_mac_addr_t {
     uint8_t bytes[ETH_ADDR_LEN];
@@ -122,8 +120,8 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id;
     vs_sdmp_service_id_t service_id; // CODEGEN: SKIP
-    vs_sdmp_element_t element_id;    // CODEGEN: SKIP
-    uint32_t flags;                  // CODEGEN: SKIP
+    vs_sdmp_element_t element_id; // CODEGEN: SKIP
+    uint32_t flags; // CODEGEN: SKIP
     uint16_t padding;
     uint16_t content_size;
 } vs_sdmp_header_t;
@@ -137,7 +135,7 @@ typedef struct __attribute__((__packed__)) {
 
 /******************************************************************************/
 typedef struct vs_netif_t {
-    void *user_data;
+    void* user_data;
 
     // Functions
     vs_netif_init_t init;
@@ -152,7 +150,7 @@ typedef struct vs_netif_t {
 
 /******************************************************************************/
 typedef struct {
-    void *user_data;
+    void* user_data;
     vs_sdmp_service_id_t id;
     vs_sdmp_service_request_processor_t request_process;
     vs_sdmp_service_response_processor_t response_process;
@@ -166,6 +164,5 @@ typedef struct {
 } vs_sdmp_stat_t;
 
 /******************************************************************************/
-
 
 #endif // VS_SDMP_STRUCTS_H
