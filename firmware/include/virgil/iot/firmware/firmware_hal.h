@@ -43,4 +43,6 @@ vs_firmware_install_prepare_space_hal(void);
 vs_status_e
 vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
+vs_status_e
+vs_firmware_get_own_firmware_descriptor_hal(void *descriptor, size_t buf_sz);
 #endif // VS_FIRMWARE_INTERFACE_H

@@ -228,19 +228,7 @@ _fw_update_set_footer(void *context, vs_update_file_type_t *file_type, const voi
         return VS_CODE_ERR_VERIFY;
 
     } else {
-        vs_firmware_descriptor_t own_desc;
-        size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(fw_descr->info.version.app_type));
-        res = VS_CODE_ERR_NOT_FOUND;
-
-        if (0 != vs_global_hal_get_own_firmware_descriptor(&own_desc)) {
-            VS_LOG_ERROR("Unable to get own firmware descriptor");
-            return VS_CODE_ERR_VERIFY;
-        }
-
-        if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(fw_descr->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
-            VS_LOG_WARNING("No need to install a new firmware. It doesn't contain a new version");
-            res = vs_firmware_install_firmware(ctx, fw_descr);
-        }
+        res = vs_firmware_install_firmware(ctx, fw_descr);
     }
 
     return res;
