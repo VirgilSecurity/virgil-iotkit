@@ -39,6 +39,9 @@
 #include <stddef.h>
 
 void
+vs_impl_device_serial(uint8_t *udid);
+
+void
 vs_impl_msleep(size_t msec);
 
 #endif // VS_IOT_SDK_GLOBAL_HAL_H
