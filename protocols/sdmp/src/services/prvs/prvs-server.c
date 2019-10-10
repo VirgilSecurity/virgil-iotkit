@@ -77,7 +77,7 @@ vs_prvs_server_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
     memcpy(device_info->manufacturer, vs_sdmp_device_manufacture(), VS_DEVICE_MANUFACTURE_ID_SIZE);
 
     // Fill device Type ID
-    memcpy(device_info->device_type, vs_sdmp_device_type(), VS_DEVICE_DEVICE_TYPE_SIZE);
+    memcpy(device_info->device_type, vs_sdmp_device_type(), VS_DEVICE_TYPE_SIZE);
 
     // Fill Serial of device
     memcpy(device_info->serial, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);

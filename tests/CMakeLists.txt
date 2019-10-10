@@ -45,10 +45,8 @@ add_library(virgil-iot-sdk-tests)
 target_sources(virgil-iot-sdk-tests
         PRIVATE
         src/tests.c
-        src/sdmp/prvs_tests.c
         src/sdmp/fldt_tests.c
         src/sdmp/sdmp_tests.c
-        src/sdmp/test_prvs.c
         src/sdmp/test_netif.c
         src/crypto/aes.c
         src/crypto/ecdh.c

@@ -50,7 +50,7 @@ typedef struct {
 
 typedef struct {
     uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
-    uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE];
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
     uint8_t default_netif_mac[ETH_ADDR_LEN];
     uint32_t device_roles; // vs_sdmp_device_role_e
     uint8_t fw_major;

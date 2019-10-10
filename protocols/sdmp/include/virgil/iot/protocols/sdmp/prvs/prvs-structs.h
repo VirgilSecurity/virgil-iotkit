@@ -57,7 +57,7 @@ typedef struct {
 
 typedef struct __attribute__((__packed__)) {
     uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE];
-    uint8_t device_type[VS_DEVICE_DEVICE_TYPE_SIZE];
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
     uint8_t serial[VS_DEVICE_SERIAL_SIZE];
     vs_mac_addr_t mac;
     uint16_t data_sz;

@@ -64,7 +64,8 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
     if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
-        memcpy(&_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_sdmp_prvs_dnid_element_t));
+        VS_IOT_MEMCPY(
+                &_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_sdmp_prvs_dnid_element_t));
         _prvs_dnid_list->count++;
 
         return VS_CODE_OK;
@@ -90,7 +91,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
     default: {
         if (response_sz && response_sz < PRVS_BUF_SZ) {
             _last_data_sz = response_sz;
-            memcpy(_last_data, response, response_sz);
+            VS_IOT_MEMCPY(_last_data, response, response_sz);
         }
 
         _prvs_impl.stop_wait_func(&_last_res, is_ack ? VS_CODE_OK : VS_CODE_ERR_PRVS_UNKNOWN);
@@ -124,7 +125,7 @@ vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *lis
 
     // Set storage for DNID request
     _prvs_dnid_list = list;
-    memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
+    VS_IOT_MEMSET(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
 
     // Send request
     STATUS_CHECK_RET(vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0), "Send request error");
@@ -205,7 +206,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
 
     // Pass data
     if (VS_CODE_OK == _last_res && _last_data_sz <= buf_sz) {
-        memcpy(data, _last_data, _last_data_sz);
+        VS_IOT_MEMCPY(data, _last_data, _last_data_sz);
         *data_sz = _last_data_sz;
         return VS_CODE_OK;
     }
@@ -251,7 +252,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
 
     // Pass data
     if (VS_CODE_OK == _last_res && _last_data_sz <= buf_sz) {
-        memcpy(signature, _last_data, _last_data_sz);
+        VS_IOT_MEMCPY(signature, _last_data, _last_data_sz);
         *signature_sz = _last_data_sz;
         return VS_CODE_OK;
     }

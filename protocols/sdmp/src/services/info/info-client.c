@@ -167,7 +167,7 @@ _ginf_request_processor(const uint8_t *request,
     // Get data from packed structure
     VS_IOT_MEMSET(&general_info, 0, sizeof(general_info));
     VS_IOT_MEMCPY(general_info.manufacture_id, ginf_request->manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE);
-    VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, VS_DEVICE_DEVICE_TYPE_SIZE);
+    VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, VS_DEVICE_TYPE_SIZE);
     VS_IOT_MEMCPY(general_info.default_netif_mac, ginf_request->default_netif_mac.bytes, ETH_ADDR_LEN);
     general_info.fw_major = ginf_request->fw_version.major;
     general_info.fw_minor = ginf_request->fw_version.minor;
