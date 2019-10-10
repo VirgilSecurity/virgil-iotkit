@@ -253,7 +253,7 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
     // Compare the own firmware image version
     ret_code = vs_firmware_compare_own_version(new_desc);
     if (VS_CODE_OLD_VERSION == ret_code) {
-        VS_LOG_WARNING("No need to fetch a new firmware.");
+        VS_LOG_WARNING("No need to fetch a new own firmware.");
         return VS_CODE_ERR_NOT_FOUND;
     }
 
