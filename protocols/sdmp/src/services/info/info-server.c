@@ -40,7 +40,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
-#include <global-hal.h>
 #include <endian-config.h>
 
 // Commands
@@ -198,12 +197,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
               -1,
               "Cannot get MAC for Default Network Interface");
 
-#if 0
-    STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(_fw_ctx, _manufacture_id, _device_type, &fw_descr),
-                     "Unable to obtain Firmware's descriptor");
-#else
-    vs_impl_own_firmware_descriptor(&fw_descr);
-#endif
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),

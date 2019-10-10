@@ -482,6 +482,13 @@ _is_rule_equal_to(vs_key_type_e type) {
 
 /*************************************************************************/
 vs_status_e
+vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
+    CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    return vs_firmware_get_own_firmware_descriptor_hal(descriptor, sizeof(vs_firmware_descriptor_t));
+}
+
+/*************************************************************************/
+vs_status_e
 vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
     ssize_t file_sz;
@@ -602,10 +609,21 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
     vs_storage_element_id_t data_id;
     vs_status_e ret_code;
     ssize_t file_sz;
+    vs_firmware_descriptor_t own_desc;
+    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(descriptor->info.version.app_type));
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+
+    //Compare the own firmware image version
+    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
+
+    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+        VS_LOG_WARNING("No need to install a new firmware. It doesn't contain a new version");
+        return VS_CODE_ERR_VERIFY;
+    }
 
     CHECK_RET(VS_CODE_OK == vs_firmware_install_prepare_space_hal(),
               VS_CODE_ERR_FILE,

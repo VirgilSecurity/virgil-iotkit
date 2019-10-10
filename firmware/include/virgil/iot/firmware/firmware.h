@@ -107,6 +107,9 @@ vs_status_e
 vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
+vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
+
+vs_status_e
 vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
                                    const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                    const uint8_t device_type[VS_DEVICE_TYPE_SIZE],

@@ -38,7 +38,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
@@ -49,5 +48,4 @@ vs_sdmp_prvs_server(void);
 #ifdef __cplusplus
 }
 #endif
-
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
