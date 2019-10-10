@@ -72,10 +72,10 @@ _data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *
 /******************************************************************************/
 static void
 _get_serial_number_in_hex_str(char _out_str[VS_DEVICE_SERIAL_SIZE * 2 + 1]) {
-    uint8_t serial_number[VS_DEVICE_SERIAL_SIZE];
+    vs_device_serial_t serial_number;
     uint32_t _in_out_len = VS_DEVICE_SERIAL_SIZE * 2 + 1;
     vs_impl_device_serial(serial_number);
-    _data_to_hex(serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
+    _data_to_hex((uint8_t *)serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
 }
 
 /******************************************************************************/
