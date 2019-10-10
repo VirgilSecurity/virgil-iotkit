@@ -41,10 +41,7 @@
 uint16_t
 sdmp_tests(void);
 uint16_t
-prvs_tests(void);
-uint16_t
 fldt_tests(void);
-
 uint16_t
 test_hash(void);
 uint16_t
@@ -151,7 +148,6 @@ vs_tests_checks(bool print_start_finish_tests) {
     }
 
     failed_test_result = sdmp_tests();
-    failed_test_result += prvs_tests();
     failed_test_result += fldt_tests();
 
     failed_test_result += crypto_tests();

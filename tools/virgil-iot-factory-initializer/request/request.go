@@ -57,7 +57,8 @@ type Builder struct {
 type DeviceInfoJson struct {
     Manufacturer  string      `json:"manufacturer"`
     Model         string      `json:"model"`
-    Mac           []byte      `json:"mac"`
+    Roles         []string    `json:"roles"`
+    Mac           string      `json:"mac"`
     Serial        []byte      `json:"serial"`
     PublicKeyTiny []byte      `json:"publicKeyTiny"`
     Signature     []byte      `json:"signature"`
@@ -74,7 +75,7 @@ type CardSnapshotJson struct {
 func (b Builder) BuildRequest() (string, error) {
     var err error
 
-    identity := hex.EncodeToString(b.DeviceProcessor.DeviceID[:])
+    identity := hex.EncodeToString(b.DeviceProcessor.Serial[:])
 
     // Convert raw public key to Virgil format
     var virgilPubKey []byte
@@ -129,15 +130,17 @@ func (b Builder) BuildRequest() (string, error) {
 }
 
 func (b *Builder) GetDeviceInfo() ([]byte, error) {
+    mac := b.DeviceProcessor.DeviceMacAddr
     info := &DeviceInfoJson{
         Manufacturer:    fmt.Sprintf("%#x", b.DeviceProcessor.Manufacturer),
         Model:           fmt.Sprintf("%#x", b.DeviceProcessor.Model),
-        Mac:             b.DeviceProcessor.DeviceMacAddr[:],
-        Serial:          b.DeviceProcessor.DeviceID[:],
+        Mac:             fmt.Sprintf("%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]),
+        Serial:          b.DeviceProcessor.Serial[:],
         PublicKeyTiny:   b.DeviceProcessor.DevicePublicKey.RawPubKey,
         Signature:       b.DeviceProcessor.Signature.RawSignature,
         KeyType:         b.DeviceProcessor.DevicePublicKey.KeyType,
         ECType:          b.DeviceProcessor.DevicePublicKey.ECType,
+        Roles:           b.DeviceProcessor.Roles,
     }
     b.deviceInfo = info
     marshaled, err := json.Marshal(info)

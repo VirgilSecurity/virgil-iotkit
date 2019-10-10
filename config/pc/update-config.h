@@ -35,8 +35,8 @@
 #ifndef VS_IOT_SDK_UPDATE_CONFIG_H
 #define VS_IOT_SDK_UPDATE_CONFIG_H
 
-#define VS_MAX_FIRMWARE_UPDATE_SIZE (2 * 1024 * 1024)
-
+// TODO : correct size !!!
+#define VS_MAX_FIRMWARE_UPDATE_SIZE ((2 * 1024 * 1024) + 30)
 /*Firmware signature rules*/
 
 /*
@@ -51,8 +51,8 @@
  * It's values of vs_key_type_e from provision library
  */
 
-#define VS_FW_SIGNER_TYPE_LIST {                                                                                       \
-    VS_KEY_AUTH,                                                                                                    \
+#define VS_FW_SIGNER_TYPE_LIST {                                                                                   \
+    VS_KEY_AUTH,                                                                                                   \
     VS_KEY_FIRMWARE                                                                                                \
 };
 

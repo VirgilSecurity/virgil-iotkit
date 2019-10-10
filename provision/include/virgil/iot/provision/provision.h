@@ -53,6 +53,14 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
+#define VS_DEVICE_SERIAL_SIZE (32) /*This is size of SHA256 data*/
+#define VS_DEVICE_MANUFACTURE_ID_SIZE (16)
+#define VS_DEVICE_TYPE_SIZE (4)
+
+typedef uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE];
+typedef uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE];
+typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
 typedef enum {

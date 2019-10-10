@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/info-client.h>
-#include <virgil/iot/protocols/sdmp/info-private.h>
+#include <virgil/iot/protocols/sdmp/info/info-client.h>
+#include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/macros/macros.h>
@@ -74,7 +74,7 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
     STATUS_CHECK_RET(vs_sdmp_send_request(netif, 0, VS_INFO_SERVICE_ID, VS_INFO_ENUM, NULL, 0), "Cannot send request");
 
     // Wait request
-    vs_global_hal_msleep(wait_ms);
+    vs_impl_msleep(wait_ms);
 
     *devices_cnt = _devices_list_cnt;
 
@@ -166,8 +166,8 @@ _ginf_request_processor(const uint8_t *request,
 
     // Get data from packed structure
     VS_IOT_MEMSET(&general_info, 0, sizeof(general_info));
-    VS_IOT_MEMCPY(general_info.manufacture_id, ginf_request->manufacture_id, MANUFACTURE_ID_SIZE);
-    VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, DEVICE_TYPE_SIZE);
+    VS_IOT_MEMCPY(general_info.manufacture_id, ginf_request->manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE);
+    VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, VS_DEVICE_TYPE_SIZE);
     VS_IOT_MEMCPY(general_info.default_netif_mac, ginf_request->default_netif_mac.bytes, ETH_ADDR_LEN);
     general_info.fw_major = ginf_request->fw_version.major;
     general_info.fw_minor = ginf_request->fw_version.minor;

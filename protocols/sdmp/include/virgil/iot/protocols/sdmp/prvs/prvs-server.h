@@ -32,14 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
-#define VS_IOT_SDK_ENDIAN_CONFIG_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 
-#include <arpa/inet.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/provision/provision.h>
 
-#define VS_IOT_NTOHS ntohs
-#define VS_IOT_NTOHL ntohl
-#define VS_IOT_HTONS htons
-#define VS_IOT_HTONL htonl
+const vs_sdmp_service_t *
+vs_sdmp_prvs_server(void);
 
-#endif //VS_IOT_SDK_ENDIAN_CONFIG_H
+#ifdef __cplusplus
+}
+#endif
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H

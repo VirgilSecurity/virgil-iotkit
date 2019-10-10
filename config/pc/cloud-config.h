@@ -39,26 +39,7 @@
 
 #define VS_MESSAGE_BIN_BROKER_URL "mqtt-dev.virgilsecurity.com"
 #define VS_CLOUD_HOST "https://things-dev.virgilsecurity.com"
-#define VS_THING_EP "thing"
-#define VS_AWS_ID "aws"
-#define VS_MQTT_ID "mqtt"
 
 #define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
-
-#define VS_MANIFEST "manifest"
-#define VS_FW_URL "firmware_url"
-
-#define VS_MANUFACTURE_ID "manufacturer_id"
-#define VS_MODEL_ID "model_type"
-#define VS_FW_VERSION "version"
-
-#define VS_FW_TIMESTAMP "build_timestamp"
-#define VS_FW_TOPIC_MASK "fw/"
-
-#define VS_TL_TOPIC_MASK "tl/"
-
-#define VS_TL_URL_FIELD "trustlist_url"
-#define VS_TL_VERSION_FIELD "version"
-#define VS_TL_TYPE_FILE "type"
 
 #endif //VS_IOT_SDK_CLOUD_CONFIG_H

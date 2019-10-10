@@ -105,7 +105,7 @@ _fw_update_get_header(void *context, vs_update_file_type_t *file_type, void *hea
     vs_storage_op_ctx_t *ctx = context;
     vs_firmware_descriptor_t *fw_descr = header_buffer;
     const uint8_t *manufacture_id = file_type->add_info;
-    const uint8_t *device_type = file_type->add_info + MANUFACTURE_ID_SIZE;
+    const uint8_t *device_type = file_type->add_info + VS_DEVICE_MANUFACTURE_ID_SIZE;
     vs_status_e ret_code;
     (void) file_type;
 

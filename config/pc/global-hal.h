@@ -32,21 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_GLOBAL_HAB_H
-#define VS_IOT_SDK_GLOBAL_HAB_H
+#ifndef VS_IOT_SDK_GLOBAL_HAL_H
+#define VS_IOT_SDK_GLOBAL_HAL_H
 
 #include <stdint.h>
 #include <stddef.h>
 
-#define SERIAL_SIZE (32) /*This is size of SHA256 data*/
+void
+vs_impl_device_serial(uint8_t *udid);
 
 void
-vs_global_hal_msleep(size_t msec);
+vs_impl_msleep(size_t msec);
 
-void
-vs_global_hal_get_udid_of_device(uint8_t udid[SERIAL_SIZE]);
-
-int
-vs_global_hal_get_own_firmware_descriptor(void *descriptor);
-
-#endif // VS_IOT_SDK_GLOBAL_HAB_H
+#endif // VS_IOT_SDK_GLOBAL_HAL_H

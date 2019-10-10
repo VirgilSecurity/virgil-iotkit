@@ -203,8 +203,8 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
 /*************************************************************************/
 static bool
 _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
-                                        uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                        uint8_t device_type[DEVICE_TYPE_SIZE],
+                                        uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                                        uint8_t device_type[VS_DEVICE_TYPE_SIZE],
                                         vs_firmware_version_t *cur_version) {
     // TODO: Need to arrange models table with current version of devices
     vs_firmware_descriptor_t desc;
@@ -224,8 +224,8 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
 /*************************************************************************/
 vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
-                                           uint8_t manufacture_id[MANUFACTURE_ID_SIZE],
-                                           uint8_t device_type[DEVICE_TYPE_SIZE],
+                                           uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                                           uint8_t device_type[VS_DEVICE_TYPE_SIZE],
                                            vs_firmware_version_t *new_ver) {
 
 #define VS_VERSION_CMP_SIZE (sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))
@@ -244,7 +244,7 @@ static vs_status_e
 _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
                                          vs_firmware_manifest_entry_t *fm_entry) {
     vs_firmware_version_t new_ver;
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
+    uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
 
     if (!_hex_str_to_bin((char *)fm_entry->manufacturer_id, manufacture_id, sizeof(manufacture_id)) ||
             VS_CODE_OK != _get_firmware_version_from_manifest(fm_entry, &new_ver)) {

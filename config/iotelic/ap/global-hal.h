@@ -38,8 +38,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define SERIAL_SIZE (32) /*This is size of SHA256 data*/
-
 void
 vs_global_hal_msleep(size_t msec);
 
