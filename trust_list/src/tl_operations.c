@@ -75,27 +75,27 @@ _read_data(const vs_storage_op_ctx_t *op_ctx,
     vs_storage_file_t f = NULL;
     ssize_t file_sz;
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     *data_sz = 0;
-    file_sz = op_ctx->impl.size(op_ctx->storage_ctx, id);
+    file_sz = op_ctx->impl_func.size(op_ctx->impl_data, id);
 
     CHECK_RET(0 < file_sz, VS_CODE_ERR_NOT_FOUND, "Can't find file");
     CHECK_RET(file_sz >= offset + buff_sz, VS_CODE_ERR_FILE, "File format error");
 
-    f = op_ctx->impl.open(op_ctx->storage_ctx, id);
+    f = op_ctx->impl_func.open(op_ctx->impl_data, id);
     CHECK_RET(NULL != f, VS_CODE_ERR_FILE, "Can't open file");
 
-    if (VS_CODE_OK != op_ctx->impl.load(op_ctx->storage_ctx, f, offset, data, buff_sz)) {
+    if (VS_CODE_OK != op_ctx->impl_func.load(op_ctx->impl_data, f, offset, data, buff_sz)) {
         VS_LOG_ERROR("Can't load data from file");
-        op_ctx->impl.close(op_ctx->storage_ctx, f);
+        op_ctx->impl_func.close(op_ctx->impl_data, f);
         return VS_CODE_ERR_FILE_READ;
     }
     *data_sz = buff_sz;
-    return op_ctx->impl.close(op_ctx->storage_ctx, f);
+    return op_ctx->impl_func.close(op_ctx->impl_data, f);
 }
 
 /******************************************************************************/
@@ -108,31 +108,31 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
     vs_storage_file_t f = NULL;
 
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(data_sz <= op_ctx->file_sz_limit, VS_CODE_ERR_NULLPTR_ARGUMENT, "Requested size is too big");
 
-    f = op_ctx->impl.open(op_ctx->storage_ctx, id);
+    f = op_ctx->impl_func.open(op_ctx->impl_data, id);
     if (NULL == f) {
         VS_LOG_ERROR("Can't open file");
         return VS_CODE_ERR_FILE;
     }
 
-    if (VS_CODE_OK != op_ctx->impl.save(op_ctx->storage_ctx, f, offset, data, data_sz)) {
-        op_ctx->impl.close(op_ctx->storage_ctx, f);
+    if (VS_CODE_OK != op_ctx->impl_func.save(op_ctx->impl_data, f, offset, data, data_sz)) {
+        op_ctx->impl_func.close(op_ctx->impl_data, f);
         VS_LOG_ERROR("Can't save data to file");
         return VS_CODE_ERR_FILE_WRITE;
     }
 
-    int res = op_ctx->impl.sync(op_ctx->storage_ctx, f);
+    int res = op_ctx->impl_func.sync(op_ctx->impl_data, f);
     CHECK_RET(VS_CODE_OK == res, res, "Can't sync file");
 
-    return op_ctx->impl.close(op_ctx->storage_ctx, f);
+    return op_ctx->impl_func.close(op_ctx->impl_data, f);
 }
 
 /******************************************************************************/
@@ -330,7 +330,7 @@ vs_tl_verify_storage(size_t storage_type) {
 vs_status_e
 vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx) {
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _init_tl_ctx(TL_STORAGE_TYPE_DYNAMIC, op_ctx, &_tl_dynamic_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, op_ctx, &_tl_static_ctx);
@@ -355,15 +355,15 @@ vs_tl_storage_deinit_internal() {
     const vs_storage_op_ctx_t *op_ctx = _tl_dynamic_ctx.storage_ctx;
 
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(op_ctx->impl.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(op_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
 
     VS_IOT_MEMSET(&_tl_dynamic_ctx, 0, sizeof(vs_tl_context_t));
     VS_IOT_MEMSET(&_tl_static_ctx, 0, sizeof(vs_tl_context_t));
     VS_IOT_MEMSET(&_tl_tmp_ctx, 0, sizeof(vs_tl_context_t));
 
-    return op_ctx->impl.deinit(op_ctx->storage_ctx);
+    return op_ctx->impl_func.deinit(op_ctx->impl_data);
 }
 
 /******************************************************************************/
@@ -579,7 +579,7 @@ vs_tl_invalidate(size_t storage_type) {
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_NOT_ZERO_RET(tl_ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(tl_ctx->storage_ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(tl_ctx->storage_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     tl_ctx->keys_qty.keys_count = 0;
     tl_ctx->keys_qty.keys_amount = 0;
@@ -588,7 +588,7 @@ vs_tl_invalidate(size_t storage_type) {
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLH, 0, file_id);
 
     if (!tl_ctx->ready || VS_CODE_OK != vs_tl_header_load(storage_type, &header) ||
-        (VS_CODE_OK != tl_ctx->storage_ctx->impl.del(tl_ctx->storage_ctx->storage_ctx, file_id))) {
+        (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id))) {
         return VS_CODE_OK;
     }
 
@@ -596,14 +596,14 @@ vs_tl_invalidate(size_t storage_type) {
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLF, 0, file_id);
-    if (VS_CODE_OK != tl_ctx->storage_ctx->impl.del(tl_ctx->storage_ctx->storage_ctx, file_id)) {
+    if (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id)) {
         return VS_CODE_OK;
     }
 
     for (i = 0; i < header.pub_keys_count; ++i) {
         // cppcheck-suppress uninitvar
         _create_data_filename(storage_type, VS_TL_ELEMENT_TLC, i, file_id);
-        if (VS_CODE_OK != tl_ctx->storage_ctx->impl.del(tl_ctx->storage_ctx->storage_ctx, file_id)) {
+        if (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id)) {
             return VS_CODE_OK;
         }
     }

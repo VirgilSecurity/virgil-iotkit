@@ -82,29 +82,29 @@ _read_data(const vs_storage_op_ctx_t *ctx,
     ssize_t bytes_left;
 
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     *data_sz = 0;
-    file_sz = ctx->impl.size(ctx->storage_ctx, id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, id);
 
     CHECK_RET(0 < file_sz, VS_CODE_ERR_FILE, "Can't find file");
     CHECK_RET(file_sz >= offset, VS_CODE_ERR_FILE, "File format error");
 
-    f = ctx->impl.open(ctx->storage_ctx, id);
+    f = ctx->impl_func.open(ctx->impl_data, id);
     CHECK_RET(NULL != f, VS_CODE_ERR_FILE, "Can't open file");
 
     bytes_left = file_sz - offset;
     *data_sz = bytes_left > buff_sz ? buff_sz : bytes_left;
-    if (VS_CODE_OK != ctx->impl.load(ctx->storage_ctx, f, offset, data, *data_sz)) {
+    if (VS_CODE_OK != ctx->impl_func.load(ctx->impl_data, f, offset, data, *data_sz)) {
 
         VS_LOG_ERROR("Can't load data from file");
-        ctx->impl.close(ctx->storage_ctx, f);
+        ctx->impl_func.close(ctx->impl_data, f);
         return VS_CODE_ERR_FILE_READ;
     }
-    return ctx->impl.close(ctx->storage_ctx, f);
+    return ctx->impl_func.close(ctx->impl_data, f);
 }
 
 /******************************************************************************/
@@ -118,40 +118,40 @@ _write_data(const vs_storage_op_ctx_t *ctx,
     vs_storage_file_t f = NULL;
 
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(data_sz <= ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Requested size is too big");
 
-    f = ctx->impl.open(ctx->storage_ctx, id);
+    f = ctx->impl_func.open(ctx->impl_data, id);
     if (NULL == f) {
         VS_LOG_ERROR("Can't open file");
         return VS_CODE_ERR_FILE_WRITE;
     }
 
-    if (VS_CODE_OK != ctx->impl.save(ctx->storage_ctx, f, offset, data, data_sz)) {
-        ctx->impl.close(ctx->storage_ctx, f);
+    if (VS_CODE_OK != ctx->impl_func.save(ctx->impl_data, f, offset, data, data_sz)) {
+        ctx->impl_func.close(ctx->impl_data, f);
         VS_LOG_ERROR("Can't save data to file");
         return VS_CODE_ERR_FILE_WRITE;
     }
 
     if(need_sync) {
-        int res = ctx->impl.sync(ctx->storage_ctx, f);
+        int res = ctx->impl_func.sync(ctx->impl_data, f);
         CHECK_RET(VS_CODE_OK == res, res, "Can't sync file");
     }
 
-    return ctx->impl.close(ctx->storage_ctx, f);
+    return ctx->impl_func.close(ctx->impl_data, f);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_firmware_init(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return VS_CODE_OK;
 }
@@ -160,10 +160,10 @@ vs_firmware_init(const vs_storage_op_ctx_t *ctx) {
 vs_status_e
 vs_firnware_deinit(const vs_storage_op_ctx_t *ctx) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    return ctx->impl.deinit(ctx->storage_ctx);
+    return ctx->impl_func.deinit(ctx->impl_data);
 }
 
 /*************************************************************************/
@@ -252,7 +252,7 @@ vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, data_id);
 
     if (file_sz > 0) {
 
@@ -279,12 +279,12 @@ vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_fi
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, desc_id);
 
     if (file_sz > 0) {
         size_t read_sz;
@@ -355,14 +355,14 @@ vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(descriptor, 0, sizeof(*descriptor));
 
     // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, desc_id);
 
     if (file_sz <= 0) {
         goto terminate;
@@ -408,15 +408,15 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // cppcheck-suppress uninitvar
     _create_descriptors_filename(desc_id);
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, desc_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, desc_id);
 
     if (file_sz <= 0) {
         goto terminate;
@@ -446,7 +446,7 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         offset += sizeof(vs_firmware_descriptor_t);
     }
 
-    if (VS_CODE_OK != ctx->impl.del(ctx->storage_ctx, desc_id)) {
+    if (VS_CODE_OK != ctx->impl_func.del(ctx->impl_data, desc_id)) {
         res = VS_CODE_ERR_FILE_DELETE;
         goto terminate;
     }
@@ -461,7 +461,7 @@ vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         VS_IOT_FREE(buf);
     }
 
-    if (VS_CODE_OK != ctx->impl.del(ctx->storage_ctx, data_id)) {
+    if (VS_CODE_OK != ctx->impl_func.del(ctx->impl_data, data_id)) {
         return VS_CODE_ERR_FILE_DELETE;
     }
 
@@ -505,12 +505,12 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, data_id);
 
     if (file_sz <= 0) {
         return VS_CODE_ERR_FILE;
@@ -614,7 +614,7 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
 
     //Compare the own firmware image version
@@ -632,7 +632,7 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
     // cppcheck-suppress uninitvar
     _create_data_filename(descriptor->info.manufacture_id, descriptor->info.device_type, data_id);
 
-    file_sz = ctx->impl.size(ctx->storage_ctx, data_id);
+    file_sz = ctx->impl_func.size(ctx->impl_data, data_id);
 
     if (file_sz <= 0) {
         return VS_CODE_ERR_FILE;

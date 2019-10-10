@@ -342,14 +342,14 @@ vs_status_e
 vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
 
     CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
 
