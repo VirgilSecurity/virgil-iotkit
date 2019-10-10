@@ -90,6 +90,7 @@ type DeviceProcessor struct {
     DeviceMacAddr          [6]byte
     Manufacturer           [16]uint8
     Model                  [4]uint8
+    Roles                  []string
     DevicePublicKey        common.Go_vs_pubkey_t
     Signature              common.Go_vs_sign_t
 }
@@ -126,8 +127,9 @@ func roles2strings(roles C.uint32_t) []string {
 
 func (p *Processor) NewDeviceProcessor(i int, deviceSigner common.SignerInterface) *DeviceProcessor {
     device := p.devicesList.elements[i]
+    deviceRoles := roles2strings(device.device_roles)
 
-    fmt.Println("Device roles:", roles2strings(device.device_roles))
+    fmt.Println("Device roles:", deviceRoles)
     var macParts []string
     for part:=0; part < ETH_ADDR_LEN; part++ {
         hex := fmt.Sprintf("%02x", device.mac_addr.bytes[part])
@@ -140,6 +142,7 @@ func (p *Processor) NewDeviceProcessor(i int, deviceSigner common.SignerInterfac
         ProvisioningInfo: p.ProvisioningInfo,
         DeviceSigner:     deviceSigner,
         deviceInfo:       p.devicesList.elements[i],
+        Roles:            deviceRoles,
     }
     return &processor
 }
