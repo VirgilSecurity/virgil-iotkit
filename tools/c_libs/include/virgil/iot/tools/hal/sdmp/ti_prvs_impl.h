@@ -37,7 +37,7 @@
 
 #include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 
-vs_sdmp_prvs_impl_t
+vs_sdmp_prvs_client_impl_t
 vs_prvs_impl();
 
 #endif // VS_HAL_PRVS_IMPLEMENTATION_H

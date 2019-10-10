@@ -70,39 +70,6 @@ typedef struct __attribute__((__packed__)) {
     uint8_t data[];
 } vs_sdmp_prvs_sgnp_req_t;
 
-typedef bool (*vs_sdmp_prvs_dnid_t)(void);
-typedef vs_status_e (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_e element_id,
-                                                const uint8_t *data,
-                                                uint16_t data_sz);
-
-typedef vs_status_e (*vs_sdmp_prvs_load_data_t)();
-typedef vs_status_e (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
-typedef vs_status_e (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, uint16_t *resp_sz);
-typedef vs_status_e (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
-typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
-typedef vs_status_e (*vs_sdmp_sign_data_t)(const uint8_t *data,
-                                           uint16_t data_sz,
-                                           uint8_t *signature,
-                                           uint16_t buf_sz,
-                                           uint16_t *signature_sz);
-
-typedef struct {
-    vs_sdmp_prvs_dnid_t is_initialized_func;
-    vs_sdmp_prvs_save_data_t save_data_func;
-    vs_sdmp_prvs_load_data_t load_data_func;
-    vs_sdmp_prvs_device_info_t device_info_func;
-    vs_sdmp_prvs_finalize_storage_t finalize_storage_func;
-    vs_sdmp_prvs_start_save_tl_t start_save_tl_func;
-    vs_sdmp_prvs_save_tl_part_t save_tl_part_func;
-    vs_sdmp_prvs_finalize_tl_t finalize_tl_func;
-    vs_sdmp_sign_data_t sign_data_func;
-    vs_sdmp_prvs_stop_wait_t stop_wait_func;
-    vs_sdmp_prvs_wait_t wait_func;
-} vs_sdmp_prvs_impl_t;
-
 #ifdef __cplusplus
 }
 #endif

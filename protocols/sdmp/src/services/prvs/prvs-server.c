@@ -240,7 +240,7 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
 
     // Fill MAC address
     vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
-    dnid_response->device_roles = 0;
+    dnid_response->device_roles = vs_sdmp_device_roles();
     *response_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
 
     return VS_CODE_OK;
@@ -343,9 +343,6 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
-
-    // Process DNID
-
     *response_sz = 0;
 
     switch (element_id) {

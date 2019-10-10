@@ -37,9 +37,20 @@ package sdmp
 /*
 #cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
 #include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/sdmp/ti_prvs_impl.h>
+
+int
+go_sdmp_init(void) {
+    vs_device_manufacture_id_t manufacture_id = {0};
+    vs_device_type_t device_type = {0};
+    vs_device_serial_t serial = {0};
+    uint32_t roles = VS_SDMP_DEV_CONTROL;
+
+    return vs_sdmp_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
+}
+
 */
 import "C"
 import (
@@ -75,18 +86,48 @@ type DeviceProcessor struct {
     DeviceSigner           common.SignerInterface
     deviceInfo             C.vs_sdmp_prvs_dnid_element_t
 
-    DeviceID               [32]uint8
+    Serial                 [32]uint8
     DeviceMacAddr          [6]byte
     Manufacturer           [16]uint8
-    Model                  uint32
+    Model                  [4]uint8
     DevicePublicKey        common.Go_vs_pubkey_t
     Signature              common.Go_vs_sign_t
+}
+
+func roles2strings(roles C.uint32_t) []string {
+        res := []string{}
+
+        if (roles & C.VS_SDMP_DEV_GATEWAY) == C.VS_SDMP_DEV_GATEWAY {
+            res = append(res, "GATEWAY")
+        }
+
+        if (roles & C.VS_SDMP_DEV_THING) == C.VS_SDMP_DEV_THING {
+            res = append(res, "THING")
+        }
+
+        if (roles & C.VS_SDMP_DEV_CONTROL) == C.VS_SDMP_DEV_CONTROL {
+            res = append(res, "CONTROL")
+        }
+
+        if (roles & C.VS_SDMP_DEV_LOGGER) == C.VS_SDMP_DEV_LOGGER {
+            res = append(res, "LOGGER")
+        }
+
+        if (roles & C.VS_SDMP_DEV_SNIFFER) == C.VS_SDMP_DEV_SNIFFER {
+            res = append(res, "SNIFFER")
+        }
+
+        if (roles & C.VS_SDMP_DEV_DEBUGGER) == C.VS_SDMP_DEV_DEBUGGER {
+            res = append(res, "DEBUGGER")
+        }
+
+        return res
 }
 
 func (p *Processor) NewDeviceProcessor(i int, deviceSigner common.SignerInterface) *DeviceProcessor {
     device := p.devicesList.elements[i]
 
-    fmt.Println("Device type:", device.device_type)
+    fmt.Println("Device roles:", roles2strings(device.device_roles))
     var macParts []string
     for part:=0; part < ETH_ADDR_LEN; part++ {
         hex := fmt.Sprintf("%02x", device.mac_addr.bytes[part])
@@ -135,7 +176,7 @@ func (p *DeviceProcessor) Process() error {
 func (p *Processor) DiscoverDevices() error {
     list := C.vs_sdmp_prvs_dnid_list_t{}
 
-    if 0 != C.vs_sdmp_prvs_uninitialized_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
+    if 0 != C.vs_sdmp_prvs_enum_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
     }
 
@@ -149,11 +190,11 @@ func (p *Processor) DiscoverDevices() error {
 func (p Processor ) ConnectToPLCBus() error {
 
     // Use UDP Broadcast as transport
-    if 0 != C.vs_sdmp_init(C.vs_hal_netif_udp_bcast()) {
+    if 0 != C.go_sdmp_init() {
         return fmt.Errorf("can't start SDMP communication")
     }
 
-    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_service(C.vs_prvs_impl())) {
+    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_client(C.vs_prvs_impl())) {
         return fmt.Errorf("can't register SDMP:PRVS service")
     }
 
@@ -161,7 +202,6 @@ func (p Processor ) ConnectToPLCBus() error {
 }
 
 func (p Processor) DisconnectFromPLCBus(){
-    fmt.Printf("DisconnectFromPLCBus\n")
     C.vs_sdmp_deinit()
 }
 
@@ -414,7 +454,7 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
 
     p.DevicePublicKey = deviceInfo.PubKey
     p.Signature = deviceInfo.Signature
-    p.DeviceID = deviceInfo.UdidOfDevice
+    p.Serial = deviceInfo.Serial
     p.DeviceMacAddr = deviceInfo.MacAddress
     p.Manufacturer = deviceInfo.Manufacturer
     p.Model = deviceInfo.Model

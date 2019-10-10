@@ -74,7 +74,7 @@ type CardSnapshotJson struct {
 func (b Builder) BuildRequest() (string, error) {
     var err error
 
-    identity := hex.EncodeToString(b.DeviceProcessor.DeviceID[:])
+    identity := hex.EncodeToString(b.DeviceProcessor.Serial[:])
 
     // Convert raw public key to Virgil format
     var virgilPubKey []byte
@@ -133,7 +133,7 @@ func (b *Builder) GetDeviceInfo() ([]byte, error) {
         Manufacturer:    fmt.Sprintf("%#x", b.DeviceProcessor.Manufacturer),
         Model:           fmt.Sprintf("%#x", b.DeviceProcessor.Model),
         Mac:             b.DeviceProcessor.DeviceMacAddr[:],
-        Serial:          b.DeviceProcessor.DeviceID[:],
+        Serial:          b.DeviceProcessor.Serial[:],
         PublicKeyTiny:   b.DeviceProcessor.DevicePublicKey.RawPubKey,
         Signature:       b.DeviceProcessor.Signature.RawSignature,
         KeyType:         b.DeviceProcessor.DevicePublicKey.KeyType,

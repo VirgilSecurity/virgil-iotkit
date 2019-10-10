@@ -44,11 +44,19 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
 
+typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
+
+typedef struct {
+    vs_sdmp_prvs_stop_wait_t stop_wait_func;
+    vs_sdmp_prvs_wait_t wait_func;
+} vs_sdmp_prvs_client_impl_t;
+
 const vs_sdmp_service_t *
-vs_sdmp_prvs_client(vs_sdmp_prvs_impl_t impl);
+vs_sdmp_prvs_client(vs_sdmp_prvs_client_impl_t impl);
 
 vs_status_e
-vs_sdmp_prvs_emun_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
+vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
 
 vs_status_e
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,

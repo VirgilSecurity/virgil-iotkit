@@ -38,9 +38,9 @@
 #include <virgil/iot/tools/helpers/ti_wait_functionality.h>
 
 /******************************************************************************/
-vs_sdmp_prvs_impl_t
+vs_sdmp_prvs_client_impl_t
 vs_prvs_impl() {
-    vs_sdmp_prvs_impl_t res;
+    vs_sdmp_prvs_client_impl_t res;
 
     memset(&res, 0, sizeof(res));
 
