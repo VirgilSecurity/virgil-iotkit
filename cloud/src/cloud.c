@@ -108,12 +108,12 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
         size_t decrypted_data_sz;
 
         if (VS_CODE_OK != vs_hsm_virgil_decrypt_sha384_aes256(NULL,
-                                                                 0,
-                                                                 (uint8_t *)crypto_answer_b64,
-                                                                 (size_t)crypto_answer_b64_len,
-                                                                 (uint8_t *)out_answer,
-                                                                 buf_size,
-                                                                 &decrypted_data_sz) ||
+                                                              0,
+                                                              (uint8_t *)crypto_answer_b64,
+                                                              (size_t)crypto_answer_b64_len,
+                                                              (uint8_t *)out_answer,
+                                                              buf_size,
+                                                              &decrypted_data_sz) ||
             decrypted_data_sz > UINT16_MAX) {
             goto terminate;
         }
@@ -126,7 +126,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
 
 terminate:
     json_parse_stop(&jobj);
-    if(crypto_answer_b64) {
+    if (crypto_answer_b64) {
         VS_IOT_FREE(crypto_answer_b64);
     }
 
@@ -248,20 +248,16 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             _ntoh_fw_header(&resp->header);
 
             if (!_check_firmware_header(&resp->header) ||
-                VS_CODE_OK !=
-                        vs_cloud_is_new_firmware_version_available(resp->fw_storage,
-                                                                   resp->header.descriptor.info.manufacture_id,
-                                                                   resp->header.descriptor.info.device_type,
-                                                                   &resp->header.descriptor.info.version)) {
+                VS_CODE_OK != vs_cloud_is_new_firmware_version_available(resp->fw_storage, &resp->header.descriptor)) {
                 return 0;
             }
 
 
             // Remove old version from fw storage
             if (VS_CODE_OK == vs_firmware_load_firmware_descriptor(resp->fw_storage,
-                                                                    resp->header.descriptor.info.manufacture_id,
-                                                                    resp->header.descriptor.info.device_type,
-                                                                    &old_desc)) {
+                                                                   resp->header.descriptor.info.manufacture_id,
+                                                                   resp->header.descriptor.info.device_type,
+                                                                   &old_desc)) {
                 vs_firmware_delete_firmware(resp->fw_storage, &old_desc);
             }
 
@@ -313,10 +309,10 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
                 if (VS_CODE_OK != vs_firmware_save_firmware_chunk(resp->fw_storage,
-                                                                   &resp->header.descriptor,
-                                                                   resp->buff,
-                                                                   required_chunk_size,
-                                                                   resp->file_offset)) {
+                                                                  &resp->header.descriptor,
+                                                                  resp->buff,
+                                                                  required_chunk_size,
+                                                                  resp->file_offset)) {
                     return 0;
                 }
 
@@ -352,8 +348,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
             resp->used_size = 0;
 
             vs_firmware_descriptor_t f;
-            VS_IOT_MEMCPY(
-                    &f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
+            VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
             _ntoh_fw_desdcriptor(&f);
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
@@ -389,7 +384,8 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
     resp.buff_sz = sizeof(vs_cloud_firmware_header_t);
     resp.fw_storage = fw_storage;
 
-    if (VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != vs_cloud_https_hal(
+                              VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
 
@@ -581,7 +577,8 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
 
     resp.buff = VS_IOT_CALLOC(512, 1);
 
-    if (VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != vs_cloud_https_hal(
+                              VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
     }

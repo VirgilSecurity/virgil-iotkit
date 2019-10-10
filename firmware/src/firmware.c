@@ -481,6 +481,14 @@ _is_rule_equal_to(vs_key_type_e type) {
 }
 
 /*************************************************************************/
+int
+vs_firmware_get_expected_footer_len(void) {
+    uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    return sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_sz + sign_sz);
+}
+
+/*************************************************************************/
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -605,25 +613,44 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
 /*************************************************************************/
 vs_status_e
+vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) {
+    vs_firmware_descriptor_t own_desc;
+    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(own_desc.info.version.app_type) - sizeof(own_desc.info.version.timestamp));
+
+    CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    if(0 == VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
+     0 == VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
+        VS_LOG_WARNING("The new firmware descriptor is not own");
+        return VS_CODE_ERR_NOT_FOUND;
+    }
+
+    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
+
+    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(new_descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+        return VS_CODE_OLD_VERSION;
+    }
+    return VS_CODE_OK;
+}
+
+/*************************************************************************/
+vs_status_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
     vs_status_e ret_code;
     ssize_t file_sz;
-    vs_firmware_descriptor_t own_desc;
-    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(descriptor->info.version.app_type));
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-
     //Compare the own firmware image version
-    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
-
-    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+    ret_code = vs_firmware_compare_own_version(descriptor);
+    if(VS_CODE_OLD_VERSION == ret_code) {
         VS_LOG_WARNING("No need to install a new firmware. It doesn't contain a new version");
         return VS_CODE_ERR_VERIFY;
     }
+    CHECK_RET(VS_CODE_OK == ret_code, VS_CODE_ERR_VERIFY, "Error during checking own firmware version");
 
     CHECK_RET(VS_CODE_OK == vs_firmware_install_prepare_space_hal(),
               VS_CODE_ERR_FILE,
