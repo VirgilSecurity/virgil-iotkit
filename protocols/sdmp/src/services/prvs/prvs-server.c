@@ -74,13 +74,13 @@ vs_prvs_server_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
     vs_sdmp_mac_addr(NULL, &device_info->mac);
 
     // Fill Manufacture ID
-    memcpy(device_info->manufacturer, vs_sdmp_device_manufacture(), VS_DEVICE_MANUFACTURE_ID_SIZE);
+    VS_IOT_MEMCPY(device_info->manufacturer, vs_sdmp_device_manufacture(), VS_DEVICE_MANUFACTURE_ID_SIZE);
 
     // Fill device Type ID
-    memcpy(device_info->device_type, vs_sdmp_device_type(), VS_DEVICE_TYPE_SIZE);
+    VS_IOT_MEMCPY(device_info->device_type, vs_sdmp_device_type(), VS_DEVICE_TYPE_SIZE);
 
     // Fill Serial of device
-    memcpy(device_info->serial, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);
+    VS_IOT_MEMCPY(device_info->serial, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);
 
     // Fill own public key
     own_pubkey = (vs_pubkey_t *)device_info->data;
