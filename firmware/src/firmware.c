@@ -493,8 +493,8 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     vs_storage_element_id_t data_id;
     ssize_t file_sz;
     uint8_t *pubkey;
-    uint16_t sign_len;
-    uint16_t key_len;
+    int sign_len;
+    int key_len;
     uint8_t sign_rules = 0;
     uint16_t i;
     vs_hsm_sw_sha256_ctx hash_ctx;
@@ -577,25 +577,25 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_UNSUPPORTED, "Unsupported signature ec_type");
 
         // Signer raw key pointer
-        pubkey = sign->raw_sign_pubkey + sign_len;
+        pubkey = sign->raw_sign_pubkey + (uint16_t)sign_len;
 
-        STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+        STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
                   "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
             STATUS_CHECK_RET(vs_hsm_ecdsa_verify(sign->ec_type,
                                                            pubkey,
-                                                           key_len,
+                                                           (uint16_t)key_len,
                                                            sign->hash_type,
                                                            hash,
                                                            sign->raw_sign_pubkey,
-                                                           sign_len),
+                                                           (uint16_t)sign_len),
                       "Signature is wrong");
             sign_rules++;
         }
 
         // Next signature
-        sign = (vs_sign_t *)(pubkey + key_len);
+        sign = (vs_sign_t *)(pubkey + (uint16_t)key_len);
     }
 
     VS_LOG_DEBUG("New FW Image. Sign rules is %s", sign_rules >= VS_FW_SIGNATURES_QTY ? "correct" : "wrong");
