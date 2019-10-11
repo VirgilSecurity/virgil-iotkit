@@ -621,8 +621,8 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
 
     CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
 
-    if(0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, MANUFACTURE_ID_SIZE) &&
-     0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, DEVICE_TYPE_SIZE)) {
+    if(0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+     0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, VS_DEVICE_TYPE_SIZE)) {
         VS_LOG_WARNING("The new firmware descriptor is not own");
         return VS_CODE_ERR_NOT_FOUND;
     }

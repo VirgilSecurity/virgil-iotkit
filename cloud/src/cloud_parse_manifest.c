@@ -278,11 +278,11 @@ _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
     if (!_hex_str_to_bin((char *)fm_entry->manufacturer_id,
                          VS_IOT_STRLEN((char *)fm_entry->manufacturer_id),
                          new_desc.info.manufacture_id,
-                         sizeof(vs_fw_manufacture_id_t)) ||
+                         sizeof(vs_device_manufacture_id_t)) ||
         VS_CODE_OK != _get_firmware_version_from_manifest(fm_entry, &new_desc.info.version)) {
         return VS_CODE_ERR_JSON;
     }
-    VS_IOT_MEMCPY(new_desc.info.device_type, fm_entry->device_type.id, sizeof(vs_fw_device_type_t));
+    VS_IOT_MEMCPY(new_desc.info.device_type, fm_entry->device_type.id, sizeof(vs_device_type_t));
 
     return vs_cloud_is_new_firmware_version_available(fw_storage, &new_desc);
 }
