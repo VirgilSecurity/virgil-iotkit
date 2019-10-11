@@ -491,8 +491,18 @@ vs_firmware_get_expected_footer_len(void) {
 /*************************************************************************/
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
+    int footer_sz = vs_firmware_get_expected_footer_len();
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    return vs_firmware_get_own_firmware_descriptor_hal(descriptor, sizeof(vs_firmware_descriptor_t));
+    CHECK_RET(footer_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Can't get footer size");
+    uint8_t buf[footer_sz];
+    vs_status_e ret_code;
+    vs_firmware_footer_t *own_footer = (vs_firmware_footer_t *)buf;
+
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "");
+
+    VS_IOT_MEMCPY(descriptor, &own_footer->descriptor, sizeof(vs_firmware_descriptor_t));
+
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
@@ -619,7 +629,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
 
     CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
+    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
 
     if(0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
      0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, VS_DEVICE_TYPE_SIZE)) {

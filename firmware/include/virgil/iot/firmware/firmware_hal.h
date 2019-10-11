@@ -44,5 +44,5 @@ vs_status_e
 vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
 vs_status_e
-vs_firmware_get_own_firmware_descriptor_hal(void *descriptor, size_t buf_sz);
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz);
 #endif // VS_FIRMWARE_INTERFACE_H
