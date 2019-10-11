@@ -34,29 +34,36 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-# Default crypto implementations
-#
-option(VIRGIL_IOT_DEFAULT_CRYPTO "Enable default crypto implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
+project(vs-default-curl-https VERSION 0.1.0 LANGUAGES C)
+
+add_library(vs-default-curl-https)
+
+target_sources(vs-default-curl-https
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-curl-https/curl-https.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/curl-https.c
+
+
+        )
+
+target_link_libraries(vs-default-curl-https
+        PUBLIC
+        cloud
+        curl
+        )
 
 #
-# Default cloud implementations
+#   Common include directories
 #
-option(VIRGIL_IOT_DEFAULT_CLOUD "Enable default cloud implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS "Enable default curl https implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS "Enable default mqtt aws implementation" ON)
+target_include_directories(vs-default-curl-https
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
 
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
-endif()
+        INTERFACE
+        "$<INSTALL_INTERFACE:include>"
+        )
 
-#
-#   Default cloud implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
-endif()

@@ -35,11 +35,6 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
-# Features
-#
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
-
-#
 #   Virigl Crypto Soft HSM
 #
 if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM)

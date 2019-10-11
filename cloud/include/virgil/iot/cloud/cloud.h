@@ -42,25 +42,7 @@
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
-typedef struct {
-    char *topic_list;
-    uint16_t *topic_len_list;
-    size_t topic_count;
-} vs_cloud_mb_topics_list_t;
-
-typedef struct {
-    char *login;
-    char *password;
-    char *cert;
-    char *pk;
-    char *host;
-    vs_cloud_mb_topics_list_t topic_list;
-    char *client_id;
-    uint16_t port;
-    bool is_filled;
-    bool is_active;
-} vs_cloud_mb_mqtt_ctx_t;
-
+// Cloud
 #define VS_UPD_URL_STR_SIZE 200
 
 #define HTTPS_RET_CODE_ERROR_OPEN_SESSION 1000
@@ -83,6 +65,43 @@ typedef enum {
     VS_HTTP_CONNECT, /* do we need this  ? */
 } vs_http_method_t;
 
+typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
+
+typedef vs_status_e (*vs_cloud_https_cb_t)(vs_http_method_t type,
+                                           const char *url,
+                                           const char *data,
+                                           size_t data_size,
+                                           char *out_data,
+                                           vs_fetch_handler_func_t fetch_handler,
+                                           void *hander_data,
+                                           size_t *in_out_size);
+typedef struct {
+    vs_cloud_https_cb_t https;
+} vs_cloud_impl_t;
+
+vs_status_e
+vs_cloud_init(const vs_cloud_impl_t *impl);
+
+// Message bin
+typedef struct {
+    char *topic_list;
+    uint16_t *topic_len_list;
+    size_t topic_count;
+} vs_cloud_mb_topics_list_t;
+
+typedef struct {
+    char *login;
+    char *password;
+    char *cert;
+    char *pk;
+    char *host;
+    vs_cloud_mb_topics_list_t topic_list;
+    char *client_id;
+    uint16_t port;
+    bool is_filled;
+    bool is_active;
+} vs_cloud_mb_mqtt_ctx_t;
+
 typedef struct __attribute__((__packed__)) {
     uint32_t code_offset;   // sizeof(vs_cloud_firmware_header_t)
     uint32_t code_length;   // firmware_length
@@ -93,14 +112,14 @@ typedef struct __attribute__((__packed__)) {
 } vs_cloud_firmware_header_t;
 
 typedef vs_status_e (*vs_cloud_mb_init_func)(const char *host,
-                                     uint16_t port,
-                                     const char *device_cert,
-                                     const char *priv_key,
-                                     const char *ca_cert);
+                                             uint16_t port,
+                                             const char *device_cert,
+                                             const char *priv_key,
+                                             const char *ca_cert);
 typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func)(const char *client_id,
-                                                  const char *login,
-                                                  const char *password,
-                                                  const vs_cloud_mb_topics_list_t *topic_list);
+                                                          const char *login,
+                                                          const char *password,
+                                                          const vs_cloud_mb_topics_list_t *topic_list);
 typedef vs_status_e (*vs_cloud_mb_process_func)(void);
 
 vs_status_e
@@ -112,8 +131,6 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
                     vs_cloud_mb_init_func init,
                     vs_cloud_mb_connect_subscribe_func connect_subscribe,
                     vs_cloud_mb_process_func process);
-
-typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
 
 vs_status_e
 vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,

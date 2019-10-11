@@ -35,28 +35,8 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
-# Default crypto implementations
+#   Virigl cloud default implementation
 #
-option(VIRGIL_IOT_DEFAULT_CRYPTO "Enable default crypto implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
-
-#
-# Default cloud implementations
-#
-option(VIRGIL_IOT_DEFAULT_CLOUD "Enable default cloud implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS "Enable default curl https implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS "Enable default mqtt aws implementation" ON)
-
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
-endif()
-
-#
-#   Default cloud implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/curl-https)
 endif()

@@ -83,6 +83,7 @@ typedef enum {
     VS_CODE_ERR_NO_SIMULATOR = -81,
     VS_CODE_ERR_SOCKET = -82,
     VS_CODE_ERR_PLC = -83,
+    VS_CODE_ERR_NOINIT = -84,
 
 } vs_status_e;
 

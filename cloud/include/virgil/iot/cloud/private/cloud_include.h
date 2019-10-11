@@ -54,7 +54,6 @@
 #include <virgil/iot/json/json_parser.h>
 
 #include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/cloud/private/cloud_hal.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/cloud/private/cloud_parse_manifest.h>
 #include <virgil/iot/cloud/private/cloud_operations.h>

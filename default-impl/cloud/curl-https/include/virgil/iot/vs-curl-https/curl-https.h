@@ -32,17 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_HAL_H
-#define VS_CLOUD_HAL_H
+#ifndef VS_CURL_HTTPS_DEFAULT_IMPL_H
+#define VS_CURL_HTTPS_DEFAULT_IMPL_H
 
-uint16_t
-vs_cloud_https_hal(vs_http_method_t type,
-                   const char *url,
-                   const char *data,
-                   size_t data_size,
-                   char *out_data,
-                   vs_fetch_handler_func_t fetch_handler,
-                   void *hander_data,
-                   size_t *in_out_size);
+#include <virgil/iot/cloud/cloud.h>
 
-#endif // VS_CLOUD_HAL_H
+const vs_cloud_impl_t*
+vs_curl_https_impl(void);
+
+#endif // VS_CURL_HTTPS_DEFAULT_IMPL_H
