@@ -44,7 +44,8 @@ type DeviceInfo struct {
 	ManufactureID string `json:"manufacture_id"`
 	DeviceType    string `json:"device_type"`
 	Roles       []string `json:"roles"`
-	Version       string `json:"version"`
+	FWVersion     string `json:"fw_version"`
+	TLVersion     string `json:"tl_version"`
 	MAC           string `json:"mac"`
 	Sent          uint32 `json:"sent"`
 	Received      uint32 `json:"received"`
@@ -61,7 +62,8 @@ func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
     cd := d.Items[info.MAC]
     cd.ManufactureID = info.ManufactureID
     cd.DeviceType = info.DeviceType
-    cd.Version = info.Version
+    cd.FWVersion = info.FWVersion
+    cd.TLVersion = info.TLVersion
     cd.MAC = info.MAC
     cd.Roles = info.Roles
     cd.lastTime = int32(time.Now().Unix())

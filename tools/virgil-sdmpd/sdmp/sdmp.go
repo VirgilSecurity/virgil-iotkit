@@ -179,12 +179,13 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
         goInfo.ID = ""
         goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.MANUFACTURE_ID_SIZE)
         goInfo.DeviceType = carray2string(&general_info.device_type[0], C.DEVICE_TYPE_SIZE)
-        goInfo.Version = fwVer2string(general_info.fw_major,
+        goInfo.FWVersion = fwVer2string(general_info.fw_major,
                                         general_info.fw_minor,
                                         general_info.fw_patch,
                                         general_info.fw_dev_milestone,
                                         general_info.fw_dev_build,
                                         general_info.fw_timestamp)
+        goInfo.TLVersion = fmt.Sprintf("ver %d", general_info.tl_version)
         goInfo.MAC = mac2string(&general_info.default_netif_mac[0])
         goInfo.Roles = roles2strings(general_info.device_roles);
 

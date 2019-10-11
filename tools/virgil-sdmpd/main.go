@@ -151,11 +151,12 @@ func createStatusTable(t time.Time) string {
 
 	for _, k := range keys {
         d := devicesInfo.Items[k]
-        table += fmt.Sprintf("<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td>  <td>%d</td> <td>%d</td> <td>%s</td>  </tr>",
+        table += fmt.Sprintf("<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%d</td> <td>%d</td> <td>%s</td>  </tr>",
 			d.MAC,
 			d.ManufactureID,
 			d.DeviceType,
-			d.Version,
+			d.FWVersion,
+			d.TLVersion,
 			d.Sent,
 			d.Received,
 			strings.Trim(strings.Join(strings.Fields(fmt.Sprint(d.Roles)), ", "), "[]"),
@@ -201,7 +202,7 @@ var HtmlPage = `
     
     
     var table_output = document.getElementById("tbl");
-    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
+    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
     var device_table_socket = new WebSocket(url + "ws/devices");
    
