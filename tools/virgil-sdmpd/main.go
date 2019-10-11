@@ -140,7 +140,7 @@ func main() {
 }
 
 func createStatusTable(t time.Time) string {
-	table := "<tr><td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td>  </tr>"
+	table := "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
     // Sorted keys
     keys := make([]string, 0, len(devicesInfo.Items))
