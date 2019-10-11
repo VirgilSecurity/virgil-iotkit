@@ -481,10 +481,28 @@ _is_rule_equal_to(vs_key_type_e type) {
 }
 
 /*************************************************************************/
+int
+vs_firmware_get_expected_footer_len(void) {
+    uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    return sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_sz + sign_sz);
+}
+
+/*************************************************************************/
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
+    int footer_sz = vs_firmware_get_expected_footer_len();
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    return vs_firmware_get_own_firmware_descriptor_hal(descriptor, sizeof(vs_firmware_descriptor_t));
+    CHECK_RET(footer_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Can't get footer size");
+    uint8_t buf[footer_sz];
+    vs_status_e ret_code;
+    vs_firmware_footer_t *own_footer = (vs_firmware_footer_t *)buf;
+
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "");
+
+    VS_IOT_MEMCPY(descriptor, &own_footer->descriptor, sizeof(vs_firmware_descriptor_t));
+
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
@@ -493,8 +511,8 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     vs_storage_element_id_t data_id;
     ssize_t file_sz;
     uint8_t *pubkey;
-    uint16_t sign_len;
-    uint16_t key_len;
+    int sign_len;
+    int key_len;
     uint8_t sign_rules = 0;
     uint16_t i;
     vs_hsm_sw_sha256_ctx hash_ctx;
@@ -577,25 +595,25 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_UNSUPPORTED, "Unsupported signature ec_type");
 
         // Signer raw key pointer
-        pubkey = sign->raw_sign_pubkey + sign_len;
+        pubkey = sign->raw_sign_pubkey + (uint16_t)sign_len;
 
-        STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+        STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
                   "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
             STATUS_CHECK_RET(vs_hsm_ecdsa_verify(sign->ec_type,
                                                            pubkey,
-                                                           key_len,
+                                                           (uint16_t)key_len,
                                                            sign->hash_type,
                                                            hash,
                                                            sign->raw_sign_pubkey,
-                                                           sign_len),
+                                                           (uint16_t)sign_len),
                       "Signature is wrong");
             sign_rules++;
         }
 
         // Next signature
-        sign = (vs_sign_t *)(pubkey + key_len);
+        sign = (vs_sign_t *)(pubkey + (uint16_t)key_len);
     }
 
     VS_LOG_DEBUG("New FW Image. Sign rules is %s", sign_rules >= VS_FW_SIGNATURES_QTY ? "correct" : "wrong");
@@ -605,25 +623,44 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 
 /*************************************************************************/
 vs_status_e
+vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) {
+    vs_firmware_descriptor_t own_desc;
+    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(own_desc.info.version.app_type) - sizeof(own_desc.info.version.timestamp));
+
+    CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
+
+    if(0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+     0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, VS_DEVICE_TYPE_SIZE)) {
+        VS_LOG_DEBUG("The new firmware descriptor is not own");
+        return VS_CODE_ERR_NOT_FOUND;
+    }
+
+    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(new_descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+        return VS_CODE_OLD_VERSION;
+    }
+    return VS_CODE_OK;
+}
+
+/*************************************************************************/
+vs_status_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor) {
     vs_storage_element_id_t data_id;
     vs_status_e ret_code;
     ssize_t file_sz;
-    vs_firmware_descriptor_t own_desc;
-    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(descriptor->info.version.app_type));
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-
     //Compare the own firmware image version
-    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor_hal(&own_desc, sizeof(own_desc)), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
-
-    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+    ret_code = vs_firmware_compare_own_version(descriptor);
+    if(VS_CODE_OLD_VERSION == ret_code) {
         VS_LOG_WARNING("No need to install a new firmware. It doesn't contain a new version");
         return VS_CODE_ERR_VERIFY;
     }
+    CHECK_RET(VS_CODE_OK == ret_code, VS_CODE_ERR_VERIFY, "Error during checking own firmware version");
 
     CHECK_RET(VS_CODE_OK == vs_firmware_install_prepare_space_hal(),
               VS_CODE_ERR_FILE,

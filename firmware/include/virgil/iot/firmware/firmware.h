@@ -124,4 +124,10 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
 char *
 vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size);
 
+vs_status_e
+vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
+
+int
+vs_firmware_get_expected_footer_len(void);
+
 #endif // VS_FIRMWARE_H
