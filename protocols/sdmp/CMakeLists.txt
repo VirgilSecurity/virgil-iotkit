@@ -60,20 +60,23 @@ function(add_sdmp _for_factory)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_structs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_private.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_private.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_server.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info-server.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info-client.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_server.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/services/info-server.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/services/info-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/generated/sdmp_cvt.c
             )
 

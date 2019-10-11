@@ -35,7 +35,7 @@
 #ifndef VS_HAL_PRVS_IMPLEMENTATION_H
 #define VS_HAL_PRVS_IMPLEMENTATION_H
 
-#include <virgil/iot/protocols/sdmp/info-client.h>
+#include <virgil/iot/protocols/sdmp/info/info-client.h>
 
 vs_sdmp_info_impl_t
 vs_info_impl();

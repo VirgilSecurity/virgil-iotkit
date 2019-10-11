@@ -44,7 +44,7 @@
 #define DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
 
 typedef union {
-    uint8_t id[DEVICE_TYPE_SIZE];
+    uint8_t id[VS_DEVICE_TYPE_SIZE];
     char str[DEV_TYPE_ID_STR_LEN];
 } vs_readable_type_t;
 

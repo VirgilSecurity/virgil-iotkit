@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
-#include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/protocols/sdmp/prvs/prvs-server.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp.h>
@@ -41,30 +41,67 @@
 #include <stdlib-config.h>
 #include <global-hal.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdlib-config.h>
 #include <string.h>
 
-#if !VS_SDMP_FACTORY
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/hsm/hsm_interface.h>
 #include <virgil/iot/trust_list/trust_list.h>
-#endif // !VS_SDMP_FACTORY
 
-static vs_sdmp_service_t _prvs_service = {0};
+static vs_sdmp_service_t _prvs_server = {0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;
-static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;
 
-// External functions for access to upper level implementations
-static vs_sdmp_prvs_impl_t _prvs_impl = {0};
+/******************************************************************************/
+static bool
+vs_prvs_server_is_initialized(void) {
+    // TODO: Check is device initialized
+    return false;
+}
 
-// Last result
-#define PRVS_BUF_SZ (1024)
-static vs_status_e _last_res = VS_CODE_ERR_PRVS_UNKNOWN;
-static uint16_t _last_data_sz = 0;
-static uint8_t _last_data[PRVS_BUF_SZ];
+/******************************************************************************/
+static vs_status_e
+vs_prvs_server_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
+    uint16_t key_sz = 0;
+    vs_hsm_keypair_type_e ec_type;
+    vs_pubkey_t *own_pubkey;
+    uint16_t sign_sz = 0;
+    vs_sign_t *sign;
+    vs_status_e ret_code;
 
-#if !VS_SDMP_FACTORY
+    // Check input parameters
+    VS_IOT_ASSERT(device_info);
+
+    // Fill MAC address
+    vs_sdmp_mac_addr(NULL, &device_info->mac);
+
+    // Fill Manufacture ID
+    VS_IOT_MEMCPY(device_info->manufacturer, vs_sdmp_device_manufacture(), VS_DEVICE_MANUFACTURE_ID_SIZE);
+
+    // Fill device Type ID
+    VS_IOT_MEMCPY(device_info->device_type, vs_sdmp_device_type(), VS_DEVICE_TYPE_SIZE);
+
+    // Fill Serial of device
+    VS_IOT_MEMCPY(device_info->serial, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);
+
+    // Fill own public key
+    own_pubkey = (vs_pubkey_t *)device_info->data;
+    STATUS_CHECK_RET(vs_hsm_keypair_get_pubkey(PRIVATE_KEY_SLOT, own_pubkey->pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
+                     "Unable to get public key");
+
+    own_pubkey->key_type = VS_KEY_IOT_DEVICE;
+    own_pubkey->ec_type = ec_type;
+    device_info->data_sz = key_sz + sizeof(vs_pubkey_t);
+    sign = (vs_sign_t *)((uint8_t *)own_pubkey + key_sz + sizeof(vs_pubkey_t));
+
+    buf_sz -= device_info->data_sz;
+
+    // Load signature
+    STATUS_CHECK_RET(vs_hsm_slot_load(SIGNATURE_SLOT, (uint8_t *)sign, buf_sz, &sign_sz), "Unable to load slot");
+
+    device_info->data_sz += sign_sz;
+
+    return VS_CODE_OK;
+}
+
 /******************************************************************************/
 static vs_status_e
 vs_prvs_save_data(vs_sdmp_prvs_element_e element_id, const uint8_t *data, uint16_t data_sz) {
@@ -182,8 +219,6 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     return VS_CODE_OK;
 }
 
-#endif // !VS_SDMP_FACTORY
-
 /******************************************************************************/
 static vs_status_e
 _prvs_dnid_process_request(const struct vs_netif_t *netif,
@@ -193,37 +228,22 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
-    vs_status_e ret_code;
     vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
 
-    VS_IOT_ASSERT(_prvs_impl.dnid_func);
+    // Check input parameters
+    VS_IOT_ASSERT(response_buf_sz >= sizeof(vs_sdmp_prvs_dnid_element_t));
 
-    STATUS_CHECK_RET(_prvs_impl.dnid_func(), "Unable to send DNID request");
-
-    const uint16_t required_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
-    VS_IOT_ASSERT(response_buf_sz >= required_sz);
-
-    vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
-    dnid_response->device_type = 0;
-    *response_sz = required_sz;
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-static vs_status_e
-_prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *response, const uint16_t response_sz) {
-
-    vs_sdmp_prvs_dnid_element_t *dnid_response = (vs_sdmp_prvs_dnid_element_t *)response;
-
-    if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
-        memcpy(&_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_sdmp_prvs_dnid_element_t));
-        _prvs_dnid_list->count++;
-
-        return VS_CODE_OK;
+    if (vs_prvs_server_is_initialized()) {
+        // No need in response, because device is initialized already
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
-    return VS_CODE_ERR_PRVS_UNKNOWN;
+    // Fill MAC address
+    vs_sdmp_mac_addr(netif, &dnid_response->mac_addr);
+    dnid_response->device_roles = vs_sdmp_device_roles();
+    *response_sz = sizeof(vs_sdmp_prvs_dnid_element_t);
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -232,8 +252,7 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
                                vs_sdmp_element_t element_id,
                                const uint8_t *key,
                                const uint16_t key_sz) {
-    VS_IOT_ASSERT(_prvs_impl.save_data_func);
-    return _prvs_impl.save_data_func(element_id, key, key_sz);
+    return vs_prvs_save_data(element_id, key, key_sz);
 }
 
 /******************************************************************************/
@@ -248,8 +267,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
     vs_status_e ret_code;
     vs_sdmp_prvs_devi_t *devi_response = (vs_sdmp_prvs_devi_t *)response;
 
-    VS_IOT_ASSERT(_prvs_impl.device_info_func);
-    STATUS_CHECK_RET(_prvs_impl.device_info_func(devi_response, response_buf_sz), "Unable to get device info");
+    STATUS_CHECK_RET(vs_prvs_server_device_info(devi_response, response_buf_sz), "Unable to get device info");
 
     *response_sz = sizeof(vs_sdmp_prvs_devi_t) + devi_response->data_sz;
 
@@ -269,10 +287,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
                            uint16_t *response_sz) {
 
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
-
-    VS_IOT_ASSERT(_prvs_impl.finalize_storage_func);
-
-    return _prvs_impl.finalize_storage_func(asav_response, response_sz);
+    return vs_prvs_finalize_storage(asav_response, response_sz);
 }
 
 /******************************************************************************/
@@ -287,9 +302,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
     vs_status_e ret_code;
     uint16_t result_sz;
 
-    VS_IOT_ASSERT(_prvs_impl.sign_data_func);
-
-    STATUS_CHECK_RET(_prvs_impl.sign_data_func(request, request_sz, response, response_buf_sz, &result_sz),
+    STATUS_CHECK_RET(vs_prvs_sign_data(request, request_sz, response, response_buf_sz, &result_sz),
                      "Unable to sign data");
 
     *response_sz = result_sz;
@@ -301,10 +314,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 static vs_status_e
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    VS_IOT_ASSERT(_prvs_impl.start_save_tl_func);
-    STATUS_CHECK_RET(_prvs_impl.start_save_tl_func(request, request_sz), "Unable to start save Trust List");
-
+    STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save Trust List");
     return VS_CODE_OK;
 }
 
@@ -312,10 +322,7 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 static vs_status_e
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    VS_IOT_ASSERT(_prvs_impl.save_tl_part_func);
-    STATUS_CHECK_RET(_prvs_impl.save_tl_part_func(request, request_sz), "Unable to save Trust List part");
-
+    STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save Trust List part");
     return VS_CODE_OK;
 }
 
@@ -323,10 +330,7 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 static vs_status_e
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    VS_IOT_ASSERT(_prvs_impl.finalize_tl_func);
-    STATUS_CHECK_RET(_prvs_impl.finalize_tl_func(request, request_sz), "Unable to finalize Trust List");
-
+    STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize Trust List");
     return VS_CODE_OK;
 }
 
@@ -339,9 +343,6 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
-
-    // Process DNID
-
     *response_sz = 0;
 
     switch (element_id) {
@@ -379,271 +380,28 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
 
     default:
         VS_LOG_ERROR("Unsupported PRVS request %d", element_id);
-        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
+        return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
 
-/******************************************************************************/
-static vs_status_e
-_prvs_service_response_processor(const struct vs_netif_t *netif,
-                                 vs_sdmp_element_t element_id,
-                                 bool is_ack,
-                                 const uint8_t *response,
-                                 const uint16_t response_sz) {
-
-    VS_IOT_ASSERT(_prvs_impl.stop_wait_func);
-
-    switch (element_id) {
-    case VS_PRVS_DNID:
-        return _prvs_dnid_process_response(netif, response, response_sz);
-
-    default: {
-        if (response_sz && response_sz < PRVS_BUF_SZ) {
-            _last_data_sz = response_sz;
-            memcpy(_last_data, response, response_sz);
-        }
-
-        _prvs_impl.stop_wait_func(&_last_res, is_ack ? VS_CODE_OK : VS_CODE_ERR_PRVS_UNKNOWN);
-
-        return VS_CODE_OK;
-    }
-    }
-}
-
-/******************************************************************************/
-static vs_status_e
-_configure_hal(vs_sdmp_prvs_impl_t impl) {
-    VS_IOT_MEMSET(&_prvs_impl, 0, sizeof(_prvs_impl));
-
-#if !VS_SDMP_FACTORY
-    _prvs_impl.save_data_func = &vs_prvs_save_data;
-    _prvs_impl.finalize_storage_func = &vs_prvs_finalize_storage;
-    _prvs_impl.start_save_tl_func = &vs_prvs_start_save_tl;
-    _prvs_impl.save_tl_part_func = &vs_prvs_save_tl_part;
-    _prvs_impl.finalize_tl_func = &vs_prvs_finalize_tl;
-    _prvs_impl.sign_data_func = &vs_prvs_sign_data;
-#endif // !VS_SDMP_FACTORY
-
-    if (impl.save_data_func) {
-        _prvs_impl.save_data_func = impl.save_data_func;
-    }
-
-    if (impl.load_data_func) {
-        _prvs_impl.load_data_func = impl.load_data_func;
-    }
-
-    if (impl.finalize_storage_func) {
-        _prvs_impl.finalize_storage_func = impl.finalize_storage_func;
-    }
-
-    if (impl.start_save_tl_func) {
-        _prvs_impl.start_save_tl_func = impl.start_save_tl_func;
-    }
-
-    if (impl.save_tl_part_func) {
-        _prvs_impl.save_tl_part_func = impl.save_tl_part_func;
-    }
-
-    if (impl.finalize_tl_func) {
-        _prvs_impl.finalize_tl_func = impl.finalize_tl_func;
-    }
-
-    if (impl.sign_data_func) {
-        _prvs_impl.sign_data_func = impl.sign_data_func;
-    }
-
-    _prvs_impl.dnid_func = impl.dnid_func;
-    _prvs_impl.device_info_func = impl.device_info_func;
-    _prvs_impl.wait_func = impl.wait_func;
-    _prvs_impl.stop_wait_func = impl.stop_wait_func;
-
-    return VS_CODE_OK;
-}
 /******************************************************************************/
 static void
 _prepare_prvs_service() {
-    _prvs_service.user_data = 0;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-    _prvs_service.id = VS_PRVS_SERVICE_ID;
-#pragma GCC diagnostic pop
-    _prvs_service.request_process = _prvs_service_request_processor;
-    _prvs_service.response_process = _prvs_service_response_processor;
-    _prvs_service.periodical_process = NULL;
+    _prvs_server.user_data = 0;
+    _prvs_server.id = VS_PRVS_SERVICE_ID;
+    _prvs_server.request_process = _prvs_service_request_processor;
+    _prvs_server.response_process = NULL;
+    _prvs_server.periodical_process = NULL;
 }
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_prvs_service(vs_sdmp_prvs_impl_t impl) {
+vs_sdmp_prvs_server(void) {
     if (!_prvs_service_ready) {
         _prepare_prvs_service();
-        _configure_hal(impl);
         _prvs_service_ready = true;
     }
-
-    return &_prvs_service;
+    return &_prvs_server;
 }
 
 /******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms) {
-    vs_status_e ret_code;
-
-    VS_IOT_ASSERT(_prvs_impl.wait_func);
-
-    // Set storage for DNID request
-    _prvs_dnid_list = list;
-    memset(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));
-
-    // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, NULL, VS_PRVS_SERVICE_ID, VS_PRVS_DNID, 0, 0), "Send request error");
-
-    // Wait request
-    vs_global_hal_msleep(wait_ms);
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_device_info(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         vs_sdmp_prvs_devi_t *device_info,
-                         uint16_t buf_sz,
-                         uint32_t wait_ms) {
-    uint16_t sz;
-
-    if (VS_CODE_OK == vs_sdmp_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms)) {
-        vs_sdmp_prvs_devi_t_decode(device_info);
-        return VS_CODE_OK;
-    }
-    return VS_CODE_ERR_PRVS_UNKNOWN;
-}
-
-/******************************************************************************/
-static void
-_reset_last_result() {
-    _last_res = VS_CODE_ERR_PRVS_UNKNOWN;
-    _last_data_sz = 0;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_set(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_sdmp_prvs_element_e element,
-                 const uint8_t *data,
-                 uint16_t data_sz,
-                 uint32_t wait_ms) {
-
-    vs_status_e ret_code;
-    VS_IOT_ASSERT(_prvs_impl.wait_func);
-
-    _reset_last_result();
-
-    // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz),
-                     "Send request error");
-
-    // Wait request
-    _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
-
-    return _last_res;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_get(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_sdmp_prvs_element_e element,
-                 uint8_t *data,
-                 uint16_t buf_sz,
-                 uint16_t *data_sz,
-                 uint32_t wait_ms) {
-
-    vs_status_e ret_code;
-    VS_IOT_ASSERT(_prvs_impl.wait_func);
-
-    _reset_last_result();
-
-    // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, 0, 0), "Send request error");
-
-    // Wait request
-    _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
-
-    // Pass data
-    if (VS_CODE_OK == _last_res && _last_data_sz <= buf_sz) {
-        memcpy(data, _last_data, _last_data_sz);
-        *data_sz = _last_data_sz;
-        return VS_CODE_OK;
-    }
-
-    return VS_CODE_ERR_PRVS_UNKNOWN;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
-                            const vs_mac_addr_t *mac,
-                            uint8_t *asav_res,
-                            uint16_t buf_sz,
-                            uint32_t wait_ms) {
-    VS_IOT_ASSERT(asav_res);
-
-    uint16_t sz;
-    return vs_sdmp_prvs_get(netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, buf_sz, &sz, wait_ms);
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
-                       const vs_mac_addr_t *mac,
-                       const uint8_t *data,
-                       uint16_t data_sz,
-                       uint8_t *signature,
-                       uint16_t buf_sz,
-                       uint16_t *signature_sz,
-                       uint32_t wait_ms) {
-
-    vs_status_e ret_code;
-    VS_IOT_ASSERT(_prvs_impl.wait_func);
-
-    _reset_last_result();
-
-    // Send request
-    STATUS_CHECK_RET(vs_sdmp_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz),
-                     "Send request error");
-
-    // Wait request
-    _prvs_impl.wait_func(wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
-
-    // Pass data
-    if (VS_CODE_OK == _last_res && _last_data_sz <= buf_sz) {
-        memcpy(signature, _last_data, _last_data_sz);
-        *signature_sz = _last_data_sz;
-        return VS_CODE_OK;
-    }
-
-    return VS_CODE_ERR_PRVS_UNKNOWN;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms) {
-    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
-}
-
-/******************************************************************************/
-vs_status_e
-vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms) {
-    return vs_sdmp_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
-}

@@ -32,81 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_LOGGER_CONFIG_H
-#define VS_IOT_SDK_LOGGER_CONFIG_H
 
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
 
+#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/firmware/firmware.h>
 
-/*
- * VS_IOT_LOGGER_ENABLE
- * Enables logger library.
- * Logger macroses will be empty if it is disabled.
- */
+typedef struct {
+    uint32_t device_roles; // vs_sdmp_device_role_e
+    uint8_t mac[ETH_ADDR_LEN];
+} vs_sdmp_info_device_t;
 
-#define VS_IOT_LOGGER_ENABLE 1
+typedef struct {
+    uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
+    uint8_t default_netif_mac[ETH_ADDR_LEN];
+    uint32_t device_roles; // vs_sdmp_device_role_e
+    uint8_t fw_major;
+    uint8_t fw_minor;
+    uint8_t fw_patch;
+    uint8_t fw_dev_milestone;
+    uint8_t fw_dev_build;
+    uint32_t fw_timestamp;
+    uint16_t tl_version;
+} vs_info_general_t;
 
-#if VS_IOT_LOGGER_ENABLE
+typedef struct {
+    uint32_t sent;
+    uint32_t received;
+    uint8_t default_netif_mac[ETH_ADDR_LEN];
+} vs_info_statistics_t;
 
-/*
- * VS_IOT_LOGGER_MAX_BUFFER_SIZE
- * Defines maximum internal char buffer for output purposes.
- */
+typedef enum {
+    VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),
+    VS_SDMP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002),
+} vs_sdmp_info_element_mask_e;
 
-#define VS_IOT_LOGGER_MAX_BUFFER_SIZE 1024
-
-/*
- * VS_IOT_LOGGER_USE_STATIC_BUFFER
- * Enables static buffer usage instead of stack one.
- * This can be done for single thread mode only.
- */
-
-#define VS_IOT_LOGGER_USE_STATIC_BUFFER 0
-
-/*
- * VS_IOT_LOGGER_USE_LIBRARY
- * Enables logger library usage with logger level, file name and line number.
- * If it is disabled, VS_IOT_LOGGER_FUNCTION function will be called.
- */
-
-#define VS_IOT_LOGGER_USE_LIBRARY 1
-
-/*
- * VS_IOT_LOGGER_FUNCTION
- * Sends string directly to the printf-like function defined by this macros.
- * Used when VS_IOT_LOGGER_USE_LIBRARY == 0
- */
-
-#if !VS_IOT_LOGGER_USE_LIBRARY && !VS_IOT_LOGGER_EXCLUDE_EXTERNAL_HEADERS
-
-/*
- * Here you can include any additional headers
- */
-
-#include <stdio.h>
-
-#define VS_IOT_LOGGER_FUNCTION printf
-#endif // VS_IOT_LOGGER_USE_LIBRARY
-
-/*
- * VS_IOT_LOGGER_EOL
- * ASCIIZ string placed at the end of the output string.
- * Normally this is "\n".
- */
-
-#define VS_IOT_LOGGER_EOL "\n"
-
-/*
- * VS_IOT_LOGGER_OUTPUT_TIME
- * Enables current time output at the beginning of log string.
- * Requires vs_logger_current_time_hal function implementation.
- */
-
-#define VS_IOT_LOGGER_OUTPUT_TIME   0
-
-#else  // VS_IOT_LOGGER_ENABLE
-#define VS_IOT_LOGGER_USE_LIBRARY 0
-#endif  // VS_IOT_LOGGER_ENABLE
-
-
-
-#endif // VS_IOT_SDK_LOGGER_CONFIG_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H

@@ -109,6 +109,7 @@ option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
 option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
+option(VIRGIL_IOT_HIGHLEVEL "Enable 'high level implementations'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
 
@@ -227,6 +228,13 @@ endif()
 #
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
+endif()
+
+#
+#   High level implementations
+#
+if (VIRGIL_IOT_HIGHLEVEL)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/high-level)
 endif()
 
 #

@@ -43,15 +43,20 @@ static vs_netif_t test_netif;
 static bool
 test_sdmp_init_deinit(void) {
 
+    const vs_device_manufacture_id_t manufacturer_id = {0};
+    const vs_device_type_t device_type = {0};
+    const vs_device_serial_t device_serial = {0};
+    uint32_t device_roles = 0;
+
     netif_state.membuf = 0;
 
-    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
+    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
     NETIF_OP_CHECK_GOTO(netif_state.initialized);
 
     SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
     NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
 
-    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif), "vs_sdmp_init call");
+    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
     NETIF_OP_CHECK_GOTO(netif_state.initialized);
 
     return true;

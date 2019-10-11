@@ -42,10 +42,26 @@ extern "C" {
 #endif
 
 vs_status_e
-vs_sdmp_init(vs_netif_t *default_netif);
+vs_sdmp_init(vs_netif_t *default_netif,
+             const vs_device_manufacture_id_t manufacturer_id,
+             const vs_device_type_t device_type,
+             const vs_device_serial_t device_serial,
+             uint32_t device_roles);
 
 vs_status_e
 vs_sdmp_deinit();
+
+const vs_device_manufacture_id_t *
+vs_sdmp_device_manufacture(void);
+
+const vs_device_type_t *
+vs_sdmp_device_type(void);
+
+const vs_device_serial_t *
+vs_sdmp_device_serial(void);
+
+uint32_t
+vs_sdmp_device_roles(void);
 
 #if 0
 vs_status_e

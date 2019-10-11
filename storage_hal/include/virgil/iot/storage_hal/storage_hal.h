@@ -91,6 +91,9 @@ typedef vs_status_e (*vs_storage_del_hal_t)(
         const vs_storage_hal_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
+vs_status_e
+vs_impl_own_firmware_descriptor(void *descriptor);
+
 // HAL
 typedef struct {
     vs_storage_deinit_hal_t deinit;

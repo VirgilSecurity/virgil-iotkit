@@ -35,12 +35,13 @@
 #ifndef VS_IOT_SDK_STDLIB_CONFIG_H
 #define VS_IOT_SDK_STDLIB_CONFIG_H
 
-
-
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+
+#include "global-hal.h"
 
 #define VS_IOT_ASSERT    assert
 #define VS_IOT_CALLOC    calloc
@@ -55,7 +56,7 @@
 #define VS_IOT_STRCPY    strcpy
 #define VS_IOT_STRLEN    strlen
 #define VS_IOT_VSNPRINTF vsnprintf
-
+#define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))
 
 
 #endif // VS_IOT_SDK_STDLIB_CONFIG_H

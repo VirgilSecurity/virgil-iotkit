@@ -104,6 +104,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ++len;
         ctx->login = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "login", ctx->login, len);
+
         /*----password----*/
         if (json_get_val_str_len(&jobj, "password", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [password]");
@@ -112,6 +113,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ++len;
         ctx->password = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "password", ctx->password, len);
+
         /*----client_id----*/
         if (json_get_val_str_len(&jobj, "client_id", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [client_id]");
@@ -120,6 +122,7 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         ++len;
         ctx->client_id = (char *)VS_IOT_MALLOC((size_t)len);
         json_get_val_str(&jobj, "client_id", ctx->client_id, len);
+
         /*----certificate----*/
         if (json_get_val_str_len(&jobj, "certificate", &len) != VS_JSON_ERR_OK || len < 0) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");

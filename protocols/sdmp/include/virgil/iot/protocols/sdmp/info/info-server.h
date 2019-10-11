@@ -32,45 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TL_CONFIG_H
-#define VS_IOT_SDK_TL_CONFIG_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
 
-/*
- * VS_TL_STORAGE_SIZE
- * Maximum size of trust list used.
- * Please note that library uses three type of storage,
- * so you need have at least VS_TL_STORAGE_SIZE * 3 memory size
- * (excluding filesystem)
- */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define VS_TL_STORAGE_SIZE (10 * 4096)
+#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/firmware/firmware.h>
 
-/*
- * VS_TL_STORAGE_MAX_PART_SIZE
- * Maximum size of each part of trust list.
- * It should be not less than max size of tl header, tl footer and tl public key
- */
+const vs_sdmp_service_t *
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx);
 
-#define VS_TL_STORAGE_MAX_PART_SIZE (512)
+vs_status_e
+vs_sdmp_info_start_notification(const vs_netif_t *netif);
 
-/*Trust list signature rules*/
+#ifdef __cplusplus
+}
+#endif
 
-/*
- * VS_TL_SIGNATURES_QTY
- * Minimum quantity of required signatures, which must be in TL footer
- */
-
-#define VS_TL_SIGNATURES_QTY (2)
-
-/*
- * List of signer types, which must be among signatures in TL footer
- * Quantity MUST be equal to VS_TL_SIGNATURES_QTY
- * It's values of vs_key_type_e from provision library
- */
-
-#define VS_TL_SIGNER_TYPE_LIST {                                                                                       \
-    VS_KEY_AUTH,                                                                                                    \
-    VS_KEY_TRUSTLIST                                                                                                \
-};
-
-#endif // VS_IOT_SDK_TL_CONFIG_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H

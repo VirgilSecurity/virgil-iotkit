@@ -32,84 +32,55 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_PRVS_H_
-#define VS_IOT_SDK_TESTS_PRVS_H_
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
 
-#include <virgil/iot/tests/helpers.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/protocols/sdmp/prvs.h>
+#include <virgil/iot/status_code/status_code.h>
+
+typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
+
+typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
+typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
+typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
 typedef struct {
-    union {
-        uint16_t call;
+    vs_sdmp_info_start_notif_cb_t device_start_cb;
+    vs_sdmp_info_general_cb_t general_info_cb;
+    vs_sdmp_info_statistics_cb_t statistics_cb;
+} vs_sdmp_info_callbacks_t;
 
-        struct {
-            unsigned dnid : 1;
-            unsigned save_data : 1;
-            unsigned device_info : 1;
-            unsigned finalize_storage : 1;
-            unsigned finalize_tl : 1;
-            unsigned stop_wait : 1;
-            unsigned sign_data : 1;
-            unsigned wait : 1;
-        };
-    };
-} prvs_call_t;
+typedef struct {
+    vs_sdmp_info_wait_t wait_func;
+    vs_sdmp_info_stop_wait_t stop_wait_func;
+} vs_sdmp_info_impl_t;
 
-typedef union {
+const vs_sdmp_service_t *
+vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks);
 
-    struct {
-        uint16_t buf_sz;
-    } finalize_storage;
+vs_status_e
+vs_sdmp_info_enum_devices(const vs_netif_t *netif,
+                          vs_sdmp_info_device_t *devices,
+                          size_t devices_max,
+                          size_t *devices_cnt,
+                          uint32_t wait_ms);
 
-    struct {
-        uint8_t *data;
-        uint16_t data_sz;
-        uint16_t buf_sz;
-    } sign_data;
+vs_status_e
+vs_sdmp_info_set_polling(const vs_netif_t *netif,
+                         const vs_mac_addr_t *mac,
+                         uint32_t elements, // Multiple vs_sdmp_info_element_mask_e
+                         bool enable,
+                         uint16_t period_seconds);
 
-    struct {
-        vs_sdmp_prvs_element_e element_id;
-        uint8_t *data;
-        uint16_t data_sz;
-    } save_data;
 
-    struct {
-        uint8_t *data;
-        uint16_t data_sz;
-    } finalize_tl;
+#ifdef __cplusplus
+}
+#endif
 
-} server_request_t;
-
-typedef union {
-    uint8_t data[1024];
-    struct {
-        uint16_t size;
-        vs_pubkey_t asav_response;
-    } finalize_storage;
-
-    vs_sdmp_prvs_devi_t *device_info;
-
-    struct {
-        uint8_t *signature;
-        uint16_t signature_sz;
-    } sign_data;
-
-    struct {
-        vs_sdmp_prvs_element_e element_id;
-        uint8_t *data;
-        uint16_t data_sz;
-    } save_data;
-
-} make_server_response_t;
-
-extern prvs_call_t prvs_call;
-extern server_request_t server_request;
-extern make_server_response_t make_server_response;
-
-vs_sdmp_prvs_impl_t
-make_prvs_implementation(void);
-
-#define PRVS_OP_CHECK_GOTO(OPERATION) CHECK_GOTO((OPERATION) != 0, "prvs operation " #OPERATION " has not been called");
-
-#endif // VS_IOT_SDK_TESTS_PRVS_H_
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H

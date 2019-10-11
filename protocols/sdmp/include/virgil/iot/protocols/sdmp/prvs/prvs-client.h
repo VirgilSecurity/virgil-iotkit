@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_PRVS_H
-#define VS_PRVS_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,75 +41,22 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
-#define DNID_LIST_SZ_MAX (50)
-#define PUBKEY_MAX_SZ (100)
+#include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/provision/provision.h>
 
-typedef struct {
-    vs_mac_addr_t mac_addr;
-    uint8_t device_type;
-    uint8_t reserved[10];
-} vs_sdmp_prvs_dnid_element_t;
-
-typedef struct {
-    vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
-    uint16_t count;
-} vs_sdmp_prvs_dnid_list_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer[16];
-    uint32_t model;
-    vs_mac_addr_t mac;
-    uint8_t udid_of_device[32];
-    uint16_t data_sz;
-
-    uint8_t data[]; // vs_pubkey_t own_key + vs_sign_t signature
-} vs_sdmp_prvs_devi_t;
-
-typedef struct __attribute__((__packed__)) {
-    uint8_t hash_type; // vs_hsm_hash_type_e
-    uint8_t data[];
-} vs_sdmp_prvs_sgnp_req_t;
-
-typedef vs_status_e (*vs_sdmp_prvs_dnid_t)();
-typedef vs_status_e (*vs_sdmp_prvs_save_data_t)(vs_sdmp_prvs_element_e element_id,
-                                                const uint8_t *data,
-                                                uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_load_data_t)();
-typedef vs_status_e (*vs_sdmp_prvs_device_info_t)(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz);
-typedef vs_status_e (*vs_sdmp_prvs_finalize_storage_t)(vs_pubkey_t *asav_response, uint16_t *resp_sz);
-typedef vs_status_e (*vs_sdmp_prvs_start_save_tl_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_save_tl_part_t)(const uint8_t *data, uint16_t data_sz);
-typedef vs_status_e (*vs_sdmp_prvs_finalize_tl_t)(const uint8_t *data, uint16_t data_sz);
 typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
-typedef vs_status_e (*vs_sdmp_sign_data_t)(const uint8_t *data,
-                                           uint16_t data_sz,
-                                           uint8_t *signature,
-                                           uint16_t buf_sz,
-                                           uint16_t *signature_sz);
 
 typedef struct {
-    vs_sdmp_prvs_dnid_t dnid_func;
-    vs_sdmp_prvs_save_data_t save_data_func;
-    vs_sdmp_prvs_load_data_t load_data_func;
-    vs_sdmp_prvs_device_info_t device_info_func;
-    vs_sdmp_prvs_finalize_storage_t finalize_storage_func;
-    vs_sdmp_prvs_start_save_tl_t start_save_tl_func;
-    vs_sdmp_prvs_save_tl_part_t save_tl_part_func;
-    vs_sdmp_prvs_finalize_tl_t finalize_tl_func;
-    vs_sdmp_sign_data_t sign_data_func;
     vs_sdmp_prvs_stop_wait_t stop_wait_func;
     vs_sdmp_prvs_wait_t wait_func;
-} vs_sdmp_prvs_impl_t;
-
-// Get Service descriptor
+} vs_sdmp_prvs_client_impl_t;
 
 const vs_sdmp_service_t *
-vs_sdmp_prvs_service(vs_sdmp_prvs_impl_t impl);
+vs_sdmp_prvs_client(vs_sdmp_prvs_client_impl_t impl);
 
-// Commands
 vs_status_e
-vs_sdmp_prvs_uninitialized_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
+vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
 
 vs_status_e
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
@@ -170,4 +117,4 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
 }
 #endif
 
-#endif // VS_PRVS_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H

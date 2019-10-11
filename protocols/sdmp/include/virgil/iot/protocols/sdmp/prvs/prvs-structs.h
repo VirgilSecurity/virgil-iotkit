@@ -32,59 +32,46 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_STRUCTS_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_STRUCTS_H
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
-#include <virgil/iot/protocols/sdmp/info-structs.h>
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/provision/provision.h>
 
-// mute "error: multi-character character constant" message
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-typedef enum {
-    VS_INFO_SERVICE_ID = HTONL_IN_COMPILE_TIME('INFO')
-} vs_info_t;
+#define DNID_LIST_SZ_MAX (50)
+#define PUBKEY_MAX_SZ (100)
 
-typedef enum {
-    VS_INFO_SNOT = HTONL_IN_COMPILE_TIME('SNOT'), /* Start NOTification */
-    VS_INFO_ENUM = HTONL_IN_COMPILE_TIME('ENUM'), /* ENUMerate devices */
-    VS_INFO_GINF = HTONL_IN_COMPILE_TIME('GINF'), /* General INFormation */
-    VS_INFO_STAT = HTONL_IN_COMPILE_TIME('STAT'), /* STATistics */
-    VS_INFO_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing of INFO elements by mask */
-} vs_sdmp_info_element_e;
-#pragma GCC diagnostic pop
-
-typedef struct __attribute__((__packed__)) {
-    vs_fw_manufacture_id_t manufacture_id;
-    vs_fw_device_type_t device_type;
-    vs_mac_addr_t default_netif_mac;
-    vs_firmware_version_t fw_version;
-    uint16_t tl_version;
+typedef struct {
+    vs_mac_addr_t mac_addr;
     uint32_t device_roles; // vs_sdmp_device_role_e
-} vs_info_ginf_response_t;
+} vs_sdmp_prvs_dnid_element_t;
+
+typedef struct {
+    vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
+    uint16_t count;
+} vs_sdmp_prvs_dnid_list_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t device_roles; // vs_sdmp_device_role_e
+    uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE];
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
+    uint8_t serial[VS_DEVICE_SERIAL_SIZE];
     vs_mac_addr_t mac;
-} vs_info_enum_response_t;
+    uint16_t data_sz;
+
+    uint8_t data[]; // vs_pubkey_t own_key + vs_sign_t signature
+} vs_sdmp_prvs_devi_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t sent;
-    uint32_t received;
-    vs_mac_addr_t mac;
-} vs_info_stat_response_t;
+    uint8_t hash_type; // vs_hsm_hash_type_e
+    uint8_t data[];
+} vs_sdmp_prvs_sgnp_req_t;
 
-typedef struct __attribute__((__packed__)) {
-    uint32_t elements;
-    uint8_t enable;
-    uint16_t period_seconds;
-    vs_mac_addr_t recipient_mac;
-} vs_info_poll_request_t;
+#ifdef __cplusplus
+}
+#endif
 
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_STRUCTS_H

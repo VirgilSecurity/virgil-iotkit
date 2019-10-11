@@ -32,9 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/protocols/sdmp/info-server.h>
-#include <virgil/iot/protocols/sdmp/info-private.h>
-#include <virgil/iot/protocols/sdmp/info-structs.h>
+#include <virgil/iot/protocols/sdmp/info/info-server.h>
+#include <virgil/iot/protocols/sdmp/info/info-private.h>
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>
@@ -46,9 +46,6 @@
 
 static vs_storage_op_ctx_t *_tl_ctx;
 static vs_storage_op_ctx_t *_fw_ctx;
-static vs_fw_manufacture_id_t _manufacture_id;
-static vs_fw_device_type_t _device_type;
-static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
 #define FW_DESCR_BUF 128
 
 // Polling
@@ -74,7 +71,7 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
     CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
-    enum_data->device_roles = _device_roles;
+    enum_data->device_roles = vs_sdmp_device_roles();
 
     return VS_CODE_OK;
 }
@@ -206,11 +203,11 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
                      "Unable to obtain Trust List version");
 
-    VS_IOT_MEMCPY(general_info->manufacture_id, _manufacture_id, sizeof(_manufacture_id));
-    VS_IOT_MEMCPY(general_info->device_type, _device_type, sizeof(_device_type));
+    VS_IOT_MEMCPY(general_info->manufacture_id, vs_sdmp_device_manufacture(), sizeof(vs_device_manufacture_id_t));
+    VS_IOT_MEMCPY(general_info->device_type, vs_sdmp_device_type(), sizeof(vs_device_type_t));
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
     general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
-    general_info->device_roles = _device_roles;
+    general_info->device_roles = vs_sdmp_device_roles();
 
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
@@ -321,11 +318,7 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    const vs_fw_manufacture_id_t manufacturer_id,
-                    const vs_fw_device_type_t device_type,
-                    uint32_t device_roles) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -334,9 +327,6 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
 
     _tl_ctx = tl_ctx;
     _fw_ctx = fw_ctx;
-    VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
-    VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
-    _device_roles = device_roles;
 
     _info.user_data = NULL;
     _info.id = VS_INFO_SERVICE_ID;

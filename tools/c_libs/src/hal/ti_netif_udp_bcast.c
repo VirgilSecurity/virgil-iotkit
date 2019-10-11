@@ -90,7 +90,7 @@ _udp_bcast_receive_processor(void *sock_desc) {
         recv_sz = recvfrom(
                 _udp_bcast_sock, received_data, sizeof received_data, 0, (struct sockaddr *)&client_addr, &addr_sz);
         if (recv_sz < 0) {
-            printf("UDP broadcast: recv failed. %s\n", strerror(errno));
+            printf("UDP broadcast: recv stop.\n");
             break;
         }
 
@@ -233,7 +233,7 @@ _udp_bcast_mac(struct vs_mac_addr_t *mac_addr) {
 }
 
 /******************************************************************************/
-const vs_netif_t *
+vs_netif_t *
 vs_hal_netif_udp_bcast() {
     return &_netif_udp_bcast;
 }

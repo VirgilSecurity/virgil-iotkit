@@ -33,44 +33,58 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
-#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
+#ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
+#define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 
+#include <virgil/iot/protocols/sdmp/info/info-server.h>
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/firmware/firmware.h>
 
-typedef struct {
-    uint32_t device_roles; // vs_sdmp_device_role_e
-    uint8_t mac[ETH_ADDR_LEN];
-} vs_sdmp_info_device_t;
-
-typedef struct {
-    uint8_t manufacture_id[MANUFACTURE_ID_SIZE];
-    uint8_t device_type[DEVICE_TYPE_SIZE];
-    uint8_t default_netif_mac[ETH_ADDR_LEN];
-    uint32_t device_roles; // vs_sdmp_device_role_e
-    uint8_t fw_major;
-    uint8_t fw_minor;
-    uint8_t fw_patch;
-    uint8_t fw_dev_milestone;
-    uint8_t fw_dev_build;
-    uint32_t fw_timestamp;
-    uint16_t tl_version;
-} vs_info_general_t;
-
-typedef struct {
-    uint32_t sent;
-    uint32_t received;
-    uint8_t default_netif_mac[ETH_ADDR_LEN];
-} vs_info_statistics_t;
+// mute "error: multi-character character constant" message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum {
+    VS_INFO_SERVICE_ID = HTONL_IN_COMPILE_TIME('INFO')
+} vs_info_t;
 
 typedef enum {
-    VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),
-    VS_SDMP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002),
-} vs_sdmp_info_element_mask_e;
+    VS_INFO_SNOT = HTONL_IN_COMPILE_TIME('SNOT'), /* Start NOTification */
+    VS_INFO_ENUM = HTONL_IN_COMPILE_TIME('ENUM'), /* ENUMerate devices */
+    VS_INFO_GINF = HTONL_IN_COMPILE_TIME('GINF'), /* General INFormation */
+    VS_INFO_STAT = HTONL_IN_COMPILE_TIME('STAT'), /* STATistics */
+    VS_INFO_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing of INFO elements by mask */
+} vs_sdmp_info_element_e;
+#pragma GCC diagnostic pop
 
-#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
+typedef struct __attribute__((__packed__)) {
+    vs_device_manufacture_id_t manufacture_id;
+    vs_device_type_t device_type;
+    vs_mac_addr_t default_netif_mac;
+    vs_firmware_version_t fw_version;
+    uint16_t tl_version;
+    uint32_t device_roles; // vs_sdmp_device_role_e
+} vs_info_ginf_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t device_roles; // vs_sdmp_device_role_e
+    vs_mac_addr_t mac;
+} vs_info_enum_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t sent;
+    uint32_t received;
+    vs_mac_addr_t mac;
+} vs_info_stat_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t elements;
+    uint8_t enable;
+    uint16_t period_seconds;
+    vs_mac_addr_t recipient_mac;
+} vs_info_poll_request_t;
+
+#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H

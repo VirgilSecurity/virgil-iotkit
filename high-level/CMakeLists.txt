@@ -34,28 +34,46 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(sdmp-codgen VERSION 0.1.0 LANGUAGES Go)
+project(vs-module-high-level VERSION 0.1.0 LANGUAGES C)
 
 #
-#   SDMP convert code generator
+#   High level library
 #
-add_go_executable(sdmp-codgen)
-
+add_library(vs-module-high-level)
 
 #
-# POST EXEC Generate convert code
+#   Headers and sources
 #
+target_sources(vs-module-high-level
+        PRIVATE
 
-set (SDMP_SRC_TYPES
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp_structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs-private.h
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/high-level/default/sdmp/prvs-server-impl.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/default/sdmp/prvs-server-impl.c
         )
 
-add_custom_command(TARGET sdmp-codgen POST_BUILD
-    COMMAND ${sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl 
-                                                  ${SDMP_SRC_TYPES} 
-                                                  -oc ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/src/generated/sdmp_cvt.c 
-                                                  -oh ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
-    COMMENT "Generate SDMP convert function"
-)
+#
+#   Link libraries
+#
+target_link_libraries(vs-module-high-level
+        PUBLIC
+        sdmp
+
+        PRIVATE
+        enable_pedantic_mode
+        enable_sanitizers
+        )
+
+#
+#   Common include directories
+#
+target_include_directories(vs-module-high-level
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+
+        INTERFACE
+        "$<INSTALL_INTERFACE:include>"
+        )
+

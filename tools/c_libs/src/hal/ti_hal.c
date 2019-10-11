@@ -38,7 +38,7 @@
 
 /******************************************************************************/
 void
-vs_global_hal_msleep(size_t msec) {
+vs_impl_msleep(size_t msec) {
     usleep(msec * 1000);
 }
 

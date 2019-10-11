@@ -47,9 +47,9 @@ import (
 
 type Go_vs_sdmp_prvs_devi_t struct {
     Manufacturer [16]uint8
-    Model        uint32
+    Model        [4]uint8
     MacAddress   [6]byte
-    UdidOfDevice [32]uint8
+    Serial       [32]uint8
     DataSz       uint16
 
     PubKey       common.Go_vs_pubkey_t
@@ -64,11 +64,11 @@ func (g *Go_vs_sdmp_prvs_devi_t) FromBytes(b []byte) error {
     if err := binary.Read(buf, common.SystemEndian, &g.Model); err != nil {
         return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t Model: %v", err)
     }
+    if err := binary.Read(buf, common.SystemEndian, &g.Serial); err != nil {
+            return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t Serial: %v", err)
+        }
     if err := binary.Read(buf, common.SystemEndian, &g.MacAddress); err != nil {
         return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t MacAddress: %v", err)
-    }
-    if err := binary.Read(buf, common.SystemEndian, &g.UdidOfDevice); err != nil {
-        return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t UdidOfDevice: %v", err)
     }
     if err := binary.Read(buf, common.SystemEndian, &g.DataSz); err != nil {
         return fmt.Errorf("failed to deserialize vs_sdmp_prvs_devi_t DataSz: %v", err)
