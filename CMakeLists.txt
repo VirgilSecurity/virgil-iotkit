@@ -204,11 +204,12 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
 if (NOT VIRGIL_IOT_MCU_BUILD)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
 endif()
+
 #
-#   HSM
+#   Crypto
 #
-# TODO: Add Option to disable hsm
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
 
 #
 #   Provision
