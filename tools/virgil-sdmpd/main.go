@@ -199,8 +199,8 @@ var HtmlPage = `
 
     var url = document.URL
     url = url.replace("http","ws")
-    
-    
+
+
     var table_output = document.getElementById("tbl");
     table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 

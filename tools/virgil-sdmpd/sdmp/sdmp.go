@@ -37,13 +37,22 @@ package sdmp
 /*
 #cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
 #include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/protocols/sdmp/info-client.h>
+#include <virgil/iot/protocols/sdmp/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
 extern int goDeviceStartNotifCb(vs_sdmp_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
 extern int goDeviceStatCb(vs_info_statistics_t *stat);
+
+static int go_sdmp_init(void) {
+    vs_device_manufacture_id_t manufacture_id = {0};
+    vs_device_type_t device_type = {0};
+    vs_device_serial_t serial = {0};
+    uint32_t roles = VS_SDMP_DEV_SNIFFER;
+
+    return vs_sdmp_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
+}
 
 static int _set_polling(void) {
     return vs_sdmp_info_set_polling(NULL,
@@ -88,7 +97,7 @@ func ConnectToDeviceNetwork() error {
     C.vs_logger_init(C.VS_LOGLEV_DEBUG)
 
     // Use UDP Broadcast as transport
-    if 0 != C.vs_sdmp_init(C.vs_hal_netif_udp_bcast()) {
+    if 0 != C.go_sdmp_init() {
         return fmt.Errorf("can't start SDMP communication")
     }
 
@@ -177,8 +186,8 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
     if nil != generalInfoCb {
         var goInfo devices.DeviceInfo
         goInfo.ID = ""
-        goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.MANUFACTURE_ID_SIZE)
-        goInfo.DeviceType = carray2string(&general_info.device_type[0], C.DEVICE_TYPE_SIZE)
+        goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.VS_DEVICE_MANUFACTURE_ID_SIZE)
+        goInfo.DeviceType = carray2string(&general_info.device_type[0], C.VS_DEVICE_TYPE_SIZE)
         goInfo.FWVersion = fwVer2string(general_info.fw_major,
                                         general_info.fw_minor,
                                         general_info.fw_patch,
