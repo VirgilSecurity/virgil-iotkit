@@ -99,7 +99,7 @@ _create_test_signed_hl_key(vs_key_type_e hl_key_type,
     hl_key->pubkey.key_type = hl_key_type;
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_get_pubkey(
-                                            slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
+                                         slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
                    "Error get test pubkey");
 
     if (with_signature) {
@@ -179,7 +179,7 @@ _create_test_firmware_signature(vs_key_type_e signer_type,
 
 /**********************************************************/
 static bool
-_create_test_firmware_footer() {
+_create_test_firmware_footer(vs_firmware_descriptor_t *desc) {
     vs_firmware_footer_t *footer;
     int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
@@ -188,10 +188,9 @@ _create_test_firmware_footer() {
     VS_IOT_MEMSET(fill, 0xFF, sizeof(fill));
 
     VS_HEADER_SUBCASE("Create test firmware footer");
-    uint16_t footer_sz =
-            sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+    uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     _fw_footer = VS_IOT_MALLOC(footer_sz);
-    _test_descriptor.app_size += footer_sz;
+    desc->app_size += footer_sz;
     if (NULL == _fw_footer) {
         VS_LOG_ERROR("Error while memory alloc");
         return false;
@@ -204,7 +203,7 @@ _create_test_firmware_footer() {
     vs_hsm_sw_sha256_init(&hash_ctx);
 
     footer->signatures_count = VS_FW_SIGNATURES_QTY;
-    VS_IOT_MEMCPY(&footer->descriptor, &_test_descriptor, sizeof(vs_firmware_descriptor_t));
+    VS_IOT_MEMCPY(&footer->descriptor, desc, sizeof(vs_firmware_descriptor_t));
 
     vs_hsm_sw_sha256_update(&hash_ctx, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA));
     vs_hsm_sw_sha256_update(&hash_ctx, fill, sizeof(fill));
@@ -231,18 +230,18 @@ _test_firmware_save_load_descriptor(vs_storage_op_ctx_t *ctx) {
                            vs_firmware_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
                    "Error save descriptor");
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_descriptor(ctx,
-                                                                       (uint8_t *)_test_descriptor.info.manufacture_id,
-                                                                       (uint8_t *)_test_descriptor.info.device_type,
-                                                                       &desc),
+                                                                      (uint8_t *)_test_descriptor.info.manufacture_id,
+                                                                      (uint8_t *)_test_descriptor.info.device_type,
+                                                                      &desc),
                    "Error load descriptor");
     MEMCMP_CHECK_RET(&desc, &_test_descriptor, sizeof(vs_firmware_descriptor_t), false);
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &desc), "Error delete descriptor");
     BOOL_CHECK_RET(VS_CODE_ERR_NOT_FOUND ==
                            vs_firmware_load_firmware_descriptor(ctx,
-                                                              (uint8_t *)_test_descriptor.info.manufacture_id,
-                                                              (uint8_t *)_test_descriptor.info.device_type,
-                                                              &desc),
+                                                                (uint8_t *)_test_descriptor.info.manufacture_id,
+                                                                (uint8_t *)_test_descriptor.info.device_type,
+                                                                &desc),
                    "Error delete descriptor");
 
     return true;
@@ -255,16 +254,15 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
     size_t _sz;
     int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
-    uint16_t footer_sz =
-            sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+    uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     uint8_t footer_buf[footer_sz];
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save descriptor");
 
     BOOL_CHECK_RET(
             VS_CODE_OK ==
-            vs_firmware_save_firmware_chunk(
-                    ctx, &_test_descriptor, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
+                    vs_firmware_save_firmware_chunk(
+                            ctx, &_test_descriptor, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
             "Error save data");
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_chunk(ctx, &_test_descriptor, 0, buf, sizeof(buf), &_sz),
                    "Error read data");
@@ -280,13 +278,43 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_verify_firmware(ctx, &_test_descriptor), "Error verify firmware");
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_install_firmware(ctx, &_test_descriptor), "Error install firmware");
-
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &_test_descriptor), "Error delete firmware");
 
-    BOOL_CHECK_RET(VS_CODE_OK != vs_firmware_install_firmware(ctx, &_test_descriptor),
-                   "The install firmware function has returned OK but image has already been deleted");
+    return true;
+}
 
+/**********************************************************/
+static bool
+_test_firmware_install(vs_storage_op_ctx_t *ctx) {
+
+    vs_firmware_descriptor_t own_desc;
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc), "Error install firmware");
+
+    own_desc.info.version.major++;
+    own_desc.padding = _test_descriptor.padding;
+    own_desc.chunk_size = _test_descriptor.chunk_size;
+    own_desc.firmware_length = _test_descriptor.firmware_length;
+    own_desc.app_size = _test_descriptor.app_size;
+
+    BOOL_CHECK_RET(_create_test_firmware_footer(&own_desc), "Error create firmware footer");
+
+    VS_HEADER_SUBCASE("Store new firmware");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &own_desc), "Error save descriptor");
+
+    BOOL_CHECK_RET(VS_CODE_OK ==
+                           vs_firmware_save_firmware_chunk(
+                                   ctx, &own_desc, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
+                   "Error save data");
+
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_footer(ctx, &own_desc, _fw_footer), "Error save footer");
+
+    VS_HEADER_SUBCASE("Install new firmware");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_install_firmware(ctx, &own_desc), "Error install firmware");
+
+    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &own_desc), "Error delete firmware");
+
+    BOOL_CHECK_RET(VS_CODE_OK != vs_firmware_install_firmware(ctx, &own_desc),
+                   "The install firmware function has returned OK but image has already been deleted");
     return true;
 }
 
@@ -294,14 +322,16 @@ _test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
 uint16_t
 vs_firmware_test(vs_storage_op_ctx_t *ctx) {
     uint16_t failed_test_result = 0;
+    assert(ctx);
 
-    START_TEST("Update tests");
+    START_TEST("Update firmware tests");
 
     TEST_CASE_OK("Prepare test",
                  vs_test_erase_otp_provision() && vs_test_create_device_key() && _create_test_hl_keys() &&
-                         _create_test_firmware_footer());
+                         _create_test_firmware_footer(&_test_descriptor));
     TEST_CASE_OK("Save load firmware descriptor", _test_firmware_save_load_descriptor(ctx));
     TEST_CASE_OK("Save load firmware data", _test_firmware_save_load_data(ctx));
+    TEST_CASE_OK("Save install firmware", _test_firmware_install(ctx));
 
     if (VS_CODE_OK != vs_firmware_init(ctx)) {
         RESULT_ERROR;
