@@ -40,23 +40,7 @@
 #include <virgil/iot/provision/provision.h>
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t app_type[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
-} vs_firmware_version_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;
-    vs_device_type_t device_type;
-    vs_firmware_version_t version;
-} vs_firmware_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_firmware_info_t info;
+    vs_file_info_t info;
     uint8_t padding;
     uint16_t chunk_size;
     uint32_t firmware_length;
@@ -122,6 +106,6 @@ vs_status_e
 vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
 
 char *
-vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size);
+vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
 
 #endif // VS_FIRMWARE_H

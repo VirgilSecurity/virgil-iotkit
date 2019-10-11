@@ -131,6 +131,22 @@ typedef struct __attribute__((__packed__)) {
     vs_pubkey_t pubkey;
 } vs_pubkey_dated_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint8_t app_type[4];
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint8_t dev_milestone;
+    uint8_t dev_build;
+    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+} vs_file_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_device_manufacture_id_t manufacture_id;
+    vs_device_type_t device_type;
+    vs_file_version_t version;
+} vs_file_info_t;
+
 /**
  * @brief vs_provision_get_slot_num() - get specific slot number for required provision element
  * @param id:           specified provision element, which stored in slot.

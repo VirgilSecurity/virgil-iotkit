@@ -79,7 +79,6 @@ typedef enum {
 // File Information
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
     vs_mac_addr_t gateway_mac;
 } vs_fldt_file_info_t;
 
@@ -98,12 +97,10 @@ typedef vs_fldt_file_info_t vs_fldt_gfti_fileinfo_response_t;
 // "Get New File Header"
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
 } vs_fldt_gnfh_header_request_t;
 
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
     uint32_t file_size;
     uint8_t has_footer;
     uint16_t header_size;
@@ -113,13 +110,11 @@ typedef struct __attribute__((__packed__)) {
 // "Get New File Data"
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
     uint32_t offset;
 } vs_fldt_gnfd_data_request_t;
 
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
     uint32_t offset;
     uint32_t next_offset;
     uint16_t data_size;
@@ -129,12 +124,10 @@ typedef struct __attribute__((__packed__)) {
 // "Get New File Footer"
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
 } vs_fldt_gnff_footer_request_t;
 
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
-    vs_update_file_version_t version;
     uint16_t footer_size;
     uint8_t footer_data[];
 } vs_fldt_gnff_footer_response_t;

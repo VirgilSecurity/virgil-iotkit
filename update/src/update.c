@@ -39,22 +39,17 @@
 char *
 vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size){
     if(update_context){
-        return update_context->describe_type(update_context->file_context, file_type, buf, buf_size);
+        return update_context->describe_type(update_context->storage_context, file_type, buf, buf_size);
     } else {
-        VS_IOT_SNPRINTF(buf, buf_size, "id = %d", file_type->file_type_id);
+        VS_IOT_SNPRINTF(buf, buf_size, "id = %d", file_type->type);
         return buf;
     }
 }
 
 /*************************************************************************/
 bool
-vs_update_equal_file_type(struct vs_update_interface_t *update_context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
-
-    if(update_context){
-        return update_context->equal_file_type(update_context, file_type, unknown_file_type);
-    } else if (file_type->file_type_id != unknown_file_type->file_type_id){
-        return false;
-    } else {
-        return !VS_IOT_MEMCMP(file_type->add_info, unknown_file_type->add_info, sizeof(file_type->add_info));
-    }
+vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
+    return 0 == VS_IOT_MEMCMP(file_type, unknown_file_type, sizeof(vs_update_interface_t));
 }
+
+/*************************************************************************/

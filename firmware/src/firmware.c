@@ -610,7 +610,7 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
     vs_status_e ret_code;
     ssize_t file_sz;
     vs_firmware_descriptor_t own_desc;
-    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(descriptor->info.version.app_type));
+    size_t version_cmp_size = (sizeof(vs_file_version_t) - sizeof(descriptor->info.version.app_type));
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -679,7 +679,7 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
 
 /*************************************************************************/
 char *
-vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size){
+vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size){
     static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
 
     CHECK_NOT_ZERO_RET(fw_ver, NULL);

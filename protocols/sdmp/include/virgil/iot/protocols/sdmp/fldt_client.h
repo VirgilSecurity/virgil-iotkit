@@ -57,6 +57,7 @@ extern "C" {
 typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
                                  const vs_update_file_version_t *prev_file_ver,
                                  const vs_update_file_version_t *new_file_ver,
+                                 vs_update_interface_t *update_interface,
                                  const vs_mac_addr_t *gateway,
                                  bool successfully_updated);
 

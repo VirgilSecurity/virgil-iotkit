@@ -87,6 +87,6 @@ vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
                                            uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                           vs_firmware_version_t *new_ver);
+                                           vs_file_version_t *new_ver);
 
 #endif // CLOUD_PARSE_MANIFEST_H

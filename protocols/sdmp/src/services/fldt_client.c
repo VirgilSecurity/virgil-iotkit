@@ -166,7 +166,7 @@ _filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
                char *file_descr,
                size_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
-    return file_type_info->update_interface->describe_version(file_type_info->update_interface->file_context,
+    return file_type_info->update_interface->describe_version(file_type_info->update_interface->storage_context,
                                                               &file_type_info->type,
                                                               file_ver,
                                                               file_descr,
@@ -204,7 +204,7 @@ _check_download_need(const char *opcode,
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
     *download = file_type_info->update_interface->file_is_newer(
-            file_type_info->update_interface->file_context, &file_type_info->type, current_file_ver, new_file_ver);
+            file_type_info->update_interface->storage_context, &file_type_info->type, current_file_ver, new_file_ver);
 
     if (*download) {
         VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
@@ -359,7 +359,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfh_header_response_t type");
 
-    STATUS_CHECK_RET(file_type_info->update_interface->set_header(file_type_info->update_interface->file_context,
+    STATUS_CHECK_RET(file_type_info->update_interface->set_header(file_type_info->update_interface->storage_context,
                                                                   file_type,
                                                                   file_header->header_data,
                                                                   file_header->header_size,
@@ -440,7 +440,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfd_data_response_t type");
 
-    STATUS_CHECK_RET(file_type_info->update_interface->set_data(file_type_info->update_interface->file_context,
+    STATUS_CHECK_RET(file_type_info->update_interface->set_data(file_type_info->update_interface->storage_context,
                                                                 file_type,
                                                                 file_type_info->file_header,
                                                                 file_data->data,
@@ -555,7 +555,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnff_footer_response_t type");
 
-    ret_code = file_type_info->update_interface->set_footer(file_type_info->update_interface->file_context,
+    ret_code = file_type_info->update_interface->set_footer(file_type_info->update_interface->storage_context,
                                                             file_type,
                                                             file_type_info->file_header,
                                                             file_footer->footer_data,
@@ -572,6 +572,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     _got_file_callback(file_type,
                        &file_type_info->prev_file_version,
                        file_ver,
+                       file_type_info->update_interface,
                        &file_type_info->gateway_mac,
                        successfully_updated);
 
@@ -608,7 +609,7 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
     VS_LOG_DEBUG("[FLDT] Update file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
     STATUS_CHECK_RET(file_type_info->update_interface->get_header_size(
-                             file_type_info->update_interface->file_context, &file_type_info->type, &header_size),
+                             file_type_info->update_interface->storage_context, &file_type_info->type, &header_size),
                      "Unable to calculate header size for file type %s",
                      file_descr);
     if (header_size) {
@@ -617,7 +618,7 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
 
     file_type_info->file_size = 0;
 
-    ret_code = file_type_info->update_interface->get_header(file_type_info->update_interface->file_context,
+    ret_code = file_type_info->update_interface->get_header(file_type_info->update_interface->storage_context,
                                                             &file_type_info->type,
                                                             file_type_info->file_header, // Version is here
                                                             header_size,
@@ -629,7 +630,7 @@ vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_updat
 
         STATUS_CHECK_RET(
                 file_type_info->update_interface->get_version(
-                        file_type_info->update_interface->file_context, &file_type_info->type, &file_ver),
+                        file_type_info->update_interface->storage_context, &file_type_info->type, &file_ver),
                 "Unable to get version for file %s",
                 _filever_descr(file_type_info, &file_type_info->cur_file_version, file_descr, sizeof(file_descr)));
 
@@ -671,7 +672,7 @@ vs_fldt_destroy_client(void) {
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
-        file_type_mapping->update_interface->free_item(file_type_mapping->update_interface->file_context,
+        file_type_mapping->update_interface->free_item(file_type_mapping->update_interface->storage_context,
                                                        &file_type_mapping->type);
         VS_IOT_FREE(file_type_mapping->file_header);
     }

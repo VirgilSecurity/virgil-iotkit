@@ -45,9 +45,9 @@
 
 /*************************************************************************/
 static uint16_t
-_tl_ver(const vs_update_file_version_t *version){
-    const uint16_t *tl_ver = (const uint16_t *)version; //-V1032 (PVS_IGNORE)
-    return VS_IOT_NTOHS(*tl_ver);
+_tl_ver(const vs_file_version_t *version){
+    // TODO: Fix it
+    return VS_IOT_NTOHS(version->major);
 }
 
 /*************************************************************************/
@@ -70,7 +70,7 @@ _tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer,
 
 /*************************************************************************/
 static char *
-_tl_describe_version(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
+_tl_describe_version(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
     char *output = buffer;
     size_t type_descr_size;
     size_t string_space = buf_size;
@@ -229,7 +229,7 @@ _tl_set_footer(void *context, vs_update_file_type_t *file_type, const void *file
 
 /*************************************************************************/
 static bool
-_tl_file_is_newer(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file){
+_tl_file_is_newer(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *available_file, const vs_file_version_t *new_file){
     (void) context;
     (void) file_type;
 
@@ -281,7 +281,7 @@ _tl_get_file_size(void *context, vs_update_file_type_t *file_type, const void *f
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_version(void *context, vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
+_tl_get_version(void *context, vs_update_file_type_t *file_type, vs_file_version_t *file_version) {
     vs_tl_header_t tl_header;
     size_t header_size = sizeof(tl_header);
     vs_status_e ret_code;
@@ -291,8 +291,10 @@ _tl_get_version(void *context, vs_update_file_type_t *file_type, vs_update_file_
     STATUS_CHECK_RET(_tl_get_header(context, file_type, &tl_header, header_size, &header_size), "Unable to get Truat List header");
     VS_IOT_ASSERT(header_size == sizeof(tl_header));
 
-    VS_IOT_MEMSET(&file_version->version, 0, sizeof(file_version->version));
-    VS_IOT_MEMCPY(&file_version->version, &tl_header.version, sizeof(tl_header.version));
+    VS_IOT_MEMSET(file_version, 0, sizeof(*file_version));
+
+    // TODO: Fix it
+    file_version->major = tl_header.version % 256;
 
     return VS_CODE_OK;
 }
@@ -324,20 +326,6 @@ _tl_inc_data_offset(void *context, vs_update_file_type_t *file_type, size_t curr
 }
 
 /*************************************************************************/
-static bool
-_tl_equal_file_type(void *context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
-    (void) context;
-    (void) file_type;
-
-    if(unknown_file_type) {
-        return unknown_file_type->file_type_id == VS_UPDATE_TRUST_LIST;
-    } else {
-        VS_LOG_ERROR("unknown_file_type argument must not be NULL");
-        return false;
-    }
-}
-
-/*************************************************************************/
 vs_status_e
 vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
 
@@ -358,7 +346,6 @@ vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t
     update_ctx->get_file_size = _tl_get_file_size;
     update_ctx->has_footer = _tl_has_footer;
     update_ctx->inc_data_offset = _tl_inc_data_offset;
-    update_ctx->equal_file_type = _tl_equal_file_type;
     update_ctx->get_header = _tl_get_header;
     update_ctx->get_data = _tl_get_data;
     update_ctx->get_footer = _tl_get_footer;
@@ -369,7 +356,7 @@ vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t
     update_ctx->free_item = _tl_free_item;
     update_ctx->describe_type = _tl_describe_type;
     update_ctx->describe_version = _tl_describe_version;
-    update_ctx->file_context = storage_ctx;
+    update_ctx->storage_context = storage_ctx;
 
     return VS_CODE_OK;
 }

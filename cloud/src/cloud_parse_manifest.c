@@ -150,7 +150,7 @@ _find_symb_in_str(char *str, char symb) {
 
 /*************************************************************************/
 static vs_status_e
-_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_firmware_version_t *fw_version) {
+_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_file_version_t *fw_version) {
     /*parse major*/
     char *ptr = _find_symb_in_str(fm_entry->version, '.');
 
@@ -205,15 +205,15 @@ static bool
 _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
                                         uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                         uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                        vs_firmware_version_t *cur_version) {
+                                        vs_file_version_t *cur_version) {
     // TODO: Need to arrange models table with current version of devices
     vs_firmware_descriptor_t desc;
     int res = vs_firmware_load_firmware_descriptor(fw_storage, manufacture_id, device_type, &desc);
 
     if (VS_CODE_ERR_NOT_FOUND == res) {
-        VS_IOT_MEMSET(cur_version, 0, sizeof(vs_firmware_version_t));
+        VS_IOT_MEMSET(cur_version, 0, sizeof(vs_file_version_t));
     } else if (VS_CODE_OK == res) {
-        VS_IOT_MEMCPY(cur_version, &desc.info.version, sizeof(vs_firmware_version_t));
+        VS_IOT_MEMCPY(cur_version, &desc.info.version, sizeof(vs_file_version_t));
     } else {
         return false;
     }
@@ -226,10 +226,10 @@ vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage,
                                            uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                            uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                           vs_firmware_version_t *new_ver) {
+                                           vs_file_version_t *new_ver) {
 
-#define VS_VERSION_CMP_SIZE (sizeof(vs_firmware_version_t) - sizeof(current_ver.app_type))
-    vs_firmware_version_t current_ver;
+#define VS_VERSION_CMP_SIZE (sizeof(vs_file_version_t) - sizeof(current_ver.app_type))
+    vs_file_version_t current_ver;
 
     if (!_is_member_for_vendor_and_model_present(fw_storage, manufacture_id, device_type, &current_ver) ||
         0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_ver->major), VS_VERSION_CMP_SIZE)) { //-V512 (PVS_IGNORE)
@@ -243,7 +243,7 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
 static vs_status_e
 _is_new_fw_version_available_in_manifest(const vs_storage_op_ctx_t *fw_storage,
                                          vs_firmware_manifest_entry_t *fm_entry) {
-    vs_firmware_version_t new_ver;
+    vs_file_version_t new_ver;
     uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
 
     if (!_hex_str_to_bin((char *)fm_entry->manufacturer_id, manufacture_id, sizeof(manufacture_id)) ||
