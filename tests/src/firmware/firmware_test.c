@@ -189,6 +189,11 @@ _create_test_firmware_footer(vs_firmware_descriptor_t *desc) {
 
     VS_HEADER_SUBCASE("Create test firmware footer");
     uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+
+    if(_fw_footer) {
+        VS_IOT_FREE(_fw_footer);
+    }
+
     _fw_footer = VS_IOT_MALLOC(footer_sz);
     desc->app_size += footer_sz;
     if (NULL == _fw_footer) {
