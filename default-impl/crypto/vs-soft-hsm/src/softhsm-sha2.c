@@ -23,12 +23,6 @@
     } while (0)
 #endif
 
-typedef struct {
-    uint32_t total[2];        /*!< The number of Bytes processed.  */
-    uint32_t state[8];        /*!< The intermediate digest state.  */
-    unsigned char buffer[64]; /*!< The data block being processed. */
-} vs_hsm_sw_sha256_ctx;
-
 /******************************************************************************/
 void
 vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx) {

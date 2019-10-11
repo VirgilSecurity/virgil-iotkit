@@ -32,48 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_STRUCTURES_API_H
-#define VS_HSM_STRUCTURES_API_H
+#include <virgil/iot/vs-softhsm/vs-softhsm.h>
 
-#include <stdint.h>
-#include <stddef.h>
+/********************************************************************************/
+static vs_status_e
+vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) {
+    return vs_rpi_write_file_data(slots_dir, get_slot_name(slot), 0, data, data_sz) &&
+           vs_rpi_sync_file(slots_dir, get_slot_name(slot))
+           ? VS_CODE_OK
+           : VS_CODE_ERR_FILE_WRITE;
+}
 
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+/********************************************************************************/
+static vs_status_e
+vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
+    size_t out_sz_size_t = *out_sz;
+    vs_status_e call_res;
 
-typedef enum {
-    VS_KEYPAIR_INVALID = -1,
-    VS_KEYPAIR_EC_SECP_MIN = 1,
-    VS_KEYPAIR_EC_SECP192R1 = VS_KEYPAIR_EC_SECP_MIN, ///< 192-bits NIST curve
-    VS_KEYPAIR_EC_SECP224R1,                          ///< 224-bits NIST curve
-    VS_KEYPAIR_EC_SECP256R1,                          ///< 256-bits NIST curve
-    VS_KEYPAIR_EC_SECP384R1,                          ///< 384-bits NIST curve
-    VS_KEYPAIR_EC_SECP521R1,                          ///< 521-bits NIST curve
-    VS_KEYPAIR_EC_SECP192K1,                          ///< 192-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP224K1,                          ///< 224-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP256K1,                          ///< 256-bits "Koblitz" curve
-    VS_KEYPAIR_EC_SECP_MAX = VS_KEYPAIR_EC_SECP256K1,
-    VS_KEYPAIR_EC_CURVE25519, ///< Curve25519
-    VS_KEYPAIR_EC_ED25519,    ///< Ed25519
-    VS_KEYPAIR_RSA_2048,      ///< RSA 2048 bit (not recommended)
-    VS_KEYPAIR_MAX
-} vs_hsm_keypair_type_e;
+    call_res = vs_rpi_read_file_data(slots_dir, get_slot_name(slot), 0, data, buf_sz, &out_sz_size_t)
+               ? VS_CODE_OK
+               : VS_CODE_ERR_FILE_READ;
 
-typedef enum {
-    VS_HASH_SHA_INVALID = -1,
-    VS_HASH_SHA_256 = 0,
-    VS_HASH_SHA_384,
-    VS_HASH_SHA_512,
-} vs_hsm_hash_type_e;
+    assert(out_sz_size_t <= UINT16_MAX);
+    *out_sz = out_sz_size_t;
 
-typedef enum {
-    VS_KDF_INVALID = -1,
-    VS_KDF_2 = 0,
-} vs_hsm_kdf_type_e;
+    return call_res;
+}
 
-typedef enum { VS_AES_GCM, VS_AES_CBC } vs_iot_aes_type_e;
+/******************************************************************************/
+static vs_status_e
+vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
+    return vs_rpi_remove_file_data(slots_dir, get_slot_name(slot)) ? VS_CODE_OK : VS_CODE_ERR_FILE_DELETE;
+}
 
-#endif // VS_HSM_STRUCTURES_API_H
+/******************************************************************************/

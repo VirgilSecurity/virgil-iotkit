@@ -44,7 +44,7 @@
 
 #include "virgil/iot/converters/private/macros.h"
 #include <virgil/iot/converters/crypto_format_converters.h>
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 
 /******************************************************************************/
 static int

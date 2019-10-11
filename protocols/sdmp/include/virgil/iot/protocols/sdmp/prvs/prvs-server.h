@@ -41,9 +41,10 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/hsm/hsm.h>
 
 const vs_sdmp_service_t *
-vs_sdmp_prvs_server(void);
+vs_sdmp_prvs_server(vs_hsm_impl_t *hsm);
 
 #ifdef __cplusplus
 }

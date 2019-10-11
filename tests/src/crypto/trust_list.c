@@ -11,7 +11,7 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
 #include <virgil/iot/tests/private/test_hl_keys_data.h>

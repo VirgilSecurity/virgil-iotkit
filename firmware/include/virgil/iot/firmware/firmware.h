@@ -38,6 +38,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/hsm/hsm.h>
 
 typedef struct __attribute__((__packed__)) {
     uint8_t app_type[4];
@@ -70,10 +71,10 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_footer_t;
 
 vs_status_e
-vs_firmware_init(const vs_storage_op_ctx_t *ctx);
+vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm);
 
 vs_status_e
-vs_firnware_deinit(const vs_storage_op_ctx_t *ctx);
+vs_firnware_deinit(void);
 
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,

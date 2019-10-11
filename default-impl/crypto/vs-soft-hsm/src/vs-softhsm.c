@@ -34,7 +34,113 @@
 
 #include <virgil/iot/vs-softhsm/vs-softhsm.h>
 
+static vs_hsm_impl_t _softhsm;
+static bool _softhsm_ready = false;
+
+/******************************************************************************/
 const vs_hsm_impl_t*
 vs_softhsm_impl(void) {
     return NULL;
 }
+
+/******************************************************************************/
+const vs_hsm_impl_t*
+_softhsm_intern(void) {
+    if (_softhsm_ready) {
+        return &_softhsm;
+    }
+
+    return NULL;
+}
+
+/******************************************************************************/
+const char *
+get_slot_name(vs_iot_hsm_slot_e slot) {
+    switch (slot) {
+        case VS_KEY_SLOT_STD_OTP_0:
+            return "STD_OTP_0";
+        case VS_KEY_SLOT_STD_OTP_1:
+            return "STD_OTP_1";
+        case VS_KEY_SLOT_STD_OTP_2:
+            return "STD_OTP_2";
+        case VS_KEY_SLOT_STD_OTP_3:
+            return "STD_OTP_3";
+        case VS_KEY_SLOT_STD_OTP_4:
+            return "STD_OTP_4";
+        case VS_KEY_SLOT_STD_OTP_5:
+            return "STD_OTP_5";
+        case VS_KEY_SLOT_STD_OTP_6:
+            return "STD_OTP_6";
+        case VS_KEY_SLOT_STD_OTP_7:
+            return "STD_OTP_7";
+        case VS_KEY_SLOT_STD_OTP_8:
+            return "STD_OTP_8";
+        case VS_KEY_SLOT_STD_OTP_9:
+            return "STD_OTP_9";
+        case VS_KEY_SLOT_STD_OTP_10:
+            return "STD_OTP_10";
+        case VS_KEY_SLOT_STD_OTP_11:
+            return "STD_OTP_11";
+        case VS_KEY_SLOT_STD_OTP_12:
+            return "STD_OTP_12";
+        case VS_KEY_SLOT_STD_OTP_13:
+            return "STD_OTP_13";
+        case VS_KEY_SLOT_STD_OTP_14:
+            return "STD_OTP_14";
+        case VS_KEY_SLOT_EXT_OTP_0:
+            return "EXT_OTP_0";
+        case VS_KEY_SLOT_STD_MTP_0:
+            return "STD_MTP_0";
+        case VS_KEY_SLOT_STD_MTP_1:
+            return "STD_MTP_1";
+        case VS_KEY_SLOT_STD_MTP_2:
+            return "STD_MTP_2";
+        case VS_KEY_SLOT_STD_MTP_3:
+            return "STD_MTP_3";
+        case VS_KEY_SLOT_STD_MTP_4:
+            return "STD_MTP_4";
+        case VS_KEY_SLOT_STD_MTP_5:
+            return "STD_MTP_5";
+        case VS_KEY_SLOT_STD_MTP_6:
+            return "STD_MTP_6";
+        case VS_KEY_SLOT_STD_MTP_7:
+            return "STD_MTP_7";
+        case VS_KEY_SLOT_STD_MTP_8:
+            return "STD_MTP_8";
+        case VS_KEY_SLOT_STD_MTP_9:
+            return "STD_MTP_9";
+        case VS_KEY_SLOT_STD_MTP_10:
+            return "STD_MTP_10";
+        case VS_KEY_SLOT_STD_MTP_11:
+            return "STD_MTP_11";
+        case VS_KEY_SLOT_STD_MTP_12:
+            return "STD_MTP_12";
+        case VS_KEY_SLOT_STD_MTP_13:
+            return "STD_MTP_13";
+        case VS_KEY_SLOT_STD_MTP_14:
+            return "STD_MTP_14";
+        case VS_KEY_SLOT_EXT_MTP_0:
+            return "EXT_MTP_0";
+        case VS_KEY_SLOT_STD_TMP_0:
+            return "STD_TMP_0";
+        case VS_KEY_SLOT_STD_TMP_1:
+            return "STD_TMP_1";
+        case VS_KEY_SLOT_STD_TMP_2:
+            return "STD_TMP_2";
+        case VS_KEY_SLOT_STD_TMP_3:
+            return "STD_TMP_3";
+        case VS_KEY_SLOT_STD_TMP_4:
+            return "STD_TMP_4";
+        case VS_KEY_SLOT_STD_TMP_5:
+            return "STD_TMP_5";
+        case VS_KEY_SLOT_STD_TMP_6:
+            return "STD_TMP_6";
+        case VS_KEY_SLOT_EXT_TMP_0:
+            return "EXT_TMP_0";
+
+        default:
+            assert(false && "Unsupported slot");
+            return NULL;
+    }
+}
+/******************************************************************************/

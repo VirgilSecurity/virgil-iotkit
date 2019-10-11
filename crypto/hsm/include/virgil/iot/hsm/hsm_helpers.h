@@ -35,7 +35,7 @@
 #ifndef VS_HSM_HELPERS_H_
 #define VS_HSM_HELPERS_H_
 
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 
 int
 vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);

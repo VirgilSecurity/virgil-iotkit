@@ -40,10 +40,7 @@ add_library(hsm)
 
 target_sources(hsm
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/hsm_sha2_routines.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/asn1_cryptogram.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/hsm_virgil_ecies.c"
         )
 #
 #   Set additional compiler flags

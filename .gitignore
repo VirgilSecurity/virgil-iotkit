@@ -4,6 +4,7 @@ install*/
 .depends_cache/
 codegen/generated/
 codegen/test/gsl/
+ext/deps/*
 
 #####
 # OS X temporary files that should never be committed

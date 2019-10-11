@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib-config.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/logger/logger.h>
 
@@ -161,3 +161,5 @@ vs_hsm_hash_type_descr(vs_hsm_hash_type_e type) {
         return NULL;
     }
 }
+
+/******************************************************************************/

@@ -36,7 +36,7 @@
 #include <stdlib-config.h>
 #include <logger-config.h>
 
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
@@ -49,6 +49,8 @@ static const size_t auth_key_slot[PROVISION_KEYS_QTY] = {AUTH1_KEY_SLOT, AUTH2_K
 static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLOT};
 
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
+
+static vs_hsm_impl_t *_hsm = NULL;
 
 /******************************************************************************/
 static vs_status_e
@@ -144,10 +146,12 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint16_t _sz;
     vs_status_e ret_code;
 
+    VS_IOT_ASSERT(_hsm);
+
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
         STATUS_CHECK_RET(_get_pubkey_slot_num(key_type, i, &slot), "Unable to get public key from slot");
-        STATUS_CHECK_RET(vs_hsm_slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
+        STATUS_CHECK_RET(_hsm->slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
 
         ref_key_sz = vs_hsm_get_pubkey_len(ref_key->pubkey.ec_type);
 
@@ -176,6 +180,8 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint8_t *pubkey;
     vs_sign_t *sign;
     vs_status_e ret_code;
+
+    VS_IOT_ASSERT(_hsm);
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
@@ -213,7 +219,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     uint8_t hash[hash_size];
 
-    STATUS_CHECK_RET(vs_hsm_hash_create(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
+    STATUS_CHECK_RET(_hsm->hash(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
                      "Error hash create");
 
     // Signer raw key pointer
@@ -223,9 +229,20 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
               "Signer key is not present");
 
     STATUS_CHECK_RET(
-            vs_hsm_ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
+            _hsm->ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
             "Signature is wrong");
 
     return VS_CODE_OK;
 
 }
+
+/******************************************************************************/
+vs_status_e
+vs_provision_init(vs_hsm_impl_t *hsm) {
+    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    _hsm = hsm;
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/

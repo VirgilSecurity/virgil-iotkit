@@ -111,5 +111,6 @@ target_link_libraries (${PROJECT_NAME}
         PRIVATE
         mbedtls::mbedcrypto
         mbedtls::ed25519
+        virgil-iot-status-code
         )
 

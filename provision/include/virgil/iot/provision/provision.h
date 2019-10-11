@@ -35,7 +35,7 @@
 #ifndef VS_IOT_PROVISION_H
 #define VS_IOT_PROVISION_H
 
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/status_code/status_code.h>
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -138,6 +138,9 @@ typedef struct __attribute__((__packed__)) {
  *
  * @return              return true if slot has found for element_id
  */
+
+vs_status_e
+vs_provision_init(vs_hsm_impl_t *hsm);
 
 vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);

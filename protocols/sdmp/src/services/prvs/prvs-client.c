@@ -43,7 +43,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 
 static vs_sdmp_service_t _prvs_client = {0, 0, 0, 0, 0};
 static vs_sdmp_prvs_dnid_list_t *_prvs_dnid_list = 0;

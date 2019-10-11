@@ -44,13 +44,15 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
 
 static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_TYPE_LIST;
 
 #define DESCRIPTORS_FILENAME "firmware_descriptors"
+
+static vs_storage_op_ctx_t *_storage_ctx = NULL;
+static vs_hsm_impl_t *_hsm = NULL;
 
 /*************************************************************************/
 static void
@@ -149,21 +151,23 @@ _write_data(const vs_storage_op_ctx_t *ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_firmware_init(const vs_storage_op_ctx_t *ctx) {
+vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm) {
+    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    _storage_ctx = ctx;
+    _hsm = hsm;
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_firnware_deinit(const vs_storage_op_ctx_t *ctx) {
-    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+vs_firnware_deinit(void) {
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    return ctx->impl_func.deinit(ctx->impl_data);
+    return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
 }
 
 /*************************************************************************/
@@ -503,6 +507,8 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     // TODO: Need to support all hash types
     uint8_t hash[32];
 
+    VS_IOT_ASSERT(_hsm);
+
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -524,7 +530,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     uint32_t offset = 0;
     size_t read_sz;
 
-    vs_hsm_sw_sha256_init(&hash_ctx);
+    _hsm->hash_init(&hash_ctx);
 
     // Update hash by firmware
     while (offset < descriptor->firmware_length) {
@@ -536,7 +542,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
             return VS_CODE_ERR_FILE_READ;
         }
 
-        vs_hsm_sw_sha256_update(&hash_ctx, buf, required_chunk_size);
+        _hsm->hash_update(&hash_ctx, buf, required_chunk_size);
         offset += required_chunk_size;
     }
 
@@ -549,7 +555,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
     // Update hash by fill
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
-        vs_hsm_sw_sha256_update(&hash_ctx, buf, sz);
+        _hsm->hash_update(&hash_ctx, buf, sz);
         fill_sz -= sz;
     }
 
@@ -558,8 +564,8 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
         return VS_CODE_ERR_FILE_READ;
     }
 
-    vs_hsm_sw_sha256_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
-    vs_hsm_sw_sha256_final(&hash_ctx, hash);
+    _hsm->hash_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
+    _hsm->hash_finish(&hash_ctx, hash);
 
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
@@ -583,7 +589,7 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
                   "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            STATUS_CHECK_RET(vs_hsm_ecdsa_verify(sign->ec_type,
+            STATUS_CHECK_RET(_hsm->ecdsa_verify(sign->ec_type,
                                                            pubkey,
                                                            key_len,
                                                            sign->hash_type,
@@ -712,3 +718,5 @@ vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, 
 
     return buffer;
 }
+
+/*************************************************************************/
