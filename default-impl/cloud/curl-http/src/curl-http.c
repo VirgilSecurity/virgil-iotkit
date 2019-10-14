@@ -40,14 +40,14 @@ typedef struct resp_buff_s {
     uint8_t *buff;
     size_t buff_sz;
     size_t used_size;
-    vs_fetch_handler_func_t fetch_handler;
+    vs_fetch_handler_cb_t fetch_handler;
     void *userdata;
 } resp_buff_t;
 
 static vs_status_e
 _curl_http_hal(const char *url,
                char *out_data,
-               vs_fetch_handler_func_t fetch_handler,
+               vs_fetch_handler_cb_t fetch_handler,
                void *hander_data,
                size_t *in_out_size);
 
@@ -77,7 +77,7 @@ _write_callback(char *contents, size_t size, size_t nmemb, void *userdata) {
 static vs_status_e
 _curl_http_hal(const char *url,
                char *out_data,
-               vs_fetch_handler_func_t fetch_handler,
+               vs_fetch_handler_cb_t fetch_handler,
                void *hander_data,
                size_t *in_out_size) {
     CURL *curl;

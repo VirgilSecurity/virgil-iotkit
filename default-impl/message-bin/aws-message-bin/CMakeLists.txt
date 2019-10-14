@@ -34,9 +34,34 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+project(vs-default-aws-message-bin VERSION 0.1.0 LANGUAGES C)
+
+add_library(vs-default-aws-message-bin)
+
+target_sources(vs-default-aws-message-bin
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-aws-message-bin/vs-aws-message-bin.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-aws-message-bin.c
+        )
+
+target_link_libraries(vs-default-aws-message-bin
+        PUBLIC
+        aws-sdk
+        cloud
+        )
+
 #
-#   Virigl cloud default implementation
+#   Common include directories
 #
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/curl-http)
-endif()
+target_include_directories(vs-default-aws-message-bin
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+
+        INTERFACE
+        "$<INSTALL_INTERFACE:include>"
+        )
+

@@ -52,6 +52,7 @@ if (GO_DISABLE)
 else()
     project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C Go)
 endif()
+set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Virgil IoT SDK")
 
 # ---------------------------------------------------------------------------
 #   Helper modules
@@ -164,6 +165,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)
 #   jsmn
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+
+#
+#   aws-sdk
+#
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
 
 #
 #   vs-json

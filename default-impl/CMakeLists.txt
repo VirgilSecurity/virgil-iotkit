@@ -43,8 +43,7 @@ option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft H
 #
 # Default cloud implementations
 #
-option(VIRGIL_IOT_DEFAULT_CLOUD "Enable default cloud implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS "Enable default curl https implementation" ON)
+option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
 option(VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS "Enable default mqtt aws implementation" ON)
 
 #
@@ -57,6 +56,10 @@ endif()
 #
 #   Default cloud implementations module
 #
-if (VIRGIL_IOT_DEFAULT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/curl-http)
+endif()
+
+if (VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/message-bin/aws-message-bin)
 endif()

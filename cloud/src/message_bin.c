@@ -34,6 +34,8 @@
 
 #include <virgil/iot/cloud/private/cloud_include.h>
 
+static const vs_cloud_mesage_bin_impl_t *_impl = NULL;
+
 /*************************************************************************/
 static void
 _mb_mqtt_ctx_free(vs_cloud_mb_mqtt_ctx_t *ctx) {
@@ -233,25 +235,26 @@ clean:
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx) {
+vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_mesage_bin_impl_t *impl) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(impl->init, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(impl->connect_subscribe, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(impl->process, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _mb_mqtt_ctx_free(ctx);
+    _impl = impl;
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
 vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
-                    const char *root_ca_crt,
-                    vs_cloud_mb_init_func init,
-                    vs_cloud_mb_connect_subscribe_func connect_subscribe,
-                    vs_cloud_mb_process_func process) {
+                    vs_clud_mb_process_topic_cb_t process_topic,
+                    const char *root_ca_crt) {
 
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(init, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(connect_subscribe, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(process, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     bool provision_is_present = ctx->is_filled || (VS_CODE_OK == _get_message_bin_credentials(ctx));
 
@@ -260,19 +263,19 @@ vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
 
             VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", ctx->host, ctx->port);
 
-            if (VS_CODE_OK == init(ctx->host,
+            if (VS_CODE_OK == _impl->init(ctx->host,
                                         ctx->port,
                                         (const char *)ctx->cert,
                                         (const char *)ctx->pk,
                                         (const char *)root_ca_crt) &&
-                VS_CODE_OK == connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list)) {
+                VS_CODE_OK == _impl->connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list, process_topic)) {
                 ctx->is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");
             }
             return VS_CODE_OK;
         }
-        return process();
+        return _impl->process();
     }
     return VS_CODE_ERR_CLOUD;
 }
