@@ -159,8 +159,8 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     vs_tl_footer_t *footer;
     vs_sign_t *sign;
     uint8_t *pubkey;
-    uint16_t sign_len;
-    uint16_t key_len;
+    int sign_len;
+    int key_len;
     uint8_t sign_rules = 0;
     vs_tl_header_t host_header;
 
@@ -222,25 +222,26 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
 
         // Signer raw key pointer
-        pubkey = sign->raw_sign_pubkey + sign_len;
+        pubkey = sign->raw_sign_pubkey + (uint16_t)sign_len;
 
-        BOOL_CHECK_RET(VS_CODE_OK == vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
+        BOOL_CHECK_RET(VS_CODE_OK == vs_provision_search_hl_pubkey(
+                                             sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
                        "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
             BOOL_CHECK_RET(VS_CODE_OK == _hsm->ecdsa_verify(sign->ec_type,
-                                                                pubkey,
-                                                                key_len,
-                                                                sign->hash_type,
-                                                                hash,
-                                                                sign->raw_sign_pubkey,
-                                                                sign_len),
+                                                             pubkey,
+                                                             (uint16_t)key_len,
+                                                             sign->hash_type,
+                                                             hash,
+                                                             sign->raw_sign_pubkey,
+                                                             (uint16_t)sign_len),
                            "Signature is wrong");
             sign_rules++;
         }
 
         // Next signature
-        sign = (vs_sign_t *)(pubkey + key_len);
+        sign = (vs_sign_t *)(pubkey + (uint16_t)key_len);
     }
 
     VS_LOG_DEBUG("TL %u. Sign rules is %s",
@@ -291,7 +292,7 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     }
 
     if (VS_CODE_OK != vs_tl_header_load(src->storage.storage_type, &header) ||
-            VS_CODE_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
+        VS_CODE_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
         dst->ready = false;
         return VS_CODE_ERR_FILE_WRITE;
     }
@@ -300,14 +301,14 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
 
     for (i = 0; i < host_header.pub_keys_count; ++i) {
         if (VS_CODE_OK != vs_tl_key_load(src->storage.storage_type, i, buf, sizeof(buf), &res_sz) ||
-                VS_CODE_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
+            VS_CODE_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
             dst->ready = false;
             return VS_CODE_ERR_FILE_WRITE;
         }
     }
 
     if (VS_CODE_OK != vs_tl_footer_load(src->storage.storage_type, buf, sizeof(buf), &res_sz) ||
-            VS_CODE_OK != vs_tl_footer_save(dst->storage.storage_type, buf, res_sz)) {
+        VS_CODE_OK != vs_tl_footer_save(dst->storage.storage_type, buf, res_sz)) {
         dst->ready = false;
         return VS_CODE_ERR_FILE_WRITE;
     }
@@ -513,7 +514,8 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_RET(key_len > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Unsupported ec_type");
-    CHECK_RET(element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
+    CHECK_RET(
+            element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
 
     key_len += sizeof(vs_pubkey_dated_t);
 
