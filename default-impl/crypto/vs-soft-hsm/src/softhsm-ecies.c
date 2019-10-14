@@ -319,3 +319,14 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
 }
 
 /******************************************************************************/
+
+vs_status_e
+_fill_ecies_impl(vs_hsm_impl_t *hsm_impl) {
+    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    hsm_impl->ecies_decrypt = vs_hsm_virgil_decrypt_sha384_aes256;
+    hsm_impl->ecies_encrypt = vs_hsm_virgil_encrypt_sha384_aes256;
+
+    return VS_CODE_OK;
+}
+/******************************************************************************/

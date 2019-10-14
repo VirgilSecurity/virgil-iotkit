@@ -85,6 +85,8 @@ target_include_directories(provision
         )
 
 target_link_libraries(provision
+        PUBLIC
+        hsm
         PRIVATE
         virgil-iot-status-code
         )

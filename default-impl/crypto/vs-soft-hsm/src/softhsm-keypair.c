@@ -513,3 +513,14 @@ terminate:
 }
 
 /********************************************************************************/
+vs_status_e
+_fill_keypair_impl(vs_hsm_impl_t *hsm_impl) {
+    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    hsm_impl->create_keypair = vs_hsm_keypair_create;
+    hsm_impl->get_pubkey = vs_hsm_keypair_get_pubkey;
+
+    return VS_CODE_OK;
+}
+
+/********************************************************************************/

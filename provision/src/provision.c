@@ -34,13 +34,13 @@
 #include <stdbool.h>
 
 #include <stdlib-config.h>
-#include <logger-config.h>
 
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/provision/provision.h>
 
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 

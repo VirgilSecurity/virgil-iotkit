@@ -212,13 +212,13 @@ typedef vs_status_e
                  uint16_t *shared_secret_sz);
 
 typedef void
-(*vs_hsm_sw_sha256_init_t)(void *ctx);
+(*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
 
 typedef vs_status_e
-(*vs_hsm_sw_sha256_update_t)(void *ctx, const uint8_t *message, uint32_t len);
+(*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
 
 typedef vs_status_e
-(*vs_hsm_sw_sha256_final_t)(void *ctx, uint8_t *digest);
+(*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
 
 typedef vs_status_e
 (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,

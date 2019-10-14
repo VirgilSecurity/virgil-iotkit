@@ -36,18 +36,10 @@
 #define HELPERS_VS_SOFTHSM_PRIVATE_H
 
 #include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 #define MAX_KEY_SZ (128)
-
-#define CHECK_BOOL(OPERATION, DESCRIPTION, ...)                                                                        \
-    do {                                                                                                               \
-        if (!(OPERATION)) {                                                                                            \
-            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
-
-#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) CHECK_BOOL(OPERATION, DESCRIPTION, ##__VA_ARGS__)
 
 #define CHECK_VSCF(OPERATION, DESCRIPTION, ...)                                                                        \
     CHECK_BOOL((vscf_status_SUCCESS == (OPERATION)), DESCRIPTION, ##__VA_ARGS__)
@@ -72,5 +64,21 @@ vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
                           uint16_t buf_sz,
                           uint16_t *key_sz,
                           vs_hsm_keypair_type_e *keypair_type);
+
+vs_status_e
+_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *tl_storage_impl);
+
+vs_status_e
+_fill_crypto_impl(vs_hsm_impl_t *hsm_impl);
+
+vs_status_e
+_fill_keypair_impl(vs_hsm_impl_t *hsm_impl);
+
+vs_status_e
+_fill_ecies_impl(vs_hsm_impl_t *hsm_impl);
+
+vs_status_e
+_fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl);
+
 
 #endif //HELPERS_VS_SOFTHSM_PRIVATE_H

@@ -94,6 +94,7 @@ target_link_libraries(vs-default-soft-hsm
         PUBLIC
         converters
         hsm
+        storage_hal
         ${CRYPTO_C_LIBS}/libvsc_foundation.a
         ${CRYPTO_C_LIBS}/libvsc_common.a
         ${CRYPTO_C_LIBS}/libmbedcrypto.a

@@ -42,7 +42,7 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp_structs.h>
 
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
-#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/provision/provision-structs.h>
 
 typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);

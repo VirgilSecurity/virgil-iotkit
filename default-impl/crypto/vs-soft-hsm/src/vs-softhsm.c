@@ -33,14 +33,28 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/vs-softhsm/vs-softhsm.h>
+#include <virgil/iot/macros/macros.h>
+#include "private/vs-softhsm-internal.h"
 
 static vs_hsm_impl_t _softhsm;
 static bool _softhsm_ready = false;
 
 /******************************************************************************/
-const vs_hsm_impl_t*
-vs_softhsm_impl(void) {
-    return NULL;
+vs_hsm_impl_t*
+vs_softhsm_impl(vs_storage_op_ctx_t *tl_storage_impl) {
+
+    CHECK_NOT_ZERO_RET(tl_storage_impl, NULL);
+
+    if (!_softhsm_ready) {
+        _fill_slots_impl(&_softhsm, tl_storage_impl);
+        _fill_crypto_impl(&_softhsm);
+        _fill_keypair_impl(&_softhsm);
+        _fill_ecies_impl(&_softhsm);
+        _fill_soft_hash_impl(&_softhsm);
+
+        _softhsm_ready = true;
+    }
+    return &_softhsm;
 }
 
 /******************************************************************************/

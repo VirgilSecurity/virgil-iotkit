@@ -66,6 +66,16 @@
 #define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero")
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
 
+#define CHECK_BOOL(OPERATION, DESCRIPTION, ...)                                                                        \
+    do {                                                                                                               \
+        if (!(OPERATION)) {                                                                                            \
+            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+    } while (0)
+
+#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) CHECK_BOOL(OPERATION, DESCRIPTION, ##__VA_ARGS__)
+
 //#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
 //#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 

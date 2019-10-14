@@ -38,7 +38,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/provision/provision-structs.h>
 
 struct vs_netif_t;
 struct vs_mac_addr_t;
