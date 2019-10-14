@@ -38,6 +38,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/hsm/hsm.h>
 
 typedef struct __attribute__((__packed__)) {
     vs_file_info_t info;
@@ -54,10 +55,10 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_footer_t;
 
 vs_status_e
-vs_firmware_init(const vs_storage_op_ctx_t *ctx);
+vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm);
 
 vs_status_e
-vs_firnware_deinit(const vs_storage_op_ctx_t *ctx);
+vs_firnware_deinit(void);
 
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
@@ -107,5 +108,11 @@ vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_d
 
 char *
 vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
+
+vs_status_e
+vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
+
+int
+vs_firmware_get_expected_footer_len(void);
 
 #endif // VS_FIRMWARE_H

@@ -42,8 +42,8 @@
 
 /******************************************************************************/
 vs_status_e
-vs_tl_init(const vs_storage_op_ctx_t *op_ctx) {
-    return vs_tl_storage_init_internal(op_ctx);
+vs_tl_init(const vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
+    return vs_tl_storage_init_internal(op_ctx, hsm);
 }
 
 /******************************************************************************/

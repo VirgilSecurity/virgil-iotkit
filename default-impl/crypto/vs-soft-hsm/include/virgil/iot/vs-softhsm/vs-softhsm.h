@@ -32,28 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_HSM_VS_ECIES_H
-#define VS_HSM_VS_ECIES_H
+#ifndef HELPERS_VS_SOFTHSM_H
+#define HELPERS_VS_SOFTHSM_H
 
-#include <stdint.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
-vs_status_e
-vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
-                                    size_t recipient_id_sz,
-                                    uint8_t *cryptogram,
-                                    size_t cryptogram_sz,
-                                    uint8_t *decrypted_data,
-                                    size_t buf_sz,
-                                    size_t *decrypted_data_sz);
+#define VS_SLOTS_STORAGE_MAX_SIZE (1024)
 
-vs_status_e
-vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
-                                    size_t recipient_id_sz,
-                                    uint8_t *data,
-                                    size_t data_sz,
-                                    uint8_t *cryptogram,
-                                    size_t buf_sz,
-                                    size_t *cryptogram_sz);
+vs_hsm_impl_t*
+vs_softhsm_impl(vs_storage_op_ctx_t *tl_storage_impl);
 
-#endif // VS_HSM_VS_ECIES_H
+#endif //HELPERS_VS_SOFTHSM_H

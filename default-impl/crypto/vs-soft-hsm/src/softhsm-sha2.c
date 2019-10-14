@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdlib-config.h>
-#include "virgil/iot/hsm/hsm_sw_sha2_routines.h"
+#include "virgil/iot/hsm/hsm.h"
 
 /*
  * 32-bit integer manipulation macros (big endian)
@@ -156,7 +156,7 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_SIZE]) {
+vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest) {
     uint32_t used;
     uint32_t high, low;
 
@@ -208,4 +208,16 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t digest[SHA256_DIGEST_S
     return VS_CODE_OK;
 }
 
+/******************************************************************************/
+
+vs_status_e
+_fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl) {
+    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    hsm_impl->hash_init = vs_hsm_sw_sha256_init;
+    hsm_impl->hash_update = vs_hsm_sw_sha256_update;
+    hsm_impl->hash_finish = vs_hsm_sw_sha256_final;
+
+    return VS_CODE_OK;
+}
 /******************************************************************************/

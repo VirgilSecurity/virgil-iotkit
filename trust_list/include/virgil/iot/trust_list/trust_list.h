@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
@@ -22,7 +22,7 @@ typedef struct vs_tl_element_info_s {
 } vs_tl_element_info_t;
 
 vs_status_e
-vs_tl_init(const vs_storage_op_ctx_t *op_ctx);
+vs_tl_init(const vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
 
 vs_status_e
 vs_tl_deinit();
