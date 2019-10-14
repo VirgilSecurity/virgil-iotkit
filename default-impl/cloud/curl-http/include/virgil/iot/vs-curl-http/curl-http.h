@@ -32,28 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_INCLUDE_H
-#define VS_CLOUD_INCLUDE_H
-
-#include <trust_list-config.h>
-#include <stdlib-config.h>
-#include <cloud-config.h>
-#include <update-config.h>
-#include <global-hal.h>
-#include <endian-config.h>
-
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/firmware/firmware_hal.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/json/json_parser.h>
+#ifndef VS_CURL_HTTP_DEFAULT_IMPL_H
+#define VS_CURL_HTTP_DEFAULT_IMPL_H
 
 #include <virgil/iot/cloud/cloud.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/base64/base64.h>
 
-#endif // VS_CLOUD_INCLUDE_H
+const vs_cloud_impl_t*
+vs_curl_http_impl(void);
+
+#endif // VS_CURL_HTTP_DEFAULT_IMPL_H

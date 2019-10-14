@@ -42,46 +42,24 @@
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
-typedef struct {
-    char *topic_list;
-    uint16_t *topic_len_list;
-    size_t topic_count;
-} vs_cloud_mb_topics_list_t;
-
-typedef struct {
-    char *login;
-    char *password;
-    char *cert;
-    char *pk;
-    char *host;
-    vs_cloud_mb_topics_list_t topic_list;
-    char *client_id;
-    uint16_t port;
-    bool is_filled;
-    bool is_active;
-} vs_cloud_mb_mqtt_ctx_t;
+/*
+ *
+ * Cloud
+ *
+*/
 
 #define VS_UPD_URL_STR_SIZE 200
 
-#define HTTPS_RET_CODE_ERROR_OPEN_SESSION 1000
-#define HTTPS_RET_CODE_ERROR_PREPARE_REQ 1001
-#define HTTPS_RET_CODE_ERROR_SEND_REQ 1002
-#define HTTPS_RET_CODE_ERROR_GET 1003
-#define HTTPS_RET_CODE_OK 200
+typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
 
-/* Request methods */
-typedef enum {
-    VS_HTTP_OPTIONS, /* request to server for communication  options */
-    VS_HTTP_GET,     /* retrieve information */
-    VS_HTTP_HEAD,    /* get meta-info */
-    VS_HTTP_POST,    /* request to accept new sub-ordinate of resource */
-    VS_HTTP_PUT,     /* modify or create new resource referred to by URI */
-    VS_HTTP_PATCH,   /* modify or create new resource referred
-                      * to by URI */
-    VS_HTTP_DELETE,  /* delete the resource */
-    VS_HTTP_TRACE,   /* echo */
-    VS_HTTP_CONNECT, /* do we need this  ? */
-} vs_http_method_t;
+typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
+                                           char *out_data,
+                                           vs_fetch_handler_cb_t fetch_handler,
+                                           void *hander_data,
+                                           size_t *in_out_size);
+typedef struct {
+    vs_cloud_http_get_func_t http_get;
+} vs_cloud_impl_t;
 
 typedef struct __attribute__((__packed__)) {
     uint32_t code_offset;   // sizeof(vs_cloud_firmware_header_t)
@@ -92,28 +70,8 @@ typedef struct __attribute__((__packed__)) {
     vs_firmware_descriptor_t descriptor;
 } vs_cloud_firmware_header_t;
 
-typedef vs_status_e (*vs_cloud_mb_init_func)(const char *host,
-                                     uint16_t port,
-                                     const char *device_cert,
-                                     const char *priv_key,
-                                     const char *ca_cert);
-typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func)(const char *client_id,
-                                                  const char *login,
-                                                  const char *password,
-                                                  const vs_cloud_mb_topics_list_t *topic_list);
-typedef vs_status_e (*vs_cloud_mb_process_func)(void);
-
 vs_status_e
-vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx);
-
-vs_status_e
-vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
-                    const char *root_ca_crt,
-                    vs_cloud_mb_init_func init,
-                    vs_cloud_mb_connect_subscribe_func connect_subscribe,
-                    vs_cloud_mb_process_func process);
-
-typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
+vs_cloud_init(const vs_cloud_impl_t *impl);
 
 vs_status_e
 vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
@@ -131,5 +89,62 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
 
 vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
+
+/*
+ *
+ * Message bin
+ *
+*/
+
+typedef struct {
+    char *topic_list;
+    uint16_t *topic_len_list;
+    size_t topic_count;
+} vs_cloud_mb_topics_list_t;
+
+typedef void ( *vs_clud_mb_process_topic_cb_t)(const char *topic,
+        const uint8_t *p_data,
+        const uint16_t length);
+
+typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
+                                             uint16_t port,
+                                             const char *device_cert,
+                                             const char *priv_key,
+                                             const char *ca_cert);
+
+typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_id,
+                                                          const char *login,
+                                                          const char *password,
+                                                          const vs_cloud_mb_topics_list_t *topic_list,
+                                                          vs_clud_mb_process_topic_cb_t process_topic);
+typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
+
+typedef struct {
+    vs_cloud_mb_init_func_t init;
+    vs_cloud_mb_connect_subscribe_func_t connect_subscribe;
+    vs_cloud_mb_process_func_t process;
+} vs_cloud_mesage_bin_impl_t;
+
+typedef struct {
+    vs_cloud_mesage_bin_impl_t *impl;
+    char *login;
+    char *password;
+    char *cert;
+    char *pk;
+    char *host;
+    vs_cloud_mb_topics_list_t topic_list;
+    char *client_id;
+    uint16_t port;
+    bool is_filled;
+    bool is_active;
+} vs_cloud_mb_mqtt_ctx_t;
+
+vs_status_e
+vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_mesage_bin_impl_t *impl);
+
+vs_status_e
+vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
+                    vs_clud_mb_process_topic_cb_t process_topic,
+                    const char *root_ca_crt);
 
 #endif // VS_CLOUD_H

@@ -34,32 +34,34 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-# Default crypto implementations
-#
-option(VIRGIL_IOT_DEFAULT_CRYPTO "Enable default crypto implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
+project(vs-default-aws-message-bin VERSION 0.1.0 LANGUAGES C)
+
+add_library(vs-default-aws-message-bin)
+
+target_sources(vs-default-aws-message-bin
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-aws-message-bin/vs-aws-message-bin.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-aws-message-bin.c
+        )
+
+target_link_libraries(vs-default-aws-message-bin
+        PUBLIC
+        aws-sdk
+        cloud
+        )
 
 #
-# Default cloud implementations
+#   Common include directories
 #
-option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS "Enable default mqtt aws implementation" ON)
+target_include_directories(vs-default-aws-message-bin
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
 
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
-endif()
+        INTERFACE
+        "$<INSTALL_INTERFACE:include>"
+        )
 
-#
-#   Default cloud implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/curl-http)
-endif()
-
-if (VIRGIL_IOT_DEFAULT_CLOUD_MQTT_AWS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/message-bin/aws-message-bin)
-endif()

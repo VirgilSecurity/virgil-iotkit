@@ -32,17 +32,56 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_CLOUD_HAL_H
-#define VS_CLOUD_HAL_H
+#ifndef VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
+#define VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
 
-uint16_t
-vs_cloud_https_hal(vs_http_method_t type,
-                   const char *url,
-                   const char *data,
-                   size_t data_size,
-                   char *out_data,
-                   vs_fetch_handler_func_t fetch_handler,
-                   void *hander_data,
-                   size_t *in_out_size);
+#include "aws_iot_mqtt_client_interface.h"
+#include <virgil/iot/cloud/cloud.h>
 
-#endif // VS_CLOUD_HAL_H
+typedef struct {
+    IoT_Client_Init_Params init_params;
+    IoT_Client_Connect_Params connect_params;
+    AWS_IoT_Client client;
+} iot_message_handler_t;
+
+IoT_Error_t
+iot_init(iot_message_handler_t *handler,
+         const char *host,
+         uint16_t port,
+         bool is_ssl_hostname_verify,
+         const char *deviceCert,
+         const char *priv_key,
+         const char *rootCACert);
+
+IoT_Error_t
+iot_connect_and_subscribe_multiple_topics(
+        iot_message_handler_t *handler,
+        const char *client_id,
+        const vs_cloud_mb_topics_list_t *topic_list,
+        const char *login,
+        const char *password,
+        QoS qos,
+        void (*iot_get_msg_handler)(AWS_IoT_Client *, char *, uint16_t, IoT_Publish_Message_Params *, void *),
+        void *iot_get_msg_handler_data);
+
+IoT_Error_t
+iot_connect_and_subscribe_topic(
+        iot_message_handler_t *handler,
+        const char *client_id,
+        const char *topic,
+        const char *login,
+        const char *password,
+        QoS qos,
+        void (*iot_get_msg_handler)(AWS_IoT_Client *, char *, uint16_t, IoT_Publish_Message_Params *, void *),
+        void *iot_get_msg_handler_data);
+
+bool
+iot_send(iot_message_handler_t *handler, const char *topic, uint8_t *data, size_t data_sz);
+
+bool
+iot_process(iot_message_handler_t *handler);
+
+const vs_cloud_mesage_bin_impl_t *
+vs_aws_message_bin_impl(void);
+
+#endif // VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H

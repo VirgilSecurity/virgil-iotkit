@@ -45,6 +45,8 @@
 
 #define MAX_EP_SIZE (256)
 
+static const vs_cloud_impl_t *_hal_impl = NULL;
+
 /******************************************************************************/
 static bool
 _data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len) {
@@ -143,14 +145,15 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
     CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
 
     _get_serial_number_in_hex_str(serial);
 
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
-    if (res < 0 || res > MAX_EP_SIZE ||
-        VS_CODE_OK != vs_cloud_https_hal(VS_HTTP_GET, url, NULL, 0, out_answer, NULL, NULL, in_out_answer_len)) {
+    if (res < 0 || res > MAX_EP_SIZE || VS_CODE_OK != _hal_impl->http_get(url, out_answer, NULL, NULL, in_out_answer_len)) {
         ret = VS_CODE_ERR_CLOUD;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
@@ -158,6 +161,16 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
     VS_IOT_FREE(url);
     return ret;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_cloud_init(const vs_cloud_impl_t *impl) {
+    CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(impl->http_get, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    _hal_impl = impl;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -376,6 +389,8 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
     CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
     size_t in_out_answer_len = 0;
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
@@ -384,8 +399,7 @@ vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
     resp.buff_sz = sizeof(vs_cloud_firmware_header_t);
     resp.fw_storage = fw_storage;
 
-    if (VS_CODE_OK != vs_cloud_https_hal(
-                              VS_HTTP_GET, fw_file_url, NULL, 0, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != _hal_impl->http_get(fw_file_url, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
 
@@ -571,14 +585,15 @@ vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(tl_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
     size_t in_out_answer_len = 0;
     tl_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
     resp.buff = VS_IOT_CALLOC(512, 1);
 
-    if (VS_CODE_OK != vs_cloud_https_hal(
-                              VS_HTTP_GET, tl_file_url, NULL, 0, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != _hal_impl->http_get(tl_file_url, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
     }
