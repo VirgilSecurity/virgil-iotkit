@@ -343,6 +343,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
+    //    _info.deinit =
 
     return &_info;
 }

@@ -134,8 +134,8 @@ typedef struct __attribute__((__packed__)) {
 
 typedef struct {
     vs_update_file_type_t type;
-    vs_update_file_version_t prev_file_version; // for client only
-    vs_update_file_version_t cur_file_version;
+    vs_file_version_t prev_file_version; // for client only
+    vs_file_version_t cur_file_version;
     vs_update_interface_t update_context;
     vs_mac_addr_t gateway_mac; // for client only
 } vs_fldt_file_type_mapping_t;
@@ -144,53 +144,8 @@ typedef struct {
 #define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
     CHECK_RET((fldt_ret_code = (OPERATION)) == VS_CODE_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
 
-// Server request/response processing
-
-int
-vs_fldt_GFTI_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
-
-int
-vs_fldt_GNFH_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
-int
-vs_fldt_GNFD_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
-
-int
-vs_fldt_GNFF_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
 
 // Client request/response processing
-
-int
-vs_fldt_INFV_request_processing(const uint8_t *request,
-                                const uint16_t request_sz,
-                                uint8_t *response,
-                                const uint16_t response_buf_sz,
-                                uint16_t *response_sz);
-
-int
-vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
-
-int
-vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
-
-int
-vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, uint16_t response_sz);
-
 #ifdef __cplusplus
 }
 #endif

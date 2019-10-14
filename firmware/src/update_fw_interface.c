@@ -35,13 +35,14 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <update-config.h>
-
 #include <virgil/iot/firmware/firmware.h>
-#include <virgil/iot/firmware/update_fw_interface.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/macros/macros.h>
+
+static vs_update_interface_t _fw_update_ctx = {.storage_context = NULL};
+static vs_device_manufacture_id_t _manufacture;
+static vs_device_type_t _device_type;
 
 /*************************************************************************/
 static char *
@@ -315,9 +316,11 @@ _fw_update_inc_data_offset(void *context, vs_update_file_type_t *file_type, size
 
 /*************************************************************************/
 vs_status_e
-vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
+vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type) {
 
-    CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(manufacture, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(device_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     CHECK_NOT_ZERO_RET(storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -327,23 +330,50 @@ vs_update_firmware_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *
     CHECK_NOT_ZERO_RET(storage_ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
+    VS_IOT_MEMSET(&_fw_update_ctx, 0, sizeof(_fw_update_ctx));
 
-    update_ctx->get_header_size = _fw_update_get_header_size;
-    update_ctx->get_file_size = _fw_update_get_file_size;
-    update_ctx->has_footer = _fw_update_has_footer;
-    update_ctx->inc_data_offset = _fw_update_inc_data_offset;
-    update_ctx->get_header = _fw_update_get_header;
-    update_ctx->get_data = _fw_update_get_data;
-    update_ctx->get_footer = _fw_update_get_footer;
-    update_ctx->set_header = _fw_update_set_header;
-    update_ctx->set_data = _fw_update_set_data;
-    update_ctx->set_footer = _fw_update_set_footer;
-    update_ctx->file_is_newer = _fw_update_file_is_newer;
-    update_ctx->free_item = _fw_update_free_item;
-    update_ctx->describe_type = _fw_update_describe_type;
-    update_ctx->describe_version = _fw_update_describe_version;
-    update_ctx->storage_context = storage_ctx;
+    _fw_update_ctx.get_header_size = _fw_update_get_header_size;
+    _fw_update_ctx.get_file_size = _fw_update_get_file_size;
+    _fw_update_ctx.has_footer = _fw_update_has_footer;
+    _fw_update_ctx.inc_data_offset = _fw_update_inc_data_offset;
+    _fw_update_ctx.get_header = _fw_update_get_header;
+    _fw_update_ctx.get_data = _fw_update_get_data;
+    _fw_update_ctx.get_footer = _fw_update_get_footer;
+    _fw_update_ctx.set_header = _fw_update_set_header;
+    _fw_update_ctx.set_data = _fw_update_set_data;
+    _fw_update_ctx.set_footer = _fw_update_set_footer;
+    _fw_update_ctx.file_is_newer = _fw_update_file_is_newer;
+    _fw_update_ctx.free_item = _fw_update_free_item;
+    _fw_update_ctx.describe_type = _fw_update_describe_type;
+    _fw_update_ctx.describe_version = _fw_update_describe_version;
+    _fw_update_ctx.storage_context = storage_ctx;
+
+    VS_IOT_MEMCPY(_manufacture, manufacture, sizeof(_manufacture));
+    VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
 
     return VS_CODE_OK;
 }
+
+/*************************************************************************/
+vs_update_interface_t *
+vs_firmware_update_ctx(void) {
+    return &_fw_update_ctx;
+}
+
+/*************************************************************************/
+const vs_update_file_type_t *
+vs_firmware_update_file_type(void) {
+    static vs_update_file_type_t file_type;
+    static bool ready = false;
+
+    if (ready) {
+        VS_IOT_MEMSET(&file_type, 0, sizeof(file_type));
+        file_type.type = VS_UPDATE_FIRMWARE;
+        VS_IOT_MEMCPY(file_type.info.manufacture_id, _manufacture, sizeof(_manufacture));
+        VS_IOT_MEMCPY(file_type.info.device_type, _device_type, sizeof(_device_type));
+        ready = true;
+    }
+    return &file_type;
+}
+
+/*************************************************************************/

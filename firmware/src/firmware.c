@@ -47,6 +47,8 @@
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
+#include "private/firmware-private.h"
+
 static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_TYPE_LIST;
 
 #define DESCRIPTORS_FILENAME "firmware_descriptors"
@@ -151,7 +153,8 @@ _write_data(const vs_storage_op_ctx_t *ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm) {
+vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm,
+        vs_device_manufacture_id_t manufacture, vs_device_type_t device_type) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -159,7 +162,7 @@ vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm) {
     _storage_ctx = ctx;
     _hsm = hsm;
 
-    return VS_CODE_OK;
+    return vs_update_firmware_init(ctx, manufacture, device_type);
 }
 
 /******************************************************************************/
@@ -631,7 +634,6 @@ vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_de
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) {
     vs_firmware_descriptor_t own_desc;
-    size_t version_cmp_size = (sizeof(vs_firmware_version_t) - sizeof(own_desc.info.version.app_type) - sizeof(own_desc.info.version.timestamp));
 
     CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -643,7 +645,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
         return VS_CODE_ERR_NOT_FOUND;
     }
 
-    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version.major), &(new_descriptor->info.version.major), version_cmp_size)) { //-V512 (PVS_IGNORE)
+    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version), &(new_descriptor->info.version), sizeof(vs_file_version_t))) {
         return VS_CODE_OLD_VERSION;
     }
     return VS_CODE_OK;

@@ -57,24 +57,21 @@ extern "C" {
 // . successfully_updated - true while file vas updated else false
 
 typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
-                                 const vs_update_file_version_t *prev_file_ver,
-                                 const vs_update_file_version_t *new_file_ver,
+                                 const vs_file_version_t *prev_file_ver,
+                                 const vs_file_version_t *new_file_ver,
                                  vs_update_interface_t *update_interface,
                                  const vs_mac_addr_t *gateway,
                                  bool successfully_updated);
 
 const vs_sdmp_service_t *
-vs_sdmp_fldt_client(void);
+vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
 
 //
 //  Customer API
 //
 
 vs_status_e
-vs_fldt_init_client(vs_fldt_got_file got_file_callback);
-
-vs_status_e
-vs_fldt_update_client_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);
+vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);
 
 void
 vs_fldt_destroy_client(void);

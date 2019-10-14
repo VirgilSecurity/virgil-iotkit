@@ -42,7 +42,6 @@
 vs_status_e
 vs_provision_init(vs_hsm_impl_t *hsm);
 typedef struct __attribute__((__packed__)) {
-    uint8_t app_type[4];
     uint8_t major;
     uint8_t minor;
     uint8_t patch;
