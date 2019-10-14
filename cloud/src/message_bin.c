@@ -34,7 +34,7 @@
 
 #include <virgil/iot/cloud/private/cloud_include.h>
 
-static const vs_cloud_mesage_bin_impl_t *_impl = NULL;
+static const vs_cloud_message_bin_impl_t *_impl = NULL;
 
 /*************************************************************************/
 static void
@@ -235,7 +235,7 @@ clean:
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_mesage_bin_impl_t *impl) {
+vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_message_bin_impl_t *impl) {
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl->init, VS_CODE_ERR_NULLPTR_ARGUMENT);
