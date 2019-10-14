@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/firmware/firmware.h>
 
 const vs_sdmp_service_t *

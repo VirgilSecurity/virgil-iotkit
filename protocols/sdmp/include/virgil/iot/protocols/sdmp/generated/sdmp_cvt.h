@@ -37,7 +37,7 @@
 
 #include <endian-config.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 
 
 /******************************************************************************/

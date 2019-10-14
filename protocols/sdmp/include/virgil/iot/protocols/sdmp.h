@@ -34,7 +34,7 @@
 
 #include <stdint.h>
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
