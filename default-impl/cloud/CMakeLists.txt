@@ -38,5 +38,5 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #   Virigl cloud default implementation
 #
 if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTPS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/curl-https)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/curl-http)
 endif()

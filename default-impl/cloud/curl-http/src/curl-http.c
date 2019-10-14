@@ -45,17 +45,14 @@ typedef struct resp_buff_s {
 } resp_buff_t;
 
 static vs_status_e
-_curl_https_hal(vs_http_method_t type,
-                const char *url,
-                const char *data,
-                size_t data_size,
-                char *out_data,
-                vs_fetch_handler_func_t fetch_handler,
-                void *hander_data,
-                size_t *in_out_size);
+_curl_http_hal(const char *url,
+               char *out_data,
+               vs_fetch_handler_func_t fetch_handler,
+               void *hander_data,
+               size_t *in_out_size);
 
 static const vs_cloud_impl_t _impl = {
-        .https = _curl_https_hal,
+        .http_get = _curl_http_hal,
 };
 
 /******************************************************************************/
@@ -78,14 +75,11 @@ _write_callback(char *contents, size_t size, size_t nmemb, void *userdata) {
 
 /******************************************************************************/
 static vs_status_e
-_curl_https_hal(vs_http_method_t type,
-                   const char *url,
-                   const char *data,
-                   size_t data_size,
-                   char *out_data,
-                   vs_fetch_handler_func_t fetch_handler,
-                   void *hander_data,
-                   size_t *in_out_size) {
+_curl_http_hal(const char *url,
+               char *out_data,
+               vs_fetch_handler_func_t fetch_handler,
+               void *hander_data,
+               size_t *in_out_size) {
     CURL *curl;
     CURLcode curl_res;
     vs_status_e res = VS_CODE_OK;
@@ -100,18 +94,10 @@ _curl_https_hal(vs_http_method_t type,
 
     curl = curl_easy_init();
     if (curl) {
-        switch (type) {
-            case VS_HTTP_GET:
-                curl_easy_setopt(curl, CURLOPT_URL, url);
-                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
-                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-                curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
-
-                break;
-            default:
-                res = VS_CODE_ERR_REQUEST_PREPARE;
-                goto terminate;
-        }
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
+        curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
 
         curl_res = curl_easy_perform(curl);
 
@@ -121,7 +107,6 @@ _curl_https_hal(vs_http_method_t type,
         *in_out_size = resp.used_size;
     }
 
-    terminate:
     curl_easy_cleanup(curl);
     curl_global_cleanup();
 
@@ -129,7 +114,7 @@ _curl_https_hal(vs_http_method_t type,
 }
 
 /******************************************************************************/
-const vs_cloud_impl_t*
-vs_curl_https_impl(void) {
+const vs_cloud_impl_t *
+vs_curl_http_impl(void) {
     return &_impl;
 }

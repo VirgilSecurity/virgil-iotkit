@@ -34,23 +34,23 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-default-curl-https VERSION 0.1.0 LANGUAGES C)
+project(vs-default-curl-http VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-default-curl-https)
+add_library(vs-default-curl-http)
 
-target_sources(vs-default-curl-https
+target_sources(vs-default-curl-http
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-curl-https/curl-https.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-curl-http/curl-http.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/curl-https.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/curl-http.c
 
 
         )
 
-target_link_libraries(vs-default-curl-https
+target_link_libraries(vs-default-curl-http
         PUBLIC
         cloud
         curl
@@ -59,7 +59,7 @@ target_link_libraries(vs-default-curl-https
 #
 #   Common include directories
 #
-target_include_directories(vs-default-curl-https
+target_include_directories(vs-default-curl-http
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
 

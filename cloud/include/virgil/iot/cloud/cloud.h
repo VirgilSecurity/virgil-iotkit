@@ -45,38 +45,15 @@
 // Cloud
 #define VS_UPD_URL_STR_SIZE 200
 
-#define HTTPS_RET_CODE_ERROR_OPEN_SESSION 1000
-#define HTTPS_RET_CODE_ERROR_PREPARE_REQ 1001
-#define HTTPS_RET_CODE_ERROR_SEND_REQ 1002
-#define HTTPS_RET_CODE_ERROR_GET 1003
-#define HTTPS_RET_CODE_OK 200
-
-/* Request methods */
-typedef enum {
-    VS_HTTP_OPTIONS, /* request to server for communication  options */
-    VS_HTTP_GET,     /* retrieve information */
-    VS_HTTP_HEAD,    /* get meta-info */
-    VS_HTTP_POST,    /* request to accept new sub-ordinate of resource */
-    VS_HTTP_PUT,     /* modify or create new resource referred to by URI */
-    VS_HTTP_PATCH,   /* modify or create new resource referred
-                      * to by URI */
-    VS_HTTP_DELETE,  /* delete the resource */
-    VS_HTTP_TRACE,   /* echo */
-    VS_HTTP_CONNECT, /* do we need this  ? */
-} vs_http_method_t;
-
 typedef size_t (*vs_fetch_handler_func_t)(char *contents, size_t chunksize, void *userdata);
 
-typedef vs_status_e (*vs_cloud_https_cb_t)(vs_http_method_t type,
-                                           const char *url,
-                                           const char *data,
-                                           size_t data_size,
+typedef vs_status_e (*vs_cloud_http_get_cb_t)(const char *url,
                                            char *out_data,
                                            vs_fetch_handler_func_t fetch_handler,
                                            void *hander_data,
                                            size_t *in_out_size);
 typedef struct {
-    vs_cloud_https_cb_t https;
+    vs_cloud_http_get_cb_t http_get;
 } vs_cloud_impl_t;
 
 vs_status_e
