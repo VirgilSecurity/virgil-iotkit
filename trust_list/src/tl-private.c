@@ -33,17 +33,17 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib-config.h>
-#include <logger-config.h>
 #include <trust_list-config.h>
 #include <endian-config.h>
 
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/private/tl_operations.h>
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
+
+#include "private/tl-private.h"
 
 static vs_tl_context_t _tl_static_ctx;
 
@@ -335,12 +335,14 @@ vs_tl_verify_storage(size_t storage_type) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
+vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _hsm = hsm;
+
+    vs_update_trust_list_init(op_ctx);
 
     _init_tl_ctx(TL_STORAGE_TYPE_DYNAMIC, op_ctx, &_tl_dynamic_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, op_ctx, &_tl_static_ctx);

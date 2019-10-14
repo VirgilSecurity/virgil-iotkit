@@ -586,7 +586,6 @@ vs_status_e
 vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_context) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gfti_fileinfo_request_t file_type_request;
-    vs_file_version_t file_ver;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
     size_t header_size;
@@ -626,16 +625,11 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
                                                             header_size,
                                                             &header_size);
     if (VS_CODE_OK == ret_code) {
-
-        STATUS_CHECK_RET(
-                file_type_info->update_interface->get_version(
-                        file_type_info->update_interface->storage_context, &file_type_info->type, &file_ver),
-                "Unable to get version for file %s",
-                _filever_descr(file_type_info, &file_type_info->cur_file_version, file_descr, sizeof(file_descr)));
-
         VS_LOG_INFO("[FLDT] Current file version : %s",
-                    _filever_descr(file_type_info, &file_ver, file_descr, sizeof(file_descr)));
-        VS_IOT_MEMCPY(&file_type_info->cur_file_version, &file_ver, sizeof(file_ver));
+                    _filever_descr(file_type_info, &file_type_info->type.info.version, file_descr, sizeof(file_descr)));
+        VS_IOT_MEMCPY(&file_type_info->cur_file_version,
+                      &file_type_info->type.info.version,
+                      sizeof(file_type_info->type.info.version));
     } else {
         VS_LOG_WARNING("[FLDT] File type was not found by Update library");
         VS_IOT_FREE(file_type_info->file_header);

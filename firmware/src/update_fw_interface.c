@@ -366,7 +366,7 @@ vs_firmware_update_file_type(void) {
     static vs_update_file_type_t file_type;
     static bool ready = false;
 
-    if (ready) {
+    if (!ready) {
         VS_IOT_MEMSET(&file_type, 0, sizeof(file_type));
         file_type.type = VS_UPDATE_FIRMWARE;
         VS_IOT_MEMCPY(file_type.info.manufacture_id, _manufacture, sizeof(_manufacture));

@@ -61,7 +61,6 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
 bool
 vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
-typedef vs_status_e (*vs_update_get_version_cb_t)(void *context, vs_update_file_type_t *file_type, vs_file_version_t *file_version);
 typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
 typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
@@ -83,7 +82,6 @@ typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type
 typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description);
 
 typedef struct __attribute__((__packed__)) vs_update_interface_t {
-    vs_update_get_version_cb_t        get_version;
     vs_update_get_header_size_cb_t    get_header_size;
     vs_update_get_file_size_cb_t      get_file_size;
     vs_update_has_footer_cb_t         has_footer;

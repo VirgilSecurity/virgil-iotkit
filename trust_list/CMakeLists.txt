@@ -47,12 +47,11 @@ add_library(trust_list)
 
 target_sources(trust_list
         PRIVATE
-        include/virgil/iot/trust_list/private/tl_operations.h
+        include/private/tl-private.h
         include/virgil/iot/trust_list/tl_structs.h
         include/virgil/iot/trust_list/trust_list.h
-        include/virgil/iot/trust_list/update_tl_interface.h
 
-        src/tl_operations.c
+        src/tl-private.c
         src/trust_list.c
         src/update_tl_interface.c
         )

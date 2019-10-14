@@ -33,16 +33,14 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib-config.h>
-#include <trust_list-config.h>
-#include <logger-config.h>
 
 #include "virgil/iot/trust_list/tl_structs.h"
-#include "virgil/iot/trust_list/private/tl_operations.h"
+#include "private/tl-private.h"
 #include "virgil/iot/trust_list/trust_list.h"
 
 /******************************************************************************/
 vs_status_e
-vs_tl_init(const vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
     return vs_tl_storage_init_internal(op_ctx, hsm);
 }
 
@@ -125,3 +123,6 @@ vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t 
 
     return res;
 }
+
+/******************************************************************************/
+

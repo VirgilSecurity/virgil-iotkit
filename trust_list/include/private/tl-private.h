@@ -24,7 +24,7 @@ typedef struct {
 } vs_tl_context_t;
 
 vs_status_e
-vs_tl_storage_init_internal(const vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
+vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
 vs_status_e
 vs_tl_storage_deinit_internal();
 
@@ -49,5 +49,8 @@ vs_tl_verify_storage(size_t storage_type);
 
 void
 vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
+
+vs_status_e
+vs_update_trust_list_init(vs_storage_op_ctx_t *storage_ctx);
 
 #endif // TL_OPERATIONS_H
