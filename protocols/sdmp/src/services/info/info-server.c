@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if INFO_SERVER
+
 #include <virgil/iot/protocols/sdmp/info/info-server.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
@@ -366,3 +368,5 @@ vs_sdmp_info_start_notification(const vs_netif_t *netif) {
 }
 
 /******************************************************************************/
+
+#endif // INFO_SERVER

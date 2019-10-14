@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if FLDT_SERVER
+
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
@@ -642,3 +644,5 @@ vs_sdmp_fldt_server(void) {
 }
 
 /******************************************************************************/
+
+#endif // FLDT_SERVER

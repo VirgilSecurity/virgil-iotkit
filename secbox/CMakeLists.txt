@@ -53,7 +53,6 @@ set_target_properties(secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
 target_link_libraries(secbox
         PUBLIC
-        sdmp    # TODO: Get rid of it from here
         hsm
         provision
         macros

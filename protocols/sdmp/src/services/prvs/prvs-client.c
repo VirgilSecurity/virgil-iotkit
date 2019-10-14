@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if PRVS_CLIENT
+
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
@@ -281,3 +283,5 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
+
+#endif // PRVS_CLIENT

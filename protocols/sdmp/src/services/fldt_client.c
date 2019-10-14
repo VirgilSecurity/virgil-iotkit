@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if FLDT_CLIENT
+
 #include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/status_code/status_code.h>
@@ -782,3 +784,5 @@ vs_sdmp_fldt_client(void) {
 }
 
 /******************************************************************************/
+
+#endif // FLDT_CLIENT

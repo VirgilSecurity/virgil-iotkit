@@ -35,6 +35,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
 
+#if FLDT_SERVER
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -73,5 +75,7 @@ vs_fldt_destroy_server(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // FLDT_SERVER
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H

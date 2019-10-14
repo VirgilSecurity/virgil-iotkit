@@ -59,8 +59,9 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/macros/include
         -I${VIRGIL_IOT_DIRECTORY}/logger/include
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
-        -I${VIRGIL_IOT_DIRECTORY}/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/crypto/hsm/include
         -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
+        -DPRVS_CLIENT=1
         )
 
 #

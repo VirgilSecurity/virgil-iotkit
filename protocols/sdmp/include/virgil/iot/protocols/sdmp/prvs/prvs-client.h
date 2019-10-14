@@ -35,6 +35,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
 
+#if PRVS_CLIENT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -116,5 +118,7 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PRVS_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H

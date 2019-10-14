@@ -35,6 +35,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 
+#if PRVS_SERVER
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -49,4 +51,7 @@ vs_sdmp_prvs_server(vs_hsm_impl_t *hsm);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PRVS_SERVER
+
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H

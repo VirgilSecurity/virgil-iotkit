@@ -36,13 +36,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(sdmp VERSION 0.1.0 LANGUAGES C)
 
-function(add_sdmp _for_factory)
-
-    if (_for_factory)
-        set (_targetname "sdmp-factory")
-    else()
-        set (_targetname "sdmp")
-    endif()
+function(add_sdmp _targetname _definitions)
 
     #
     #   SDMP library
@@ -111,9 +105,16 @@ function(add_sdmp _for_factory)
     #
     #   Add definitions
     #
+    if ("${_definitions}" STREQUAL "")
+        message("-- No _definitions for SDMP target ${_targetname}")
+    else()
+        message("-- SDMP_DEFINITIONS for ${_targetname} = ${_definitions}")
+        string(REPLACE " " ";" SDMP_DEFINITIONS ${_definitions})
+    endif()
+
     target_compile_definitions(${_targetname}
             PUBLIC
-            "VS_SDMP_FACTORY=${_for_factory}"
+            ${SDMP_DEFINITIONS}
             )
 
     #
@@ -124,14 +125,21 @@ function(add_sdmp _for_factory)
             virgil-iot-status-code
             logger
             provision
-            update
-            firmware
             $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
             $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
 
             PRIVATE
             macros
+            enable_pedantic_mode
             )
+
+#    target_link_libraries(${_targetname}
+#            PUBLIC
+#            update
+#            firmware
+#            )
+
+
     #
     # Format code
     #
@@ -144,9 +152,14 @@ endfunction()
 #
 #   SDMP For factory purposes
 #
-add_sdmp(1)
+add_sdmp("sdmp-factory" "PRVS_CLIENT=1")
+
+#
+#   SDMP Devices initializer
+#
+add_sdmp("sdmp-initializer" "PRVS_SERVER=1")
 
 #
 #   SDMP For common usage
 #
-add_sdmp(0)
+add_sdmp("sdmp" "")

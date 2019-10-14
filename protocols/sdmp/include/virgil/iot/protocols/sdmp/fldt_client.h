@@ -35,6 +35,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
 
+#if FLDT_CLIENT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -80,5 +82,7 @@ vs_fldt_destroy_client(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // FLDT_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H

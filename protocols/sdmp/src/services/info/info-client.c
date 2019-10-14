@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if INFO_CLIENT
+
 #include <virgil/iot/protocols/sdmp/info/info-client.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp.h>
@@ -330,3 +332,5 @@ vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks
 }
 
 /******************************************************************************/
+
+#endif // INFO_CLIENT

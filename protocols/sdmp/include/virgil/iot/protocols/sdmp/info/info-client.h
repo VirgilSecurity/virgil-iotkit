@@ -35,6 +35,8 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
 
+#if INFO_CLIENT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -82,5 +84,7 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
 #ifdef __cplusplus
 }
 #endif
+
+#endif // INFO_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
