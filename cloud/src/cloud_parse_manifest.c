@@ -244,15 +244,14 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
 vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage, vs_firmware_descriptor_t *new_desc) {
 
-    size_t _cmp_sz = (sizeof(vs_firmware_version_t) - sizeof(new_desc->info.version.app_type) -
+    size_t cmp_sz = (sizeof(vs_firmware_version_t) - sizeof(new_desc->info.version.app_type) -
                       sizeof(new_desc->info.version.timestamp));
-    vs_status_e ret_code;
+
     CHECK_NOT_ZERO_RET(new_desc, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Compare the own firmware image version
-    ret_code = vs_firmware_compare_own_version(new_desc);
-    if (VS_CODE_OLD_VERSION == ret_code) {
+    if (VS_CODE_OLD_VERSION == vs_firmware_compare_own_version(new_desc)) {
         VS_LOG_WARNING("No need to fetch a new own firmware.");
         return VS_CODE_ERR_NOT_FOUND;
     }
@@ -261,7 +260,7 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
 
     if (!_is_member_for_vendor_and_model_present(
                 fw_storage, new_desc->info.manufacture_id, new_desc->info.device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_desc->info.version.major), _cmp_sz)) { //-V512 (PVS_IGNORE)
+        0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_desc->info.version.major), cmp_sz)) { //-V512 (PVS_IGNORE)
 
         return VS_CODE_ERR_NOT_FOUND;
     }

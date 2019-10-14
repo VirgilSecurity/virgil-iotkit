@@ -498,7 +498,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
     vs_status_e ret_code;
     vs_firmware_footer_t *own_footer = (vs_firmware_footer_t *)buf;
 
-    STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "");
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "Unable to read own firmware");
 
     VS_IOT_MEMCPY(descriptor, &own_footer->descriptor, sizeof(vs_firmware_descriptor_t));
 
