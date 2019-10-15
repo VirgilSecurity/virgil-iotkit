@@ -34,8 +34,8 @@
 
 #if FLDT_CLIENT
 
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
-#include <virgil/iot/protocols/sdmp/fldt_client.h>
+#include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
+#include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>

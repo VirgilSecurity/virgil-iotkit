@@ -8,6 +8,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
+#include <virgil/iot/trust_list/tl_structs.h>
 
 typedef enum {
     VS_TL_ELEMENT_MIN = 0,
@@ -39,5 +40,8 @@ vs_tl_update_ctx(void);
 
 const vs_update_file_type_t *
 vs_tl_update_file_type(void);
+
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
 
 #endif // TRUST_LIST_H

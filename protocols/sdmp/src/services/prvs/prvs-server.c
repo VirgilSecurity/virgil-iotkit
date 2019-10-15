@@ -36,7 +36,6 @@
 
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-server.h>
-#include <virgil/iot/protocols/sdmp/sdmp_private.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>

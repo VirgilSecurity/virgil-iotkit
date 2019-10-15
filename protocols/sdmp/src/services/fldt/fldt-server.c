@@ -34,10 +34,10 @@
 
 #if FLDT_SERVER
 
-#include <virgil/iot/protocols/sdmp/fldt_server.h>
+#include <virgil/iot/protocols/sdmp/fldt/fldt-server.h>
+#include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/protocols/sdmp/fldt_private.h>
 #include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>
@@ -50,7 +50,7 @@ static vs_sdmp_service_t _fldt_server = {0};
 typedef struct {
     vs_update_file_type_t type;
     vs_update_interface_t *update_context;
-    vs_update_file_version_t current_version;
+    vs_file_version_t current_version;
     void *file_header;
     size_t file_size;
 } vs_fldt_server_file_type_mapping_t;
@@ -67,7 +67,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
     size_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-        if (vs_update_equal_file_type(file_type_info->update_context, &file_type_info->type, file_type)) {
+        if (vs_update_equal_file_type(&file_type_info->type, file_type)) {
             return file_type_info;
         }
     }
@@ -80,7 +80,7 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
 /******************************************************************/
 static const char *
 _filever_descr(vs_fldt_server_file_type_mapping_t *file_type_info,
-               const vs_update_file_version_t *file_ver,
+               const vs_file_version_t *file_ver,
                char *file_descr,
                size_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
@@ -153,11 +153,7 @@ _file_info(const vs_update_file_type_t *file_type,
                          "Unable to get header size for file type %s",
                          _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
-        STATUS_CHECK_RET(file_type_info->update_context->get_version(file_type_info->update_context->storage_context,
-                                                                     &file_type_info->type,
-                                                                     &file_type_info->current_version),
-                         "Unable to get file version for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+        file_type_info->current_version = file_type_info->type.info.version;
     } else {
         VS_LOG_WARNING("There is no header data for file type %s",
                        _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
@@ -169,7 +165,7 @@ _file_info(const vs_update_file_type_t *file_type,
     memset(file_info, 0, sizeof(*file_info));
 
     file_info->type = *file_type;
-    file_info->version = file_type_info->current_version;
+    file_info->type.info.version = file_type_info->current_version;
     file_info->gateway_mac = _gateway_mac;
 
     *file_type_info_ptr = file_type_info;
@@ -240,7 +236,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     const vs_fldt_gnfh_header_request_t *header_request = (const vs_fldt_gnfh_header_request_t *)request;
-    const vs_update_file_version_t *file_ver = NULL;
+    const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
@@ -261,7 +257,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfh_header_request_t type");
 
-    file_ver = &header_request->version;
+    file_ver = &header_request->type.info.version;
     file_type = &header_request->type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
@@ -276,7 +272,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
               "Response buffer must have enough size to store vs_fldt_gnfh_header_response_t structure");
 
     header_response->type = *file_type;
-    header_response->version = header_request->version;
+    header_response->type.info.version = header_request->type.info.version;
     if (file_type_info->file_size > UINT32_MAX) {
         VS_LOG_ERROR("File size %d is bigger that file_type_info->file_size %d can transmit",
                      file_type_info->file_size,
@@ -330,7 +326,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     const vs_fldt_gnfd_data_request_t *data_request = (const vs_fldt_gnfd_data_request_t *)request;
-    const vs_update_file_version_t *file_ver = NULL;
+    const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
@@ -354,7 +350,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfd_data_request_t type");
 
-    file_ver = &data_request->version;
+    file_ver = &data_request->type.info.version;
     file_type = &data_request->type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
@@ -377,7 +373,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
               data_request->offset,
               file_type_info->file_size);
 
-    data_response->version = data_request->version;
+    data_response->type.info.version = data_request->type.info.version;
     data_response->type = data_request->type;
     data_response->offset = data_request->offset;
 
@@ -437,7 +433,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     const vs_fldt_gnff_footer_request_t *footer_request = (const vs_fldt_gnff_footer_request_t *)request;
-    const vs_update_file_version_t *file_ver = NULL;
+    const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
@@ -459,7 +455,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnff_footer_request_t type");
 
-    file_ver = &footer_request->version;
+    file_ver = &footer_request->type.info.version;
     file_type = &footer_request->type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
@@ -484,7 +480,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
               _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
     footer_response->type = footer_request->type;
-    footer_response->version = footer_request->version;
+    footer_response->type.info.version = footer_request->type.info.version;
 
     data_size = response_buf_sz - sizeof(vs_fldt_gnff_footer_response_t);
     if (data_size > DATA_SZ) {
@@ -632,10 +628,7 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
 const vs_sdmp_service_t *
 vs_sdmp_fldt_server(void) {
     _fldt_server.user_data = 0;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmultichar"
-    _fldt_server.id = HTONL_IN_COMPILE_TIME('FLDT');
-#pragma GCC diagnostic pop
+    _fldt_server.id = VS_FLDT_SERVICE_ID;
     _fldt_server.request_process = _fldt_server_request_processor;
     _fldt_server.response_process = _fldt_server_response_processor;
     _fldt_server.periodical_process = NULL;

@@ -41,7 +41,6 @@
 #include <unistd.h>
 
 #include <virgil/iot/cloud/private/cloud_include.h>
-#include <virgil/iot/trust_list/private/tl_operations.h>
 
 #define MAX_EP_SIZE (256)
 

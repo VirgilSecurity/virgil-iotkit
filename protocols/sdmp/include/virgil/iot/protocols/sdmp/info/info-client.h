@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
 typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);

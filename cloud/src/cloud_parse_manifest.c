@@ -35,7 +35,6 @@
 
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/cloud/private/cloud_include.h>
-#include <virgil/iot/trust_list/private/tl_operations.h>
 
 /*************************************************************************/
 vs_status_e
@@ -244,9 +243,6 @@ _is_member_for_vendor_and_model_present(const vs_storage_op_ctx_t *fw_storage,
 vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage, vs_firmware_descriptor_t *new_desc) {
 
-    size_t cmp_sz = (sizeof(vs_firmware_version_t) - sizeof(new_desc->info.version.app_type) -
-                      sizeof(new_desc->info.version.timestamp));
-
     CHECK_NOT_ZERO_RET(new_desc, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -260,7 +256,7 @@ vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage
 
     if (!_is_member_for_vendor_and_model_present(
                 fw_storage, new_desc->info.manufacture_id, new_desc->info.device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&(current_ver.major), &(new_desc->info.version.major), cmp_sz)) { //-V512 (PVS_IGNORE)
+        0 <= VS_IOT_MEMCMP(&current_ver, &new_desc->info.version, sizeof(vs_file_version_t))) {
 
         return VS_CODE_ERR_NOT_FOUND;
     }
