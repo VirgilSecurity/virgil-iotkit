@@ -23,8 +23,7 @@ function(sign_firmware _target_name
             --fw-version ${_app_version}
             --manufacturer ${_manufacture_id}
             --model ${_device_model}
-            --chunk-size ${_chunk_size}
-            --app-type ${_app_type})
+            --chunk-size ${_chunk_size})
 
     add_custom_target(${_target_name}
             COMMAND ${SIGN_FIRMWARE_PROCESSING}

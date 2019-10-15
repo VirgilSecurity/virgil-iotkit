@@ -70,6 +70,12 @@ typedef struct __attribute__((__packed__)) {
     vs_firmware_descriptor_t descriptor;
 } vs_cloud_firmware_header_t;
 
+void
+vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc);
+
+ void
+vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header);
+
 vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *impl, vs_hsm_impl_t *hsm);
 
