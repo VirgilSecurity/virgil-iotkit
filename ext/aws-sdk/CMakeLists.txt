@@ -27,7 +27,7 @@ include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
 set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
-        CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/converters/libs_ext/mbedtls"
+        CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
         CMAKE_ARGS "${MBEDTLS_CMAKE_ARGS}"
 )
 

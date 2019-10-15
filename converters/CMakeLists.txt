@@ -45,13 +45,22 @@ set(CONV_SRC
         src/signature_converters.c
         src/pubkey_converters.c)
 
+#
+#   Config path
+#
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[converters] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
 # Include and build external libraries
-include (${CMAKE_CURRENT_SOURCE_DIR}/../cmake/virgil_depends.cmake)
+include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
 
 set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
-        CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs_ext/mbedtls"
+        CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
         CMAKE_ARGS "${MBEDTLS_CMAKE_ARGS}"
 )
 virgil_find_package (MbedTLS 2.4)
@@ -76,16 +85,6 @@ endif()
 
 target_compile_options(${PROJECT_NAME}
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
-
-#
-#   Config path
-#
-
-if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[converters] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
-else()
-    message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
-endif()
 
 target_compile_definitions(${PROJECT_NAME}
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
