@@ -260,15 +260,33 @@ vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl) {
 /*************************************************************************/
 static void
 _process_topic(const char *topic, uint16_t topic_sz, const uint8_t *data, uint16_t length) {
-    char *ptr = strstr(topic, VS_FW_TOPIC_MASK);
+    char *ptr = VS_IOT_STRSTR(topic, VS_FW_TOPIC_MASK);
+    char upd_file_url[VS_UPD_URL_STR_SIZE];
+    vs_status_e res;
     if (ptr != NULL && topic == ptr && _topic_handlers.fw_handler) {
-        _topic_handlers.fw_handler(data, length);
+        res = vs_cloud_parse_firmware_manifest((char *)data, length, upd_file_url);
+
+        if (VS_CODE_OK == res) {
+            _topic_handlers.fw_handler(data, VS_UPD_URL_STR_SIZE);
+        } else if (VS_CODE_ERR_NOT_FOUND == res) {
+            VS_LOG_INFO("[MB] Firmware manifest contains old version\n");
+        } else {
+            VS_LOG_INFO("[MB] Error parse firmware manifest\n");
+        }
         return;
     }
 
-    ptr = strstr(topic, VS_TL_TOPIC_MASK);
+    ptr = VS_IOT_STRSTR(topic, VS_TL_TOPIC_MASK);
     if (ptr != NULL && topic == ptr && _topic_handlers.tl_handler) {
-        _topic_handlers.tl_handler(data, length);
+        res = vs_cloud_parse_tl_mainfest((char *)data, length, upd_file_url);
+
+        if (VS_CODE_OK == res) {
+            _topic_handlers.tl_handler(data, VS_UPD_URL_STR_SIZE);
+        } else if (VS_CODE_ERR_NOT_FOUND == res) {
+            VS_LOG_INFO("[MB] TL manifest contains old version\n");
+        } else {
+            VS_LOG_INFO("[MB] Error parse tl manifest\n");
+        }
         return;
     }
 

@@ -110,7 +110,7 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
                                                const uint8_t *p_data,
                                                uint16_t length);
 
-typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *p_data,
+typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
                                                       uint16_t length);
 vs_status_e
 vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler);
