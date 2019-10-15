@@ -43,6 +43,6 @@ target_include_directories(storage_hal
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         )
 
-if(COMMAND add_clangformat)
-    add_clangformat(storage_hal)
-endif()
+#if(COMMAND add_clangformat)
+#    add_clangformat(storage_hal)
+#endif()

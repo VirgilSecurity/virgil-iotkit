@@ -112,12 +112,12 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
         size_t decrypted_data_sz;
 
         if (VS_CODE_OK != _hsm->ecies_decrypt(NULL,
-                                                              0,
-                                                              (uint8_t *)crypto_answer_b64,
-                                                              (size_t)crypto_answer_b64_len,
-                                                              (uint8_t *)out_answer,
-                                                              buf_size,
-                                                              &decrypted_data_sz) ||
+                                              0,
+                                              (uint8_t *)crypto_answer_b64,
+                                              (size_t)crypto_answer_b64_len,
+                                              (uint8_t *)out_answer,
+                                              buf_size,
+                                              &decrypted_data_sz) ||
             decrypted_data_sz > UINT16_MAX) {
             goto terminate;
         }
@@ -155,7 +155,8 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
     _get_serial_number_in_hex_str(serial);
 
     int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
-    if (res < 0 || res > MAX_EP_SIZE || VS_CODE_OK != _hal_impl->http_get(url, out_answer, NULL, NULL, in_out_answer_len)) {
+    if (res < 0 || res > MAX_EP_SIZE ||
+        VS_CODE_OK != _hal_impl->http_get(url, out_answer, NULL, NULL, in_out_answer_len)) {
         ret = VS_CODE_ERR_CLOUD;
     } else {
         ret = _decrypt_answer(out_answer, in_out_answer_len);
@@ -167,7 +168,9 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *cloud_impl, const vs_cloud_message_bin_impl_t *message_bin_impl, vs_hsm_impl_t *hsm) {
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
+              const vs_cloud_message_bin_impl_t *message_bin_impl,
+              vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hsm->ecies_decrypt, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -323,10 +326,9 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->used_size == required_chunk_size) {
                 resp->used_size = 0;
-                if (VS_CODE_OK != vs_firmware_save_firmware_chunk(&resp->header.descriptor,
-                                                                  resp->buff,
-                                                                  required_chunk_size,
-                                                                  resp->file_offset)) {
+                if (VS_CODE_OK !=
+                    vs_firmware_save_firmware_chunk(
+                            &resp->header.descriptor, resp->buff, required_chunk_size, resp->file_offset)) {
                     return 0;
                 }
 
@@ -370,8 +372,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
                 return VS_CODE_ERR_INCORRECT_ARGUMENT;
             }
 
-            if (VS_CODE_OK !=
-                vs_firmware_save_firmware_footer(&resp->header.descriptor, resp->buff)) {
+            if (VS_CODE_OK != vs_firmware_save_firmware_footer(&resp->header.descriptor, resp->buff)) {
                 return 0;
             }
             resp->step = VS_CLOUD_FETCH_FW_STEP_DONE;
@@ -383,8 +384,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url,
-                                 vs_cloud_firmware_header_t *fetched_header) {
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header) {
     vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);

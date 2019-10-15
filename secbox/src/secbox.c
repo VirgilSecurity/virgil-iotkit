@@ -14,10 +14,7 @@ static vs_hsm_impl_t *_hsm = NULL;
 
 /******************************************************************************/
 static vs_status_e
-_secbox_verify_signature(vs_storage_file_t f,
-                         uint8_t data_type,
-                         uint8_t *data,
-                         size_t data_sz) {
+_secbox_verify_signature(vs_storage_file_t f, uint8_t data_type, uint8_t *data, size_t data_sz) {
     vs_status_e ret_code;
     uint16_t hash_len = (uint16_t)vs_hsm_get_hash_len(VS_HASH_SHA_256);
     uint8_t hash[hash_len];
@@ -45,8 +42,10 @@ _secbox_verify_signature(vs_storage_file_t f,
         return ret_code;
     }
 
-    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type), "Unable to get public key");
-    STATUS_CHECK_RET(_hsm->ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz), "Unable to verify");
+    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
+                     "Unable to get public key");
+    STATUS_CHECK_RET(_hsm->ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz),
+                     "Unable to verify");
 
     return VS_CODE_OK;
 }
@@ -95,7 +94,8 @@ vs_secbox_file_size(vs_storage_element_id_t id) {
     CHECK_RET(NULL != f, VS_CODE_ERR_FILE, "Can't open file");
 
     // read data type
-    STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 0, &type, 1), "Can't load data type from file");
+    STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 0, &type, 1),
+                 "Can't load data type from file");
 
     switch (type) {
     case VS_SECBOX_SIGNED_AND_ENCRYPTED:
@@ -106,15 +106,17 @@ vs_secbox_file_size(vs_storage_element_id_t id) {
             goto terminate;
         }
 
-        STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz), "Can't load data from file");
+        STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz),
+                     "Can't load data from file");
 
         STATUS_CHECK(_hsm->ecies_decrypt(id,
-                                                                 sizeof(vs_storage_element_id_t),
-                                                                 (uint8_t *)data_load,
-                                                                 data_load_sz,
-                                                                 data_load,
-                                                                 data_load_sz,
-                                                                 &data_load_sz), "Cannot decrypt");
+                                         sizeof(vs_storage_element_id_t),
+                                         (uint8_t *)data_load,
+                                         data_load_sz,
+                                         data_load,
+                                         data_load_sz,
+                                         &data_load_sz),
+                     "Cannot decrypt");
 
         file_sz = data_load_sz;
         ret_code = VS_CODE_OK;
@@ -138,10 +140,7 @@ terminate:
 
 /******************************************************************************/
 vs_status_e
-vs_secbox_save(vs_secbox_type_t type,
-               vs_storage_element_id_t id,
-               const uint8_t *data,
-               size_t data_sz) {
+vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t *data, size_t data_sz) {
     vs_status_e res = VS_CODE_ERR_FILE_WRITE;
     vs_status_e res_close = VS_CODE_OK;
     vs_storage_file_t f = NULL;
@@ -174,12 +173,13 @@ vs_secbox_save(vs_secbox_type_t type,
         }
 
         STATUS_CHECK(_hsm->ecies_encrypt(id,
-                                                                 sizeof(vs_storage_element_id_t),
-                                                                 (uint8_t *)data,
-                                                                 data_sz,
-                                                                 data_to_save,
-                                                                 data_sz + 512,
-                                                                 &data_to_save_sz), "Cannot encrypt SHA384 AES256");
+                                         sizeof(vs_storage_element_id_t),
+                                         (uint8_t *)data,
+                                         data_sz,
+                                         data_to_save,
+                                         data_sz + 512,
+                                         &data_to_save_sz),
+                     "Cannot encrypt SHA384 AES256");
         break;
 
     case VS_SECBOX_SIGNED:
@@ -206,9 +206,12 @@ vs_secbox_save(vs_secbox_type_t type,
     CHECK(f = _storage_ctx->impl_func.open(_storage_ctx->impl_data, id), "Cannot open file");
 
     // Save data type to file
-    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, 0, &u8_type, 1), "Can't save type to file");
-    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, 1, data_to_save, data_to_save_sz), "Can't save data to file");
-    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, data_to_save_sz + 1, sign, sign_sz), "Can't save sign to file");
+    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, 0, &u8_type, 1),
+                 "Can't save type to file");
+    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, 1, data_to_save, data_to_save_sz),
+                 "Can't save data to file");
+    STATUS_CHECK(res = _storage_ctx->impl_func.save(_storage_ctx->impl_data, f, data_to_save_sz + 1, sign, sign_sz),
+                 "Can't save sign to file");
 
     STATUS_CHECK(res = _storage_ctx->impl_func.sync(_storage_ctx->impl_data, f), "Can't sync secbox file");
 
@@ -263,17 +266,19 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz) {
         }
 
         res = VS_CODE_ERR_FILE_WRITE;
-        STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz), "Can't load data from file");
+        STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz),
+                     "Can't load data from file");
         STATUS_CHECK(_secbox_verify_signature(f, type, data_load, data_load_sz), "Can't verify signature");
         STATUS_CHECK(_hsm->ecies_decrypt(id,
-                                                                 sizeof(vs_storage_element_id_t),
-                                                                 (uint8_t *)data_load,
-                                                                 data_load_sz,
-                                                                 data,
-                                                                 data_sz,
-                                                                 &data_load_sz), "Can't descrypt DHA384 AES256");
+                                         sizeof(vs_storage_element_id_t),
+                                         (uint8_t *)data_load,
+                                         data_load_sz,
+                                         data,
+                                         data_sz,
+                                         &data_load_sz),
+                     "Can't descrypt DHA384 AES256");
 
-        CHECK (data_sz == data_load_sz, "Can't read requested data quantity");
+        CHECK(data_sz == data_load_sz, "Can't read requested data quantity");
         break;
 
     case VS_SECBOX_SIGNED:

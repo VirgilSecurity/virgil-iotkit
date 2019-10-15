@@ -75,11 +75,7 @@ _create_descriptors_filename(vs_storage_element_id_t id) {
 
 /*************************************************************************/
 static vs_status_e
-_read_data(vs_storage_element_id_t id,
-           uint32_t offset,
-           uint8_t *data,
-           ssize_t buff_sz,
-           size_t *data_sz) {
+_read_data(vs_storage_element_id_t id, uint32_t offset, uint8_t *data, ssize_t buff_sz, size_t *data_sz) {
     vs_storage_file_t f = NULL;
     ssize_t file_sz;
     ssize_t bytes_left;
@@ -112,11 +108,7 @@ _read_data(vs_storage_element_id_t id,
 
 /******************************************************************************/
 static vs_status_e
-_write_data(vs_storage_element_id_t id,
-            bool need_sync,
-            uint32_t offset,
-            const void *data,
-            size_t data_sz) {
+_write_data(vs_storage_element_id_t id, bool need_sync, uint32_t offset, const void *data, size_t data_sz) {
     vs_storage_file_t f = NULL;
 
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -141,7 +133,7 @@ _write_data(vs_storage_element_id_t id,
         return VS_CODE_ERR_FILE_WRITE;
     }
 
-    if(need_sync) {
+    if (need_sync) {
         int res = _storage_ctx->impl_func.sync(_storage_ctx->impl_data, f);
         CHECK_RET(VS_CODE_OK == res, res, "Can't sync file");
     }
@@ -151,8 +143,10 @@ _write_data(vs_storage_element_id_t id,
 
 /******************************************************************************/
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t *_storage_ctx, vs_hsm_impl_t *hsm,
-        vs_device_manufacture_id_t manufacture, vs_device_type_t device_type) {
+vs_firmware_init(vs_storage_op_ctx_t *_storage_ctx,
+                 vs_hsm_impl_t *hsm,
+                 vs_device_manufacture_id_t manufacture,
+                 vs_device_type_t device_type) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -174,10 +168,10 @@ vs_firnware_deinit(void) {
 /*************************************************************************/
 vs_status_e
 vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
-                              uint32_t offset,
-                              uint8_t *data,
-                              size_t buff_sz,
-                              size_t *data_sz) {
+                                uint32_t offset,
+                                uint8_t *data,
+                                size_t buff_sz,
+                                size_t *data_sz) {
 
     vs_storage_element_id_t data_id;
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -193,9 +187,9 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
 /*************************************************************************/
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
-                              const uint8_t *chunk,
-                              size_t chunk_sz,
-                              size_t offset) {
+                                const uint8_t *chunk,
+                                size_t chunk_sz,
+                                size_t offset) {
 
     vs_storage_element_id_t data_id;
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -240,7 +234,7 @@ vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, con
 /*************************************************************************/
 vs_status_e
 vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
-                               uint8_t *data,
+                                 uint8_t *data,
                                  size_t buff_sz,
                                  size_t *data_sz) {
     ssize_t file_sz;
@@ -335,7 +329,7 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor)
         VS_IOT_MEMCPY(newbuf, (uint8_t *)descriptor, file_sz);
     }
 
-    save_data:
+save_data:
     res = _write_data(desc_id, true, 0, newbuf, file_sz);
     VS_IOT_FREE(newbuf);
 
@@ -345,8 +339,8 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor)
 /*************************************************************************/
 vs_status_e
 vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                   vs_firmware_descriptor_t *descriptor) {
+                                     const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
+                                     vs_firmware_descriptor_t *descriptor) {
 
     vs_storage_element_id_t desc_id;
     int res = VS_CODE_ERR_NOT_FOUND;
@@ -391,7 +385,7 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
         offset += sizeof(vs_firmware_descriptor_t);
     }
 
-    terminate:
+terminate:
     VS_IOT_FREE(buf);
 
     return res;
@@ -457,7 +451,7 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor) {
         res = _write_data(desc_id, true, 0, buf, file_sz);
     }
 
-    terminate:
+terminate:
     if (buf) {
         VS_IOT_FREE(buf);
     }
@@ -552,8 +546,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
         uint32_t fw_rest = descriptor->firmware_length - offset;
         uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
 
-        if (VS_CODE_OK !=
-            vs_firmware_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
+        if (VS_CODE_OK != vs_firmware_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz)) {
             return VS_CODE_ERR_FILE_READ;
         }
 
@@ -585,9 +578,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
 
-    CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY,
-              VS_CODE_ERR_FILE,
-              "There are not enough signatures");
+    CHECK_RET(footer->signatures_count >= VS_FW_SIGNATURES_QTY, VS_CODE_ERR_FILE, "There are not enough signatures");
 
     for (i = 0; i < footer->signatures_count; ++i) {
         CHECK_RET(sign->hash_type == VS_HASH_SHA_256, VS_CODE_ERR_UNSUPPORTED, "Unsupported hash size for sign FW");
@@ -601,17 +592,17 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
         pubkey = sign->raw_sign_pubkey + (uint16_t)sign_len;
 
         STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
-                  "Signer key is wrong");
+                         "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
             STATUS_CHECK_RET(_hsm->ecdsa_verify(sign->ec_type,
-                                                           pubkey,
-                                                           (uint16_t)key_len,
-                                                           sign->hash_type,
-                                                           hash,
-                                                           sign->raw_sign_pubkey,
-                                                           (uint16_t)sign_len),
-                      "Signature is wrong");
+                                                pubkey,
+                                                (uint16_t)key_len,
+                                                sign->hash_type,
+                                                hash,
+                                                sign->raw_sign_pubkey,
+                                                (uint16_t)sign_len),
+                             "Signature is wrong");
             sign_rules++;
         }
 
@@ -631,15 +622,19 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
 
     CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc), VS_CODE_ERR_NOT_FOUND, "Unable to get own firmware descriptor");
+    CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc),
+              VS_CODE_ERR_NOT_FOUND,
+              "Unable to get own firmware descriptor");
 
-    if(0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id, new_descriptor->info.manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE) &&
-     0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, VS_DEVICE_TYPE_SIZE)) {
+    if (0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id,
+                           new_descriptor->info.manufacture_id,
+                           VS_DEVICE_MANUFACTURE_ID_SIZE) &&
+        0 != VS_IOT_MEMCMP(own_desc.info.device_type, new_descriptor->info.device_type, VS_DEVICE_TYPE_SIZE)) {
         VS_LOG_DEBUG("The new firmware descriptor is not own");
         return VS_CODE_ERR_NOT_FOUND;
     }
 
-    if(0 <= VS_IOT_MEMCMP(&(own_desc.info.version), &(new_descriptor->info.version), sizeof(vs_file_version_t))) {
+    if (0 <= VS_IOT_MEMCMP(&(own_desc.info.version), &(new_descriptor->info.version), sizeof(vs_file_version_t))) {
         return VS_CODE_OLD_VERSION;
     }
     return VS_CODE_OK;
@@ -656,9 +651,9 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    //Compare the own firmware image version
+    // Compare the own firmware image version
     ret_code = vs_firmware_compare_own_version(descriptor);
-    if(VS_CODE_OLD_VERSION == ret_code) {
+    if (VS_CODE_OLD_VERSION == ret_code) {
         VS_LOG_WARNING("No need to install a new firmware. It doesn't contain a new version");
         return VS_CODE_ERR_VERIFY;
     }
@@ -689,7 +684,8 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
         uint32_t fw_rest = descriptor->firmware_length - offset;
         uint32_t required_chunk_size = fw_rest > descriptor->chunk_size ? descriptor->chunk_size : fw_rest;
 
-        STATUS_CHECK_RET(vs_firmware_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz), "Unable to load data chunk");
+        STATUS_CHECK_RET(vs_firmware_load_firmware_chunk(descriptor, offset, buf, required_chunk_size, &read_sz),
+                         "Unable to load data chunk");
         STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, required_chunk_size), "Unable to append data");
 
         offset += required_chunk_size;
@@ -705,20 +701,22 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
 
-        STATUS_CHECK_RET(VS_CODE_OK != vs_firmware_install_append_data_hal(buf, sz), "Unable to install and append data");
+        STATUS_CHECK_RET(VS_CODE_OK != vs_firmware_install_append_data_hal(buf, sz),
+                         "Unable to install and append data");
 
         fill_sz -= sz;
     }
 
     // Update image by footer
-    STATUS_CHECK_RET(vs_firmware_load_firmware_footer(descriptor, buf, footer_sz, &read_sz), "Unable to load firmware footer");
+    STATUS_CHECK_RET(vs_firmware_load_firmware_footer(descriptor, buf, footer_sz, &read_sz),
+                     "Unable to load firmware footer");
 
     return vs_firmware_install_append_data_hal(buf, read_sz);
 }
 
 /*************************************************************************/
 char *
-vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size){
+vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size) {
     static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
 
     CHECK_NOT_ZERO_RET(fw_ver, NULL);
@@ -731,21 +729,22 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
 #endif //   VS_IOT_ASCTIME
 
-    VS_IOT_SNPRINTF(buffer, buf_size,
-                    #ifdef VS_IOT_ASCTIME
-                            "ver %d.%d.%d.%d.%d, %s",
-                    #else
-                            "ver %d.%d.%d.%d.%d, UNIX timestamp %u",
-                    #endif //   VS_IOT_ASCTIME
+    VS_IOT_SNPRINTF(buffer,
+                    buf_size,
+#ifdef VS_IOT_ASCTIME
+                    "ver %d.%d.%d.%d.%d, %s",
+#else
+                    "ver %d.%d.%d.%d.%d, UNIX timestamp %u",
+#endif //   VS_IOT_ASCTIME
                     fw_ver->major,
                     fw_ver->minor,
                     fw_ver->patch,
                     fw_ver->dev_milestone,
                     fw_ver->dev_build,
-                    #ifdef VS_IOT_ASCTIME
-                            fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
+#ifdef VS_IOT_ASCTIME
+                    fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
 #else
-            timestamp
+                    timestamp
 #endif //   VS_IOT_ASCTIME
     );
 

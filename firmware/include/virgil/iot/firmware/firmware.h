@@ -56,31 +56,34 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_footer_t;
 
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type);
+vs_firmware_init(vs_storage_op_ctx_t *ctx,
+                 vs_hsm_impl_t *hsm,
+                 vs_device_manufacture_id_t manufacture,
+                 vs_device_type_t device_type);
 
 vs_status_e
 vs_firnware_deinit(void);
 
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
-                              const uint8_t *chunk,
-                              size_t chunk_sz,
-                              size_t offset);
+                                const uint8_t *chunk,
+                                size_t chunk_sz,
+                                size_t offset);
 
 vs_status_e
 vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
 
 vs_status_e
 vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
-                              uint32_t offset,
-                              uint8_t *data,
-                              size_t buf_sz,
-                              size_t *data_sz);
+                                uint32_t offset,
+                                uint8_t *data,
+                                size_t buf_sz,
+                                size_t *data_sz);
 
 vs_status_e
 vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
-                               uint8_t *data,
-                               size_t buff_sz,
+                                 uint8_t *data,
+                                 size_t buff_sz,
                                  size_t *data_sz);
 
 vs_status_e
@@ -94,8 +97,8 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
 vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                   vs_firmware_descriptor_t *descriptor);
+                                     const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
+                                     vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
 vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);

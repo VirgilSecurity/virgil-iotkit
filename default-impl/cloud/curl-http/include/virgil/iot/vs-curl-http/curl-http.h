@@ -37,7 +37,7 @@
 
 #include <virgil/iot/cloud/cloud.h>
 
-const vs_cloud_impl_t*
+const vs_cloud_impl_t *
 vs_curl_http_impl(void);
 
 #endif // VS_CURL_HTTP_DEFAULT_IMPL_H
