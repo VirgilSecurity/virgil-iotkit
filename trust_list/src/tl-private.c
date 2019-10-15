@@ -230,12 +230,12 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
 
         if (_is_rule_equal_to(sign->signer_type)) {
             BOOL_CHECK_RET(VS_CODE_OK == _hsm->ecdsa_verify(sign->ec_type,
-                                                             pubkey,
-                                                             (uint16_t)key_len,
-                                                             sign->hash_type,
-                                                             hash,
-                                                             sign->raw_sign_pubkey,
-                                                             (uint16_t)sign_len),
+                                                            pubkey,
+                                                            (uint16_t)key_len,
+                                                            sign->hash_type,
+                                                            hash,
+                                                            sign->raw_sign_pubkey,
+                                                            (uint16_t)sign_len),
                            "Signature is wrong");
             sign_rules++;
         }

@@ -38,5 +38,5 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #   Virigl Crypto Soft HSM
 #
 if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vs-soft-hsm)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/vs-soft-hsm)
 endif()

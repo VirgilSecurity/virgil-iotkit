@@ -79,3 +79,7 @@ target_link_libraries(tools-hal
         PRIVATE
         enable_pedantic_mode
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(tools-hal)
+endif()

@@ -59,7 +59,7 @@ file (APPEND "@VIRGIL_DEPENDS_ARGS_FILE@"
 )
 
 # Configure custom MbedTLS 'config.h' file
-set (MBEDTLS_CONFIGS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/configs")
+set(MBEDTLS_CONFIGS_DIR "${CMAKE_CURRENT_LIST_DIR}/configs")
 configure_file (
     ${MBEDTLS_CONFIGS_DIR}/config.h
     ${CMAKE_CURRENT_BINARY_DIR}/configs/config.h

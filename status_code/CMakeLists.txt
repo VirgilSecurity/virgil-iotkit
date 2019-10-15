@@ -52,3 +52,7 @@ target_link_libraries(virgil-iot-status-code
         INTERFACE
         macros
         )
+
+#if(COMMAND add_clangformat)
+#    add_clangformat(virgil-iot-status-code)
+#endif()

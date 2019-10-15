@@ -59,3 +59,7 @@ add_custom_command(TARGET sdmp-codgen POST_BUILD
                                                   -oh ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
     COMMENT "Generate SDMP convert function"
 )
+
+if(COMMAND add_clangformat)
+    add_clangformat(sdmp-codgen)
+endif()

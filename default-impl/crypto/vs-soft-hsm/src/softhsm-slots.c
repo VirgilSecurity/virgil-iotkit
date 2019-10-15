@@ -36,7 +36,7 @@
 #include <virgil/iot/macros/macros.h>
 #include "private/vs-softhsm-internal.h"
 
-static vs_storage_op_ctx_t * _storage = NULL;
+static vs_storage_op_ctx_t *_storage = NULL;
 
 /********************************************************************************/
 static vs_status_e
@@ -48,7 +48,9 @@ vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) 
     vs_status_e res, res_close;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
-    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t), VS_CODE_ERR_TOO_SMALL_BUFFER, "Slot name too big");
+    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
     VS_IOT_STRCPY((char *)id, slot_name);
 
     CHECK(f = _storage->impl_func.open(_storage->impl_data, id), "Cannot open file");
@@ -58,7 +60,7 @@ vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) 
 
     STATUS_CHECK(res = _storage->impl_func.sync(_storage->impl_data, f), "Can't sync secbox file");
 
-    terminate:
+terminate:
 
     if (f) {
         res_close = _storage->impl_func.close(_storage->impl_data, f);
@@ -78,7 +80,9 @@ vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_
     ssize_t file_sz;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
-    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t), VS_CODE_ERR_TOO_SMALL_BUFFER, "Slot name too big");
+    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
     VS_IOT_STRCPY((char *)id, slot_name);
 
     CHECK(f = _storage->impl_func.open(_storage->impl_data, id), "Cannot open file");
@@ -93,7 +97,7 @@ vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_
 
     *out_sz = file_sz;
 
-    terminate:
+terminate:
 
     if (f) {
         res_close = _storage->impl_func.close(_storage->impl_data, f);
@@ -111,7 +115,9 @@ vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
-    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t), VS_CODE_ERR_TOO_SMALL_BUFFER, "Slot name too big");
+    CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
     VS_IOT_STRCPY((char *)id, slot_name);
 
     return _storage->impl_func.del(_storage, id);

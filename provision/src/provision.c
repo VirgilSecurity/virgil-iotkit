@@ -41,6 +41,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 
@@ -211,7 +212,9 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     key_len = vs_hsm_get_pubkey_len(sign->ec_type);
 
     CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported signature ec_type");
-    CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len, VS_CODE_ERR_CRYPTO, "key stuff is wrong");
+    CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len,
+              VS_CODE_ERR_CRYPTO,
+              "key stuff is wrong");
 
     // Calculate hash of stuff under signature
     hash_size = vs_hsm_get_hash_len(sign->hash_type);
@@ -226,21 +229,24 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     pubkey = sign->raw_sign_pubkey + sign_len;
 
     STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-              "Signer key is not present");
+                     "Signer key is not present");
 
     STATUS_CHECK_RET(
             _hsm->ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
             "Signature is wrong");
 
     return VS_CODE_OK;
-
 }
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_hsm_impl_t *hsm) {
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _hsm = hsm;
+
+    // TrustList module
+    // TODO: Fix errors detection
+    vs_tl_init(tl_storage_ctx, hsm);
 
     return VS_CODE_OK;
 }

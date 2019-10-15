@@ -71,9 +71,13 @@ target_link_libraries(vs-module-high-level
 #
 target_include_directories(vs-module-high-level
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         INTERFACE
-        "$<INSTALL_INTERFACE:include>"
+        $<INSTALL_INTERFACE:include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-module-high-level)
+endif()
 

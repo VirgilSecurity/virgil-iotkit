@@ -79,12 +79,12 @@ endif ()
 #
 target_include_directories(vs-default-soft-hsm
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         ${CRYPTO_C_INCLUDES}
         ${CRYPTO_C_INCLUDES}/virgil/crypto/common
 
         INTERFACE
-        "$<INSTALL_INTERFACE:include>"
+        $<INSTALL_INTERFACE:include>
         )
 
 #
@@ -100,4 +100,9 @@ target_link_libraries(vs-default-soft-hsm
         ${CRYPTO_C_LIBS}/libmbedcrypto.a
         ${CRYPTO_C_LIBS}/libed25519.a
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-default-soft-hsm)
+endif()
+
 

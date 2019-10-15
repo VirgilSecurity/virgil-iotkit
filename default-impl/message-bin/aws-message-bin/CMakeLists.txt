@@ -59,9 +59,13 @@ target_link_libraries(vs-default-aws-message-bin
 #
 target_include_directories(vs-default-aws-message-bin
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         INTERFACE
-        "$<INSTALL_INTERFACE:include>"
+        $<INSTALL_INTERFACE:include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-default-aws-message-bin)
+endif()
 

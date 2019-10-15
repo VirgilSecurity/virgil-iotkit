@@ -40,6 +40,8 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 vs_status_e
-vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type);
+vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx,
+                        vs_device_manufacture_id_t manufacture,
+                        vs_device_type_t device_type);
 
-#endif //HELPERS_FIRMWARE_PRIVATE_H
+#endif // HELPERS_FIRMWARE_PRIVATE_H

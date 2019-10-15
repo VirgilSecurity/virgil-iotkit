@@ -77,9 +77,6 @@ vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc);
 vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header);
 
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *impl, vs_hsm_impl_t *hsm);
-
-vs_status_e
 vs_cloud_parse_firmware_manifest(void *payload,
                                  size_t payload_len,
                                  char *fw_url);
@@ -130,24 +127,13 @@ typedef struct {
     vs_cloud_mb_process_func_t process;
 } vs_cloud_message_bin_impl_t;
 
-typedef struct {
-    vs_cloud_message_bin_impl_t *impl;
-    char *login;
-    char *password;
-    char *cert;
-    char *pk;
-    char *host;
-    vs_cloud_mb_topics_list_t topic_list;
-    char *client_id;
-    uint16_t port;
-    bool is_filled;
-    bool is_active;
-} vs_cloud_mb_mqtt_ctx_t;
+vs_status_e
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
+        const vs_cloud_message_bin_impl_t *message_bin_impl,
+        vs_hsm_impl_t *hsm);
 
 vs_status_e
-vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_message_bin_impl_t *impl);
-
-vs_status_e
-vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx, vs_clud_mb_process_topic_cb_t process_topic, const char *root_ca_crt);
+vs_cloud_message_bin_process(vs_clud_mb_process_topic_cb_t process_topic,
+                             const char *root_ca_crt);
 
 #endif // VS_CLOUD_H
