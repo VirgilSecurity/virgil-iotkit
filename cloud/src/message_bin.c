@@ -260,36 +260,43 @@ vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl) {
 /*************************************************************************/
 static void
 _process_topic(const char *topic, uint16_t topic_sz, const uint8_t *data, uint16_t length) {
-    char *ptr = VS_IOT_STRSTR(topic, VS_FW_TOPIC_MASK);
-    char upd_file_url[VS_UPD_URL_STR_SIZE];
-    vs_status_e res;
-    if (ptr != NULL && topic == ptr && _topic_handlers.fw_handler) {
-        res = vs_cloud_parse_firmware_manifest((char *)data, length, upd_file_url);
+    char *ptr;
+    uint8_t upd_file_url[VS_UPD_URL_STR_SIZE];
+    vs_cloud_mb_process_default_topic_cb_t default_handler = NULL;
 
+    vs_status_e res = VS_CODE_ERR_NOT_IMPLEMENTED;
+
+    // Process firmware topic
+    if (_topic_handlers.fw_handler) {
+        ptr = VS_IOT_STRSTR(topic, VS_FW_TOPIC_MASK);
+        if (ptr != NULL && topic == ptr) {
+            res = vs_cloud_parse_firmware_manifest((char *)data, length, (char *)upd_file_url);
+            default_handler = _topic_handlers.fw_handler;
+        }
+    }
+
+    // Process tl topic if firmware topic isn't found
+    if (_topic_handlers.tl_handler && !default_handler) {
+        ptr = VS_IOT_STRSTR(topic, VS_TL_TOPIC_MASK);
+        if (ptr != NULL && topic == ptr) {
+            res = vs_cloud_parse_tl_mainfest((char *)data, length, (char *)upd_file_url);
+            default_handler = _topic_handlers.tl_handler;
+        }
+    }
+
+    // Process default topic if it's handler is registered
+    if (default_handler) {
         if (VS_CODE_OK == res) {
-            _topic_handlers.fw_handler(data, VS_UPD_URL_STR_SIZE);
+            default_handler(upd_file_url, VS_IOT_STRLEN((char *)upd_file_url));
         } else if (VS_CODE_ERR_NOT_FOUND == res) {
-            VS_LOG_INFO("[MB] Firmware manifest contains old version\n");
+            VS_LOG_INFO("[MB] Manifest contains old version\n");
         } else {
-            VS_LOG_INFO("[MB] Error parse firmware manifest\n");
+            VS_LOG_INFO("[MB] Error parse manifest\n");
         }
         return;
     }
 
-    ptr = VS_IOT_STRSTR(topic, VS_TL_TOPIC_MASK);
-    if (ptr != NULL && topic == ptr && _topic_handlers.tl_handler) {
-        res = vs_cloud_parse_tl_mainfest((char *)data, length, upd_file_url);
-
-        if (VS_CODE_OK == res) {
-            _topic_handlers.tl_handler(data, VS_UPD_URL_STR_SIZE);
-        } else if (VS_CODE_ERR_NOT_FOUND == res) {
-            VS_LOG_INFO("[MB] TL manifest contains old version\n");
-        } else {
-            VS_LOG_INFO("[MB] Error parse tl manifest\n");
-        }
-        return;
-    }
-
+    // Call the custom topic handler if any default topics weren't found or any default handlers weren't registered
     if (_topic_handlers.custom_handler) {
         _topic_handlers.custom_handler(topic, topic_sz, data, length);
     }

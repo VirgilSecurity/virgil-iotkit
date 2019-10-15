@@ -143,15 +143,15 @@ _write_data(vs_storage_element_id_t id, bool need_sync, uint32_t offset, const v
 
 /******************************************************************************/
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t *_storage_ctx,
+vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_hsm_impl_t *hsm,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(_storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    _storage_ctx = _storage_ctx;
+    _storage_ctx = ctx;
     _hsm = hsm;
 
     return vs_update_firmware_init(_storage_ctx, manufacture, device_type);
