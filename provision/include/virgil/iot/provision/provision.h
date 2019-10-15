@@ -38,9 +38,8 @@
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
-vs_status_e
-vs_provision_init(vs_hsm_impl_t *hsm);
 typedef struct __attribute__((__packed__)) {
     uint8_t major;
     uint8_t minor;
@@ -56,6 +55,9 @@ typedef struct __attribute__((__packed__)) {
     vs_file_version_t version;
 } vs_file_info_t;
 
+
+vs_status_e
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
 
 vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);

@@ -41,6 +41,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 
@@ -238,9 +239,13 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_hsm_impl_t *hsm) {
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _hsm = hsm;
+
+    // TrustList module
+    // TODO: Fix errors detection
+    vs_tl_init(tl_storage_ctx, hsm);
 
     return VS_CODE_OK;
 }

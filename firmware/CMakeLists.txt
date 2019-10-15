@@ -52,12 +52,9 @@ target_sources(firmware
 
 target_link_libraries(firmware
         PUBLIC
-        logger
         macros
-        hsm
         update
-        trust_list
-        storage_hal
+        provision
         virgil-iot-status-code
         )
 

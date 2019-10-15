@@ -127,8 +127,6 @@ function(add_sdmp _targetname _firmware_update _definitions)
             provision
             $<$<BOOL:${_firmware_update}>:update>
             $<$<BOOL:${_firmware_update}>:firmware>
-            $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
-            $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
 
             PRIVATE
             macros

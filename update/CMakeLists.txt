@@ -47,12 +47,7 @@ target_sources(update
 
 target_link_libraries(update
         PUBLIC
-        logger
-        macros
-        hsm
-        trust_list
-        storage_hal
-        virgil-iot-status-code
+        provision
         )
 
 target_include_directories(update

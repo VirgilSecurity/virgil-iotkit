@@ -77,11 +77,9 @@ if (NOT VIRGIL_IOT_MCU_BUILD)
 endif()
 
 target_link_libraries(virgil-iot-sdk-tests
-        hsm
         secbox
         sdmp
-        trust_list
-        macros
+        provision
         update
         firmware
         )
