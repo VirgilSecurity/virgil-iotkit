@@ -88,3 +88,7 @@ target_include_directories(logger
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(logger)
+endif()

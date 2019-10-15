@@ -61,7 +61,7 @@ target_link_libraries(secbox
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
+target_include_directories(secbox
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
@@ -69,3 +69,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(secbox)
+endif()

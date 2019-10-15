@@ -22,3 +22,8 @@ target_include_directories(vs-json
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-json)
+endif()
+

@@ -47,3 +47,7 @@ target_link_libraries(macros
         INTERFACE
         logger
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(macros)
+endif()

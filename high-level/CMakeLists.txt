@@ -77,3 +77,7 @@ target_include_directories(vs-module-high-level
         $<INSTALL_INTERFACE:include>
         )
 
+if(COMMAND add_clangformat)
+    add_clangformat(vs-module-high-level)
+endif()
+

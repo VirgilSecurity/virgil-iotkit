@@ -92,3 +92,7 @@ target_link_libraries(provision
         PRIVATE
         virgil-iot-status-code
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(provision)
+endif()

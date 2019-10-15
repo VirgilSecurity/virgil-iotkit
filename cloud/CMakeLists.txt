@@ -60,3 +60,7 @@ target_include_directories(cloud
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(cloud)
+endif()

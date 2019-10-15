@@ -57,7 +57,7 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
-include("cmake/clangformat.cmake")
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/clangformat.cmake)
 
 
 # ---------------------------------------------------------------------------

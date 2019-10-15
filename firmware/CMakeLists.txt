@@ -65,3 +65,7 @@ target_include_directories(firmware
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(firmware)
+endif()
