@@ -32,8 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-// TODO : TEMPORARY !!!!
-// #if FLDT_SERVER
+#if FLDT_SERVER
 
 #include <virgil/iot/protocols/sdmp/fldt/fldt-server.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
@@ -653,4 +652,4 @@ vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
 
 /******************************************************************************/
 
-//#endif // FLDT_SERVER
+#endif // FLDT_SERVER

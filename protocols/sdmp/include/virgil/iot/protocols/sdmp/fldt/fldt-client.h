@@ -35,8 +35,7 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
 
-// TODO : TEMPORARY !!!!!
-// #if FLDT_CLIENT
+#if FLDT_CLIENT
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,7 +77,6 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 }
 #endif
 
-// TODO : TEMPORARY !!!!!
-// #endif // FLDT_CLIENT
+#endif // FLDT_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_FLDT_CLIENT_H
