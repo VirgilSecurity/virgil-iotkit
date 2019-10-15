@@ -44,7 +44,7 @@ option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft H
 #   Default Crypto implementations module
 #
 if (VIRGIL_IOT_DEFAULT_CRYPTO)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/crypto)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 endif()
 
 #

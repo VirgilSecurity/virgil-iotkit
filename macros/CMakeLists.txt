@@ -40,10 +40,14 @@ add_library(macros INTERFACE)
 
 target_include_directories(macros
         INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
 
 target_link_libraries(macros
         INTERFACE
         logger
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(macros)
+endif()

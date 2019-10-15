@@ -47,13 +47,13 @@ add_library(trust_list)
 
 target_sources(trust_list
         PRIVATE
-        include/private/tl-private.h
-        include/virgil/iot/trust_list/tl_structs.h
-        include/virgil/iot/trust_list/trust_list.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/tl-private.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/tl_structs.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/trust_list.h
 
-        src/tl-private.c
-        src/trust_list.c
-        src/update_tl_interface.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/tl-private.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/trust_list.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/update_tl_interface.c
         )
 
 #
@@ -79,7 +79,7 @@ else()
     message(STATUS "[trust_list] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-target_compile_definitions(${PROJECT_NAME}
+target_compile_definitions(trust_list
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
@@ -95,16 +95,20 @@ target_link_libraries(trust_list
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
+target_include_directories(trust_list
         PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         PUBLIC
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<INSTALL_INTERFACE:include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(trust_list)
+endif()
 

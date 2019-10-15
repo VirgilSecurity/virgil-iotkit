@@ -42,12 +42,12 @@ target_sources(firmware
         PRIVATE
 
         # Headers
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h"
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h
 
         # Sources
-        "${CMAKE_CURRENT_LIST_DIR}/src/firmware.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c"
+        ${CMAKE_CURRENT_LIST_DIR}/src/firmware.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c
         )
 
 target_link_libraries(firmware
@@ -60,8 +60,12 @@ target_link_libraries(firmware
 
 target_include_directories(firmware
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(firmware)
+endif()

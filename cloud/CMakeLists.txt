@@ -40,10 +40,10 @@ add_library(cloud)
 
 target_sources(cloud
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cloud.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c"
+        ${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/cloud.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c
         )
 
 target_link_libraries(cloud
@@ -58,5 +58,9 @@ target_include_directories(cloud
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(cloud)
+endif()

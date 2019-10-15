@@ -53,10 +53,10 @@ function(add_sdmp _targetname _firmware_update _definitions)
 
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp-structs.h
-            include/private/sdmp-private.h
-            include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
-            include/virgil/iot/protocols/sdmp/fldt/fldt-client.h
-            include/virgil/iot/protocols/sdmp/fldt/fldt-server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/private/sdmp-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-structs.h
@@ -65,8 +65,8 @@ function(add_sdmp _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
-            src/services/fldt/fldt-client.c
-            src/services/fldt/fldt-server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt/fldt-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt/fldt-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-server.c
@@ -92,14 +92,14 @@ function(add_sdmp _targetname _firmware_update _definitions)
     #
     target_include_directories(${_targetname}
             PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
             PRIVATE
             # TODO: FIX PVS
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
-            "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>
+            $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
             )
 
     #

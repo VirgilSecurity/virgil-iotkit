@@ -42,24 +42,24 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
 #
 #   Factory initalizer
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-factory-initializer)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-iot-factory-initializer)
 
 #
 #   Registrar
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-iot-registrar)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-iot-registrar)
 
 #
 #   Signer
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-signer)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-signer)
 
 #
 #   SDMPD
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/virgil-sdmpd)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-sdmpd)
 
 #
 #   SDMP convert function generator
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sdmp-codgen)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/sdmp-codgen)

@@ -175,3 +175,20 @@ target_link_libraries(enable_sanitizers
         $<$<BOOL:${USE_LSAN}>:enable_lsan_mode>
         $<$<BOOL:${USE_UBSAN}>:enable_ubsan_mode>
         )
+
+#
+# Target options
+#
+function(create_text_option _name _maxlen _default_val _descr)
+    if ((NOT DEFINED ${_name}) OR (${_name} STREQUAL ""))
+        message("* Use default ${_name}=\"${_default_val}\"")
+        set(${_name} "${_default_val}" CACHE STRING "${_descr}")
+    else()
+        string(LENGTH ${${_name}} LEN)
+        if (${LEN} GREATER ${_maxlen})
+            message(FATAL_ERROR "${_name} parameter must be less than ${_maxlen} symbols")
+        else()
+            message("* ${_name}=\"${${_name}}\"")
+        endif ()
+    endif()
+endfunction()
