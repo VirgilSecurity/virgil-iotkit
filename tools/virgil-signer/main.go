@@ -84,11 +84,6 @@ func main()  {
             Aliases: []string{"k"},
             Usage:   "Chunk size",
         },
-        &cli.StringFlag{
-            Name:    "app-type",
-            Aliases: []string{"t"},
-            Usage:   "Application Type",
-        },
     }
 
     app := &cli.App{
@@ -120,7 +115,6 @@ func signerFunc(context *cli.Context) (err error) {
         Manufacturer:       context.String("manufacturer"),
         Model:              context.String("model"),
         ChunkSize:          context.Int("chunk-size"),
-        ApplicationType:    context.String("app-type"),
     }
 
     err = signerUtil.CreateSignedFirmware()

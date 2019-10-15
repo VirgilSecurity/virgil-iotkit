@@ -12,7 +12,6 @@ _Prog can be used directly on device. _Update file can be uploaded to cloud.
 --manufacturer value, -a value  Manufacturer
 --model value, -d value         Model
 --chunk-size value, -k value    Chunk size (default: 0)
---app-type value, -t value      Application Type
 --help, -h                      show help (default: false)
 --version, -v                   print the version (default: false)
 ```

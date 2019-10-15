@@ -69,9 +69,8 @@ type Descriptor struct {
     AppSize          uint32
 }
 
-// Size: 4 + 1 + 1 + 1 + 1 + 1 + 4 = 13
+// Size: 1 + 1 + 1 + 1 + 1 + 4 = 9
 type Version struct {
-    ApplicationType [4]byte
     Major           uint8
     Minor           uint8
     Patch           uint8

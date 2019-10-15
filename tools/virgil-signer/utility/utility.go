@@ -63,7 +63,6 @@ type SignerUtility struct {
     Manufacturer    string
     Model           string
     ChunkSize       int
-    ApplicationType string
 
     progFile        *firmware.ProgFile
 }
@@ -271,8 +270,6 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
         DevBuild:         devBuild,
         Timestamp:        timestamp,
     }
-    // Application type
-    copy(ver.ApplicationType[:], s.ApplicationType)
 
     return ver, nil
 }
