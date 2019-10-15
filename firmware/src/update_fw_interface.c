@@ -111,7 +111,7 @@ _fw_update_get_header(void *context, vs_update_file_type_t *file_type, void *hea
 
     CHECK_RET(buffer_size >= sizeof(vs_firmware_descriptor_t), VS_CODE_ERR_NO_MEMORY, "Buffer size %d is lower that sizeof(vs_firmware_descriptor_t) = %d", buffer_size, sizeof(vs_firmware_descriptor_t));
 
-    if (VS_CODE_OK != vs_firmware_load_firmware_descriptor(ctx, file_type->info.manufacture_id, file_type->info.device_type, fw_descr)) {
+    if (VS_CODE_OK != vs_firmware_load_firmware_descriptor(file_type->info.manufacture_id, file_type->info.device_type, fw_descr)) {
         VS_LOG_WARNING("Unable to load Firmware's header");
         VS_IOT_MEMSET(fw_descr, 0, sizeof(*fw_descr));
         VS_IOT_MEMCPY(&fw_descr->info.manufacture_id, file_type->info.manufacture_id, sizeof(fw_descr->info.manufacture_id));
@@ -142,7 +142,7 @@ _fw_update_get_data(void *context, vs_update_file_type_t *file_type, const void 
     CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
     CHECK_RET(data_offset <= UINT32_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Data offset %d is bigger than uint16_t %d", data_offset, VS_CODE_ERR_FORMAT_OVERFLOW);
 
-    ret_code = vs_firmware_load_firmware_chunk(ctx, descriptor, data_offset, data_buffer, buffer_size, data_size);
+    ret_code = vs_firmware_load_firmware_chunk(descriptor, data_offset, data_buffer, buffer_size, data_size);
     CHECK_RET(buffer_size >= *data_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store data %d bytes size", buffer_size, *data_size);
 
     return ret_code;
@@ -164,7 +164,7 @@ _fw_update_get_footer(void *context, vs_update_file_type_t *file_type, const voi
 
     CHECK_RET(buffer_size <= UINT16_MAX, VS_CODE_ERR_FORMAT_OVERFLOW, "Buffer size %d is bigger than uint16_t %d", buffer_size, VS_CODE_ERR_FORMAT_OVERFLOW);
 
-    ret_code = vs_firmware_load_firmware_footer(ctx, descriptor, footer_buffer, buffer_size, footer_size);
+    ret_code = vs_firmware_load_firmware_footer(descriptor, footer_buffer, buffer_size, footer_size);
     CHECK_RET(buffer_size >= *footer_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store footer %d bytes size", buffer_size, *footer_size);
 
     return ret_code;
@@ -182,7 +182,7 @@ _fw_update_set_header(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_RET(header_size == sizeof(*descriptor), VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect header size %d byte while it must store vs_firmware_descriptor_t %d bytes length", header_size, sizeof(*descriptor));
 
     *file_size = descriptor->firmware_length;
-    return vs_firmware_save_firmware_descriptor(ctx, descriptor);
+    return vs_firmware_save_firmware_descriptor(descriptor);
 }
 
 /*************************************************************************/
@@ -195,7 +195,7 @@ _fw_update_set_data(void *context, vs_update_file_type_t *file_type, const void 
     CHECK_NOT_ZERO_RET(file_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    return vs_firmware_save_firmware_chunk(ctx, descriptor, file_data, data_size, data_offset);
+    return vs_firmware_save_firmware_chunk(descriptor, file_data, data_size, data_offset);
 }
 
 /*************************************************************************/
@@ -211,13 +211,13 @@ _fw_update_set_footer(void *context, vs_update_file_type_t *file_type, const voi
     CHECK_NOT_ZERO_RET(file_footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    res = vs_firmware_save_firmware_footer(ctx, fw_descr, file_footer);
+    res = vs_firmware_save_firmware_footer(fw_descr, file_footer);
     CHECK_RET(VS_CODE_OK == res, res, "Unable to save footer");
 
-    if(VS_CODE_OK != vs_firmware_verify_firmware(ctx, fw_descr)){
+    if(VS_CODE_OK != vs_firmware_verify_firmware(fw_descr)){
         VS_LOG_WARNING("Error while verifying firmware");
 
-        if (VS_CODE_OK != (res = vs_firmware_delete_firmware(ctx, fw_descr))) {
+        if (VS_CODE_OK != (res = vs_firmware_delete_firmware(fw_descr))) {
             VS_LOG_ERROR("Unable to delete firmware");
             return res;
         }
@@ -225,7 +225,7 @@ _fw_update_set_footer(void *context, vs_update_file_type_t *file_type, const voi
         return VS_CODE_ERR_VERIFY;
 
     } else {
-        res = vs_firmware_install_firmware(ctx, fw_descr);
+        res = vs_firmware_install_firmware(fw_descr);
     }
 
     return res;

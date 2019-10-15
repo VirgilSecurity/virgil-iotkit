@@ -62,50 +62,46 @@ vs_status_e
 vs_firnware_deinit(void);
 
 vs_status_e
-vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              const vs_firmware_descriptor_t *descriptor,
+vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
                               const uint8_t *chunk,
                               size_t chunk_sz,
                               size_t offset);
 
 vs_status_e
-vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
+vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
 
 vs_status_e
-vs_firmware_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              const vs_firmware_descriptor_t *descriptor,
+vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
                               uint32_t offset,
                               uint8_t *data,
                               size_t buf_sz,
                               size_t *data_sz);
 
 vs_status_e
-vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
-                               const vs_firmware_descriptor_t *descriptor,
+vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
                                uint8_t *data,
                                size_t buff_sz,
                                  size_t *data_sz);
 
 vs_status_e
-vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                    const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
                                    vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 
 char *
 vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);

@@ -65,9 +65,9 @@ vs_status_e
 vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
 vs_status_e
-vs_fldt_update_server_file_type(const vs_update_file_type_t *file_type,
-                                vs_update_interface_t *update_context,
-                                bool broadcast_file_info);
+vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
+                             vs_update_interface_t *update_context,
+                             bool broadcast_file_info);
 
 void
 vs_fldt_destroy_server(void);

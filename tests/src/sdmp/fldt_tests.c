@@ -113,8 +113,8 @@ test_fldt_add_filetypes(void) {
     FLDT_CHECK_GOTO(vs_fldt_update_client_file_type(&client_file_type), true, "Unable to add Firmware client file mapping for the already existed one (vs_fldt_update_client_file_type call)");
 
     server_file_type = make_server_mapping(&file_type_2);
-    FLDT_CHECK_GOTO(vs_fldt_update_server_file_type(&server_file_type), true, "Unable to add Firmware server file mapping for the first time (vs_fldt_update_server_file_type call)");
-    FLDT_CHECK_GOTO(vs_fldt_update_server_file_type(&server_file_type), true, "Unable to add Firmware server file mapping for the already existed one (vs_fldt_update_server_file_type call)");
+    FLDT_CHECK_GOTO(vs_fldt_server_add_file_type(&server_file_type), true, "Unable to add Firmware server file mapping for the first time (vs_fldt_server_add_file_type call)");
+    FLDT_CHECK_GOTO(vs_fldt_server_add_file_type(&server_file_type), true, "Unable to add Firmware server file mapping for the already existed one (vs_fldt_server_add_file_type call)");
 
     server_add_filetype_to_copy = make_server_mapping(&file_type_1);
     calls.calls = 0;
