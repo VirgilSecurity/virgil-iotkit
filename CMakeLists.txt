@@ -114,6 +114,18 @@ option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_HIGHLEVEL "Enable 'high level implementations'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
+#
+# Default cloud implementations
+#
+option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
+option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws implementation" ON)
+
+#
+#   aws-sdk
+#
+if (VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
+endif ()
 
 
 # ---------------------------------------------------------------------------
@@ -141,7 +153,6 @@ if (NOT GO_DISABLE)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
 endif()
 
-
 # ---------------------------------------------------------------------------
 #   Features
 # ---------------------------------------------------------------------------
@@ -165,11 +176,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)
 #   jsmn
 #
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
-
-#
-#   aws-sdk
-#
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
 
 #
 #   vs-json
