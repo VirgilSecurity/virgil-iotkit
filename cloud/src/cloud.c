@@ -45,6 +45,7 @@
 #define MAX_EP_SIZE (256)
 
 static const vs_cloud_impl_t *_hal_impl = NULL;
+static vs_hsm_impl_t *_hsm = NULL;
 
 /******************************************************************************/
 static bool
@@ -86,6 +87,8 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     size_t buf_size = *in_out_answer_len;
     int crypto_answer_b64_len;
 
+    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
         return VS_CODE_ERR_JSON;
     }
@@ -108,7 +111,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                      &crypto_answer_b64_len);
         size_t decrypted_data_sz;
 
-        if (VS_CODE_OK != vs_hsm_virgil_decrypt_sha384_aes256(NULL,
+        if (VS_CODE_OK != _hsm->ecies_decrypt(NULL,
                                                               0,
                                                               (uint8_t *)crypto_answer_b64,
                                                               (size_t)crypto_answer_b64_len,
@@ -164,11 +167,14 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *impl) {
+vs_cloud_init(const vs_cloud_impl_t *impl, vs_hsm_impl_t *hsm) {
+    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(hsm->ecies_decrypt, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl->http_get, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _hal_impl = impl;
+    _hsm = hsm;
     return VS_CODE_OK;
 }
 
@@ -204,7 +210,7 @@ typedef struct {
 
 /*************************************************************************/
 static void
-_ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
+_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc) {
     desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
@@ -215,7 +221,7 @@ _ntoh_fw_desdcriptor(vs_firmware_descriptor_t *desc) {
 static void
 _ntoh_fw_header(vs_cloud_firmware_header_t *header) {
 
-    _ntoh_fw_desdcriptor(&header->descriptor);
+    _ntoh_fw_descriptor(&header->descriptor);
 
     header->code_length = VS_IOT_NTOHL(header->code_length);
     header->code_offset = VS_IOT_NTOHL(header->code_offset);
@@ -357,7 +363,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             vs_firmware_descriptor_t f;
             VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
-            _ntoh_fw_desdcriptor(&f);
+            _ntoh_fw_descriptor(&f);
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
                 VS_LOG_ERROR("Invalid firmware descriptor");
