@@ -135,6 +135,7 @@ vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic,
  * Init cloud library
  *
  */
+vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
         const vs_cloud_message_bin_impl_t *message_bin_impl,
         vs_hsm_impl_t *hsm);

@@ -181,7 +181,7 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
     return vs_cloud_message_bin_init(message_bin_impl);
 }
 
-//TODO: Will be used for alexa
+// TODO: Will be used for alexa
 #if 0
 /******************************************************************************/
 vs_status_e
