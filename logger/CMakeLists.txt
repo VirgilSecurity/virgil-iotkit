@@ -40,14 +40,14 @@ project(logger VERSION 0.1.0 LANGUAGES C)
 #   Logger library
 #
 add_library(logger
-        src/logger.c
-        src/utoa_fast_div.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/logger.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/utoa_fast_div.c
         )
 
 #
 #   Set additional compiler flags
 #
-if ("${CFLAGS_PLATFORM}" STREQUAL "")
+if("${CFLAGS_PLATFORM}" STREQUAL "")
     message("-- No CFLAGS_PLATFORM")
 else()
     message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")

@@ -42,8 +42,8 @@ set(CONV_LIB converters)
 #   Source code
 #
 set(CONV_SRC
-        src/signature_converters.c
-        src/pubkey_converters.c)
+        ${CMAKE_CURRENT_LIST_DIR}/src/signature_converters.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pubkey_converters.c)
 
 #
 #   Config path
@@ -99,7 +99,7 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

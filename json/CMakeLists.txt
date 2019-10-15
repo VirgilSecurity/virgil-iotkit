@@ -6,8 +6,8 @@ add_library(vs-json)
 
 target_sources(vs-json
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/json_parser.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/json_generator.c"
+        ${CMAKE_CURRENT_LIST_DIR}/src/json_parser.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/json_generator.c
         )
 
 target_link_libraries(vs-json

@@ -37,7 +37,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 # ---------------------------------------------------------------------------
 #   Enable Golang
 # ---------------------------------------------------------------------------
-if (NOT GO_DISABLE)
+if(NOT GO_DISABLE)
     include(cmake/golang.cmake)
     include(cmake/flags.cmake)
     set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
@@ -123,9 +123,9 @@ option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws 
 #
 #   aws-sdk
 #
-if (VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
-endif ()
+endif()
 
 
 # ---------------------------------------------------------------------------
@@ -215,7 +215,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
 #
 #   Converters
 #
-if (NOT VIRGIL_IOT_MCU_BUILD)
+if(NOT VIRGIL_IOT_MCU_BUILD)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/converters)
 endif()
 
