@@ -116,56 +116,58 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
     CHECK_NOT_ZERO_RET(decrypted_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(decrypted_data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET (vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
-                                                                      cryptogram_sz,
-                                                                      recipient_id,
-                                                                      recipient_id_sz,
-                                                                      &public_key,
-                                                                      &iv_key,
-                                                                      &encrypted_key,
-                                                                      &mac_data,
-                                                                      &iv_data,
-                                                                      &encrypted_data,
-                                                                      &encrypted_data_sz), "Unable to parse SHA384 AES256");
+    STATUS_CHECK_RET(vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
+                                                                  cryptogram_sz,
+                                                                  recipient_id,
+                                                                  recipient_id_sz,
+                                                                  &public_key,
+                                                                  &iv_key,
+                                                                  &encrypted_key,
+                                                                  &mac_data,
+                                                                  &iv_data,
+                                                                  &encrypted_data,
+                                                                  &encrypted_data_sz),
+                     "Unable to parse SHA384 AES256");
 
     STATUS_CHECK_RET(_hsm->ecdh(PRIVATE_KEY_SLOT,
-                                     VS_KEYPAIR_EC_SECP256R1,
-                                     public_key,
-                                     vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
-                                     pre_master_key,
-                                     sizeof(pre_master_key),
-                                     &pre_master_key_sz), "Unable to calculate ECDH");
+                                VS_KEYPAIR_EC_SECP256R1,
+                                public_key,
+                                vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
+                                pre_master_key,
+                                sizeof(pre_master_key),
+                                &pre_master_key_sz),
+                     "Unable to calculate ECDH");
 
-    STATUS_CHECK_RET(_hsm->kdf(VS_KDF_2,
-                                    VS_HASH_SHA_384,
-                                    pre_master_key,
-                                    sizeof(pre_master_key),
-                                    master_key,
-                                    sizeof(master_key)), "Unable to calculate KDF2");
+    STATUS_CHECK_RET(
+            _hsm->kdf(
+                    VS_KDF_2, VS_HASH_SHA_384, pre_master_key, sizeof(pre_master_key), master_key, sizeof(master_key)),
+            "Unable to calculate KDF2");
 
     STATUS_CHECK_RET(_hsm->hmac(VS_HASH_SHA_384,
-                                     master_key + VS_AES_256_KEY_SIZE,
-                                     sizeof(master_key) - VS_AES_256_KEY_SIZE,
-                                     encrypted_key,
-                                     VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE,
-                                     mac_buf,
-                                     sizeof(mac_buf),
-                                     &mac_sz), "Unable to calculate HMAC");
+                                master_key + VS_AES_256_KEY_SIZE,
+                                sizeof(master_key) - VS_AES_256_KEY_SIZE,
+                                encrypted_key,
+                                VS_AES_256_KEY_SIZE + VS_AES_256_BLOCK_SIZE,
+                                mac_buf,
+                                sizeof(mac_buf),
+                                &mac_sz),
+                     "Unable to calculate HMAC");
 
     MEMCMP_CHECK_RET(mac_data, mac_buf, mac_sz, VS_CODE_ERR_CRYPTO);
 
     STATUS_CHECK_RET(_hsm->aes_decrypt(VS_AES_CBC,
-                                            master_key,
-                                            VS_AES_256_KEY_BITLEN,
-                                            iv_key,
-                                            VS_AES_256_CBC_IV_SIZE,
-                                            NULL,
-                                            0,
-                                            sizeof(decrypted_key),
-                                            encrypted_key,
-                                            decrypted_key,
-                                            NULL,
-                                            0), "Unable to descrypt");
+                                       master_key,
+                                       VS_AES_256_KEY_BITLEN,
+                                       iv_key,
+                                       VS_AES_256_CBC_IV_SIZE,
+                                       NULL,
+                                       0,
+                                       sizeof(decrypted_key),
+                                       encrypted_key,
+                                       decrypted_key,
+                                       NULL,
+                                       0),
+                     "Unable to descrypt");
 
     if (encrypted_data_sz < VS_AES_256_GCM_AUTH_TAG_SIZE ||
         buf_sz < (encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE)) {
@@ -175,17 +177,18 @@ vs_hsm_virgil_decrypt_sha384_aes256(const uint8_t *recipient_id,
     *decrypted_data_sz = encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE;
 
     STATUS_CHECK_RET(_hsm->aes_auth_decrypt(VS_AES_GCM,
-                                                 decrypted_key,
-                                                 VS_AES_256_KEY_BITLEN,
-                                                 iv_data,
-                                                 VS_AES_256_GCM_IV_SIZE,
-                                                 NULL,
-                                                 0,
-                                                 encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE,
-                                                 encrypted_data,
-                                                 decrypted_data,
-                                                 &encrypted_data[encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE],
-                                                 VS_AES_256_GCM_AUTH_TAG_SIZE), "Unable to decrypt");
+                                            decrypted_key,
+                                            VS_AES_256_KEY_BITLEN,
+                                            iv_data,
+                                            VS_AES_256_GCM_IV_SIZE,
+                                            NULL,
+                                            0,
+                                            encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE,
+                                            encrypted_data,
+                                            decrypted_data,
+                                            &encrypted_data[encrypted_data_sz - VS_AES_256_GCM_AUTH_TAG_SIZE],
+                                            VS_AES_256_GCM_AUTH_TAG_SIZE),
+                     "Unable to decrypt");
 
     *decrypted_data_sz -= _remove_padding_size(decrypted_data, *decrypted_data_sz);
 
@@ -251,57 +254,59 @@ vs_hsm_virgil_encrypt_sha384_aes256(const uint8_t *recipient_id,
     STATUS_CHECK_RET(_hsm->random(rnd_buf, sizeof(rnd_buf)), "Unable to generate random buffer");
 
     STATUS_CHECK_RET(_hsm->ecdh(PRIVATE_KEY_SLOT,
-                                     VS_KEYPAIR_EC_SECP256R1,
-                                     pubkey,
-                                     vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
-                                     pre_master_key,
-                                     sizeof(pre_master_key),
-                                     &pre_master_key_sz), "Unable to calculate ECDH");
+                                VS_KEYPAIR_EC_SECP256R1,
+                                pubkey,
+                                vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
+                                pre_master_key,
+                                sizeof(pre_master_key),
+                                &pre_master_key_sz),
+                     "Unable to calculate ECDH");
 
-    STATUS_CHECK_RET(_hsm->kdf(VS_KDF_2,
-                                    VS_HASH_SHA_384,
-                                    pre_master_key,
-                                    sizeof(pre_master_key),
-                                    master_key,
-                                    sizeof(master_key)), "Unable to calculate KDF");
+    STATUS_CHECK_RET(
+            _hsm->kdf(
+                    VS_KDF_2, VS_HASH_SHA_384, pre_master_key, sizeof(pre_master_key), master_key, sizeof(master_key)),
+            "Unable to calculate KDF");
 
     STATUS_CHECK_RET(_hsm->aes_encrypt(VS_AES_CBC,
-                                            master_key,
-                                            VS_AES_256_KEY_BITLEN,
-                                            iv_key,
-                                            VS_AES_256_CBC_IV_SIZE,
-                                            NULL,
-                                            0,
-                                            VS_AES_256_KEY_SIZE,
-                                            shared_key,
-                                            encrypted_key,
-                                            NULL,
-                                            0), "Unable to encrypt by using AES");
+                                       master_key,
+                                       VS_AES_256_KEY_BITLEN,
+                                       iv_key,
+                                       VS_AES_256_CBC_IV_SIZE,
+                                       NULL,
+                                       0,
+                                       VS_AES_256_KEY_SIZE,
+                                       shared_key,
+                                       encrypted_key,
+                                       NULL,
+                                       0),
+                     "Unable to encrypt by using AES");
 
     STATUS_CHECK_RET(_hsm->hmac(VS_HASH_SHA_384,
-                                     master_key + VS_AES_256_KEY_SIZE,
-                                     sizeof(master_key) - VS_AES_256_KEY_SIZE,
-                                     encrypted_key,
-                                     sizeof(encrypted_key),
-                                     hmac,
-                                     sizeof(hmac),
-                                     &hmac_sz), "Unable to calculate HMAC");
+                                master_key + VS_AES_256_KEY_SIZE,
+                                sizeof(master_key) - VS_AES_256_KEY_SIZE,
+                                encrypted_key,
+                                sizeof(encrypted_key),
+                                hmac,
+                                sizeof(hmac),
+                                &hmac_sz),
+                     "Unable to calculate HMAC");
 
     uint8_t add_data = 0;
     uint8_t encrypted_data[data_sz + VS_AES_256_GCM_AUTH_TAG_SIZE];
 
     STATUS_CHECK_RET(_hsm->aes_encrypt(VS_AES_GCM,
-                                            shared_key,
-                                            VS_AES_256_KEY_BITLEN,
-                                            iv_data,
-                                            VS_AES_256_GCM_IV_SIZE,
-                                            &add_data,
-                                            0,
-                                            data_sz,
-                                            data,
-                                            encrypted_data,
-                                            &encrypted_data[sizeof(encrypted_data) - VS_AES_256_GCM_AUTH_TAG_SIZE],
-                                            VS_AES_256_GCM_AUTH_TAG_SIZE), "Unable to encrypt by using AES");
+                                       shared_key,
+                                       VS_AES_256_KEY_BITLEN,
+                                       iv_data,
+                                       VS_AES_256_GCM_IV_SIZE,
+                                       &add_data,
+                                       0,
+                                       data_sz,
+                                       data,
+                                       encrypted_data,
+                                       &encrypted_data[sizeof(encrypted_data) - VS_AES_256_GCM_AUTH_TAG_SIZE],
+                                       VS_AES_256_GCM_AUTH_TAG_SIZE),
+                     "Unable to encrypt by using AES");
 
     return vs_hsm_virgil_cryptogram_create_sha384_aes256(recipient_id,
                                                          recipient_id_sz,

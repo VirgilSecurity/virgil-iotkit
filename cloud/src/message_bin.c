@@ -34,49 +34,49 @@
 
 #include <virgil/iot/cloud/private/cloud_include.h>
 
-static const vs_cloud_message_bin_impl_t *_impl = NULL;
+static vs_cloud_message_bin_ctx_t _mb_ctx;
+static const vs_cloud_message_bin_impl_t *_impl;
 
 /*************************************************************************/
 static void
-_mb_mqtt_ctx_free(vs_cloud_mb_mqtt_ctx_t *ctx) {
+_mb_mqtt_ctx_free() {
 
-    ctx->is_filled = false;
-    ctx->is_active = false;
+    _mb_ctx.is_filled = false;
+    _mb_ctx.is_active = false;
 
-    VS_IOT_FREE(ctx->cert);
-    ctx->cert = NULL;
+    VS_IOT_FREE(_mb_ctx.cert);
+    _mb_ctx.cert = NULL;
 
-    VS_IOT_FREE(ctx->login);
-    ctx->login = NULL;
+    VS_IOT_FREE(_mb_ctx.login);
+    _mb_ctx.login = NULL;
 
-    VS_IOT_FREE(ctx->password);
-    ctx->password = NULL;
+    VS_IOT_FREE(_mb_ctx.password);
+    _mb_ctx.password = NULL;
 
-    VS_IOT_FREE(ctx->client_id);
-    ctx->client_id = NULL;
+    VS_IOT_FREE(_mb_ctx.client_id);
+    _mb_ctx.client_id = NULL;
 
-    VS_IOT_FREE(ctx->pk);
-    ctx->pk = NULL;
+    VS_IOT_FREE(_mb_ctx.pk);
+    _mb_ctx.pk = NULL;
 
-    VS_IOT_FREE(ctx->topic_list.topic_list);
-    ctx->topic_list.topic_list = NULL;
+    VS_IOT_FREE(_mb_ctx.topic_list.topic_list);
+    _mb_ctx.topic_list.topic_list = NULL;
 
-    VS_IOT_FREE(ctx->topic_list.topic_len_list);
-    ctx->topic_list.topic_len_list = NULL;
+    VS_IOT_FREE(_mb_ctx.topic_list.topic_len_list);
+    _mb_ctx.topic_list.topic_len_list = NULL;
 
-    ctx->port = 0;
+    _mb_ctx.port = 0;
 }
 
 /******************************************************************************/
 static vs_status_e
-_get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
-    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+_get_message_bin_credentials() {
 
-    if (ctx->is_filled) {
+    if (_mb_ctx.is_filled) {
         return VS_CODE_OK;
     }
 
-    _mb_mqtt_ctx_free(ctx);
+    _mb_mqtt_ctx_free();
 
     VS_LOG_DEBUG("------------------------- LOAD MESSAGE BIN CREDENTIALS -------------------------");
 
@@ -91,8 +91,8 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
         jobj_t jobj;
         int len;
 
-        ctx->host = VS_MESSAGE_BIN_BROKER_URL; /*host*/
-        ctx->port = VS_MSG_BIN_MQTT_PORT;      /*port*/
+        _mb_ctx.host = VS_MESSAGE_BIN_BROKER_URL; /*host*/
+        _mb_ctx.port = VS_MSG_BIN_MQTT_PORT;      /*port*/
 
         if (json_parse_start(&jobj, answer, answer_size) != VS_JSON_ERR_OK) {
             goto clean;
@@ -104,8 +104,8 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             goto clean;
         }
         ++len;
-        ctx->login = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "login", ctx->login, len);
+        _mb_ctx.login = (char *)VS_IOT_MALLOC((size_t)len);
+        json_get_val_str(&jobj, "login", _mb_ctx.login, len);
 
         /*----password----*/
         if (json_get_val_str_len(&jobj, "password", &len) != VS_JSON_ERR_OK || len < 0) {
@@ -113,8 +113,8 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             goto clean;
         }
         ++len;
-        ctx->password = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "password", ctx->password, len);
+        _mb_ctx.password = (char *)VS_IOT_MALLOC((size_t)len);
+        json_get_val_str(&jobj, "password", _mb_ctx.password, len);
 
         /*----client_id----*/
         if (json_get_val_str_len(&jobj, "client_id", &len) != VS_JSON_ERR_OK || len < 0) {
@@ -122,8 +122,8 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             goto clean;
         }
         ++len;
-        ctx->client_id = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "client_id", ctx->client_id, len);
+        _mb_ctx.client_id = (char *)VS_IOT_MALLOC((size_t)len);
+        json_get_val_str(&jobj, "client_id", _mb_ctx.client_id, len);
 
         /*----certificate----*/
         if (json_get_val_str_len(&jobj, "certificate", &len) != VS_JSON_ERR_OK || len < 0) {
@@ -143,9 +143,9 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             goto clean;
         }
 
-        ctx->cert = (char *)VS_IOT_MALLOC((size_t)decode_len);
+        _mb_ctx.cert = (char *)VS_IOT_MALLOC((size_t)decode_len);
 
-        base64decode(tmp, len, (uint8_t *)ctx->cert, &decode_len);
+        base64decode(tmp, len, (uint8_t *)_mb_ctx.cert, &decode_len);
         VS_IOT_FREE(tmp);
 
         /*----private_key----*/
@@ -165,9 +165,9 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             goto clean;
         }
 
-        ctx->pk = (char *)VS_IOT_MALLOC((size_t)decode_len);
+        _mb_ctx.pk = (char *)VS_IOT_MALLOC((size_t)decode_len);
 
-        base64decode(tmp, len, (uint8_t *)ctx->pk, &decode_len);
+        base64decode(tmp, len, (uint8_t *)_mb_ctx.pk, &decode_len);
         VS_IOT_FREE(tmp);
 
         /*----available_topics----*/
@@ -176,22 +176,23 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [available_topics]");
             goto clean;
         }
-        ctx->topic_list.topic_count = (size_t)topic_count;
+        _mb_ctx.topic_list.topic_count = (size_t)topic_count;
 
-        if (0 == ctx->topic_list.topic_count) {
+        if (0 == _mb_ctx.topic_list.topic_count) {
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [available_topics] is empty!");
             goto clean;
         } else {
             uint16_t i, total_topic_names_len = 0;
             len = 0;
 
-            ctx->topic_list.topic_len_list = (uint16_t *)VS_IOT_MALLOC(ctx->topic_list.topic_count * sizeof(uint16_t));
-            if (! ctx->topic_list.topic_len_list) {
+            _mb_ctx.topic_list.topic_len_list =
+                    (uint16_t *)VS_IOT_MALLOC(_mb_ctx.topic_list.topic_count * sizeof(uint16_t));
+            if (!_mb_ctx.topic_list.topic_len_list) {
                 VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_len_list] allocation error");
                 goto clean;
             }
 
-            for (i = 0; i < ctx->topic_list.topic_count; i++) {
+            for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
                 json_array_get_str_len(&jobj, i, &len);
 
                 if (len + 1 > UINT16_MAX) {
@@ -199,77 +200,78 @@ _get_message_bin_credentials(vs_cloud_mb_mqtt_ctx_t *ctx) {
                     goto clean;
                 }
 
-                ctx->topic_list.topic_len_list[i] = (uint16_t)(len + 1);
-                total_topic_names_len += ctx->topic_list.topic_len_list[i];
+                _mb_ctx.topic_list.topic_len_list[i] = (uint16_t)(len + 1);
+                total_topic_names_len += _mb_ctx.topic_list.topic_len_list[i];
             }
 
-            ctx->topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
-            if (! ctx->topic_list.topic_list) {
+            _mb_ctx.topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
+            if (!_mb_ctx.topic_list.topic_list) {
                 VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_list] allocation error");
                 goto clean;
             }
 
             int offset = 0;
 
-            for (i = 0; i < ctx->topic_list.topic_count; i++) {
-                json_array_get_str(&jobj, i, ctx->topic_list.topic_list + offset, total_topic_names_len - offset);
+            for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
+                json_array_get_str(&jobj, i, _mb_ctx.topic_list.topic_list + offset, total_topic_names_len - offset);
 
                 json_array_get_str_len(&jobj, i, &len);
                 offset += len;
-                ctx->topic_list.topic_list[offset] = '\0';
+                _mb_ctx.topic_list.topic_list[offset] = '\0';
                 offset++;
             }
         }
 
-        ctx->is_filled = true;
+        _mb_ctx.is_filled = true;
         VS_IOT_FREE(answer);
         VS_LOG_DEBUG("[MB] Credentials are loaded successfully");
         return VS_CODE_OK;
     }
 
 clean:
-    _mb_mqtt_ctx_free(ctx);
+    _mb_mqtt_ctx_free();
     VS_IOT_FREE(answer);
     return VS_CODE_ERR_CLOUD;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_mb_init_ctx(vs_cloud_mb_mqtt_ctx_t *ctx, const vs_cloud_message_bin_impl_t *impl) {
-    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl) {
+    _impl = NULL;
     CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl->init, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl->connect_subscribe, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(impl->process, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    _mb_mqtt_ctx_free(ctx);
+    _mb_mqtt_ctx_free();
     _impl = impl;
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_mb_process(vs_cloud_mb_mqtt_ctx_t *ctx,
-                    vs_clud_mb_process_topic_cb_t process_topic,
-                    const char *root_ca_crt) {
+vs_cloud_message_bin_process(vs_clud_mb_process_topic_cb_t process_topic, const char *root_ca_crt) {
 
-    CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    bool provision_is_present = ctx->is_filled || (VS_CODE_OK == _get_message_bin_credentials(ctx));
+    bool provision_is_present = _mb_ctx.is_filled || (VS_CODE_OK == _get_message_bin_credentials());
 
     if (provision_is_present) {
-        if (!ctx->is_active) {
+        if (!_mb_ctx.is_active) {
 
-            VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", ctx->host, ctx->port);
+            VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", _mb_ctx.host, _mb_ctx.port);
 
-            if (VS_CODE_OK == _impl->init(ctx->host,
-                                        ctx->port,
-                                        (const char *)ctx->cert,
-                                        (const char *)ctx->pk,
-                                        (const char *)root_ca_crt) &&
-                VS_CODE_OK == _impl->connect_subscribe(ctx->client_id, ctx->login, ctx->password, &ctx->topic_list, process_topic)) {
-                ctx->is_active = true;
+            if (VS_CODE_OK == _impl->init(_mb_ctx.host,
+                                          _mb_ctx.port,
+                                          (const char *)_mb_ctx.cert,
+                                          (const char *)_mb_ctx.pk,
+                                          (const char *)root_ca_crt) &&
+                VS_CODE_OK == _impl->connect_subscribe(_mb_ctx.client_id,
+                                                       _mb_ctx.login,
+                                                       _mb_ctx.password,
+                                                       &_mb_ctx.topic_list,
+                                                       process_topic)) {
+                _mb_ctx.is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");
             }

@@ -281,9 +281,7 @@ _is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t *fm_entry)
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_parse_firmware_manifest(void *payload,
-                                 size_t payload_len,
-                                 char *fw_url) {
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url) {
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
 

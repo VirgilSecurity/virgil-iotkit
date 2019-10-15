@@ -135,4 +135,3 @@ vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
 }
 
 /******************************************************************************/
-
