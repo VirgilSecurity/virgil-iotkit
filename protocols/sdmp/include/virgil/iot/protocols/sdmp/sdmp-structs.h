@@ -82,6 +82,8 @@ typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_neti
 
 typedef vs_status_e (*vs_sdmp_service_periodical_processor_t)(void);
 
+typedef vs_status_e (*vs_sdmp_service_deinit_t)(void);
+
 typedef enum {
     VS_SDMP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001),
     VS_SDMP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002),
@@ -158,6 +160,7 @@ typedef struct {
     vs_sdmp_service_request_processor_t request_process;
     vs_sdmp_service_response_processor_t response_process;
     vs_sdmp_service_periodical_processor_t periodical_process;
+    vs_sdmp_service_deinit_t deinit;
 } vs_sdmp_service_t;
 
 /******************************************************************************/

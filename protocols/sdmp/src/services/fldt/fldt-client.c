@@ -646,8 +646,8 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 }
 
 /******************************************************************/
-void
-vs_fldt_destroy_client(void) {
+static vs_status_e
+_fldt_destroy_client(void) {
     size_t id;
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
 
@@ -658,6 +658,8 @@ vs_fldt_destroy_client(void) {
     }
 
     _file_type_mapping_array_size = 0;
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -756,6 +758,7 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback) {
     _fldt_client.request_process = _fldt_client_request_processor;
     _fldt_client.response_process = _fldt_client_response_processor;
     _fldt_client.periodical_process = _fldt_client_periodical_processor;
+    _fldt_client.deinit = _fldt_destroy_client;
 
     _got_file_callback = got_file_callback;
 

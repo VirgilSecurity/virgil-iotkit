@@ -60,6 +60,9 @@ static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[10];
 static vs_fldt_server_add_filetype _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
+static vs_status_e
+_fldt_destroy_server(void);
+
 /******************************************************************/
 static vs_fldt_server_file_type_mapping_t *
 _get_mapping_elem(const vs_update_file_type_t *file_type) {
@@ -544,7 +547,7 @@ vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
 
     CHECK_NOT_ZERO_RET(add_filetype, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
-    vs_fldt_destroy_server();
+    _fldt_destroy_server();
 
     _gateway_mac = *gateway_mac;
     _add_filetype_callback = add_filetype;
@@ -553,8 +556,8 @@ vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
 }
 
 /******************************************************************/
-void
-vs_fldt_destroy_server(void) {
+static vs_status_e
+_fldt_destroy_server(void) {
     size_t id;
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
@@ -565,6 +568,8 @@ vs_fldt_destroy_server(void) {
     }
 
     _file_type_mapping_array_size = 0;
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -632,6 +637,7 @@ vs_sdmp_fldt_server(void) {
     _fldt_server.request_process = _fldt_server_request_processor;
     _fldt_server.response_process = _fldt_server_response_processor;
     _fldt_server.periodical_process = NULL;
+    _fldt_server.deinit = _fldt_destroy_server;
 
     return &_fldt_server;
 }
