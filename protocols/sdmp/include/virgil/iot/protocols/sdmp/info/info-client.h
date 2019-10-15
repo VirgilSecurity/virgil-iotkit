@@ -35,12 +35,14 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H
 
+#if INFO_CLIENT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
 typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
@@ -82,5 +84,7 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
 #ifdef __cplusplus
 }
 #endif
+
+#endif // INFO_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_CLIENT_H

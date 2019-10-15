@@ -36,33 +36,36 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(firmware VERSION 0.1.0 LANGUAGES C)
 
-add_library(firmware)
+add_library(firmware include/private/firmware-private.h)
 
 target_sources(firmware
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/update_fw_interface.h"
 
-        "${CMAKE_CURRENT_LIST_DIR}/src/firmware.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c"
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/firmware.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c
         )
 
 target_link_libraries(firmware
         PUBLIC
-        logger
         macros
-        hsm
         update
-        trust_list
-        storage_hal
+        provision
         virgil-iot-status-code
         )
 
 target_include_directories(firmware
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-
-        PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(firmware)
+endif()

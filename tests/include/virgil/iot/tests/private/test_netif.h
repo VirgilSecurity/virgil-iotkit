@@ -36,7 +36,7 @@
 #define VS_IOT_SDK_TESTS_SDMP_H_
 
 #include <stdbool.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/logger/logger.h>
 
 typedef union {

@@ -43,18 +43,13 @@
 #include <virgil/iot/update/update.h>
 #include <endian-config.h>
 
-/*************************************************************************/
-static uint16_t
-_tl_ver(const vs_update_file_version_t *version){
-    const uint16_t *tl_ver = (const uint16_t *)version; //-V1032 (PVS_IGNORE)
-    return VS_IOT_NTOHS(*tl_ver);
-}
+static vs_update_interface_t _tl_update_ctx = {.storage_context = NULL};
 
 /*************************************************************************/
 static char *
-_tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, size_t buf_size){
-    (void) context;
-    (void) file_type;
+_tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, size_t buf_size) {
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
@@ -63,39 +58,44 @@ _tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer,
 
     return buffer;
 
-    terminate:
+terminate:
 
     return NULL;
 }
 
 /*************************************************************************/
 static char *
-_tl_describe_version(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description){
+_tl_describe_version(void *context,
+                     vs_update_file_type_t *file_type,
+                     const vs_file_version_t *version,
+                     char *buffer,
+                     size_t buf_size,
+                     bool add_filetype_description) {
     char *output = buffer;
     size_t type_descr_size;
     size_t string_space = buf_size;
     static const size_t TYPE_DESCR_POSTFIX = 2;
-    (void) context;
+    (void)context;
 
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
 
-    if(add_filetype_description){
+    if (add_filetype_description) {
         type_descr_size = VS_IOT_STRLEN(_tl_describe_type(context, file_type, buffer, buf_size));
         string_space -= type_descr_size;
         output += type_descr_size;
-        if(string_space > TYPE_DESCR_POSTFIX){
+        if (string_space > TYPE_DESCR_POSTFIX) {
             VS_IOT_STRCPY(output, ", ");
             string_space -= TYPE_DESCR_POSTFIX;
             output += TYPE_DESCR_POSTFIX;
         }
     }
 
-    VS_IOT_SNPRINTF(output, string_space, "version %d", _tl_ver(version));
+    VS_IOT_SNPRINTF(output, string_space, "version %d", (int)version->major);
 
     return buffer;
 
-    terminate:
+terminate:
 
     return NULL;
 }
@@ -103,9 +103,9 @@ _tl_describe_version(void *context, vs_update_file_type_t *file_type, const vs_u
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_header_size(void *context, vs_update_file_type_t *file_type, size_t *header_size){
-    (void) context;
-    (void) file_type;
+_tl_get_header_size(void *context, vs_update_file_type_t *file_type, size_t *header_size) {
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(header_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -116,13 +116,19 @@ _tl_get_header_size(void *context, vs_update_file_type_t *file_type, size_t *hea
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_data(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset){
+_tl_get_data(void *context,
+             vs_update_file_type_t *file_type,
+             const void *file_header,
+             void *data_buffer,
+             size_t buffer_size,
+             size_t *data_size,
+             size_t data_offset) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
     uint16_t out_size = *data_size;
-    (void) file_header;
-    (void) context;
-    (void) file_type;
+    (void)file_header;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(data_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -132,22 +138,33 @@ _tl_get_data(void *context, vs_update_file_type_t *file_type, const void *file_h
     elem_info.id = VS_TL_ELEMENT_TLC;
     elem_info.index = data_offset;
 
-    STATUS_CHECK_RET(vs_tl_load_part(&elem_info, data_buffer, buffer_size, &out_size), "Unable to get data (key %d)", data_offset);
+    STATUS_CHECK_RET(vs_tl_load_part(&elem_info, data_buffer, buffer_size, &out_size),
+                     "Unable to get data (key %d)",
+                     data_offset);
     *data_size = out_size;
-    CHECK_RET(buffer_size >= *data_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store data %d bytes size", buffer_size, *data_size);
+    CHECK_RET(buffer_size >= *data_size,
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Buffer size %d bytes is not enough to store data %d bytes size",
+              buffer_size,
+              *data_size);
 
     return VS_CODE_OK;
 }
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_footer(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size){
+_tl_get_footer(void *context,
+               vs_update_file_type_t *file_type,
+               const void *file_header,
+               void *footer_buffer,
+               size_t buffer_size,
+               size_t *footer_size) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
     uint16_t out_size = *footer_size;
-    (void) file_header;
-    (void) context;
-    (void) file_type;
+    (void)file_header;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(footer_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -157,19 +174,27 @@ _tl_get_footer(void *context, vs_update_file_type_t *file_type, const void *file
     elem_info.id = VS_TL_ELEMENT_TLF;
     STATUS_CHECK_RET(vs_tl_load_part(&elem_info, footer_buffer, buffer_size, &out_size), "Unable to get footer");
     *footer_size = out_size;
-    CHECK_RET(buffer_size >= *footer_size, VS_CODE_ERR_TOO_SMALL_BUFFER, "Buffer size %d bytes is not enough to store footer %d bytes size", buffer_size, *footer_size);
+    CHECK_RET(buffer_size >= *footer_size,
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Buffer size %d bytes is not enough to store footer %d bytes size",
+              buffer_size,
+              *footer_size);
 
     return VS_CODE_OK;
 }
 
 /*************************************************************************/
 static vs_status_e
-_tl_set_header(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size){
+_tl_set_header(void *context,
+               vs_update_file_type_t *file_type,
+               const void *file_header,
+               size_t header_size,
+               size_t *file_size) {
     vs_tl_element_info_t elem_info;
     const vs_tl_header_t *tl_header = file_header;
     vs_status_e ret_code;
-    (void) context;
-    (void) file_type;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(header_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -188,12 +213,17 @@ _tl_set_header(void *context, vs_update_file_type_t *file_type, const void *file
 
 /*************************************************************************/
 static vs_status_e
-_tl_set_data(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset){
+_tl_set_data(void *context,
+             vs_update_file_type_t *file_type,
+             const void *file_header,
+             const void *file_data,
+             size_t data_size,
+             size_t data_offset) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
-    (void) file_header;
-    (void) context;
-    (void) file_type;
+    (void)file_header;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(file_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -209,12 +239,16 @@ _tl_set_data(void *context, vs_update_file_type_t *file_type, const void *file_h
 
 /*************************************************************************/
 static vs_status_e
-_tl_set_footer(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size){
+_tl_set_footer(void *context,
+               vs_update_file_type_t *file_type,
+               const void *file_header,
+               const void *file_footer,
+               size_t footer_size) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
-    (void) file_header;
-    (void) context;
-    (void) file_type;
+    (void)file_header;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(file_footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -229,32 +263,43 @@ _tl_set_footer(void *context, vs_update_file_type_t *file_type, const void *file
 
 /*************************************************************************/
 static bool
-_tl_file_is_newer(void *context, vs_update_file_type_t *file_type, const vs_update_file_version_t *available_file, const vs_update_file_version_t *new_file){
-    (void) context;
-    (void) file_type;
+_tl_file_is_newer(void *context,
+                  vs_update_file_type_t *file_type,
+                  const vs_file_version_t *available_file,
+                  const vs_file_version_t *new_file) {
+    (void)context;
+    (void)file_type;
 
-    return _tl_ver(new_file) > _tl_ver(available_file);
+    return new_file->major > available_file->major;
 }
 
 /*************************************************************************/
 static void
-_tl_free_item(void *context, vs_update_file_type_t *file_type){
-    (void) context;
-    (void) file_type;
+_tl_free_item(void *context, vs_update_file_type_t *file_type) {
+    (void)context;
+    (void)file_type;
 }
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_header(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size){
+_tl_get_header(void *context,
+               vs_update_file_type_t *file_type,
+               void *header_buffer,
+               size_t buffer_size,
+               size_t *header_size) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
     uint16_t out_size = *header_size;
-    (void) context;
-    (void) file_type;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(header_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(buffer_size == sizeof(vs_tl_header_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "Buffer sdize %d bytes is not enough to store vs_tl_header_t %d bytes length", buffer_size, sizeof(vs_tl_header_t));
+    CHECK_RET(buffer_size == sizeof(vs_tl_header_t),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Buffer sdize %d bytes is not enough to store vs_tl_header_t %d bytes length",
+              buffer_size,
+              sizeof(vs_tl_header_t));
 
     *header_size = 0;
     elem_info.id = VS_TL_ELEMENT_TLH;
@@ -266,10 +311,10 @@ _tl_get_header(void *context, vs_update_file_type_t *file_type, void *header_buf
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_file_size(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size){
+_tl_get_file_size(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size) {
     const vs_tl_header_t *tl_header = file_header;
-    (void) context;
-    (void) file_type;
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -281,27 +326,30 @@ _tl_get_file_size(void *context, vs_update_file_type_t *file_type, const void *f
 
 /*************************************************************************/
 static vs_status_e
-_tl_get_version(void *context, vs_update_file_type_t *file_type, vs_update_file_version_t *file_version){
+_tl_get_version(vs_update_file_type_t *file_type, vs_file_version_t *file_version) {
     vs_tl_header_t tl_header;
     size_t header_size = sizeof(tl_header);
     vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(file_version, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(_tl_get_header(context, file_type, &tl_header, header_size, &header_size), "Unable to get Truat List header");
+    STATUS_CHECK_RET(_tl_get_header(NULL, file_type, &tl_header, header_size, &header_size),
+                     "Unable to get Truat List header");
     VS_IOT_ASSERT(header_size == sizeof(tl_header));
 
-    VS_IOT_MEMSET(&file_version->version, 0, sizeof(file_version->version));
-    VS_IOT_MEMCPY(&file_version->version, &tl_header.version, sizeof(tl_header.version));
+    VS_IOT_MEMSET(file_version, 0, sizeof(*file_version));
+
+    // TODO: Fix it
+    file_version->major = VS_IOT_NTOHS(tl_header.version) % 256;
 
     return VS_CODE_OK;
 }
 
 /*************************************************************************/
 static vs_status_e
-_tl_has_footer(void *context, vs_update_file_type_t *file_type, bool *has_footer){
-    (void) context;
-    (void) file_type;
+_tl_has_footer(void *context, vs_update_file_type_t *file_type, bool *has_footer) {
+    (void)context;
+    (void)file_type;
 
     CHECK_NOT_ZERO_RET(has_footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -312,11 +360,15 @@ _tl_has_footer(void *context, vs_update_file_type_t *file_type, bool *has_footer
 
 /*************************************************************************/
 static vs_status_e
-_tl_inc_data_offset(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset){
-    (void) context;
-    (void) file_type;
-    (void) next_offset;
-    (void) loaded_data_size;
+_tl_inc_data_offset(void *context,
+                    vs_update_file_type_t *file_type,
+                    size_t current_offset,
+                    size_t loaded_data_size,
+                    size_t *next_offset) {
+    (void)context;
+    (void)file_type;
+    (void)next_offset;
+    (void)loaded_data_size;
 
     *next_offset = current_offset + 1;
 
@@ -324,52 +376,58 @@ _tl_inc_data_offset(void *context, vs_update_file_type_t *file_type, size_t curr
 }
 
 /*************************************************************************/
-static bool
-_tl_equal_file_type(void *context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
-    (void) context;
-    (void) file_type;
-
-    if(unknown_file_type) {
-        return unknown_file_type->file_type_id == VS_UPDATE_TRUST_LIST;
-    } else {
-        VS_LOG_ERROR("unknown_file_type argument must not be NULL");
-        return false;
-    }
-}
-
-/*************************************************************************/
 vs_status_e
-vs_update_trust_list_init(vs_update_interface_t *update_ctx, vs_storage_op_ctx_t *storage_ctx){
+vs_update_trust_list_init(vs_storage_op_ctx_t *storage_ctx) {
 
-    CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(storage_ctx->impl.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
+    VS_IOT_MEMSET(&_tl_update_ctx, 0, sizeof(_tl_update_ctx));
 
-    update_ctx->get_version = _tl_get_version;
-    update_ctx->get_header_size = _tl_get_header_size;
-    update_ctx->get_file_size = _tl_get_file_size;
-    update_ctx->has_footer = _tl_has_footer;
-    update_ctx->inc_data_offset = _tl_inc_data_offset;
-    update_ctx->equal_file_type = _tl_equal_file_type;
-    update_ctx->get_header = _tl_get_header;
-    update_ctx->get_data = _tl_get_data;
-    update_ctx->get_footer = _tl_get_footer;
-    update_ctx->set_header = _tl_set_header;
-    update_ctx->set_data = _tl_set_data;
-    update_ctx->set_footer = _tl_set_footer;
-    update_ctx->file_is_newer = _tl_file_is_newer;
-    update_ctx->free_item = _tl_free_item;
-    update_ctx->describe_type = _tl_describe_type;
-    update_ctx->describe_version = _tl_describe_version;
-    update_ctx->file_context = storage_ctx;
+    _tl_update_ctx.get_header_size = _tl_get_header_size;
+    _tl_update_ctx.get_file_size = _tl_get_file_size;
+    _tl_update_ctx.has_footer = _tl_has_footer;
+    _tl_update_ctx.inc_data_offset = _tl_inc_data_offset;
+    _tl_update_ctx.get_header = _tl_get_header;
+    _tl_update_ctx.get_data = _tl_get_data;
+    _tl_update_ctx.get_footer = _tl_get_footer;
+    _tl_update_ctx.set_header = _tl_set_header;
+    _tl_update_ctx.set_data = _tl_set_data;
+    _tl_update_ctx.set_footer = _tl_set_footer;
+    _tl_update_ctx.file_is_newer = _tl_file_is_newer;
+    _tl_update_ctx.free_item = _tl_free_item;
+    _tl_update_ctx.describe_type = _tl_describe_type;
+    _tl_update_ctx.describe_version = _tl_describe_version;
+    _tl_update_ctx.storage_context = storage_ctx;
 
     return VS_CODE_OK;
 }
+
+/*************************************************************************/
+vs_update_interface_t *
+vs_tl_update_ctx(void) {
+    return &_tl_update_ctx;
+}
+
+/*************************************************************************/
+const vs_update_file_type_t *
+vs_tl_update_file_type(void) {
+    static vs_update_file_type_t file_type;
+    static bool ready = false;
+
+    if (!ready) {
+        VS_IOT_MEMSET(&file_type, 0, sizeof(file_type));
+        file_type.type = VS_UPDATE_TRUST_LIST;
+        _tl_get_version(&file_type, &file_type.info.version);
+        ready = true;
+    }
+    return &file_type;
+}
+
+/*************************************************************************/

@@ -38,25 +38,11 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/update/update.h>
+#include <virgil/iot/hsm/hsm.h>
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t app_type[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
-} vs_firmware_version_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;
-    vs_device_type_t device_type;
-    vs_firmware_version_t version;
-} vs_firmware_info_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_firmware_info_t info;
+    vs_file_info_t info;
     uint8_t padding;
     uint16_t chunk_size;
     uint32_t firmware_length;
@@ -70,64 +56,69 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_footer_t;
 
 vs_status_e
-vs_firmware_init(const vs_storage_op_ctx_t *ctx);
+vs_firmware_init(vs_storage_op_ctx_t *ctx,
+                 vs_hsm_impl_t *hsm,
+                 vs_device_manufacture_id_t manufacture,
+                 vs_device_type_t device_type);
 
 vs_status_e
-vs_firnware_deinit(const vs_storage_op_ctx_t *ctx);
+vs_firnware_deinit(void);
 
 vs_status_e
-vs_firmware_save_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              const vs_firmware_descriptor_t *descriptor,
-                              const uint8_t *chunk,
-                              size_t chunk_sz,
-                              size_t offset);
+vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
+                                const uint8_t *chunk,
+                                size_t chunk_sz,
+                                size_t offset);
 
 vs_status_e
-vs_firmware_save_firmware_footer(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
+vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
 
 vs_status_e
-vs_firmware_load_firmware_chunk(const vs_storage_op_ctx_t *ctx,
-                              const vs_firmware_descriptor_t *descriptor,
-                              uint32_t offset,
-                              uint8_t *data,
-                              size_t buf_sz,
-                              size_t *data_sz);
+vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
+                                uint32_t offset,
+                                uint8_t *data,
+                                size_t buf_sz,
+                                size_t *data_sz);
 
 vs_status_e
-vs_firmware_load_firmware_footer(const vs_storage_op_ctx_t *ctx,
-                               const vs_firmware_descriptor_t *descriptor,
-                               uint8_t *data,
-                               size_t buff_sz,
+vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
+                                 uint8_t *data,
+                                 size_t buff_sz,
                                  size_t *data_sz);
 
 vs_status_e
-vs_firmware_verify_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_save_firmware_descriptor(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_load_firmware_descriptor(const vs_storage_op_ctx_t *ctx,
-                                   const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
-                                   const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-                                   vs_firmware_descriptor_t *descriptor);
+vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
+                                     const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
+                                     vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_delete_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
 
 vs_status_e
-vs_firmware_install_firmware(const vs_storage_op_ctx_t *ctx, const vs_firmware_descriptor_t *descriptor);
+vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 
 char *
-vs_firmware_describe_version(const vs_firmware_version_t *fw_ver, char *buffer, size_t buf_size);
+vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
 
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
 
 int
 vs_firmware_get_expected_footer_len(void);
+
+vs_update_interface_t *
+vs_firmware_update_ctx(void);
+
+const vs_update_file_type_t *
+vs_firmware_update_file_type(void);
 
 #endif // VS_FIRMWARE_H

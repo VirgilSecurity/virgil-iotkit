@@ -67,3 +67,7 @@ target_include_directories(vs-default-curl-http
         "$<INSTALL_INTERFACE:include>"
         )
 
+if(COMMAND add_clangformat)
+    add_clangformat(vs-default-curl-http)
+endif()
+

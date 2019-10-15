@@ -44,32 +44,32 @@ add_library(virgil-iot-sdk-tests)
 
 target_sources(virgil-iot-sdk-tests
         PRIVATE
-        src/tests.c
-        src/sdmp/fldt_tests.c
-        src/sdmp/sdmp_tests.c
-        src/sdmp/test_netif.c
-        src/crypto/aes.c
-        src/crypto/ecdh.c
-        src/crypto/ecdsa.c
-        src/crypto/hash.c
-        src/crypto/hmac.c
-        src/crypto/kdf.c
-        src/crypto/keypair.c
-        src/crypto/random.c
-        src/crypto/helpers.c
-        src/crypto/trust_list.c
-        src/secbox/secbox_test.c
-        src/crypto/virgil_ecies.c
-        src/firmware/firmware_test.c
-        src/test_data/test_hl_keys_data.c
-        src/test_data/test_tl_data.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/tests.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/fldt_tests.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/test_netif.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdsa.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/hash.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/hmac.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/kdf.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/keypair.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/random.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust_list.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox_test.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil_ecies.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/firmware/firmware_test.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_hl_keys_data.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
         )
 
 if (NOT VIRGIL_IOT_MCU_BUILD)
     target_sources(virgil-iot-sdk-tests
             PRIVATE
-            src/crypto/sign_converters.c
-            src/crypto/pubkeys_converters.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/sign_converters.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/pubkeys_converters.c
             )
     target_link_libraries(virgil-iot-sdk-tests
             converters
@@ -77,11 +77,9 @@ if (NOT VIRGIL_IOT_MCU_BUILD)
 endif()
 
 target_link_libraries(virgil-iot-sdk-tests
-        hsm
         secbox
         sdmp
-        trust_list
-        macros
+        provision
         update
         firmware
         )
@@ -119,11 +117,15 @@ endif()
 #
 target_include_directories(virgil-iot-sdk-tests
         PRIVATE
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<INSTALL_INTERFACE:include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(virgil-iot-sdk-tests)
+endif()

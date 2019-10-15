@@ -35,7 +35,7 @@
 #ifndef VS_TESTS_PRIVATE_HELPERS_H
 #define VS_TESTS_PRIVATE_HELPERS_H
 
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 
 const char *
 vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);

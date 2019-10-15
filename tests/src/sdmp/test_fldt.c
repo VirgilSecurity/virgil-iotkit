@@ -34,7 +34,7 @@
 
 #if 0
 #include <stdlib-config.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
@@ -194,7 +194,7 @@ vs_status_e server_add_filetype(const vs_update_file_type_t *file_type){
 
     calls.server_add_filetype = 1;
 
-    return vs_fldt_update_server_file_type(&server_add_filetype_to_copy);
+    return vs_fldt_server_add_file_type(&server_add_filetype_to_copy);
 }
 
 /**********************************************************/

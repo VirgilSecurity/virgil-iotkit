@@ -36,13 +36,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(sdmp VERSION 0.1.0 LANGUAGES C)
 
-function(add_sdmp _for_factory)
-
-    if (_for_factory)
-        set (_targetname "sdmp-factory")
-    else()
-        set (_targetname "sdmp")
-    endif()
+function(add_sdmp _targetname _firmware_update _definitions)
 
     #
     #   SDMP library
@@ -58,11 +52,11 @@ function(add_sdmp _for_factory)
             PRIVATE
 
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_structs.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp_private.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_private.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_client.h
-            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt_server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/sdmp-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/private/sdmp-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-structs.h
@@ -71,8 +65,8 @@ function(add_sdmp _for_factory)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_client.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt_server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt/fldt-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt/fldt-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-server.c
@@ -98,22 +92,29 @@ function(add_sdmp _for_factory)
     #
     target_include_directories(${_targetname}
             PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
             PRIVATE
             # TODO: FIX PVS
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>"
-            "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>
+            $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
             )
 
     #
     #   Add definitions
     #
+    if ("${_definitions}" STREQUAL "")
+        message("-- No _definitions for SDMP target ${_targetname}")
+    else()
+        message("-- SDMP_DEFINITIONS for ${_targetname} = ${_definitions}")
+        string(REPLACE " " ";" SDMP_DEFINITIONS ${_definitions})
+    endif()
+
     target_compile_definitions(${_targetname}
             PUBLIC
-            "VS_SDMP_FACTORY=${_for_factory}"
+            ${SDMP_DEFINITIONS}
             )
 
     #
@@ -124,14 +125,14 @@ function(add_sdmp _for_factory)
             virgil-iot-status-code
             logger
             provision
-            update
-            firmware
-            $<$<NOT:$<BOOL:${_for_factory}>>:hsm>
-            $<$<NOT:$<BOOL:${_for_factory}>>:trust_list>
+            $<$<BOOL:${_firmware_update}>:update>
+            $<$<BOOL:${_firmware_update}>:firmware>
 
             PRIVATE
             macros
+            enable_pedantic_mode
             )
+
     #
     # Format code
     #
@@ -144,9 +145,19 @@ endfunction()
 #
 #   SDMP For factory purposes
 #
-add_sdmp(1)
+add_sdmp("sdmp-factory" 0 "PRVS_CLIENT=1")
 
 #
-#   SDMP For common usage
+#   SDMP Devices initializer
 #
-add_sdmp(0)
+add_sdmp("sdmp-initializer" 0 "PRVS_SERVER=1")
+
+#
+#   SDMP For Thing
+#
+add_sdmp("sdmp-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
+
+#
+#   SDMP For Gateway
+#
+add_sdmp("sdmp-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")

@@ -35,11 +35,13 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H
 
+#if INFO_SERVER
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/firmware/firmware.h>
 
 const vs_sdmp_service_t *
@@ -51,5 +53,7 @@ vs_sdmp_info_start_notification(const vs_netif_t *netif);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // INFO_SERVER
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H

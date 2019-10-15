@@ -35,14 +35,16 @@
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H
 
+#if PRVS_CLIENT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
-#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/provision/provision-structs.h>
 
 typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
@@ -116,5 +118,7 @@ vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PRVS_CLIENT
 
 #endif // VS_SECURITY_SDK_SDMP_SERVICES_PRVS_CLIENT_H

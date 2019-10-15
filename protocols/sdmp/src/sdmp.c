@@ -36,7 +36,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/protocols/sdmp/sdmp_private.h>
+#include <private/sdmp-private.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 
 #include <stdbool.h>
@@ -338,11 +338,21 @@ vs_sdmp_init(vs_netif_t *default_netif,
 /******************************************************************************/
 vs_status_e
 vs_sdmp_deinit() {
+    int i;
     VS_IOT_ASSERT(_sdmp_default_netif);
     VS_IOT_ASSERT(_sdmp_default_netif->deinit);
 
+    // Stop network
     _sdmp_default_netif->deinit();
 
+    // Deinit all services
+    for (i = 0; i < _sdmp_services_num; i++) {
+        if (_sdmp_services[i]->deinit) {
+            _sdmp_services[i]->deinit();
+        }
+    }
+
+    // Clean services list
     _sdmp_services_num = 0;
 
     return VS_CODE_OK;

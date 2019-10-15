@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if INFO_SERVER
+
 #include <virgil/iot/protocols/sdmp/info/info-server.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
@@ -287,6 +289,14 @@ static vs_status_e
 _info_server_periodical_processor(void) {
     vs_status_e ret_code;
 
+    static bool started = false;
+
+    // Send broadcast notification about self start
+    if (!started) {
+        started = true;
+        vs_sdmp_info_start_notification(NULL);
+    }
+
     _poll_ctx.time_counter++;
     if (_poll_ctx.time_counter >= _poll_ctx.period_seconds) {
         _poll_ctx.time_counter = 0;
@@ -333,6 +343,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
+    //    _info.deinit =
 
     return &_info;
 }
@@ -358,3 +369,5 @@ vs_sdmp_info_start_notification(const vs_netif_t *netif) {
 }
 
 /******************************************************************************/
+
+#endif // INFO_SERVER

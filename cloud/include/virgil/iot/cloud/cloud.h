@@ -71,8 +71,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_cloud_firmware_header_t;
 
 vs_status_e
-vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
-                                 void *payload,
+vs_cloud_parse_firmware_manifest(void *payload,
                                  size_t payload_len,
                                  char *fw_url);
 
@@ -80,8 +79,7 @@ vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const vs_storage_op_ctx_t *fw_storage,
-                                 const char *fw_file_url,
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url,
                                  vs_cloud_firmware_header_t *fetched_header);
 
 vs_status_e
@@ -131,8 +129,8 @@ vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic,
  * Init cloud library
  *
  */
-vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *cloud_impl, const vs_cloud_message_bin_impl_t *message_bin_impl);
-
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
+        const vs_cloud_message_bin_impl_t *message_bin_impl,
+        vs_hsm_impl_t *hsm);
 
 #endif // VS_CLOUD_H

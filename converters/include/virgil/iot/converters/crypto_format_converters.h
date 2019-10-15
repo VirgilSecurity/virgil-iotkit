@@ -45,7 +45,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <virgil/iot/hsm/hsm_structs.h>
+#include <virgil/iot/hsm/hsm.h>
 
 #ifdef __cplusplus
 extern "C" {

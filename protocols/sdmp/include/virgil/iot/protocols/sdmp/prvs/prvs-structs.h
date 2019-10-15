@@ -39,8 +39,8 @@
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
-#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
+#include <virgil/iot/provision/provision-structs.h>
 
 #define DNID_LIST_SZ_MAX (50)
 #define PUBKEY_MAX_SZ (100)

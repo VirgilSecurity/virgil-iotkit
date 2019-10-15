@@ -137,7 +137,10 @@ _get_topic_name_by_index(const vs_cloud_mb_topics_list_t *topic_list, uint32_t i
 
 /******************************************************************************/
 static IoT_Error_t
-_connect_internal(vs_aws_mqtt_message_handler_t *handler, const char *client_id, const char *login, const char *password) {
+_connect_internal(vs_aws_mqtt_message_handler_t *handler,
+                  const char *client_id,
+                  const char *login,
+                  const char *password) {
     IoT_Error_t rc;
     IoT_Client_Connect_Params *pConnectParams = &handler->connect_params;
     pConnectParams->keepAliveIntervalInSec = 10;
@@ -264,7 +267,6 @@ _init_aws_mqtt_client(const char *host,
     }
 
     return res;
-
 }
 
 /*************************************************************************/
@@ -311,7 +313,8 @@ _connect_and_subscribe_to_topics(const char *client_id,
 /*************************************************************************/
 static vs_status_e
 _mqtt_process(void) {
-    return (SUCCESS == aws_iot_mqtt_yield(&_mb_mqtt_handler.client, VS_MQTT_TIMEOUT_MS)) ? VS_CODE_OK : VS_CODE_ERR_CLOUD;
+    return (SUCCESS == aws_iot_mqtt_yield(&_mb_mqtt_handler.client, VS_MQTT_TIMEOUT_MS)) ? VS_CODE_OK
+                                                                                         : VS_CODE_ERR_CLOUD;
 }
 
 /******************************************************************************/

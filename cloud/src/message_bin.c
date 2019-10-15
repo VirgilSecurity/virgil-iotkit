@@ -185,8 +185,9 @@ _get_message_bin_credentials() {
             uint16_t i, total_topic_names_len = 0;
             len = 0;
 
-            _mb_ctx.topic_list.topic_len_list = (uint16_t *)VS_IOT_MALLOC(_mb_ctx.topic_list.topic_count * sizeof(uint16_t));
-            if (! _mb_ctx.topic_list.topic_len_list) {
+            _mb_ctx.topic_list.topic_len_list =
+                    (uint16_t *)VS_IOT_MALLOC(_mb_ctx.topic_list.topic_count * sizeof(uint16_t));
+            if (!_mb_ctx.topic_list.topic_len_list) {
                 VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_len_list] allocation error");
                 goto clean;
             }
@@ -204,7 +205,7 @@ _get_message_bin_credentials() {
             }
 
             _mb_ctx.topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
-            if (! _mb_ctx.topic_list.topic_list) {
+            if (!_mb_ctx.topic_list.topic_list) {
                 VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_list] allocation error");
                 goto clean;
             }
@@ -262,11 +263,15 @@ vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic,
             VS_LOG_DEBUG("[MB]Connecting to broker host %s : %u ...", _mb_ctx.host, _mb_ctx.port);
 
             if (VS_CODE_OK == _impl->init(_mb_ctx.host,
-                                        _mb_ctx.port,
-                                        (const char *)_mb_ctx.cert,
-                                        (const char *)_mb_ctx.pk,
-                                        (const char *)root_ca_crt) &&
-                VS_CODE_OK == _impl->connect_subscribe(_mb_ctx.client_id, _mb_ctx.login, _mb_ctx.password, &_mb_ctx.topic_list, process_topic)) {
+                                          _mb_ctx.port,
+                                          (const char *)_mb_ctx.cert,
+                                          (const char *)_mb_ctx.pk,
+                                          (const char *)root_ca_crt) &&
+                VS_CODE_OK == _impl->connect_subscribe(_mb_ctx.client_id,
+                                                       _mb_ctx.login,
+                                                       _mb_ctx.password,
+                                                       &_mb_ctx.topic_list,
+                                                       process_topic)) {
                 _mb_ctx.is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");

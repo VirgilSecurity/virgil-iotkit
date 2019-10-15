@@ -84,6 +84,6 @@ vs_status_e
 vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
 
 vs_status_e
-vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage, vs_firmware_descriptor_t *new_desc);
+vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc);
 
 #endif // CLOUD_PARSE_MANIFEST_H

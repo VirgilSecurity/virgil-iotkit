@@ -36,14 +36,6 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(converters VERSION 0.1.0 LANGUAGES C)
 
-set(CONV_LIB converters)
-
-#
-#   Source code
-#
-set(CONV_SRC
-        src/signature_converters.c
-        src/pubkey_converters.c)
 
 #
 #   Config path
@@ -68,9 +60,10 @@ virgil_find_package (MbedTLS 2.4)
 #
 #   Converters library
 #
-add_library(${CONV_LIB}
+add_library(converters
         SHARED
-        ${CONV_SRC}
+        ${CMAKE_CURRENT_LIST_DIR}/src/signature_converters.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pubkey_converters.c
         )
 
 #
@@ -83,7 +76,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(converters
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 target_compile_definitions(${PROJECT_NAME}
@@ -93,22 +86,27 @@ target_compile_definitions(${PROJECT_NAME}
 #
 #   Common include directories
 #
-target_include_directories(${PROJECT_NAME}
+target_include_directories(converters
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
 
-target_link_libraries (${PROJECT_NAME}
+target_link_libraries (converters
         PRIVATE
         mbedtls::mbedcrypto
         mbedtls::ed25519
+        virgil-iot-status-code
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(converters)
+endif()
 

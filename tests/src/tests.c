@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/test_hl_keys_data.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
 uint16_t

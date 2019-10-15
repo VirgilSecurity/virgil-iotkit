@@ -47,7 +47,7 @@ typedef uint8_t vs_storage_element_id_t[VS_STORAGE_ELEMENT_ID_MAX];
  * vs_storage_hal_ctx_t vs_storage_xxx_init( Parameters list depends on implementation of storage );
  *
  */
-typedef void *vs_storage_hal_ctx_t;
+typedef void *vs_storage_impl_data_ctx_t;
 
 /*
  * File descriptor depends on implementation of storage
@@ -55,40 +55,40 @@ typedef void *vs_storage_hal_ctx_t;
 typedef void *vs_storage_file_t;
 
 typedef vs_status_e (*vs_storage_deinit_hal_t)(
-        vs_storage_hal_ctx_t storage_ctx); // After this call storage_ctx is incorrect and must be zeroed.
+        vs_storage_impl_data_ctx_t storage_ctx); // After this call storage_ctx is incorrect and must be zeroed.
 
 typedef vs_storage_file_t (*vs_storage_open_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
 typedef vs_status_e (*vs_rpi_storage_sync_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_file_t file);
 
 typedef vs_status_e (*vs_storage_close_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         vs_storage_file_t file); // After this call file is incorrect and must be zeroed.
 
 typedef vs_status_e (*vs_storage_save_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_file_t file,
         size_t offset,
         const uint8_t *in_data,
         size_t data_sz);
 
 typedef vs_status_e (*vs_storage_load_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_file_t file,
         size_t offset,
         uint8_t *out_data,
         size_t data_sz);
 
 typedef ssize_t (*vs_storage_file_size_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
 typedef vs_status_e (*vs_storage_del_hal_t)(
-        const vs_storage_hal_ctx_t storage_ctx,
+        const vs_storage_impl_data_ctx_t storage_ctx,
         const vs_storage_element_id_t id);
 
 vs_status_e
@@ -107,13 +107,13 @@ typedef struct {
     vs_storage_file_size_hal_t size;
 
     vs_storage_del_hal_t del;
-}vs_storage_op_impl_t;
+}vs_storage_impl_func_t;
 
 typedef struct {
-    // Context if required
-    vs_storage_hal_ctx_t storage_ctx;
+    vs_storage_impl_func_t impl_func;
+    vs_storage_impl_data_ctx_t impl_data;
     size_t file_sz_limit;     // Maximum size of file
-    vs_storage_op_impl_t impl;
+
 } vs_storage_op_ctx_t;
 
 

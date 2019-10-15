@@ -42,7 +42,7 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
@@ -64,7 +64,7 @@ typedef struct __attribute__((__packed__)) {
     vs_device_manufacture_id_t manufacture_id;
     vs_device_type_t device_type;
     vs_mac_addr_t default_netif_mac;
-    vs_firmware_version_t fw_version;
+    vs_file_version_t fw_version;
     uint16_t tl_version;
     uint32_t device_roles; // vs_sdmp_device_role_e
 } vs_info_ginf_response_t;

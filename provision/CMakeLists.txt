@@ -73,18 +73,26 @@ target_compile_definitions(provision
 #
 target_include_directories(provision
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         PRIVATE
-        "$<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../hsm/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>"
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>
         )
 
 target_link_libraries(provision
+        PUBLIC
+        hsm
+        storage_hal
+        trust_list
         PRIVATE
         virgil-iot-status-code
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(provision)
+endif()

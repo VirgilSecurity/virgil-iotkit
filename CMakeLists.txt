@@ -37,11 +37,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 # ---------------------------------------------------------------------------
 #   Enable Golang
 # ---------------------------------------------------------------------------
-if (NOT GO_DISABLE)
+if(NOT GO_DISABLE)
     include(cmake/golang.cmake)
     include(cmake/flags.cmake)
     set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
-    set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
-include("cmake/clangformat.cmake")
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/clangformat.cmake)
 
 
 # ---------------------------------------------------------------------------
@@ -65,13 +65,13 @@ include("cmake/clangformat.cmake")
 # ---------------------------------------------------------------------------
 set(VIRGIL_IOT_SDK_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
 
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil-iot-sdk-VERSION}")
+file(WRITE "${CMAKE_CURRENT_LIST_DIR}/VERSION" "${virgil-iot-sdk-VERSION}")
 
 if(VIRGIL_IOT_SDK_VERSION_LABEL)
-    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
+    file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
 endif()
 
-file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
+file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "\n")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -123,9 +123,9 @@ option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws 
 #
 #   aws-sdk
 #
-if (VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
-endif ()
+endif()
 
 
 # ---------------------------------------------------------------------------
@@ -150,7 +150,7 @@ set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORC
 # ---------------------------------------------------------------------------
 
 if (NOT GO_DISABLE)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tools)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -160,104 +160,106 @@ endif()
 #
 #   Shared macros interface
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/macros)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/macros)
 
 #
 #   Status codes
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/status_code)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/status_code)
 
 #
 #   Data storage hal interface
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/storage_hal)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/storage_hal)
 
 #
 #   jsmn
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/jsmn)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ext/jsmn)
+
 
 #
 #   vs-json
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)
 
 #
 #   firmware
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/firmware)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/firmware)
 
 #
 #   update
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/update)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/update)
 
 #
 #   Logger
 #
 # TODO: Add Option to disable Logger
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logger)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/logger)
 
 #
 #   Cloud
 #
 if (VIRGIL_IOT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cloud)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud)
 endif()
 
 #
 #   Trust list
 #
 # TODO: Add Option to disable trust_list
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/trust_list)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
 
 #
 #   Converters
 #
-if (NOT VIRGIL_IOT_MCU_BUILD)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/converters)
+if(NOT VIRGIL_IOT_MCU_BUILD)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/converters)
 endif()
+
 #
-#   HSM
+#   Crypto
 #
-# TODO: Add Option to disable hsm
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hsm)
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 
 #
 #   Provision
 #
 # TODO: Add Option to disable hsm
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/provision)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/provision)
 
 #
 #   Protocols
 #
 if (VIRGIL_IOT_PROTOCOLS)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/protocols)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/protocols)
 endif()
 
 #
 #   Secbox
 #
 if (VIRGIL_IOT_SECBOX)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/secbox)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secbox)
 endif()
 
 #
 #   Default implementations
 #
 if (VIRGIL_IOT_DEFAULT_IMPL)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/default-impl)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
 endif()
 
 #
 #   High level SDK
 #
 if (VIRGIL_IOT_HIGHLEVEL)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/high-level)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/high-level)
 endif()
 
 #
 #   Tests
 #
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
