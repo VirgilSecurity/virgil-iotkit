@@ -245,7 +245,7 @@ vs_status_e
 vs_cloud_is_new_firmware_version_available(const vs_storage_op_ctx_t *fw_storage, vs_firmware_descriptor_t *new_desc) {
 
     size_t cmp_sz = (sizeof(vs_firmware_version_t) - sizeof(new_desc->info.version.app_type) -
-                      sizeof(new_desc->info.version.timestamp));
+                     sizeof(new_desc->info.version.timestamp));
 
     CHECK_NOT_ZERO_RET(new_desc, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -294,6 +294,7 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
                                  char *fw_url) {
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
+    int url_len;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -302,6 +303,12 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[FW] Error. Invalid JSON");
+        return VS_CODE_ERR_JSON;
+    }
+
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
+        VS_LOG_ERROR("[FW] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
 
@@ -347,6 +354,7 @@ vs_cloud_parse_firmware_manifest(const vs_storage_op_ctx_t *fw_storage,
 vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
+    int url_len;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(tl_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -357,6 +365,12 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[TL] Error. Invalid JSON");
+        return VS_CODE_ERR_JSON;
+    }
+
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
+        VS_LOG_ERROR("[TL] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
 

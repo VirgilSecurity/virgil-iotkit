@@ -248,7 +248,7 @@ vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl) {
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_message_bin_process(vs_clud_mb_process_topic_cb_t process_topic,
+vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic,
                              const char *root_ca_crt) {
 
     CHECK_NOT_ZERO_RET(_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);

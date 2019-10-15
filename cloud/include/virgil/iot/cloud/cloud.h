@@ -99,7 +99,7 @@ typedef struct {
     size_t topic_count;
 } vs_cloud_mb_topics_list_t;
 
-typedef void (*vs_clud_mb_process_topic_cb_t)(const char *topic,
+typedef void (*vs_cloud_mb_process_topic_cb_t)(const char *topic,
                                               uint16_t topic_sz,
                                               const uint8_t *p_data,
                                               uint16_t length);
@@ -114,7 +114,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
                                                             const char *login,
                                                             const char *password,
                                                             const vs_cloud_mb_topics_list_t *topic_list,
-                                                            vs_clud_mb_process_topic_cb_t process_topic);
+                                                            vs_cloud_mb_process_topic_cb_t process_topic);
 typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
 typedef struct {
@@ -124,10 +124,15 @@ typedef struct {
 } vs_cloud_message_bin_impl_t;
 
 vs_status_e
+vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic,
+                             const char *root_ca_crt);
+/*
+ *
+ * Init cloud library
+ *
+ */
+vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl, const vs_cloud_message_bin_impl_t *message_bin_impl);
 
-vs_status_e
-vs_cloud_message_bin_process(vs_clud_mb_process_topic_cb_t process_topic,
-                             const char *root_ca_crt);
 
 #endif // VS_CLOUD_H
