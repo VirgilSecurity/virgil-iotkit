@@ -32,7 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#if FLDT_SERVER
+// TODO : TEMPORARY !!!!
+// #if FLDT_SERVER
 
 #include <virgil/iot/protocols/sdmp/fldt/fldt-server.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
@@ -167,7 +168,13 @@ _file_info(const vs_update_file_type_t *file_type,
 
     memset(file_info, 0, sizeof(*file_info));
 
-    file_info->type = *file_type;
+    file_info->type.type = file_type->type;
+    VS_IOT_MEMCPY(file_info->type.info.manufacture_id,
+                  file_type->info.manufacture_id,
+                  sizeof(file_type->info.manufacture_id));
+    VS_IOT_MEMCPY(file_info->type.info.device_type, file_type->info.device_type, sizeof(file_type->info.device_type));
+    VS_IOT_MEMCPY(&file_info->type.info.version, &file_type->info.version, sizeof(file_type->info.version));
+
     file_info->type.info.version = file_type_info->current_version;
     file_info->gateway_mac = _gateway_mac;
 
@@ -542,17 +549,17 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
 }
 
 /******************************************************************/
-vs_status_e
-vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
+static void
+_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
 
-    CHECK_NOT_ZERO_RET(add_filetype, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO(add_filetype);
 
     _fldt_destroy_server();
 
     _gateway_mac = *gateway_mac;
     _add_filetype_callback = add_filetype;
 
-    return VS_CODE_OK;
+terminate:;
 }
 
 /******************************************************************/
@@ -631,7 +638,7 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_fldt_server(void) {
+vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
     _fldt_server.user_data = 0;
     _fldt_server.id = VS_FLDT_SERVICE_ID;
     _fldt_server.request_process = _fldt_server_request_processor;
@@ -639,9 +646,11 @@ vs_sdmp_fldt_server(void) {
     _fldt_server.periodical_process = NULL;
     _fldt_server.deinit = _fldt_destroy_server;
 
+    _init_server(gateway_mac, add_filetype);
+
     return &_fldt_server;
 }
 
 /******************************************************************************/
 
-#endif // FLDT_SERVER
+//#endif // FLDT_SERVER
