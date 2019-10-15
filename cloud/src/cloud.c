@@ -165,12 +165,12 @@ _get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_ou
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *impl) {
-    CHECK_NOT_ZERO_RET(impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(impl->http_get, VS_CODE_ERR_NULLPTR_ARGUMENT);
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl, const vs_cloud_message_bin_impl_t *message_bin_impl) {
+    CHECK_NOT_ZERO_RET(cloud_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(cloud_impl->http_get, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    _hal_impl = impl;
-    return VS_CODE_OK;
+    _hal_impl = cloud_impl;
+    return vs_cloud_message_bin_init(message_bin_impl);
 }
 
 /******************************************************************************/
