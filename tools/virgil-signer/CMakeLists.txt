@@ -55,7 +55,11 @@ endif()
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
         -I${VIRGIL_IOT_DIRECTORY}/converters/include
-        -I${VIRGIL_IOT_DIRECTORY}/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/crypto/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/status_code/include
+        -I${VIRGIL_IOT_DIRECTORY}/macros/include
+        -I${VIRGIL_IOT_DIRECTORY}/logger/include
+        -I${VIRGIL_IOT_DIRECTORY}/config/pc
         )
 
 #
