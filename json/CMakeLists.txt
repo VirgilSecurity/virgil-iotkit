@@ -6,6 +6,11 @@ add_library(vs-json)
 
 target_sources(vs-json
         PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/json/json_generator.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/json/json_parser.h
+
+        # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/json_parser.c
         ${CMAKE_CURRENT_LIST_DIR}/src/json_generator.c
         )

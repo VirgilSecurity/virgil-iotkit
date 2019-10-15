@@ -40,7 +40,7 @@ add_library(virgil-iot-status-code INTERFACE)
 
 target_sources(virgil-iot-status-code
         INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/status_code/status_code.h>
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/status_code/status_code.h
         )
 
 target_include_directories(virgil-iot-status-code

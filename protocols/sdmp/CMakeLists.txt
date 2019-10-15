@@ -59,10 +59,12 @@ function(add_sdmp _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/fldt/fldt-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-private.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/info/info-structs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/sdmp.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/fldt/fldt-client.c

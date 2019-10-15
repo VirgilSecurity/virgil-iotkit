@@ -45,6 +45,8 @@ target_sources(firmware
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h
 
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/firmware-private.h
+
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/firmware.c
         ${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c

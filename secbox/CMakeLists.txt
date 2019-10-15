@@ -43,6 +43,10 @@ add_library(secbox)
 
 target_sources(secbox
         PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secbox/secbox.h
+
+        # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/secbox.c
         )
 

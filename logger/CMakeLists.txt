@@ -39,7 +39,19 @@ project(logger VERSION 0.1.0 LANGUAGES C)
 #
 #   Logger library
 #
-add_library(logger
+add_library(logger)
+
+target_sources(logger
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/logger.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/utoa_fast_div.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/logger_hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/macro_va_args.h
+
+        # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/logger.c
         ${CMAKE_CURRENT_LIST_DIR}/src/utoa_fast_div.c
         )

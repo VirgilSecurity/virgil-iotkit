@@ -51,6 +51,7 @@ target_sources(tools-hal
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_prvs_impl.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_info_impl.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/helpers/ti_wait_functionality.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c

@@ -62,9 +62,18 @@ virgil_find_package (MbedTLS 2.4)
 #
 add_library(converters
         SHARED
+        )
+
+target_sources(converters
+        PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/crypto_format_converters.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/private/macros.h
+
+        # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/signature_converters.c
         ${CMAKE_CURRENT_LIST_DIR}/src/pubkey_converters.c
-        )
+    )
 
 #
 #   Set additional compiler flags
