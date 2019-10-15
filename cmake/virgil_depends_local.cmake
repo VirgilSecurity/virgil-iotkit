@@ -68,7 +68,7 @@
 #
 #          virgil_depends (
 #              PACKAGE_NAME "zzzzz"
-#              CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dir_to_config_file_from_step_1"
+#              CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}/dir_to_config_file_from_step_1"
 #              CMAKE_ARGS "${OPTIONAL_VARIABLE_WITH_ADITIONAL_CMAKE_PARAMETERS}"
 #          )
 #
