@@ -37,6 +37,13 @@
 static vs_cloud_message_bin_ctx_t _mb_ctx;
 static const vs_cloud_message_bin_impl_t *_impl;
 
+typedef struct {
+    vs_cloud_mb_process_default_topic_cb_t tl_handler;
+    vs_cloud_mb_process_default_topic_cb_t fw_handler;
+    vs_cloud_mb_process_custom_topic_cb_t custom_handler;
+} vs_cloud_message_bin_handlers_t;
+
+static vs_cloud_message_bin_handlers_t _topic_handlers;
 /*************************************************************************/
 static void
 _mb_mqtt_ctx_free() {
@@ -244,12 +251,61 @@ vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl) {
     CHECK_NOT_ZERO_RET(impl->process, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _mb_mqtt_ctx_free();
     _impl = impl;
+
+    VS_IOT_MEMSET(&_topic_handlers, 0, sizeof(vs_cloud_message_bin_handlers_t));
+
+    return VS_CODE_OK;
+}
+
+/*************************************************************************/
+static void
+_process_topic(const char *topic, uint16_t topic_sz, const uint8_t *data, uint16_t length) {
+    char *ptr = strstr(topic, VS_FW_TOPIC_MASK);
+    if (ptr != NULL && topic == ptr && _topic_handlers.fw_handler) {
+        _topic_handlers.fw_handler(data, length);
+        return;
+    }
+
+    ptr = strstr(topic, VS_TL_TOPIC_MASK);
+    if (ptr != NULL && topic == ptr && _topic_handlers.tl_handler) {
+        _topic_handlers.tl_handler(data, length);
+        return;
+    }
+
+    if (_topic_handlers.custom_handler) {
+        _topic_handlers.custom_handler(topic, topic_sz, data, length);
+    }
+}
+
+/******************************************************************************/
+vs_status_e
+vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
+                                              vs_cloud_mb_process_default_topic_cb_t handler) {
+
+    switch (topic_id) {
+    case VS_CLOUD_MB_TOPIC_FW:
+        _topic_handlers.fw_handler = handler;
+        break;
+    case VS_CLOUD_MB_TOPIC_TL:
+        _topic_handlers.tl_handler = handler;
+        break;
+    default:
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
+    }
+
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic, const char *root_ca_crt) {
+vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb_t handler) {
+    _topic_handlers.custom_handler = handler;
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_cloud_message_bin_process(const char *root_ca_crt) {
 
     CHECK_NOT_ZERO_RET(_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -270,7 +326,7 @@ vs_cloud_message_bin_process(vs_cloud_mb_process_topic_cb_t process_topic, const
                                                        _mb_ctx.login,
                                                        _mb_ctx.password,
                                                        &_mb_ctx.topic_list,
-                                                       process_topic)) {
+                                                       _process_topic)) {
                 _mb_ctx.is_active = true;
             } else {
                 VS_LOG_DEBUG("[MB]Connection failed");

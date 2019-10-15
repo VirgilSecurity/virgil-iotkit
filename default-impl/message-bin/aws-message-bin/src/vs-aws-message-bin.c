@@ -62,7 +62,7 @@ _connect_and_subscribe_to_topics(const char *client_id,
                                  const char *login,
                                  const char *password,
                                  const vs_cloud_mb_topics_list_t *topic_list,
-                                 vs_cloud_mb_process_topic_cb_t process_topic);
+                                 vs_cloud_mb_process_custom_topic_cb_t process_topic);
 static vs_status_e
 _mqtt_process(void);
 
@@ -106,7 +106,7 @@ _group_callback(AWS_IoT_Client *client,
                 void *pData) {
     uint8_t *p = (uint8_t *)params->payload;
     p[params->payloadLen] = 0;
-    vs_cloud_mb_process_topic_cb_t process_topic = (vs_cloud_mb_process_topic_cb_t)pData;
+    vs_cloud_mb_process_custom_topic_cb_t process_topic = (vs_cloud_mb_process_custom_topic_cb_t)pData;
 
     VS_LOG_DEBUG("[MB] Message from topic %s", topic);
     VS_LOG_DEBUG("[MB] _group_callback params->payloadLen=%d", (int)params->payloadLen);
@@ -275,7 +275,7 @@ _connect_and_subscribe_to_topics(const char *client_id,
                                  const char *login,
                                  const char *password,
                                  const vs_cloud_mb_topics_list_t *topic_list,
-                                 vs_cloud_mb_process_topic_cb_t process_topic) {
+                                 vs_cloud_mb_process_custom_topic_cb_t process_topic) {
 
     vs_status_e res = VS_CODE_ERR_CLOUD;
     IoT_Error_t rc;
