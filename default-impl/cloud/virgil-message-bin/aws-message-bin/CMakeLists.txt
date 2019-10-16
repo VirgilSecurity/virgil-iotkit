@@ -42,10 +42,10 @@ target_sources(vs-default-aws-message-bin
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-aws-message-bin/vs-aws-message-bin.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-aws-message-bin/aws-message-bin.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/vs-aws-message-bin.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/aws-message-bin.c
         )
 
 target_link_libraries(vs-default-aws-message-bin
