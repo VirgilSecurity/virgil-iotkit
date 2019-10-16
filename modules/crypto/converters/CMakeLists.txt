@@ -34,77 +34,87 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-default-soft-hsm VERSION 0.1.0 LANGUAGES C)
+project(converters VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-default-soft-hsm)
 
-target_sources(vs-default-soft-hsm
-        PRIVATE
+#
+#   Config path
+#
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[converters] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
 
-        # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
+# Include and build external libraries
+include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
 
-        # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/vs-softhsm.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-slots.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-ecies.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-sha2.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/asn1-cryptogram.c
+set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+virgil_depends (
+        PACKAGE_NAME "MbedTLS"
+        CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
+        CMAKE_ARGS "${MBEDTLS_CMAKE_ARGS}"
+)
+virgil_find_package (MbedTLS 2.4)
+
+#
+#   Converters library
+#
+add_library(converters
+        SHARED
         )
 
-#
-#	Path to crypto lib
-#
-if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips64")
-elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips32")
-else()
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/host")
-endif ()
+target_sources(converters
+        PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/crypto_format_converters.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/private/macros.h
 
-include(GNUInstallDirs)
-if(EXISTS "${CRYPTO_C_BASE_DIR}")
-    set(CRYPTO_C_INCLUDES "${CRYPTO_C_BASE_DIR}/include")
-    set(CRYPTO_C_LIBS "${CRYPTO_C_BASE_DIR}/lib")
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/signature_converters.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/pubkey_converters.c
+    )
+
+#
+#   Set additional compiler flags
+#
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("-- No CFLAGS_PLATFORM")
 else()
-    set(CRYPTO_C_INCLUDES "/usr/include/cryptoc-shsm")
-    set(CRYPTO_C_LIBS "/usr/${CMAKE_INSTALL_LIBDIR}/cryptoc-shsm")
-endif ()
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(converters
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
+
+target_compile_definitions(${PROJECT_NAME}
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        )
 
 #
 #   Common include directories
 #
-target_include_directories(vs-default-soft-hsm
+target_include_directories(converters
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        ${CRYPTO_C_INCLUDES}
-        ${CRYPTO_C_INCLUDES}/virgil/crypto/common
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
 
-#
-#   Link libraries
-#
-target_link_libraries(vs-default-soft-hsm
-        PUBLIC
-        converters
+target_link_libraries (converters
+        PRIVATE
+        mbedtls::mbedcrypto
+        mbedtls::ed25519
         vs-module-hsm
-        storage_hal
-        ${CRYPTO_C_LIBS}/libvsc_foundation.a
-        ${CRYPTO_C_LIBS}/libvsc_common.a
-        ${CRYPTO_C_LIBS}/libmbedcrypto.a
-        ${CRYPTO_C_LIBS}/libed25519.a
+        virgil-iot-status-code
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(vs-default-soft-hsm)
+    add_clangformat(converters)
 endif()
-
 

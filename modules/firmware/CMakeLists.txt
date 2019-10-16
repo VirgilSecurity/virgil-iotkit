@@ -34,53 +34,40 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(tools-hal VERSION 0.1.0 LANGUAGES C)
+project(vs-module-firmware VERSION 0.1.0 LANGUAGES C)
 
-#
-#   Network interfaces for Factory Inittializer
-#
-add_library(tools-hal)
+add_library(vs-module-firmware)
 
-#
-#   Sources
-#
-target_sources(tools-hal
+target_sources(vs-module-firmware
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_prvs_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_info_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/helpers/ti_wait_functionality.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/firmware-private.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/firmware-private.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/ti_wait_functionality.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_impl.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_info_impl.c
-        )
-#
-#   Includes
-#
-target_include_directories(tools-hal
-        PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
+        ${CMAKE_CURRENT_LIST_DIR}/src/firmware.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c
         )
 
-#
-#   Libraries
-#
-target_link_libraries(tools-hal
+target_link_libraries(vs-module-firmware
         PUBLIC
-        vs-module-sdmp-factory
+        macros
+        vs-module-provision
+        virgil-iot-status-code
+        )
+
+target_include_directories(vs-module-firmware
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         PRIVATE
-        enable_pedantic_mode
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(tools-hal)
+    add_clangformat(vs-module-firmware)
 endif()

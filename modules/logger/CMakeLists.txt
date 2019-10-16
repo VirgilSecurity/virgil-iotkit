@@ -34,77 +34,83 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-default-soft-hsm VERSION 0.1.0 LANGUAGES C)
+project(vs-module-logger VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-default-soft-hsm)
+#
+#   Logger library
+#
+add_library(vs-module-logger)
 
-target_sources(vs-default-soft-hsm
+target_sources(logger
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/logger.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/utoa_fast_div.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/logger_hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/macro_va_args.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/vs-softhsm.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-slots.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-ecies.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-sha2.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/asn1-cryptogram.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/logger.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/utoa_fast_div.c
         )
 
 #
-#	Path to crypto lib
+#   Set additional compiler flags
 #
-if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips64")
-elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips32")
+if("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("-- No CFLAGS_PLATFORM")
 else()
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/host")
-endif ()
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
 
-include(GNUInstallDirs)
-if(EXISTS "${CRYPTO_C_BASE_DIR}")
-    set(CRYPTO_C_INCLUDES "${CRYPTO_C_BASE_DIR}/include")
-    set(CRYPTO_C_LIBS "${CRYPTO_C_BASE_DIR}/lib")
+target_compile_options(vs-module-logger
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
+
+#
+#   Compile definitions
+#
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[vs-module-logger] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
 else()
-    set(CRYPTO_C_INCLUDES "/usr/include/cryptoc-shsm")
-    set(CRYPTO_C_LIBS "/usr/${CMAKE_INSTALL_LIBDIR}/cryptoc-shsm")
-endif ()
+    message(STATUS "[vs-module-logger] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+target_compile_definitions(vs-module-logger
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+    )
 
 #
 #   Common include directories
 #
-target_include_directories(vs-default-soft-hsm
+target_include_directories(vs-module-logger
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        ${CRYPTO_C_INCLUDES}
-        ${CRYPTO_C_INCLUDES}/virgil/crypto/common
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        "$<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>"
 
         INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
 
-#
-#   Link libraries
-#
-target_link_libraries(vs-default-soft-hsm
-        PUBLIC
-        converters
-        vs-module-hsm
-        storage_hal
-        ${CRYPTO_C_LIBS}/libvsc_foundation.a
-        ${CRYPTO_C_LIBS}/libvsc_common.a
-        ${CRYPTO_C_LIBS}/libmbedcrypto.a
-        ${CRYPTO_C_LIBS}/libed25519.a
-        )
-
 if(COMMAND add_clangformat)
-    add_clangformat(vs-default-soft-hsm)
+    add_clangformat(vs-module-logger)
 endif()
 
+install(TARGETS logger
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
 
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )

@@ -34,53 +34,46 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(tools-hal VERSION 0.1.0 LANGUAGES C)
+project(vs-module-secbox VERSION 0.1.0 LANGUAGES C)
 
 #
-#   Network interfaces for Factory Inittializer
+#   SecBox library
 #
-add_library(tools-hal)
+add_library(vs-module-secbox)
 
-#
-#   Sources
-#
-target_sources(tools-hal
+target_sources(vs-module-secbox
         PRIVATE
-
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_prvs_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_info_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/helpers/ti_wait_functionality.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secbox/secbox.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/ti_wait_functionality.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_impl.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_info_impl.c
-        )
-#
-#   Includes
-#
-target_include_directories(tools-hal
-        PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
+        ${CMAKE_CURRENT_LIST_DIR}/src/secbox.c
         )
 
 #
-#   Libraries
+#   -Wall -Werror
 #
-target_link_libraries(tools-hal
+set_target_properties(vs-module-secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+
+target_link_libraries(vs-module-secbox
         PUBLIC
-        vs-module-sdmp-factory
+        vs-module-hsm
+        vs-module-provision
+        macros
+        storage_hal
+        )
+#
+#   Common include directories
+#
+target_include_directories(vs-module-secbox
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         PRIVATE
-        enable_pedantic_mode
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(tools-hal)
+    add_clangformat(vs-module-secbox)
 endif()

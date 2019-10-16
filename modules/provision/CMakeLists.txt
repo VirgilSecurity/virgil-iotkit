@@ -34,53 +34,80 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(tools-hal VERSION 0.1.0 LANGUAGES C)
+project(vs-module-provision VERSION 0.1.0 LANGUAGES C)
 
 #
-#   Network interfaces for Factory Inittializer
+#   Add TrustList library
 #
-add_library(tools-hal)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
 
 #
-#   Sources
+#   Provision library
 #
-target_sources(tools-hal
+add_library(vs-module-provision
+        src/provision.c
+        )
+
+target_sources(provision
         PRIVATE
-
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_prvs_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/sdmp/ti_info_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/helpers/ti_wait_functionality.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision-structs.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_netif_udp_bcast.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/ti_wait_functionality.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_prvs_impl.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/sdmp/ti_info_impl.c
-        )
-#
-#   Includes
-#
-target_include_directories(tools-hal
-        PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../provision/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../hsm/include
+        ${CMAKE_CURRENT_LIST_DIR}/src/provision.c
         )
 
 #
-#   Libraries
+#   Set additional compiler flags
 #
-target_link_libraries(tools-hal
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("-- No CFLAGS_PLATFORM")
+else()
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(vs-module-provision
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
+
+#
+#   Compile definitions
+#
+
+#
+#   Config path
+#
+
+target_compile_definitions(vs-module-provision
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        )
+
+#
+#   Common include directories
+#
+target_include_directories(vs-module-provision
         PUBLIC
-        vs-module-sdmp-factory
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         PRIVATE
-        enable_pedantic_mode
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>
+        )
+
+target_link_libraries(vs-module-provision
+        PUBLIC
+        vs-module-hsm
+        storage_hal
+        trust_list
+        PRIVATE
+        virgil-iot-status-code
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(tools-hal)
+    add_clangformat(vs-module-provision)
 endif()

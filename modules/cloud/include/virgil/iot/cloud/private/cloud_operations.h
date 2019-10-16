@@ -32,21 +32,44 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <string.h>
+#ifndef VS_CLOUD_OPERATIONS_H
+#define VS_CLOUD_OPERATIONS_H
 
-#include <virgil/iot/protocols/sdmp/info/info-client.h>
-#include <virgil/iot/tools/helpers/ti_wait_functionality.h>
+#include <virgil/iot/status_code/status_code.h>
 
-/******************************************************************************/
-vs_sdmp_info_impl_t
-vs_info_impl() {
-    vs_sdmp_info_impl_t res;
+#define VS_THING_EP "thing"
+#define VS_AWS_ID "aws"
+#define VS_MQTT_ID "mqtt"
 
-    memset(&res, 0, sizeof(res));
 
-    res.stop_wait_func = vs_wait_stop_func;
-    res.wait_func = vs_wait_func;
+#define VS_FW_TOPIC_MASK "fw/"
 
-    return res;
-}
-/******************************************************************************/
+#define VS_TL_TOPIC_MASK "tl/"
+
+typedef struct {
+    char *login;
+    char *password;
+    char *cert;
+    char *root_ca_cert;
+    char *pk;
+    char *host;
+    vs_cloud_mb_topics_list_t topic_list;
+    char *client_id;
+    uint16_t port;
+    bool is_filled;
+    bool is_active;
+} vs_cloud_message_bin_ctx_t;
+
+//TODO: Will be used for alexa
+#if 0
+vs_status_e
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
+#endif
+
+vs_status_e
+vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+
+vs_status_e
+vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl);
+
+#endif // VS_CLOUD_OPERATIONS_H

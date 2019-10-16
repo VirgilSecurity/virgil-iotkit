@@ -54,6 +54,7 @@
 #define VS_IOT_SNPRINTF  snprintf
 #define VS_IOT_SPRINTF   sprintf
 #define VS_IOT_STRCPY    strcpy
+#define VS_IOT_STRSTR    strstr
 #define VS_IOT_STRLEN    strlen
 #define VS_IOT_VSNPRINTF vsnprintf
 #define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))

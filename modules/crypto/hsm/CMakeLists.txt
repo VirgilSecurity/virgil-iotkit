@@ -34,77 +34,72 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-default-soft-hsm VERSION 0.1.0 LANGUAGES C)
+project(vs-module-hsm VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-default-soft-hsm)
+add_library(vs-module-hsm)
 
-target_sources(vs-default-soft-hsm
+target_sources(vs-module-hsm
         PRIVATE
-
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm_helpers.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_508a.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_608a.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_custom.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_iotelic.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_iotelic.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/vs-softhsm.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-slots.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-ecies.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-sha2.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/asn1-cryptogram.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c
+        )
+#
+#   Set additional compiler flags
+#
+if ("${CFLAGS_PLATFORM}" STREQUAL "")
+    message("-- No CFLAGS_PLATFORM")
+else()
+    message("-- CFLAGS_PLATFORM = ${CFLAGS_PLATFORM}")
+    string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
+endif()
+
+target_compile_options(vs-module-hsm
+        PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[vs-module-hsm] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[vs-module-hsm] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+target_compile_definitions(vs-module-hsm
+        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
-#
-#	Path to crypto lib
-#
-if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips64")
-elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips32")
-else()
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/host")
-endif ()
-
-include(GNUInstallDirs)
-if(EXISTS "${CRYPTO_C_BASE_DIR}")
-    set(CRYPTO_C_INCLUDES "${CRYPTO_C_BASE_DIR}/include")
-    set(CRYPTO_C_LIBS "${CRYPTO_C_BASE_DIR}/lib")
-else()
-    set(CRYPTO_C_INCLUDES "/usr/include/cryptoc-shsm")
-    set(CRYPTO_C_LIBS "/usr/${CMAKE_INSTALL_LIBDIR}/cryptoc-shsm")
-endif ()
-
+target_link_libraries(vs-module-hsm
+        PUBLIC
+        macros
+        virgil-iot-status-code
+        )
 #
 #   Common include directories
 #
-target_include_directories(vs-default-soft-hsm
+target_include_directories(vs-module-hsm
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        ${CRYPTO_C_INCLUDES}
-        ${CRYPTO_C_INCLUDES}/virgil/crypto/common
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
         INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
 
-#
-#   Link libraries
-#
-target_link_libraries(vs-default-soft-hsm
-        PUBLIC
-        converters
-        vs-module-hsm
-        storage_hal
-        ${CRYPTO_C_LIBS}/libvsc_foundation.a
-        ${CRYPTO_C_LIBS}/libvsc_common.a
-        ${CRYPTO_C_LIBS}/libmbedcrypto.a
-        ${CRYPTO_C_LIBS}/libed25519.a
-        )
-
 if(COMMAND add_clangformat)
-    add_clangformat(vs-default-soft-hsm)
+    add_clangformat(vs-module-hsm)
 endif()
-
 

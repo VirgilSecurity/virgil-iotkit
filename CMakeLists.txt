@@ -113,7 +113,6 @@ option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
-option(VIRGIL_IOT_HIGHLEVEL "Enable 'high level implementations'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
 #
@@ -147,118 +146,28 @@ set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
 set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
 
-# ---------------------------------------------------------------------------
+#
 #   Tools
-# ---------------------------------------------------------------------------
-
+#
 if (NOT GO_DISABLE)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tools)
 endif()
 
-# ---------------------------------------------------------------------------
-#   Features
-# ---------------------------------------------------------------------------
+#
+#   Helpers
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/helpers)
 
 #
-#   Shared macros interface
+#   Modules
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/macros)
-
-#
-#   Status codes
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/status_code)
-
-#
-#   Data storage hal interface
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/storage_hal)
-
-#
-#   jsmn
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ext/jsmn)
-
-
-#
-#   vs-json
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)
-
-#
-#   firmware
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/firmware)
-
-#
-#   update
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/update)
-
-#
-#   Logger
-#
-# TODO: Add Option to disable Logger
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/logger)
-
-#
-#   Cloud
-#
-if (VIRGIL_IOT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud)
-endif()
-
-#
-#   Trust list
-#
-# TODO: Add Option to disable trust_list
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
-
-#
-#   Converters
-#
-if(NOT VIRGIL_IOT_MCU_BUILD)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/converters)
-endif()
-
-#
-#   Crypto
-#
-
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
-
-#
-#   Provision
-#
-# TODO: Add Option to disable hsm
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/provision)
-
-#
-#   Protocols
-#
-if (VIRGIL_IOT_PROTOCOLS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/protocols)
-endif()
-
-#
-#   Secbox
-#
-if (VIRGIL_IOT_SECBOX)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secbox)
-endif()
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
 
 #
 #   Default implementations
 #
 if (VIRGIL_IOT_DEFAULT_IMPL)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
-endif()
-
-#
-#   High level SDK
-#
-if (VIRGIL_IOT_HIGHLEVEL)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/high-level)
 endif()
 
 #
