@@ -55,14 +55,11 @@ typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *
                                                    vs_update_interface_t **update_ctx);
 
 const vs_sdmp_service_t *
-vs_sdmp_fldt_server(void);
+vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
 //
 //  Customer API
 //
-
-vs_status_e
-vs_fldt_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
 vs_status_e
 vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,

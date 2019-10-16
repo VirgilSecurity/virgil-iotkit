@@ -49,7 +49,9 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
 /*************************************************************************/
 bool
 vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type){
-    return 0 == VS_IOT_MEMCMP(file_type, unknown_file_type, sizeof(vs_update_interface_t));
+    return file_type->type == unknown_file_type->type &&
+            !VS_IOT_MEMCMP(file_type->info.manufacture_id, unknown_file_type->info.manufacture_id, sizeof(unknown_file_type->info.manufacture_id)) &&
+            !VS_IOT_MEMCMP(file_type->info.device_type, unknown_file_type->info.device_type, sizeof(unknown_file_type->info.device_type));
 }
 
 /*************************************************************************/

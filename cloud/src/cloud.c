@@ -212,8 +212,8 @@ typedef struct {
 } fw_resp_buff_t;
 
 /*************************************************************************/
-static void
-_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc) {
+void
+vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc) {
     desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
@@ -221,10 +221,10 @@ _ntoh_fw_descriptor(vs_firmware_descriptor_t *desc) {
 }
 
 /*************************************************************************/
-static void
-_ntoh_fw_header(vs_cloud_firmware_header_t *header) {
+void
+vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header) {
 
-    _ntoh_fw_descriptor(&header->descriptor);
+    vs_cloud_ntoh_fw_descriptor(&header->descriptor);
 
     header->code_length = VS_IOT_NTOHL(header->code_length);
     header->code_offset = VS_IOT_NTOHL(header->code_offset);
@@ -265,7 +265,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
         if (resp->used_size == sizeof(vs_cloud_firmware_header_t)) {
 
-            _ntoh_fw_header(&resp->header);
+            vs_cloud_ntoh_fw_header(&resp->header);
 
             if (!_check_firmware_header(&resp->header) ||
                 VS_CODE_OK != vs_cloud_is_new_firmware_version_available(&resp->header.descriptor)) {
@@ -365,7 +365,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             vs_firmware_descriptor_t f;
             VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
-            _ntoh_fw_descriptor(&f);
+            vs_cloud_ntoh_fw_descriptor(&f);
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
                 VS_LOG_ERROR("Invalid firmware descriptor");

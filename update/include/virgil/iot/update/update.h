@@ -65,7 +65,6 @@ typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_f
 typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
 typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
-typedef bool (*vs_update_equal_file_type_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
 typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
 typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
