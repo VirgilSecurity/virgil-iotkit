@@ -50,6 +50,7 @@ typedef struct {
     char *login;
     char *password;
     char *cert;
+    char *root_ca_cert;
     char *pk;
     char *host;
     vs_cloud_mb_topics_list_t topic_list;

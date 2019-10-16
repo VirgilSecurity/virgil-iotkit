@@ -138,7 +138,7 @@ typedef struct {
 } vs_cloud_message_bin_impl_t;
 
 vs_status_e
-vs_cloud_message_bin_process(const char *root_ca_crt);
+vs_cloud_message_bin_process(void);
 /*
  *
  * Init cloud library

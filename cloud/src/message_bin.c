@@ -51,6 +51,9 @@ _mb_mqtt_ctx_free() {
     _mb_ctx.is_filled = false;
     _mb_ctx.is_active = false;
 
+    VS_IOT_FREE(_mb_ctx.host);
+    _mb_ctx.host = NULL;
+
     VS_IOT_FREE(_mb_ctx.cert);
     _mb_ctx.cert = NULL;
 
@@ -74,13 +77,38 @@ _mb_mqtt_ctx_free() {
 
     _mb_ctx.port = 0;
 }
+// TODO: It will be removed
+#define VS_MB_MQTT_URL_FIELD "mqtt_url"
 
+#define VS_MB_MQTT_HOST_FIELD "mqtt_host"
+#define VS_MB_MQTT_PORT_FIELD "mqtt_port"
 #define VS_MB_LOGIN_FIELD "login"
 #define VS_MB_PASSWORD_FIELD "password"
 #define VS_MB_CLIENT_ID_FIELD "client_id"
 #define VS_MB_CERTIFICATE_FIELD "certificate"
+#define VS_MB_ROOT_CA_CERTIFICATE_FIELD "ca_certificate"
 #define VS_MB_PRIVATE_KEY_FIELD "private_key"
 #define VS_MB_AVAILABLE_TOPICS_FIELD "available_topics"
+
+/******************************************************************************/
+static int32_t
+_str_to_int(const char *str) {
+    int32_t res = 0;
+    int i;
+
+    for (i = 0; str[i] != '\0'; ++i) {
+        if (str[i] < '0' || str[i] > '9') {
+            return -1;
+        }
+
+        res = res * 10 + str[i] - '0';
+
+        if (res > UINT16_MAX) {
+            return -1;
+        }
+    }
+    return res;
+}
 
 /******************************************************************************/
 static vs_status_e
@@ -104,12 +132,70 @@ _get_message_bin_credentials() {
     if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(answer, &answer_size)) {
         jobj_t jobj;
         int len;
-
-        _mb_ctx.host = VS_MESSAGE_BIN_BROKER_URL; /*host*/
-        _mb_ctx.port = VS_MSG_BIN_MQTT_PORT;      /*port*/
+        int val;
+        char *tmp;
+        int decode_len;
 
         CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, answer, answer_size),
               "[MB] Unable to parse message bin credentials");
+
+        // TODO: Need to remove when changes to a service will be applied
+        /*----mqtt broker url and port----*/
+        if (VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_URL_FIELD, &len) && len > 0) {
+            int32_t port;
+            char tmp_buf[len];
+            char *ptr = &tmp_buf[len - 1];
+            uint16_t i;
+
+            len++;
+            // Temporary dirty hack with the offset by 6 because this code will be removed as soon as possible
+            uint16_t prefix_offset = 6;
+
+            json_get_val_str(&jobj, VS_MB_MQTT_URL_FIELD, tmp_buf, len);
+
+            for (i = len - 1; i > 0; ++i) {
+                if (*ptr == ':') {
+                    break;
+                }
+                --ptr;
+            }
+
+            port = _str_to_int(ptr + 1);
+
+            if (0 == i || port < 0) {
+                VS_IOT_FREE(tmp_buf);
+                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong format of [mqtt_url]");
+                goto terminate;
+            }
+
+            _mb_ctx.port = (uint16_t)port;
+
+
+            len = ptr - tmp_buf + 1 - prefix_offset;
+
+            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
+            CHECK_MEM_ALLOC(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
+
+            VS_IOT_MEMSET(_mb_ctx.host, 0, len);
+            VS_IOT_MEMCPY(_mb_ctx.host, tmp_buf + prefix_offset, len - 1);
+
+        } else {
+            // TODO: Only this code will be used
+            /*----mqtt broker host----*/
+            CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_HOST_FIELD, &len) && len > 0,
+                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt host]");
+            ++len;
+            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
+            CHECK_MEM_ALLOC(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
+
+            json_get_val_str(&jobj, VS_MB_LOGIN_FIELD, _mb_ctx.host, len);
+
+            /*----mqtt broker host----*/
+            CHECK(VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_MB_MQTT_PORT_FIELD, &val),
+                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt port]");
+            CHECK(val > 0 && val < UINT16_MAX, "[MB] cloud_get_message_bin_credentials(...) wrong format [mqtt port]");
+            _mb_ctx.port = (uint16_t)val;
+        }
 
         /*----login----*/
         CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_LOGIN_FIELD, &len) && len > 0,
@@ -141,17 +227,45 @@ _get_message_bin_credentials() {
 
         json_get_val_str(&jobj, VS_MB_CLIENT_ID_FIELD, _mb_ctx.client_id, len);
 
+        /*----ca certificate----*/
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_ROOT_CA_CERTIFICATE_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");
+
+        ++len;
+        tmp = (char *)VS_IOT_MALLOC((size_t)len);
+        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_ROOT_CA_CERTIFICATE_FIELD, tmp, len);
+
+        decode_len = base64decode_len(tmp, len);
+
+        if (0 >= decode_len) {
+            VS_IOT_FREE(tmp);
+            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong size [ca_certificate]");
+            goto terminate;
+        }
+
+        _mb_ctx.root_ca_cert = (char *)VS_IOT_MALLOC((size_t)decode_len);
+        if (NULL == _mb_ctx.root_ca_cert) {
+            VS_IOT_FREE(tmp);
+            VS_LOG_ERROR("[MB] Can't allocate memory");
+            goto terminate;
+        }
+
+        base64decode(tmp, len, (uint8_t *)_mb_ctx.root_ca_cert, &decode_len);
+        VS_IOT_FREE(tmp);
+
         /*----certificate----*/
         CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_CERTIFICATE_FIELD, &len) && len > 0,
               "[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");
 
         ++len;
-        char *tmp = (char *)VS_IOT_MALLOC((size_t)len);
+        tmp = (char *)VS_IOT_MALLOC((size_t)len);
         CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_CERTIFICATE_FIELD, tmp, len);
 
-        int decode_len = base64decode_len(tmp, len);
+        decode_len = base64decode_len(tmp, len);
 
         if (0 >= decode_len) {
             VS_IOT_FREE(tmp);
@@ -208,8 +322,8 @@ _get_message_bin_credentials() {
               "[MB] cloud_get_message_bin_credentials(...) [available_topics] is empty!");
 
         {
-            uint16_t i;
             uint16_t total_topic_names_len = 0;
+            uint16_t i;
             len = 0;
             int offset = 0;
 
@@ -341,10 +455,9 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_message_bin_process(const char *root_ca_crt) {
+vs_cloud_message_bin_process(void) {
 
     CHECK_NOT_ZERO_RET(_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(root_ca_crt, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     bool provision_is_present = _mb_ctx.is_filled || (VS_CODE_OK == _get_message_bin_credentials());
 
@@ -357,7 +470,7 @@ vs_cloud_message_bin_process(const char *root_ca_crt) {
                                           _mb_ctx.port,
                                           (const char *)_mb_ctx.cert,
                                           (const char *)_mb_ctx.pk,
-                                          (const char *)root_ca_crt) &&
+                                          (const char *)_mb_ctx.root_ca_cert) &&
                 VS_CODE_OK == _impl->connect_subscribe(_mb_ctx.client_id,
                                                        _mb_ctx.login,
                                                        _mb_ctx.password,
