@@ -54,11 +54,11 @@ endif()
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
-        -I${VIRGIL_IOT_DIRECTORY}/converters/include
-        -I${VIRGIL_IOT_DIRECTORY}/crypto/hsm/include
-        -I${VIRGIL_IOT_DIRECTORY}/status_code/include
-        -I${VIRGIL_IOT_DIRECTORY}/macros/include
-        -I${VIRGIL_IOT_DIRECTORY}/logger/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
+        -I${VIRGIL_IOT_DIRECTORY}/helpers/macros/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/logger/include
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
         )
 
@@ -67,7 +67,7 @@ set(CMAKE_CGO_CFLAGS
 #
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/converters
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
         )
 
 #
