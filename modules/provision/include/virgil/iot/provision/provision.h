@@ -41,6 +41,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 typedef struct __attribute__((__packed__)) {
+    uint8_t dummy[4];
     uint8_t major;
     uint8_t minor;
     uint8_t patch;

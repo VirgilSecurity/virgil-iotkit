@@ -270,6 +270,10 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
         DevBuild:         devBuild,
         Timestamp:        timestamp,
     }
+    // Application type
+    // TODO: Remove it after update of Service
+    appType := "0000"
+    copy(ver.ApplicationType[:], appType)
 
     return ver, nil
 }
