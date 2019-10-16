@@ -47,9 +47,7 @@
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-typedef enum {
-    VS_INFO_SERVICE_ID = HTONL_IN_COMPILE_TIME('INFO')
-} vs_info_t;
+typedef enum { VS_INFO_SERVICE_ID = HTONL_IN_COMPILE_TIME('INFO') } vs_info_t;
 
 typedef enum {
     VS_INFO_SNOT = HTONL_IN_COMPILE_TIME('SNOT'), /* Start NOTification */

@@ -40,7 +40,18 @@ add_library(vs-module-hsm)
 
 target_sources(vs-module-hsm
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c"
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm_helpers.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_508a.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_608a.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_custom.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_iotelic.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_iotelic.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c
         )
 #
 #   Set additional compiler flags

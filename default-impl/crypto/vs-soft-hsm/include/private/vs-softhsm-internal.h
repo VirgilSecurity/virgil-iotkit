@@ -52,7 +52,7 @@
         }                                                                                                              \
     } while (0)
 
-const vs_hsm_impl_t*
+const vs_hsm_impl_t *
 _softhsm_intern(void);
 
 const char *
@@ -81,4 +81,4 @@ vs_status_e
 _fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl);
 
 
-#endif //HELPERS_VS_SOFTHSM_PRIVATE_H
+#endif // HELPERS_VS_SOFTHSM_PRIVATE_H

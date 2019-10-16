@@ -48,6 +48,16 @@ add_library(vs-module-provision
         src/provision.c
         )
 
+target_sources(vs-module-provision
+        PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision-structs.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/provision.c
+        )
+
 #
 #   Set additional compiler flags
 #

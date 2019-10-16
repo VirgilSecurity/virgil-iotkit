@@ -39,7 +39,19 @@ project(vs-module-logger VERSION 0.1.0 LANGUAGES C)
 #
 #   Logger library
 #
-add_library(vs-module-logger
+add_library(vs-module-logger)
+
+target_sources(vs-module-logger
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/logger.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/utoa_fast_div.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/logger_hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/macro_va_args.h
+
+        # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/logger.c
         ${CMAKE_CURRENT_LIST_DIR}/src/utoa_fast_div.c
         )
@@ -92,3 +104,13 @@ target_include_directories(vs-module-logger
 if(COMMAND add_clangformat)
     add_clangformat(vs-module-logger)
 endif()
+
+install(TARGETS vs-module-logger
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )

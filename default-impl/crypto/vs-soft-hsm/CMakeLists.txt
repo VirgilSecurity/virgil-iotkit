@@ -43,6 +43,8 @@ target_sources(vs-default-soft-hsm
 
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/vs-softhsm.c

@@ -62,9 +62,7 @@ typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-typedef enum {
-    VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS')
-} vs_prvs_t;
+typedef enum { VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS') } vs_prvs_t;
 
 typedef enum {
     VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */

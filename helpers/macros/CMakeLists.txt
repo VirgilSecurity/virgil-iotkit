@@ -38,6 +38,11 @@ project(macros VERSION 0.1.0 LANGUAGES C)
 
 add_library(macros INTERFACE)
 
+target_sources(macros
+        INTERFACE
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/macros/macros.h
+        )
+
 target_include_directories(macros
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

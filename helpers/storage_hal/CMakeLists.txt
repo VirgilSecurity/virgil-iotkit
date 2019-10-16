@@ -38,9 +38,14 @@ project(storage_hal VERSION 0.1.0 LANGUAGES C)
 
 add_library(storage_hal INTERFACE)
 
+target_sources(storage_hal
+        INTERFACE
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/storage_hal/storage_hal.h
+        )
+
 target_include_directories(storage_hal
         INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
 
 #if(COMMAND add_clangformat)
