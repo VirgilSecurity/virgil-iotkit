@@ -73,20 +73,17 @@ typedef struct __attribute__((__packed__)) {
 void
 vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc);
 
- void
+void
 vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header);
 
 vs_status_e
-vs_cloud_parse_firmware_manifest(void *payload,
-                                 size_t payload_len,
-                                 char *fw_url);
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
 
 vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url,
-                                 vs_cloud_firmware_header_t *fetched_header);
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header);
 
 vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
@@ -103,10 +100,23 @@ typedef struct {
     size_t topic_count;
 } vs_cloud_mb_topics_list_t;
 
-typedef void (*vs_clud_mb_process_topic_cb_t)(const char *topic,
-                                              uint16_t topic_sz,
-                                              const uint8_t *p_data,
-                                              uint16_t length);
+typedef enum {
+    VS_CLOUD_MB_TOPIC_TL,
+    VS_CLOUD_MB_TOPIC_FW
+}vs_cloud_mb_topic_id_t;
+
+typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
+                                               uint16_t topic_sz,
+                                               const uint8_t *p_data,
+                                               uint16_t length);
+
+typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
+                                                      uint16_t length);
+vs_status_e
+vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler);
+
+vs_status_e
+vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb_t handler);
 
 typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
                                                uint16_t port,
@@ -118,7 +128,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
                                                             const char *login,
                                                             const char *password,
                                                             const vs_cloud_mb_topics_list_t *topic_list,
-                                                            vs_clud_mb_process_topic_cb_t process_topic);
+                                                            vs_cloud_mb_process_custom_topic_cb_t process_topic);
 typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
 typedef struct {
@@ -128,12 +138,15 @@ typedef struct {
 } vs_cloud_message_bin_impl_t;
 
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
-        const vs_cloud_message_bin_impl_t *message_bin_impl,
-        vs_hsm_impl_t *hsm);
-
+vs_cloud_message_bin_process(const char *root_ca_crt);
+/*
+ *
+ * Init cloud library
+ *
+ */
 vs_status_e
-vs_cloud_message_bin_process(vs_clud_mb_process_topic_cb_t process_topic,
-                             const char *root_ca_crt);
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
+              const vs_cloud_message_bin_impl_t *message_bin_impl,
+              vs_hsm_impl_t *hsm);
 
 #endif // VS_CLOUD_H

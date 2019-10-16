@@ -181,11 +181,14 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
     return vs_cloud_message_bin_init(message_bin_impl);
 }
 
+// TODO: Will be used for alexa
+#if 0
 /******************************************************************************/
 vs_status_e
 vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
     return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
 }
+#endif
 
 /******************************************************************************/
 vs_status_e

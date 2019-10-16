@@ -242,6 +242,8 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFAC
 vs_status_e
 vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc) {
 
+    size_t cmp_sz = (sizeof(vs_file_version_t) + sizeof(new_desc->info.version.timestamp));
+
     CHECK_NOT_ZERO_RET(new_desc, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Compare the own firmware image version
@@ -254,7 +256,7 @@ vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc) {
 
     if (!_is_member_for_vendor_and_model_present(
                 new_desc->info.manufacture_id, new_desc->info.device_type, &current_ver) ||
-        0 <= VS_IOT_MEMCMP(&current_ver, &new_desc->info.version, sizeof(vs_file_version_t))) {
+        0 <= VS_IOT_MEMCMP(&current_ver, &new_desc->info.version, cmp_sz)) { //-V512 (PVS_IGNORE)
 
         return VS_CODE_ERR_NOT_FOUND;
     }
@@ -284,6 +286,7 @@ vs_status_e
 vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url) {
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
+    int url_len;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -292,6 +295,12 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[FW] Error. Invalid JSON");
+        return VS_CODE_ERR_JSON;
+    }
+
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
+        VS_LOG_ERROR("[FW] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
 
@@ -337,6 +346,7 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
 vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
+    int url_len;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(tl_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -347,6 +357,12 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[TL] Error. Invalid JSON");
+        return VS_CODE_ERR_JSON;
+    }
+
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
+        VS_LOG_ERROR("[TL] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
 
