@@ -139,7 +139,7 @@ endfunction()
 #
 #   SDMP For factory purposes
 #
-add_sdmp("vs-module-sdmp-factory" 0 "PRVS_CLIENT=1")
+add_sdmp("vs-module-sdmp-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
 
 #
 #   SDMP Devices initializer

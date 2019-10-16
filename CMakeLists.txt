@@ -158,84 +158,20 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
-#   Shared macros interface
+#   Helpers
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/macros)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/helpers)
 
 #
-#   Status codes
+#   Modules
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/status_code)
-
-#
-#   Data storage hal interface
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/storage_hal)
-
-#
-#   jsmn
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ext/jsmn)
-
-
-#
-#   vs-json
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)
-
-#
-#   firmware
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/firmware)
-
-#
-#   update
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/update)
-
-#
-#   Logger
-#
-# TODO: Add Option to disable Logger
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/logger)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
 
 #
 #   Cloud
 #
 if (VIRGIL_IOT_CLOUD)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud)
-endif()
-
-#
-#   Converters
-#
-if(NOT VIRGIL_IOT_MCU_BUILD)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/converters)
-endif()
-
-#
-#   Crypto
-#
-
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
-
-#
-#   Provision
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/provision)
-
-#
-#   Protocols
-#
-if (VIRGIL_IOT_PROTOCOLS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/protocols)
-endif()
-
-#
-#   Secbox
-#
-if (VIRGIL_IOT_SECBOX)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secbox)
 endif()
 
 #

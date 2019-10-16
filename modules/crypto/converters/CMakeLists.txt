@@ -89,8 +89,6 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(converters
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
 
@@ -103,6 +101,7 @@ target_link_libraries (converters
         PRIVATE
         mbedtls::mbedcrypto
         mbedtls::ed25519
+        vs-module-hsm
         virgil-iot-status-code
         )
 

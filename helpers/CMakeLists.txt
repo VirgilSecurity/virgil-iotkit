@@ -34,51 +34,32 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-sdmpd VERSION 0.1.0 LANGUAGES Go C)
+#
+#   Status codes
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/status_code)
 
 #
-#   Check required CMake variables
+#   Shared macros
 #
-if(NOT VIRGIL_IOT_DIRECTORY)
-    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
-endif()
-
-if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
-endif()
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/macros)
 
 #
-#   CFLAGS for CGO
+#   Data storage hal interface
 #
-set(CMAKE_CGO_CFLAGS
-        ${CMAKE_CGO_CFLAGS}
-        -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/provision/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/firmware/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/provision/trust_list/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/storage_hal/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/update/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/macros/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/logger/include
-        -I${VIRGIL_IOT_DIRECTORY}/config/pc
-        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
-        -DINFO_CLIENT=1
-        )
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/storage_hal)
 
 #
-#   LDFLAGS for CGO
+#   update
 #
-set(CMAKE_CGO_LDFLAGS
-        ${CMAKE_CGO_LDFLAGS}
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
-        )
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/update)
 
 #
-#   Virgil IoT Initializer
+#   jsmn
 #
-add_go_executable(virgil-sdmpd tools-hal vs-module-logger)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../ext/jsmn "jsmn")
+
+#
+#   vs-json
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)

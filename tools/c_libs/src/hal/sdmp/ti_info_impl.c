@@ -38,7 +38,6 @@
 #include <virgil/iot/tools/helpers/ti_wait_functionality.h>
 
 /******************************************************************************/
-#if 0
 vs_sdmp_info_impl_t
 vs_info_impl() {
     vs_sdmp_info_impl_t res;
@@ -50,5 +49,4 @@ vs_info_impl() {
 
     return res;
 }
-#endif
 /******************************************************************************/

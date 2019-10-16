@@ -35,6 +35,35 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
-#   HSM module
+#   Logger module
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/hsm)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/logger)
+
+#
+#   Provision
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/provision)
+
+#
+#   firmware
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/firmware)
+
+#
+#   Protocols
+#
+if (VIRGIL_IOT_PROTOCOLS)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/protocols)
+endif()
+
+#
+#   Crypto
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
+
+#
+#   SecurityBox
+#
+if (VIRGIL_IOT_SECBOX)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secbox)
+endif()
