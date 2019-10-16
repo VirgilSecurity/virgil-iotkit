@@ -148,7 +148,7 @@ static bool
 _test_tl_header_save_pass() {
 
     STATUS_CHECK_RET_BOOL(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)test_header, test_header_sz),
-                     "Error write tl header");
+                          "Error write tl header");
     return true;
 }
 
@@ -196,8 +196,7 @@ _tl_keys_save_wrong_order() {
 
     if (pub_keys_count > 2) {
         for (i = 0; i < pub_keys_count - 2; ++i) {
-            BOOL_CHECK_RET(VS_CODE_OK ==
-                                   _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+            BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                            "Error write tl key %u",
                            i);
         }
