@@ -75,6 +75,13 @@ _mb_mqtt_ctx_free() {
     _mb_ctx.port = 0;
 }
 
+#define VS_MB_LOGIN_FIELD "login"
+#define VS_MB_PASSWORD_FIELD "password"
+#define VS_MB_CLIENT_ID_FIELD "client_id"
+#define VS_MB_CERTIFICATE_FIELD "certificate"
+#define VS_MB_PRIVATE_KEY_FIELD "private_key"
+#define VS_MB_AVAILABLE_TOPICS_FIELD "available_topics"
+
 /******************************************************************************/
 static vs_status_e
 _get_message_bin_credentials() {
@@ -101,123 +108,127 @@ _get_message_bin_credentials() {
         _mb_ctx.host = VS_MESSAGE_BIN_BROKER_URL; /*host*/
         _mb_ctx.port = VS_MSG_BIN_MQTT_PORT;      /*port*/
 
-        if (json_parse_start(&jobj, answer, answer_size) != VS_JSON_ERR_OK) {
-            goto clean;
-        }
+        CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, answer, answer_size),
+              "[MB] Unable to parse message bin credentials");
 
         /*----login----*/
-        if (json_get_val_str_len(&jobj, "login", &len) != VS_JSON_ERR_OK || len < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [login]!!!\r\n");
-            goto clean;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_LOGIN_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [login]");
+
         ++len;
         _mb_ctx.login = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "login", _mb_ctx.login, len);
+        CHECK_MEM_ALLOC(NULL != _mb_ctx.login, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_LOGIN_FIELD, _mb_ctx.login, len);
 
         /*----password----*/
-        if (json_get_val_str_len(&jobj, "password", &len) != VS_JSON_ERR_OK || len < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [password]");
-            goto clean;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_PASSWORD_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [password]");
+
         ++len;
         _mb_ctx.password = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "password", _mb_ctx.password, len);
+        CHECK_MEM_ALLOC(NULL != _mb_ctx.password, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_PASSWORD_FIELD, _mb_ctx.password, len);
 
         /*----client_id----*/
-        if (json_get_val_str_len(&jobj, "client_id", &len) != VS_JSON_ERR_OK || len < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [client_id]");
-            goto clean;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_CLIENT_ID_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [client_id]");
+
         ++len;
         _mb_ctx.client_id = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "client_id", _mb_ctx.client_id, len);
+        CHECK_MEM_ALLOC(NULL != _mb_ctx.client_id, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_CLIENT_ID_FIELD, _mb_ctx.client_id, len);
 
         /*----certificate----*/
-        if (json_get_val_str_len(&jobj, "certificate", &len) != VS_JSON_ERR_OK || len < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");
-            goto clean;
-        }
-        ++len;
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_CERTIFICATE_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [certificate]");
 
+        ++len;
         char *tmp = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "certificate", tmp, len);
+        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_CERTIFICATE_FIELD, tmp, len);
 
         int decode_len = base64decode_len(tmp, len);
 
         if (0 >= decode_len) {
             VS_IOT_FREE(tmp);
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong size [certificate]");
-            goto clean;
+            goto terminate;
         }
 
         _mb_ctx.cert = (char *)VS_IOT_MALLOC((size_t)decode_len);
+        if (NULL == _mb_ctx.cert) {
+            VS_IOT_FREE(tmp);
+            VS_LOG_ERROR("[MB] Can't allocate memory");
+            goto terminate;
+        }
 
         base64decode(tmp, len, (uint8_t *)_mb_ctx.cert, &decode_len);
         VS_IOT_FREE(tmp);
 
         /*----private_key----*/
-        if (json_get_val_str_len(&jobj, "private_key", &len) != VS_JSON_ERR_OK || len < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [private_key]");
-            goto clean;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_PRIVATE_KEY_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [private_key]");
+
         ++len;
         tmp = (char *)VS_IOT_MALLOC((size_t)len);
-        json_get_val_str(&jobj, "private_key", tmp, len);
+        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+
+        json_get_val_str(&jobj, VS_MB_PRIVATE_KEY_FIELD, tmp, len);
 
         decode_len = base64decode_len(tmp, len);
 
         if (0 >= decode_len) {
             VS_IOT_FREE(tmp);
             VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong size [certificate]");
-            goto clean;
+            goto terminate;
         }
 
         _mb_ctx.pk = (char *)VS_IOT_MALLOC((size_t)decode_len);
+        if (NULL == _mb_ctx.pk) {
+            VS_IOT_FREE(tmp);
+            VS_LOG_ERROR("[MB] Can't allocate memory");
+            goto terminate;
+        }
 
         base64decode(tmp, len, (uint8_t *)_mb_ctx.pk, &decode_len);
         VS_IOT_FREE(tmp);
 
         /*----available_topics----*/
         int topic_count;
-        if (json_get_array_object(&jobj, "available_topics", &topic_count) != VS_JSON_ERR_OK || topic_count < 0) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) answer not contain [available_topics]");
-            goto clean;
-        }
-        _mb_ctx.topic_list.topic_count = (size_t)topic_count;
+        CHECK(VS_JSON_ERR_OK == json_get_array_object(&jobj, VS_MB_AVAILABLE_TOPICS_FIELD, &topic_count) &&
+                      topic_count > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [available_topics]");
 
-        if (0 == _mb_ctx.topic_list.topic_count) {
-            VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [available_topics] is empty!");
-            goto clean;
-        } else {
-            uint16_t i, total_topic_names_len = 0;
+        _mb_ctx.topic_list.topic_count = (size_t)topic_count;
+        CHECK(_mb_ctx.topic_list.topic_count != 0,
+              "[MB] cloud_get_message_bin_credentials(...) [available_topics] is empty!");
+
+        {
+            uint16_t i;
+            uint16_t total_topic_names_len = 0;
             len = 0;
+            int offset = 0;
 
             _mb_ctx.topic_list.topic_len_list =
                     (uint16_t *)VS_IOT_MALLOC(_mb_ctx.topic_list.topic_count * sizeof(uint16_t));
-            if (!_mb_ctx.topic_list.topic_len_list) {
-                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_len_list] allocation error");
-                goto clean;
-            }
+            CHECK_MEM_ALLOC(NULL != _mb_ctx.topic_list.topic_len_list, "[MB] Can't allocate memory");
 
             for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
                 json_array_get_str_len(&jobj, i, &len);
 
-                if (len + 1 > UINT16_MAX) {
-                    VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [available_topics] name len is too big");
-                    goto clean;
-                }
+                CHECK(len + 1 <= UINT16_MAX,
+                      "[MB] cloud_get_message_bin_credentials(...) [available_topics] name len is too big");
 
                 _mb_ctx.topic_list.topic_len_list[i] = (uint16_t)(len + 1);
                 total_topic_names_len += _mb_ctx.topic_list.topic_len_list[i];
             }
 
             _mb_ctx.topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
-            if (!_mb_ctx.topic_list.topic_list) {
-                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) [topic_list] allocation error");
-                goto clean;
-            }
-
-            int offset = 0;
+            CHECK_MEM_ALLOC(NULL != _mb_ctx.topic_list.topic_list, "[MB] Can't allocate memory");
 
             for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
                 json_array_get_str(&jobj, i, _mb_ctx.topic_list.topic_list + offset, total_topic_names_len - offset);
@@ -235,7 +246,7 @@ _get_message_bin_credentials() {
         return VS_CODE_OK;
     }
 
-clean:
+terminate:
     _mb_mqtt_ctx_free();
     VS_IOT_FREE(answer);
     return VS_CODE_ERR_CLOUD;
