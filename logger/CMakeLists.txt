@@ -104,3 +104,13 @@ target_include_directories(logger
 if(COMMAND add_clangformat)
     add_clangformat(logger)
 endif()
+
+install(TARGETS logger
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
