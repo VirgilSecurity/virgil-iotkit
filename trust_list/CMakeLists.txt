@@ -85,10 +85,9 @@ target_compile_definitions(trust_list
 
 target_link_libraries(trust_list
         PUBLIC
-        logger
-        hsm
+        vs-module-hsm
         macros
-        provision
+        vs-module-provision
         storage_hal
         update
         )

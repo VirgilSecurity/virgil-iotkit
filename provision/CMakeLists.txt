@@ -34,12 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(provision VERSION 0.1.0 LANGUAGES C)
+project(vs-module-provision VERSION 0.1.0 LANGUAGES C)
 
 #
 #   Provision library
 #
-add_library(provision
+add_library(vs-module-provision
         src/provision.c
         )
 
@@ -53,7 +53,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(provision
+target_compile_options(vs-module-provision
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -64,14 +64,14 @@ target_compile_options(provision
 #   Config path
 #
 
-target_compile_definitions(provision
+target_compile_definitions(vs-module-provision
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
 #
 #   Common include directories
 #
-target_include_directories(provision
+target_include_directories(vs-module-provision
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
@@ -84,9 +84,9 @@ target_include_directories(provision
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>
         )
 
-target_link_libraries(provision
+target_link_libraries(vs-module-provision
         PUBLIC
-        hsm
+        vs-module-hsm
         storage_hal
         trust_list
         PRIVATE
@@ -94,5 +94,5 @@ target_link_libraries(provision
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(provision)
+    add_clangformat(vs-module-provision)
 endif()

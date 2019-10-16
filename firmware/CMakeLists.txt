@@ -34,31 +34,31 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(firmware VERSION 0.1.0 LANGUAGES C)
+project(vs-module-firmware VERSION 0.1.0 LANGUAGES C)
 
-add_library(firmware include/private/firmware-private.h)
+add_library(vs-module-firmware)
 
-target_sources(firmware
+target_sources(vs-module-firmware
         PRIVATE
 
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/firmware/firmware_hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/firmware-private.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/firmware.c
         ${CMAKE_CURRENT_LIST_DIR}/src/update_fw_interface.c
         )
 
-target_link_libraries(firmware
+target_link_libraries(vs-module-firmware
         PUBLIC
         macros
-        update
-        provision
+        vs-module-provision
         virgil-iot-status-code
         )
 
-target_include_directories(firmware
+target_include_directories(vs-module-firmware
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
@@ -67,5 +67,5 @@ target_include_directories(firmware
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(firmware)
+    add_clangformat(vs-module-firmware)
 endif()

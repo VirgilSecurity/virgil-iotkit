@@ -34,14 +34,14 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(secbox VERSION 0.1.0 LANGUAGES C)
+project(vs-module-secbox VERSION 0.1.0 LANGUAGES C)
 
 #
 #   SecBox library
 #
-add_library(secbox)
+add_library(vs-module-secbox)
 
-target_sources(secbox
+target_sources(vs-module-secbox
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src/secbox.c
         )
@@ -49,19 +49,19 @@ target_sources(secbox
 #
 #   -Wall -Werror
 #
-set_target_properties(secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+set_target_properties(vs-module-secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
-target_link_libraries(secbox
+target_link_libraries(vs-module-secbox
         PUBLIC
-        hsm
-        provision
+        vs-module-hsm
+        vs-module-provision
         macros
         storage_hal
         )
 #
 #   Common include directories
 #
-target_include_directories(secbox
+target_include_directories(vs-module-secbox
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
@@ -71,5 +71,5 @@ target_include_directories(secbox
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(secbox)
+    add_clangformat(vs-module-secbox)
 endif()

@@ -45,7 +45,7 @@ target_include_directories(macros
 
 target_link_libraries(macros
         INTERFACE
-        logger
+        vs-module-logger
         )
 
 #if(COMMAND add_clangformat)

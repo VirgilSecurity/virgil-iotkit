@@ -77,11 +77,9 @@ if (NOT VIRGIL_IOT_MCU_BUILD)
 endif()
 
 target_link_libraries(virgil-iot-sdk-tests
-        secbox
-        sdmp
-        provision
-        update
-        firmware
+        vs-module-secbox
+        vs-module-sdmp
+        vs-module-firmware
         )
 
 #

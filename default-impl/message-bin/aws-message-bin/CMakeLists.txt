@@ -51,7 +51,7 @@ target_sources(vs-default-aws-message-bin
 target_link_libraries(vs-default-aws-message-bin
         PUBLIC
         aws-sdk
-        cloud
+        vs-module-cloud
         )
 
 #

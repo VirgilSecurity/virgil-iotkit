@@ -34,12 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(logger VERSION 0.1.0 LANGUAGES C)
+project(vs-module-logger VERSION 0.1.0 LANGUAGES C)
 
 #
 #   Logger library
 #
-add_library(logger
+add_library(vs-module-logger
         ${CMAKE_CURRENT_LIST_DIR}/src/logger.c
         ${CMAKE_CURRENT_LIST_DIR}/src/utoa_fast_div.c
         )
@@ -54,7 +54,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(logger
+target_compile_options(vs-module-logger
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -66,19 +66,19 @@ target_compile_options(logger
 #
 
 if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[logger] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+    message(FATAL_ERROR "[vs-module-logger] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
 else()
-    message(STATUS "[logger] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+    message(STATUS "[vs-module-logger] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-target_compile_definitions(logger
+target_compile_definitions(vs-module-logger
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
     )
 
 #
 #   Common include directories
 #
-target_include_directories(logger
+target_include_directories(vs-module-logger
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
@@ -90,5 +90,5 @@ target_include_directories(logger
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(logger)
+    add_clangformat(vs-module-logger)
 endif()

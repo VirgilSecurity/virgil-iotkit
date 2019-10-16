@@ -52,7 +52,7 @@ target_sources(vs-default-curl-http
 
 target_link_libraries(vs-default-curl-http
         PUBLIC
-        cloud
+        vs-module-cloud
         curl
         )
 

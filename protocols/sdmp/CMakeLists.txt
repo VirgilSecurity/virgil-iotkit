@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(sdmp VERSION 0.1.0 LANGUAGES C)
+project(vs-module-sdmp VERSION 0.1.0 LANGUAGES C)
 
 function(add_sdmp _targetname _firmware_update _definitions)
 
@@ -123,10 +123,8 @@ function(add_sdmp _targetname _firmware_update _definitions)
     target_link_libraries(${_targetname}
             PUBLIC
             virgil-iot-status-code
-            logger
-            provision
-            $<$<BOOL:${_firmware_update}>:update>
-            $<$<BOOL:${_firmware_update}>:firmware>
+            vs-module-provision
+            $<$<BOOL:${_firmware_update}>:vs-module-firmware>
 
             PRIVATE
             macros
@@ -145,19 +143,19 @@ endfunction()
 #
 #   SDMP For factory purposes
 #
-add_sdmp("sdmp-factory" 0 "PRVS_CLIENT=1")
+add_sdmp("vs-module-sdmp-factory" 0 "PRVS_CLIENT=1")
 
 #
 #   SDMP Devices initializer
 #
-add_sdmp("sdmp-initializer" 0 "PRVS_SERVER=1")
+add_sdmp("vs-module-sdmp-initializer" 0 "PRVS_SERVER=1")
 
 #
 #   SDMP For Thing
 #
-add_sdmp("sdmp-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
+add_sdmp("vs-module-sdmp-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
 
 #
 #   SDMP For Gateway
 #
-add_sdmp("sdmp-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+add_sdmp("vs-module-sdmp-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")

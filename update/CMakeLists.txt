@@ -49,7 +49,7 @@ target_sources(update
 
 target_link_libraries(update
         PUBLIC
-        provision
+        vs-module-provision
         )
 
 target_include_directories(update

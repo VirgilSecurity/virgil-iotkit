@@ -79,4 +79,4 @@ set(CMAKE_CGO_LDFLAGS
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(virgil-sdmpd tools-hal logger)
+add_go_executable(virgil-sdmpd tools-hal vs-module-logger)

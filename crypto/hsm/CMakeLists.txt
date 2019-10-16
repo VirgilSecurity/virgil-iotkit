@@ -34,11 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(hsm VERSION 0.1.0 LANGUAGES C)
+project(vs-module-hsm VERSION 0.1.0 LANGUAGES C)
 
-add_library(hsm)
+add_library(vs-module-hsm)
 
-target_sources(hsm
+target_sources(vs-module-hsm
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c"
         )
@@ -52,7 +52,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(hsm
+target_compile_options(vs-module-hsm
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -60,25 +60,24 @@ target_compile_options(hsm
 #
 
 if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[hsm] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+    message(FATAL_ERROR "[vs-module-hsm] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
 else()
-    message(STATUS "[hsm] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+    message(STATUS "[vs-module-hsm] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-target_compile_definitions(hsm
+target_compile_definitions(vs-module-hsm
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
-target_link_libraries(hsm
+target_link_libraries(vs-module-hsm
         PUBLIC
-        logger
         macros
         virgil-iot-status-code
         )
 #
 #   Common include directories
 #
-target_include_directories(hsm
+target_include_directories(vs-module-hsm
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
@@ -90,6 +89,6 @@ target_include_directories(hsm
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(hsm)
+    add_clangformat(vs-module-hsm)
 endif()
 

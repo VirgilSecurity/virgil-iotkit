@@ -34,11 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(cloud VERSION 0.1.0 LANGUAGES C)
+project(vs-module-cloud VERSION 0.1.0 LANGUAGES C)
 
-add_library(cloud)
+add_library(vs-module-cloud)
 
-target_sources(cloud
+target_sources(vs-module-cloud
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c
         ${CMAKE_CURRENT_LIST_DIR}/src/cloud.c
@@ -46,14 +46,14 @@ target_sources(cloud
         ${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c
         )
 
-target_link_libraries(cloud
+target_link_libraries(vs-module-cloud
         PUBLIC
         vs-json
-        firmware
+        vs-module-firmware
         storage_hal
         )
 
-target_include_directories(cloud
+target_include_directories(vs-module-cloud
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
@@ -62,5 +62,5 @@ target_include_directories(cloud
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(cloud)
+    add_clangformat(vs-module-cloud)
 endif()
