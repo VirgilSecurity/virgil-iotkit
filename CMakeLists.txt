@@ -144,17 +144,12 @@ set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
 set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
 
-# ---------------------------------------------------------------------------
+#
 #   Tools
-# ---------------------------------------------------------------------------
-
+#
 if (NOT GO_DISABLE)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tools)
 endif()
-
-# ---------------------------------------------------------------------------
-#   Features
-# ---------------------------------------------------------------------------
 
 #
 #   Helpers
@@ -165,13 +160,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/helpers)
 #   Modules
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
-
-#
-#   Cloud
-#
-if (VIRGIL_IOT_CLOUD)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud)
-endif()
 
 #
 #   Default implementations

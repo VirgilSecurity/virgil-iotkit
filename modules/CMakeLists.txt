@@ -67,3 +67,10 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 if (VIRGIL_IOT_SECBOX)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secbox)
 endif()
+
+#
+#   Cloud
+#
+if (VIRGIL_IOT_CLOUD)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud)
+endif()
