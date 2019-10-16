@@ -272,11 +272,13 @@ class TrustList:
                 start_date = int(key_data["start_date"])
                 expiration_date = int(key_data["expiration_date"])
                 ec_type = int(key_data["ec_type"])
+                meta_data = key_data["meta_data"]
                 key = PubKeyStructure(
                     start_date=start_date,
                     expiration_date=expiration_date,
                     key_type=consts.key_type_str_to_num_map[key_type_str],
                     ec_type=consts.VsEcTypeE(ec_type),
+                    meta_data=bytearray(meta_data, 'utf-8'),
                     pub_key=b64_to_bytes(key_data["key"])
                 )
                 keys.append(key)
