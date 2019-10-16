@@ -84,159 +84,138 @@ typedef struct {
     unsigned char buffer[64]; /*!< The data block being processed. */
 } vs_hsm_sw_sha256_ctx;
 
-typedef vs_status_e
-(*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz);
 
-typedef vs_status_e
-(*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
+typedef vs_status_e (*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
 
-typedef vs_status_e
-(*vs_hsm_slot_delete_t)(vs_iot_hsm_slot_e slot);
+typedef vs_status_e (*vs_hsm_slot_delete_t)(vs_iot_hsm_slot_e slot);
 
-typedef vs_status_e
-(*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
-                        const uint8_t *data,
-                        uint16_t data_sz,
-                        uint8_t *hash,
-                        uint16_t hash_buf_sz,
-                        uint16_t *hash_sz);
+typedef vs_status_e (*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
+                                            const uint8_t *data,
+                                            uint16_t data_sz,
+                                            uint8_t *hash,
+                                            uint16_t hash_buf_sz,
+                                            uint16_t *hash_sz);
 
-typedef vs_status_e
-(*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
+typedef vs_status_e (*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
 
-typedef vs_status_e
-(*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
-                               uint8_t *buf,
-                               uint16_t buf_sz,
-                               uint16_t *key_sz,
-                               vs_hsm_keypair_type_e *keypair_type);
+typedef vs_status_e (*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
+                                                   uint8_t *buf,
+                                                   uint16_t buf_sz,
+                                                   uint16_t *key_sz,
+                                                   vs_hsm_keypair_type_e *keypair_type);
 
-typedef vs_status_e
-(*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
-                       vs_hsm_hash_type_e hash_type,
-                       const uint8_t *hash,
-                       uint8_t *signature,
-                       uint16_t signature_buf_sz,
-                       uint16_t *signature_sz);
+typedef vs_status_e (*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
+                                           vs_hsm_hash_type_e hash_type,
+                                           const uint8_t *hash,
+                                           uint8_t *signature,
+                                           uint16_t signature_buf_sz,
+                                           uint16_t *signature_sz);
 
-typedef vs_status_e
-(*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
-                         const uint8_t *public_key,
-                         uint16_t public_key_sz,
-                         vs_hsm_hash_type_e hash_type,
-                         const uint8_t *hash,
-                         const uint8_t *signature,
-                         uint16_t signature_sz);
+typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
+                                             const uint8_t *public_key,
+                                             uint16_t public_key_sz,
+                                             vs_hsm_hash_type_e hash_type,
+                                             const uint8_t *hash,
+                                             const uint8_t *signature,
+                                             uint16_t signature_sz);
 
-typedef vs_status_e
-(*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
-                 const uint8_t *key,
-                 uint16_t key_sz,
-                 const uint8_t *input,
-                 uint16_t input_sz,
-                 uint8_t *output,
-                 uint16_t output_buf_sz,
-                 uint16_t *output_sz);
+typedef vs_status_e (*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
+                                     const uint8_t *key,
+                                     uint16_t key_sz,
+                                     const uint8_t *input,
+                                     uint16_t input_sz,
+                                     uint8_t *output,
+                                     uint16_t output_buf_sz,
+                                     uint16_t *output_sz);
 
-typedef vs_status_e
-(*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
-                vs_hsm_hash_type_e hash_type,
-                const uint8_t *input,
-                uint16_t input_sz,
-                uint8_t *output,
-                uint16_t output_sz);
+typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
+                                    vs_hsm_hash_type_e hash_type,
+                                    const uint8_t *input,
+                                    uint16_t input_sz,
+                                    uint8_t *output,
+                                    uint16_t output_sz);
 
-typedef vs_status_e
-(*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
-                 const uint8_t *input,
-                 uint16_t input_sz,
-                 const uint8_t *salt,
-                 uint16_t salt_sz,
-                 const uint8_t *info,
-                 uint16_t info_sz,
-                 uint8_t *output,
-                 uint16_t output_sz);
+typedef vs_status_e (*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
+                                     const uint8_t *input,
+                                     uint16_t input_sz,
+                                     const uint8_t *salt,
+                                     uint16_t salt_sz,
+                                     const uint8_t *info,
+                                     uint16_t info_sz,
+                                     uint8_t *output,
+                                     uint16_t output_sz);
 
-typedef vs_status_e
-(*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
+typedef vs_status_e (*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
 
-typedef vs_status_e
-(*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
-                        const uint8_t *key,
-                        uint16_t key_bitlen,
-                        const uint8_t *iv,
-                        uint16_t iv_len,
-                        const uint8_t *add,
-                        uint16_t add_len,
-                        uint16_t buf_len,
-                        const uint8_t *input,
-                        uint8_t *output,
-                        uint8_t *tag,
-                        uint16_t tag_len);
+typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
+                                            const uint8_t *key,
+                                            uint16_t key_bitlen,
+                                            const uint8_t *iv,
+                                            uint16_t iv_len,
+                                            const uint8_t *add,
+                                            uint16_t add_len,
+                                            uint16_t buf_len,
+                                            const uint8_t *input,
+                                            uint8_t *output,
+                                            uint8_t *tag,
+                                            uint16_t tag_len);
 
-typedef vs_status_e
-(*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
-                        const uint8_t *key,
-                        uint16_t key_bitlen,
-                        const uint8_t *iv,
-                        uint16_t iv_len,
-                        const uint8_t *add,
-                        uint16_t add_len,
-                        uint16_t buf_len,
-                        const uint8_t *input,
-                        uint8_t *output,
-                        uint8_t *tag,
-                        uint16_t tag_len);
+typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
+                                            const uint8_t *key,
+                                            uint16_t key_bitlen,
+                                            const uint8_t *iv,
+                                            uint16_t iv_len,
+                                            const uint8_t *add,
+                                            uint16_t add_len,
+                                            uint16_t buf_len,
+                                            const uint8_t *input,
+                                            uint8_t *output,
+                                            uint8_t *tag,
+                                            uint16_t tag_len);
 
-typedef vs_status_e
-(*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
-                             const uint8_t *key,
-                             uint16_t key_bitlen,
-                             const uint8_t *iv,
-                             uint16_t iv_len,
-                             const uint8_t *add,
-                             uint16_t add_len,
-                             uint16_t buf_len,
-                             const uint8_t *input,
-                             uint8_t *output,
-                             const uint8_t *tag,
-                             uint16_t tag_len);
+typedef vs_status_e (*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
+                                                 const uint8_t *key,
+                                                 uint16_t key_bitlen,
+                                                 const uint8_t *iv,
+                                                 uint16_t iv_len,
+                                                 const uint8_t *add,
+                                                 uint16_t add_len,
+                                                 uint16_t buf_len,
+                                                 const uint8_t *input,
+                                                 uint8_t *output,
+                                                 const uint8_t *tag,
+                                                 uint16_t tag_len);
 
-typedef vs_status_e
-(*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
-                 vs_hsm_keypair_type_e keypair_type,
-                 const uint8_t *public_key,
-                 uint16_t public_key_sz,
-                 uint8_t *shared_secret,
-                 uint16_t buf_sz,
-                 uint16_t *shared_secret_sz);
+typedef vs_status_e (*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
+                                     vs_hsm_keypair_type_e keypair_type,
+                                     const uint8_t *public_key,
+                                     uint16_t public_key_sz,
+                                     uint8_t *shared_secret,
+                                     uint16_t buf_sz,
+                                     uint16_t *shared_secret_sz);
 
-typedef void
-(*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
+typedef void (*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
 
-typedef vs_status_e
-(*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
+typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
 
-typedef vs_status_e
-(*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
+typedef vs_status_e (*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
 
-typedef vs_status_e
-(*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                    size_t recipient_id_sz,
-                                    uint8_t *cryptogram,
-                                    size_t cryptogram_sz,
-                                    uint8_t *decrypted_data,
-                                    size_t buf_sz,
-                                    size_t *decrypted_data_sz);
+typedef vs_status_e (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,
+                                                             size_t recipient_id_sz,
+                                                             uint8_t *cryptogram,
+                                                             size_t cryptogram_sz,
+                                                             uint8_t *decrypted_data,
+                                                             size_t buf_sz,
+                                                             size_t *decrypted_data_sz);
 
-typedef vs_status_e
-(*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                    size_t recipient_id_sz,
-                                    uint8_t *data,
-                                    size_t data_sz,
-                                    uint8_t *cryptogram,
-                                    size_t buf_sz,
-                                    size_t *cryptogram_sz);
+typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *recipient_id,
+                                                             size_t recipient_id_sz,
+                                                             uint8_t *data,
+                                                             size_t data_sz,
+                                                             uint8_t *cryptogram,
+                                                             size_t buf_sz,
+                                                             size_t *cryptogram_sz);
 
 typedef struct {
     // Slot operations

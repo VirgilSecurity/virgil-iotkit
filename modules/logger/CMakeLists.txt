@@ -41,7 +41,7 @@ project(vs-module-logger VERSION 0.1.0 LANGUAGES C)
 #
 add_library(vs-module-logger)
 
-target_sources(logger
+target_sources(vs-module-logger
         PRIVATE
 
         # Headers
@@ -105,7 +105,7 @@ if(COMMAND add_clangformat)
     add_clangformat(vs-module-logger)
 endif()
 
-install(TARGETS logger
+install(TARGETS vs-module-logger
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

@@ -21,10 +21,7 @@ ssize_t
 vs_secbox_file_size(vs_storage_element_id_t id);
 
 vs_status_e
-vs_secbox_save(vs_secbox_type_t type,
-               vs_storage_element_id_t id,
-               const uint8_t *data,
-               size_t data_sz);
+vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t *data, size_t data_sz);
 
 vs_status_e
 vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
