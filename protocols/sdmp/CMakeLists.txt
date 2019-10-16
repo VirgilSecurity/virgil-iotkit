@@ -95,10 +95,6 @@ function(add_sdmp _targetname _firmware_update _definitions)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
             PRIVATE
-            # TODO: FIX PVS
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../trust_list/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../hsm/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../../inc>
             $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
             )
 

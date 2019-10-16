@@ -37,6 +37,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(vs-module-provision VERSION 0.1.0 LANGUAGES C)
 
 #
+#   Add TrustList library
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
+
+#
 #   Provision library
 #
 add_library(vs-module-provision

@@ -207,12 +207,6 @@ if (VIRGIL_IOT_CLOUD)
 endif()
 
 #
-#   Trust list
-#
-# TODO: Add Option to disable trust_list
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
-
-#
 #   Converters
 #
 if(NOT VIRGIL_IOT_MCU_BUILD)
@@ -228,7 +222,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 #
 #   Provision
 #
-# TODO: Add Option to disable hsm
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/provision)
 
 #
