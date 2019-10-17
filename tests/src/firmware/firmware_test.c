@@ -52,16 +52,16 @@
 //#define VS_TEST_FIRMWARE_DATA "test firmware data for verifying update library"
 //#define VS_TEST_FILL_SIZE 256
 //
-//static uint8_t *_fw_footer = NULL;
+// static uint8_t *_fw_footer = NULL;
 //
-//#define TEST_MANUFACTURE_ID                                                                                            \
+//#define TEST_MANUFACTURE_ID \
 //    { 'V', 'R', 'G', 'L' }
-//#define TEST_DEVICE_TYPE                                                                                               \
+//#define TEST_DEVICE_TYPE \
 //    { 'T', 'E', 'S', 'T' }
-//#define TEST_APP_TYPE                                                                                                  \
+//#define TEST_APP_TYPE \
 //    { 'A', 'P', 'P', '0' }
 //
-//static vs_firmware_descriptor_t _test_descriptor = {
+// static vs_firmware_descriptor_t _test_descriptor = {
 //        .info.manufacture_id = TEST_MANUFACTURE_ID,
 //        .info.device_type = TEST_DEVICE_TYPE,
 //        .info.version.app_type = TEST_APP_TYPE,
@@ -78,7 +78,7 @@
 //};
 //
 ///**********************************************************/
-//static bool
+// static bool
 //_create_test_signed_hl_key(vs_key_type_e hl_key_type,
 //                           vs_iot_hsm_slot_e slot_with_hl_keypair,
 //                           vs_iot_hsm_slot_e slot_to_save_pubkey,
@@ -121,7 +121,8 @@
 //
 //        BOOL_CHECK_RET(VS_CODE_OK ==
 //                               vs_hsm_keypair_get_pubkey(
-//                                       TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
+//                                       TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz,
+//                                       &pubkey_type),
 //                       "Error get test RECOVERY pubkey");
 //    }
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_slot_save(slot_to_save_pubkey, buf, hl_slot_sz), "Error save test pubkey");
@@ -129,7 +130,7 @@
 //}
 //
 ///**********************************************************/
-//static bool
+// static bool
 //_create_test_hl_keys() {
 //    VS_HEADER_SUBCASE("Create test hl keys");
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_create(TEST_REC_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
@@ -150,7 +151,7 @@
 //}
 //
 ///**********************************************************/
-//static bool
+// static bool
 //_create_test_firmware_signature(vs_key_type_e signer_type,
 //                                vs_iot_hsm_slot_e slot_with_hl_keypair,
 //                                uint8_t fw_hash[32],
@@ -167,7 +168,8 @@
 //    BOOL_CHECK_RET(
 //            VS_CODE_OK ==
 //                    vs_hsm_ecdsa_sign(
-//                            slot_with_hl_keypair, VS_HASH_SHA_256, fw_hash, sign_buf->raw_sign_pubkey, sign_len, &_sz),
+//                            slot_with_hl_keypair, VS_HASH_SHA_256, fw_hash, sign_buf->raw_sign_pubkey, sign_len,
+//                            &_sz),
 //            "Error sign test firmware by auth key");
 //    BOOL_CHECK_RET(
 //            VS_CODE_OK ==
@@ -178,7 +180,7 @@
 //}
 //
 ///**********************************************************/
-//static bool
+// static bool
 //_create_test_firmware_footer() {
 //    vs_firmware_footer_t *footer;
 //    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
@@ -224,14 +226,15 @@
 //    return true;
 //}
 ///**********************************************************/
-//static bool
+// static bool
 //_test_firmware_save_load_descriptor(vs_storage_op_ctx_t *ctx) {
 //    vs_firmware_descriptor_t desc;
 //    BOOL_CHECK_RET(VS_CODE_OK ==
 //                           vs_firmware_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
 //                   "Error save descriptor");
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_descriptor(ctx,
-//                                                                       (uint8_t *)_test_descriptor.info.manufacture_id,
+//                                                                       (uint8_t
+//                                                                       *)_test_descriptor.info.manufacture_id,
 //                                                                       (uint8_t *)_test_descriptor.info.device_type,
 //                                                                       &desc),
 //                   "Error load descriptor");
@@ -249,7 +252,7 @@
 //}
 //
 ///**********************************************************/
-//static bool
+// static bool
 //_test_firmware_save_load_data(vs_storage_op_ctx_t *ctx) {
 //    uint8_t buf[sizeof(VS_TEST_FIRMWARE_DATA)];
 //    size_t _sz;
@@ -259,7 +262,8 @@
 //            sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
 //    uint8_t footer_buf[footer_sz];
 //
-//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save descriptor");
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save
+//    descriptor");
 //
 //    BOOL_CHECK_RET(
 //            VS_CODE_OK ==
@@ -273,7 +277,8 @@
 //
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_footer(ctx, &_test_descriptor, _fw_footer),
 //                   "Error save footer");
-//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_footer(ctx, &_test_descriptor, footer_buf, footer_sz, &_sz),
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_footer(ctx, &_test_descriptor, footer_buf, footer_sz,
+//    &_sz),
 //                   "Error read footer");
 //    BOOL_CHECK_RET(_sz == footer_sz, "Error size of reading footer");
 //    MEMCMP_CHECK_RET(footer_buf, _fw_footer, footer_sz, false);
@@ -291,8 +296,8 @@
 //}
 //
 ///**********************************************************/
-//uint16_t
-//vs_firmware_test(vs_storage_op_ctx_t *ctx) {
+// uint16_t
+// vs_firmware_test(vs_storage_op_ctx_t *ctx) {
 //    uint16_t failed_test_result = 0;
 //
 //    START_TEST("Update tests");
@@ -307,7 +312,7 @@
 //        RESULT_ERROR;
 //    }
 //
-//terminate:
+// terminate:
 //    if (_fw_footer) {
 //        VS_IOT_FREE(_fw_footer);
 //    }

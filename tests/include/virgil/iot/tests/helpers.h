@@ -42,17 +42,19 @@
 
 #define VS_HSM_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                       \
     do {                                                                                                               \
-        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                              \
             VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
             return true;                                                                                               \
         }                                                                                                              \
     } while (0)
 
-#define CHECK_GOTO(OPERATION, DESCRIPTION, ...) do {                                                                       \
-    if (!(OPERATION)) {                                                                                                \
-        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
-        goto terminate;                                                                                                \
-    } } while(0)
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
+    do {                                                                                                               \
+        if (!(OPERATION)) {                                                                                            \
+            VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                  \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+    } while (0)
 
 #define RESULT_BUF_SIZE (1024)
 #define HASH_MAX_BUF_SIZE (64)

@@ -46,31 +46,34 @@
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/logger/logger.h>
 
-#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  CHECK(VS_CODE_OK == (OPERATION) && (CALLS), DESCRIPTION, ## __VA_ARGS__ )
+#define FLDT_CHECK_GOTO(OPERATION, CALLS, DESCRIPTION, ...)                                                            \
+    CHECK(VS_CODE_OK == (OPERATION) && (CALLS), DESCRIPTION, ##__VA_ARGS__)
 
-#define FLDT_CHECK_ERROR_GOTO(OPERATION, CALLS, DESCRIPTION, ...)  do {                                                                 \
-        prev_loglev = vs_logger_get_loglev();   \
-        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if (VS_CODE_OK != (OPERATION) || !(CALLS)) {                                                                                            \
-        vs_logger_set_loglev(prev_loglev);  \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    } else {  \
-        vs_logger_set_loglev(prev_loglev);  \
-    }   \
-    } while(0)
+#define FLDT_CHECK_ERROR_GOTO(OPERATION, CALLS, DESCRIPTION, ...)                                                      \
+    do {                                                                                                               \
+        prev_loglev = vs_logger_get_loglev();                                                                          \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);                                                                         \
+        if (VS_CODE_OK != (OPERATION) || !(CALLS)) {                                                                   \
+            vs_logger_set_loglev(prev_loglev);                                                                         \
+            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
+            goto terminate;                                                                                            \
+        } else {                                                                                                       \
+            vs_logger_set_loglev(prev_loglev);                                                                         \
+        }                                                                                                              \
+    } while (0)
 
-#define FLDT_CHECK_GOTO_HIDE_ERROR(OPERATION, DESCRIPTION, ...)  do {                                                                 \
-        prev_loglev = vs_logger_get_loglev();   \
-        vs_logger_set_loglev(VS_LOGLEV_ALERT);  \
-    if ((OPERATION)) {                                                                                            \
-        vs_logger_set_loglev(prev_loglev);  \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    } else {  \
-        vs_logger_set_loglev(prev_loglev);  \
-    }   \
-    } while(0)
+#define FLDT_CHECK_GOTO_HIDE_ERROR(OPERATION, DESCRIPTION, ...)                                                        \
+    do {                                                                                                               \
+        prev_loglev = vs_logger_get_loglev();                                                                          \
+        vs_logger_set_loglev(VS_LOGLEV_ALERT);                                                                         \
+        if ((OPERATION)) {                                                                                             \
+            vs_logger_set_loglev(prev_loglev);                                                                         \
+            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
+            goto terminate;                                                                                            \
+        } else {                                                                                                       \
+            vs_logger_set_loglev(prev_loglev);                                                                         \
+        }                                                                                                              \
+    } while (0)
 
 calls_t calls;
 

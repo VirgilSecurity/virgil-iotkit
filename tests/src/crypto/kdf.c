@@ -31,7 +31,8 @@ _test_kdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, uin
             VS_KDF_2, hash_type, (uint8_t *)another_key_raw, strlen(another_key_raw), another_result_buf, result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute kdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(another_result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "kdf is constant");
+    CHECK_RET(
+            0 != VS_IOT_MEMCMP(another_result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "kdf is constant");
     return res;
 }
 
@@ -69,7 +70,9 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "Same hkdf with other salt");
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len),
+              VS_CODE_ERR_CRYPTO,
+              "Same hkdf with other salt");
 
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = vs_hsm_hkdf(hash_type,
@@ -82,7 +85,9 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       result_buf,
                       result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "Same hkdf with other input");
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len),
+              VS_CODE_ERR_CRYPTO,
+              "Same hkdf with other input");
 
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = vs_hsm_hkdf(hash_type,
@@ -96,7 +101,9 @@ _test_hkdf2_step(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result, ui
                       result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
 
-    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "Same hkdf with other info");
+    CHECK_RET(0 != VS_IOT_MEMCMP(result_buf, correct_result, result_len),
+              VS_CODE_ERR_CRYPTO,
+              "Same hkdf with other info");
 
     return res;
 }
@@ -109,10 +116,10 @@ test_kdf2(void) {
 #define TEST_STEP(COND, BITLEN, FUNC)                                                                                  \
     do {                                                                                                               \
         int res = COND;                                                                                                \
-        if (VS_CODE_ERR_NOT_IMPLEMENTED == res) {                                                                       \
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == res) {                                                                      \
             VS_LOG_WARNING(#FUNC " for SHA_" #BITLEN " algorithm is not implemented");                                 \
         } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_CODE_OK == res);                           \
+            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_CODE_OK == res);                             \
         }                                                                                                              \
     } while (0)
 

@@ -21,10 +21,11 @@ _test_keypair_generate(_test_case_t *test_case) {
     test_case->initialized = true;
 
     STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(test_case->slot, test_case->keypair_type),
-                     "vs_hsm_keypair_create call error");
-    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_get_pubkey(
-                             test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
-                     "vs_hsm_keypair_get_pubkey call error");
+                          "vs_hsm_keypair_create call error");
+    STATUS_CHECK_RET_BOOL(
+            vs_hsm_keypair_get_pubkey(
+                    test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
+            "vs_hsm_keypair_get_pubkey call error");
     BOOL_CHECK_RET(keypair == test_case->keypair_type, "Received key pair type error");
     BOOL_CHECK_RET(test_case->key_sz == test_case->expected_size, "Received buffer error");
 

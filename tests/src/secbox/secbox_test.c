@@ -60,8 +60,7 @@ _test_case_secbox_save_load(vs_storage_op_ctx_t *ctx,
 
     vs_hsm_hash_create(VS_HASH_SHA_256, (uint8_t *)filename, strlen(filename), file_id, sizeof(file_id), &hash_sz);
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_save(ctx, type, file_id, (uint8_t *)test_data, data_sz),
-                   "Error save file");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_save(ctx, type, file_id, (uint8_t *)test_data, data_sz), "Error save file");
 
     BOOL_CHECK_RET(data_sz == vs_secbox_file_size(ctx, file_id), "Error file size");
 
@@ -109,9 +108,9 @@ vs_secbox_test(vs_storage_op_ctx_t *ctx) {
 
     size_t big_test_size = (ctx->file_sz_limit > (3 * 256 + 128 - 1)) ? 3 * 256 + 128 - 1 : ctx->file_sz_limit;
     _big_test_data = VS_IOT_MALLOC(big_test_size);
-    if(!_big_test_data) {
+    if (!_big_test_data) {
         VS_LOG_ERROR("Allocation memory for _big_test_data error");
-        goto  terminate;
+        goto terminate;
     }
     for (uint32_t i = 0; i < big_test_size; i++) {
         _big_test_data[i] = (uint8_t)i;

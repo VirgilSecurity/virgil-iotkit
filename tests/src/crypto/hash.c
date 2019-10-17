@@ -64,22 +64,22 @@ _test_sha_pass(vs_hsm_hash_type_e hash_type, const uint8_t *correct_result_raw, 
     uint16_t result_sz;
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_hash_create(hash_type,
-                                                       (uint8_t *)test_data,
-                                                       strlen(test_data),
-                                                       result_buf,
-                                                       sizeof(result_buf),
-                                                       &result_sz),
+                                                    (uint8_t *)test_data,
+                                                    strlen(test_data),
+                                                    result_buf,
+                                                    sizeof(result_buf),
+                                                    &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
 
     MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz, false);
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_hash_create(hash_type,
-                                                       (uint8_t *)another_test_data,
-                                                       strlen(another_test_data),
-                                                       another_result_buf,
-                                                       sizeof(another_result_buf),
-                                                       &result_sz),
+                                                    (uint8_t *)another_test_data,
+                                                    strlen(another_test_data),
+                                                    another_result_buf,
+                                                    sizeof(another_result_buf),
+                                                    &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
     BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");

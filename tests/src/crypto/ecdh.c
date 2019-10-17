@@ -62,8 +62,8 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
     // Create key pair for Alice
     STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(alice_slot, keypair_type),
-                     "Can't create keypair %s for Alice",
-                     vs_hsm_keypair_type_descr(keypair_type));
+                          "Can't create keypair %s for Alice",
+                          vs_hsm_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
             vs_hsm_keypair_get_pubkey(
@@ -77,34 +77,35 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
     // Create key pair for Bob
     STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(bob_slot, keypair_type),
-                     "Can't create keypair %s for Bob",
-                     vs_hsm_keypair_type_descr(keypair_type));
+                          "Can't create keypair %s for Bob",
+                          vs_hsm_keypair_type_descr(keypair_type));
 
-    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_get_pubkey(
-                             bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
-                     "Can't load public key from slot %s for Bob",
-                     vs_iot_hsm_slot_descr(bob_slot));
+    STATUS_CHECK_RET_BOOL(
+            vs_hsm_keypair_get_pubkey(
+                    bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
+            "Can't load public key from slot %s for Bob",
+            vs_iot_hsm_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
     STATUS_CHECK_RET_BOOL(vs_hsm_ecdh(alice_slot,
-                                 bob_keypair_type,
-                                 bob_public_key,
-                                 bob_public_key_sz,
-                                 shared_secret_1,
-                                 sizeof(shared_secret_1),
-                                 &shared_secret_sz_1),
-                     "Can't process ECDH (slot %s, keypair type %s) for Alice",
-                     vs_iot_hsm_slot_descr(alice_slot),
-                     vs_hsm_keypair_type_descr(bob_keypair_type));
+                                      bob_keypair_type,
+                                      bob_public_key,
+                                      bob_public_key_sz,
+                                      shared_secret_1,
+                                      sizeof(shared_secret_1),
+                                      &shared_secret_sz_1),
+                          "Can't process ECDH (slot %s, keypair type %s) for Alice",
+                          vs_iot_hsm_slot_descr(alice_slot),
+                          vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
     if (VS_CODE_OK != vs_hsm_ecdh(bob_slot,
-                                     alice_keypair_type,
-                                     alice_public_key,
-                                     alice_public_key_sz,
-                                     shared_secret_2,
-                                     sizeof(shared_secret_2),
-                                     &shared_secret_sz_2)) {
+                                  alice_keypair_type,
+                                  alice_public_key,
+                                  alice_public_key_sz,
+                                  shared_secret_2,
+                                  sizeof(shared_secret_2),
+                                  &shared_secret_sz_2)) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
                          vs_iot_hsm_slot_descr(bob_slot),

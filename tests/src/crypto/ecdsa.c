@@ -12,11 +12,11 @@ _create_keypairs_() {
         if (not_implemented) {                                                                                         \
             VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(KEYPAIR));                  \
         } else {                                                                                                       \
-            STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                                 \
-                             "Unable to create keypair %s for slot %d (%s) while preparing test",                      \
-                             vs_hsm_keypair_type_descr(KEYPAIR),                                                       \
-                             (SLOT),                                                                                   \
-                             vs_iot_hsm_slot_descr(SLOT));                                                             \
+            STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create((SLOT), (KEYPAIR)),                                            \
+                                  "Unable to create keypair %s for slot %d (%s) while preparing test",                 \
+                                  vs_hsm_keypair_type_descr(KEYPAIR),                                                  \
+                                  (SLOT),                                                                              \
+                                  vs_iot_hsm_slot_descr(SLOT));                                                        \
         }                                                                                                              \
     } while (0)
 
@@ -50,25 +50,26 @@ _test_sign_verify_pass(vs_iot_hsm_slot_e slot, vs_hsm_hash_type_e hash_alg, vs_h
     uint16_t signature_sz;
 
     STATUS_CHECK_RET_BOOL(vs_hsm_hash_create(hash_alg,
-                                        (uint8_t *)input_data_raw,
-                                        strlen(input_data_raw),
-                                        hash_buf,
-                                        sizeof(hash_buf),
-                                        &result_sz),
-                     "ERROR while creating hash");
+                                             (uint8_t *)input_data_raw,
+                                             strlen(input_data_raw),
+                                             hash_buf,
+                                             sizeof(hash_buf),
+                                             &result_sz),
+                          "ERROR while creating hash");
 
     signature_sz = sizeof(sign_buf);
 
     STATUS_CHECK_RET_BOOL(vs_hsm_ecdsa_sign(slot, hash_alg, hash_buf, sign_buf, signature_sz, &signature_sz),
-                     "ERROR while signing hash");
+                          "ERROR while signing hash");
 
     BOOL_CHECK_RET(signature_sz == vs_hsm_get_signature_len(keypair_type), "ERROR Invalid signature size");
 
     STATUS_CHECK_RET_BOOL(vs_hsm_keypair_get_pubkey(slot, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
-                     "ERROR while importing public key from slot");
+                          "ERROR while importing public key from slot");
 
-    STATUS_CHECK_RET_BOOL(vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
-                     "ERROR while verifying hash");
+    STATUS_CHECK_RET_BOOL(
+            vs_hsm_ecdsa_verify(keypair_type, pubkey, pubkey_sz, hash_alg, hash_buf, sign_buf, signature_sz),
+            "ERROR while verifying hash");
 
     return true;
 }
