@@ -1,50 +1,48 @@
-////  Copyright (C) 2015-2019 Virgil Security, Inc.
-////
-////  All rights reserved.
-////
-////  Redistribution and use in source and binary forms, with or without
-////  modification, are permitted provided that the following conditions are
-////  met:
-////
-////      (1) Redistributions of source code must retain the above copyright
-////      notice, this list of conditions and the following disclaimer.
-////
-////      (2) Redistributions in binary form must reproduce the above copyright
-////      notice, this list of conditions and the following disclaimer in
-////      the documentation and/or other materials provided with the
-////      distribution.
-////
-////      (3) Neither the name of the copyright holder nor the names of its
-////      contributors may be used to endorse or promote products derived from
-////      this software without specific prior written permission.
-////
-////  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-////  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-////  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-////  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-////  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-////  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-////  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-////  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-////  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-////  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-////  POSSIBILITY OF SUCH DAMAGE.
-////
-////  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
-//#include <stdlib.h>
+//  All rights reserved.
 //
-//#include <global-hal.h>
-//#include <update-config.h>
-//#include <virgil/iot/tests/helpers.h>
-//#include <virgil/iot/macros/macros.h>
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
 //
-//#include <virgil/iot/firmware/firmware.h>
-//#include <virgil/iot/hsm/hsm.h>
-//#include <virgil/iot/hsm/hsm_helpers.h>
-//#include <virgil/iot/provision/provision.h>
-//#include <virgil/iot/hsm/hsm_sw_sha2_routines.h>
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#include <stdlib.h>
+
+#include <global-hal.h>
+#include <update-config.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/macros/macros.h>
+
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/provision/provision.h>
+
 //#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_12
 //#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_13
 //#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_14
@@ -99,7 +97,7 @@
 //    hl_key->pubkey.key_type = hl_key_type;
 //
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_keypair_get_pubkey(
-//                                            slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
+//            slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
 //                   "Error get test pubkey");
 //
 //    if (with_signature) {
@@ -115,14 +113,13 @@
 //
 //        BOOL_CHECK_RET(
 //                VS_CODE_OK ==
-//                        vs_hsm_ecdsa_sign(
-//                                TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
+//                vs_hsm_ecdsa_sign(
+//                        TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
 //                "Error sign test pubkey");
 //
 //        BOOL_CHECK_RET(VS_CODE_OK ==
-//                               vs_hsm_keypair_get_pubkey(
-//                                       TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz,
-//                                       &pubkey_type),
+//                       vs_hsm_keypair_get_pubkey(
+//                               TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
 //                       "Error get test RECOVERY pubkey");
 //    }
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_slot_save(slot_to_save_pubkey, buf, hl_slot_sz), "Error save test pubkey");
@@ -167,21 +164,20 @@
 //
 //    BOOL_CHECK_RET(
 //            VS_CODE_OK ==
-//                    vs_hsm_ecdsa_sign(
-//                            slot_with_hl_keypair, VS_HASH_SHA_256, fw_hash, sign_buf->raw_sign_pubkey, sign_len,
-//                            &_sz),
+//            vs_hsm_ecdsa_sign(
+//                    slot_with_hl_keypair, VS_HASH_SHA_256, fw_hash, sign_buf->raw_sign_pubkey, sign_len, &_sz),
 //            "Error sign test firmware by auth key");
 //    BOOL_CHECK_RET(
 //            VS_CODE_OK ==
-//                    vs_hsm_keypair_get_pubkey(
-//                            slot_with_hl_keypair, sign_buf->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
+//            vs_hsm_keypair_get_pubkey(
+//                    slot_with_hl_keypair, sign_buf->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
 //            "Error get test aut pubkey");
 //    return true;
 //}
 //
 ///**********************************************************/
 // static bool
-//_create_test_firmware_footer() {
+//_create_test_firmware_footer(vs_firmware_descriptor_t *desc) {
 //    vs_firmware_footer_t *footer;
 //    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
 //    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
@@ -190,10 +186,15 @@
 //    VS_IOT_MEMSET(fill, 0xFF, sizeof(fill));
 //
 //    VS_HEADER_SUBCASE("Create test firmware footer");
-//    uint16_t footer_sz =
-//            sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
+//    uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len +
+//    sign_len);
+//
+//    if(_fw_footer) {
+//        VS_IOT_FREE(_fw_footer);
+//    }
+//
 //    _fw_footer = VS_IOT_MALLOC(footer_sz);
-//    _test_descriptor.app_size += footer_sz;
+//    desc->app_size += footer_sz;
 //    if (NULL == _fw_footer) {
 //        VS_LOG_ERROR("Error while memory alloc");
 //        return false;
@@ -206,7 +207,7 @@
 //    vs_hsm_sw_sha256_init(&hash_ctx);
 //
 //    footer->signatures_count = VS_FW_SIGNATURES_QTY;
-//    VS_IOT_MEMCPY(&footer->descriptor, &_test_descriptor, sizeof(vs_firmware_descriptor_t));
+//    VS_IOT_MEMCPY(&footer->descriptor, desc, sizeof(vs_firmware_descriptor_t));
 //
 //    vs_hsm_sw_sha256_update(&hash_ctx, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA));
 //    vs_hsm_sw_sha256_update(&hash_ctx, fill, sizeof(fill));
@@ -230,22 +231,21 @@
 //_test_firmware_save_load_descriptor(vs_storage_op_ctx_t *ctx) {
 //    vs_firmware_descriptor_t desc;
 //    BOOL_CHECK_RET(VS_CODE_OK ==
-//                           vs_firmware_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
+//                   vs_firmware_save_firmware_descriptor(ctx, (vs_firmware_descriptor_t *)&_test_descriptor),
 //                   "Error save descriptor");
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_load_firmware_descriptor(ctx,
-//                                                                       (uint8_t
-//                                                                       *)_test_descriptor.info.manufacture_id,
-//                                                                       (uint8_t *)_test_descriptor.info.device_type,
-//                                                                       &desc),
+//                                                                      (uint8_t *)_test_descriptor.info.manufacture_id,
+//                                                                      (uint8_t *)_test_descriptor.info.device_type,
+//                                                                      &desc),
 //                   "Error load descriptor");
 //    MEMCMP_CHECK_RET(&desc, &_test_descriptor, sizeof(vs_firmware_descriptor_t), false);
 //
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &desc), "Error delete descriptor");
 //    BOOL_CHECK_RET(VS_CODE_ERR_NOT_FOUND ==
-//                           vs_firmware_load_firmware_descriptor(ctx,
-//                                                              (uint8_t *)_test_descriptor.info.manufacture_id,
-//                                                              (uint8_t *)_test_descriptor.info.device_type,
-//                                                              &desc),
+//                   vs_firmware_load_firmware_descriptor(ctx,
+//                                                        (uint8_t *)_test_descriptor.info.manufacture_id,
+//                                                        (uint8_t *)_test_descriptor.info.device_type,
+//                                                        &desc),
 //                   "Error delete descriptor");
 //
 //    return true;
@@ -258,9 +258,8 @@
 //    size_t _sz;
 //    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
 //    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
-//    uint16_t footer_sz =
-//            sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
-//    uint8_t footer_buf[footer_sz];
+//    uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len +
+//    sign_len); uint8_t footer_buf[footer_sz];
 //
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &_test_descriptor), "Error save
 //    descriptor");
@@ -285,38 +284,71 @@
 //
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_verify_firmware(ctx, &_test_descriptor), "Error verify firmware");
 //
-//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_install_firmware(ctx, &_test_descriptor), "Error install firmware");
-//
 //    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &_test_descriptor), "Error delete firmware");
-//
-//    BOOL_CHECK_RET(VS_CODE_OK != vs_firmware_install_firmware(ctx, &_test_descriptor),
-//                   "The install firmware function has returned OK but image has already been deleted");
 //
 //    return true;
 //}
 //
 ///**********************************************************/
-// uint16_t
-// vs_firmware_test(vs_storage_op_ctx_t *ctx) {
-//    uint16_t failed_test_result = 0;
+// static bool
+//_test_firmware_install(vs_storage_op_ctx_t *ctx) {
 //
-//    START_TEST("Update tests");
+//    vs_firmware_descriptor_t own_desc;
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&own_desc), "Error install firmware");
 //
-//    TEST_CASE_OK("Prepare test",
-//                 vs_test_erase_otp_provision() && vs_test_create_device_key() && _create_test_hl_keys() &&
-//                         _create_test_firmware_footer());
-//    TEST_CASE_OK("Save load firmware descriptor", _test_firmware_save_load_descriptor(ctx));
-//    TEST_CASE_OK("Save load firmware data", _test_firmware_save_load_data(ctx));
+//    own_desc.info.version.major++;
+//    own_desc.padding = _test_descriptor.padding;
+//    own_desc.chunk_size = _test_descriptor.chunk_size;
+//    own_desc.firmware_length = _test_descriptor.firmware_length;
+//    own_desc.app_size = _test_descriptor.app_size;
 //
-//    if (VS_CODE_OK != vs_firmware_init(ctx)) {
-//        RESULT_ERROR;
-//    }
+//    BOOL_CHECK_RET(_create_test_firmware_footer(&own_desc), "Error create firmware footer");
 //
-// terminate:
-//    if (_fw_footer) {
-//        VS_IOT_FREE(_fw_footer);
-//    }
+//    VS_HEADER_SUBCASE("Store new firmware");
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_descriptor(ctx, &own_desc), "Error save descriptor");
 //
-//    vs_firnware_deinit(ctx);
-//    return failed_test_result;
+//    BOOL_CHECK_RET(VS_CODE_OK ==
+//                   vs_firmware_save_firmware_chunk(
+//                           ctx, &own_desc, (uint8_t *)VS_TEST_FIRMWARE_DATA, sizeof(VS_TEST_FIRMWARE_DATA), 0),
+//                   "Error save data");
+//
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_save_firmware_footer(ctx, &own_desc, _fw_footer), "Error save footer");
+//
+//    VS_HEADER_SUBCASE("Install new firmware");
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_install_firmware(ctx, &own_desc), "Error install firmware");
+//
+//    BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_delete_firmware(ctx, &own_desc), "Error delete firmware");
+//
+//    BOOL_CHECK_RET(VS_CODE_OK != vs_firmware_install_firmware(ctx, &own_desc),
+//                   "The install firmware function has returned OK but image has already been deleted");
+//    return true;
 //}
+//
+///**********************************************************/
+uint16_t
+vs_firmware_test(vs_hsm_impl_t *hsm_impl) {
+    //    uint16_t failed_test_result = 0;
+    //    assert(ctx);
+    //
+    //    START_TEST("Update firmware tests");
+    //
+    //    TEST_CASE_OK("Prepare test",
+    //                 vs_test_erase_otp_provision() && vs_test_create_device_key() && _create_test_hl_keys() &&
+    //                 _create_test_firmware_footer(&_test_descriptor));
+    //    TEST_CASE_OK("Save load firmware descriptor", _test_firmware_save_load_descriptor(ctx));
+    //    TEST_CASE_OK("Save load firmware data", _test_firmware_save_load_data(ctx));
+    //    TEST_CASE_OK("Save install firmware", _test_firmware_install(ctx));
+    //
+    //    if (VS_CODE_OK != vs_firmware_init(ctx)) {
+    //        RESULT_ERROR;
+    //    }
+    //
+    //    terminate:
+    //    if (_fw_footer) {
+    //        VS_IOT_FREE(_fw_footer);
+    //    }
+    //
+    //    vs_firnware_deinit(ctx);
+    //    return failed_test_result;
+    return 0;
+}

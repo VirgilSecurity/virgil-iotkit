@@ -157,3 +157,8 @@ add_sdmp("vs-module-sdmp-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
 #   SDMP For Gateway
 #
 add_sdmp("vs-module-sdmp-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+
+#
+#   SDMP For Test
+#
+add_sdmp("vs-module-sdmp-test" 1 "FLDT_SERVER=1 FLDT_CLIENT=1")

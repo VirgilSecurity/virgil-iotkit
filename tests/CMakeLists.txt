@@ -88,7 +88,7 @@ endif()
 
 target_link_libraries(virgil-iot-sdk-tests
         vs-module-secbox
-        vs-module-sdmp
+        vs-module-sdmp-test
         vs-module-firmware
         )
 

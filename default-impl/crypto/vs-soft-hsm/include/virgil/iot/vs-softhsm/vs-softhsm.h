@@ -41,6 +41,6 @@
 #define VS_SLOTS_STORAGE_MAX_SIZE (1024)
 
 vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *tl_storage_impl);
+vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
 #endif // HELPERS_VS_SOFTHSM_H

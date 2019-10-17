@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#if 0
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/tests/private/test_netif.h>
@@ -111,3 +112,4 @@ prepare_test_netif(vs_netif_t *netif) {
 
     netif_state.membuf = 0;
 }
+#endif
