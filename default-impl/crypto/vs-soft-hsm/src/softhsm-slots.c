@@ -125,6 +125,14 @@ vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
     return _storage->impl_func.del(_storage, id);
 }
 
+/********************************************************************************/
+void
+_hsm_deinit(void) {
+    if (_storage && _storage->impl_func.deinit) {
+        _storage->impl_func.deinit(_storage->impl_data);
+    }
+}
+
 /******************************************************************************/
 vs_status_e
 _fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *tl_storage_impl) {
@@ -132,6 +140,8 @@ _fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *tl_storage_impl) 
     CHECK_NOT_ZERO_RET(tl_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _storage = tl_storage_impl;
+
+    hsm_impl->deinit = _hsm_deinit;
 
     hsm_impl->slot_load = vs_hsm_slot_load;
     hsm_impl->slot_save = vs_hsm_slot_save;
