@@ -244,8 +244,6 @@ class UtilityManager(object):
 
     def __generate_initial_keys(self):
         self.__logger.info("initial generation stage started")
-        self.__retrieve_cloud_key()
-        self.__logger.info("Generate upper level keys")
         supress_db_warning = True
         upper_keys = self.__upper_level_pub_keys.get_all_data(suppress_db_warning=supress_db_warning)
         upper_keys_value = upper_keys.values()
@@ -1243,7 +1241,7 @@ class UtilityManager(object):
         if not self._utility_list:
             self._utility_list = []
             self._utility_list.extend([
-                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory, retrieve Cloud)"
+                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory)"
                     .format(self.__upper_level_keys_count), self.__generate_initial_keys],
                 ["---"],
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
@@ -1259,8 +1257,6 @@ class UtilityManager(object):
                 ["---"],
                 ["Generate Firmware Key ({})".format(self.__upper_level_keys_count), self.__generate_firmware_by_count],
                 ["Generate FirmwareInternal Key", self.__generate_firmware_internal_key],
-                ["---"],
-                ["Retrieve Cloud key", self.__retrieve_cloud_key],
                 ["---"],
                 ["Generate TrustList", self.__generate_trust_list],
                 ["---"],
