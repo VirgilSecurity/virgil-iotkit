@@ -10,6 +10,7 @@ from typing import Union, Optional
 
 from PyCRC.CRCCCITT import CRCCCITT
 from prettytable import PrettyTable
+from virgil_crypto import VirgilKeyPair
 
 from virgil_keymanager import consts
 from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
@@ -88,7 +89,8 @@ class UtilityManager(object):
             consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
             consts.VSKeyTypeS.AUTH_INTERNAL:     (self.__internal_private_keys, self.__trust_list_pub_keys),
-            consts.VSKeyTypeS.FIRMWARE_INTERNAL: (self.__internal_private_keys, self.__trust_list_pub_keys)
+            consts.VSKeyTypeS.FIRMWARE_INTERNAL: (self.__internal_private_keys, self.__trust_list_pub_keys),
+            consts.VSKeyTypeS.CLOUD:             (None, self.__trust_list_pub_keys),  # private key is stored on cloud
         }
         self.__dongle_chooser = DongleChooser(
             self.__ui,
@@ -102,7 +104,7 @@ class UtilityManager(object):
 
         # generator plugs
         self.__logger.info("TrustList generator initialization")
-        self.__trust_list_generator = TrustListGenerator(self.__ui, self.__trust_list_pub_keys, self.__atmel)
+        self.__trust_list_generator = TrustListGenerator(self.__ui, self.__trust_list_pub_keys)
         self.__logger.info("initialization successful")
 
         # chooser
@@ -505,6 +507,33 @@ class UtilityManager(object):
         key_id = factory_keys_info[user_choice][1]
         self.__logger.info("Factory Key with id: [{}] deleted".format(key_id))
 
+    def __retrieve_cloud_key(self):
+        """
+        Get cloud key from service and save it to db with trust list public keys
+        """
+        # Retrieve private key
+        # TODO: remove stub - get key from service
+        private_b64 = "MHgCAQEEIQD9p5vfO1RijB3AvH7Pfq03PkXnKo9sg+bEoF8WLZoAOqAKBggqhkjOPQMBB6FEA0IABPTAylSzxD652nILN7Q5mwefEh/Of/pwDHCy4IAWNvDYWJtswcT6Rb65L+C0o82sQZpq5udk4Ox8zrxI+wVOcj0="
+
+        key_pair = VirgilKeyGenerator(consts.VSKeyTypeS.CLOUD.value,
+                                      private_key=private_b64,
+                                      ec_type=VirgilKeyPair.Type_EC_SECP256R1).generate()
+
+        # Save public key to db
+        # - prepare key info to be saved
+        meta_data = self._context.virgil_api_url
+        key_info = {
+            "type": key_pair.key_type,
+            "ec_type": key_pair.ec_type_hsm,
+            "start_date": 0,
+            "expiration_date": 0,
+            "comment": "cloud",
+            "key": key_pair.public_key,
+            "meta_data": meta_data
+        }
+        # - save
+        self.__trust_list_pub_keys.save(key_pair.key_id, key_info, suppress_db_warning=False)
+
     def __generate_key(
             self,
             key_type: consts.VSKeyTypeS,
@@ -515,7 +544,8 @@ class UtilityManager(object):
             print_to_paper: bool,
             stored_on_dongle: bool,
             extra_card_content: Union[dict, None],
-            allowed_count: Optional[int] = None
+            allowed_count: Optional[int] = None,
+            meta_data: Optional[str] = ""
     ):
         self.__logger.info("%s Key generation started" % name_for_log)
         self.__ui.print_message("\nGenerating %s Key..." % name_for_log)
@@ -589,7 +619,8 @@ class UtilityManager(object):
             "start_date": start_date,
             "expiration_date": expiration_date,
             "comment": comment,
-            "key": key.public_key
+            "key": key.public_key,
+            "meta_data": meta_data
         }
         if sign_by_recovery_key:
             key_info["signature"] = key.signature
@@ -1284,6 +1315,7 @@ class UtilityManager(object):
             expiration_date=int(key_data["expiration_date"]),
             key_type=consts.key_type_str_to_num_map[pub_key_type_str],
             ec_type=int(key_data["ec_type"]),
+            meta_data=bytearray(key_data["meta_data"], "utf-8"),
             pub_key=b64_to_bytes(key_data["key"])
         )
         byte_buffer.write(bytes(pub_key))

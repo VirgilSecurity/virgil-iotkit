@@ -38,6 +38,7 @@ class UtilContext:
         self.secure_transfer_password = self._config["MAIN"]["secure_transfer_keys_passwd"]
 
         self.virgil_app_id = self._config["CARDS"]["virgil_app_id"]
+        self.virgil_api_url = self._config["CARDS"]["virgil_api_url"]
         self.factory_info_json = self._config["CARDS"]["factory_info_json"]
 
     @property
@@ -123,6 +124,7 @@ class UtilContext:
             ],
             "CARDS": [
                 "virgil_app_id",
+                "virgil_api_url",
                 "factory_info_json"
             ]
         }
