@@ -61,6 +61,9 @@ vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
 
 vs_status_e
+vs_provision_deinit(void);
+
+vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
 
 vs_status_e

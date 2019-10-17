@@ -71,7 +71,7 @@ vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_device_type_t device_type);
 
 vs_status_e
-vs_firnware_deinit(void);
+vs_firmware_deinit(void);
 
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,

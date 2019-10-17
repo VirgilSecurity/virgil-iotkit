@@ -43,4 +43,7 @@
 vs_hsm_impl_t *
 vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
+vs_status_e
+vs_softhsm_deinit(void);
+
 #endif // HELPERS_VS_SOFTHSM_H
