@@ -244,6 +244,8 @@ class UtilityManager(object):
 
     def __generate_initial_keys(self):
         self.__logger.info("initial generation stage started")
+        self.__retrieve_cloud_key()
+        self.__logger.info("Generate upper level keys")
         supress_db_warning = True
         upper_keys = self.__upper_level_pub_keys.get_all_data(suppress_db_warning=supress_db_warning)
         upper_keys_value = upper_keys.values()
@@ -511,13 +513,14 @@ class UtilityManager(object):
         """
         Get cloud key from service and save it to db with trust list public keys
         """
-        # Retrieve private key
+        self.__ui.print_message("Retrieve Cloud key")
+        self.__logger.info("Retrieve Cloud key")
         # TODO: remove stub - get key from service
         private_b64 = "MHgCAQEEIQD9p5vfO1RijB3AvH7Pfq03PkXnKo9sg+bEoF8WLZoAOqAKBggqhkjOPQMBB6FEA0IABPTAylSzxD652nILN7Q5mwefEh/Of/pwDHCy4IAWNvDYWJtswcT6Rb65L+C0o82sQZpq5udk4Ox8zrxI+wVOcj0="
 
         key_pair = VirgilKeyGenerator(consts.VSKeyTypeS.CLOUD.value,
-                                      private_key=private_b64,
-                                      ec_type=VirgilKeyPair.Type_EC_SECP256R1).generate()
+                                      ec_type=VirgilKeyPair.Type_EC_SECP256R1)
+        key_pair.generate(private_key_base64=private_b64)
 
         # Save public key to db
         # - prepare key info to be saved
@@ -533,6 +536,9 @@ class UtilityManager(object):
         }
         # - save
         self.__trust_list_pub_keys.save(key_pair.key_id, key_info, suppress_db_warning=False)
+
+        self.__ui.print_message("Cloud key retrieved and stored")
+        self.__logger.info("Cloud key retrieved and stored. Metadata: %s" % meta_data)
 
     def __generate_key(
             self,
@@ -1237,7 +1243,7 @@ class UtilityManager(object):
         if not self._utility_list:
             self._utility_list = []
             self._utility_list.extend([
-                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory)"
+                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory, retrieve Cloud)"
                     .format(self.__upper_level_keys_count), self.__generate_initial_keys],
                 ["---"],
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
@@ -1253,6 +1259,8 @@ class UtilityManager(object):
                 ["---"],
                 ["Generate Firmware Key ({})".format(self.__upper_level_keys_count), self.__generate_firmware_by_count],
                 ["Generate FirmwareInternal Key", self.__generate_firmware_internal_key],
+                ["---"],
+                ["Retrieve Cloud key", self.__retrieve_cloud_key],
                 ["---"],
                 ["Generate TrustList", self.__generate_trust_list],
                 ["---"],
