@@ -45,7 +45,8 @@ vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) 
     vs_storage_file_t f;
     vs_storage_element_id_t id;
     const char *slot_name = get_slot_name(slot);
-    vs_status_e res, res_close;
+    vs_status_e res;
+    vs_status_e res_close = VS_CODE_OK;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
     CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
@@ -76,7 +77,8 @@ vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_
     vs_storage_file_t f;
     vs_storage_element_id_t id;
     const char *slot_name = get_slot_name(slot);
-    vs_status_e res, res_close;
+    vs_status_e res;
+    vs_status_e res_close = VS_CODE_OK;
     ssize_t file_sz;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));

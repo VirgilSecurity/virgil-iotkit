@@ -144,18 +144,18 @@ uint16_t
 vs_tests_checks(bool print_start_finish_tests) {
     uint16_t failed_test_result = 0;
 
-    if (print_start_finish_tests) {
-        START_TESTS;
-    }
+    //    if (print_start_finish_tests) {
+    START_TESTS;
+    //    }
 
     //    failed_test_result = sdmp_tests();
     //    failed_test_result += fldt_tests();
     //
     //    failed_test_result += crypto_tests();
 
-    if (print_start_finish_tests) {
-        FINISH_TESTS;
-    }
+    //    if (print_start_finish_tests) {
+    FINISH_TESTS;
+    //    }
 
     return failed_test_result;
 }

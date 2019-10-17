@@ -153,7 +153,7 @@ _get_message_bin_credentials() {
 
             json_get_val_str(&jobj, VS_MB_MQTT_URL_FIELD, tmp_buf, len);
 
-            for (i = len - 1; i > 0; ++i) {
+            for (i = len - 1; i > 0; --i) {
                 if (*ptr == ':') {
                     break;
                 }
@@ -163,7 +163,6 @@ _get_message_bin_credentials() {
             port = _str_to_int(ptr + 1);
 
             if (0 == i || port < 0) {
-                VS_IOT_FREE(tmp_buf);
                 VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong format of [mqtt_url]");
                 goto terminate;
             }
@@ -318,8 +317,6 @@ _get_message_bin_credentials() {
               "[MB] cloud_get_message_bin_credentials(...) answer not contain [available_topics]");
 
         _mb_ctx.topic_list.topic_count = (size_t)topic_count;
-        CHECK(_mb_ctx.topic_list.topic_count != 0,
-              "[MB] cloud_get_message_bin_credentials(...) [available_topics] is empty!");
 
         {
             uint16_t total_topic_names_len = 0;
