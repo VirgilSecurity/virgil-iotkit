@@ -43,10 +43,10 @@ class TLVersionTinyDBStorage(object):
         db = self._get_db(suppress_db_warning)
         version = db.table(self.__table_name).get(where("release_version").exists())
         db.close()
-        return version["release_version"] if version else 0
+        return version["release_version"] if version else "0.0.0.0.0"
 
     def get_dev_version(self, suppress_db_warning=False):
         db = self._get_db(suppress_db_warning)
         version = db.table(self.__table_name).get(where("dev_version").exists())
         db.close()
-        return version["dev_version"] if version else 0
+        return version["dev_version"] if version else "0.0.0.0.0"

@@ -1,5 +1,5 @@
 import base64
-
+import string
 import binascii
 
 
@@ -45,6 +45,23 @@ class UI(object):
             except ValueError:
                 return False
             return True
+
+        @staticmethod
+        def tl_version_check(user_input):
+            """
+            Sample TL version: 0.1.30.m.2
+            """
+            user_input = user_input.split(".")
+            if len(user_input) != 5:
+                return False
+            major, minor, patch, milestone, build = user_input
+            if milestone not in string.ascii_letters + string.digits or len(milestone) > 1:
+                return False
+            try:
+                version_parts = [int(part) for part in (major, minor, patch, build)]
+            except ValueError:  # each part should be integer
+                return False
+            return all(part in range(0, 255) for part in version_parts)  # each part should fit uint8
 
     def __init__(self, logger=None):
         self.__logger = logger

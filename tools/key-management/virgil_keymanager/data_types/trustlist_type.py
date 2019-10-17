@@ -37,6 +37,7 @@ class FileVersion:
         ts = virgil_time.ts_now()
         major, minor, patch, milestone, build = ver.split('.')
         milestone = ord(milestone)
+        major, minor, patch, build = int(major), int(minor), int(patch), int(build)
         return cls(major, minor, patch, milestone, build, ts)
 
     def __bytes__(self) -> bytes:

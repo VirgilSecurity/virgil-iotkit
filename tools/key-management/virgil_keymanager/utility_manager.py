@@ -335,6 +335,28 @@ class UtilityManager(object):
         self.__logger.info("UpperLevelPublicKeys dumping completed")
 
     def __generate_trust_list(self, storage=None):
+        def increment_version(version):
+            # Simply increment tl version
+            major, minor, patch, milestone, build = current_tl_version.split(".")
+            ver_parts = [int(part) for part in (build, patch, minor, major)]
+            for indx, ver_part in enumerate(ver_parts):
+                if ver_part < 255:
+                    ver_parts[indx] += 1
+                    break
+            else:
+                self.__ui.print_warning("Failed to automatically increment trust list version.")
+                self.__logger.info("Failed to automatically increment trust list version: %s" % current_tl_version)
+                return None
+            major, minor, patch, build = ver_parts[::-1]
+            return "{major}.{minor}.{patch}.{milestone}.{build}".format(**locals())
+
+        # Trust list should contain Cloud key
+        if not self.__retrieve_cloud_key():
+            self.__ui.print_warning("Failed to retrieve Cloud key")
+            self.__logger.info("Failed to retrieve Cloud key. Virgil api url: %s" % self._context.virgil_api_url)
+            return
+
+        # Choose trust list type
         trust_list_types = [["Dev"], ["Release"]]
         trust_type_choice_raw = self.__ui.choose_from_list(
             trust_list_types, "Please choose TrustList type: ",
@@ -346,63 +368,41 @@ class UtilityManager(object):
 
         if trust_type_choice == "Dev":
             current_tl_version = self.__trust_list_version_db.get_dev_version()
-
-            self.__ui.print_message("Current TrustList version is {}".format(current_tl_version))
-            tl_version = self.__ui.get_user_input(
-                "Enter the TrustList version [{}]: ".format(current_tl_version + 1),
-                input_checker_callback=self.__ui.InputCheckers.number_check,
-                input_checker_msg="Only the integer value is allowed. Please try again: ",
-                empty_allow=True
-            )
-            if not tl_version:
-                tl_version = current_tl_version + 1
-            else:
-                tl_version = int(tl_version)
-            if tl_version != current_tl_version + 1:
-                user_choice = str(
-                    self.__ui.get_user_input(
-                        "Are you sure want change current TrustList version to {} [y/n]: ".format(tl_version),
-                        input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
-                        input_checker_msg="Allowed answers [y/n]. Please try again: ",
-                        empty_allow=False
-                    )
-                ).upper()
-                if user_choice == "N":
-                    self.__ui.print_warning("Operation stopped by user, TrustList version doesn't changed")
-                    self.__logger.info("TrustList version doesn't changed")
-                    return
-
-            self.__trust_list_version_db.save("dev_version", tl_version)
+            save_as = "dev_version"
+            trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "dev")
         else:
             current_tl_version = self.__trust_list_version_db.get_release_version()
+            save_as = "release_version"
+            trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "release")
 
-            self.__ui.print_message("Current TrustList version is {}".format(current_tl_version))
-            tl_version = self.__ui.get_user_input(
-                "Enter the TrustList version [{}]: ".format(current_tl_version + 1),
-                input_checker_callback=self.__ui.InputCheckers.number_check,
-                input_checker_msg="Only the integer value is allowed. Please try again: ",
-                empty_allow=True
+        # Get version to generate
+        self.__ui.print_message("Current TrustList version is {}".format(current_tl_version))
+        incremented_version = increment_version(current_tl_version) or ""
+        empty_allow = bool(incremented_version)  # allow empty input if version increment was successful
+        tl_version = self.__ui.get_user_input(
+            "Enter the TrustList version [{}]: ".format(incremented_version),
+            input_checker_callback=self.__ui.InputCheckers.tl_version_check,
+            input_checker_msg="Trust List version should match following format:"
+                              " [0-255].[0-255].[0-255].[ascii letter or 0-9].[0-255]",
+            empty_allow=empty_allow
+        )
+        if not tl_version:
+            tl_version = incremented_version
+        user_choice = str(
+            self.__ui.get_user_input(
+                "Are you sure you want change current TrustList version to {} [y/n]: ".format(tl_version),
+                input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
+                input_checker_msg="Allowed answers [y/n]. Please try again: ",
+                empty_allow=False
             )
-            if not tl_version:
-                tl_version = current_tl_version + 1
-            else:
-                tl_version = int(tl_version)
-            if tl_version != current_tl_version + 1:
-                user_choice = str(
-                    self.__ui.get_user_input(
-                        "Are you sure want change current TrustList version to {} [y/n]: ".format(tl_version),
-                        input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
-                        input_checker_msg="Allowed answers [y/n]. Please try again: ",
-                        empty_allow=False
-                    )
-                ).upper()
-                if user_choice == "N":
-                    self.__ui.print_warning("Operation stopped by user, TrustList version doesn't changed")
-                    self.__logger.info("TrustList version doesn't changed")
-                    return
+            ).upper()
+        if user_choice == "N":
+            self.__ui.print_warning("Operation stopped by user, TrustList version doesn't changed")
+            self.__logger.info("TrustList version doesn't changed")
+            return
+        self.__trust_list_version_db.save(save_as, tl_version)
 
-            self.__trust_list_version_db.save("release_version", tl_version)
-
+        # Select signer keys
         auth_key = self.key_chooser(
             consts.VSKeyTypeS.AUTH,
             stage="TrustList generation, Auth Key choosing",
@@ -421,6 +421,8 @@ class UtilityManager(object):
         self.__logger.info("TrustList version: {} ".format(tl_version))
 
         signer_keys = [auth_key, tl_key]
+
+        # Generate Trust list
         tl = self.__trust_list_generator.generate(
             signer_keys,
             tl_version,
@@ -429,10 +431,6 @@ class UtilityManager(object):
         self.__ui.print_message("Generation finished")
         self.__ui.print_message("Storing to file...")
         if not storage:
-            if trust_type_choice == "Dev":
-                trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "dev")
-            else:
-                trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "release")
             storage = FileKeyStorage(trust_list_storage_path)
         storage.save(tl, "TrustList")
         self.__ui.print_message("File stored")
@@ -507,7 +505,7 @@ class UtilityManager(object):
         key_id = factory_keys_info[user_choice][1]
         self.__logger.info("Factory Key with id: [{}] deleted".format(key_id))
 
-    def __retrieve_cloud_key(self):
+    def __retrieve_cloud_key(self) -> bool:
         """
         Get cloud key from service and save it to db with trust list public keys
         """
@@ -537,6 +535,7 @@ class UtilityManager(object):
 
         self.__ui.print_message("Cloud key retrieved and stored")
         self.__logger.info("Cloud key retrieved and stored. Metadata: %s" % meta_data)
+        return True
 
     def __generate_key(
             self,
