@@ -60,6 +60,7 @@ vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 /******************************************************************************/
 vs_status_e
 vs_softhsm_deinit(void) {
+    _softhsm_ready = false;
     _hsm_deinit();
 
     return VS_CODE_OK;
