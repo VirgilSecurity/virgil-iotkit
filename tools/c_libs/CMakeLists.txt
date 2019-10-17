@@ -75,7 +75,7 @@ target_include_directories(tools-hal
 #
 target_link_libraries(tools-hal
         PUBLIC
-        sdmp-factory
+        vs-module-sdmp-factory
 
         PRIVATE
         enable_pedantic_mode

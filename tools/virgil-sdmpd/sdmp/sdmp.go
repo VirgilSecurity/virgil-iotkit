@@ -35,7 +35,7 @@
 package sdmp
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
+#cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
