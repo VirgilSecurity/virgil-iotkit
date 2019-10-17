@@ -340,7 +340,7 @@ _tl_get_version(vs_update_file_type_t *file_type, vs_file_version_t *file_versio
     VS_IOT_MEMSET(file_version, 0, sizeof(*file_version));
 
     // TODO: Fix it
-    file_version->major = VS_IOT_NTOHS(tl_header.version) % 256;
+    file_version->major = VS_IOT_NTOHS(tl_header.version) & 0xFF;
 
     return VS_CODE_OK;
 }
