@@ -5,7 +5,7 @@ install*/
 codegen/generated/
 codegen/test/gsl/
 ext/deps/*
-doc/*
+docs/doxygen
 
 #####
 # OS X temporary files that should never be committed
