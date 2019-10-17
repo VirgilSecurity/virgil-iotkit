@@ -337,6 +337,5 @@ terminate:
         VS_IOT_FREE(_fw_footer);
     }
 
-    vs_firnware_deinit();
     return failed_test_result;
 }
