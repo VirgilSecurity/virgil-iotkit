@@ -15,18 +15,16 @@ class FileVersion:
         Major           uint8
         Minor           uint8
         Patch           uint8
-        DevMilestone    byte
-        DevBuild        uint8
+        Build           uint32
         Timestamp       uint32
     }
     """
-    SIZE = 1 + 1 + 1 + 1 + 1 + 4  # see structure in class doc-string
+    SIZE = 1 + 1 + 1 + 4 + 4  # see structure in class doc-string
 
-    def __init__(self, major: int, minor: int, patch: int, milestone: int, build: int, timestamp: int):
+    def __init__(self, major: int, minor: int, patch: int, build: int, timestamp: int):
         self._major = major
         self._minor = minor
         self._patch = patch
-        self._milestone = milestone
         self._build = build
         self._timestamp = timestamp
 
@@ -35,10 +33,9 @@ class FileVersion:
     @classmethod
     def from_string(cls, ver: str):
         ts = virgil_time.ts_now()
-        major, minor, patch, milestone, build = ver.split('.')
-        milestone = ord(milestone)
+        major, minor, patch, build = ver.split('.')
         major, minor, patch, build = int(major), int(minor), int(patch), int(build)
-        return cls(major, minor, patch, milestone, build, ts)
+        return cls(major, minor, patch, build, ts)
 
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
@@ -46,8 +43,7 @@ class FileVersion:
             byte_buffer.write(self._major.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
             byte_buffer.write(self._minor.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
             byte_buffer.write(self._patch.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
-            byte_buffer.write(self._milestone.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
-            byte_buffer.write(self._build.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._build.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
             byte_buffer.write(self._timestamp.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes

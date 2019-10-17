@@ -337,18 +337,23 @@ class UtilityManager(object):
     def __generate_trust_list(self, storage=None):
         def increment_version(version):
             # Simply increment tl version
-            major, minor, patch, milestone, build = current_tl_version.split(".")
-            ver_parts = [int(part) for part in (build, patch, minor, major)]
-            for indx, ver_part in enumerate(ver_parts):
-                if ver_part < 255:
-                    ver_parts[indx] += 1
-                    break
+            major, minor, patch, build = current_tl_version.split(".")
+            major, minor, patch, build = int(major), int(minor), int(patch), int(build)
+            if build < 4294967295:  # build is uint32
+                build += 1
             else:
-                self.__ui.print_warning("Failed to automatically increment trust list version.")
-                self.__logger.info("Failed to automatically increment trust list version: %s" % current_tl_version)
-                return None
-            major, minor, patch, build = ver_parts[::-1]
-            return "{major}.{minor}.{patch}.{milestone}.{build}".format(**locals())
+                build = 0
+                ver_parts = [patch, minor, major]
+                for indx, ver_part in enumerate(ver_parts):
+                    if ver_part < 255:
+                        ver_parts[indx] += 1
+                        break
+                else:
+                    self.__ui.print_warning("Failed to automatically increment trust list version.")
+                    self.__logger.info("Failed to automatically increment trust list version: %s" % current_tl_version)
+                    return None
+                major, minor, patch = ver_parts[::-1]
+            return "{major}.{minor}.{patch}.{build}".format(**locals())
 
         # Trust list should contain Cloud key
         if not self.__retrieve_cloud_key():
@@ -383,7 +388,7 @@ class UtilityManager(object):
             "Enter the TrustList version [{}]: ".format(incremented_version),
             input_checker_callback=self.__ui.InputCheckers.tl_version_check,
             input_checker_msg="Trust List version should match following format:"
-                              " [0-255].[0-255].[0-255].[ascii letter or 0-9].[0-255]",
+                              " [0-255].[0-255].[0-255].[0-4294967295]",
             empty_allow=empty_allow
         )
         if not tl_version:

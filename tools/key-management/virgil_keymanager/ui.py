@@ -49,19 +49,22 @@ class UI(object):
         @staticmethod
         def tl_version_check(user_input):
             """
-            Sample TL version: 0.1.30.m.2
+            Sample TL version: 0.1.30.2
             """
             user_input = user_input.split(".")
-            if len(user_input) != 5:
+            if len(user_input) != 4:
                 return False
-            major, minor, patch, milestone, build = user_input
-            if milestone not in string.ascii_letters + string.digits or len(milestone) > 1:
-                return False
+            major, minor, patch, build = user_input
             try:
-                version_parts = [int(part) for part in (major, minor, patch, build)]
-            except ValueError:  # each part should be integer
+                version_parts = [int(part) for part in (major, minor, patch)]
+                build = int(build)
+            except ValueError:  # each part should be an integer
                 return False
-            return all(part in range(0, 255) for part in version_parts)  # each part should fit uint8
+            if not all(part in range(0, 255) for part in version_parts):  # each part should fit uint8
+                return False
+            if not (0 <= build <= 4294967295):  # build should fit uint32
+                return False
+            return True
 
     def __init__(self, logger=None):
         self.__logger = logger
