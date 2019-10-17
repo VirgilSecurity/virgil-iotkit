@@ -174,3 +174,10 @@ endif()
 #   Tests
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+
+#
+#   Documentation
+#
+add_custom_target(documentation
+        COMMAND doxygen
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
