@@ -125,6 +125,5 @@ terminate:;
     if (_big_test_data) {
         VS_IOT_FREE(_big_test_data);
     }
-    vs_secbox_deinit();
     return failed_test_result;
 }
