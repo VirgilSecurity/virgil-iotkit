@@ -2,22 +2,71 @@ import io
 from typing import List
 
 from virgil_keymanager import consts
+from virgil_keymanager.core_utils import virgil_time
 from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
+
+TL_BYTE_ORDER = 'big'
+
+
+class FileVersion:
+    """
+    type FileVersion struct {
+        Major           uint8
+        Minor           uint8
+        Patch           uint8
+        DevMilestone    byte
+        DevBuild        uint8
+        Timestamp       uint32
+    }
+    """
+    SIZE = 1 + 1 + 1 + 1 + 1 + 4  # see structure in class doc-string
+
+    def __init__(self, major: int, minor: int, patch: int, milestone: int, build: int, timestamp: int):
+        self._major = major
+        self._minor = minor
+        self._patch = patch
+        self._milestone = milestone
+        self._build = build
+        self._timestamp = timestamp
+
+        self.__bytes = None
+
+    @classmethod
+    def from_string(cls, ver: str):
+        ts = virgil_time.ts_now()
+        major, minor, patch, milestone, build = ver.split('.')
+        milestone = ord(milestone)
+        return cls(major, minor, patch, milestone, build, ts)
+
+    def __bytes__(self) -> bytes:
+        if self.__bytes is None:
+            byte_buffer = io.BytesIO()
+            byte_buffer.write(self._major.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._minor.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._patch.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._milestone.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._build.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._timestamp.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
+            self.__bytes = byte_buffer.getvalue()
+        return self.__bytes
+
+    def __len__(self):
+        return len(bytes(self))
 
 
 class Header:
     """
     type Header struct {
         WholeTLSize      uint32
-        Version          uint16
+        Version          FileVersion
         PubKeysCount     uint16
         SignaturesCount  uint8
     }
     """
-    SIZE = 4 + 2 + 2 + 1  # see structure in class doc-string
+    SIZE = 4 + FileVersion.SIZE + 2 + 1  # see structure in class doc-string
 
-    def __init__(self, whole_tl_size: int, version: int, pub_keys_count: int, signatures_count: int):
+    def __init__(self, whole_tl_size: int, version: FileVersion, pub_keys_count: int, signatures_count: int):
         self._whole_tl_size = whole_tl_size
         self._version = version
         self._pub_keys_count = pub_keys_count
@@ -28,25 +77,24 @@ class Header:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._whole_tl_size.to_bytes(4, byteorder='big', signed=False))
-            byte_buffer.write(self._version.to_bytes(2, byteorder='big', signed=False))
-            byte_buffer.write(self._pub_keys_count.to_bytes(2, byteorder='big', signed=False))
-            byte_buffer.write(self._signatures_count.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._whole_tl_size.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(bytes(self._version))
+            byte_buffer.write(self._pub_keys_count.to_bytes(2, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._signatures_count.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes
 
     def __len__(self):
-        return len(bytes(self))
+        return self.SIZE
 
 
 class Signature:
     """
     type Signature struct {
-        SignerType       uint8
-        ECType           uint8
-        Hash_type        uint8
-        Sign             [SignSize]byte
-        SignerPublicKey  []byte
+        SignerType               uint8
+        ECType                   uint8
+        Hash_type                uint8
+        SignAndSignerPublicKey   [SignSize+PublicKeySize]byte
     }
     """
     def __init__(self, signer_type: int, ec_type: int, hash_type: int, sign: bytearray, signer_pub_key: bytearray):
@@ -61,9 +109,9 @@ class Signature:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._signer_type.to_bytes(1, byteorder='big', signed=False))
-            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='big', signed=False))
-            byte_buffer.write(self._hash_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._signer_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._hash_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
             byte_buffer.write(self._sign)
             byte_buffer.write(self._signer_pub_key)
             self.__bytes = byte_buffer.getvalue()
@@ -89,7 +137,7 @@ class Footer:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self.tl_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self.tl_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
             for signature in self.signatures:
                 byte_buffer.write(bytes(signature))
             self.__bytes = byte_buffer.getvalue()
@@ -102,18 +150,27 @@ class Footer:
 class PubKeyStructure:
     """
     type PubKeyStructure struct {
-        StartDate       uint32
-        ExpirationDate  uint32
-        KeyType         uint8
-        ECType          uint8
-        PubKey          [PublicKeySize]byte
+        StartDate           uint32
+        ExpirationDate      uint32
+        KeyType             uint8
+        ECType              uint8
+        MetadataSize        uint16
+        MetadataAndPubKey   [MetadataSize+PublicKeySize]byte
     }
     """
-    def __init__(self, start_date: int, expiration_date: int, key_type: int, ec_type: int, pub_key: bytearray):
+    def __init__(self,
+                 start_date: int,
+                 expiration_date: int,
+                 key_type: int,
+                 ec_type: int,
+                 meta_data: bytearray,
+                 pub_key: bytearray):
         self._start_date = start_date
         self._expiration_date = expiration_date
         self._key_type = key_type
         self._ec_type = ec_type
+        self._meta_data_sz = len(meta_data)
+        self._meta_data = meta_data
         self._pub_key = pub_key
 
         self.__bytes = None
@@ -121,16 +178,18 @@ class PubKeyStructure:
     def __bytes__(self) -> bytes:
         if self.__bytes is None:
             byte_buffer = io.BytesIO()
-            byte_buffer.write(self._start_date.to_bytes(4, byteorder='big', signed=False))
-            byte_buffer.write(self._expiration_date.to_bytes(4, byteorder='big', signed=False))
-            byte_buffer.write(self._key_type.to_bytes(1, byteorder='big', signed=False))
-            byte_buffer.write(self._ec_type.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self._start_date.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._expiration_date.to_bytes(4, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._key_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._ec_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._meta_data_sz.to_bytes(2, byteorder=TL_BYTE_ORDER, signed=False))
+            byte_buffer.write(self._meta_data)
             byte_buffer.write(self._pub_key)
             self.__bytes = byte_buffer.getvalue()
         return self.__bytes
 
     def __len__(self):
-        return 4 + 4 + 1 + 1 + len(self._pub_key)  # see structure in class doc-string
+        return 4 + 4 + 1 + 1 + 2 + self._meta_data_sz + len(self._pub_key)  # see structure in class doc-string
 
 
 class Body:
@@ -156,12 +215,12 @@ class TrustList:
                  pub_keys_dict: dict,
                  signer_keys: List[KeyGeneratorInterface],
                  tl_type: consts.TrustListType,
-                 tl_version: int
+                 tl_version: str
                  ):
         self._pub_keys_dict = pub_keys_dict
         self._signer_keys = signer_keys
         self._tl_type = tl_type
-        self._tl_version = tl_version
+        self._tl_version = FileVersion.from_string(tl_version)
 
         self._header = None  # type: Header
         self._body = None    # type: Body
@@ -213,11 +272,13 @@ class TrustList:
                 start_date = int(key_data["start_date"])
                 expiration_date = int(key_data["expiration_date"])
                 ec_type = int(key_data["ec_type"])
+                meta_data = key_data["meta_data"]
                 key = PubKeyStructure(
                     start_date=start_date,
                     expiration_date=expiration_date,
                     key_type=consts.key_type_str_to_num_map[key_type_str],
                     ec_type=consts.VsEcTypeE(ec_type),
+                    meta_data=bytearray(meta_data, 'utf-8'),
                     pub_key=b64_to_bytes(key_data["key"])
                 )
                 keys.append(key)
@@ -231,7 +292,7 @@ class TrustList:
             signatures = []
 
             # Data to sign: header + body + tl_type from footer
-            tl_type_bytes = self._tl_type.to_bytes(1, byteorder='big', signed=False)
+            tl_type_bytes = self._tl_type.to_bytes(1, byteorder=TL_BYTE_ORDER, signed=False)
             data_to_sign = to_b64(bytes(self.header) + bytes(self.body) + tl_type_bytes)
 
             for key in self._signer_keys:
