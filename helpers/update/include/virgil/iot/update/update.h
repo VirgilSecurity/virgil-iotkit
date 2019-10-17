@@ -61,6 +61,9 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
 bool
 vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
+vs_status_e
+vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
+
 typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
 typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
