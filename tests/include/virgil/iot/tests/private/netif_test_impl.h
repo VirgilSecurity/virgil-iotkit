@@ -55,8 +55,8 @@ extern vs_mac_addr_t mac_addr_client_call;
 extern vs_mac_addr_t mac_addr_server_call;
 extern bool is_client_call;
 
-void
-prepare_test_netif(vs_netif_t *netif);
+vs_netif_t *
+vs_test_netif(void);
 
 #define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
     if ((OPERATION) != 0) {                                                                                            \

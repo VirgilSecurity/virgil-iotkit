@@ -422,7 +422,7 @@ test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl) {
     }
 
     TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision(hsm_impl));
-    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_keys(hsm_impl));
+    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_pubkeys(hsm_impl));
     TEST_CASE_OK("TL verify hl keys", _test_verify_hl_keys());
 
     TEST_CASE_OK("TL save", _test_tl_save_pass());

@@ -33,10 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib.h>
-#include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/tests/private/test_hl_keys_data.h>
 #include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
 
 uint16_t
 test_hash(vs_hsm_impl_t *hsm_impl);
@@ -63,59 +60,9 @@ test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl);
 uint16_t
 vs_virgil_ecies_test(vs_hsm_impl_t *hsm_impl);
 
-/******************************************************************************/
-static bool
-_save_hl_key(vs_hsm_impl_t *hsm_impl, size_t slot, const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
-
-    STATUS_CHECK_RET_BOOL(
-            hsm_impl->slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
-
-    return true;
-}
-
-/**********************************************************/
-bool
-vs_test_erase_otp_provision(vs_hsm_impl_t *hsm_impl) {
-    VS_HEADER_SUBCASE("Erase otp slots");
-    if (VS_CODE_OK != hsm_impl->slot_clean(PRIVATE_KEY_SLOT) || VS_CODE_OK != hsm_impl->slot_clean(REC1_KEY_SLOT) ||
-        VS_CODE_OK != hsm_impl->slot_clean(REC2_KEY_SLOT)) {
-        VS_LOG_ERROR("[AP] Error. Can't erase OTP slots. ");
-        return false;
-    }
-    return true;
-}
-
-/**********************************************************/
-bool
-vs_test_create_device_key(vs_hsm_impl_t *hsm_impl) {
-    VS_HEADER_SUBCASE("Create device keypair");
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create device key");
-    return true;
-}
-
-/**********************************************************/
-bool
-vs_test_save_hl_keys(vs_hsm_impl_t *hsm_impl) {
-    bool res = true;
-    res &= _save_hl_key(hsm_impl, REC1_KEY_SLOT, "PBR1", recovery1_pub, recovery1_pub_len);
-    res &= _save_hl_key(hsm_impl, REC2_KEY_SLOT, "PBR2", recovery2_pub, recovery2_pub_len);
-
-    res &= _save_hl_key(hsm_impl, AUTH1_KEY_SLOT, "PBA1", auth1_pub, auth1_pub_len);
-    res &= _save_hl_key(hsm_impl, AUTH2_KEY_SLOT, "PBA2", auth2_pub, auth2_pub_len);
-
-    res &= _save_hl_key(hsm_impl, FW1_KEY_SLOT, "PBF1", firmware1_pub, firmware1_pub_len);
-    res &= _save_hl_key(hsm_impl, FW2_KEY_SLOT, "PBF2", firmware2_pub, firmware2_pub_len);
-
-    res &= _save_hl_key(hsm_impl, TL1_KEY_SLOT, "PBT1", tl_service1_pub, tl_service1_pub_len);
-    res &= _save_hl_key(hsm_impl, TL2_KEY_SLOT, "PBT2", tl_service2_pub, tl_service2_pub_len);
-
-    return res;
-}
-
 /**********************************************************/
 uint16_t
-vs_tests_checks(vs_hsm_impl_t *hsm_impl) {
+vs_crypto_test(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
 
     VS_IOT_ASSERT(hsm_impl);

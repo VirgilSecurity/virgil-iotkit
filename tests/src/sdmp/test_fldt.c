@@ -32,13 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#if 0
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/protocols/sdmp/fldt.h>
 #include <virgil/iot/protocols/sdmp/fldt_client.h>
 #include <virgil/iot/protocols/sdmp/fldt_server.h>
-#include <virgil/iot/tests/private/test_netif.h>
+#include <virgil/iot/tests/private/netif_test_impl.h>
 #include <virgil/iot/tests/private/test_fldt.h>
 
 vs_fldt_file_type_mapping_t server_add_filetype_to_copy;
@@ -233,5 +232,3 @@ make_server_mapping(const vs_update_file_type_t *file_type){
 
     return mapping;
 }
-
-#endif

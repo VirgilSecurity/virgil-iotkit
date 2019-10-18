@@ -16,7 +16,7 @@ _create_keypairs_(vs_hsm_impl_t *hsm_impl) {
                                   "Unable to create keypair %s for slot %d (%s) while preparing test",                 \
                                   vs_hsm_keypair_type_descr(KEYPAIR),                                                  \
                                   (SLOT),                                                                              \
-                                  vs_iot_hsm_slot_descr(SLOT));                                                        \
+                                  vs_test_hsm_slot_descr(SLOT));                                                       \
         }                                                                                                              \
     } while (0)
 
@@ -87,7 +87,7 @@ _prepare_and_test(vs_hsm_impl_t *hsm_impl,
     bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(slot));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", hash ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(hash));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");
@@ -115,7 +115,7 @@ test_ecdsa(vs_hsm_impl_t *hsm_impl) {
 
 #define TEST_SIGN_VERIFY_PASS(SLOT, HASH, KEY)                                                                         \
     VS_IOT_STRCPY(descr, "slot ");                                                                                     \
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(SLOT));                                          \
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(SLOT));                                         \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", hash ");                                                            \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_hash_type_descr(HASH));                                         \
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");                                                    \

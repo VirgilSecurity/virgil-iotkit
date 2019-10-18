@@ -32,17 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#if 0
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/tests/private/test_netif.h>
+#include <virgil/iot/tests/private/netif_test_impl.h>
 
 netif_state_t netif_state;
 vs_mac_addr_t mac_addr_client_call;
 vs_mac_addr_t mac_addr_server_call;
 bool is_client_call;
 
-static vs_netif_t *test_netif = NULL;
+static vs_status_e
+test_netif_tx(const uint8_t *data, const uint16_t data_sz);
+static vs_status_e
+test_netif_mac_addr(struct vs_mac_addr_t *mac_addr);
+static vs_status_e
+test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+static vs_status_e
+test_netif_deinit();
+
+static vs_netif_t _test_netif = {
+        .init = test_netif_init,
+        .deinit = test_netif_deinit,
+        .mac_addr = test_netif_mac_addr,
+        .tx = test_netif_tx,
+        .user_data = (void *)&netif_state,
+};
+
 static vs_netif_rx_cb_t callback_rx_cb;
 static vs_netif_process_cb_t callback_process_cb;
 
@@ -55,8 +70,8 @@ test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
 
     is_client_call = !is_client_call;
 
-    if (0 == callback_rx_cb(test_netif, data, data_sz, &packet_data, &packet_data_sz)) {
-        ret_code = callback_process_cb(test_netif, packet_data, packet_data_sz);
+    if (0 == callback_rx_cb(&_test_netif, data, data_sz, &packet_data, &packet_data_sz)) {
+        ret_code = callback_process_cb(&_test_netif, packet_data, packet_data_sz);
     }
 
     netif_state.sent = 1;
@@ -83,7 +98,7 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
     callback_rx_cb = rx_cb;
     callback_process_cb = process_cb;
-
+    netif_state.deinitialized = 0;
     netif_state.initialized = 1;
 
     return VS_CODE_OK;
@@ -92,24 +107,14 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 /**********************************************************/
 static vs_status_e
 test_netif_deinit() {
+    netif_state.initialized = 0;
     netif_state.deinitialized = 1;
     return VS_CODE_OK;
 }
 
 /**********************************************************/
-void
-prepare_test_netif(vs_netif_t *netif) {
-    VS_IOT_ASSERT(netif);
-
-    test_netif = netif;
-
-    netif->user_data = (void *)&netif_state;
-
-    netif->tx = test_netif_tx;
-    netif->mac_addr = test_netif_mac_addr;
-    netif->init = test_netif_init;
-    netif->deinit = test_netif_deinit;
-
+vs_netif_t *
+vs_test_netif(void) {
     netif_state.membuf = 0;
+    return &_test_netif;
 }
-#endif

@@ -70,7 +70,7 @@ _test_ecdh_pass(vs_hsm_impl_t *hsm_impl,
             hsm_impl->get_pubkey(
                     alice_slot, alice_public_key, sizeof(alice_public_key), &alice_public_key_sz, &alice_keypair_type),
             "Can't load public key from slot %s for Alice",
-            vs_iot_hsm_slot_descr(alice_slot));
+            vs_test_hsm_slot_descr(alice_slot));
 
     if (corrupt_key) {
         ++alice_public_key[1];
@@ -85,7 +85,7 @@ _test_ecdh_pass(vs_hsm_impl_t *hsm_impl,
             hsm_impl->get_pubkey(
                     bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
             "Can't load public key from slot %s for Bob",
-            vs_iot_hsm_slot_descr(bob_slot));
+            vs_test_hsm_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
     STATUS_CHECK_RET_BOOL(hsm_impl->ecdh(alice_slot,
@@ -96,7 +96,7 @@ _test_ecdh_pass(vs_hsm_impl_t *hsm_impl,
                                          sizeof(shared_secret_1),
                                          &shared_secret_sz_1),
                           "Can't process ECDH (slot %s, keypair type %s) for Alice",
-                          vs_iot_hsm_slot_descr(alice_slot),
+                          vs_test_hsm_slot_descr(alice_slot),
                           vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
@@ -109,7 +109,7 @@ _test_ecdh_pass(vs_hsm_impl_t *hsm_impl,
                                      &shared_secret_sz_2)) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
-                         vs_iot_hsm_slot_descr(bob_slot),
+                         vs_test_hsm_slot_descr(bob_slot),
                          vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
@@ -148,9 +148,9 @@ _prepare_and_test(vs_hsm_impl_t *hsm_impl,
     VS_IOT_STRCPY(descr, "Key ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(alice_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(alice_slot));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(bob_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(bob_slot));
     if (corrupt) {
         VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");
     }

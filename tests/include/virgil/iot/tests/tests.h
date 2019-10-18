@@ -39,10 +39,18 @@
 #include <virgil/iot/hsm/hsm.h>
 
 uint16_t
-vs_tests_checks(vs_hsm_impl_t *hsm_impl);
+vs_sdmp_tests(void);
+
+uint16_t
+vs_fldt_tests(vs_hsm_impl_t *hsm_impl);
+
+uint16_t
+vs_crypto_test(vs_hsm_impl_t *hsm_impl);
+
 uint16_t
 vs_secbox_test(vs_hsm_impl_t *hsm_impl);
 
 uint16_t
 vs_firmware_test(vs_hsm_impl_t *hsm_impl);
+
 #endif // VS_IOT_SDK_TESTS_H

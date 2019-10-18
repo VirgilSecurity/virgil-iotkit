@@ -38,7 +38,7 @@
 #include <virgil/iot/hsm/hsm.h>
 
 const char *
-vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
+vs_test_hsm_slot_descr(vs_iot_hsm_slot_e slot);
 
 #define TEST_NOT_IMPLEMENTED(OPERATION)                                                                                \
     do {                                                                                                               \

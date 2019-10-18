@@ -112,7 +112,7 @@ test_keypair(vs_hsm_impl_t *hsm_impl) {
         VS_IOT_STRCPY(buf, "Keypair type ");
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_hsm_keypair_type_descr(test_case->keypair_type));
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), ", slot ");
-        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_iot_hsm_slot_descr(test_case->slot));
+        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_test_hsm_slot_descr(test_case->slot));
 
         TEST_CASE_OK(buf, _test_keypair_generate(hsm_impl, test_case));
     }

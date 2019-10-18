@@ -43,10 +43,6 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/provision/provision.h>
 
-#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_12
-#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_13
-#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_14
-
 #define VS_TEST_FIRMWARE_DATA "test firmware data for verifying update library"
 #define VS_TEST_FILL_SIZE 256
 
@@ -72,79 +68,6 @@ static vs_firmware_descriptor_t _test_descriptor = {
         .firmware_length = sizeof(VS_TEST_FIRMWARE_DATA),
         .app_size = sizeof(VS_TEST_FIRMWARE_DATA) + VS_TEST_FILL_SIZE,
 };
-
-/**********************************************************/
-static bool
-_create_test_signed_hl_key(vs_hsm_impl_t *hsm_impl,
-                           vs_key_type_e hl_key_type,
-                           vs_iot_hsm_slot_e slot_with_hl_keypair,
-                           vs_iot_hsm_slot_e slot_to_save_pubkey,
-                           bool with_signature) {
-    uint8_t buf[PUBKEY_MAX_BUF_SIZE];
-    uint8_t hash_buf[32];
-    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
-    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
-    uint16_t hl_slot_sz = sizeof(vs_pubkey_dated_t) + key_len + sizeof(vs_sign_t) + sign_len + key_len;
-    vs_pubkey_dated_t *hl_key = (vs_pubkey_dated_t *)buf;
-    vs_hsm_keypair_type_e pubkey_type;
-    uint16_t _sz;
-
-    VS_IOT_MEMSET(buf, 0, sizeof(buf));
-    hl_key->start_date = 0;
-    hl_key->expire_date = UINT32_MAX;
-    hl_key->pubkey.ec_type = VS_KEYPAIR_EC_SECP256R1;
-    hl_key->pubkey.key_type = hl_key_type;
-
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->get_pubkey(
-                                         slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
-                   "Error get test pubkey");
-
-    if (with_signature) {
-        STATUS_CHECK_RET_BOOL(
-                hsm_impl->hash(
-                        VS_HASH_SHA_256, buf, sizeof(vs_pubkey_dated_t) + key_len, hash_buf, sizeof(hash_buf), &_sz),
-                "ERROR while creating hash for test key");
-
-        vs_sign_t *sign = (vs_sign_t *)(hl_key->pubkey.pubkey + key_len);
-        sign->signer_type = VS_KEY_RECOVERY;
-        sign->hash_type = VS_HASH_SHA_256;
-        sign->ec_type = VS_KEYPAIR_EC_SECP256R1;
-
-        BOOL_CHECK_RET(
-                VS_CODE_OK ==
-                        hsm_impl->ecdsa_sign(
-                                TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
-                "Error sign test pubkey");
-
-        BOOL_CHECK_RET(VS_CODE_OK ==
-                               hsm_impl->get_pubkey(
-                                       TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
-                       "Error get test RECOVERY pubkey");
-    }
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->slot_save(slot_to_save_pubkey, buf, hl_slot_sz), "Error save test pubkey");
-    return true;
-}
-
-/**********************************************************/
-static bool
-_create_test_hl_keys(vs_hsm_impl_t *hsm_impl) {
-    VS_HEADER_SUBCASE("Create test hl keys");
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->create_keypair(TEST_REC_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test recovery keypair");
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->create_keypair(TEST_AUTH_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test auth keypair");
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->create_keypair(TEST_FW_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create fw keypair");
-
-    BOOL_CHECK_RET(_create_test_signed_hl_key(hsm_impl, VS_KEY_RECOVERY, TEST_REC_KEYPAIR, REC1_KEY_SLOT, false),
-                   "Error while creating signed test rec key");
-    BOOL_CHECK_RET(_create_test_signed_hl_key(hsm_impl, VS_KEY_AUTH, TEST_AUTH_KEYPAIR, AUTH1_KEY_SLOT, true),
-                   "Error while creating signed test auth key");
-    BOOL_CHECK_RET(_create_test_signed_hl_key(hsm_impl, VS_KEY_FIRMWARE, TEST_FW_KEYPAIR, FW1_KEY_SLOT, true),
-                   "Error while creating signed test auth key");
-
-    return true;
-}
 
 /**********************************************************/
 static bool
@@ -327,7 +250,8 @@ vs_firmware_test(vs_hsm_impl_t *hsm_impl) {
 
     TEST_CASE_OK("Prepare test",
                  vs_test_erase_otp_provision(hsm_impl) && vs_test_create_device_key(hsm_impl) &&
-                         _create_test_hl_keys(hsm_impl) && _create_test_firmware_footer(hsm_impl, &_test_descriptor));
+                         vs_test_create_test_hl_keys(hsm_impl) &&
+                         _create_test_firmware_footer(hsm_impl, &_test_descriptor));
     TEST_CASE_OK("Save load firmware descriptor", _test_firmware_save_load_descriptor());
     TEST_CASE_OK("Save load firmware data", _test_firmware_save_load_data());
     TEST_CASE_OK("Save install firmware", _test_firmware_install(hsm_impl));
