@@ -40,7 +40,8 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
                  signer_key: Optional[KeyGeneratorInterface]=None,
                  private_key_base64: Optional[str]=None,
                  start_date: Optional[int]=0,
-                 expire_date: Optional[int]=0):
+                 expire_date: Optional[int]=0,
+                 meta_data: Optional[bytes]=bytes()):
         def make_signature():
             byte_buffer = io.BytesIO()
 
@@ -49,6 +50,8 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             byte_buffer.write(expire_date.to_bytes(4, byteorder='big', signed=False))
             byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(len(meta_data).to_bytes(2, byteorder='big', signed=False))
+            byte_buffer.write(meta_data)
             byte_buffer.write(b64_to_bytes(self.public_key))
 
             bytes_to_sign = byte_buffer.getvalue()
