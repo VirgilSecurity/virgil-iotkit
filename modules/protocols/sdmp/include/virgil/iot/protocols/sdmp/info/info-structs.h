@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file info-structs.h
+ * \brief INFO structures
+ */
 
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_STRUCTS_H
@@ -43,31 +46,48 @@
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/firmware/firmware.h>
 
+/** Device information
+ *
+ * Device information as parameter for \ref vs_sdmp_info_start_notif_cb_t call
+ */
 typedef struct {
-    uint32_t device_roles; // vs_sdmp_device_role_e
-    uint8_t mac[ETH_ADDR_LEN];
+    uint32_t device_roles; /**< Mask based on \ref vs_sdmp_device_role_e elements */
+    uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_sdmp_info_device_t;
 
+/** Device general information
+ *
+ * Device general information as parameter for \ref vs_sdmp_info_general_cb_t call
+ */
 typedef struct {
-    uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
-    uint8_t default_netif_mac[ETH_ADDR_LEN];
-    uint32_t device_roles; // vs_sdmp_device_role_e
-    uint8_t fw_major;
-    uint8_t fw_minor;
-    uint8_t fw_patch;
-    uint8_t fw_dev_milestone;
-    uint8_t fw_dev_build;
-    uint32_t fw_timestamp;
-    uint16_t tl_version;
+    uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< Manufacture ID*/
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< Device type */
+    uint8_t default_netif_mac[ETH_ADDR_LEN]; /**< Default network interface MAC address*/
+    uint32_t device_roles; /**< Mask based on \ref vs_sdmp_device_role_e elements */
+    uint8_t fw_major; /**< Major version */
+    uint8_t fw_minor; /**< Minor version */
+    uint8_t fw_patch; /**< Patch version */
+    uint8_t fw_dev_milestone; /**< Device milestone */
+    uint8_t fw_dev_build; /**< Build number */
+    uint32_t fw_timestamp; /**< The number of seconds elapsed since January 1, 2015 UTC */
+    uint16_t tl_version; /**< Trust List version */
 } vs_info_general_t;
 
+/** Device statistics
+ *
+ * Device statistics as parameter for \ref vs_sdmp_info_statistics_cb_t call
+ */
 typedef struct {
     uint32_t sent;
     uint32_t received;
     uint8_t default_netif_mac[ETH_ADDR_LEN];
 } vs_info_statistics_t;
 
+// TODO : description???
+/** Device statistics
+ *
+ * Element mask for \ref vs_sdmp_info_set_polling call
+ */
 typedef enum {
     VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),
     VS_SDMP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002),

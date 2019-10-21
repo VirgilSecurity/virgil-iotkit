@@ -32,6 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file prvs-structs.h
+ * \brief PRVS structures
+ */
+
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_STRUCTS_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_STRUCTS_H
 
@@ -45,29 +49,46 @@ extern "C" {
 #define DNID_LIST_SZ_MAX (50)
 #define PUBKEY_MAX_SZ (100)
 
+/** Device description
+ *
+ * Device description. This is response for \ref vs_sdmp_prvs_enum_devices call as an element from \ref vs_sdmp_prvs_dnid_list_t.
+ */
 typedef struct {
-    vs_mac_addr_t mac_addr;
-    uint32_t device_roles; // vs_sdmp_device_role_e
+    vs_mac_addr_t mac_addr; /**< Device MAC address */
+    uint32_t device_roles; /**< Mask based on \ref vs_sdmp_device_role_e */
 } vs_sdmp_prvs_dnid_element_t;
 
+/** Devices enumeration
+ *
+ * The list of devices that have not been initialized. This is response for \ref vs_sdmp_prvs_enum_devices call.
+ */
 typedef struct {
-    vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX];
-    uint16_t count;
+    vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX]; /**< elements array */
+    uint16_t count; /**< elements amount */
 } vs_sdmp_prvs_dnid_list_t;
 
+/** Device information
+ *
+ * Device information. This is response for \ref vs_sdmp_prvs_device_info call.
+ */
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE];
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE];
-    uint8_t serial[VS_DEVICE_SERIAL_SIZE];
-    vs_mac_addr_t mac;
-    uint16_t data_sz;
+    uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< manufacture ID */
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< device type */
+    uint8_t serial[VS_DEVICE_SERIAL_SIZE]; /**< device serial number */
+    vs_mac_addr_t mac; /**< device MAC address */
+    uint16_t data_sz; /**< \a data size*/
 
-    uint8_t data[]; // vs_pubkey_t own_key + vs_sign_t signature
+    uint8_t data[]; /**< data : \ref vs_pubkey_t own_key + \ref vs_sign_t signature */
 } vs_sdmp_prvs_devi_t;
 
+// TODO : check !!!
+/** Signed data
+ *
+ * Signed data from \ref vs_sdmp_prvs_sign_data
+ */
 typedef struct __attribute__((__packed__)) {
-    uint8_t hash_type; // vs_hsm_hash_type_e
-    uint8_t data[];
+    uint8_t hash_type; /**< \ref vs_hsm_hash_type_e */
+    uint8_t data[]; /**< signed data */
 } vs_sdmp_prvs_sgnp_req_t;
 
 #ifdef __cplusplus

@@ -114,9 +114,9 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
                                  const vs_mac_addr_t *gateway,
                                  bool successfully_updated);
 
-/** Initialize FLDT client
+/** FLDT Client SDMP Service implementation
  *
- * This call initializes FLDT client. It must be called before any FLDT call.
+ * This call returns FLDT client implementation. It must be called before any FLDT call.
  *
  * \param[in] got_file_callback \ref vs_fldt_got_file callback. Must not be NULL.
  *

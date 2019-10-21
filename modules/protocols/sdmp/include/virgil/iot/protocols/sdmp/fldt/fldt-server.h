@@ -105,9 +105,9 @@ extern "C" {
 typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
                                                    vs_update_interface_t **update_ctx);
 
-/** Initialize FLDT server
+/** FLDT Server SDMP Service implementation
  *
- * This call initializes FLDT server. It must be called before any FLDT call.
+ * This call returns FLDT server implementation. It must be called before any FLDT call.
  *
  * \param[in] gateway_mac \ref vs_mac_addr_t gateway's MAC address. Must not be NULL.
  * \param[in] add_filetype \ref vs_fldt_server_add_filetype callback. Must not be NULL.

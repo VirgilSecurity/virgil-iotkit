@@ -166,6 +166,7 @@ typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif
                                                            const uint16_t response_buf_sz,
                                                            uint16_t *response_sz);
 
+// TODO : what is ACK ???
 /** SDMP Service Response Processor
  *
  * Callback for \a response_process member of \ref vs_sdmp_service_t structure.
@@ -252,6 +253,7 @@ typedef struct __attribute__((__packed__)) ethernet_header {
     vs_mac_addr_t src; /**< Source MAC address */
     uint16_t type; /**< Packet type */
 } vs_ethernet_header_t;
+// TODO : what is type ??? Which packet types?
 
 /******************************************************************************/
 /** SDMP packet header
@@ -264,6 +266,7 @@ typedef struct __attribute__((__packed__)) {
     uint16_t padding; /**< Packet padding */
     uint16_t content_size; /**< Packet \ref vs_sdmp_packet_t \a content data size */
 } vs_sdmp_header_t;
+// TODO : what is it padding?
 
 /******************************************************************************/
 /** SDMP packet
