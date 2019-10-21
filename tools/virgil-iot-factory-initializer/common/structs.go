@@ -61,6 +61,14 @@ type Go_vs_pubkey_dated_t struct {
     PubKey     Go_vs_pubkey_t
 }
 
+type Go_vs_pubkey_t struct  {
+    KeyType         uint8
+    ECType          uint8
+    MetadataSize    uint16
+    Metadata        []byte
+    RawPubKey       []byte // raw public key, size of element depends on @ec_type
+}
+
 func (g *Go_vs_pubkey_dated_t) ToBytes() ([]byte, error) {
     buf := new(bytes.Buffer)
 
@@ -102,12 +110,6 @@ func (g *Go_vs_pubkey_dated_t) FromBytes(b []byte) (n int, err error) {
     return n, nil
 }
 
-type Go_vs_pubkey_t struct  {
-    KeyType    uint8
-    ECType     uint8
-    RawPubKey  []byte // raw public key, size of element depends on @ec_type
-}
-
 func (g *Go_vs_pubkey_t) FromBytes(b []byte) (n int, err error) {
     buf := bytes.NewBuffer(b)
     if err := binary.Read(buf, SystemEndian, &g.KeyType); err != nil {
@@ -116,7 +118,14 @@ func (g *Go_vs_pubkey_t) FromBytes(b []byte) (n int, err error) {
     if err := binary.Read(buf, SystemEndian, &g.ECType); err != nil {
         return 0, fmt.Errorf("failed to deserialize vs_pubkey_t ECType: %v", err)
     }
+    if err := binary.Read(buf, binary.BigEndian, &g.MetadataSize); err != nil {
+        return 0, fmt.Errorf("failed to deserialize vs_pubkey_t MetadataSize: %v", err)
+    }
 
+    // Get Meta data
+    g.Metadata = buf.Next(int(g.MetadataSize))
+
+    // Get Public key
     pubKeySize := GetPublicKeySizeByECType(g.ECType)
     pubKey := buf.Next(pubKeySize)
     if len(pubKey) != pubKeySize {
@@ -135,6 +144,14 @@ func (g *Go_vs_pubkey_t) ToBytes() ([]byte, error) {
     }
     if err := binary.Write(buf, SystemEndian, g.ECType); err != nil {
         return nil, fmt.Errorf("failed to serialize vs_pubkey_t ECType: %v", err)
+    }
+    if err := binary.Write(buf, binary.BigEndian, g.MetadataSize); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_t MetadataSize: %v", err)
+    }
+
+    // Meta data
+    if _, err := buf.Write(g.Metadata); err != nil {
+        return nil, fmt.Errorf("failed to serialize vs_pubkey_t Metadata: %v", err)
     }
 
     // Public key

@@ -56,8 +56,7 @@ typedef struct {
     uint8_t fw_major;
     uint8_t fw_minor;
     uint8_t fw_patch;
-    uint8_t fw_dev_milestone;
-    uint8_t fw_dev_build;
+    uint32_t fw_dev_build;
     uint32_t fw_timestamp;
     uint16_t tl_version;
 } vs_info_general_t;

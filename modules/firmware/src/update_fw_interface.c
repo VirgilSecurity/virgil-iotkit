@@ -317,11 +317,13 @@ _fw_update_file_is_newer(void *context,
     VS_IOT_ASSERT(available_file);
     VS_IOT_ASSERT(new_file);
 
-    if (!fw_ver_available->timestamp || !fw_ver_available->dev_build) {
+    // TODO: Fix it ! Use version comparision
+
+    if (!fw_ver_available->timestamp || !fw_ver_available->build) {
         return true;
     }
 
-    if (fw_ver_new->dev_build > fw_ver_available->dev_build) {
+    if (fw_ver_new->build > fw_ver_available->build) {
         return true;
     }
 

@@ -731,15 +731,14 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     VS_IOT_SNPRINTF(buffer,
                     buf_size,
 #ifdef VS_IOT_ASCTIME
-                    "ver %d.%d.%d.%d.%d, %s",
+                    "ver %d.%d.%d.%llu, %s",
 #else
-                    "ver %d.%d.%d.%d.%d, UNIX timestamp %u",
+                    "ver %d.%d.%d.%llu, UNIX timestamp %u",
 #endif //   VS_IOT_ASCTIME
                     fw_ver->major,
                     fw_ver->minor,
                     fw_ver->patch,
-                    fw_ver->dev_milestone,
-                    fw_ver->dev_build,
+                    (unsigned long long)fw_ver->build,
 #ifdef VS_IOT_ASCTIME
                     fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
 #else

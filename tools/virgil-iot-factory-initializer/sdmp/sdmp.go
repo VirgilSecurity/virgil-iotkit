@@ -67,7 +67,7 @@ import (
 
 
 const (
-    DEFAULT_TIMEOUT_MS = 7000
+    DEFAULT_TIMEOUT_MS = 3000
     ETH_ADDR_LEN       = int(C.ETH_ADDR_LEN)
     // algorithm, which is used by device in sign operations and signing device:
     DEVICE_HASH_ALGO   = common.VS_HASH_SHA_256

@@ -66,9 +66,7 @@ vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_ver
         return VS_CODE_OLD_VERSION;
     if (update_ver->patch < current_ver->patch)
         return VS_CODE_OLD_VERSION;
-    if (update_ver->dev_milestone < current_ver->dev_milestone)
-        return VS_CODE_OLD_VERSION;
-    if (update_ver->dev_build <= current_ver->dev_build)
+    if (update_ver->build <= current_ver->build)
         return VS_CODE_OLD_VERSION;
 
     return VS_CODE_OK;

@@ -34,6 +34,7 @@
 #include <stdbool.h>
 
 #include <stdlib-config.h>
+#include <endian-config.h>
 
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
@@ -146,6 +147,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
     vs_status_e ret_code;
+    uint8_t *pubkey;
 
     VS_IOT_ASSERT(_hsm);
 
@@ -160,8 +162,9 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
             return VS_CODE_ERR_INCORRECT_PARAMETER;
         }
 
+        pubkey = &ref_key->pubkey.meta_and_pubkey[ref_key->pubkey.meta_data_sz];
         if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz &&
-            0 == VS_IOT_MEMCMP(key, ref_key->pubkey.pubkey, key_sz)) {
+            0 == VS_IOT_MEMCMP(key, pubkey, key_sz)) {
             return vs_provision_verify_hl_key(buf, _sz);
         }
     }
@@ -199,7 +202,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     CHECK_RET(key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported key ec_type");
 
     // Determine stuff size under signature
-    signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
+    signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len + VS_IOT_NTOHS(key->pubkey.meta_data_sz);
 
     CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), VS_CODE_ERR_CRYPTO, "key stuff is too small");
 

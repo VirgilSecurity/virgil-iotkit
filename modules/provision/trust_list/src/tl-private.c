@@ -519,7 +519,7 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     CHECK_RET(
             element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
 
-    key_len += sizeof(vs_pubkey_dated_t);
+    key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element->pubkey.meta_data_sz);
 
     CHECK_RET(key_len == key_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid length key to save");
 
@@ -567,7 +567,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(key_len > 0, VS_CODE_ERR_FILE_READ, "Unsupported ec_type");
 
     // Full size of key stuff is raw key size and meta info
-    key_len += sizeof(vs_pubkey_dated_t);
+    key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element.pubkey.meta_data_sz);
 
     CHECK_RET(key_len <= buf_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Out buffer too small");
 

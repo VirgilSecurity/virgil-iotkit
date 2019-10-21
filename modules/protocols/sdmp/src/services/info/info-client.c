@@ -174,8 +174,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.fw_major = ginf_request->fw_version.major;
     general_info.fw_minor = ginf_request->fw_version.minor;
     general_info.fw_patch = ginf_request->fw_version.patch;
-    general_info.fw_dev_milestone = ginf_request->fw_version.dev_milestone;
-    general_info.fw_dev_build = ginf_request->fw_version.dev_build;
+    general_info.fw_dev_build = ginf_request->fw_version.build;
     general_info.fw_timestamp = ginf_request->fw_version.timestamp;
     general_info.tl_version = ginf_request->tl_version;
     general_info.device_roles = ginf_request->device_roles;
