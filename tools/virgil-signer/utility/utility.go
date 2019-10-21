@@ -237,8 +237,8 @@ func (s *SignerUtility) createUpdateFile(filePath string) error {
 func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
     // Version parts
     versionParts := strings.Split(s.FirmwareVersion, ".")
-    if len(versionParts) > 5 {
-        return ver, fmt.Errorf("version parts amount is > 5: %s", versionParts)
+    if len(versionParts) > 4 {
+        return ver, fmt.Errorf("version parts amount is > 4: %s", versionParts)
     }
 
     major, err := stringToUint8(versionParts[0])
@@ -253,8 +253,7 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
     if err != nil {
         return ver, err
     }
-    devMilestone := []byte(versionParts[3])[0]
-    devBuild, err := stringToUint8(versionParts[4])
+    build, err := stringToUint8(versionParts[3])
     if err != nil {
         return ver, err
     }
@@ -266,14 +265,9 @@ func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
         Major:            major,
         Minor:            minor,
         Patch:            patch,
-        DevMilestone:     devMilestone,
-        DevBuild:         devBuild,
+        Build:            build,
         Timestamp:        timestamp,
     }
-    // Application type
-    // TODO: Remove it after update of Service
-    appType := "0000"
-    copy(ver.ApplicationType[:], appType)
 
     return ver, nil
 }

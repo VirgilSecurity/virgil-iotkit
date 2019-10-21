@@ -37,7 +37,6 @@
 
 #include <trust_list-config.h>
 #include <stdlib-config.h>
-#include <cloud-config.h>
 #include <update-config.h>
 #include <global-hal.h>
 #include <endian-config.h>

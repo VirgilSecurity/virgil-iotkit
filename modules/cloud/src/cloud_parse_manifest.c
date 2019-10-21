@@ -45,7 +45,7 @@ vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     uint16_t res_sz;
     vs_status_e ret_code;
 
-    if (tl_info->type < 0 || tl_info->type > 0xFF || (uint32_t)tl_info->version > 0xFFFF) {
+    if (tl_info->type < 0 || tl_info->type > 0xFF) {
         return VS_CODE_ERR_INCORRECT_PARAMETER;
     }
 
@@ -59,7 +59,7 @@ vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
     STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
 
     if ((uint8_t)tl_info->type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
-        (uint16_t)tl_info->version <= tl_header.version) {
+        VS_CODE_OK != vs_update_compare_version(&tl_info->version, &tl_header.version)) {
         return VS_CODE_ERR_NOT_FOUND;
     }
 
@@ -195,14 +195,13 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->patch), VS_CODE_ERR_JSON, "Incorrect patch field");
     ptr = ptr1;
 
-    /*parse dev_milestone*/
-    fw_version->dev_milestone = *ptr;
-
     /*parse dev_build*/
     ptr++;
+#if 0
     ptr1 = fm_entry->version + VS_IOT_STRLEN(fm_entry->version);
     len = (int8_t)(ptr1 - ptr);
     CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->dev_build), VS_CODE_ERR_JSON, "Incorrect dev_build field");
+#endif
 
     /*parse build_timestamp*/
     uint8_t timestamp[sizeof(uint32_t)];
@@ -375,8 +374,11 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     int res = VS_CODE_ERR_CLOUD;
 
-    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
-        VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.info.version)) {
+    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type)
+#if 0
+        && VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.info.version)
+#endif
+    ) {
         VS_LOG_INFO("[TL] new tl manifest:");
         VS_LOG_INFO("[TL] url = %s", tl_entry.file_url);
         VS_LOG_INFO("[TL] type = %d", tl_entry.info.type);

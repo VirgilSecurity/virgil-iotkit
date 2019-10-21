@@ -57,7 +57,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_firmware_manifest_entry_t;
 
 typedef struct {
-    int version;
+    vs_file_version_t version;
     int type;
 } vs_tl_info_t;
 

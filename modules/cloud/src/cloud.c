@@ -141,7 +141,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
+_get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
     vs_status_e ret;
     char serial[VS_DEVICE_SERIAL_SIZE * 2 + 1];
 
@@ -192,8 +192,9 @@ vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
+vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len) {
+    CHECK_NOT_ZERO_RET(cloud_host, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    return _get_credentials(cloud_host, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
 }
 
 #define VS_CLOUD_FETCH_FW_STEP_HEADER 0

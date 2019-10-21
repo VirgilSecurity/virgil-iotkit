@@ -55,4 +55,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
 vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 
+const char *
+vs_provision_cloud_url(void);
+
 #endif // VS_IOT_PROVISION_H

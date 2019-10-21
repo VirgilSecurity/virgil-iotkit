@@ -208,7 +208,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_sdmp_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_sdmp_device_type(), sizeof(vs_device_type_t));
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
-    general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
+    VS_IOT_MEMCPY(&general_info->tl_version, &tl_header.version, sizeof(tl_header.version));
     general_info->device_roles = vs_sdmp_device_roles();
 
     VS_LOG_DEBUG(
