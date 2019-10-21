@@ -44,6 +44,22 @@
 #include <virgil/iot/protocols/sdmp.h>
 
 /******************************************************************************/
+static void
+_str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
+    size_t pos;
+    size_t len;
+
+    assert(src && *src);
+
+    memset(dst, 0, buf_size);
+
+    len = VS_IOT_STRLEN(src);
+    for (pos = 0; pos < len && pos < buf_size; ++pos, ++src, ++dst) {
+        *dst = *src;
+    }
+}
+
+/******************************************************************************/
 vs_status_e
 vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
     assert(footer);
@@ -54,8 +70,9 @@ vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
 
     memset(footer, 0, footer_sz);
     vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
-    VS_IOT_MEMCPY((char *)buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
-    VS_IOT_MEMCPY((char *)buf->descriptor.info.device_type, TEST_MANUFACTURE_ID, sizeof(vs_device_type_t));
+
+    _str_to_bytes(buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
+    _str_to_bytes(buf->descriptor.info.device_type, TEST_DEVICE_TYPE, sizeof(vs_device_type_t));
 
     return VS_CODE_OK;
 }
