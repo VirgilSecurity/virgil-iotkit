@@ -46,7 +46,6 @@ target_sources(virgil-iot-sdk-tests
         PRIVATE
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/private_helpers.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_fldt.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_hl_keys_data.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/netif_test_impl.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_tl_data.h
@@ -55,7 +54,6 @@ target_sources(virgil-iot-sdk-tests
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test_crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/fldt_tests.c
         ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
@@ -92,7 +90,7 @@ endif()
 
 target_link_libraries(virgil-iot-sdk-tests
         vs-module-secbox
-        vs-module-sdmp-test
+        vs-module-sdmp-factory
         vs-module-firmware
         )
 
