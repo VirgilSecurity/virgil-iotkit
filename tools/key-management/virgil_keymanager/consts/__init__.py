@@ -38,6 +38,7 @@ class VSKeyTypeE(IntEnum):
     USER_DEVICE = 6
     FIRMWARE_INTERNAL = 7
     AUTH_INTERNAL = 8
+    CLOUD = 9
 
 
 class VSKeyTypeS(Enum):
@@ -50,6 +51,7 @@ class VSKeyTypeS(Enum):
     USER_DEVICE = "user_device"
     FIRMWARE_INTERNAL = "firmware_internal"
     AUTH_INTERNAL = "auth_internal"
+    CLOUD = "cloud"
 
 
 hash_type_vs_to_hsm_map = {
@@ -80,7 +82,8 @@ key_type_str_to_num_map = {
     VSKeyTypeS.IOT_DEVICE:        VSKeyTypeE.IOT_DEVICE,
     VSKeyTypeS.USER_DEVICE:       VSKeyTypeE.USER_DEVICE,
     VSKeyTypeS.FIRMWARE_INTERNAL: VSKeyTypeE.FIRMWARE_INTERNAL,
-    VSKeyTypeS.AUTH_INTERNAL:     VSKeyTypeE.AUTH_INTERNAL
+    VSKeyTypeS.AUTH_INTERNAL:     VSKeyTypeE.AUTH_INTERNAL,
+    VSKeyTypeS.CLOUD:             VSKeyTypeE.CLOUD
 }
 
 signature_sizes = {
@@ -108,6 +111,6 @@ pub_keys_sizes = {
     # VirgilKeyPair.Type_EC_SECP521R1: 133,
     # VirgilKeyPair.Type_EC_CURVE25519: 32,
     # VirgilKeyPair.Type_FAST_EC_ED25519: 32
-    # TODO: 64 is because key is trimmed. Use values above after converters implementation
+    # TODO: Use values above after converters implementation
     VirgilKeyPair.Type_EC_SECP256R1: 65
 }

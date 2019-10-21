@@ -138,7 +138,8 @@ class AtmelKeyGenerator(KeyGeneratorInterface):
                  signer_key: Optional[KeyGeneratorInterface] = None,
                  private_key_base64: Optional[str] = None,
                  start_date: Optional[int] = 0,
-                 expire_date: Optional[int] = 0):
+                 expire_date: Optional[int] = 0,
+                 meta_data: Optional[bytes] = bytes()):
         random_number_bytes = list(randint(0, 255) for _ in range(32))
         random_number = to_b64(bytearray(random_number_bytes))
 
