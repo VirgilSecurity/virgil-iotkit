@@ -204,7 +204,7 @@ vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_l
 typedef struct {
     uint8_t step;
     bool is_descriptor_stored;
-    vs_cloud_firmware_header_t header;
+    vs_firmware_header_t header;
     uint32_t file_offset;
     uint16_t chunks_qty;
     uint16_t chunk_cnt;
@@ -215,31 +215,10 @@ typedef struct {
 } fw_resp_buff_t;
 
 /*************************************************************************/
-void
-vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc) {
-    desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
-    desc->app_size = VS_IOT_NTOHL(desc->app_size);
-    desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
-    desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
-}
-
-/*************************************************************************/
-void
-vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header) {
-
-    vs_cloud_ntoh_fw_descriptor(&header->descriptor);
-
-    header->code_length = VS_IOT_NTOHL(header->code_length);
-    header->code_offset = VS_IOT_NTOHL(header->code_offset);
-    header->footer_length = VS_IOT_NTOHL(header->footer_length);
-    header->footer_offset = VS_IOT_NTOHL(header->footer_offset);
-}
-
-/*************************************************************************/
 static bool
-_check_firmware_header(vs_cloud_firmware_header_t *header) {
+_check_firmware_header(vs_firmware_header_t *header) {
     return header->descriptor.firmware_length == header->code_length &&
-           header->code_offset == sizeof(vs_cloud_firmware_header_t) && header->footer_offset >= header->code_length &&
+           header->code_offset == sizeof(vs_firmware_header_t) && header->footer_offset >= header->code_length &&
            header->footer_offset + header->footer_length < VS_MAX_FIRMWARE_UPDATE_SIZE;
 }
 
@@ -258,17 +237,17 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
     case VS_CLOUD_FETCH_FW_STEP_HEADER: {
         size_t read_sz = chunksize;
 
-        if (resp->used_size + chunksize > sizeof(vs_cloud_firmware_header_t)) {
-            read_sz = sizeof(vs_cloud_firmware_header_t) - resp->used_size;
+        if (resp->used_size + chunksize > sizeof(vs_firmware_header_t)) {
+            read_sz = sizeof(vs_firmware_header_t) - resp->used_size;
         }
 
         VS_IOT_MEMCPY(&((uint8_t *)&resp->header)[resp->used_size], contents, read_sz);
 
         resp->used_size += read_sz;
 
-        if (resp->used_size == sizeof(vs_cloud_firmware_header_t)) {
+        if (resp->used_size == sizeof(vs_firmware_header_t)) {
 
-            vs_cloud_ntoh_fw_header(&resp->header);
+            vs_firmware_ntoh_header(&resp->header);
 
             if (!_check_firmware_header(&resp->header) ||
                 VS_CODE_OK != vs_cloud_is_new_firmware_version_available(&resp->header.descriptor)) {
@@ -368,7 +347,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
             vs_firmware_descriptor_t f;
             VS_IOT_MEMCPY(&f, &((vs_firmware_footer_t *)resp->buff)->descriptor, sizeof(vs_firmware_descriptor_t));
-            vs_cloud_ntoh_fw_descriptor(&f);
+            vs_firmware_ntoh_descriptor(&f);
 
             if (0 != memcmp(&resp->header.descriptor, &f, sizeof(vs_firmware_descriptor_t))) {
                 VS_LOG_ERROR("Invalid firmware descriptor");
@@ -387,7 +366,7 @@ _store_fw_handler(char *contents, size_t chunksize, void *userdata) {
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header) {
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header) {
     vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -397,8 +376,8 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_head
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
-    resp.buff = VS_IOT_CALLOC(1, sizeof(vs_cloud_firmware_header_t));
-    resp.buff_sz = sizeof(vs_cloud_firmware_header_t);
+    resp.buff = VS_IOT_CALLOC(1, sizeof(vs_firmware_header_t));
+    resp.buff_sz = sizeof(vs_firmware_header_t);
 
     if (VS_CODE_OK != _hal_impl->http_get(fw_file_url, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
@@ -409,7 +388,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_head
         }
 
     } else {
-        VS_IOT_MEMCPY(fetched_header, &resp.header, sizeof(vs_cloud_firmware_header_t));
+        VS_IOT_MEMCPY(fetched_header, &resp.header, sizeof(vs_firmware_header_t));
     }
 
     VS_IOT_FREE(resp.buff);

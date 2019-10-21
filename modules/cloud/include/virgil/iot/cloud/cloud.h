@@ -61,21 +61,6 @@ typedef struct {
     vs_cloud_http_get_func_t http_get;
 } vs_cloud_impl_t;
 
-typedef struct __attribute__((__packed__)) {
-    uint32_t code_offset;   // sizeof(vs_cloud_firmware_header_t)
-    uint32_t code_length;   // firmware_length
-    uint32_t footer_offset; // code_offset + code_length
-    uint32_t footer_length;
-    uint8_t signatures_count;
-    vs_firmware_descriptor_t descriptor;
-} vs_cloud_firmware_header_t;
-
-void
-vs_cloud_ntoh_fw_descriptor(vs_firmware_descriptor_t *desc);
-
-void
-vs_cloud_ntoh_fw_header(vs_cloud_firmware_header_t *header);
-
 vs_status_e
 vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
 
@@ -83,7 +68,7 @@ vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_cloud_firmware_header_t *fetched_header);
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header);
 
 vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);

@@ -45,34 +45,34 @@ add_library(virgil-iot-sdk-tests)
 target_sources(virgil-iot-sdk-tests
         PRIVATE
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/private_helpers.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_fldt.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_hl_keys_data.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_netif.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_tl_data.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/helpers.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/private_helpers.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_fldt.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_hl_keys_data.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_netif.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_tl_data.h
+        #${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/helpers.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/tests.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/tests.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/fldt_tests.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/test_netif.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdsa.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/hash.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/hmac.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/kdf.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/random.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/helpers.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust_list.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox_test.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil_ecies.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/firmware/firmware_test.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_hl_keys_data.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/sdmp/fldt_tests.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/sdmp/test_netif.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdsa.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/hash.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/hmac.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/kdf.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/keypair.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/random.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/helpers.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust_list.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox_test.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil_ecies.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/firmware/firmware_test.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_hl_keys_data.c
+        #${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
         )
 
 if (NOT VIRGIL_IOT_MCU_BUILD)
@@ -88,7 +88,7 @@ endif()
 
 target_link_libraries(virgil-iot-sdk-tests
         vs-module-secbox
-        vs-module-sdmp
+        vs-module-sdmp-thing
         vs-module-firmware
         )
 

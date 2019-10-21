@@ -55,6 +55,15 @@ typedef struct __attribute__((__packed__)) {
     uint8_t signatures[];
 } vs_firmware_footer_t;
 
+typedef struct __attribute__((__packed__)) {
+    uint32_t code_offset;   // sizeof(vs_firmware_header_t)
+    uint32_t code_length;   // firmware_length
+    uint32_t footer_offset; // code_offset + code_length
+    uint32_t footer_length;
+    uint8_t signatures_count;
+    vs_firmware_descriptor_t descriptor;
+} vs_firmware_header_t;
+
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_hsm_impl_t *hsm,
@@ -62,7 +71,7 @@ vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_device_type_t device_type);
 
 vs_status_e
-vs_firnware_deinit(void);
+vs_firmware_deinit(void);
 
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
@@ -120,5 +129,11 @@ vs_firmware_update_ctx(void);
 
 const vs_update_file_type_t *
 vs_firmware_update_file_type(void);
+
+void
+vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc);
+
+void
+vs_firmware_ntoh_header(vs_firmware_header_t *header);
 
 #endif // VS_FIRMWARE_H

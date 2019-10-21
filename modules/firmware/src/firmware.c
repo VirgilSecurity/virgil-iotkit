@@ -36,6 +36,7 @@
 #include <stddef.h>
 
 #include <update-config.h>
+#include <endian-config.h>
 
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
@@ -159,7 +160,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_firnware_deinit(void) {
+vs_firmware_deinit(void) {
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
@@ -619,7 +620,6 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) {
     vs_firmware_descriptor_t own_desc;
-    size_t cmp_sz = (sizeof(vs_file_version_t) - sizeof(own_desc.info.version.timestamp));
 
     CHECK_NOT_ZERO_RET(new_descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -627,6 +627,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
               VS_CODE_ERR_NOT_FOUND,
               "Unable to get own firmware descriptor");
 
+    // TODO: Use vs_update_equal_file_type !
     if (0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id,
                            new_descriptor->info.manufacture_id,
                            VS_DEVICE_MANUFACTURE_ID_SIZE) &&
@@ -635,10 +636,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
         return VS_CODE_ERR_NOT_FOUND;
     }
 
-    if (0 <= VS_IOT_MEMCMP(&(own_desc.info.version), &(new_descriptor->info.version), cmp_sz)) { //-V512 (PVS_IGNORE)
-        return VS_CODE_OLD_VERSION;
-    }
-    return VS_CODE_OK;
+    return vs_update_compare_version(&new_descriptor->info.version, &own_desc.info.version);
 }
 
 /*************************************************************************/
@@ -750,6 +748,28 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     );
 
     return buffer;
+}
+
+
+/*************************************************************************/
+void
+vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
+    desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
+    desc->app_size = VS_IOT_NTOHL(desc->app_size);
+    desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
+    desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
+}
+
+/*************************************************************************/
+void
+vs_firmware_ntoh_header(vs_firmware_header_t *header) {
+
+    vs_firmware_ntoh_descriptor(&header->descriptor);
+
+    header->code_length = VS_IOT_NTOHL(header->code_length);
+    header->code_offset = VS_IOT_NTOHL(header->code_offset);
+    header->footer_length = VS_IOT_NTOHL(header->footer_length);
+    header->footer_offset = VS_IOT_NTOHL(header->footer_offset);
 }
 
 /*************************************************************************/

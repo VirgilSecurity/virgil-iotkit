@@ -37,11 +37,11 @@
 //#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 //#include <virgil/iot/protocols/sdmp.h>
 //
-//static vs_netif_t test_netif;
+// static vs_netif_t test_netif;
 //
 ///**********************************************************/
-//static bool
-//test_sdmp_init_deinit(void) {
+// static bool
+// test_sdmp_init_deinit(void) {
 //
 //    const vs_device_manufacture_id_t manufacturer_id = {0};
 //    const vs_device_type_t device_type = {0};
@@ -50,25 +50,25 @@
 //
 //    netif_state.membuf = 0;
 //
-//    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
-//    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+//    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles),
+//    "vs_sdmp_init call"); NETIF_OP_CHECK_GOTO(netif_state.initialized);
 //
 //    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
 //    NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
 //
-//    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
-//    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+//    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles),
+//    "vs_sdmp_init call"); NETIF_OP_CHECK_GOTO(netif_state.initialized);
 //
 //    return true;
 //
-//terminate:
+// terminate:
 //
 //    return false;
 //}
 //
 ///**********************************************************/
-//static bool
-//test_sdmp_send(void) {
+// static bool
+// test_sdmp_send(void) {
 //    const uint16_t data_sz = sizeof(vs_sdmp_packet_t);
 //    uint8_t data[data_sz];
 //
@@ -81,14 +81,14 @@
 //
 //    return true;
 //
-//terminate:
+// terminate:
 //
 //    return false;
 //}
 //
 ///**********************************************************/
-//static bool
-//test_sdmp_mac_addr(void) {
+// static bool
+// test_sdmp_mac_addr(void) {
 //
 //    vs_mac_addr_t mac_addr;
 //    netif_state.membuf = 0;
@@ -98,14 +98,14 @@
 //
 //    return true;
 //
-//terminate:
+// terminate:
 //
 //    return false;
 //}
 //
 ///**********************************************************/
-//uint16_t
-//sdmp_tests(void) {
+// uint16_t
+// sdmp_tests(void) {
 //    uint16_t failed_test_result = 0;
 //
 //    START_TEST("SDMP");
@@ -121,6 +121,6 @@
 //    // Call for possible crashes and memory leaks
 //    SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
 //
-//terminate:;
+// terminate:;
 //    return failed_test_result;
 //}

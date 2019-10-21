@@ -45,7 +45,7 @@ vs_iot_hsm_slot_descr(vs_iot_hsm_slot_e slot);
         vs_log_level_t prev_loglev;                                                                                    \
         prev_loglev = vs_logger_get_loglev();                                                                          \
         vs_logger_set_loglev(VS_LOGLEV_CRITICAL);                                                                      \
-        not_implemented = (OPERATION) == VS_CODE_ERR_NOT_IMPLEMENTED;                                                   \
+        not_implemented = (OPERATION) == VS_CODE_ERR_NOT_IMPLEMENTED;                                                  \
         vs_logger_set_loglev(prev_loglev);                                                                             \
     } while (0)
 

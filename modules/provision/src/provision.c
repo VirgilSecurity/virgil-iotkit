@@ -252,3 +252,9 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_provision_deinit(void) {
+    return vs_tl_deinit();
+}
+
+/******************************************************************************/

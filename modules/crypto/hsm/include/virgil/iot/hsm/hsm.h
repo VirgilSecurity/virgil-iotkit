@@ -217,7 +217,12 @@ typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *reci
                                                              size_t buf_sz,
                                                              size_t *cryptogram_sz);
 
+typedef void (*vs_hsm_deinit_t)(void);
+
 typedef struct {
+
+    vs_hsm_deinit_t deinit;
+
     // Slot operations
     vs_hsm_slot_save_t slot_save;
     vs_hsm_slot_load_t slot_load;
