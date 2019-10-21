@@ -38,7 +38,7 @@
  * FLDT protocol is used to download new file version from gateway to client. This module is used to process client part
  * of FLDT protocol.
  *
- * \section fldt_client_usage Usage
+ * \section fldt_client_usage FLDT Client Usage
  *
  * Client side downloads new file versions and checks them. \ref vs_fldt_got_file function is called after file upgrading.
  * In most case it used to output new file version information and gateway address.
