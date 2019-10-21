@@ -57,7 +57,6 @@ target_sources(virgil-iot-sdk-tests
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test_crypto.c
         ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/fldt_tests.c
         ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/netif_test_impl.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdsa.c
@@ -66,13 +65,18 @@ target_sources(virgil-iot-sdk-tests
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/kdf.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/keypair.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/random.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/crypto_helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust_list.c
         ${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox_test.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil_ecies.c
         ${CMAKE_CURRENT_LIST_DIR}/src/firmware/firmware_test.c
         ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_hl_keys_data.c
         ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/crypto_helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/netif_test_impl.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/global_test_impl.c
+
+        PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/firmware_test_impl.c
         )
 
 if (NOT VIRGIL_IOT_MCU_BUILD)

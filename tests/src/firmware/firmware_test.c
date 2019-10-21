@@ -36,6 +36,7 @@
 
 #include <global-hal.h>
 #include <update-config.h>
+#include <virgil/iot/tests/tests.h>
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
 
@@ -47,11 +48,6 @@
 #define VS_TEST_FILL_SIZE 256
 
 static uint8_t *_fw_footer = NULL;
-
-#define TEST_MANUFACTURE_ID                                                                                            \
-    { 'V', 'R', 'G', 'L' }
-#define TEST_DEVICE_TYPE                                                                                               \
-    { 'T', 'E', 'S', 'T' }
 
 static vs_firmware_descriptor_t _test_descriptor = {
         .info.manufacture_id = TEST_MANUFACTURE_ID,

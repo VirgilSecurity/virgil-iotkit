@@ -32,29 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_H
-#define VS_IOT_SDK_TESTS_H
-
+#include <stdlib-config.h>
 #include <stdbool.h>
-#include <virgil/iot/hsm/hsm.h>
 
-#define TEST_MANUFACTURE_ID "VRGL"
+#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/protocols/sdmp.h>
 
-#define TEST_DEVICE_TYPE "TEST"
-
-uint16_t
-vs_sdmp_tests(void);
-
-uint16_t
-vs_fldt_tests(vs_hsm_impl_t *hsm_impl);
-
-uint16_t
-vs_crypto_test(vs_hsm_impl_t *hsm_impl);
-
-uint16_t
-vs_secbox_test(vs_hsm_impl_t *hsm_impl);
-
-uint16_t
-vs_firmware_test(vs_hsm_impl_t *hsm_impl);
-
-#endif // VS_IOT_SDK_TESTS_H
+/******************************************************************************/
+void
+vs_impl_device_serial(vs_device_serial_t serial_number) {
+    VS_IOT_MEMCPY(serial_number, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);
+}

@@ -32,29 +32,30 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_H
-#define VS_IOT_SDK_TESTS_H
-
+#include <stdlib-config.h>
 #include <stdbool.h>
-#include <virgil/iot/hsm/hsm.h>
 
-#define TEST_MANUFACTURE_ID "VRGL"
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/tests.h>
 
-#define TEST_DEVICE_TYPE "TEST"
+#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/firmware/firmware_hal.h>
+#include <virgil/iot/protocols/sdmp.h>
 
-uint16_t
-vs_sdmp_tests(void);
+/******************************************************************************/
+vs_status_e
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
+    assert(footer);
+    assert(footer_sz >= sizeof(vs_firmware_footer_t));
 
-uint16_t
-vs_fldt_tests(vs_hsm_impl_t *hsm_impl);
+    CHECK_NOT_ZERO_RET(footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(footer_sz >= sizeof(vs_firmware_footer_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "buffer size too small");
 
-uint16_t
-vs_crypto_test(vs_hsm_impl_t *hsm_impl);
+    memset(footer, 0, footer_sz);
+    vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
+    VS_IOT_MEMCPY((char *)buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
+    VS_IOT_MEMCPY((char *)buf->descriptor.info.device_type, TEST_MANUFACTURE_ID, sizeof(vs_device_type_t));
 
-uint16_t
-vs_secbox_test(vs_hsm_impl_t *hsm_impl);
-
-uint16_t
-vs_firmware_test(vs_hsm_impl_t *hsm_impl);
-
-#endif // VS_IOT_SDK_TESTS_H
+    return VS_CODE_OK;
+}
