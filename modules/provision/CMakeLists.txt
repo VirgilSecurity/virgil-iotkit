@@ -53,6 +53,7 @@ target_sources(vs-module-provision
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/provision/provision-structs.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/provision-private.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/provision.c

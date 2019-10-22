@@ -64,9 +64,6 @@ vs_status_e
 vs_provision_deinit(void);
 
 vs_status_e
-vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
-
-vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
 
 vs_status_e

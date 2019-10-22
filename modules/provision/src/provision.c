@@ -42,6 +42,7 @@
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/trust_list/trust_list.h>
+#include <private/provision-private.h>
 
 static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
 

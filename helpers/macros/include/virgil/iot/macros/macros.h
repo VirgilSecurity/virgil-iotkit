@@ -85,7 +85,19 @@
         }                                                                                                              \
     } while (0)
 
-//#define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (ret_code = (OPERATION)), (MESSAGE), ##__VA_ARGS__)
-//#define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONL_IN_COMPILE_TIME(val)                                                                                     \
+    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
+               ((uint32_t)val & 0xFF000000) >> 24)
+#else
+#define HTONL_IN_COMPILE_TIME(val) (val)
+#endif
+
+// Macro used to do htons in compile time
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define HTONS_IN_COMPILE_TIME(val) (uint16_t)(((uint16_t)val & 0xFF) << 8 | ((uint16_t)val & 0xFF00) >> 8)
+#else
+#define HTONS_IN_COMPILE_TIME(val) (val)
+#endif
 
 #endif // VS_MACROS_H
