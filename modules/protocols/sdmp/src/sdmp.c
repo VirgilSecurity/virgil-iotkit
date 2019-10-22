@@ -339,8 +339,8 @@ vs_sdmp_init(vs_netif_t *default_netif,
 vs_status_e
 vs_sdmp_deinit() {
     int i;
-    VS_IOT_ASSERT(_sdmp_default_netif);
-    VS_IOT_ASSERT(_sdmp_default_netif->deinit);
+    CHECK_NOT_ZERO_RET(_sdmp_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_sdmp_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
     _sdmp_default_netif->deinit();
