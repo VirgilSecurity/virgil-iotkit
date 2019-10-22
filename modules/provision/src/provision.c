@@ -245,10 +245,7 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
     _hsm = hsm;
 
     // TrustList module
-    // TODO: Fix errors detection
-    vs_tl_init(tl_storage_ctx, hsm);
-
-    return VS_CODE_OK;
+    return vs_tl_init(tl_storage_ctx, hsm);
 }
 
 /******************************************************************************/
