@@ -161,6 +161,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 /******************************************************************************/
 vs_status_e
 vs_firmware_deinit(void) {
+    CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
