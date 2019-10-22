@@ -876,7 +876,8 @@ EXCLUDE                = cmake/ \
                          ext/ \
                          git-hooks/ \
                          tests/ \
-                         tools/
+                         tools/ \
+                         modules/logger/include/virgil/iot/logger/macro_va_args.h
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -2131,7 +2132,8 @@ PREDEFINED             = __attribute__(x)= \
                          PRVS_CLIENT=1 \
                          PRVS_SERVER=1 \
                          INFO_CLIENT=1 \
-                         INFO_SERVER=1
+                         INFO_SERVER=1 \
+                         VS_IOT_LOGGER_USE_LIBRARY=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
