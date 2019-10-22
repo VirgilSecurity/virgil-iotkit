@@ -33,7 +33,7 @@ typedef enum {
 
 typedef struct vs_tl_element_info_s {
     vs_tl_element_e id;
-    size_t index;
+    int index;
 } vs_tl_element_info_t;
 
 #endif // TL_STRUCTS_H

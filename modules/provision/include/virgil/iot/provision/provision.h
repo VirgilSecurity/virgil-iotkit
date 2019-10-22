@@ -58,4 +58,19 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 const char *
 vs_provision_cloud_url(void);
 
+vs_status_e
+vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
+                               vs_key_type_e key_type,
+                               uint8_t **pubkey,
+                               uint16_t *pubkey_sz,
+                               uint8_t **meta,
+                               uint16_t *meta_sz);
+
+vs_status_e
+vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              uint8_t **pubkey,
+                              uint16_t *pubkey_sz,
+                              uint8_t **meta,
+                              uint16_t *meta_sz);
+
 #endif // VS_IOT_PROVISION_H
