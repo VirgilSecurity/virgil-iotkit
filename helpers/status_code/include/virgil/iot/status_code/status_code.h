@@ -35,7 +35,7 @@
 /*! \file status_code.h
  * \brief Status codes and macroses
  *
- * This file declares \ref vs_status_e status codes and declares macroses to simplify return code checks.
+ * This file declares \ref vs_status_e status codes and macroses to simplify return code checks.
  */
 
 #ifndef VS_IOT_SDK_STATUS_CODE
