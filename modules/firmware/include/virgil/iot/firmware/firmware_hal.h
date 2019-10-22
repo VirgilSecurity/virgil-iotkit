@@ -32,17 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file firmware_hal.h
+ * \brief Firmware HAL signatures
+ */
+
 #ifndef VS_FIRMWARE_INTERFACE_H
 #define VS_FIRMWARE_INTERFACE_H
 
 #include <virgil/iot/status_code/status_code.h>
 
+/** Prepare space
+ *
+ * Signature for function that prepares space for firmware installation
+ *
+ * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_firmware_install_prepare_space_hal(void);
 
+/** Append data
+ *
+ * Signature for function that prepares space for firmware installation
+ *
+ * \param[in] data Data to be append
+ * \param[in] data_sz Data size
+ *
+ * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
+/** Get own firmware footer
+ *
+ * Signature for function that loads firmware footer for own device
+ *
+ * \param[out] footer Device footer
+ * \param[in] footer_sz Footer size
+ *
+ * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz);
 #endif // VS_FIRMWARE_INTERFACE_H
