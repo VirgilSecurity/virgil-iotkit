@@ -46,6 +46,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoapi"
@@ -55,7 +56,6 @@ import (
 
 var (
 	crypto = virgil_crypto_go.NewVirgilCrypto()
-	httpClient = &http.Client{}
 )
 
 type cardsRegistrar struct {
@@ -64,6 +64,8 @@ type cardsRegistrar struct {
 	filePublicSenderKey  cryptoapi.PublicKey   // public key of file sender to verify signature
 	cardService          *cardsServiceInfo
 	failedRequestsFile   string
+
+	httpClient           *http.Client
 
 	processingErrors     []string
 	failedRequests       []string
@@ -119,6 +121,10 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	cardsService.RegistrationUrl = param
 
 	registrar.cardService = cardsService
+
+	// Prepare http client
+	registrar.httpClient = &http.Client{}
+	registrar.httpClient.Timeout = time.Second * 10
 
 	return registrar, nil
 }
@@ -238,7 +244,7 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 	req.Header.Set("AppToken", r.cardService.AppToken)
 
 	// Send request
-	resp, err := httpClient.Do(req)
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("send card request error: %s", err)
 	}
