@@ -120,7 +120,7 @@ typedef enum {
  *
  * Sends \a FRMT message by calling \ref vs_logger_message function.
  *
- * \param[in] LGLVL \ref vs_log_level_t logging level.
+ * \param[in] LGLVL Logging level.
  * \param[in] FRMT printf-like format string and arguments.
  */
 #define VS_LOG(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
@@ -129,7 +129,7 @@ typedef enum {
  *
  * Sends \a BUF as hex string by calling \ref vs_logger_message function.
  *
- * \param[in] LGLVL \ref vs_log_level_t logging level
+ * \param[in] LGLVL Logging level
  * \param[in] PREFIX Prefix for output. Must not be NULL.
  * \param[in] BUF Buffer to be output as HEX. Must not be NULL.
  * \param[in] SIZE Array size to be output as HEX. Must not be zero.
@@ -180,7 +180,7 @@ vs_logger_last_result(void);
  * Sends \a FRMT output message with current time if \ref VS_IOT_LOGGER_OUTPUT_TIME is enabled, filename, line number
  * and user message. Buffer size is limited by \ref VS_IOT_LOGGER_MAX_BUFFER_SIZE define.
  *
- * \param[in] level \ref vs_log_level_t message log level
+ * \param[in] level Message log level
  * \param[in] cur_filename Source code file name. If NULL, not output.
  * \param[in] line_num Source code line number. If zero, not output.
  * \param[in] log_format Printf like string
@@ -192,14 +192,14 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
 
 /** Initialize logging level
  *
- * \param[int] log_level \ref vs_log_level_t message log level
+ * \param[int] log_level Message log level
  */
 void
 vs_logger_init(vs_log_level_t log_level);
 
 /** Set current logging level
  *
- * \param[in] new_level \ref vs_log_level_t new logging level to be initialized
+ * \param[in] new_level New logging level to be initialized
  *
  * \return vs_log_level_t previous log level
  */
@@ -217,7 +217,7 @@ vs_logger_get_loglev(void);
 
 /** Check that specified logging level is enabled
  *
- * \param[in] level \ref vs_log_level_t logging level to be tested
+ * \param[in] level Logging level to be tested
  *
  * \return true if specified logging level is enabled and there are now any error
  */
@@ -229,7 +229,7 @@ vs_logger_is_loglev(vs_log_level_t level);
  *
  * Sends \a BUF as hex string by calling \ref vs_logger_message function.
  *
- * \param[in] level \ref vs_log_level_t logging level
+ * \param[in] level Logging level
  * \param[in] cur_filename Source code file name. If NULL, not output.
  * \param[in] line_num Source code line number. If zero, not output.
  * \param[in] prefix Prefix for output. Must not be NULL.

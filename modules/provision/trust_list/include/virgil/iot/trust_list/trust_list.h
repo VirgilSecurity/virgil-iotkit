@@ -70,14 +70,14 @@ typedef struct vs_tl_element_info_s {
  * \param[in] op_ctx \ref vs_storage_op_ctx_t storage context. Must not be NULL.
  * \param[in] hsm \ref vs_hsm_impl_t HSM implementation. Must not be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
 
 /** Trust List destruction
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_tl_deinit();
@@ -88,7 +88,7 @@ vs_tl_deinit();
  * \param[in] in_data Data to be saved. Must not be NULL.
  * \param[in] data_sz Data size. Must not be zero.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
@@ -100,7 +100,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
  * \param[in] buf_sz Buffer size. Must not be zero.
  * \param[out] out_sz Pointer to save stored data size. Must not be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);

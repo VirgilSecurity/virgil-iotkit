@@ -56,7 +56,7 @@ extern "C" {
  * \param[in] condition
  * \param[in] idle
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
@@ -69,7 +69,7 @@ typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int
  * \param[in] condition
  * \param[in] expect
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
 
@@ -80,7 +80,7 @@ typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
  *
  * \param[in] device \ref vs_sdmp_info_device_t device information.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
 
@@ -91,7 +91,7 @@ typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *devi
  *
  * \param[in] general_info \ref vs_info_general_t device information.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
 
@@ -102,7 +102,7 @@ typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info
  *
  * \param[in] statistics \ref vs_info_statistics_t device information.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
@@ -115,7 +115,7 @@ typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statis
  * \param[in] general_info_cb \ref vs_sdmp_info_general_cb_t general information.
  * \param[in] statistics_cb \ref vs_sdmp_info_statistics_cb_t device statistics.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef struct {
     vs_sdmp_info_start_notif_cb_t device_start_cb;

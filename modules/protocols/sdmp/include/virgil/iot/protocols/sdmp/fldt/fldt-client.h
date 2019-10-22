@@ -132,7 +132,7 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
  * \param[in] file_type \ref vs_update_file_type_t file type to be added. Must not be NULL.
  * \param[in] update_ctx \ref vs_update_interface_t update context for current file type. Must not be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);

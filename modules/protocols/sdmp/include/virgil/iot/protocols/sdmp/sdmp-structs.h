@@ -74,7 +74,7 @@ typedef uint32_t vs_sdmp_element_t;
  * \param[out] packet_data Buffer to store packed data. Cannot be NULL.
  * \param[out] packet_data_sz Output buffer to store packet data size in bytes. Cannot be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
 */
 typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
                                         const uint8_t *data,
@@ -91,7 +91,7 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
@@ -104,7 +104,7 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uin
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
 
@@ -116,7 +116,7 @@ typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz
  *
  * \param[out] mac_addr \ref vs_mac_addr_t MAC address buffer. Cannot be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
@@ -129,7 +129,7 @@ typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
  * \param[in] rx_cb \ref vs_netif_rx_cb_t  callback. Cannot be NULL.
  * \param[in] process_cb \ref vs_netif_process_cb_t callback. Cannot be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
@@ -139,7 +139,7 @@ typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_ne
  * This callback is used to destroy SDMP implementation.
  * Called from \ref vs_sdmp_deinit call.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_netif_deinit_t)(void);
 
@@ -156,7 +156,7 @@ typedef vs_status_e (*vs_netif_deinit_t)(void);
  * \param[in] response_buf_sz Response output buffer size.
  * \param[out] response_sz Stored output data size. Must be not more than \a response_buf_size. Cannot be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif_t *netif,
                                                            vs_sdmp_element_t element_id,
@@ -178,7 +178,7 @@ typedef vs_status_e (*vs_sdmp_service_request_processor_t)(const struct vs_netif
  * \param[in] response Response buffer.
  * \param[in] response_sz Response size.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_netif_t *netif,
                                                             vs_sdmp_element_t element_id,
@@ -193,7 +193,7 @@ typedef vs_status_e (*vs_sdmp_service_response_processor_t)(const struct vs_neti
  * This callback is called when there is no input data.
  * It can be used to send some statistical data as it is done for INFO service.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_service_periodical_processor_t)(void);
 
@@ -202,7 +202,7 @@ typedef vs_status_e (*vs_sdmp_service_periodical_processor_t)(void);
  * Callback for \a deinit member of \ref vs_sdmp_service_t structure.
  * This callback is called to destroy SDMP service.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_service_deinit_t)(void);
 

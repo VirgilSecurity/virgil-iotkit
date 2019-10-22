@@ -40,35 +40,70 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
+/** File version */
 typedef struct __attribute__((__packed__)) {
     uint8_t dummy[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+    uint8_t major; /**< Major version */
+    uint8_t minor; /**< Minor version */
+    uint8_t patch; /**< Patch version */
+    uint8_t dev_milestone; /**< Device milestone */
+    uint8_t dev_build; /**< Build number */
+    uint32_t timestamp; /**< The number of seconds elapsed since January 1, 2015 UTC */
 } vs_file_version_t;
 
+/** File information */
 typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;
-    vs_device_type_t device_type;
-    vs_file_version_t version;
+    vs_device_manufacture_id_t manufacture_id; /**< Manufacture ID */
+    vs_device_type_t device_type; /**< Device type */
+    vs_file_version_t version; /**< Version */
 } vs_file_info_t;
 
-
+/** Provision initialization
+ *
+ * \param[in] tl_storage_ctx \ref vs_storage_op_ctx_t storage context. Must not be NULL.
+ * \param[in] hsm \ref vs_hsm_impl_t HSM implementation. Must not be NULL.
+ *
+ * \return \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
 
+/** Provision destruction
+ *
+ * \return \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_provision_deinit(void);
 
+/** Get slot number
+ *
+ * \param[in] id Storage context. Must not be NULL.
+ * \param[in] hsm HSM implementation. Must not be NULL.
+ *
+ * \return \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
 
+/** Search high level public key
+ *
+ * \param[in] key_type Key type.
+ * \param[in] ec_type Elliptic curve type.
+ * \param[out] key Output buffer to save key. Must not be NULL.
+ * \param[in] key_sz Key size. Must not be zero.
+ *
+ * \return \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
 
+/** Verify high level public key
+ *
+ * \param[in] key_to_check Key to check. Must not be NULL.
+ * \param[in] key_size Key size. Must not be zero.
+ *
+ * \return \ref VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 

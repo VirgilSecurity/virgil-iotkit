@@ -64,7 +64,7 @@ extern "C" {
  * \param[in] device_serial \ref vs_device_serial_t Device serial number.
  * \param[in] device_roles \ref Device roles. Mask formed from vs_sdmp_device_role_e element.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_init(vs_netif_t *default_netif,
@@ -76,7 +76,7 @@ vs_sdmp_init(vs_netif_t *default_netif,
 /** Destroy SDMP
  *
  * Uses \a deinit call from \ref vs_sdmp_service_t structure for each SDMP registered service and \a deinit call from \ref vs_netif_t structure for network interface.
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_deinit();
@@ -131,7 +131,7 @@ vs_sdmp_default_netif(void);
  * \param[in] data Data buffer to be send. Must not be NULL.
  * \param[in] data_sz Data size in bytes to be send. Must not be zero.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
@@ -142,7 +142,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
  *
  * \param[in] service \ref vs_sdmp_service_t SDMP service descriptor. Must not be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_register_service(const vs_sdmp_service_t *service);
@@ -154,7 +154,7 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service);
  * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
  * \param[out] mac_addr \ref vs_mac_addr_t Buffer to store MAC address. Must not be NULL.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
@@ -177,7 +177,7 @@ vs_sdmp_broadcast_mac(void);
  * \param[in] data Data buffer to be send. Must not be NULL.
  * \param[in] data_sz Data size in bytes to be send. Must not be zero.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_send_request(const vs_netif_t *netif,

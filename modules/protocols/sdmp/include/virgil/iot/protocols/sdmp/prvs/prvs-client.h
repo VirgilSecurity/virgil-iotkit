@@ -59,7 +59,7 @@ extern "C" {
  * \param[in] condition
  * \param[in] expect
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 
@@ -70,7 +70,7 @@ typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
  * \param[in] condition
  * \param[in] idle
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
 

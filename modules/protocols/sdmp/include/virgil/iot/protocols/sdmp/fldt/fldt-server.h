@@ -100,7 +100,7 @@ extern "C" {
  *
  * \param[in] file_type \ref vs_update_file_type_t File type descriptor. Cannot be NULL.
  * \param[in, out] update_ctx \ref vs_update_interface_t Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
                                                    vs_update_interface_t **update_ctx);
@@ -125,7 +125,7 @@ vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
  * \param[in] update_ctx \ref vs_update_interface_t update context for current file type. Must not be NULL.
  * \param[in] broadcast_file_info true if gateways has to broadcast information about file provided.
  *
- * \return \ref vs_status_e \ref VS_CODE_OK in case of success or error code.
+ * \return \ref VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
