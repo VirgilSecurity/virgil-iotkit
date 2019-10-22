@@ -99,11 +99,11 @@ extern "C" {
  * Callback for \ref vs_sdmp_fldt_client function.
  * This callback is used when new file has been fully loaded. See \ref fldt_client_usage for details.
  *
- * \param[in] file_type \ref vs_update_file_type_t File type descriptor. Cannot be NULL.
- * \param[in] prev_file_ver \ref vs_file_version_t Current file version before loading new one. Cannot be NULL.
- * \param[in] new_file_ver \ref vs_file_version_t Has been loaded file version. Cannot be NULL.
- * \param[in] update_interface \ref vs_update_interface_t Update interface for current file type. Cannot be NULL.
- * \param[in] gateway \ref vs_mac_addr_t Gateway's MAC address. Cannot be NULL.
+ * \param[in] file_type File type descriptor. Cannot be NULL.
+ * \param[in] prev_file_ver Current file version before loading new one. Cannot be NULL.
+ * \param[in] new_file_ver Has been loaded file version. Cannot be NULL.
+ * \param[in] update_interface Update interface for current file type. Cannot be NULL.
+ * \param[in] gateway Gateway's MAC address. Cannot be NULL.
  * \param[in] successfully_updated True if file has been successfully updated.
  *
  */
@@ -118,7 +118,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * This call returns FLDT client implementation. It must be called before any FLDT call.
  *
- * \param[in] got_file_callback \ref vs_fldt_got_file callback. Must not be NULL.
+ * \param[in] got_file_callback Callback. Must not be NULL.
  *
  * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
  */
@@ -129,8 +129,8 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
  *
  * FLDT client has the list of file types that it processes. This call adds new file type or update previously added one.
  *
- * \param[in] file_type \ref vs_update_file_type_t file type to be added. Must not be NULL.
- * \param[in] update_ctx \ref vs_update_interface_t update context for current file type. Must not be NULL.
+ * \param[in] file_type File type to be added. Must not be NULL.
+ * \param[in] update_ctx Update context for current file type. Must not be NULL.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */

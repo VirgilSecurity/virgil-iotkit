@@ -98,8 +98,8 @@ extern "C" {
  *
  * \warning Valid pointer to the update context with all callback must be provided.
  *
- * \param[in] file_type \ref vs_update_file_type_t File type descriptor. Cannot be NULL.
- * \param[in, out] update_ctx \ref vs_update_interface_t Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
+ * \param[in] file_type File type descriptor. Cannot be NULL.
+ * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
  * \return \ref VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
@@ -109,8 +109,8 @@ typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *
  *
  * This call returns FLDT server implementation. It must be called before any FLDT call.
  *
- * \param[in] gateway_mac \ref vs_mac_addr_t gateway's MAC address. Must not be NULL.
- * \param[in] add_filetype \ref vs_fldt_server_add_filetype callback. Must not be NULL.
+ * \param[in] gateway_mac Gateway's MAC address. Must not be NULL.
+ * \param[in] add_filetype Callback. Must not be NULL.
  *
  * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
  */
@@ -121,8 +121,8 @@ vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
  *
  * FLDT server has the list of file types that it processes. This call adds new file type or update previously added one.
  *
- * \param[in] file_type \ref vs_update_file_type_t file type to be added. Must not be NULL.
- * \param[in] update_ctx \ref vs_update_interface_t update context for current file type. Must not be NULL.
+ * \param[in] file_type File type to be added. Must not be NULL.
+ * \param[in] update_ctx Update context for current file type. Must not be NULL.
  * \param[in] broadcast_file_info true if gateways has to broadcast information about file provided.
  *
  * \return \ref VS_CODE_OK in case of success or error code.

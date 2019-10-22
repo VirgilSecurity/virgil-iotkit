@@ -112,8 +112,8 @@ vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *lis
  *
  * Sends request to save provision
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
  * \param[out] asav_res
  * \param[in] buf_sz Buffer size
  * \param[in] wait_ms Time to wait response.
@@ -131,9 +131,9 @@ vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
  *
  * Sends request for \a mac device information
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
- * \param[out] device_info \ref vs_sdmp_prvs_devi_t Device information output buffer. Must not be NULL.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
+ * \param[out] device_info Device information output buffer. Must not be NULL.
  * \param[in] buf_sz Buffer size
  * \param[in] wait_ms Time to wait response.
  *
@@ -151,8 +151,8 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif,
  *
  * Sends request for \a mac device information
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
  * \param[in] data Data to be signed. Must not be NULL.
  * \param[in] data_sz \a data size. Must not be zero.
  * \param[out] signature Output buffer for signature. Must not be NULL.
@@ -177,9 +177,9 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
  *
  * Sends request for set \a element provision data for \a mac device
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
- * \param[in] element \ref vs_sdmp_prvs_element_e element.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
+ * \param[in] element Element identificator.
  * \param[in] data Data to be saved. Must not be NULL.
  * \param[in] data_sz \a data size. Must not be zero.
  * \param[in] wait_ms Time to wait response.
@@ -200,9 +200,9 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
  *
  * Sends request for get \a element provision data from \a mac device
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
- * \param[in] element \ref vs_sdmp_prvs_element_e element.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
+ * \param[in] element Element identificator.
  * \param[out] data Output buffer for data. Must not be NULL.
  * \param[in] buf_sz \a signature buffer size. Must not be zero.
  * \param[out] data_sz Buffer to store \a data size. Must not be NULL.
@@ -224,9 +224,9 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
  *
  * Sends request for set \a data to Trust List header for \a mac device
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
- * \param[in] element \ref vs_sdmp_prvs_element_e element.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
+ * \param[in] element Element identificator.
  * \param[in] data Data to be saved. Must not be NULL.
  * \param[in] data_sz \a data size. Must not be zero.
  * \param[in] wait_ms Time to wait response.
@@ -246,8 +246,8 @@ vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
  *
  * Sends request for set \a data to Trust List footer for \a mac device
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t Device MAC address.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[in] mac Device MAC address.
  * \param[in] data Data to be saved. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *

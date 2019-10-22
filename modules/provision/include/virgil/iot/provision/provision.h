@@ -60,8 +60,8 @@ typedef struct __attribute__((__packed__)) {
 
 /** Provision initialization
  *
- * \param[in] tl_storage_ctx \ref vs_storage_op_ctx_t storage context. Must not be NULL.
- * \param[in] hsm \ref vs_hsm_impl_t HSM implementation. Must not be NULL.
+ * \param[in] tl_storage_ctx Storage context. Must not be NULL.
+ * \param[in] hsm HSM implementation. Must not be NULL.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */

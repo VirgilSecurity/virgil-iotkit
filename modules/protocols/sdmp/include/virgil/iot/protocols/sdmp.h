@@ -58,11 +58,11 @@ extern "C" {
  * Initializes SDMP. Uses \a init call from \ref vs_netif_t network interface.
  * Must be called prior to any SDMP call.
  *
- * \param[in] default_netif \ref vs_netif_t Default network interface. Must not be NULL.
- * \param[in] manufacturer_id \ref vs_device_manufacture_id_t Manufacturer ID.
- * \param[in] device_type \ref vs_device_type_t Device type.
- * \param[in] device_serial \ref vs_device_serial_t Device serial number.
- * \param[in] device_roles \ref Device roles. Mask formed from vs_sdmp_device_role_e element.
+ * \param[in] default_netif Default network interface. Must not be NULL.
+ * \param[in] manufacturer_id Manufacturer ID.
+ * \param[in] device_type Device type.
+ * \param[in] device_serial Device serial number.
+ * \param[in] device_roles Device roles. Mask formed from vs_sdmp_device_role_e element.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */
@@ -127,7 +127,7 @@ vs_sdmp_default_netif(void);
  * Sends \a data message \a data_sz bytes length by using SDMP protocol specified by \a netif network interface.
  * \a tx callback from \ref vs_netif_t network interface is used.
  *
- * \param[in] netif \ref vs_netif_t Network interface. If NULL, default network interface specified by \a default_netif parameter for \ref vs_sdmp_init call is used.
+ * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for \ref vs_sdmp_init call is used.
  * \param[in] data Data buffer to be send. Must not be NULL.
  * \param[in] data_sz Data size in bytes to be send. Must not be zero.
  *
@@ -140,7 +140,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
  *
  * Initializes \a service SDMP service.
  *
- * \param[in] service \ref vs_sdmp_service_t SDMP service descriptor. Must not be NULL.
+ * \param[in] service SDMP service descriptor. Must not be NULL.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */
@@ -151,8 +151,8 @@ vs_sdmp_register_service(const vs_sdmp_service_t *service);
  *
  * Returns \a mac_addr MAC address. Uses \a mac_addr call from \ref vs_netif_t network interface.
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[out] mac_addr \ref vs_mac_addr_t Buffer to store MAC address. Must not be NULL.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
+ * \param[out] mac_addr Buffer to store MAC address. Must not be NULL.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */
@@ -170,10 +170,10 @@ vs_sdmp_broadcast_mac(void);
  *
  * Sends \a data message \a data_sz bytes length by using \a element_ID element of \a service_id SDMP service to \a mac device by \a netif network interface.
  *
- * \param[in] netif \ref vs_netif_t Network interface. If NULL, default network interface specified by \a default_netif parameter for \ref vs_sdmp_init call is used.
- * \param[in] mac \ref vs_mac_addr_t MAC address. If NULL, broadcast MAC address is used.
- * \param[in] service_id \ref vs_sdmp_service_id_t Service ID registered by \ref vs_sdmp_register_service call.
- * \param[in] element_id \ref vs_sdmp_element_t Element ID of \a service_id.
+ * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for \ref vs_sdmp_init call is used.
+ * \param[in] mac MAC address. If NULL, broadcast MAC address is used.
+ * \param[in] service_id Service ID registered by \ref vs_sdmp_register_service call.
+ * \param[in] element_id Element ID of \a service_id.
  * \param[in] data Data buffer to be send. Must not be NULL.
  * \param[in] data_sz Data size in bytes to be send. Must not be zero.
  *

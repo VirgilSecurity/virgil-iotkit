@@ -67,8 +67,8 @@ typedef struct vs_tl_element_info_s {
 
 /** Trust List initialization
  *
- * \param[in] op_ctx \ref vs_storage_op_ctx_t storage context. Must not be NULL.
- * \param[in] hsm \ref vs_hsm_impl_t HSM implementation. Must not be NULL.
+ * \param[in] op_ctx Storage context. Must not be NULL.
+ * \param[in] hsm HSM implementation. Must not be NULL.
  *
  * \return \ref VS_CODE_OK in case of success or error code.
  */
@@ -84,7 +84,7 @@ vs_tl_deinit();
 
 /** Trust List element saving
  *
- * \param[in] element_info \ref vs_tl_element_info_t element selection. Must not be NULL.
+ * \param[in] element_info Element selection. Must not be NULL.
  * \param[in] in_data Data to be saved. Must not be NULL.
  * \param[in] data_sz Data size. Must not be zero.
  *
@@ -95,7 +95,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 
 /** Trust List element loading
  *
- * \param[in] element_info \ref vs_tl_element_info_t element selection. Must not be NULL.
+ * \param[in] element_info Element selection. Must not be NULL.
  * \param[out] out_data Output buffer to store data. Must not be NULL.
  * \param[in] buf_sz Buffer size. Must not be zero.
  * \param[out] out_sz Pointer to save stored data size. Must not be NULL.
@@ -121,8 +121,8 @@ vs_tl_update_file_type(void);
 
 /** Convert Trust List header to host
  *
- * \param[in] src_data \ref vs_tl_header_t Data source. Must not be NULL.
- * \param[out] dst_data \ref vs_tl_header_t Data destination. Must not be NULL.
+ * \param[in] src_data Data source. Must not be NULL.
+ * \param[out] dst_data Data destination. Must not be NULL.
  */
 void
 vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);

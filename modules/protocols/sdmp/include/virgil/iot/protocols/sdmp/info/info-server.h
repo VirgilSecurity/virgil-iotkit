@@ -53,8 +53,8 @@ extern "C" {
  *
  * This call returns INFO server implementation. It must be called before any INFO call.
  *
- * \param[in] tl_ctx \ref vs_storage_op_ctx_t Trust List storage context. Must not be NULL.
- * \param[in] fw_ctx \ref vs_storage_op_ctx_t Firmware storage context. Must not be NULL.
+ * \param[in] tl_ctx Trust List storage context. Must not be NULL.
+ * \param[in] fw_ctx Firmware storage context. Must not be NULL.
  *
  * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
  */
@@ -65,7 +65,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx);
  *
  * Sends startup notification.
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
+ * \param[in] netif SDMP service descriptor. Must not be NULL.
  *
  * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
  */

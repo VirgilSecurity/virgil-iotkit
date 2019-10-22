@@ -54,7 +54,7 @@ extern "C" {
  *
  * This call returns PRVS server implementation. It must be called before any PRVS call.
  *
- * \param[in] impl \ref vs_hsm_impl_t callback functions. Must not be NULL.
+ * \param[in] impl Callback functions. Must not be NULL.
  *
  * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
  */
