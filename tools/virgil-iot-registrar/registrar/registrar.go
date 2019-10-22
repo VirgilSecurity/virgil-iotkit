@@ -36,18 +36,19 @@ package registrar
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"gopkg.in/urfave/cli.v2"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoapi"
 	"gopkg.in/virgil.v5/sdk"
 	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
@@ -55,31 +56,24 @@ import (
 
 var (
 	crypto = virgil_crypto_go.NewVirgilCrypto()
-	cardCrypto  = virgil_crypto_go.NewVirgilCardCrypto()
-	tokenSigner = virgil_crypto_go.NewVirgilAccessTokenSigner()
 )
 
 type cardsRegistrar struct {
 	dataFile             string                // file with card requests
 	filePrivateKey       cryptoapi.PrivateKey  // private key for file decryption
 	filePublicSenderKey  cryptoapi.PublicKey   // public key of file sender to verify signature
-	iotPrivateKey        cryptoapi.PrivateKey  // private key for adding IoT Registrar signature to card request
 	cardService          *cardsServiceInfo
 	failedRequestsFile   string
+
+	httpClient           *http.Client
 
 	processingErrors     []string
 	failedRequests       []string
 }
 
 type cardsServiceInfo struct {
-	appID               string
-	apiKeyID            string
-	apiPrivateKey       cryptoapi.PrivateKey
-	cardsClient         *sdk.CardClient
-}
-
-type iotRegistrarSnapshot struct {
-	AppID  string  `json:"app_id"`
+	RegistrationUrl      string  // url on which card requests will be send
+	AppToken             string  // application token used for authorization on service
 }
 
 func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
@@ -112,42 +106,25 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	if err != nil {
 		return nil, err
 	}
-	// iot_priv_key
-	if param = context.String("iot_priv_key"); param == "" {
-		return nil, cli.Exit("File with private key of IoT registrar doesn't specified.", 1)
-	}
-	registrar.iotPrivateKey, err = importPrivateKey(param, context.String("iot_priv_key_pass"))
-	if err != nil {
-		return nil, err
-	}
 
 	// Fill cardsServiceInfo struct
 	cardsService := new(cardsServiceInfo)
 	// app_id
-	if param = context.String("app_id"); param == "" {
-		return nil, cli.Exit("Application ID does't specified.", 1)
+	if param = context.String("app_token"); param == "" {
+		return nil, cli.Exit("Virgil application token does't specified.", 1)
 	}
-	cardsService.appID = param
-	// api_key_id
-	if param = context.String("api_key_id"); param == "" {
-		return nil, cli.Exit("Api key Id does't specified.", 1)
+	cardsService.AppToken = param
+	// registration_url
+	if param = context.String("registration_url"); param == "" {
+		return nil, cli.Exit("URL used for Cards registration does't specified.", 1)
 	}
-	cardsService.apiKeyID = param
-	// base_url
-	if param = context.String("base_url"); param == "" {
-		return nil, cli.Exit("Card service base url does't specified.", 1)
-	}
-	cardsService.cardsClient = sdk.NewCardsClient(param)
-	// api_key
-	if param = context.String("api_key"); param == "" {
-		return nil, cli.Exit("Api private key file doesn't specified.", 1)
-	}
-	cardsService.apiPrivateKey, err = importPrivateKey(param, "")
-	if err != nil {
-		return nil, err
-	}
+	cardsService.RegistrationUrl = param
 
 	registrar.cardService = cardsService
+
+	// Prepare http client
+	registrar.httpClient = &http.Client{}
+	registrar.httpClient.Timeout = time.Second * 10
 
 	return registrar, nil
 }
@@ -254,51 +231,37 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 		return fmt.Errorf("parse snapshot error: %s", err)
 	}
 
-	// Prepare "iot_registrator" snapshot
-	registrarSnapshot := &iotRegistrarSnapshot{
-		AppID:   r.cardService.appID,
-	}
-	extraFields, err := json.Marshal(registrarSnapshot)
+	// Prepare card for publishing
+	prepared, err := rawSignedModel.ExportAsJson()
 	if err != nil {
-		return fmt.Errorf("failed to marshal iotRegistrarSnapshot: %v", err)
-	}
-
-	// Add IoT registrar signature
-	modelSigner := sdk.NewModelSigner(cardCrypto)
-	if err := modelSigner.SignRaw(rawSignedModel, "iot_registrator", r.iotPrivateKey, extraFields); err != nil {
-		return fmt.Errorf("failed to sign by IoT registrar key %v", err)
-	}
-
-	// Generate JWT token
-	ttl := time.Minute * 5
-	jwtGenerator := sdk.NewJwtGenerator(
-		r.cardService.apiPrivateKey, r.cardService.apiKeyID, tokenSigner, r.cardService.appID, ttl)
-	identity := rawCardContent.Identity
-	jwtToken, err := jwtGenerator.GenerateToken(identity, nil)
-	if err != nil {
-		return fmt.Errorf("jwtToken generation error: %s", err)
-	}
-	jwtString := jwtToken.String()
-
-	// Publish card
-	prepared, err := rawSignedModel.ExportAsBase64EncodedString()
-	if err != nil {
-		return fmt.Errorf("failed to export rawSignedModel as base 64: %v", err)
+		return fmt.Errorf("failed to export rawSignedModel as json: %v", err)
 	}
 	fmt.Printf("Prepared card: %s\n", prepared)
-	publishedCard, err := r.cardService.cardsClient.PublishCard(rawSignedModel, jwtString)
+
+	// Prepare request
+	sendBytes := bytes.NewBuffer([]byte(prepared))
+	req, err := http.NewRequest("POST", r.cardService.RegistrationUrl, sendBytes)
+	req.Header.Set("AppToken", r.cardService.AppToken)
+
+	// Send request
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("publish card error: %s", err)
+		return fmt.Errorf("send card request error: %s", err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body: %s", err)
+	}
+	respBodyS := string(body)
+
+	// Verify response
+    if resp.StatusCode != 200 {
+		return fmt.Errorf("publish card error, status code: %d, body: %s", resp.StatusCode, respBodyS)
 	}
 
 	// Print results
-	var rawCardResponse *sdk.RawCardContent
-	err = sdk.ParseSnapshot(publishedCard.ContentSnapshot, &rawCardResponse)
-	if err != nil {
-		return fmt.Errorf("response snapshot parse error: %s", err)
-	}
-	fmt.Printf("Card registered. identity: %s, createdAt: %d, version: %s\n",
-		rawCardResponse.Identity, rawCardResponse.CreatedAt, rawCardResponse.Version)
+	fmt.Printf("Card registered. Response: %s", respBodyS)
 
 	return nil
 }
