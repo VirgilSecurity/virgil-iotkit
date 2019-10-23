@@ -50,7 +50,6 @@ import (
 
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoapi"
-	"gopkg.in/virgil.v5/sdk"
 	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
@@ -219,39 +218,26 @@ func (r *cardsRegistrar) decryptThenVerifyRequest(request string) (string, error
 }
 
 func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
-
-	// Generate raw card from request
-	rawSignedModel, err := sdk.GenerateRawSignedModelFromString(decryptedRequest)
+	// Decode base 64
+	cardRequest, err := base64.StdEncoding.DecodeString(decryptedRequest)
 	if err != nil {
-		return fmt.Errorf("GenerateRawSignedModelFromString error: %s", err)
+		return fmt.Errorf("failed to decode b64 request string: %v", err)
 	}
-	var rawCardContent *sdk.RawCardContent
-	err = sdk.ParseSnapshot(rawSignedModel.ContentSnapshot, &rawCardContent)
-	if err != nil {
-		return fmt.Errorf("parse snapshot error: %s", err)
-	}
-
-	// Prepare card for publishing
-	prepared, err := rawSignedModel.ExportAsJson()
-	if err != nil {
-		return fmt.Errorf("failed to export rawSignedModel as json: %v", err)
-	}
-	fmt.Printf("Prepared card: %s\n", prepared)
 
 	// Prepare request
-	sendBytes := bytes.NewBuffer([]byte(prepared))
+	sendBytes := bytes.NewBuffer(cardRequest)
 	req, err := http.NewRequest("POST", r.cardService.RegistrationUrl, sendBytes)
 	req.Header.Set("AppToken", r.cardService.AppToken)
 
-	// Send request
+	// Send
 	resp, err := r.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("send card request error: %s", err)
+		return fmt.Errorf("send card request error: %v", err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %s", err)
+		return fmt.Errorf("failed to read response body: %v", err)
 	}
 	respBodyS := string(body)
 
@@ -261,7 +247,7 @@ func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
 	}
 
 	// Print results
-	fmt.Printf("Card registered. Response: %s", respBodyS)
+	fmt.Printf("Card registered. Response: %s\n", respBodyS)
 
 	return nil
 }
