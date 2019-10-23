@@ -93,11 +93,13 @@ func main() {
 
 	http.HandleFunc("/devices", func(w http.ResponseWriter, r *http.Request) {
 
+	    devices := devicesInfo.GetItems()
+
 		if r.Method == "GET" {
 			keys, ok := r.URL.Query()["key"]
 
 			if ok {
-				respBody, err := json.Marshal(devicesInfo.Items[keys[0]])
+				respBody, err := json.Marshal(devices[keys[0]])
 				if err != nil {
 					utils.Log.Println(err)
 				}
@@ -110,7 +112,7 @@ func main() {
 			}
 
 
-			respBody, err := json.Marshal(devicesInfo.Items)
+			respBody, err := json.Marshal(devices)
 			if err != nil {
 				utils.Log.Println(err)
 			}
@@ -142,15 +144,17 @@ func main() {
 func createStatusTable(t time.Time) string {
 	table := "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
+    devices := devicesInfo.GetItems()
+
     // Sorted keys
-    keys := make([]string, 0, len(devicesInfo.Items))
-    for k := range devicesInfo.Items {
+    keys := make([]string, 0, len(devices))
+    for k := range devices {
 	    keys = append(keys, k)
     }
     sort.Strings(keys)
 
 	for _, k := range keys {
-        d := devicesInfo.Items[k]
+        d := devices[k]
         table += fmt.Sprintf("<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%d</td> <td>%d</td> <td>%s</td>  </tr>",
 			d.MAC,
 			d.ManufactureID,
