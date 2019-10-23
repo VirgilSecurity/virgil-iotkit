@@ -49,9 +49,9 @@ _str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
     size_t pos;
     size_t len;
 
-    assert(src && *src);
+    VS_IOT_ASSERT(src && *src);
 
-    memset(dst, 0, buf_size);
+    VS_IOT_MEMSET(dst, 0, buf_size);
 
     len = VS_IOT_STRLEN(src);
     for (pos = 0; pos < len && pos < buf_size; ++pos, ++src, ++dst) {
@@ -62,13 +62,13 @@ _str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
 /******************************************************************************/
 vs_status_e
 vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
-    assert(footer);
-    assert(footer_sz >= sizeof(vs_firmware_footer_t));
+    VS_IOT_ASSERT(footer);
+    VS_IOT_ASSERT(footer_sz >= sizeof(vs_firmware_footer_t));
 
     CHECK_NOT_ZERO_RET(footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(footer_sz >= sizeof(vs_firmware_footer_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "buffer size too small");
 
-    memset(footer, 0, footer_sz);
+    VS_IOT_MEMSET(footer, 0, footer_sz);
     vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
 
     _str_to_bytes(buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));

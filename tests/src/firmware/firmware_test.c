@@ -240,7 +240,7 @@ _test_firmware_install(vs_hsm_impl_t *hsm_impl) {
 uint16_t
 vs_firmware_test(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
-    assert(hsm_impl);
+    VS_IOT_ASSERT(hsm_impl);
 
     START_TEST("Update firmware tests");
 
