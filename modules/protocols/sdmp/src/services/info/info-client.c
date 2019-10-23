@@ -171,12 +171,22 @@ _ginf_request_processor(const uint8_t *request,
     VS_IOT_MEMCPY(general_info.manufacture_id, ginf_request->manufacture_id, VS_DEVICE_MANUFACTURE_ID_SIZE);
     VS_IOT_MEMCPY(general_info.device_type, ginf_request->device_type, VS_DEVICE_TYPE_SIZE);
     VS_IOT_MEMCPY(general_info.default_netif_mac, ginf_request->default_netif_mac.bytes, ETH_ADDR_LEN);
-    general_info.fw_major = ginf_request->fw_version.major;
-    general_info.fw_minor = ginf_request->fw_version.minor;
-    general_info.fw_patch = ginf_request->fw_version.patch;
-    general_info.fw_dev_build = ginf_request->fw_version.build;
-    general_info.fw_timestamp = ginf_request->fw_version.timestamp;
-    general_info.tl_version = ginf_request->tl_version;
+
+    // Firmware version
+    general_info.fw_ver.major = ginf_request->fw_version.major;
+    general_info.fw_ver.minor = ginf_request->fw_version.minor;
+    general_info.fw_ver.patch = ginf_request->fw_version.patch;
+    // TODO: Use VA_IOT_NTOHL
+    general_info.fw_ver.build = ginf_request->fw_version.build;
+    general_info.fw_ver.timestamp = ginf_request->fw_version.timestamp;
+
+    // TrustList version
+    general_info.tl_ver.major = ginf_request->tl_version.major;
+    general_info.tl_ver.minor = ginf_request->tl_version.minor;
+    general_info.tl_ver.patch = ginf_request->tl_version.patch;
+    // TODO: Use VA_IOT_NTOHL
+    general_info.tl_ver.build = ginf_request->tl_version.build;
+    general_info.tl_ver.timestamp = ginf_request->tl_version.timestamp;
     general_info.device_roles = ginf_request->device_roles;
 
     // Invoke callback function

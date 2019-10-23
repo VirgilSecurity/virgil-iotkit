@@ -49,16 +49,20 @@ typedef struct {
 } vs_sdmp_info_device_t;
 
 typedef struct {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint32_t build;
+    uint32_t timestamp;
+} vs_file_version_unpacked_t;
+
+typedef struct {
     uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE];
     uint8_t device_type[VS_DEVICE_TYPE_SIZE];
     uint8_t default_netif_mac[ETH_ADDR_LEN];
     uint32_t device_roles; // vs_sdmp_device_role_e
-    uint8_t fw_major;
-    uint8_t fw_minor;
-    uint8_t fw_patch;
-    uint32_t fw_dev_build;
-    uint32_t fw_timestamp;
-    uint16_t tl_version;
+    vs_file_version_unpacked_t fw_ver;
+    vs_file_version_unpacked_t tl_ver;
 } vs_info_general_t;
 
 typedef struct {
