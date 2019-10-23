@@ -37,7 +37,7 @@
 
 #include <virgil/iot/status_code/status_code.h>
 
-#define VS_THING_EP "thing"
+#define VS_THING_EP "things"
 #define VS_AWS_ID "aws"
 #define VS_MQTT_ID "mqtt"
 
