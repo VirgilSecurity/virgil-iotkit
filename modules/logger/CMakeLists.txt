@@ -46,9 +46,8 @@ target_sources(vs-module-logger
 
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/logger.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/logger-hal.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/helpers.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/utoa_fast_div.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/private/logger_hal.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/logger/macro_va_args.h
 
         # Sources
