@@ -32,21 +32,58 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file hsm_helpers.h
+ * @brief HSM helper functions
+ */
+
 #ifndef VS_HSM_HELPERS_H_
 #define VS_HSM_HELPERS_H_
 
 #include <virgil/iot/hsm/hsm.h>
 
+/** Get public key length
+ *
+ * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ *
+ * \return Public key length
+ */
 int
 vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
+
+/** Get signature length
+ *
+ * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ *
+ * \return Signature length
+ */
 int
 vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+
+/** Get hash length
+ *
+ * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ *
+ * \return Hash length
+ */
 int
 vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
 
+/** Get key pair type description
+ *
+ * \param[in] type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ *
+ * \return Key pair description in static buffer
+ */
 const char *
 vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 
+/** Get hash type description
+ *
+ * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ *
+ * \return Hash type description in static buffer
+ */
 const char *
 vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
 
