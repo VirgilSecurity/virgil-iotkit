@@ -32,18 +32,47 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef HELPERS_VS_SOFTHSM_H
-#define HELPERS_VS_SOFTHSM_H
+#include <stdlib-config.h>
+#include <stdbool.h>
 
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/tests/helpers.h>
+#include <virgil/iot/tests/tests.h>
 
-#define VS_SLOTS_STORAGE_MAX_SIZE (1024)
+#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/firmware/firmware_hal.h>
+#include <virgil/iot/protocols/sdmp.h>
 
-vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
+/******************************************************************************/
+static void
+_str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
+    size_t pos;
+    size_t len;
 
+    VS_IOT_ASSERT(src && *src);
+
+    VS_IOT_MEMSET(dst, 0, buf_size);
+
+    len = VS_IOT_STRLEN(src);
+    for (pos = 0; pos < len && pos < buf_size; ++pos, ++src, ++dst) {
+        *dst = *src;
+    }
+}
+
+/******************************************************************************/
 vs_status_e
-vs_softhsm_deinit(void);
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
+    VS_IOT_ASSERT(footer);
+    VS_IOT_ASSERT(footer_sz >= sizeof(vs_firmware_footer_t));
 
-#endif // HELPERS_VS_SOFTHSM_H
+    CHECK_NOT_ZERO_RET(footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(footer_sz >= sizeof(vs_firmware_footer_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "buffer size too small");
+
+    VS_IOT_MEMSET(footer, 0, footer_sz);
+    vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
+
+    _str_to_bytes(buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
+    _str_to_bytes(buf->descriptor.info.device_type, TEST_DEVICE_TYPE, sizeof(vs_device_type_t));
+
+    return VS_CODE_OK;
+}

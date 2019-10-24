@@ -40,7 +40,8 @@
 
 /******************************************************************************/
 static bool
-_test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
+_test_ecdh_pass(vs_hsm_impl_t *hsm_impl,
+                vs_hsm_keypair_type_e keypair_type,
                 bool corrupt_key,
                 vs_iot_hsm_slot_e alice_slot,
                 vs_iot_hsm_slot_e bob_slot) {
@@ -61,54 +62,54 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
 
     // Create key pair for Alice
-    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(alice_slot, keypair_type),
+    STATUS_CHECK_RET_BOOL(hsm_impl->create_keypair(alice_slot, keypair_type),
                           "Can't create keypair %s for Alice",
                           vs_hsm_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
-            vs_hsm_keypair_get_pubkey(
+            hsm_impl->get_pubkey(
                     alice_slot, alice_public_key, sizeof(alice_public_key), &alice_public_key_sz, &alice_keypair_type),
             "Can't load public key from slot %s for Alice",
-            vs_iot_hsm_slot_descr(alice_slot));
+            vs_test_hsm_slot_descr(alice_slot));
 
     if (corrupt_key) {
         ++alice_public_key[1];
     }
 
     // Create key pair for Bob
-    STATUS_CHECK_RET_BOOL(vs_hsm_keypair_create(bob_slot, keypair_type),
+    STATUS_CHECK_RET_BOOL(hsm_impl->create_keypair(bob_slot, keypair_type),
                           "Can't create keypair %s for Bob",
                           vs_hsm_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
-            vs_hsm_keypair_get_pubkey(
+            hsm_impl->get_pubkey(
                     bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
             "Can't load public key from slot %s for Bob",
-            vs_iot_hsm_slot_descr(bob_slot));
+            vs_test_hsm_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
-    STATUS_CHECK_RET_BOOL(vs_hsm_ecdh(alice_slot,
-                                      bob_keypair_type,
-                                      bob_public_key,
-                                      bob_public_key_sz,
-                                      shared_secret_1,
-                                      sizeof(shared_secret_1),
-                                      &shared_secret_sz_1),
+    STATUS_CHECK_RET_BOOL(hsm_impl->ecdh(alice_slot,
+                                         bob_keypair_type,
+                                         bob_public_key,
+                                         bob_public_key_sz,
+                                         shared_secret_1,
+                                         sizeof(shared_secret_1),
+                                         &shared_secret_sz_1),
                           "Can't process ECDH (slot %s, keypair type %s) for Alice",
-                          vs_iot_hsm_slot_descr(alice_slot),
+                          vs_test_hsm_slot_descr(alice_slot),
                           vs_hsm_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
-    if (VS_CODE_OK != vs_hsm_ecdh(bob_slot,
-                                  alice_keypair_type,
-                                  alice_public_key,
-                                  alice_public_key_sz,
-                                  shared_secret_2,
-                                  sizeof(shared_secret_2),
-                                  &shared_secret_sz_2)) {
+    if (VS_CODE_OK != hsm_impl->ecdh(bob_slot,
+                                     alice_keypair_type,
+                                     alice_public_key,
+                                     alice_public_key_sz,
+                                     shared_secret_2,
+                                     sizeof(shared_secret_2),
+                                     &shared_secret_sz_2)) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
-                         vs_iot_hsm_slot_descr(bob_slot),
+                         vs_test_hsm_slot_descr(bob_slot),
                          vs_hsm_keypair_type_descr(alice_keypair_type));
         }
 
@@ -136,7 +137,8 @@ _test_ecdh_pass(vs_hsm_keypair_type_e keypair_type,
 
 /******************************************************************************/
 static bool
-_prepare_and_test(char *descr,
+_prepare_and_test(vs_hsm_impl_t *hsm_impl,
+                  char *descr,
                   vs_hsm_keypair_type_e keypair_type,
                   vs_iot_hsm_slot_e alice_slot,
                   vs_iot_hsm_slot_e bob_slot,
@@ -146,9 +148,9 @@ _prepare_and_test(char *descr,
     VS_IOT_STRCPY(descr, "Key ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(alice_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(alice_slot));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_iot_hsm_slot_descr(bob_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(bob_slot));
     if (corrupt) {
         VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");
     }
@@ -170,7 +172,7 @@ _prepare_and_test(char *descr,
 
 /******************************************************************************/
 uint16_t
-test_ecdh(void) {
+test_ecdh(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
 
     char descr[256];
@@ -180,11 +182,11 @@ test_ecdh(void) {
 #define TEST_ECDH_PASS(KEY, SLOT_ALICE, SLOT_BOB, CORRUPT)                                                             \
     do {                                                                                                               \
                                                                                                                        \
-        if (_prepare_and_test(descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                                    \
+        if (_prepare_and_test(hsm_impl, descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                          \
             if (CORRUPT) {                                                                                             \
-                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                          \
+                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(hsm_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                \
             } else {                                                                                                   \
-                TEST_CASE_OK(descr, _test_ecdh_pass(KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                              \
+                TEST_CASE_OK(descr, _test_ecdh_pass(hsm_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                    \
             }                                                                                                          \
         }                                                                                                              \
     } while (0)

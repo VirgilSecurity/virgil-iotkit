@@ -32,42 +32,14 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_FLDT_H_
-#define VS_IOT_SDK_TESTS_FLDT_H_
+#include <stdlib-config.h>
+#include <stdbool.h>
 
-#if 0
-#include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/protocols/sdmp/fldt.h>
-#include <virgil/iot/protocols/sdmp/fldt_client.h>
-#include <virgil/iot/protocols/sdmp/fldt_server.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/protocols/sdmp.h>
 
-typedef struct {
-    union {
-        uint32_t calls;
-        struct {
-            uint32_t server_version : 1, server_header : 1, server_chunk : 1, server_footer : 1, server_destroy : 3,
-            server_add_filetype : 1, client_set_gateway_mac : 1, client_get_current_version : 1, client_update_file : 1,
-            client_got_info : 1, client_got_header : 1, client_got_chunk : 1, client_got_footer : 1, client_destroy : 3;
-        };
-    };
-} calls_t;
-calls_t calls;
-vs_fldt_file_type_mapping_t server_add_filetype_to_copy;
-vs_update_file_version_t client_get_current_file_version;
-vs_fldt_gfti_fileinfo_response_t server_get_version_file;
-vs_update_file_version_t file_ver;
-
-vs_fldt_file_type_mapping_t
-make_client_mapping(const vs_update_file_type_t *file_type);
-
-vs_fldt_file_type_mapping_t
-make_server_mapping(const vs_update_file_type_t *file_type);
-
-vs_status_e
-server_add_filetype(const vs_update_file_type_t *file_type);
-
-#endif
-
-#endif // VS_IOT_SDK_TESTS_FLDT_H_
+/******************************************************************************/
+void
+vs_impl_device_serial(vs_device_serial_t serial_number) {
+    VS_IOT_MEMCPY(serial_number, vs_sdmp_device_serial(), VS_DEVICE_SERIAL_SIZE);
+}
