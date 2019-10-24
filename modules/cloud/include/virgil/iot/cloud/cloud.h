@@ -35,12 +35,74 @@
 // TODO : finish description !!!
 /*! \file cloud.h
  * \brief Cloud implementation
+ * Cloud library is used to
+ * - obtaining credentials from thing service
+ * - connecting to message bin broker over MQTT and subscribing list of topics
+ * - processing received messages over message bin
+ * - downloading firmware images and trust list files from cloud storage
  *
- * креды для работы с MQTT thing service
- * подключение к MQTT с помощью кредов
- * скачивание trust list, firmware
- * пример работы
- * topics list - vs_cloud_mb_topic_id_t
+ * \section cloud_usage Cloud Usage
+ *
+ *  function \ref vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing service using
+ *  \ref vs_cloud_http_get_func_t and connect to broker using \ref vs_cloud_mb_connect_subscribe_func_t.
+ *  Then it waits for new messages periodically calling \ref vs_cloud_mb_process_func_t.
+ *  User can register own handlers for events about new firmware or trust list by calling
+ *  \ref vs_cloud_message_bin_register_default_handler or custom handler for raw data processing from some topics by calling
+ *  \ref vs_cloud_message_bin_register_custom_handler
+ *  Cloud library uses provision and firmware modules, which must be initialized before.
+ *
+ *  Here you can see an example of Cloud library initialization :
+ *  \code
+ *  // Provision module
+ *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
+ *  // Firmware module
+ *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+ *  //Cloud module
+ *  STATUS_CHECK(vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), hsm_impl), "Unable to initialize Cloud module");
+ *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register handler for TL topic");
+ *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, firmware_topic_process), "Error register handler for FW topic");
+ *  \endcode
+ *
+ *  Here you can see an example of Cloud library usage:
+ *  \code
+ *  //handlers for default topics example
+ * void
+ * firmware_topic_process(const uint8_t *url, uint16_t length) {
+ *      vs_status_e res;
+ *      vs_firmware_header_t header;
+ *      res = vs_cloud_fetch_and_store_fw_file(url, &header);
+ *      if (VS_CODE_OK == res) {
+ *          res = vs_firmware_verify_firmware(&header.descriptor);
+ *          if (VS_CODE_OK == res) {
+ *             //Fetched firmware is correct. Do someting
+ *          } else {
+ *              // Incorrect firmware image. We can delete it.
+ *              vs_firmware_delete_firmware(&header.descriptor);
+ *          }
+ *      }
+ *  }
+ *
+ * void
+ * tl_topic_process(const uint8_t *url, uint16_t length) {
+ *
+ *      if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
+ *          // Trust list is correct. Do something
+ *      }
+ *  }
+ *
+ * // Processing of cloud library functionality example
+ * void
+ * message_bin_mqtt_task(void *params) {
+ *    while (true) {
+ *        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
+ *            sleep(500);
+ *        } else {
+ *            sleep(5000);
+ *        }
+ *     }
+ *  }
+ * \endcode
+ *
  */
 
 #ifndef VS_CLOUD_H
@@ -52,12 +114,6 @@
 #include <virgil/iot/firmware/firmware.h>
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
-
-/*
- *
- * Cloud
- *
- */
 
 #define VS_UPD_URL_STR_SIZE 200
 
