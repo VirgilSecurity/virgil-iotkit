@@ -42,7 +42,7 @@
 #define MAX_KEY_SZ (128)
 
 #define CHECK_VSCF(OPERATION, DESCRIPTION, ...)                                                                        \
-    CHECK_BOOL((vscf_status_SUCCESS == (OPERATION)), DESCRIPTION, ##__VA_ARGS__)
+    BOOL_CHECK((vscf_status_SUCCESS == (OPERATION)), DESCRIPTION, ##__VA_ARGS__)
 
 #define NOT_ZERO(ARG)                                                                                                  \
     do {                                                                                                               \
