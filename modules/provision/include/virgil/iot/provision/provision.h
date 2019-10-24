@@ -32,6 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file provision.h
+ * \brief Provision interface implementation
+ */
+
 #ifndef VS_IOT_PROVISION_H
 #define VS_IOT_PROVISION_H
 
