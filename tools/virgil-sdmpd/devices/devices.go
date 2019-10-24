@@ -55,11 +55,14 @@ type DeviceInfo struct {
 
 type ConcurrentDevices struct {
 	sync.RWMutex
-	Items map[string]DeviceInfo
+	items map[string]DeviceInfo
 }
 
 func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
-    cd := d.Items[info.MAC]
+    d.Lock()
+    defer d.Unlock()
+
+    cd := d.items[info.MAC]
     cd.ManufactureID = info.ManufactureID
     cd.DeviceType = info.DeviceType
     cd.FWVersion = info.FWVersion
@@ -67,27 +70,33 @@ func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
     cd.MAC = info.MAC
     cd.Roles = info.Roles
     cd.lastTime = int32(time.Now().Unix())
-    d.Items[info.MAC] = cd
+    d.items[info.MAC] = cd
     return nil
 }
 
 func (d *ConcurrentDevices) UpdateDeviceStatistics(info DeviceInfo) error {
+    d.Lock()
+    defer d.Unlock()
+
     info.lastTime = int32(time.Now().Unix())
-    cd := d.Items[info.MAC]
+    cd := d.items[info.MAC]
     cd.MAC = info.MAC
     cd.Sent = info.Sent
     cd.Received = info.Received
     cd.lastTime = int32(time.Now().Unix())
-    d.Items[info.MAC] = cd
+    d.items[info.MAC] = cd
     return nil
 }
 
 func (d *ConcurrentDevices) CleanList(cleanTimeout int32) error {
+    d.Lock()
+    defer d.Unlock()
+
     utime := int32(time.Now().Unix())
 
     // Collect keys to delete
     keyToDelete := []string{};
-    for _, d := range d.Items {
+    for _, d := range d.items {
         if utime - d.lastTime > cleanTimeout {
             keyToDelete = append(keyToDelete, d.MAC)
         }
@@ -95,14 +104,28 @@ func (d *ConcurrentDevices) CleanList(cleanTimeout int32) error {
 
     // Remove old devices from map
     for _, k := range keyToDelete {
-        delete(d.Items, k)
+        delete(d.items, k)
     }
 
     return nil
 }
 
+func (d *ConcurrentDevices) GetItems() map[string]DeviceInfo {
+    d.RLock()
+    defer d.RUnlock()
+
+    // Copy map
+    copy := make(map[string]DeviceInfo)
+
+    for key, value := range d.items {
+      copy[key] = value
+    }
+
+    return copy
+}
+
 func NewDevices() *ConcurrentDevices {
     var d ConcurrentDevices
-    d.Items = make(map[string]DeviceInfo)
+    d.items = make(map[string]DeviceInfo)
     return &d
 }

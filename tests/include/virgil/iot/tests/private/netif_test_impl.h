@@ -55,31 +55,7 @@ extern vs_mac_addr_t mac_addr_client_call;
 extern vs_mac_addr_t mac_addr_server_call;
 extern bool is_client_call;
 
-void
-prepare_test_netif(vs_netif_t *netif);
-
-#define SDMP_CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                   \
-    if ((OPERATION) != 0) {                                                                                            \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    }
-
-#define SDMP_CHECK_ERROR_GOTO(OPERATION, DESCRIPTION, ...)                                                             \
-    if ((OPERATION) == 0) {                                                                                            \
-        VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                    \
-        goto terminate;                                                                                                \
-    }
-
-#define MAC_ADDR_CHECK_GOTO(CURRENT, WAITED)                                                                           \
-    if (memcmp((CURRENT).bytes, (WAITED).bytes, sizeof(vs_mac_addr_t))) {                                              \
-        VS_LOG_ERROR("Current MAC address is incorrect");                                                              \
-        goto terminate;                                                                                                \
-    }
-
-#define NETIF_OP_CHECK_GOTO(OPERATION)                                                                                 \
-    if ((OPERATION) == 0) {                                                                                            \
-        VS_LOG_ERROR("netif operation " #OPERATION " has not been called");                                            \
-        goto terminate;                                                                                                \
-    }
+vs_netif_t *
+vs_test_netif(void);
 
 #endif // VS_IOT_SDK_TESTS_SDMP_H_

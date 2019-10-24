@@ -35,7 +35,7 @@
 #ifndef VS_IOT_SDK_CLOUD_CONFIG_H
 #define VS_IOT_SDK_CLOUD_CONFIG_H
 
-#define VS_CLOUD_HOST "https://things-dev.virgilsecurity.com"
+#define VS_CLOUD_HOST "https://api-stg-va.virgilsecurity.com"
 
 #define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 

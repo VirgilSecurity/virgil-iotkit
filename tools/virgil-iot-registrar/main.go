@@ -70,34 +70,14 @@ func main()  {
 			Usage:   "Public key of sender of data file",
 		},
 		&cli.StringFlag{
-			Name:    "iot_priv_key",
-			Aliases: []string{"i"},
-			Usage:   "IoT registrar private key",
-		},
-		&cli.StringFlag{
-			Name:    "iot_priv_key_pass",
-			Aliases: []string{"u"},
-			Usage:   "Password for IoT registrar private key",
-		},
-		&cli.StringFlag{
-			Name:    "app_id",
-			Aliases: []string{"a"},
-			Usage:   "Virgil Application ID",
-		},
-		&cli.StringFlag{
-			Name:    "api_key_id",
+			Name:    "app_token",
 			Aliases: []string{"t"},
-			Usage:   "Virgil Api key Id",
+			Usage:   "Virgil application token",
 		},
 		&cli.StringFlag{
-			Name:    "api_key",
-			Aliases: []string{"y"},
-			Usage:   "Virgil Api private key",
-		},
-		&cli.StringFlag{
-			Name:    "base_url",
+			Name:    "registration_url",
 			Aliases: []string{"b"},
-			Usage:   "Card service base url",
+			Usage:   "URL used for Cards registration",
 		},
 	}
 

@@ -135,11 +135,11 @@ _hsm_deinit(void) {
 
 /******************************************************************************/
 vs_status_e
-_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *tl_storage_impl) {
+_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *slots_storage_impl) {
     CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(tl_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(slots_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    _storage = tl_storage_impl;
+    _storage = slots_storage_impl;
 
     hsm_impl->deinit = _hsm_deinit;
 

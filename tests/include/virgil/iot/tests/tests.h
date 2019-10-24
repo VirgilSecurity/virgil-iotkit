@@ -36,13 +36,21 @@
 #define VS_IOT_SDK_TESTS_H
 
 #include <stdbool.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/hsm/hsm.h>
+
+#define TEST_MANUFACTURE_ID "VRGL"
+#define TEST_DEVICE_TYPE "TEST"
 
 uint16_t
-vs_tests_checks(bool print_start_finish_tests);
-uint16_t
-vs_secbox_test(vs_storage_op_ctx_t *ctx);
+vs_sdmp_tests(void);
 
 uint16_t
-vs_firmware_test(vs_storage_op_ctx_t *ctx);
+vs_crypto_test(vs_hsm_impl_t *hsm_impl);
+
+uint16_t
+vs_secbox_test(vs_hsm_impl_t *hsm_impl);
+
+uint16_t
+vs_firmware_test(vs_hsm_impl_t *hsm_impl);
+
 #endif // VS_IOT_SDK_TESTS_H
