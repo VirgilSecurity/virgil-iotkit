@@ -98,8 +98,8 @@ typedef enum {
 
 /** Status code check and goto if non-successful.
  *
- *  1. OPERATION is compared with \ref VS_CODE_OK.
- *  2. If they are not equal, MESSAGES is logged and function jumps to terminate label.
+ *  1. \a OPERATION is compared with \ref VS_CODE_OK.
+ *  2. If they are not equal, \a MESSAGES is logged and function jumps to terminate label.
  *
  * \warning terminate label must be present in current function.
  *
@@ -110,8 +110,8 @@ typedef enum {
 
 /** Status code check and return \ref vs_status_e if non-successful.
  *
- *  1. OPERATION result code is saved to the \ref vs_status_e ret_code variable.
- *  2. if ret_code is not equal to \ref VS_CODE_OK, MESSAGES is logged and function returns ret_code.
+ *  1. \a OPERATION result code is saved to the \ref vs_status_e ret_code variable.
+ *  2. if ret_code is not equal to \ref VS_CODE_OK, \a MESSAGES is logged and function returns ret_code.
  *
  * \warning \ref vs_status_e ret_code must be initialized.
  *
@@ -124,8 +124,8 @@ typedef enum {
 
 /** Status code check and return bool if non-successful.
  *
- *  1. OPERATION is compared with \ref VS_CODE_OK.
- *  2. If they are not equal, MESSAGES is logged and function returns false.
+ *  1. \a OPERATION is compared with \ref VS_CODE_OK.
+ *  2. If they are not equal, \a MESSAGES is logged and function returns false.
  *
  *  \param[in] OPERATION Operation to be checked.
  *  \param[in] MESSAGE String with printf-like parameter to be logged in case of non-successful operation.
