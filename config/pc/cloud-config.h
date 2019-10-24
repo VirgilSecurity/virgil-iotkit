@@ -32,11 +32,17 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file cloud-config.h
+ * \brief Cloud configuration
+ */
+
 #ifndef VS_IOT_SDK_CLOUD_CONFIG_H
 #define VS_IOT_SDK_CLOUD_CONFIG_H
 
+/** Cloud URL */
 #define VS_CLOUD_HOST "https://api-stg-va.virgilsecurity.com"
 
+/** Cloud reply buffer size */
 #define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 
 #endif //VS_IOT_SDK_CLOUD_CONFIG_H
