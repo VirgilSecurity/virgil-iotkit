@@ -32,18 +32,56 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef HELPERS_VS_SOFTHSM_H
-#define HELPERS_VS_SOFTHSM_H
-
+#include <stdlib.h>
 #include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
 
-#define VS_SLOTS_STORAGE_MAX_SIZE (1024)
+uint16_t
+test_hash(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_hmac(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_kdf2(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_ecdsa(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_ecdh(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_keypair(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_random(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_aes(vs_hsm_impl_t *hsm_impl);
+uint16_t
+test_sign_converters(void);
+uint16_t
+test_pubkeys_converters(void);
+uint16_t
+test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl);
+uint16_t
+vs_virgil_ecies_test(vs_hsm_impl_t *hsm_impl);
 
-vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
+/**********************************************************/
+uint16_t
+vs_crypto_test(vs_hsm_impl_t *hsm_impl) {
+    uint16_t failed_test_result = 0;
 
-vs_status_e
-vs_softhsm_deinit(void);
+    VS_IOT_ASSERT(hsm_impl);
+    CHECK_NOT_ZERO_RET(hsm_impl, 1);
 
-#endif // HELPERS_VS_SOFTHSM_H
+    failed_test_result = test_hash(hsm_impl);
+    failed_test_result += test_hmac(hsm_impl);
+    failed_test_result += test_kdf2(hsm_impl);
+    failed_test_result += test_random(hsm_impl);
+    failed_test_result += test_aes(hsm_impl);
+    failed_test_result += test_keystorage_and_tl(hsm_impl);
+    failed_test_result += test_keypair(hsm_impl);
+    failed_test_result += test_ecdsa(hsm_impl);
+    failed_test_result += test_ecdh(hsm_impl);
+    failed_test_result += vs_virgil_ecies_test(hsm_impl);
+#if !VIRGIL_IOT_MCU_BUILD
+    failed_test_result += test_sign_converters();
+    failed_test_result += test_pubkeys_converters();
+#endif
+
+    return failed_test_result;
+}
