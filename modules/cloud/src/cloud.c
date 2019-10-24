@@ -543,10 +543,10 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->footer_sz != 0 && resp->used_size == resp->footer_sz) {
                 resp->used_size = 0;
-                vs_tl_info_t tl_info = {.type = ((vs_tl_footer_t *)resp->buff)->tl_type,
-                                        .version = resp->host_header.version};
+                uint8_t type = ((vs_tl_footer_t *)resp->buff)->tl_type;
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
-                if (VS_CODE_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
+
+                if (VS_CODE_OK != vs_cloud_is_new_tl_version_available(type, &resp->host_header.version) ||
                     VS_CODE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
                     return 0;
                 }

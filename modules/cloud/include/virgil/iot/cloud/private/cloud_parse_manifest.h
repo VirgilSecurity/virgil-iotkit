@@ -51,13 +51,13 @@ typedef union {
 typedef struct __attribute__((__packed__)) {
     uint8_t manufacturer_id[MANUFACTURE_ID_STR_LEN];
     vs_readable_type_t device_type;
-    char version[16];
+    char version[17];
     char timestamp[9];
     char fw_file_url[VS_UPD_URL_STR_SIZE];
 } vs_firmware_manifest_entry_t;
 
 typedef struct {
-    vs_file_version_t version;
+    char version[17];
     int type;
 } vs_tl_info_t;
 
@@ -81,7 +81,7 @@ typedef struct {
 #define VS_TL_TYPE_FIELD "type"
 
 vs_status_e
-vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
+vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version);
 
 vs_status_e
 vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc);

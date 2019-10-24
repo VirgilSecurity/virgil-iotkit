@@ -37,36 +37,6 @@
 #include <virgil/iot/cloud/private/cloud_include.h>
 
 /*************************************************************************/
-vs_status_e
-vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info) {
-    vs_tl_header_t tl_header;
-    uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
-    vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
-    uint16_t res_sz;
-    vs_status_e ret_code;
-
-    if (tl_info->type < 0 || tl_info->type > 0xFF) {
-        return VS_CODE_ERR_INCORRECT_PARAMETER;
-    }
-
-    STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz),
-                     "Unable to load Trust List header");
-
-    // Use host endian
-    vs_tl_header_to_host(&tl_header, &tl_header);
-
-    info.id = VS_TL_ELEMENT_TLF;
-    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
-
-    if ((uint8_t)tl_info->type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
-        VS_CODE_OK != vs_update_compare_version(&tl_info->version, &tl_header.version)) {
-        return VS_CODE_ERR_NOT_FOUND;
-    }
-
-    return VS_CODE_OK;
-}
-
-/*************************************************************************/
 static int8_t
 _hex_char_to_num(char input) {
     if (input >= '0' && input <= '9') {
@@ -120,7 +90,7 @@ _hex_str_to_bin(const char *src, uint16_t src_sz, uint8_t *out, uint16_t out_sz)
 
 /*************************************************************************/
 static bool
-_dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
+_dec_str_to_num8(const char *str, int8_t str_len, uint8_t *num) {
     int8_t i;
     uint8_t deg = 1;
     uint16_t tmp = 0;
@@ -132,7 +102,7 @@ _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
 
     for (i = str_len - 1; i >= 0; i--) {
         if (str[i] < '0' || str[i] > '9') {
-            return -1;
+            return false;
         }
         tmp += (uint16_t)(str[i] - 0x30) * deg;
         deg *= 10;
@@ -143,6 +113,35 @@ _dec_str_to_bin(const char *str, int8_t str_len, uint8_t *num) {
     }
 
     *num = (uint8_t)tmp;
+    return true;
+}
+
+/*************************************************************************/
+static bool
+_dec_str_to_num32(const char *str, int8_t str_len, uint32_t *num) {
+    int8_t i;
+    uint64_t deg = 1;
+    uint64_t tmp = 0;
+    *num = 0;
+
+
+    if (str_len <= 0 || str_len > 10) {
+        return false;
+    }
+
+    for (i = str_len - 1; i >= 0; i--) {
+        if (str[i] < '0' || str[i] > '9') {
+            return false;
+        }
+        tmp += (uint64_t)(str[i] - 0x30) * deg;
+        deg *= 10;
+    }
+
+    if (tmp > 0xFFFFFFFF) {
+        return false;
+    }
+
+    *num = (uint32_t)tmp;
     return true;
 }
 
@@ -163,15 +162,15 @@ _find_symb_in_str(char *str, char symb) {
 
 /*************************************************************************/
 static vs_status_e
-_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_file_version_t *fw_version) {
+_parse_version(char *version_str, vs_file_version_t *version) {
     /*parse major*/
-    char *ptr = _find_symb_in_str(fm_entry->version, '.');
+    char *ptr = _find_symb_in_str(version_str, '.');
 
     CHECK_NOT_ZERO_RET(ptr, VS_CODE_ERR_JSON);
 
-    int8_t len = (int8_t)(ptr - fm_entry->version);
+    int8_t len = (int8_t)(ptr - version_str);
 
-    CHECK_RET(_dec_str_to_bin(fm_entry->version, len, &fw_version->major), VS_CODE_ERR_JSON, "Incorrect version field");
+    CHECK_RET(_dec_str_to_num8(version_str, len, &version->major), VS_CODE_ERR_JSON, "Incorrect version field");
     ptr++;
 
     /*parse minor*/
@@ -179,12 +178,12 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     CHECK_NOT_ZERO_RET(ptr1, VS_CODE_ERR_JSON);
 
     len = (int8_t)(ptr1 - ptr);
-    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->minor), VS_CODE_ERR_JSON, "Incorrect minor field");
+    CHECK_RET(_dec_str_to_num8(ptr, len, &version->minor), VS_CODE_ERR_JSON, "Incorrect minor field");
     ptr1++;
     ptr = ptr1;
 
     /*parse patch*/
-    while (ptr1 < fm_entry->version + VS_IOT_STRLEN(fm_entry->version)) {
+    while (ptr1 < version_str + VS_IOT_STRLEN(version_str)) {
         if (*ptr1 < 0x30 || *ptr1 > 0x39) {
             break;
         }
@@ -192,16 +191,25 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     }
 
     len = (int8_t)(ptr1 - ptr);
-    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->patch), VS_CODE_ERR_JSON, "Incorrect patch field");
+    CHECK_RET(_dec_str_to_num8(ptr, len, &version->patch), VS_CODE_ERR_JSON, "Incorrect patch field");
     ptr = ptr1;
 
-    /*parse dev_build*/
+    /*parse build*/
     ptr++;
-#if 0
-    ptr1 = fm_entry->version + VS_IOT_STRLEN(fm_entry->version);
+    ptr1 = version_str + VS_IOT_STRLEN(version_str);
     len = (int8_t)(ptr1 - ptr);
-    CHECK_RET(_dec_str_to_bin(ptr, len, &fw_version->dev_build), VS_CODE_ERR_JSON, "Incorrect dev_build field");
-#endif
+    uint32_t build;
+    CHECK_RET(_dec_str_to_num32(ptr, len, &build), VS_CODE_ERR_JSON, "Incorrect dev_build field");
+    version->build = build;
+
+    return VS_CODE_OK;
+}
+
+/*************************************************************************/
+static vs_status_e
+_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_file_version_t *fw_version) {
+    vs_status_e ret_code;
+    STATUS_CHECK_RET(_parse_version(fm_entry->version, fw_version), "Error parse file version");
 
     /*parse build_timestamp*/
     uint8_t timestamp[sizeof(uint32_t)];
@@ -235,6 +243,32 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFAC
     }
 
     return true;
+}
+
+/*************************************************************************/
+vs_status_e
+vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version) {
+    vs_tl_header_t tl_header;
+    uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
+    vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
+    uint16_t res_sz;
+    vs_status_e ret_code;
+
+    STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz),
+                     "Unable to load Trust List header");
+
+    // Use host endian
+    vs_tl_header_to_host(&tl_header, &tl_header);
+
+    info.id = VS_TL_ELEMENT_TLF;
+    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
+
+    if (new_tl_type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
+        VS_CODE_OK != vs_update_compare_version(new_tl_version, &tl_header.version)) {
+        return VS_CODE_ERR_NOT_FOUND;
+    }
+
+    return VS_CODE_OK;
 }
 
 /*************************************************************************/
@@ -374,17 +408,19 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     int res = VS_CODE_ERR_CLOUD;
 
-    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type)
-#if 0
-        && VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_VERSION_FIELD, &tl_entry.info.version)
-#endif
-    ) {
+    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
+        VS_JSON_ERR_OK ==
+                json_get_val_str(&jobj, VS_TL_VERSION_FIELD, tl_entry.info.version, sizeof(tl_entry.info.version))) {
         VS_LOG_INFO("[TL] new tl manifest:");
         VS_LOG_INFO("[TL] url = %s", tl_entry.file_url);
         VS_LOG_INFO("[TL] type = %d", tl_entry.info.type);
-        VS_LOG_INFO("[TL] version = %d", tl_entry.info.version);
+        VS_LOG_INFO("[TL] version = %s", tl_entry.info.version);
 
-        res = vs_cloud_is_new_tl_version_available(&tl_entry.info);
+        vs_status_e ret_code;
+        vs_file_version_t new_version;
+        STATUS_CHECK_RET(_parse_version(tl_entry.info.version, &new_version), "Error parse file version");
+
+        res = vs_cloud_is_new_tl_version_available(tl_entry.info.type, &new_version);
         if (VS_CODE_OK == res) {
             VS_IOT_STRCPY(tl_url, tl_entry.file_url);
         }
