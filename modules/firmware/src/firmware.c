@@ -516,7 +516,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     vs_status_e ret_code;
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     VS_IOT_ASSERT(_hsm);
 

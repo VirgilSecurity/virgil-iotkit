@@ -172,7 +172,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     tl_ctx->ready = true;
     if (VS_CODE_OK != vs_tl_header_load(tl_ctx->storage.storage_type, &(tl_ctx->header))) {
