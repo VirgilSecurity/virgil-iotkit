@@ -1,3 +1,6 @@
+
+// TODO : insert our copyright ???
+
 /*! \file json_parser.h
  * \brief JSON Parser module
  *
