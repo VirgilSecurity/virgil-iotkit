@@ -67,14 +67,14 @@ typedef struct __attribute__((__packed__)) {
  * \param[in] tl_storage_ctx Storage context. Must not be NULL.
  * \param[in] hsm HSM implementation. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
 
 /** Provision destruction
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_provision_deinit(void);
@@ -84,7 +84,7 @@ vs_provision_deinit(void);
  * \param[in] id Storage context. Must not be NULL.
  * \param[in] hsm HSM implementation. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
@@ -96,7 +96,7 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
  * \param[out] key Output buffer to save key. Must not be NULL.
  * \param[in] key_sz Key size. Must not be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
@@ -106,7 +106,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
  * \param[in] key_to_check Key to check. Must not be NULL.
  * \param[in] key_size Key size. Must not be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);

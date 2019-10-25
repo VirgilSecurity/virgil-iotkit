@@ -56,7 +56,7 @@ extern "C" {
  *
  * \param[in] impl Callback functions. Must not be NULL.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
 vs_sdmp_prvs_server(vs_hsm_impl_t *hsm);

@@ -53,13 +53,13 @@ extern "C" {
 // TODO : description???
 /** Wait and stop callback
  *
- * \a stop_wait_func member or \ref vs_sdmp_prvs_client_impl_t structure.
- * \a wait_func member or \ref vs_sdmp_prvs_client_impl_t structure.
+ * \a stop_wait_func member or #vs_sdmp_prvs_client_impl_t structure.
+ * \a wait_func member or #vs_sdmp_prvs_client_impl_t structure.
  *
  * \param[in] condition
  * \param[in] expect
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
 
@@ -70,7 +70,7 @@ typedef vs_status_e (*vs_sdmp_prvs_stop_wait_t)(int *condition, int expect);
  * \param[in] condition
  * \param[in] idle
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
@@ -86,9 +86,9 @@ typedef struct {
  *
  * This call returns PRVS client implementation. It must be called before any PRVS call.
  *
- * \param[in] impl \ref vs_sdmp_prvs_client_impl_t callback functions. Must not be NULL.
+ * \param[in] impl #vs_sdmp_prvs_client_impl_t callback functions. Must not be NULL.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
 vs_sdmp_prvs_client(vs_sdmp_prvs_client_impl_t impl);
@@ -97,11 +97,11 @@ vs_sdmp_prvs_client(vs_sdmp_prvs_client_impl_t impl);
  *
  * Sends request for all devices that have not been initialized.
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[out] list \ref vs_sdmp_prvs_dnid_list_t Buffer with devices list. Must not be NULL.
+ * \param[in] netif #vs_netif_t SDMP service descriptor. Must not be NULL.
+ * \param[out] list #vs_sdmp_prvs_dnid_list_t Buffer with devices list. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *list, uint32_t wait_ms);
@@ -118,7 +118,7 @@ vs_sdmp_prvs_enum_devices(const vs_netif_t *netif, vs_sdmp_prvs_dnid_list_t *lis
  * \param[in] buf_sz Buffer size
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
@@ -137,7 +137,7 @@ vs_sdmp_prvs_save_provision(const vs_netif_t *netif,
  * \param[in] buf_sz Buffer size
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_device_info(const vs_netif_t *netif,
@@ -160,7 +160,7 @@ vs_sdmp_prvs_device_info(const vs_netif_t *netif,
  * \param[out] signature_sz Buffer to store \a signature size. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
@@ -184,7 +184,7 @@ vs_sdmp_prvs_sign_data(const vs_netif_t *netif,
  * \param[in] data_sz \a data size. Must not be zero.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_set(const vs_netif_t *netif,
@@ -208,7 +208,7 @@ vs_sdmp_prvs_set(const vs_netif_t *netif,
  * \param[out] data_sz Buffer to store \a data size. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_get(const vs_netif_t *netif,
@@ -231,7 +231,7 @@ vs_sdmp_prvs_get(const vs_netif_t *netif,
  * \param[in] data_sz \a data size. Must not be zero.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
@@ -251,7 +251,7 @@ vs_sdmp_prvs_set_tl_header(const vs_netif_t *netif,
  * \param[in] data Data to be saved. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_prvs_set_tl_footer(const vs_netif_t *netif,

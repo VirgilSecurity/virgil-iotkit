@@ -5,7 +5,7 @@
  * \brief JSON Parser module
  *
  * This module is used to parse a JSON string
- * For JSON generation, please refer \ref json_generator.h
+ * For JSON generation, please refer #json_generator.h
  *
  * \section json_parser_usage Usage
  *
@@ -183,7 +183,7 @@ typedef jsmntok_t jsontok_t;
 typedef jsmn_parser json_parser_t;
 /** Object used by the JSON parser internally. This object needs to be
  * defined by the application but all the elements will be set internally
- * by the JSON parser. Please refer \ref json_parser_usage for more information.
+ * by the JSON parser. Please refer #json_parser_usage for more information.
  *
  * \note Please do not modify any elements of this object
  */
@@ -210,11 +210,11 @@ typedef struct {
  * if the number of tokens that will be required for successful parsing are
  * not known in advance.
  *
- * \param[in,out] jobj Pointer to a JSON object \ref jobj_t assigned by the
+ * \param[in,out] jobj Pointer to a JSON object #jobj_t assigned by the
  * application. This is set up for further use internally by this API.
- * \param[in] tokens Pointer to an array of JSON tokens \ref jsontok_t
+ * \param[in] tokens Pointer to an array of JSON tokens #jsontok_t
  * assigned by the application. To get an idea about how large the array should
- * be, please refer \ref json_parser_usage section.
+ * be, please refer #json_parser_usage section.
  * \param[in] num_tokens Number of tokens in the tokens array.
  * \param[in] js Pointer to the JSON string.
  * \param[in] js_len Length of the JSON string.
@@ -248,12 +248,12 @@ json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_l
  * fetched), it is mandatory to call json_parse_stop() if this
  * API is used.
  *
- * \param[in,out] jobj Pointer to a JSON object \ref jobj_t assigned by the
+ * \param[in,out] jobj Pointer to a JSON object #jobj_t assigned by the
  * application. This is set up for further use internally by this API.
  * \param[in] js Pointer to the JSON string.
  * \param[in] js_len Length of the JSON string.
  *
- * \return WM_SUCCESS on successful parsing. The \ref jobj_t structure can
+ * \return WM_SUCCESS on successful parsing. The #jobj_t structure can
  * be used to find out the total number of parsed tokens if required.
  * json_is_object() and/or json_is_array() can then be used to find out
  * if the parsed string is a JSON object or array so that the appropriate
@@ -284,7 +284,7 @@ json_parse_stop(jobj_t *jobj);
 
 /** Find out if the current object is a JSON Object
  *
- * \param[in] jobj The current JSON object pointer of type \ref jobj_t
+ * \param[in] jobj The current JSON object pointer of type #jobj_t
  *
  * \return true if it is an object
  * \return false if it is not an object
@@ -294,7 +294,7 @@ json_is_object(jobj_t *jobj);
 
 /** Find out if the current object is a JSON Array
  *
- * \param[in] jobj The current JSON object pointer of type \ref jobj_t
+ * \param[in] jobj The current JSON object pointer of type #jobj_t
  *
  * \return true if it is an array
  * \return false if it is not an array
@@ -306,7 +306,7 @@ json_is_array(jobj_t *jobj);
  * Gets the value of a JSON boolean element from an object based on
  * the given key.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] value Pointer to a boolean variable assigned by the application.
  * This will hold the value on success.
@@ -327,7 +327,7 @@ json_get_val_bool(jobj_t *jobj, char *key, bool *value);
  * Gets the value of a JSON integer element from an object based on
  * the given key.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] value Pointer to an integer variable assigned by the
  * application. This will hold the value on success.
@@ -348,7 +348,7 @@ json_get_val_int(jobj_t *jobj, char *key, int *value);
  * Gets the value of a JSON integer element from an object based on
  * the given key.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] value Pointer to a 64bit integer variable assigned by the
  * application. This will hold the value on success.
@@ -369,7 +369,7 @@ json_get_val_int64(jobj_t *jobj, char *key, int64_t *value);
  * Gets the value of a JSON float element from an object based on
  * the given key.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] value Pointer to a float variable assigned by the application.
  * This will hold the value on success.
@@ -390,7 +390,7 @@ json_get_val_float(jobj_t *jobj, char *key, float *value);
  * Gets the value of a JSON string element from an object based on
  * the given key.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] value Pointer to a buffer assigned by the application to hold
  * the string. This will hold the null terminated string on success.
@@ -414,7 +414,7 @@ json_get_val_str(jobj_t *jobj, char *key, char *value, int max_len);
  * the given key. This is useful when the application does not know
  * what size of buffer to use for json_get_val_str()
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] key Name of the JSON element.
  * \param[out] len Pointer to an integer assigned by the application to hold
  * the length of string. Applications will have to use a buffer of size
@@ -435,7 +435,7 @@ json_get_val_str_len(jobj_t *jobj, char *key, int *len);
  *
  * Gets a composite JSON object from another object based on the given key.
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t.
+ * \param[in,out] jobj Current JSON search object #jobj_t.
  * On success, the jobj will be modified such that the scope of subsequent
  * searches will be limited to this composite object. Use
  * json_release_composite_object() to expand the scope back to the parent
@@ -458,7 +458,7 @@ json_get_composite_object(jobj_t *jobj, char *key);
  * This function expands the scope of searches back to the parent object, if it
  * was previously constrained using json_get_composite_object().
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t. On success, this
+ * \param[in,out] jobj Current JSON search object #jobj_t. On success, this
  * will be modified such that the scope of future searches will be expanded
  * back to the parent object.
  *
@@ -472,7 +472,7 @@ json_release_composite_object(jobj_t *jobj);
  *
  * Gets a JSON array object from another object based on the given key.
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t.
+ * \param[in,out] jobj Current JSON search object #jobj_t.
  * On success, the jobj will be modified such that the scope of subsequent
  * searches will be limited to this array. Use json_release_array_object()
  * to expand the scope back to the parent object.
@@ -496,7 +496,7 @@ json_get_array_object(jobj_t *jobj, char *key, int *num_elements);
  * This function expands the scope of searches back to the parent object, if it
  * was previously constrained using json_get_array_object().
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t. On success, this
+ * \param[in,out] jobj Current JSON search object #jobj_t. On success, this
  * will be modified such that the scope of future searches will be expanded
  * back to the parent object.
  *
@@ -523,7 +523,7 @@ json_array_get_num_elements(jobj_t *jobj);
  * Gets the value of a JSON boolean element from an array based on the given
  * index.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] value Pointer to a boolean variable assigned by the application.
  * This will hold the value on success.
@@ -544,7 +544,7 @@ json_array_get_bool(jobj_t *jobj, uint16_t index, bool *value);
  * Gets the value of a JSON integer element from an array based on the given
  * index.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] value Pointer to an integer variable assigned by the
  * application. This will hold the value on success.
@@ -565,7 +565,7 @@ json_array_get_int(jobj_t *jobj, uint16_t index, int *value);
  * Gets the value of a JSON integer element from an array based on the given
  * index.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] value Pointer to a 64bit integer variable assigned by the
  * application. This will hold the value on success.
@@ -586,7 +586,7 @@ json_array_get_int64(jobj_t *jobj, uint16_t index, int64_t *value);
  * Gets the value of a JSON float element from an array based on the given
  * index.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] value Pointer to a float variable assigned by the application.
  * This will hold the value on success.
@@ -607,7 +607,7 @@ json_array_get_float(jobj_t *jobj, uint16_t index, float *value);
  * Gets the value of a JSON string element from an array based on the given
  * index.
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] value Pointer to a buffer assigned by the application to hold
  * the string. This will hold the null terminated string on success.
@@ -631,7 +631,7 @@ json_array_get_str(jobj_t *jobj, uint16_t index, char *value, int maxlen);
  * the given index. This is useful when the application does not know
  * what size of buffer to use for json_array_get_str()
  *
- * \param[in] jobj Current JSON search object \ref jobj_t.
+ * \param[in] jobj Current JSON search object #jobj_t.
  * \param[in] index Index in the array (beginning from 0).
  * \param[out] len Pointer to an integer assigned by the application to hold
  * the length of string. Applications will have to use a buffer of size
@@ -652,7 +652,7 @@ json_array_get_str_len(jobj_t *jobj, uint16_t index, int *len);
  *
  * Gets a composite JSON object from an array based on the given index.
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t.
+ * \param[in,out] jobj Current JSON search object #jobj_t.
  * On success, the jobj will be modified such that the scope of subsequent
  * searches will be limited to this composite object. Use
  * json_array_release_composite_object() to expand the scope back to the
@@ -677,7 +677,7 @@ json_array_get_composite_object(jobj_t *jobj, uint16_t index);
  * This function expands the scope of searches back to the parent array, if it
  * was previously constrained using json_array_get_composite_object().
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t. On success, this
+ * \param[in,out] jobj Current JSON search object #jobj_t. On success, this
  * will be modified such that the scope of future searches will be expanded
  * back to the parent array.
  *
@@ -691,7 +691,7 @@ json_array_release_composite_object(jobj_t *jobj);
  *
  * Gets a JSON array object from another array based on the given index.
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t.
+ * \param[in,out] jobj Current JSON search object #jobj_t.
  * On success, the jobj will be modified such that the scope of subsequent
  * searches will be limited to this composite object. Use
  * json_array_release_composite_object() to expand the scope back to the
@@ -716,7 +716,7 @@ json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements);
  * This function expands the scope of searches back to the parent array, if it
  * was previously constrained using json_array_get_array_object().
  *
- * \param[in,out] jobj Current JSON search object \ref jobj_t. On success, this
+ * \param[in,out] jobj Current JSON search object #jobj_t. On success, this
  * will be modified such that the scope of future searches will be expanded
  * back to the parent array.
  *

@@ -44,7 +44,7 @@
 
 /** Get public key length
  *
- * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
  * \return Public key length
  */
@@ -53,7 +53,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
 
 /** Get signature length
  *
- * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
  * \return Signature length
  */
@@ -62,7 +62,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
 
 /** Get hash length
  *
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  *
  * \return Hash length
  */
@@ -71,7 +71,7 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
 
 /** Get key pair type description
  *
- * \param[in] type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
  * \return Key pair description in static buffer
  */
@@ -80,7 +80,7 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 
 /** Get hash type description
  *
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  *
  * \return Hash type description in static buffer
  */

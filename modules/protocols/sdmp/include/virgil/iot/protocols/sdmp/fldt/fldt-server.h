@@ -40,12 +40,12 @@
  *
  * \section fldt_server_usage FLDT Server Usage
  *
- * Server side sends new file versions provided by \ref vs_fldt_server_add_file_type call. Also it sends information about
- * present files by client requests. Files must be previously listed by \ref vs_fldt_server_add_file_type call. If requested
- * file has not been added, \ref vs_fldt_server_add_filetype callback is called to provide such information.
+ * Server side sends new file versions provided by #vs_fldt_server_add_file_type call. Also it sends information about
+ * present files by client requests. Files must be previously listed by #vs_fldt_server_add_file_type call. If requested
+ * file has not been added, #vs_fldt_server_add_filetype callback is called to provide such information.
  * In most case it used to output new file version information and gateway address.
- * To successfully file broadcasting \ref vs_update_interface_t must be provided for each file type. You can see
- * function \ref vs_firmware_update_file_type for Firmware example and \ref vs_tl_update_file_type for Trust List one.
+ * To successfully file broadcasting #vs_update_interface_t must be provided for each file type. You can see
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
  *
  * Here you can see an example of FLDT server initialization :
  * \code
@@ -56,7 +56,7 @@
  *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ), "Unable to add Firmware file type" );
  *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx(), false ), "Unable to add Trust List file type" ); * \endcode
  *
- * You can see \ref vs_fldt_server_add_filetype function example below :
+ * You can see #vs_fldt_server_add_filetype function example below :
  * \code
  * static vs_status_e
  * _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **update_ctx) {
@@ -93,14 +93,14 @@ extern "C" {
 
 /** Add new file type callback
  *
- * Callback for \ref vs_sdmp_fldt_server function.
- * This callback is used when gateway receives request for file type that has not been added by \ref vs_fldt_server_add_file_type call.
+ * Callback for #vs_sdmp_fldt_server function.
+ * This callback is used when gateway receives request for file type that has not been added by #vs_fldt_server_add_file_type call.
  *
  * \warning Valid pointer to the update context with all callback must be provided.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
                                                    vs_update_interface_t **update_ctx);
@@ -112,7 +112,7 @@ typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *
  * \param[in] gateway_mac Gateway's MAC address. Must not be NULL.
  * \param[in] add_filetype Callback. Must not be NULL.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
 vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
@@ -125,7 +125,7 @@ vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
  * \param[in] update_ctx Update context for current file type. Must not be NULL.
  * \param[in] broadcast_file_info true if gateways has to broadcast information about file provided.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,

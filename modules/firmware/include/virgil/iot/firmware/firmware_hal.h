@@ -45,7 +45,7 @@
  *
  * Signature for function that prepares space for firmware installation
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_firmware_install_prepare_space_hal(void);
@@ -57,7 +57,7 @@ vs_firmware_install_prepare_space_hal(void);
  * \param[in] data Data to be append
  * \param[in] data_sz Data size
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
@@ -69,7 +69,7 @@ vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
  * \param[out] footer Device footer
  * \param[in] footer_sz Footer size
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz);

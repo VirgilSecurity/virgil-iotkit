@@ -69,7 +69,7 @@
 /** Use logger library
  *
  * Enables logger library usage with logger level, file name and line number.
- * If it is disabled, \ref VS_IOT_LOGGER_FUNCTION function will be called.
+ * If it is disabled, #VS_IOT_LOGGER_FUNCTION function will be called.
  */
 
 #define VS_IOT_LOGGER_USE_LIBRARY 1
@@ -81,7 +81,7 @@
 /** Function to directly output
  *
  * Sends string directly to the printf-like function defined by this macros.
- * Used when \ref VS_IOT_LOGGER_USE_LIBRARY == 0
+ * Used when #VS_IOT_LOGGER_USE_LIBRARY == 0
  */
 
 #define VS_IOT_LOGGER_FUNCTION printf
@@ -97,7 +97,7 @@
 /** Output current time
  *
  * Enables current time output at the beginning of log string.
- * Requires \ref vs_logger_current_time_hal function implementation.
+ * Requires #vs_logger_current_time_hal function implementation.
  */
 
 #define VS_IOT_LOGGER_OUTPUT_TIME   0

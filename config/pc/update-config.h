@@ -53,7 +53,7 @@
 
 /** List of signer types, which must be among signatures in firmware footer
  *
- * Quantity MUST be equal to \ref VS_FW_SIGNATURES_QTY
+ * Quantity MUST be equal to #VS_FW_SIGNATURES_QTY
  * It's values of vs_key_type_e from provision library
  */
 #define VS_FW_SIGNER_TYPE_LIST {                                                                                   \

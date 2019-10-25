@@ -56,20 +56,20 @@ extern "C" {
  * \param[in] condition
  * \param[in] idle
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
 // TODO : description???
 /** Wait and stop callback
  *
- * \a stop_wait_func member or \ref vs_sdmp_prvs_client_impl_t structure.
- * \a wait_func member or \ref vs_sdmp_prvs_client_impl_t structure.
+ * \a stop_wait_func member or #vs_sdmp_prvs_client_impl_t structure.
+ * \a wait_func member or #vs_sdmp_prvs_client_impl_t structure.
  *
  * \param[in] condition
  * \param[in] expect
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
 
@@ -78,9 +78,9 @@ typedef vs_status_e (*vs_sdmp_info_stop_wait_t)(int *condition, int expect);
  *
  * Sends notification with device information.
  *
- * \param[in] device \ref vs_sdmp_info_device_t device information.
+ * \param[in] device #vs_sdmp_info_device_t device information.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *device);
 
@@ -89,9 +89,9 @@ typedef vs_status_e (*vs_sdmp_info_start_notif_cb_t)(vs_sdmp_info_device_t *devi
  *
  * Sends detailed device information.
  *
- * \param[in] general_info \ref vs_info_general_t device information.
+ * \param[in] general_info #vs_info_general_t device information.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info);
 
@@ -100,22 +100,22 @@ typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info
  *
  * Sends device statistic information.
  *
- * \param[in] statistics \ref vs_info_statistics_t device information.
+ * \param[in] statistics #vs_info_statistics_t device information.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
 // TODO : description???
 /** INFO client callbacks
  *
- * INFO client callbacks for \ref vs_sdmp_info_client call.
+ * INFO client callbacks for #vs_sdmp_info_client call.
  *
- * \param[in] device_start_cb \ref vs_sdmp_info_start_notif_cb_t startup notification.
- * \param[in] general_info_cb \ref vs_sdmp_info_general_cb_t general information.
- * \param[in] statistics_cb \ref vs_sdmp_info_statistics_cb_t device statistics.
+ * \param[in] device_start_cb #vs_sdmp_info_start_notif_cb_t startup notification.
+ * \param[in] general_info_cb #vs_sdmp_info_general_cb_t general information.
+ * \param[in] statistics_cb #vs_sdmp_info_statistics_cb_t device statistics.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef struct {
     vs_sdmp_info_start_notif_cb_t device_start_cb;
@@ -135,23 +135,23 @@ typedef struct {
  *
  * This call returns INFO client implementation. It must be called before any INFO call.
  *
- * \param[in] impl \ref vs_sdmp_info_impl_t SDMP implementation. Must not be NULL.
- * \param[in] callbacks \ref vs_sdmp_info_callbacks_t callbacks. Must not be NULL.
+ * \param[in] impl #vs_sdmp_info_impl_t SDMP implementation. Must not be NULL.
+ * \param[in] callbacks #vs_sdmp_info_callbacks_t callbacks. Must not be NULL.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
 vs_sdmp_info_client(vs_sdmp_info_impl_t impl, vs_sdmp_info_callbacks_t callbacks);
 
 /** Enumerate devices
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[out] devices \ref vs_sdmp_info_device_t Devices information list. Must not be NULL.
+ * \param[in] netif #vs_netif_t SDMP service descriptor. Must not be NULL.
+ * \param[out] devices #vs_sdmp_info_device_t Devices information list. Must not be NULL.
  * \param[in] devices_max Maximum devices amount. Must not be zero.
  * \param[out] devices_cnt Buffer to store devices amount. Must not be NULL.
  * \param[in] wait_ms Time to wait response.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_info_enum_devices(const vs_netif_t *netif,
@@ -163,13 +163,13 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
 // TODO : description??? fields???
 /** Set pooling
  *
- * \param[in] netif \ref vs_netif_t SDMP service descriptor. Must not be NULL.
- * \param[in] mac \ref vs_mac_addr_t MAC address. Must not be NULL.
- * \param[in] elements Multiple \ref vs_sdmp_info_element_mask_e
+ * \param[in] netif #vs_netif_t SDMP service descriptor. Must not be NULL.
+ * \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL.
+ * \param[in] elements Multiple #vs_sdmp_info_element_mask_e
  * \param[out] enable
  * \param[in] period_seconds
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 vs_status_e
 vs_sdmp_info_set_polling(const vs_netif_t *netif,

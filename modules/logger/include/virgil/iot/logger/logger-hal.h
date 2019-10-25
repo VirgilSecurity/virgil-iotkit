@@ -35,11 +35,11 @@
 /*! \file logger-hal.h
  * \brief Logger HAL functions declarations
  *
- * These functions have to be implemented to use logger module. See \ref logger_usage for details.
+ * These functions have to be implemented to use logger module. See #logger_usage for details.
  *
  * \section logger_hal_implementation Logger HAL Implementation
  *
- * User has to provide logger output function \ref vs_logger_output_hal . The goal of this function is to output part
+ * User has to provide logger output function #vs_logger_output_hal . The goal of this function is to output part
  * of string to the output. Its implementation can be as listed below :
  *
  * \code
@@ -54,7 +54,7 @@
  * }
  * \endcode
  *
- * If \ref VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement \ref vs_logger_current_time_hal function that
+ * If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
  * outputs current time :
  *
  * \code
@@ -102,7 +102,7 @@ vs_logger_output_hal(const char *buffer);
 
 /** Output current date/time function signature
  *
- * This is HAL function that has to be implemented by user if \ref VS_IOT_LOGGER_OUTPUT_TIME == 1.
+ * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_OUTPUT_TIME == 1.
  * It outputs current date and/or time to the output.
  *
  * \return true in case of success or false in any error occur

@@ -65,7 +65,7 @@
 
 /** List of signer types, which must be among signatures in TL footer
  *
- * Quantity MUST be equal to \ref VS_TL_SIGNATURES_QTY
+ * Quantity MUST be equal to #VS_TL_SIGNATURES_QTY
  * It's values of vs_key_type_e from provision library
  */
 

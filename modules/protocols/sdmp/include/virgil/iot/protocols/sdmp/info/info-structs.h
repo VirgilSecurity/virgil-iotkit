@@ -48,22 +48,22 @@
 
 /** Device information
  *
- * Device information as parameter for \ref vs_sdmp_info_start_notif_cb_t call
+ * Device information as parameter for #vs_sdmp_info_start_notif_cb_t call
  */
 typedef struct {
-    uint32_t device_roles; /**< Mask based on \ref vs_sdmp_device_role_e elements */
+    uint32_t device_roles; /**< Mask based on #vs_sdmp_device_role_e elements */
     uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_sdmp_info_device_t;
 
 /** Device general information
  *
- * Device general information as parameter for \ref vs_sdmp_info_general_cb_t call
+ * Device general information as parameter for #vs_sdmp_info_general_cb_t call
  */
 typedef struct {
     uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< Manufacture ID*/
     uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< Device type */
     uint8_t default_netif_mac[ETH_ADDR_LEN]; /**< Default network interface MAC address*/
-    uint32_t device_roles; /**< Mask based on \ref vs_sdmp_device_role_e elements */
+    uint32_t device_roles; /**< Mask based on #vs_sdmp_device_role_e elements */
     uint8_t fw_major; /**< Major version */
     uint8_t fw_minor; /**< Minor version */
     uint8_t fw_patch; /**< Patch version */
@@ -75,7 +75,7 @@ typedef struct {
 
 /** Device statistics
  *
- * Device statistics as parameter for \ref vs_sdmp_info_statistics_cb_t call
+ * Device statistics as parameter for #vs_sdmp_info_statistics_cb_t call
  */
 typedef struct {
     uint32_t sent;
@@ -86,7 +86,7 @@ typedef struct {
 // TODO : description???
 /** Device statistics
  *
- * Element mask for \ref vs_sdmp_info_set_polling call
+ * Element mask for #vs_sdmp_info_set_polling call
  */
 typedef enum {
     VS_SDMP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),

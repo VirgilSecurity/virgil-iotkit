@@ -43,12 +43,12 @@
  *
  * \section cloud_usage Cloud Usage
  *
- *  function \ref vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing service using
- *  \ref vs_cloud_http_get_func_t and connect to broker using \ref vs_cloud_mb_connect_subscribe_func_t.
- *  Then it waits for new messages periodically calling \ref vs_cloud_mb_process_func_t.
+ *  function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing service using
+ *  #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t.
+ *  Then it waits for new messages periodically calling #vs_cloud_mb_process_func_t.
  *  User can register own handlers for events about new firmware or trust list by calling
- *  \ref vs_cloud_message_bin_register_default_handler or custom handler for raw data processing from some topics by calling
- *  \ref vs_cloud_message_bin_register_custom_handler
+ *  #vs_cloud_message_bin_register_default_handler or custom handler for raw data processing from some topics by calling
+ *  #vs_cloud_message_bin_register_custom_handler
  *  Cloud library uses provision and firmware modules, which must be initialized before.
  *
  *  Here you can see an example of Cloud library initialization :
@@ -138,7 +138,7 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
  * \param[in] hander_data Context from \a fetch_handler \a userdata parameter.
  * \param[in,out] in_out_size Data size storage. Must not be NULL.
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
                                                 char *out_data,
@@ -157,9 +157,9 @@ typedef struct {
  *
  * \param[in] payload 
  * \param[in] payload_len 
- * \param[out] fw_url Buffer for Firmware download URL. Must be enough to store \ref VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
+ * \param[out] fw_url Buffer for Firmware download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 
 vs_status_e
@@ -171,9 +171,9 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
  *
  * \param[in] payload
  * \param[in] payload_len
- * \param[out] tl_url Buffer for Trust List download URL. Must be enough to store \ref VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
+ * \param[out] tl_url Buffer for Trust List download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 
 vs_status_e
@@ -184,7 +184,7 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
  * \param[in] fw_file_url 
  * \param[out] fetched_header
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header);
@@ -193,7 +193,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *
  * 
  * \param[in] tl_file_url 
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_fetch_and_store_tl(const char *tl_file_url);
@@ -244,18 +244,18 @@ typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
  * \param[in] topic_id 
  * \param[in] handler 
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler);
 
 /** Register custom handler callback
  *
- * This callback is used for topics that have not been registered by \ref vs_cloud_message_bin_register_default_handler
+ * This callback is used for topics that have not been registered by #vs_cloud_message_bin_register_default_handler
  *
  * \param[in] handler 
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb_t handler);
@@ -268,7 +268,7 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
  * \param[in] priv_key 
  * \param[in] ca_cert Broker's certificate. Must not be NULL.
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
                                                uint16_t port,
@@ -283,7 +283,7 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
  * \param[in] topic_list
  * \param[in] process_topic
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_id,
                                                             const char *login,
@@ -293,7 +293,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
 
 /** Message Bin processing
  * 
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
@@ -305,7 +305,7 @@ typedef struct {
 
 /** Process Message Bin
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_message_bin_process(void);
@@ -316,7 +316,7 @@ vs_cloud_message_bin_process(void);
  * \param[in] message_bin_impl Message bin implementation. Must not be NULL.
  * \param[in] hsm HSM implementation. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,

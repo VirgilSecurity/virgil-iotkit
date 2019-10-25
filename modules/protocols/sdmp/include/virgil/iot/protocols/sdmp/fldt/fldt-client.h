@@ -40,10 +40,10 @@
  *
  * \section fldt_client_usage FLDT Client Usage
  *
- * Client side downloads new file versions and checks them. \ref vs_fldt_got_file function is called after file upgrading.
+ * Client side downloads new file versions and checks them. #vs_fldt_got_file function is called after file upgrading.
  * In most case it used to output new file version information and gateway address.
- * To successfully file downloading process \ref vs_update_interface_t must be provided for each file type. You can see
- * function \ref vs_firmware_update_file_type for Firmware example and \ref vs_tl_update_file_type for Trust List one.
+ * To successfully file downloading process #vs_update_interface_t must be provided for each file type. You can see
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
  *
  * Here you can see an example of FLDT client initialization :
  * \code
@@ -54,7 +54,7 @@
  *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx() ), "Unable to add Trust List file type" );
  * \endcode
  *
- * You can see minimalistic \ref vs_fldt_got_file function example below :
+ * You can see minimalistic #vs_fldt_got_file function example below :
  * \code
  * void _on_file_updated(vs_update_file_type_t *file_type,
  *                  const vs_file_version_t *prev_file_ver,
@@ -96,8 +96,8 @@ extern "C" {
 
 /** Got new file callback
  *
- * Callback for \ref vs_sdmp_fldt_client function.
- * This callback is used when new file has been fully loaded. See \ref fldt_client_usage for details.
+ * Callback for #vs_sdmp_fldt_client function.
+ * This callback is used when new file has been fully loaded. See #fldt_client_usage for details.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in] prev_file_ver Current file version before loading new one. Cannot be NULL.
@@ -120,7 +120,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * \param[in] got_file_callback Callback. Must not be NULL.
  *
- * \return \ref vs_sdmp_service_t SDMP service description. Use this pointer to call \ref vs_sdmp_register_service.
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
 vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
@@ -132,7 +132,7 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
  * \param[in] file_type File type to be added. Must not be NULL.
  * \param[in] update_ctx Update context for current file type. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);

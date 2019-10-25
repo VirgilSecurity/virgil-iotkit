@@ -123,9 +123,9 @@ typedef enum {
 
 /** Signature type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t signer_type;       /**< \ref vs_key_type_e */
-    uint8_t ec_type;           /**< \ref vs_hsm_keypair_type_e */
-    uint8_t hash_type;         /**< \ref vs_hsm_hash_type_e */
+    uint8_t signer_type;       /**< #vs_key_type_e */
+    uint8_t ec_type;           /**< #vs_hsm_keypair_type_e */
+    uint8_t hash_type;         /**< #vs_hsm_hash_type_e */
     uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type */
 } vs_sign_t;
 

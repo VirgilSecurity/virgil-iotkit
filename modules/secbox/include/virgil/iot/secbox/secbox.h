@@ -56,14 +56,14 @@ typedef enum {
  * \param[in] ctx Storage context. Must not be NULL.
  * \param[in] hsm HSM implementation. Must not be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm);
 
 /** Destroy Security Box
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_deinit(void);
@@ -72,7 +72,7 @@ vs_secbox_deinit(void);
  *
  * \param[in] id Element ID
  *
- * \return Element size or \ref vs_status_e negative value in case of error
+ * \return Element size or #vs_status_e negative value in case of error
  */
 ssize_t
 vs_secbox_file_size(vs_storage_element_id_t id);
@@ -84,7 +84,7 @@ vs_secbox_file_size(vs_storage_element_id_t id);
  * \param[in] data Data buffer. Must not be NULL.
  * \param[in] data_sz Data size. Must not be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t *data, size_t data_sz);
@@ -95,7 +95,7 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
  * \param[out] data Data buffer. Must not be NULL.
  * \param[in] data_sz Data size. Must not be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
@@ -105,7 +105,7 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
  *
  * \param[in] id Element ID
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_del(vs_storage_element_id_t id);

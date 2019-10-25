@@ -35,7 +35,7 @@
 /*! \file status_code.h
  * \brief Status codes and macroses
  *
- * This file declares \ref vs_status_e status codes and macroses to simplify return code checks.
+ * This file declares #vs_status_e status codes and macroses to simplify return code checks.
  */
 
 #ifndef VS_IOT_SDK_STATUS_CODE
@@ -44,7 +44,7 @@
 #include <virgil/iot/macros/macros.h>
 
 /** Status code
- * Status code to be returned from function. Zero value \ref VS_CODE_OK is used for non-error values. All others mean error
+ * Status code to be returned from function. Zero value #VS_CODE_OK is used for non-error values. All others mean error
  */
 typedef enum {
     VS_CODE_COMMAND_NO_RESPONSE = 100,
@@ -98,7 +98,7 @@ typedef enum {
 
 /** Status code check and goto if non-successful.
  *
- *  1. \a OPERATION is compared with \ref VS_CODE_OK.
+ *  1. \a OPERATION is compared with #VS_CODE_OK.
  *  2. If they are not equal, \a MESSAGES is logged and function jumps to terminate label.
  *
  * \warning terminate label must be present in current function.
@@ -108,23 +108,23 @@ typedef enum {
  */
 #define STATUS_CHECK(OPERATION, MESSAGE, ...)   CHECK(VS_CODE_OK == (OPERATION), (MESSAGE), ##__VA_ARGS__)
 
-/** Status code check and return \ref vs_status_e if non-successful.
+/** Status code check and return #vs_status_e if non-successful.
  *
- *  1. \a OPERATION result code is saved to the \ref vs_status_e ret_code variable.
- *  2. if ret_code is not equal to \ref VS_CODE_OK, \a MESSAGES is logged and function returns ret_code.
+ *  1. \a OPERATION result code is saved to the #vs_status_e ret_code variable.
+ *  2. if ret_code is not equal to #VS_CODE_OK, \a MESSAGES is logged and function returns ret_code.
  *
- * \warning \ref vs_status_e ret_code must be initialized.
+ * \warning #vs_status_e ret_code must be initialized.
  *
  *  \param[in] OPERATION Operation to be checked.
  *  \param[in] MESSAGE String with printf-like parameter to be logged in case of non-successful operation.
  *
- *  \return OPERATION's \ref vs_status_e ret_code in case of non-successful result.
+ *  \return OPERATION's #vs_status_e ret_code in case of non-successful result.
  */
 #define STATUS_CHECK_RET(OPERATION, MESSAGE, ...)   CHECK_RET(VS_CODE_OK == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)
 
 /** Status code check and return bool if non-successful.
  *
- *  1. \a OPERATION is compared with \ref VS_CODE_OK.
+ *  1. \a OPERATION is compared with #VS_CODE_OK.
  *  2. If they are not equal, \a MESSAGES is logged and function returns false.
  *
  *  \param[in] OPERATION Operation to be checked.

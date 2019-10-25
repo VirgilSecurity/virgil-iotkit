@@ -64,7 +64,7 @@ typedef void *vs_storage_file_t;
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_deinit_hal_t)(
         vs_storage_impl_data_ctx_t storage_ctx); // After this call storage_ctx is incorrect and must be zeroed.
@@ -74,7 +74,7 @@ typedef vs_status_e (*vs_storage_deinit_hal_t)(
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] id
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_storage_file_t (*vs_storage_open_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -87,7 +87,7 @@ typedef vs_storage_file_t (*vs_storage_open_hal_t)(
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] file Storage file context.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_rpi_storage_sync_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -100,7 +100,7 @@ typedef vs_status_e (*vs_rpi_storage_sync_t)(
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] file Storage file context.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_close_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -114,7 +114,7 @@ typedef vs_status_e (*vs_storage_close_hal_t)(
  * \param[in] in_data Data to be saved. Cannot be NULL.
  * \param[in] data_sz Data size.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_save_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -131,7 +131,7 @@ typedef vs_status_e (*vs_storage_save_hal_t)(
  * \param[out] out_data Output storage for loaded data. Cannot be NULL.
  * \param[in] data_sz Data size to be loaded. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_load_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -145,7 +145,7 @@ typedef vs_status_e (*vs_storage_load_hal_t)(
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] id Storage element identifier.
  *
- * \return File size if not negative, \ref vs_status_e code if any error
+ * \return File size if not negative, #vs_status_e code if any error
  */
 typedef ssize_t (*vs_storage_file_size_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -156,7 +156,7 @@ typedef ssize_t (*vs_storage_file_size_hal_t)(
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] id Storage element identifier.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_del_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -166,7 +166,7 @@ typedef vs_status_e (*vs_storage_del_hal_t)(
  *
  * \param[out] descriptor Output buffer to store firmware descriptor. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_impl_own_firmware_descriptor(void *descriptor);

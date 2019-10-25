@@ -58,7 +58,7 @@ enum vs_update_file_type_id_t {
 
 /** File type information */
 typedef struct __attribute__((__packed__)) {
-    uint16_t type; /**< \ref vs_update_file_type_id_t */
+    uint16_t type; /**< #vs_update_file_type_id_t */
     vs_file_info_t info; /**< Additional file information */
 } vs_update_file_type_t;
 
@@ -91,9 +91,9 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
  * \param update_ver File to be update. Cannot be NULL.
  * \param current_ver Current file version. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK if \a update_ver file is newer than \a current_ver file.
- * \return \ref VS_CODE_OLD_VERSION if \a update_ver file is not newer than \a current_ver file.
- * \return Other \ref vs_status_e in case of error.
+ * \return #VS_CODE_OK if \a update_ver file is newer than \a current_ver file.
+ * \return #VS_CODE_OLD_VERSION if \a update_ver file is not newer than \a current_ver file.
+ * \return Other #vs_status_e in case of error.
  */
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
@@ -104,7 +104,7 @@ vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_ver
  * \param[in] file_type Current file type. Cannot be NULL.
  * \param[out] header_size Output buffer for current file type header size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
 
@@ -115,7 +115,7 @@ typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_f
  * \param[in] file_header File header.
  * \param[out] file_size Output buffer to store file size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
 
@@ -125,7 +125,7 @@ typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_fil
  * \param[in] file_type Current file type. Cannot be NULL.
  * \param[out] has_footer Output boolean footer to store true if current file type has footer. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_type_t *file_type, bool *has_footer);
 
@@ -139,7 +139,7 @@ typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_t
  * \param[in] loaded_data_size Data size that has been loaded before this call.
  * \param[out] next_offset Output buffer to store offset for next call. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
 
@@ -151,7 +151,7 @@ typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_f
  * \param[in] buffer_size Buffer size. Cannot be zero.
  * \param[out] header_size Output buffer to save header size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
 
@@ -165,7 +165,7 @@ typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_t
  * \param[out] data_size Data buffer to store read data size. Cannot be NULL.
  * \param[in] data_offset Data offset. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
 
@@ -178,7 +178,7 @@ typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_typ
  * \param[in] buffer_size Buffer size. Cannot be zero.
  * \param[out] footer_size Footer size that has been read. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
 
@@ -190,7 +190,7 @@ typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_t
  * \param[in] header_size Header size to be saved. Cannot be NULL.
  * \param[out] file_size Output buffer to store current file size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
 
@@ -203,7 +203,7 @@ typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_t
  * \param[in] data_size Data size. Cannot be NULL.
  * \param[in] data_offset Data offset from the file beginning. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
 
@@ -215,7 +215,7 @@ typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_typ
  * \param[in] file_footer Current file footer. Cannot be NULL.
  * \param[in] footer_size Footer size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
 

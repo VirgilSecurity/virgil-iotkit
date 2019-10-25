@@ -103,7 +103,7 @@ typedef struct {
  * \param[in] data Data to be saved. Cannot be NULL.
  * \param[in] data_sz Data size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz);
 
@@ -114,7 +114,7 @@ typedef vs_status_e (*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t 
  * \param[in] buf_sz Buffer size. Cannot be zero.
  * \param[out] out_sz Loaded data size buffer. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
 
@@ -122,20 +122,20 @@ typedef vs_status_e (*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data,
  *
  * \param[in] slot Slot ID.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_slot_delete_t)(vs_iot_hsm_slot_e slot);
 
 /** Callback for hash generation
  *
- * \param[in] hash_type Hash type. Cannot by \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot by #VS_HASH_SHA_INVALID.
  * \param[in] data Data source for hash calculation. Cannot be NULL.
  * \param[in] data_sz Data size. Cannot be zero.
  * \param[out] hash Output buffer to store hash. Cannot be NULL.
  * \param[in] hash_buf_sz Output buffer size. Cannot be NULL.
  * \param[out] hash_sz Output buffer to store hash size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
                                             const uint8_t *data,
@@ -147,9 +147,9 @@ typedef vs_status_e (*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
 /** Callback for key pair generate
  *
  * \param[in] slot Slot ID to save key pair.
- * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
 
@@ -163,7 +163,7 @@ typedef vs_status_e (*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_ke
  * \param[out] key_sz Output buffer to store public key size. Cannot be NULL.
  * \param[out] keypair_type Output buffer to store key pair type. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
                                                    uint8_t *buf,
@@ -174,13 +174,13 @@ typedef vs_status_e (*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
 /** Callback for signature calculation based on ECDSA
  *
  * \param[in] key_slot Slot number.
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] hash Hash source for signature calculation. Cannot be NULL.
  * \param[out] signature Output buffer to store signature. Cannot be NULL.
  * \param[in] signature_buf_sz Output buffer size. Cannot be NULL.
  * \param[out] signature_sz Output buffer to store signature size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
                                            vs_hsm_hash_type_e hash_type,
@@ -191,15 +191,15 @@ typedef vs_status_e (*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
 
 /** Callback for signature verify based on ECDSA
  *
- * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  * \param[in] public_key Public key buffer. Cannot be NULL.
  * \param[in] public_key_sz Public key size. Cannot be zero.
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] hash Hash source for signature calculation. Cannot be NULL.
  * \param[in] signature Output buffer to store signature. Cannot be NULL.
  * \param[in] signature_sz Output buffer to store signature size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of successful verifying or error code.
+ * \return #VS_CODE_OK in case of successful verifying or error code.
  */
 typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
                                              const uint8_t *public_key,
@@ -211,7 +211,7 @@ typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
 
 /** Callback for HMAC calculation
  *
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key buffer. Cannot be NULL.
  * \param[in] key_sz Key size. Cannot be zero.
  * \param[in] input Input data. Cannot be NULL.
@@ -220,7 +220,7 @@ typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
  * \param[in] output_buf_sz Output buffer size. Cannot be NULL.
  * \param[out] output_sz Output buffer to store output data size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
                                      const uint8_t *key,
@@ -233,14 +233,14 @@ typedef vs_status_e (*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
 
 /** Callback for KDF calculation
  *
- * \param[in] kdf_type KDF algorithm. Cannot be \ref VS_KDF_INVALID.
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] kdf_type KDF algorithm. Cannot be #VS_KDF_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] input Input data. Cannot be NULL.
  * \param[in] input_sz Input data size. Cannot be zero.
  * \param[out] output Output key buffer. Cannot be NULL.
  * \param[in] output_sz Output key size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
                                     vs_hsm_hash_type_e hash_type,
@@ -251,7 +251,7 @@ typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
 
 /** Callback for HKDF calculation
  *
- * \param[in] hash_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] input Input data. Cannot be NULL.
  * \param[in] input_sz Input data size. Cannot be zero.
  * \param[in] salt Salt data. Cannot be NULL.
@@ -261,7 +261,7 @@ typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
  * \param[out] output Output key buffer. Cannot be NULL.
  * \param[in] output_sz Output key size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
                                      const uint8_t *input,
@@ -278,13 +278,13 @@ typedef vs_status_e (*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
  * \param[out] output Output buffer. Cannot be NULL.
  * \param[in] output_sz Output buffer size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
 
 /** Callback for data encryption by AES algorithm
  *
- * \param[in] aes_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
  * \param[in] key_bitlen Key size in bits. Cannot be zero.
  * \param[in] iv IV. Cannot be NULL.
@@ -297,7 +297,7 @@ typedef vs_status_e (*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
  * \param[out] tag Tag buffer. Cannot be NULL.
  * \param[in] tag_len Tag size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
                                             const uint8_t *key,
@@ -314,7 +314,7 @@ typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
 
 /** Callback for data decryption by AES algorithm
  *
- * \param[in] aes_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
  * \param[in] key_bitlen Key size in bits. Cannot be zero.
  * \param[in] iv IV. Cannot be NULL.
@@ -327,7 +327,7 @@ typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
  * \param[out] tag Tag buffer. Cannot be NULL.
  * \param[in] tag_len Tag size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
                                             const uint8_t *key,
@@ -345,7 +345,7 @@ typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
 // TODO : correct title?
 /** Callback for data decryption by AES algorithm with authetnification check
  *
- * \param[in] aes_type Hash type. Cannot be \ref VS_HASH_SHA_INVALID.
+ * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
  * \param[in] key_bitlen Key size in bits. Cannot be zero.
  * \param[in] iv IV. Cannot be NULL.
@@ -358,7 +358,7 @@ typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
  * \param[in] tag Tag buffer. Cannot be NULL.
  * \param[in] tag_len Tag size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
                                                  const uint8_t *key,
@@ -377,14 +377,14 @@ typedef vs_status_e (*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
 /** Callback for ECDH algorithm
  *
  * \param[in] key_slot Slot number.
- * \param[in] keypair_type Key pair type. Cannot be \ref VS_KEYPAIR_INVALID or \ref VS_KEYPAIR_MAX.
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  * \param[in] public_key Public key buffer. Cannot be NULL.
  * \param[in] public_key_sz Public key size. Cannot be zero.
  * \param[in,out] shared_secret Shared secret buffer. Cannot be NULL.
  * \param[in] buf_sz Shared secret buffer size. Cannot be zero.
  * \param[out] shared_secret_sz Output buffer to store shared secret buffer size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
                                      vs_hsm_keypair_type_e keypair_type,
@@ -398,7 +398,7 @@ typedef vs_status_e (*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
  *
  * \param[out] ctx Context. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef void (*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
 
@@ -408,7 +408,7 @@ typedef void (*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
  * \param[in] message Message update SHA-256 context. Cannot be NULL.
  * \param[in] len Message size. Cannot be zero.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
 
@@ -418,7 +418,7 @@ typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, cons
  * \param[in,out] ctx Context.
  * \param[out] digest Produced digest. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
 
@@ -433,7 +433,7 @@ typedef vs_status_e (*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8
  * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
  * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,
                                                              size_t recipient_id_sz,
@@ -453,7 +453,7 @@ typedef vs_status_e (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *reci
  * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
  * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
  *
- * \return \ref VS_CODE_OK in case of success or error code.
+ * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *recipient_id,
                                                              size_t recipient_id_sz,
