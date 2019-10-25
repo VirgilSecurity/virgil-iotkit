@@ -1210,36 +1210,6 @@ class UtilityManager(object):
         else:
             self.run_utility()
 
-    @property
-    def __virgil_exporter_keys(self):
-        if not self._virgil_exporter_keys:
-            self._virgil_exporter_keys = dict()
-            secure_transfer_private_key_path = os.path.join(self._context.secure_transfer_keys_path, "private.key")
-            if not os.path.exists(secure_transfer_private_key_path):
-                self.__logger.error("SecureTransfer Private Keys were not found at {}".format(
-                    secure_transfer_private_key_path
-                ))
-                sys.exit(
-                    "[FATAL]: Can't find SecureTransfer Private Key at {}".format(secure_transfer_private_key_path)
-                )
-            self._virgil_exporter_keys["private"] = open(
-                secure_transfer_private_key_path,
-                "rb"
-            ).read()
-            secure_transfer_public_key_path = os.path.join(self._context.secure_transfer_keys_path, "public.key")
-            if not os.path.exists(secure_transfer_private_key_path):
-                self.__logger.error("SecureTransfer Private Keys were not found at {}".format(
-                    secure_transfer_private_key_path
-                ))
-                sys.exit(
-                    "[FATAL]: Can't find SecureTransfer Public Key at {}".format(secure_transfer_private_key_path)
-                )
-            self._virgil_exporter_keys["public"] = open(
-                secure_transfer_public_key_path,
-                "rb"
-            ).read()
-            self._virgil_exporter_keys["password"] = self._context.secure_transfer_password
-        return self._virgil_exporter_keys
 
     @property
     def __utility_list(self):

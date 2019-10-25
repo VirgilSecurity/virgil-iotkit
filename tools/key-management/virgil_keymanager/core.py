@@ -34,8 +34,6 @@ class UtilContext:
         self.debug_logging = self._cli_args["verbose_logging"]
 
         self.storage_path = self._config["MAIN"]["storage_path"]
-        self.secure_transfer_keys_path = self._config["MAIN"]["secure_transfer_keys_path"]
-        self.secure_transfer_password = self._config["MAIN"]["secure_transfer_keys_passwd"]
 
         self.application_token = self._cli_args["app_token"]
         self.virgil_api_url = self._config["CARDS"]["virgil_api_url"]
@@ -120,9 +118,7 @@ class UtilContext:
         required_content = {
             "MAIN": [
                 "storage_path",
-                "log_path",
-                "secure_transfer_keys_path",
-                "secure_transfer_keys_passwd"
+                "log_path"
             ],
             "CARDS": [
                 "virgil_api_url",
