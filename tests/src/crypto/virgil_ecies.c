@@ -37,7 +37,6 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/hsm/softhsm-ecies.h>
 #include <virgil/iot/hsm/hsm.h>
 
 const char *test_recipient_id = "test-recipient-id";
@@ -45,7 +44,11 @@ const char *test_data = "this string will be encrypted";
 
 /**********************************************************/
 static bool
-_ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uint8_t *data, size_t data_sz) {
+_ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
+                  const uint8_t *recipient_id,
+                  size_t recipient_id_sz,
+                  const uint8_t *data,
+                  size_t data_sz) {
 
     uint8_t encrypted_data[1024];
     size_t encrypted_data_sz;
@@ -53,31 +56,31 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
     uint8_t decrypted_data[128];
     size_t decrypted_data_sz;
 
-    BOOL_CHECK_RET(VS_CODE_OK != vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
-                                                                     recipient_id_sz,
-                                                                     (uint8_t *)data,
-                                                                     data_sz,
-                                                                     encrypted_data,
-                                                                     data_sz,
-                                                                     &encrypted_data_sz),
+    BOOL_CHECK_RET(VS_CODE_OK != hsm_impl->ecies_encrypt(recipient_id,
+                                                         recipient_id_sz,
+                                                         (uint8_t *)data,
+                                                         data_sz,
+                                                         encrypted_data,
+                                                         data_sz,
+                                                         &encrypted_data_sz),
                    "Success call with small output buffer");
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_virgil_encrypt_sha384_aes256(recipient_id,
-                                                                     recipient_id_sz,
-                                                                     (uint8_t *)data,
-                                                                     data_sz,
-                                                                     encrypted_data,
-                                                                     sizeof(encrypted_data),
-                                                                     &encrypted_data_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->ecies_encrypt(recipient_id,
+                                                         recipient_id_sz,
+                                                         (uint8_t *)data,
+                                                         data_sz,
+                                                         encrypted_data,
+                                                         sizeof(encrypted_data),
+                                                         &encrypted_data_sz),
                    "Error encrypt data");
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_hsm_virgil_decrypt_sha384_aes256(recipient_id,
-                                                                     recipient_id_sz,
-                                                                     (uint8_t *)encrypted_data,
-                                                                     encrypted_data_sz,
-                                                                     decrypted_data,
-                                                                     sizeof(decrypted_data),
-                                                                     &decrypted_data_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->ecies_decrypt(recipient_id,
+                                                         recipient_id_sz,
+                                                         (uint8_t *)encrypted_data,
+                                                         encrypted_data_sz,
+                                                         decrypted_data,
+                                                         sizeof(decrypted_data),
+                                                         &decrypted_data_sz),
                    "Error decrypt data");
 
     return decrypted_data_sz == data_sz && 0 == VS_IOT_MEMCMP(data, decrypted_data, decrypted_data_sz);
@@ -85,13 +88,14 @@ _ecies_crypt_case(const uint8_t *recipient_id, size_t recipient_id_sz, const uin
 
 /**********************************************************/
 uint16_t
-vs_virgil_ecies_test() {
+vs_virgil_ecies_test(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
     START_TEST("Virgil ecies encryption");
 
-    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision() && vs_test_create_device_key());
+    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision(hsm_impl) && vs_test_create_device_key(hsm_impl));
     TEST_CASE_OK("Encrypt/decrypt data",
-                 _ecies_crypt_case((uint8_t *)test_recipient_id,
+                 _ecies_crypt_case(hsm_impl,
+                                   (uint8_t *)test_recipient_id,
                                    strlen(test_recipient_id),
                                    (uint8_t *)test_data,
                                    strlen(test_data) + 1));

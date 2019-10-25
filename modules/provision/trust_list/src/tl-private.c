@@ -172,7 +172,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     tl_ctx->ready = true;
     if (VS_CODE_OK != vs_tl_header_load(tl_ctx->storage.storage_type, &(tl_ctx->header))) {
@@ -353,12 +353,14 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
     }
 
     if (_verify_tl(&_tl_static_ctx)) {
-        if (VS_CODE_OK == _copy_tl_file(&_tl_dynamic_ctx, &_tl_static_ctx)) {
+        vs_status_e ret_code = _copy_tl_file(&_tl_dynamic_ctx, &_tl_static_ctx);
+        if (VS_CODE_OK == ret_code) {
             return _verify_tl(&_tl_dynamic_ctx) ? VS_CODE_OK : VS_CODE_ERR_VERIFY;
         }
+        return ret_code;
     }
 
-    return VS_CODE_ERR_VERIFY;
+    return VS_CODE_ERR_NOINIT;
 }
 
 /******************************************************************************/

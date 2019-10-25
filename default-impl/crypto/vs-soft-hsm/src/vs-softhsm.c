@@ -41,12 +41,12 @@ static bool _softhsm_ready = false;
 
 /******************************************************************************/
 vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *tl_storage_impl) {
+vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
-    CHECK_NOT_ZERO_RET(tl_storage_impl, NULL);
+    CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
 
     if (!_softhsm_ready) {
-        _fill_slots_impl(&_softhsm, tl_storage_impl);
+        _fill_slots_impl(&_softhsm, slots_storage_impl);
         _fill_crypto_impl(&_softhsm);
         _fill_keypair_impl(&_softhsm);
         _fill_ecies_impl(&_softhsm);

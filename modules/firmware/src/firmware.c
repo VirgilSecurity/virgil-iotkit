@@ -161,6 +161,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 /******************************************************************************/
 vs_status_e
 vs_firmware_deinit(void) {
+    CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
@@ -516,7 +517,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     vs_status_e ret_code;
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     VS_IOT_ASSERT(_hsm);
 
