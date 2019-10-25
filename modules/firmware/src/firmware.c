@@ -496,6 +496,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
 
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "Unable to read own firmware");
 
+    vs_firmware_ntoh_descriptor(&own_footer->descriptor);
     VS_IOT_MEMCPY(descriptor, &own_footer->descriptor, sizeof(vs_firmware_descriptor_t));
 
     return VS_CODE_OK;
@@ -636,6 +637,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
         return VS_CODE_ERR_NOT_FOUND;
     }
 
+
     return vs_update_compare_version(&new_descriptor->info.version, &own_desc.info.version);
 }
 
@@ -757,6 +759,7 @@ vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
     desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
+    desc->info.version.build = VS_IOT_NTOHL(desc->info.version.build);
 }
 
 /*************************************************************************/

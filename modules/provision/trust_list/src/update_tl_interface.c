@@ -91,7 +91,13 @@ _tl_describe_version(void *context,
         }
     }
 
-    VS_IOT_SNPRINTF(output, string_space, "version %d", (int)version->major);
+    VS_IOT_SNPRINTF(output,
+                    string_space,
+                    "version %d.%d.%d.%d",
+                    (int)version->major,
+                    (int)version->minor,
+                    (int)version->patch,
+                    (int)version->build);
 
     return buffer;
 
