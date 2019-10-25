@@ -165,7 +165,7 @@ _file_info(const vs_update_file_type_t *file_type,
     VS_LOG_DEBUG("[FLDT] Update file %s",
                  _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
 
-    memset(file_info, 0, sizeof(*file_info));
+    VS_IOT_MEMSET(file_info, 0, sizeof(*file_info));
 
     file_info->type.type = file_type->type;
     VS_IOT_MEMCPY(file_info->type.info.manufacture_id,
