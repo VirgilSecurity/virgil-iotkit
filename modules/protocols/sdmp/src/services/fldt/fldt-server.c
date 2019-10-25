@@ -36,6 +36,7 @@
 
 #include <virgil/iot/protocols/sdmp/fldt/fldt-server.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/macros/macros.h>
@@ -323,6 +324,9 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                  header_response->file_size,
                  header_response->has_footer ? "has footer" : "no footer");
 
+    // Normalize byte order
+    vs_fldt_gnfh_header_response_t_encode(header_response);
+
     return VS_CODE_OK;
 }
 
@@ -334,7 +338,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    const vs_fldt_gnfd_data_request_t *data_request = (const vs_fldt_gnfd_data_request_t *)request;
+    vs_fldt_gnfd_data_request_t *data_request = (vs_fldt_gnfd_data_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
@@ -351,6 +355,9 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // Normalize byte order
+    vs_fldt_gnfd_data_request_t_decode(data_request);
 
     *response_sz = 0;
     VS_IOT_MEMSET(data_response, 0, sizeof(*data_response));
@@ -429,6 +436,9 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                  data_response->data_size,
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 #endif
+
+    // Normalize byte order
+    vs_fldt_gnfd_data_response_t_encode(data_response);
 
     return VS_CODE_OK;
 }
@@ -509,6 +519,9 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     footer_response->footer_size = data_size;
 
     *response_sz = sizeof(vs_fldt_gnff_footer_response_t) + footer_response->footer_size;
+
+    // Normalize byte order
+    vs_fldt_gnff_footer_response_t_encode(footer_response);
 
     return VS_CODE_OK;
 }

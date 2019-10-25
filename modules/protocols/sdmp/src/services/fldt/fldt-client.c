@@ -36,6 +36,7 @@
 
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
@@ -341,6 +342,9 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     (void)is_ack;
 
+    // Normalize byte order
+    vs_fldt_gnfh_header_response_t_decode(file_header);
+
     file_ver = &file_header->type.info.version;
     file_type = &file_header->type;
 
@@ -394,6 +398,9 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                         (const uint8_t *)&data_request,
                         sizeof(data_request));
 
+    // Normalize byte order
+    vs_fldt_gnfd_data_request_t_encode(&data_request);
+
     CHECK_RET(!vs_sdmp_send_request(NULL,
                                     &file_type_info->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
@@ -419,6 +426,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_status_e ret_code;
 
     (void)is_ack;
+
+    // Normalize byte order
+    vs_fldt_gnfd_data_response_t_decode(file_data);
 
     file_ver = &file_data->type.info.version;
     file_type = &file_data->type;
@@ -538,6 +548,9 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_status_e ret_code;
 
     (void)is_ack;
+
+    // Normalize byte order
+    vs_fldt_gnff_footer_response_t_decode(file_footer);
 
     file_ver = &file_footer->type.info.version;
     file_type = &file_footer->type;

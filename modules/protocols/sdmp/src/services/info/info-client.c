@@ -36,6 +36,7 @@
 
 #include <virgil/iot/protocols/sdmp/info/info-client.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/macros/macros.h>
@@ -72,6 +73,9 @@ vs_sdmp_info_enum_devices(const vs_netif_t *netif,
     _devices_list_cnt = 0;
     *devices_cnt = 0;
 
+    // Normalize byte order
+    // Place here if it'll be required
+
     // Send request
     STATUS_CHECK_RET(vs_sdmp_send_request(netif, 0, VS_INFO_SERVICE_ID, VS_INFO_ENUM, NULL, 0), "Cannot send request");
 
@@ -107,6 +111,9 @@ vs_sdmp_info_set_polling(const vs_netif_t *netif,
     } else {
         VS_IOT_MEMSET(request.recipient_mac.bytes, 0xFF, ETH_ADDR_LEN);
     }
+
+    // Normalize byte order
+    vs_info_poll_request_t_encode(&request);
 
     // Send request
     STATUS_CHECK_RET(vs_sdmp_send_request(
@@ -162,6 +169,9 @@ _ginf_request_processor(const uint8_t *request,
         return VS_CODE_OK;
     }
 
+    // Normalize byte order
+    vs_info_ginf_response_t_decode(ginf_request);
+
     // Check input parameters
     CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SDMP:GINF error on a remote device");
     CHECK_RET(sizeof(vs_info_ginf_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
@@ -213,6 +223,9 @@ _stat_request_processor(const uint8_t *request,
         return VS_CODE_OK;
     }
 
+    // Normalize byte order
+    vs_info_stat_response_t_decode(stat_request);
+
     // Check input parameters
     CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SDMP:STAT error on a remote device");
     CHECK_RET(sizeof(vs_info_stat_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
@@ -240,6 +253,9 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
     CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_PARAMETER, "ENUM error on a remote device");
     CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
     CHECK_RET(sizeof(vs_info_enum_response_t) == response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
+
+    // Normalize byte order
+    vs_info_enum_response_t_decode(enum_response);
 
     if (_devices_list && _devices_list_cnt < _devices_list_max) {
         VS_IOT_MEMCPY(_devices_list[_devices_list_cnt].mac, enum_response->mac.bytes, ETH_ADDR_LEN);
