@@ -37,8 +37,9 @@ class UtilContext:
         self.secure_transfer_keys_path = self._config["MAIN"]["secure_transfer_keys_path"]
         self.secure_transfer_password = self._config["MAIN"]["secure_transfer_keys_passwd"]
 
-        self.virgil_app_id = self._config["CARDS"]["virgil_app_id"]
+        self.application_token = self._cli_args["app_token"]
         self.virgil_api_url = self._config["CARDS"]["virgil_api_url"]
+        self.card_registration_ep = self._config["CARDS"]["card_registration_endpoint"]
         self.factory_info_json = self._config["CARDS"]["factory_info_json"]
 
     @property
@@ -52,6 +53,7 @@ class UtilContext:
         arguments.add_argument('-b', '--verbose-logging', action='store_true', help="enable debug logging")
         arguments.add_argument('-y', '--skip-confirm', action='store_true', help='skip all confirmation requests')
         arguments.add_argument('-c', "--config", metavar="CONFIG_PATH", type=str, help="custom configuration file")
+        arguments.add_argument('-t', "--app-token", required=True, type=str, help="Virgil application token")
         arguments.add_argument('-v', "--version", action="version", version=__version__,
                                help="print application version and exit")
         self.__cli_args = vars(arguments.parse_args())
@@ -123,8 +125,8 @@ class UtilContext:
                 "secure_transfer_keys_passwd"
             ],
             "CARDS": [
-                "virgil_app_id",
                 "virgil_api_url",
+                "card_registration_endpoint",
                 "factory_info_json"
             ]
         }

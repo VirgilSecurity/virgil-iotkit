@@ -1,7 +1,8 @@
 import json
-import os
 import sys
+import http.client
 from datetime import datetime
+from urllib.parse import urlparse
 
 from virgil_crypto import VirgilCrypto
 from virgil_sdk.cards import RawCardContent
@@ -13,21 +14,13 @@ from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
 class CardRequestsHandler:
-    def __init__(self, ui, logger, exporter_keys, path_to_requests_file, identity):
+    def __init__(self, ui, logger, api_url, registration_endpoint, app_token):
         self._ui = ui
         self._logger = logger
         self._crypto = VirgilCrypto()
-        self._path_to_requests_file = path_to_requests_file
-        self._identity = identity
-
-        # Prepare keys for requests encryption
-        self._request_encrypt_private_key = self._crypto.import_private_key(
-            tuple(exporter_keys["private"]),
-            exporter_keys["password"]
-        )
-        self._recipient_public_key = self._crypto.import_public_key(
-            exporter_keys["public"]
-        )
+        self._api_host = urlparse(api_url).netloc
+        self._registration_ep = registration_endpoint
+        self._app_token = app_token
 
     def _create_raw_card(self, key_pair: KeyGeneratorInterface, key_info: dict) -> str:
         # Prepare public key in virgil format
@@ -35,10 +28,13 @@ class CardRequestsHandler:
         public_key = tiny_key_to_virgil(public_key)
         public_key = self._crypto.import_public_key(public_key)
 
+        # Calculate identity
+        identity = key_pair.key_type  # values from VSKeyTypeS
+
         # Prepare card content snapshot
         created_at = int(datetime.utcnow().timestamp())
         card_content = RawCardContent(
-            identity=self._identity,
+            identity=identity,
             public_key=public_key,
             created_at=created_at
         )
@@ -68,32 +64,35 @@ class CardRequestsHandler:
         # Append signature to card
         raw_card.signatures.append(raw_signature)
 
-        # Return card request as base64 encoded string
-        return raw_card.to_string()
+        # Return card request as json string
+        return raw_card.to_json()
 
-    def _create_encrypted_card_request(self, key: KeyGeneratorInterface, key_info: dict) -> str:
-        exported_virgil_card_b64 = self._create_raw_card(key, key_info)
-
-        encrypted_card_request = self._crypto.sign_then_encrypt(
-            exported_virgil_card_b64.encode('utf-8'),
-            self._request_encrypt_private_key,
-            self._recipient_public_key
-        )
-        return to_b64(encrypted_card_request)
-
-    def _save_card_request_to_file(self, encrypted_request: str):
-        folder_path = os.path.dirname(self._path_to_requests_file)
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        with open(self._path_to_requests_file, "a") as f:
-            f.write(encrypted_request + "\n")
-
-    def create_and_save_request_for_key(self, key: KeyGeneratorInterface, key_info: dict):
-        encrypted_request = self._create_encrypted_card_request(key, key_info)
-        if not encrypted_request:
-            err_msg = "[ERROR]: Failed to create encrypted card request"
+    def _register_card(self, card_b64):
+        """
+        Send card request to Things service
+        """
+        conn = http.client.HTTPSConnection(host=self._api_host)
+        conn.request(method="POST",
+                     url=self._registration_ep,
+                     body=card_b64,
+                     headers={"AppToken": self._app_token})
+        response = conn.getresponse()
+        resp_body = response.read()
+        if response.status != 200:
+            err_msg = ("[ERROR]: Failed to register Virgil card at {host}\n"
+                       "Card: {card_b64}\n"
+                       "Response status code: {status}\n"
+                       "Response body: {body}".format(card_b64=card_b64,
+                                                      host=self._api_host,
+                                                      status=response.status,
+                                                      body=resp_body))
             self._ui.print_error(err_msg)
             self._logger.error(err_msg)
             sys.exit(1)
+        self._ui.print_message("Virgil Card for key successfully registered")
+        self._logger.info("Card registered. Response: %s" % resp_body)
 
-        self._save_card_request_to_file(encrypted_request)
+    def create_and_register_card(self, key: KeyGeneratorInterface, key_info: dict):
+        card = self._create_raw_card(key, key_info)
+        self._logger.info("Card request prepared: %s" % card)
+        self._register_card(card)

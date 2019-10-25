@@ -117,9 +117,9 @@ class UtilityManager(object):
         self.__card_requests_handler = CardRequestsHandler(
             self.__ui,
             self.__logger,
-            self.__virgil_exporter_keys,
-            path_to_requests_file=os.path.join(self.__virgil_request_path, "card_creation_requests.vr"),
-            identity=self._context.virgil_app_id
+            self._context.virgil_api_url,
+            self._context.card_registration_ep,
+            self._context.application_token
         )
 
     def __choose_dates_for_key(self, necessary: bool) -> (int, int):
@@ -619,6 +619,22 @@ class UtilityManager(object):
         # Enter comment
         comment = self.__ui.get_user_input("Enter comment for %s Key: " % name_for_log)
 
+        # Register card for key
+        card_content = dict()
+        card_content["start_date"] = start_date
+        card_content["expiration_date"] = expiration_date
+        card_content["comment"] = comment
+        card_content["ec_type"] = key.ec_type_hsm
+        card_content["meta_data"] = meta_data
+        card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
+        if sign_by_recovery_key:
+            card_content["signature"] = key.signature
+            card_content["signer_public_key"] = rec_key_for_sign.public_key
+            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
+        if extra_card_content:
+            card_content.update(extra_card_content)
+        self.__card_requests_handler.create_and_register_card(key, key_info=card_content)
+
         # Save to db / dongle
         # - prepare key info to be saved
         key_info = {
@@ -650,21 +666,6 @@ class UtilityManager(object):
         if print_to_paper:
             if self._context.printer_enable:
                 self.__printer_controller.send_to_printer(key_info)
-
-        # Create card request
-        card_content = dict()
-        card_content["start_date"] = start_date
-        card_content["expiration_date"] = expiration_date
-        card_content["comment"] = comment
-        card_content["ec_type"] = key.ec_type_hsm
-        card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
-        if sign_by_recovery_key:
-            card_content["signature"] = key.signature
-            card_content["signer_public_key"] = rec_key_for_sign.public_key
-            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
-        if extra_card_content:
-            card_content.update(extra_card_content)
-        self.__card_requests_handler.create_and_save_request_for_key(key, key_info=card_content)
 
         # Finish
         self.__ui.print_message("Generation finished")
