@@ -470,7 +470,10 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             } else {
                 vs_pubkey_dated_t *pubkey = (vs_pubkey_dated_t *)resp->buff;
-                curr_key_sz = sizeof(vs_pubkey_dated_t) + vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                int key_len = vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                CHECK_RET(key_len > 0, 0, "Error fetch TL key. Unsupported ec type");
+
+                curr_key_sz = sizeof(vs_pubkey_dated_t) + key_len + VS_IOT_NTOHS(pubkey->pubkey.meta_data_sz);
                 if (resp->used_size + rest_data_sz > curr_key_sz) {
                     read_sz = curr_key_sz - resp->used_size;
                 }
