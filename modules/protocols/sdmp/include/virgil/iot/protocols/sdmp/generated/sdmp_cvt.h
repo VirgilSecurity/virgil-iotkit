@@ -37,8 +37,74 @@
 
 #include <endian-config.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/protocols/sdmp/info/info-structs.h>
+#include <virgil/iot/protocols/sdmp/info/info-private.h>
+#include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 
+
+/******************************************************************************/
+// Converting functions for (vs_info_ginf_response_t)
+void
+vs_info_ginf_response_t_encode(vs_info_ginf_response_t *src_data);
+void
+vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_info_enum_response_t)
+void
+vs_info_enum_response_t_encode(vs_info_enum_response_t *src_data);
+void
+vs_info_enum_response_t_decode(vs_info_enum_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data);
+void
+vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_info_poll_request_t)
+void
+vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data);
+void
+vs_info_poll_request_t_decode(vs_info_poll_request_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_fldt_gnfd_data_response_t)
+void
+vs_fldt_gnfd_data_response_t_encode(vs_fldt_gnfd_data_response_t *src_data);
+void
+vs_fldt_gnfd_data_response_t_decode(vs_fldt_gnfd_data_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_fldt_gnff_footer_response_t)
+void
+vs_fldt_gnff_footer_response_t_encode(vs_fldt_gnff_footer_response_t *src_data);
+void
+vs_fldt_gnff_footer_response_t_decode(vs_fldt_gnff_footer_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_sdmp_packet_t)
+void
+vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data);
+void
+vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_fldt_gnfh_header_response_t)
+void
+vs_fldt_gnfh_header_response_t_encode(vs_fldt_gnfh_header_response_t *src_data);
+void
+vs_fldt_gnfh_header_response_t_decode(vs_fldt_gnfh_header_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_fldt_gnfd_data_request_t)
+void
+vs_fldt_gnfd_data_request_t_encode(vs_fldt_gnfd_data_request_t *src_data);
+void
+vs_fldt_gnfd_data_request_t_decode(vs_fldt_gnfd_data_request_t *src_data);
 
 /******************************************************************************/
 // Converting functions for (vs_ethernet_header_t)
@@ -55,17 +121,10 @@ void
 vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_sdmp_packet_t)
+// Converting functions for (vs_info_stat_response_t)
 void
-vs_sdmp_packet_t_encode(vs_sdmp_packet_t *src_data);
+vs_info_stat_response_t_encode(vs_info_stat_response_t *src_data);
 void
-vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_sdmp_prvs_devi_t)
-void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data);
-void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data);
+vs_info_stat_response_t_decode(vs_info_stat_response_t *src_data);
 
 #endif // SDMP_CVT_H

@@ -36,35 +36,93 @@
 
 
 /******************************************************************************/
-// Converting encode function for (vs_ethernet_header_t)
+// Converting encode function for (vs_info_ginf_response_t)
 void
-vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data) {
-    src_data->type = VS_IOT_HTONS(src_data->type);
+vs_info_ginf_response_t_encode(vs_info_ginf_response_t *src_data) {
+    src_data->device_roles = VS_IOT_HTONL(src_data->device_roles);
 }
 
 /******************************************************************************/
-// Converting decode function for (vs_ethernet_header_t)
+// Converting decode function for (vs_info_ginf_response_t)
 void
-vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
-    src_data->type = VS_IOT_NTOHS(src_data->type);
+vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data) {
+    src_data->device_roles = VS_IOT_NTOHL(src_data->device_roles);
 }
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_header_t)
+// Converting encode function for (vs_info_enum_response_t)
 void
-vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = VS_IOT_HTONS(src_data->transaction_id);
-    src_data->padding = VS_IOT_HTONS(src_data->padding);
-    src_data->content_size = VS_IOT_HTONS(src_data->content_size);
+vs_info_enum_response_t_encode(vs_info_enum_response_t *src_data) {
+    src_data->device_roles = VS_IOT_HTONL(src_data->device_roles);
 }
 
 /******************************************************************************/
-// Converting decode function for (vs_sdmp_header_t)
+// Converting decode function for (vs_info_enum_response_t)
 void
-vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
-    src_data->transaction_id = VS_IOT_NTOHS(src_data->transaction_id);
-    src_data->padding = VS_IOT_NTOHS(src_data->padding);
-    src_data->content_size = VS_IOT_NTOHS(src_data->content_size);
+vs_info_enum_response_t_decode(vs_info_enum_response_t *src_data) {
+    src_data->device_roles = VS_IOT_NTOHL(src_data->device_roles);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = VS_IOT_HTONS(src_data->data_sz);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_prvs_devi_t)
+void
+vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
+    src_data->data_sz = VS_IOT_NTOHS(src_data->data_sz);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_info_poll_request_t)
+void
+vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data) {
+    src_data->elements = VS_IOT_HTONL(src_data->elements);
+    src_data->period_seconds = VS_IOT_HTONS(src_data->period_seconds);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_info_poll_request_t)
+void
+vs_info_poll_request_t_decode(vs_info_poll_request_t *src_data) {
+    src_data->elements = VS_IOT_NTOHL(src_data->elements);
+    src_data->period_seconds = VS_IOT_NTOHS(src_data->period_seconds);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_fldt_gnfd_data_response_t)
+void
+vs_fldt_gnfd_data_response_t_encode(vs_fldt_gnfd_data_response_t *src_data) {
+    src_data->data_size = VS_IOT_HTONS(src_data->data_size);
+    src_data->offset = VS_IOT_HTONL(src_data->offset);
+    src_data->next_offset = VS_IOT_HTONL(src_data->next_offset);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_fldt_gnfd_data_response_t)
+void
+vs_fldt_gnfd_data_response_t_decode(vs_fldt_gnfd_data_response_t *src_data) {
+    src_data->data_size = VS_IOT_NTOHS(src_data->data_size);
+    src_data->offset = VS_IOT_NTOHL(src_data->offset);
+    src_data->next_offset = VS_IOT_NTOHL(src_data->next_offset);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_fldt_gnff_footer_response_t)
+void
+vs_fldt_gnff_footer_response_t_encode(vs_fldt_gnff_footer_response_t *src_data) {
+    src_data->footer_size = VS_IOT_HTONS(src_data->footer_size);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_fldt_gnff_footer_response_t)
+void
+vs_fldt_gnff_footer_response_t_decode(vs_fldt_gnff_footer_response_t *src_data) {
+    src_data->footer_size = VS_IOT_NTOHS(src_data->footer_size);
 }
 
 /******************************************************************************/
@@ -84,15 +142,79 @@ vs_sdmp_packet_t_decode(vs_sdmp_packet_t *src_data) {
 }
 
 /******************************************************************************/
-// Converting encode function for (vs_sdmp_prvs_devi_t)
+// Converting encode function for (vs_fldt_gnfh_header_response_t)
 void
-vs_sdmp_prvs_devi_t_encode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->data_sz = VS_IOT_HTONS(src_data->data_sz);
+vs_fldt_gnfh_header_response_t_encode(vs_fldt_gnfh_header_response_t *src_data) {
+    src_data->file_size = VS_IOT_HTONL(src_data->file_size);
+    src_data->header_size = VS_IOT_HTONS(src_data->header_size);
 }
 
 /******************************************************************************/
-// Converting decode function for (vs_sdmp_prvs_devi_t)
+// Converting decode function for (vs_fldt_gnfh_header_response_t)
 void
-vs_sdmp_prvs_devi_t_decode(vs_sdmp_prvs_devi_t *src_data) {
-    src_data->data_sz = VS_IOT_NTOHS(src_data->data_sz);
+vs_fldt_gnfh_header_response_t_decode(vs_fldt_gnfh_header_response_t *src_data) {
+    src_data->file_size = VS_IOT_NTOHL(src_data->file_size);
+    src_data->header_size = VS_IOT_NTOHS(src_data->header_size);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_fldt_gnfd_data_request_t)
+void
+vs_fldt_gnfd_data_request_t_encode(vs_fldt_gnfd_data_request_t *src_data) {
+    src_data->offset = VS_IOT_HTONL(src_data->offset);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_fldt_gnfd_data_request_t)
+void
+vs_fldt_gnfd_data_request_t_decode(vs_fldt_gnfd_data_request_t *src_data) {
+    src_data->offset = VS_IOT_NTOHL(src_data->offset);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_ethernet_header_t)
+void
+vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data) {
+    src_data->type = VS_IOT_HTONS(src_data->type);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_ethernet_header_t)
+void
+vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data) {
+    src_data->type = VS_IOT_NTOHS(src_data->type);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_sdmp_header_t)
+void
+vs_sdmp_header_t_encode(vs_sdmp_header_t *src_data) {
+    src_data->padding = VS_IOT_HTONS(src_data->padding);
+    src_data->content_size = VS_IOT_HTONS(src_data->content_size);
+    src_data->transaction_id = VS_IOT_HTONS(src_data->transaction_id);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_sdmp_header_t)
+void
+vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
+    src_data->padding = VS_IOT_NTOHS(src_data->padding);
+    src_data->content_size = VS_IOT_NTOHS(src_data->content_size);
+    src_data->transaction_id = VS_IOT_NTOHS(src_data->transaction_id);
+}
+
+/******************************************************************************/
+// Converting encode function for (vs_info_stat_response_t)
+void
+vs_info_stat_response_t_encode(vs_info_stat_response_t *src_data) {
+    src_data->sent = VS_IOT_HTONL(src_data->sent);
+    src_data->received = VS_IOT_HTONL(src_data->received);
+}
+
+/******************************************************************************/
+// Converting decode function for (vs_info_stat_response_t)
+void
+vs_info_stat_response_t_decode(vs_info_stat_response_t *src_data) {
+    src_data->sent = VS_IOT_NTOHL(src_data->sent);
+    src_data->received = VS_IOT_NTOHL(src_data->received);
 }

@@ -47,19 +47,20 @@ add_go_executable(sdmp-codgen)
 #
 
 set (SDMP_SRC_TYPES
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs-private.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
         )
+
+message("${SDMP_SRC_TYPES}")
 
 add_custom_command(TARGET sdmp-codgen POST_BUILD
     COMMAND ${sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl 
                                                   ${SDMP_SRC_TYPES} 
-                                                  -oc ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/src/generated/sdmp_cvt.c 
-                                                  -oh ${PROJECT_SOURCE_DIR}/../../protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
+                                                  -oc ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/src/generated/sdmp_cvt.c
+                                                  -oh ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
     COMMENT "Generate SDMP convert function"
 )
 
-if(COMMAND add_clangformat)
-    add_clangformat(sdmp-codgen)
-endif()

@@ -41,7 +41,6 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/firmware/firmware.h>
 
 typedef struct {
     uint32_t device_roles; // vs_sdmp_device_role_e
