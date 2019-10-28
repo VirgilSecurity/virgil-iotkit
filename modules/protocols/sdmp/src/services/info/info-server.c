@@ -215,14 +215,17 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
             "%s, trust list "
-            "version = %d",
+            "version = %d.%d.%d.%d",
             general_info->manufacture_id,
             general_info->device_type[0],
             general_info->device_type[1],
             general_info->device_type[2],
             general_info->device_type[3],
             vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version);
+            general_info->tl_version.major,
+            general_info->tl_version.minor,
+            general_info->tl_version.patch,
+            general_info->tl_version.build);
 
     return VS_CODE_OK;
 }
