@@ -44,8 +44,6 @@ class UtilityManager(object):
         self.__atmel = self._context.atmel
         self.__printer_controller = PrinterController(self.__ui)
         self.__upper_level_keys_count = 2
-        self.__virgil_request_path = os.path.join(self.__key_storage_path, "virgil_requests")
-        self._virgil_exporter_keys = None
         self.__dongles_cache = DonglesCache(self._context.disable_cache)
         self._utility_list = dict()
         self.__check_db_path()
@@ -268,7 +266,7 @@ class UtilityManager(object):
                 os.makedirs(os.path.join(self.__key_storage_path, "db"))
                 private_keys_file_path = os.path.join(self.__key_storage_path, "private")
                 public_keys_file_path = os.path.join(self.__key_storage_path, "pubkeys")
-                for path in (private_keys_file_path, public_keys_file_path, self.__virgil_request_path):
+                for path in (private_keys_file_path, public_keys_file_path):
                     if os.path.exists(path):
                         shutil.rmtree(path)
                 dongle_directory = os.path.join(
