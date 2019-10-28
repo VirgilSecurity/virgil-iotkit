@@ -204,6 +204,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
                      "Unable to obtain Trust List version");
+    vs_tl_header_to_host(&tl_header, &tl_header);
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_sdmp_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_sdmp_device_type(), sizeof(vs_device_type_t));
