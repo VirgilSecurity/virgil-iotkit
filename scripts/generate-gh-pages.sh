@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# generate-gh-pages.sh ~/Work/virgil-iot-sdk debug ~/Work/virgil-iot-sdk.gh-pages
+
 GIT_ORIGIN="origin"
 
 CMAKE_PROJECT_DIR=$1    #"~/Work/virgil-iot-sdk"
