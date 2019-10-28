@@ -114,7 +114,14 @@ func (d *ConcurrentDevices) GetItems() map[string]DeviceInfo {
     d.RLock()
     defer d.RUnlock()
 
-    return d.items
+    // Copy map
+    copy := make(map[string]DeviceInfo)
+
+    for key, value := range d.items {
+      copy[key] = value
+    }
+
+    return copy
 }
 
 func NewDevices() *ConcurrentDevices {

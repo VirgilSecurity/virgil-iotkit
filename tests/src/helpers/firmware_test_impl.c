@@ -32,42 +32,47 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_FLDT_H_
-#define VS_IOT_SDK_TESTS_FLDT_H_
+#include <stdlib-config.h>
+#include <stdbool.h>
 
-#if 0
 #include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/protocols/sdmp/fldt.h>
-#include <virgil/iot/protocols/sdmp/fldt_client.h>
-#include <virgil/iot/protocols/sdmp/fldt_server.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/tests/tests.h>
 
-typedef struct {
-    union {
-        uint32_t calls;
-        struct {
-            uint32_t server_version : 1, server_header : 1, server_chunk : 1, server_footer : 1, server_destroy : 3,
-            server_add_filetype : 1, client_set_gateway_mac : 1, client_get_current_version : 1, client_update_file : 1,
-            client_got_info : 1, client_got_header : 1, client_got_chunk : 1, client_got_footer : 1, client_destroy : 3;
-        };
-    };
-} calls_t;
-calls_t calls;
-vs_fldt_file_type_mapping_t server_add_filetype_to_copy;
-vs_update_file_version_t client_get_current_file_version;
-vs_fldt_gfti_fileinfo_response_t server_get_version_file;
-vs_update_file_version_t file_ver;
+#include <virgil/iot/provision/provision.h>
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/firmware/firmware_hal.h>
+#include <virgil/iot/protocols/sdmp.h>
 
-vs_fldt_file_type_mapping_t
-make_client_mapping(const vs_update_file_type_t *file_type);
+/******************************************************************************/
+static void
+_str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
+    size_t pos;
+    size_t len;
 
-vs_fldt_file_type_mapping_t
-make_server_mapping(const vs_update_file_type_t *file_type);
+    VS_IOT_ASSERT(src && *src);
 
+    VS_IOT_MEMSET(dst, 0, buf_size);
+
+    len = VS_IOT_STRLEN(src);
+    for (pos = 0; pos < len && pos < buf_size; ++pos, ++src, ++dst) {
+        *dst = *src;
+    }
+}
+
+/******************************************************************************/
 vs_status_e
-server_add_filetype(const vs_update_file_type_t *file_type);
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
+    VS_IOT_ASSERT(footer);
+    VS_IOT_ASSERT(footer_sz >= sizeof(vs_firmware_footer_t));
 
-#endif
+    CHECK_NOT_ZERO_RET(footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(footer_sz >= sizeof(vs_firmware_footer_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "buffer size too small");
 
-#endif // VS_IOT_SDK_TESTS_FLDT_H_
+    VS_IOT_MEMSET(footer, 0, footer_sz);
+    vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
+
+    _str_to_bytes(buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
+    _str_to_bytes(buf->descriptor.info.device_type, TEST_DEVICE_TYPE, sizeof(vs_device_type_t));
+
+    return VS_CODE_OK;
+}
