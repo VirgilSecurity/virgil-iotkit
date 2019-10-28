@@ -80,7 +80,7 @@
 
 #include <stdbool.h>
 
-/** Output part of string function signature
+/** Function signature for unterminated string output
  *
  * This is HAL function that has to be implemented by user.
  * It sends string to the output.

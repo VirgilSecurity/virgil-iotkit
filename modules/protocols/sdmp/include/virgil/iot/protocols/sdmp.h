@@ -115,9 +115,9 @@ vs_status_e
 vs_sdmp_add_netif(const vs_netif_t *netif);
 #endif
 
-/** Return device role
+/** Return device network interface
  *
- * \return #vs_device_serial_t Device serial number. Cannot be NULL.
+ * \return #vs_netif_t Device network interface. Cannot be NULL.
  */
 const vs_netif_t *
 vs_sdmp_default_netif(void);
