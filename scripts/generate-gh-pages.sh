@@ -2,12 +2,12 @@
 
 GIT_ORIGIN="origin"
 
-CMAKE_PROJECT_DIR="/Users/oleksandr/Work/virgil-iot-sdk"
-CMAKE_OUTPUT_DIR="${CMAKE_PROJECT_DIR}/debug"
+CMAKE_PROJECT_DIR=$1    #"~/Work/virgil-iot-sdk"
+CMAKE_OUTPUT_DIR="${CMAKE_PROJECT_DIR}/$2"     #"${CMAKE_PROJECT_DIR}/debug"
 CMAKE_TARGET="documentation"
 
 DOC_PAGES_DIR="${CMAKE_PROJECT_DIR}/docs/doxygen/html"
-GH_PAGES_DIR="/Users/oleksandr/Work/virgil-iot-sdk.gh-pages"
+GH_PAGES_DIR=$3     #"~/Work/virgil-iot-sdk.gh-pages"
 
 
 CUR_DIRECTORY=`pwd`
