@@ -35,16 +35,10 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
-# Default crypto implementations
-#
-option(VIRGIL_IOT_DEFAULT_CRYPTO "Enable default crypto implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
-
-#
 #   Default Crypto implementations module
 #
-if (VIRGIL_IOT_DEFAULT_CRYPTO)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
+if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-hsm)
 endif()
 
 #
