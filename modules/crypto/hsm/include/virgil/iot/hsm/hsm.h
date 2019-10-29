@@ -466,6 +466,7 @@ typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *reci
 /** Callback for HSM destruction */
 typedef void (*vs_hsm_deinit_t)(void);
 
+/** HSM implementation */
 typedef struct {
 
     vs_hsm_deinit_t deinit; /**< HSM destruction callback */
