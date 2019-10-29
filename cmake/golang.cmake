@@ -31,13 +31,12 @@ function(add_go_executable NAME)
             DEPENDS ${DEPS_SH}
             )
 
-    add_custom_target(${NAME}-build
+    add_custom_target(${NAME}-build ALL
             COMMAND env GOPATH=${GOPATH} CGO_CFLAGS="${CMAKE_CGO_CFLAGS}" CGO_LDFLAGS="${CMAKE_CGO_LDFLAGS}"
                     ${CMAKE_Go_COMPILER} build -o "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" ${CMAKE_GO_FLAGS} ${GO_SOURCE}
             DEPENDS ${NAME}-install-deps
             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
             )
-
     add_executable(${NAME} IMPORTED GLOBAL)
 
     set_target_properties(${NAME} PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
