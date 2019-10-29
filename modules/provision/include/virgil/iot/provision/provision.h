@@ -40,23 +40,6 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
-typedef struct __attribute__((__packed__)) {
-    uint8_t dummy[4];
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint8_t dev_milestone;
-    uint8_t dev_build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
-} vs_file_version_t;
-
-typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;
-    vs_device_type_t device_type;
-    vs_file_version_t version;
-} vs_file_info_t;
-
-
 vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
 
@@ -71,5 +54,23 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
 
 vs_status_e
 vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
+
+const char *
+vs_provision_cloud_url(void);
+
+vs_status_e
+vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
+                               vs_key_type_e key_type,
+                               uint8_t **pubkey,
+                               uint16_t *pubkey_sz,
+                               uint8_t **meta,
+                               uint16_t *meta_sz);
+
+vs_status_e
+vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              uint8_t **pubkey,
+                              uint16_t *pubkey_sz,
+                              uint8_t **meta,
+                              uint16_t *meta_sz);
 
 #endif // VS_IOT_PROVISION_H

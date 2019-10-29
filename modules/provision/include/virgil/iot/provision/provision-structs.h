@@ -106,6 +106,7 @@ typedef enum {
     VS_KEY_USER_DEVICE,
     VS_KEY_FIRMWARE_INTERNAL,
     VS_KEY_AUTH_INTERNAL,
+    VS_KEY_CLOUD,
     VS_KEY_UNSUPPORTED
 } vs_key_type_e;
 
@@ -119,7 +120,8 @@ typedef struct __attribute__((__packed__)) {
 typedef struct __attribute__((__packed__)) {
     uint8_t key_type; // vs_key_type_e
     uint8_t ec_type;  // vs_hsm_keypair_type_e
-    uint8_t pubkey[]; // public key, size of element depends on @ec_type
+    uint16_t meta_data_sz;
+    uint8_t meta_and_pubkey[]; // meta data and public key, size of element depends on @ec_type
 } vs_pubkey_t;
 
 typedef struct __attribute__((__packed__)) {
@@ -127,5 +129,27 @@ typedef struct __attribute__((__packed__)) {
     uint32_t expire_date;
     vs_pubkey_t pubkey;
 } vs_pubkey_dated_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint32_t build;
+    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+} vs_file_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    vs_device_manufacture_id_t manufacture_id;
+    vs_device_type_t device_type;
+    vs_file_version_t version;
+} vs_file_info_t;
+
+#define VS_SEARCH_KEY_BUF_SZ (512)
+
+typedef struct {
+    int last_pos;
+    vs_key_type_e key_type;
+    uint8_t element_buf[VS_SEARCH_KEY_BUF_SZ];
+} vs_provision_tl_find_ctx_t;
 
 #endif // VS_IOT_PROVISION_STRUCTS_H

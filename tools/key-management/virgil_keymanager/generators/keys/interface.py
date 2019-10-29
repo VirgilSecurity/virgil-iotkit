@@ -6,7 +6,14 @@ from virgil_keymanager import consts
 class KeyGeneratorInterface(ABC):
 
     @abstractmethod
-    def generate(self, *, signature_limit, rec_pub_keys, signer_key, private_key_base64, start_date, expire_date):
+    def generate(self, *,
+                 signature_limit,
+                 rec_pub_keys,
+                 signer_key,
+                 private_key_base64,
+                 start_date,
+                 expire_date,
+                 meta_data):
         pass
 
     @property

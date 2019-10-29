@@ -117,10 +117,10 @@ _fw_update_get_header(void *context,
                       void *header_buffer,
                       size_t buffer_size,
                       size_t *header_size) {
-    vs_storage_op_ctx_t *ctx = context;
+    (void)context;
     vs_firmware_descriptor_t *fw_descr = header_buffer;
-    (void)file_type;
 
+    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(header_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(header_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -317,11 +317,13 @@ _fw_update_file_is_newer(void *context,
     VS_IOT_ASSERT(available_file);
     VS_IOT_ASSERT(new_file);
 
-    if (!fw_ver_available->timestamp || !fw_ver_available->dev_build) {
+    // TODO: Fix it ! Use version comparision
+
+    if (!fw_ver_available->timestamp || !fw_ver_available->build) {
         return true;
     }
 
-    if (fw_ver_new->dev_build > fw_ver_available->dev_build) {
+    if (fw_ver_new->build > fw_ver_available->build) {
         return true;
     }
 

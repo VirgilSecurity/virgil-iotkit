@@ -77,9 +77,11 @@ _create_test_signed_hl_key(vs_hsm_impl_t *hsm_impl,
     hl_key->expire_date = UINT32_MAX;
     hl_key->pubkey.ec_type = VS_KEYPAIR_EC_SECP256R1;
     hl_key->pubkey.key_type = hl_key_type;
+    hl_key->pubkey.meta_data_sz = 0;
 
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->get_pubkey(
-                                         slot_with_hl_keypair, hl_key->pubkey.pubkey, key_len, &_sz, &pubkey_type),
+    BOOL_CHECK_RET(VS_CODE_OK ==
+                           hsm_impl->get_pubkey(
+                                   slot_with_hl_keypair, hl_key->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
                    "Error get test pubkey");
 
     if (with_signature) {
@@ -88,7 +90,7 @@ _create_test_signed_hl_key(vs_hsm_impl_t *hsm_impl,
                         VS_HASH_SHA_256, buf, sizeof(vs_pubkey_dated_t) + key_len, hash_buf, sizeof(hash_buf), &_sz),
                 "ERROR while creating hash for test key");
 
-        vs_sign_t *sign = (vs_sign_t *)(hl_key->pubkey.pubkey + key_len);
+        vs_sign_t *sign = (vs_sign_t *)(hl_key->pubkey.meta_and_pubkey + key_len);
         sign->signer_type = VS_KEY_RECOVERY;
         sign->hash_type = VS_HASH_SHA_256;
         sign->ec_type = VS_KEYPAIR_EC_SECP256R1;
@@ -190,7 +192,11 @@ vs_test_create_test_tl(vs_hsm_impl_t *hsm_impl) {
     const vs_iot_hsm_slot_e signer_key_slots_list[VS_TL_SIGNATURES_QTY] = {TEST_AUTH_KEYPAIR, TEST_TL_KEYPAIR};
 
     vs_tl_header_t test_header = {
-            .version = 0,
+            .version.major = 0,
+            .version.minor = 0,
+            .version.patch = 0,
+            .version.build = 0,
+            .version.timestamp = 0,
             .signatures_count = VS_TL_SIGNATURES_QTY,
             .pub_keys_count = 1,
     };
@@ -217,13 +223,15 @@ vs_test_create_test_tl(vs_hsm_impl_t *hsm_impl) {
     key_el->expire_date = UINT32_MAX;
     key_el->pubkey.ec_type = VS_KEYPAIR_EC_SECP256R1;
     key_el->pubkey.key_type = VS_KEY_FACTORY;
+    key_el->pubkey.meta_data_sz = 0;
 
 
     BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->create_keypair(TEST_USER_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
                    "Error create test recovery keypair");
 
     BOOL_CHECK_RET(VS_CODE_OK ==
-                           hsm_impl->get_pubkey(TEST_USER_KEYPAIR, key_el->pubkey.pubkey, key_len, &_sz, &pubkey_type),
+                           hsm_impl->get_pubkey(
+                                   TEST_USER_KEYPAIR, key_el->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
                    "Error get test pubkey");
 
     vs_tl_header_to_net(&test_header, &net_header);

@@ -141,7 +141,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_get_credentials(char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
+_get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
     vs_status_e ret;
     char serial[VS_DEVICE_SERIAL_SIZE * 2 + 1];
 
@@ -192,8 +192,9 @@ vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
 
 /******************************************************************************/
 vs_status_e
-vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
+vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len) {
+    CHECK_NOT_ZERO_RET(cloud_host, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    return _get_credentials(cloud_host, VS_THING_EP, VS_MQTT_ID, out_answer, in_out_answer_len);
 }
 
 #define VS_CLOUD_FETCH_FW_STEP_HEADER 0
@@ -469,7 +470,10 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             } else {
                 vs_pubkey_dated_t *pubkey = (vs_pubkey_dated_t *)resp->buff;
-                curr_key_sz = sizeof(vs_pubkey_dated_t) + vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                int key_len = vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                CHECK_RET(key_len > 0, 0, "Error fetch TL key. Unsupported ec type");
+
+                curr_key_sz = sizeof(vs_pubkey_dated_t) + key_len + VS_IOT_NTOHS(pubkey->pubkey.meta_data_sz);
                 if (resp->used_size + rest_data_sz > curr_key_sz) {
                     read_sz = curr_key_sz - resp->used_size;
                 }
@@ -542,10 +546,10 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             if (resp->footer_sz != 0 && resp->used_size == resp->footer_sz) {
                 resp->used_size = 0;
-                vs_tl_info_t tl_info = {.type = ((vs_tl_footer_t *)resp->buff)->tl_type,
-                                        .version = resp->host_header.version};
+                uint8_t type = ((vs_tl_footer_t *)resp->buff)->tl_type;
                 vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLF, .index = 0};
-                if (VS_CODE_OK != vs_cloud_is_new_tl_version_available(&tl_info) ||
+
+                if (VS_CODE_OK != vs_cloud_is_new_tl_version_available(type, &resp->host_header.version) ||
                     VS_CODE_OK != vs_tl_save_part(&info, (uint8_t *)resp->buff, resp->footer_sz)) {
                     return 0;
                 }

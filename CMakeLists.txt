@@ -116,6 +116,11 @@ option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 
 #
+# Default crypto implementations
+#
+option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
+
+#
 # Default cloud implementations
 #
 option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)

@@ -71,7 +71,6 @@ target_sources(virgil-iot-sdk-tests
         ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
         ${CMAKE_CURRENT_LIST_DIR}/src/helpers/crypto_helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/helpers/netif_test_impl.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/global_test_impl.c
 
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/src/helpers/firmware_test_impl.c
