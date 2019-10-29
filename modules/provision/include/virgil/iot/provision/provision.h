@@ -43,7 +43,7 @@
 #include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
- 
+
 /** Provision initialization
  *
  * \param[in] tl_storage_ctx Storage context. Must not be NULL.

@@ -53,8 +53,9 @@
  *  const vs_mac_addr_t mac_addr;
  *  sdmp_fldt_server = vs_sdmp_fldt_server( &mac_addr, _add_filetype );
  *  STATUS_CHECK( vs_sdmp_register_service(sdmp_fldt_server), "Cannot register FLDT server service" );
- *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ), "Unable to add Firmware file type" );
- *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx(), false ), "Unable to add Trust List file type" ); * \endcode
+ *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ),
+ * "Unable to add Firmware file type" ); STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(),
+ * vs_tl_update_ctx(), false ), "Unable to add Trust List file type" ); * \endcode
  *
  * You can see #vs_fldt_server_add_filetype function example below :
  * \code
@@ -94,7 +95,8 @@ extern "C" {
 /** Add new file type callback
  *
  * Callback for #vs_sdmp_fldt_server function.
- * This callback is used when gateway receives request for file type that has not been added by #vs_fldt_server_add_file_type call.
+ * This callback is used when gateway receives request for file type that has not been added by
+ * #vs_fldt_server_add_file_type call.
  *
  * \warning Valid pointer to the update context with all callback must be provided.
  *
@@ -119,7 +121,8 @@ vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
 
 /** Add file type
  *
- * FLDT server has the list of file types that it processes. This call adds new file type or update previously added one.
+ * FLDT server has the list of file types that it processes. This call adds new file type or update previously added
+ * one.
  *
  * \param[in] file_type File type to be added. Must not be NULL.
  * \param[in] update_ctx Update context for current file type. Must not be NULL.

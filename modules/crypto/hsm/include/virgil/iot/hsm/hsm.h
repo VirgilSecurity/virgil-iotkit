@@ -53,7 +53,7 @@
 
 /** Keypair types */
 typedef enum {
-    VS_KEYPAIR_INVALID = -1,                          /**< Invalid keypair */
+    VS_KEYPAIR_INVALID = -1, /**< Invalid keypair */
     VS_KEYPAIR_EC_SECP_MIN = 1,
     VS_KEYPAIR_EC_SECP192R1 = VS_KEYPAIR_EC_SECP_MIN, /**< 192-bits NIST curve */
     VS_KEYPAIR_EC_SECP224R1,                          /**< 224-bits NIST curve */
@@ -87,7 +87,7 @@ typedef enum {
 /** AES mode */
 typedef enum {
     VS_AES_GCM, /**< AES-GCM */
-    VS_AES_CBC /**< AES-CBC */
+    VS_AES_CBC  /**< AES-CBC */
 } vs_iot_aes_type_e;
 
 /** SHA-256 context */
@@ -472,8 +472,8 @@ typedef struct {
     vs_hsm_deinit_t deinit; /**< HSM destruction callback */
 
     // Slot operations
-    vs_hsm_slot_save_t slot_save; /**< Slot save information callback */
-    vs_hsm_slot_load_t slot_load; /**< Slot load information callback */
+    vs_hsm_slot_save_t slot_save;    /**< Slot save information callback */
+    vs_hsm_slot_load_t slot_load;    /**< Slot load information callback */
     vs_hsm_slot_delete_t slot_clean; /**< Slot delete callback */
 
     // RNG
@@ -484,7 +484,7 @@ typedef struct {
     vs_hsm_keypair_get_pubkey_t get_pubkey; /**< Get public key callback */
 
     // ECDSA
-    vs_hsm_ecdsa_sign_t ecdsa_sign; /**< ECDSA sign callback */
+    vs_hsm_ecdsa_sign_t ecdsa_sign;     /**< ECDSA sign callback */
     vs_hsm_ecdsa_verify_t ecdsa_verify; /**< ECDSA verify callback */
 
     // ECDH
@@ -497,10 +497,10 @@ typedef struct {
     vs_hsm_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentification callback */
 
     // Hash
-    vs_hsm_sw_sha256_init_t hash_init; /**< SHA-256 hash initialize callback */
+    vs_hsm_sw_sha256_init_t hash_init;     /**< SHA-256 hash initialize callback */
     vs_hsm_sw_sha256_update_t hash_update; /**< SHA-256 update callback */
-    vs_hsm_sw_sha256_final_t hash_finish; /**< SHA-256 finalize callback */
-    vs_hsm_hash_create_t hash; /**< Create hash callback */
+    vs_hsm_sw_sha256_final_t hash_finish;  /**< SHA-256 finalize callback */
+    vs_hsm_hash_create_t hash;             /**< Create hash callback */
 
     // HMAC
     vs_hsm_hmac_t hmac; /**< HMAC calculate callback */

@@ -35,7 +35,8 @@
 /*! \file firmware.h
  * \brief Firmware uploading/downloading and installation implementation
  *
- * Firmware library is used to save firmware by gateway for different devices and downloading, installing them by client.
+ * Firmware library is used to save firmware by gateway for different devices and downloading, installing them by
+ * client.
  */
 
 #ifndef VS_FIRMWARE_H
@@ -49,27 +50,27 @@
 
 /** Firmware descriptor */
 typedef struct __attribute__((__packed__)) {
-    vs_file_info_t info; /**< File information */
-    uint8_t padding; /**< Padding */
-    uint16_t chunk_size; /**< Chunk size */
+    vs_file_info_t info;      /**< File information */
+    uint8_t padding;          /**< Padding */
+    uint16_t chunk_size;      /**< Chunk size */
     uint32_t firmware_length; /**< Firmware length */
-    uint32_t app_size;  /**< Application size = firmware_length + fill_size + footer */
+    uint32_t app_size;        /**< Application size = firmware_length + fill_size + footer */
 } vs_firmware_descriptor_t;
 
 /** Firmware footer */
 typedef struct __attribute__((__packed__)) {
-    uint8_t signatures_count; /**< Signatures amount */
+    uint8_t signatures_count;            /**< Signatures amount */
     vs_firmware_descriptor_t descriptor; /**< Firmware descriptor */
-    uint8_t signatures[]; /**< Array of signatures */
+    uint8_t signatures[];                /**< Array of signatures */
 } vs_firmware_footer_t;
 
 /** Firmware header */
 typedef struct __attribute__((__packed__)) {
-    uint32_t code_offset; /**< Code offset = sizeof(vs_firmware_header_t) */
-    uint32_t code_length; /**< Code length = #vs_firmware_descriptor_t . firmware_length */
-    uint32_t footer_offset; /**< Footer offset = \a code_offset + \a code_length */
-    uint32_t footer_length; /**< Footer length */
-    uint8_t signatures_count; /**< Signatures amount */
+    uint32_t code_offset;                /**< Code offset = sizeof(vs_firmware_header_t) */
+    uint32_t code_length;                /**< Code length = #vs_firmware_descriptor_t . firmware_length */
+    uint32_t footer_offset;              /**< Footer offset = \a code_offset + \a code_length */
+    uint32_t footer_length;              /**< Footer length */
+    uint8_t signatures_count;            /**< Signatures amount */
     vs_firmware_descriptor_t descriptor; /**< Firnware descriptor */
 } vs_firmware_header_t;
 

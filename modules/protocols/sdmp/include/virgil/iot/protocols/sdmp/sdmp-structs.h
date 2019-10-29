@@ -75,7 +75,7 @@ typedef uint32_t vs_sdmp_element_t;
  * \param[out] packet_data_sz Output buffer to store packet data size in bytes. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
-*/
+ */
 typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
                                         const uint8_t *data,
                                         const uint16_t data_sz,
@@ -212,12 +212,12 @@ typedef vs_status_e (*vs_sdmp_service_deinit_t)(void);
  * Enumeration with mask bits to describe device roles.
  */
 typedef enum {
-    VS_SDMP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001), /**< Gateway role */
-    VS_SDMP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002), /**< Thing role */
-    VS_SDMP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004), /**< Control role */
-    VS_SDMP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008), /**< Logger role */
-    VS_SDMP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010), /**< Sniffer role */
-    VS_SDMP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020), /**< Debugger role */
+    VS_SDMP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001),    /**< Gateway role */
+    VS_SDMP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002),      /**< Thing role */
+    VS_SDMP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004),    /**< Control role */
+    VS_SDMP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008),     /**< Logger role */
+    VS_SDMP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010),    /**< Sniffer role */
+    VS_SDMP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020),   /**< Debugger role */
     VS_SDMP_DEV_INITIALIZER = HTONL_IN_COMPILE_TIME(0x0040) /**< Initializer role */
 } vs_sdmp_device_role_e;
 
@@ -250,8 +250,8 @@ typedef struct __attribute__((__packed__)) vs_mac_addr_t {
  */
 typedef struct __attribute__((__packed__)) ethernet_header {
     vs_mac_addr_t dest; /**< Destination MAC address */
-    vs_mac_addr_t src; /**< Source MAC address */
-    uint16_t type; /**< Packet type */
+    vs_mac_addr_t src;  /**< Source MAC address */
+    uint16_t type;      /**< Packet type */
 } vs_ethernet_header_t;
 // TODO : what is type ??? Which packet types?
 
@@ -260,11 +260,11 @@ typedef struct __attribute__((__packed__)) ethernet_header {
  */
 typedef struct __attribute__((__packed__)) {
     vs_sdmp_transaction_id_t transaction_id; /**< Transaction ID */
-    vs_sdmp_service_id_t service_id; /**< SDMP service */
-    vs_sdmp_element_t element_id; /**< Service's command */
-    uint32_t flags; /**< Packet flags */
-    uint16_t padding; /**< Packet padding */
-    uint16_t content_size; /**< Packet #vs_sdmp_packet_t \a content data size */
+    vs_sdmp_service_id_t service_id;         /**< SDMP service */
+    vs_sdmp_element_t element_id;            /**< Service's command */
+    uint32_t flags;                          /**< Packet flags */
+    uint16_t padding;                        /**< Packet padding */
+    uint16_t content_size;                   /**< Packet #vs_sdmp_packet_t \a content data size */
 } vs_sdmp_header_t;
 // TODO : what is it padding?
 
@@ -273,8 +273,8 @@ typedef struct __attribute__((__packed__)) {
  */
 typedef struct __attribute__((__packed__)) {
     vs_ethernet_header_t eth_header; /**< Ethernet header */
-    vs_sdmp_header_t header; /**< Packet header */
-    uint8_t content[]; /**< Packet data with \a header . \a content_size bytes size */
+    vs_sdmp_header_t header;         /**< Packet header */
+    uint8_t content[];               /**< Packet data with \a header . \a content_size bytes size */
 } vs_sdmp_packet_t;
 
 /******************************************************************************/
@@ -284,14 +284,14 @@ typedef struct vs_netif_t {
     void *user_data; /**< User data */
 
     // Functions
-    vs_netif_init_t init; /**< Initialization callback */
+    vs_netif_init_t init;     /**< Initialization callback */
     vs_netif_deinit_t deinit; /**< Destroy callback */
-    vs_netif_tx_t tx; /**< Transmit data callback */
-    vs_netif_mac_t mac_addr; /**< MAC address callback */
+    vs_netif_tx_t tx;         /**< Transmit data callback */
+    vs_netif_mac_t mac_addr;  /**< MAC address callback */
 
     // Incoming packet
     // TODO : magic number!
-    uint8_t packet_buf[1024]; /**< Packet buffer */
+    uint8_t packet_buf[1024];   /**< Packet buffer */
     uint16_t packet_buf_filled; /**< Packet size */
 } vs_netif_t;
 
@@ -299,19 +299,19 @@ typedef struct vs_netif_t {
 /** SDMP service descriptor
  */
 typedef struct {
-    void *user_data; /**< User data */
-    vs_sdmp_service_id_t id; /**< Service ID */
-    vs_sdmp_service_request_processor_t request_process; /**< Reqeust processing callback */
-    vs_sdmp_service_response_processor_t response_process; /**< Response processing callback */
+    void *user_data;                                           /**< User data */
+    vs_sdmp_service_id_t id;                                   /**< Service ID */
+    vs_sdmp_service_request_processor_t request_process;       /**< Reqeust processing callback */
+    vs_sdmp_service_response_processor_t response_process;     /**< Response processing callback */
     vs_sdmp_service_periodical_processor_t periodical_process; /**< Periodical task callback */
-    vs_sdmp_service_deinit_t deinit; /**< Destructor call */
+    vs_sdmp_service_deinit_t deinit;                           /**< Destructor call */
 } vs_sdmp_service_t;
 
 /******************************************************************************/
 /** SDMP statistics
  */
 typedef struct {
-    uint32_t sent; /**< Sents amount */
+    uint32_t sent;     /**< Sents amount */
     uint32_t received; /**< Receives amount */
 } vs_sdmp_stat_t;
 

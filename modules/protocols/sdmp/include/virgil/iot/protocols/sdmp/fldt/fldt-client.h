@@ -50,9 +50,9 @@
  *  const vs_sdmp_service_t *sdmp_fldt_client;
  *  sdmp_fldt_client = vs_sdmp_fldt_client( _on_file_updated );
  *  STATUS_CHECK( vs_sdmp_register_service( sdmp_fldt_client ), "Cannot register FLDT client service");
- *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to add Firmware file type" );
- *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx() ), "Unable to add Trust List file type" );
- * \endcode
+ *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to
+ * add Firmware file type" ); STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx()
+ * ), "Unable to add Trust List file type" ); \endcode
  *
  * You can see minimalistic #vs_fldt_got_file function example below :
  * \code
@@ -127,7 +127,8 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
 
 /** Add file type
  *
- * FLDT client has the list of file types that it processes. This call adds new file type or update previously added one.
+ * FLDT client has the list of file types that it processes. This call adds new file type or update previously added
+ * one.
  *
  * \param[in] file_type File type to be added. Must not be NULL.
  * \param[in] update_ctx Update context for current file type. Must not be NULL.

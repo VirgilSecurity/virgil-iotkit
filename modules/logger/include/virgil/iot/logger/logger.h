@@ -51,9 +51,9 @@
  *  const vs_sdmp_service_t *sdmp_fldt_client;
  *  sdmp_fldt_client = vs_sdmp_fldt_client( _on_file_updated );
  *  STATUS_CHECK( vs_sdmp_register_service( sdmp_fldt_client ), "Cannot register FLDT client service");
- *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to add Firmware file type" );
- *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx() ), "Unable to add Trust List file type" );
- * \endcode
+ *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to
+ * add Firmware file type" ); STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx()
+ * ), "Unable to add Trust List file type" ); \endcode
  *
  * You can see minimalistic #vs_fldt_got_file function example below :
  * \code
@@ -95,14 +95,14 @@ typedef enum {
     VS_LOGLEV_UNKNOWN = 0xFF,   /**< Errorneous logging level */
     VS_LOGLEV_NO_LOGGER = 0xFE, /**< Logging is disabled */
 
-    VS_LOGLEV_INFO = 0x00, /**< Information messages */
-    VS_LOGLEV_FATAL = 0x10, /**< Fatal messages */
-    VS_LOGLEV_ALERT = 0x20, /**< Alert messages */
+    VS_LOGLEV_INFO = 0x00,     /**< Information messages */
+    VS_LOGLEV_FATAL = 0x10,    /**< Fatal messages */
+    VS_LOGLEV_ALERT = 0x20,    /**< Alert messages */
     VS_LOGLEV_CRITICAL = 0x30, /**< Critical messages */
-    VS_LOGLEV_ERROR = 0x40, /**< Error messages */
-    VS_LOGLEV_WARNING = 0x50, /**< Warning message */
-    VS_LOGLEV_NOTICE = 0x60, /**< Notifications */
-    VS_LOGLEV_TRACE = 0x70, /**< Trace messages */
+    VS_LOGLEV_ERROR = 0x40,    /**< Error messages */
+    VS_LOGLEV_WARNING = 0x50,  /**< Warning message */
+    VS_LOGLEV_NOTICE = 0x60,   /**< Notifications */
+    VS_LOGLEV_TRACE = 0x70,    /**< Trace messages */
 
     VS_LOGLEV_DEBUG = 0xFD, /**< Debug messages */
 } vs_log_level_t;

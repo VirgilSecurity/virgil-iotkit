@@ -51,11 +51,12 @@ extern "C" {
 
 /** Device description
  *
- * Device description. This is response for #vs_sdmp_prvs_enum_devices call as an element from #vs_sdmp_prvs_dnid_list_t.
+ * Device description. This is response for #vs_sdmp_prvs_enum_devices call as an element from
+ * #vs_sdmp_prvs_dnid_list_t.
  */
 typedef struct {
     vs_mac_addr_t mac_addr; /**< Device MAC address */
-    uint32_t device_roles; /**< Mask based on #vs_sdmp_device_role_e */
+    uint32_t device_roles;  /**< Mask based on #vs_sdmp_device_role_e */
 } vs_sdmp_prvs_dnid_element_t;
 
 /** Devices enumeration
@@ -64,7 +65,7 @@ typedef struct {
  */
 typedef struct {
     vs_sdmp_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX]; /**< elements array */
-    uint16_t count; /**< elements amount */
+    uint16_t count;                                         /**< elements amount */
 } vs_sdmp_prvs_dnid_list_t;
 
 /** Device information
@@ -73,10 +74,10 @@ typedef struct {
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< manufacture ID */
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< device type */
-    uint8_t serial[VS_DEVICE_SERIAL_SIZE]; /**< device serial number */
-    vs_mac_addr_t mac; /**< device MAC address */
-    uint16_t data_sz; /**< \a data size*/
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];            /**< device type */
+    uint8_t serial[VS_DEVICE_SERIAL_SIZE];               /**< device serial number */
+    vs_mac_addr_t mac;                                   /**< device MAC address */
+    uint16_t data_sz;                                    /**< \a data size*/
 
     uint8_t data[]; /**< data : #vs_pubkey_t own_key + #vs_sign_t signature */
 } vs_sdmp_prvs_devi_t;
@@ -88,7 +89,7 @@ typedef struct __attribute__((__packed__)) {
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t hash_type; /**< #vs_hsm_hash_type_e */
-    uint8_t data[]; /**< signed data */
+    uint8_t data[];    /**< signed data */
 } vs_sdmp_prvs_sgnp_req_t;
 
 #ifdef __cplusplus

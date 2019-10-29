@@ -47,7 +47,7 @@
 
 /** Security box operation type */
 typedef enum {
-    VS_SECBOX_SIGNED, /**< Signed data */
+    VS_SECBOX_SIGNED,               /**< Signed data */
     VS_SECBOX_SIGNED_AND_ENCRYPTED, /**< Signed and encrypted data */
 } vs_secbox_type_t;
 

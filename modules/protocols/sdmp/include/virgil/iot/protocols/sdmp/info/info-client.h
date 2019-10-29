@@ -127,7 +127,7 @@ typedef struct {
 /** INFO client implementation
  */
 typedef struct {
-    vs_sdmp_info_wait_t wait_func; /**< Wait function callback */
+    vs_sdmp_info_wait_t wait_func;           /**< Wait function callback */
     vs_sdmp_info_stop_wait_t stop_wait_func; /**< Stop and wait function callback */
 } vs_sdmp_info_impl_t;
 

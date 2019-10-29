@@ -35,12 +35,15 @@
 /*! \file sdmp.h
  * \brief SDMP network interface calls
  *
- * SDMP protocol is used as transport layer for network communication. There are several layers provided by Virgil IoT SDK that use this interface :
+ * SDMP protocol is used as transport layer for network communication. There are several layers provided by Virgil IoT
+ * SDK that use this interface :
  * - PRVS : provision interface.
- * - FLDT : file data broadcast sent by server for clients to upgrade software. See #fldt_client_usage and #fldt_server_usage for details
+ * - FLDT : file data broadcast sent by server for clients to upgrade software. See #fldt_client_usage and
+ * #fldt_server_usage for details
  * - INFO : devices information sent by clients for server to notify current software usage.
  *
- * User can add his own protocols base on SDMP. It is necessary to provide service callbacks by filling #vs_sdmp_service_t structure and register service by #vs_sdmp_register_service call.
+ * User can add his own protocols base on SDMP. It is necessary to provide service callbacks by filling
+ * #vs_sdmp_service_t structure and register service by #vs_sdmp_register_service call.
  */
 // TODO : add an example of SDMP service registration
 
@@ -75,8 +78,8 @@ vs_sdmp_init(vs_netif_t *default_netif,
 
 /** Destroy SDMP
  *
- * Uses \a deinit call from #vs_sdmp_service_t structure for each SDMP registered service and \a deinit call from #vs_netif_t structure for network interface.
- * \return #VS_CODE_OK in case of success or error code.
+ * Uses \a deinit call from #vs_sdmp_service_t structure for each SDMP registered service and \a deinit call from
+ * #vs_netif_t structure for network interface. \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_sdmp_deinit();
@@ -127,9 +130,9 @@ vs_sdmp_default_netif(void);
  * Sends \a data message \a data_sz bytes length by using SDMP protocol specified by \a netif network interface.
  * \a tx callback from #vs_netif_t network interface is used.
  *
- * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for #vs_sdmp_init call is used.
- * \param[in] data Data buffer to be send. Must not be NULL.
- * \param[in] data_sz Data size in bytes to be send. Must not be zero.
+ * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for
+ * #vs_sdmp_init call is used. \param[in] data Data buffer to be send. Must not be NULL. \param[in] data_sz Data size in
+ * bytes to be send. Must not be zero.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -168,12 +171,12 @@ vs_sdmp_broadcast_mac(void);
 
 /** Prepare and send SDMP message
  *
- * Sends \a data message \a data_sz bytes length by using \a element_ID element of \a service_id SDMP service to \a mac device by \a netif network interface.
+ * Sends \a data message \a data_sz bytes length by using \a element_ID element of \a service_id SDMP service to \a mac
+ * device by \a netif network interface.
  *
- * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for #vs_sdmp_init call is used.
- * \param[in] mac MAC address. If NULL, broadcast MAC address is used.
- * \param[in] service_id Service ID registered by #vs_sdmp_register_service call.
- * \param[in] element_id Element ID of \a service_id.
+ * \param[in] netif Network interface. If NULL, default network interface specified by \a default_netif parameter for
+ * #vs_sdmp_init call is used. \param[in] mac MAC address. If NULL, broadcast MAC address is used. \param[in] service_id
+ * Service ID registered by #vs_sdmp_register_service call. \param[in] element_id Element ID of \a service_id.
  * \param[in] data Data buffer to be send. Must not be NULL.
  * \param[in] data_sz Data size in bytes to be send. Must not be zero.
  *
