@@ -59,7 +59,7 @@ static vs_device_type_t _device_type;
 static vs_device_serial_t _device_serial;
 static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
 
-#define VS_SDMP_PROFILE 1
+#define VS_SDMP_PROFILE 0
 
 #if VS_SDMP_PROFILE
 #include <sys/time.h>
