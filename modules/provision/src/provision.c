@@ -276,9 +276,6 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
 
     // TrustList module
     return vs_tl_init(tl_storage_ctx, hsm);
-    // Load Cloud URL
-    _load_cloud_url();
-
 }
 
 /******************************************************************************/
@@ -291,6 +288,10 @@ vs_provision_deinit(void) {
 /******************************************************************************/
 const char *
 vs_provision_cloud_url(void) {
+    if (NULL == _base_url) {
+        _load_cloud_url();
+    }
+
     return _base_url;
 }
 

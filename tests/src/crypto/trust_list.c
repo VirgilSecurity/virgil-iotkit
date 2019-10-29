@@ -63,10 +63,11 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
         key_len = vs_hsm_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
+        uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t *)ptr)->pubkey.meta_data_sz);
 
         BOOL_CHECK_RET(key_len > 0, "Key parse error");
 
-        test_tl_keys[i].size = key_len + sizeof(vs_pubkey_dated_t);
+        test_tl_keys[i].size = key_len + sizeof(vs_pubkey_dated_t) + key_meta_data_sz;
         if (test_key_max_size < test_tl_keys[i].size) {
             test_key_max_size = test_tl_keys[i].size;
         }

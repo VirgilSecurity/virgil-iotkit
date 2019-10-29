@@ -272,7 +272,7 @@ func (p *DeviceProcessor) SetTrustList() error {
                                        &mac,
                                        dataPtr,
                                        C.uint16_t(len(footerBytes)),
-                                       DEFAULT_TIMEOUT_MS) {
+                                       DEFAULT_TIMEOUT_MS * 3) {
         return fmt.Errorf("failed to set TrustList footer")
     }
 
