@@ -55,7 +55,7 @@ typedef size_t vs_tl_key_handle;
 /** Trust List header */
 typedef struct __attribute__((__packed__)) {
     uint32_t tl_size; /**< Trust List size = header + public keys + footer */
-    uint16_t version; /**< Version */
+    vs_file_version_t version; /**< Version */
     uint16_t pub_keys_count; /**< Public keys amount */
     uint8_t signatures_count; /**< Signatures amount */
 } vs_tl_header_t;
@@ -66,5 +66,17 @@ typedef struct __attribute__((__packed__)) {
     uint8_t signatures[]; /**< Signatures */
 } vs_tl_footer_t;
 
+typedef enum {
+    VS_TL_ELEMENT_MIN = 0,
+    VS_TL_ELEMENT_TLH,
+    VS_TL_ELEMENT_TLC,
+    VS_TL_ELEMENT_TLF,
+    VS_TL_ELEMENT_MAX,
+} vs_tl_element_e;
+
+typedef struct vs_tl_element_info_s {
+    vs_tl_element_e id;
+    int index;
+} vs_tl_element_info_t;
 
 #endif // TL_STRUCTS_H

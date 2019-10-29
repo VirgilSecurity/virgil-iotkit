@@ -60,18 +60,28 @@ vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_ver
     CHECK_NOT_ZERO_RET(update_ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(current_ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
     // Compare version
-    if (update_ver->major < current_ver->major)
-        return VS_CODE_OLD_VERSION;
-    if (update_ver->minor < current_ver->minor)
-        return VS_CODE_OLD_VERSION;
-    if (update_ver->patch < current_ver->patch)
-        return VS_CODE_OLD_VERSION;
-    if (update_ver->dev_milestone < current_ver->dev_milestone)
-        return VS_CODE_OLD_VERSION;
-    if (update_ver->dev_build <= current_ver->dev_build)
-        return VS_CODE_OLD_VERSION;
+    if (update_ver->major > current_ver->major) {
+        return VS_CODE_OK;
+    }
 
-    return VS_CODE_OK;
+    if (update_ver->major == current_ver->major) {
+        if(update_ver->minor > current_ver->minor) {
+           return VS_CODE_OK;
+        }
+
+        if(update_ver->minor == current_ver->minor) {
+            if (update_ver->patch > current_ver->patch) {
+                return VS_CODE_OK;
+            }
+
+            if (update_ver->patch == current_ver->patch) {
+                if (update_ver->build > current_ver->build) {
+                    return VS_CODE_OK;
+                }
+            }
+        }
+    }
+    return VS_CODE_OLD_VERSION;
 }
 
 /*************************************************************************/

@@ -44,7 +44,6 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/firmware/firmware.h>
 
 /** Device information
  *
@@ -54,6 +53,14 @@ typedef struct {
     uint32_t device_roles; /**< Mask based on #vs_sdmp_device_role_e elements */
     uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_sdmp_info_device_t;
+
+typedef struct {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint32_t build;
+    uint32_t timestamp;
+} vs_file_version_unpacked_t;
 
 /** Device general information
  *

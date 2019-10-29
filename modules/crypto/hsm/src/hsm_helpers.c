@@ -45,24 +45,24 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
-        return 256;
+        return VS_PUBKEY_RSA2048_LEN;
 #endif
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
-        return 49;
+        return VS_PUBKEY_SECP192_LEN;
     case VS_KEYPAIR_EC_SECP224R1:
     case VS_KEYPAIR_EC_SECP224K1:
-        return 57;
+        return VS_PUBKEY_SECP224_LEN;
     case VS_KEYPAIR_EC_SECP256R1:
     case VS_KEYPAIR_EC_SECP256K1:
-        return 65;
+        return VS_PUBKEY_SECP256_LEN;
     case VS_KEYPAIR_EC_SECP384R1:
-        return 97;
+        return VS_PUBKEY_SECP384_LEN;
     case VS_KEYPAIR_EC_SECP521R1:
-        return 133;
+        return VS_PUBKEY_SECP521_LEN;
     case VS_KEYPAIR_EC_CURVE25519:
     case VS_KEYPAIR_EC_ED25519:
-        return 32;
+        return VS_PUBKEY_25519_LEN;
     default:
         VS_LOG_WARNING("Unsupported keypair type");
         return VS_CODE_ERR_CRYPTO;
@@ -75,23 +75,23 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
-        return 256;
+        return VS_SIGNATURE_RSA2048_LEN;
 #endif
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
-        return 48;
+        return VS_SIGNATURE_SECP192_LEN;
     case VS_KEYPAIR_EC_SECP224R1:
     case VS_KEYPAIR_EC_SECP224K1:
-        return 56;
+        return VS_SIGNATURE_SECP224_LEN;
     case VS_KEYPAIR_EC_SECP256R1:
     case VS_KEYPAIR_EC_SECP256K1:
-        return 64;
+        return VS_SIGNATURE_SECP256_LEN;
     case VS_KEYPAIR_EC_SECP384R1:
-        return 96;
+        return VS_SIGNATURE_SECP384_LEN;
     case VS_KEYPAIR_EC_SECP521R1:
-        return 132;
+        return VS_SIGNATURE_SECP521_LEN;
     case VS_KEYPAIR_EC_ED25519:
-        return 64;
+        return VS_SIGNATURE_25519_LEN;
     default:
         VS_LOG_WARNING("Unsupported signature type");
         return VS_CODE_ERR_CRYPTO;
@@ -103,11 +103,11 @@ int
 vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
     switch (hash_type) {
     case VS_HASH_SHA_256:
-        return 32;
+        return VS_HASH_SHA256_LEN;
     case VS_HASH_SHA_384:
-        return 48;
+        return VS_HASH_SHA384_LEN;
     case VS_HASH_SHA_512:
-        return 64;
+        return VS_HASH_SHA512_LEN;
     default:
         VS_LOG_WARNING("Unsupported hash type");
         return VS_CODE_ERR_CRYPTO;

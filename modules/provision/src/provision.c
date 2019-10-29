@@ -34,6 +34,7 @@
 #include <stdbool.h>
 
 #include <stdlib-config.h>
+#include <endian-config.h>
 
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
@@ -52,6 +53,8 @@ static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLO
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
 
 static vs_hsm_impl_t *_hsm = NULL;
+
+static char *_base_url = NULL;
 
 /******************************************************************************/
 static vs_status_e
@@ -142,10 +145,11 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t i = 0;
     int ref_key_sz;
     // TODO: Fix buffer constant size
-    uint8_t buf[512];
+    uint8_t buf[VS_SEARCH_KEY_BUF_SZ];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
     vs_status_e ret_code;
+    uint8_t *pubkey;
 
     VS_IOT_ASSERT(_hsm);
 
@@ -160,8 +164,9 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
             return VS_CODE_ERR_INCORRECT_PARAMETER;
         }
 
+        pubkey = &ref_key->pubkey.meta_and_pubkey[ref_key->pubkey.meta_data_sz];
         if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz &&
-            0 == VS_IOT_MEMCMP(key, ref_key->pubkey.pubkey, key_sz)) {
+            0 == VS_IOT_MEMCMP(key, pubkey, key_sz)) {
             return vs_provision_verify_hl_key(buf, _sz);
         }
     }
@@ -199,7 +204,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     CHECK_RET(key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported key ec_type");
 
     // Determine stuff size under signature
-    signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len;
+    signed_data_sz = sizeof(vs_pubkey_dated_t) + key_len + VS_IOT_NTOHS(key->pubkey.meta_data_sz);
 
     CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), VS_CODE_ERR_CRYPTO, "key stuff is too small");
 
@@ -239,22 +244,112 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 }
 
 /******************************************************************************/
+static vs_status_e
+_load_cloud_url(void) {
+    vs_provision_tl_find_ctx_t search_ctx;
+    uint8_t *pubkey = NULL;
+    uint16_t pubkey_sz = 0;
+    uint8_t *meta = NULL;
+    uint16_t meta_sz = 0;
+
+    VS_IOT_MEMSET(&search_ctx, 0, sizeof(search_ctx));
+
+    if (VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
+        !meta_sz) {
+        _base_url = VS_IOT_MALLOC(meta_sz + 1);
+        CHECK_MEM_ALLOC(NULL != _base_url, "");
+        VS_IOT_MEMCPY(_base_url, meta, meta_sz);
+        _base_url[meta_sz] = 0x00;
+        return VS_CODE_OK;
+    }
+
+terminate:
+
+    return VS_CODE_ERR_NOT_FOUND;
+}
+
+/******************************************************************************/
 vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _hsm = hsm;
 
     // TrustList module
-    // TODO: Fix errors detection
-    vs_tl_init(tl_storage_ctx, hsm);
-
-    return VS_CODE_OK;
+    return vs_tl_init(tl_storage_ctx, hsm);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_provision_deinit(void) {
+    VS_IOT_FREE(_base_url);
     return vs_tl_deinit();
+}
+
+/******************************************************************************/
+const char *
+vs_provision_cloud_url(void) {
+    if (NULL == _base_url) {
+        _load_cloud_url();
+    }
+
+    return _base_url;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
+                               vs_key_type_e key_type,
+                               uint8_t **pubkey,
+                               uint16_t *pubkey_sz,
+                               uint8_t **meta,
+                               uint16_t *meta_sz) {
+
+    // Setup search context
+    search_ctx->key_type = key_type;
+    search_ctx->last_pos = -1;
+
+    return vs_provision_tl_find_next_key(search_ctx, pubkey, pubkey_sz, meta, meta_sz);
+}
+
+/******************************************************************************/
+vs_status_e
+vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              uint8_t **pubkey,
+                              uint16_t *pubkey_sz,
+                              uint8_t **meta,
+                              uint16_t *meta_sz) {
+    vs_status_e res = VS_CODE_ERR_NOT_FOUND;
+    vs_tl_element_info_t element;
+    uint16_t data_sz = 0;
+    vs_pubkey_dated_t *pubkey_dated = (vs_pubkey_dated_t *)search_ctx->element_buf;
+
+    CHECK_NOT_ZERO_RET(search_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(pubkey, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(pubkey_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(meta, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(meta_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    // Prepare element info
+    element.id = VS_TL_ELEMENT_TLC;
+    element.index = search_ctx->last_pos + 1;
+
+    while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_SEARCH_KEY_BUF_SZ, &data_sz)) {
+        element.index++;
+        if (pubkey_dated->pubkey.key_type != search_ctx->key_type) {
+            continue;
+        }
+        if (element.index >= search_ctx->last_pos) {
+            *meta_sz = VS_IOT_NTOHS(pubkey_dated->pubkey.meta_data_sz);
+            *meta = pubkey_dated->pubkey.meta_and_pubkey;
+            *pubkey_sz = vs_hsm_get_pubkey_len(pubkey_dated->pubkey.ec_type);
+            *pubkey = &pubkey_dated->pubkey.meta_and_pubkey[*meta_sz];
+            res = VS_CODE_OK;
+            search_ctx->last_pos = element.index;
+            break;
+        }
+    }
+
+    return res;
 }
 
 /******************************************************************************/

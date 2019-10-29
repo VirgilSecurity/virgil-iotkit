@@ -90,11 +90,12 @@ vs_prvs_server_device_info(vs_sdmp_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     // Fill own public key
     own_pubkey = (vs_pubkey_t *)device_info->data;
-    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, own_pubkey->pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
+    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, own_pubkey->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
                      "Unable to get public key");
 
     own_pubkey->key_type = VS_KEY_IOT_DEVICE;
     own_pubkey->ec_type = ec_type;
+    own_pubkey->meta_data_sz = 0;
     device_info->data_sz = key_sz + sizeof(vs_pubkey_t);
     sign = (vs_sign_t *)((uint8_t *)own_pubkey + key_sz + sizeof(vs_pubkey_t));
 
@@ -140,11 +141,13 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     STATUS_CHECK_RET(_hsm->slot_clean(REC1_KEY_SLOT), "Unable to delete REC1_KEY slot");
     STATUS_CHECK_RET(_hsm->slot_clean(REC2_KEY_SLOT), "Unable to delete REC2_KEY slot");
     STATUS_CHECK_RET(_hsm->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1), "Unable to create keypair");
-    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, asav_response->pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
-                     "Unable to get public key");
+    STATUS_CHECK_RET(
+            _hsm->get_pubkey(PRIVATE_KEY_SLOT, asav_response->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
+            "Unable to get public key");
 
     asav_response->key_type = VS_KEY_IOT_DEVICE;
     asav_response->ec_type = ec_type;
+    asav_response->meta_data_sz = 0;
     *resp_sz = sizeof(vs_pubkey_t) + key_sz;
 
     return VS_CODE_OK;

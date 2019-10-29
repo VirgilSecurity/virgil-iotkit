@@ -130,15 +130,15 @@ func mac2string(mac *C.uint8_t) string {
         return fmt.Sprintf("%02x:%02x:%02x:%02x:%02x:%02x", b[0], b[1], b[2], b[3], b[4], b[5])
 }
 
-func fwVer2string(major C.uint8_t, minor C.uint8_t,
-                    patch C.uint8_t, devMilestone C.uint8_t,
-                    devBuild C.uint8_t, timestamp C.uint32_t) string {
+func fileVer2string(major C.uint8_t, minor C.uint8_t,
+                    patch C.uint8_t, build C.uint32_t,
+                    timestamp C.uint32_t) string {
         // Create time string
         unixTime := int64(timestamp)
         unixTime += 1420070400
         tm := time.Unix(unixTime, 0)
 
-        return fmt.Sprintf("ver %d.%d.%d.%c.%d, %s", major, minor, patch, devMilestone, devBuild, tm.String())
+        return fmt.Sprintf("ver %d.%d.%d.%d, %s", major, minor, patch, build, tm.String())
 }
 
 func roles2strings(roles C.uint32_t) []string {
@@ -188,13 +188,16 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
         goInfo.ID = ""
         goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.VS_DEVICE_MANUFACTURE_ID_SIZE)
         goInfo.DeviceType = carray2string(&general_info.device_type[0], C.VS_DEVICE_TYPE_SIZE)
-        goInfo.FWVersion = fwVer2string(general_info.fw_major,
-                                        general_info.fw_minor,
-                                        general_info.fw_patch,
-                                        general_info.fw_dev_milestone,
-                                        general_info.fw_dev_build,
-                                        general_info.fw_timestamp)
-        goInfo.TLVersion = fmt.Sprintf("ver %d", general_info.tl_version)
+        goInfo.FWVersion = fileVer2string(general_info.fw_ver.major,
+                                        general_info.fw_ver.minor,
+                                        general_info.fw_ver.patch,
+                                        general_info.fw_ver.build,
+                                        general_info.fw_ver.timestamp)
+        goInfo.TLVersion = fileVer2string(general_info.tl_ver.major,
+                                          general_info.tl_ver.minor,
+                                          general_info.tl_ver.patch,
+                                          general_info.tl_ver.build,
+                                          general_info.tl_ver.timestamp)
         goInfo.MAC = mac2string(&general_info.default_netif_mac[0])
         goInfo.Roles = roles2strings(general_info.device_roles);
 

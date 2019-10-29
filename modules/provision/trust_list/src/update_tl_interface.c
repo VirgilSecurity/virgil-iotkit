@@ -91,7 +91,13 @@ _tl_describe_version(void *context,
         }
     }
 
-    VS_IOT_SNPRINTF(output, string_space, "version %d", (int)version->major);
+    VS_IOT_SNPRINTF(output,
+                    string_space,
+                    "version %d.%d.%d.%d",
+                    (int)version->major,
+                    (int)version->minor,
+                    (int)version->patch,
+                    (int)version->build);
 
     return buffer;
 
@@ -270,7 +276,7 @@ _tl_file_is_newer(void *context,
     (void)context;
     (void)file_type;
 
-    return new_file->major > available_file->major;
+    return (VS_CODE_OK == vs_update_compare_version(new_file, available_file));
 }
 
 /*************************************************************************/
@@ -289,10 +295,12 @@ _tl_get_header(void *context,
                size_t *header_size) {
     vs_tl_element_info_t elem_info;
     vs_status_e ret_code;
+    vs_tl_header_t *tl_header = (vs_tl_header_t *)header_buffer;
     uint16_t out_size = *header_size;
+    vs_tl_header_t host_header;
     (void)context;
-    (void)file_type;
 
+    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(header_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(buffer_size == sizeof(vs_tl_header_t),
@@ -304,7 +312,10 @@ _tl_get_header(void *context,
     *header_size = 0;
     elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&elem_info, header_buffer, buffer_size, &out_size), "Unable to get header");
+    vs_tl_header_to_host(tl_header, &host_header);
     *header_size = out_size;
+
+    VS_IOT_MEMCPY(&file_type->info.version, &host_header.version, sizeof(vs_file_version_t));
 
     return VS_CODE_OK;
 }
@@ -334,13 +345,10 @@ _tl_get_version(vs_update_file_type_t *file_type, vs_file_version_t *file_versio
     CHECK_NOT_ZERO_RET(file_version, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_tl_get_header(NULL, file_type, &tl_header, header_size, &header_size),
-                     "Unable to get Truat List header");
+                     "Unable to get Trust List header");
     VS_IOT_ASSERT(header_size == sizeof(tl_header));
 
-    VS_IOT_MEMSET(file_version, 0, sizeof(*file_version));
-
-    // TODO: Fix it
-    file_version->major = VS_IOT_NTOHS(tl_header.version) & 0xFF;
+    VS_IOT_MEMCPY(file_version, &tl_header.version, sizeof(*file_version));
 
     return VS_CODE_OK;
 }

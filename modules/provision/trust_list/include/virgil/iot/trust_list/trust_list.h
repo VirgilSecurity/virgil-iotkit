@@ -47,24 +47,6 @@
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 
-/** Trust List element type
- *
- * Used for save Trust List header, data or footer by #vs_tl_save_part call or load by #vs_tl_load_part call
- */
-typedef enum {
-    VS_TL_ELEMENT_MIN = 0,
-    VS_TL_ELEMENT_TLH, /**< Trust List header */
-    VS_TL_ELEMENT_TLC, /**< Trust List data chunk */
-    VS_TL_ELEMENT_TLF, /**< Trust List footer */
-    VS_TL_ELEMENT_MAX,
-} vs_tl_element_e;
-
-/** Trust List element description */
-typedef struct vs_tl_element_info_s {
-    vs_tl_element_e id; /**< Trust List header, data chunk or footer selection */
-    size_t index; /**< Trust List data chunk number */
-} vs_tl_element_info_t;
-
 /** Trust List initialization
  *
  * \param[in] op_ctx Storage context. Must not be NULL.

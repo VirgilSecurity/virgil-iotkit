@@ -161,6 +161,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 /******************************************************************************/
 vs_status_e
 vs_firmware_deinit(void) {
+    CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
@@ -496,6 +497,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor) {
 
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_footer_hal(buf, footer_sz), "Unable to read own firmware");
 
+    vs_firmware_ntoh_descriptor(&own_footer->descriptor);
     VS_IOT_MEMCPY(descriptor, &own_footer->descriptor, sizeof(vs_firmware_descriptor_t));
 
     return VS_CODE_OK;
@@ -515,7 +517,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     vs_status_e ret_code;
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     VS_IOT_ASSERT(_hsm);
 
@@ -636,6 +638,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
         return VS_CODE_ERR_NOT_FOUND;
     }
 
+
     return vs_update_compare_version(&new_descriptor->info.version, &own_desc.info.version);
 }
 
@@ -731,15 +734,14 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     VS_IOT_SNPRINTF(buffer,
                     buf_size,
 #ifdef VS_IOT_ASCTIME
-                    "ver %d.%d.%d.%d.%d, %s",
+                    "ver %d.%d.%d.%llu, %s",
 #else
-                    "ver %d.%d.%d.%d.%d, UNIX timestamp %u",
+                    "ver %d.%d.%d.%llu, UNIX timestamp %u",
 #endif //   VS_IOT_ASCTIME
                     fw_ver->major,
                     fw_ver->minor,
                     fw_ver->patch,
-                    fw_ver->dev_milestone,
-                    fw_ver->dev_build,
+                    (unsigned long long)fw_ver->build,
 #ifdef VS_IOT_ASCTIME
                     fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
 #else
@@ -758,6 +760,7 @@ vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
     desc->info.version.timestamp = VS_IOT_NTOHL(desc->info.version.timestamp);
+    desc->info.version.build = VS_IOT_NTOHL(desc->info.version.build);
 }
 
 /*************************************************************************/

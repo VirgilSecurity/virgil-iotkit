@@ -44,6 +44,8 @@ typedef struct {
 } vs_cloud_message_bin_handlers_t;
 
 static vs_cloud_message_bin_handlers_t _topic_handlers;
+
+#define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 /*************************************************************************/
 static void
 _mb_mqtt_ctx_free() {
@@ -129,7 +131,7 @@ _get_message_bin_credentials() {
         return VS_CODE_ERR_NO_MEMORY;
     }
 
-    if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(answer, &answer_size)) {
+    if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(vs_provision_cloud_url(), answer, &answer_size)) {
         jobj_t jobj;
         int len;
         int val;

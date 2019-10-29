@@ -59,10 +59,21 @@ static vs_device_type_t _device_type;
 static vs_device_serial_t _device_serial;
 static uint32_t _device_roles = 0; // See vs_sdmp_device_role_e
 
+#define VS_SDMP_PROFILE 1
+
 #if VS_SDMP_PROFILE
 #include <sys/time.h>
-static long long _processing_time_us = 0;
+static long long _processing_time = 0;
 static long _calls_counter = 0;
+
+/******************************************************************************/
+static long long
+current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);                               // get current time
+    long long us = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate ms
+    return us;
+}
 #endif
 
 /******************************************************************************/
@@ -265,18 +276,6 @@ _sdmp_rx_cb(vs_netif_t *netif,
 }
 
 /******************************************************************************/
-#if VS_SDMP_PROFILE
-#include <sys/time.h>
-static long long
-current_timestamp() {
-    struct timeval te;
-    gettimeofday(&te, NULL);                        // get current time
-    long long us = te.tv_sec * 1000LL + te.tv_usec; // calculate us
-    return us;
-}
-#endif
-
-/******************************************************************************/
 static vs_status_e
 _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_sdmp_packet_t *packet = (vs_sdmp_packet_t *)data;
@@ -284,6 +283,7 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 
 #if VS_SDMP_PROFILE
     long long t;
+    long long dt;
     _calls_counter++;
     t = current_timestamp();
 #endif
@@ -300,8 +300,12 @@ _sdmp_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
     VS_IOT_ASSERT(packet);
     res = _process_packet(netif, packet);
 #if VS_SDMP_PROFILE
-    _processing_time += current_timestamp() - t;
-    VS_LOG_INFO("Processing Time: %lld ms  Calls: %ld", _processing_time, _calls_counter);
+    dt = current_timestamp() - t;
+    _processing_time += dt;
+    VS_LOG_INFO("[_process_packet]. Time op = %lld ms Total time: %lld ms Calls: %ld",
+                dt,
+                _processing_time,
+                _calls_counter);
 #endif
 
     return res;
@@ -324,6 +328,14 @@ vs_sdmp_init(vs_netif_t *default_netif,
     VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
     VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
     VS_IOT_MEMCPY(_device_serial, device_serial, sizeof(_device_serial));
+
+#if VS_SDMP_PROFILE
+    vs_log_level_t log_level = vs_logger_get_loglev();
+    if (VS_LOGLEV_UNKNOWN == log_level) {
+        vs_logger_init(VS_LOGLEV_DEBUG);
+    }
+#endif
+
     _device_roles = device_roles;
 
     // Save default network interface
@@ -339,8 +351,8 @@ vs_sdmp_init(vs_netif_t *default_netif,
 vs_status_e
 vs_sdmp_deinit() {
     int i;
-    VS_IOT_ASSERT(_sdmp_default_netif);
-    VS_IOT_ASSERT(_sdmp_default_netif->deinit);
+    CHECK_NOT_ZERO_RET(_sdmp_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_sdmp_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
     _sdmp_default_netif->deinit();

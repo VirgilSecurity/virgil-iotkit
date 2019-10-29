@@ -204,24 +204,28 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
                      "Unable to obtain Trust List version");
+    vs_tl_header_to_host(&tl_header, &tl_header);
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_sdmp_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_sdmp_device_type(), sizeof(vs_device_type_t));
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
-    general_info->tl_version = VS_IOT_NTOHS(tl_header.version);
+    VS_IOT_MEMCPY(&general_info->tl_version, &tl_header.version, sizeof(tl_header.version));
     general_info->device_roles = vs_sdmp_device_roles();
 
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
             "%s, trust list "
-            "version = %d",
+            "version = %d.%d.%d.%d",
             general_info->manufacture_id,
             general_info->device_type[0],
             general_info->device_type[1],
             general_info->device_type[2],
             general_info->device_type[3],
             vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version);
+            general_info->tl_version.major,
+            general_info->tl_version.minor,
+            general_info->tl_version.patch,
+            general_info->tl_version.build);
 
     return VS_CODE_OK;
 }
