@@ -328,6 +328,14 @@ vs_sdmp_init(vs_netif_t *default_netif,
     VS_IOT_MEMCPY(_manufacture_id, manufacturer_id, sizeof(_manufacture_id));
     VS_IOT_MEMCPY(_device_type, device_type, sizeof(_device_type));
     VS_IOT_MEMCPY(_device_serial, device_serial, sizeof(_device_serial));
+
+#if VS_SDMP_PROFILE
+    vs_log_level_t log_level = vs_logger_get_loglev();
+    if (VS_LOGLEV_UNKNOWN == log_level) {
+        vs_logger_init(VS_LOGLEV_DEBUG);
+    }
+#endif
+
     _device_roles = device_roles;
 
     // Save default network interface
