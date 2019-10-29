@@ -92,6 +92,12 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__pubkey__dated__t.html">vs_pubkey_dated_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Public key with date information.  <a href="structvs__pubkey__dated__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__file__version__t.html">vs_file_version_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__file__info__t.html">vs_file_info_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__provision__tl__find__ctx__t.html">vs_provision_tl_find_ctx_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -105,6 +111,8 @@ Macros</h2></td></tr>
 <tr class="separator:af112d528390dd5f93420d003ae10ee1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56a6d2c2138d5af1f2d18634d00ba3e5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">VS_DEVICE_TYPE_SIZE</a>&#160;&#160;&#160;(4)</td></tr>
 <tr class="separator:a56a6d2c2138d5af1f2d18634d00ba3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9750c54f80ca747317f806e4c140f86a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a9750c54f80ca747317f806e4c140f86a">VS_SEARCH_KEY_BUF_SZ</a>&#160;&#160;&#160;(512)</td></tr>
+<tr class="separator:a9750c54f80ca747317f806e4c140f86a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -176,6 +184,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="provision-structs_8h.html#a8e7c46a325769db43ae2aca03bbe49b9a996dbf663d69784574c7b07ef03ebee8">VS_KEY_FIRMWARE_INTERNAL</a>, 
 <br />
 &#160;&#160;<a class="el" href="provision-structs_8h.html#a8e7c46a325769db43ae2aca03bbe49b9a1e90420b31bb7db98a00ea5068d10904">VS_KEY_AUTH_INTERNAL</a>, 
+<a class="el" href="provision-structs_8h.html#a8e7c46a325769db43ae2aca03bbe49b9a0dc6101e192b2a5b7e5ef8495bf11205">VS_KEY_CLOUD</a>, 
 <a class="el" href="provision-structs_8h.html#a8e7c46a325769db43ae2aca03bbe49b9afeaa2ec5acaf4637c69a3c9b8f7d2744">VS_KEY_UNSUPPORTED</a>
 <br />
  }</td></tr>
@@ -265,6 +274,20 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="a9750c54f80ca747317f806e4c140f86a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9750c54f80ca747317f806e4c140f86a">&#9670;&nbsp;</a></span>VS_SEARCH_KEY_BUF_SZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VS_SEARCH_KEY_BUF_SZ&#160;&#160;&#160;(512)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="af50a14354959f598dabb99c25aecd685"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af50a14354959f598dabb99c25aecd685">&#9670;&nbsp;</a></span>vs_device_manufacture_id_t</h2>
@@ -346,6 +369,8 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a996dbf663d69784574c7b07ef03ebee8"></a>VS_KEY_FIRMWARE_INTERNAL&#160;</td><td class="fielddoc"><p>Firmware internal key. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a1e90420b31bb7db98a00ea5068d10904"></a>VS_KEY_AUTH_INTERNAL&#160;</td><td class="fielddoc"><p>Authentification internal key. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a0dc6101e192b2a5b7e5ef8495bf11205"></a>VS_KEY_CLOUD&#160;</td><td class="fielddoc"><p>Cloud key. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9afeaa2ec5acaf4637c69a3c9b8f7d2744"></a>VS_KEY_UNSUPPORTED&#160;</td><td class="fielddoc"><p>Unsupported key. </p>
 </td></tr>

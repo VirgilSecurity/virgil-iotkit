@@ -66,8 +66,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">trust_list.h File Reference</div>  </div>
@@ -86,26 +84,6 @@ $(function() {
 </div>
 <p><a href="trust__list_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__tl__element__info__t.html">vs_tl_element_info_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust List element description.  <a href="structvs__tl__element__info__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:ab384d907a71a3e5d261663d90e4e62b4"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4">vs_tl_element_e</a> { <br />
-&#160;&#160;<a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4a6244e28692358df3b4d1ffba010b90ae">VS_TL_ELEMENT_MIN</a> = 0, 
-<a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4a3ca4ee89a756bd112d344bc49c894127">VS_TL_ELEMENT_TLH</a>, 
-<a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4ab5371b49bea65e5d01b36f74123afb3a">VS_TL_ELEMENT_TLC</a>, 
-<a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4ad49e08f1668c10c47e8f1ea7429a2e8d">VS_TL_ELEMENT_TLF</a>, 
-<br />
-&#160;&#160;<a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4a2c5d1953e415ca1924a9788be9ed9e21">VS_TL_ELEMENT_MAX</a>
-<br />
- }</td></tr>
-<tr class="memdesc:ab384d907a71a3e5d261663d90e4e62b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust List element type.  <a href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4">More...</a><br /></td></tr>
-<tr class="separator:ab384d907a71a3e5d261663d90e4e62b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a09d075a86829ff70d5d56f363e7a7cb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#a09d075a86829ff70d5d56f363e7a7cb6">vs_tl_init</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *op_ctx, <a class="el" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm)</td></tr>
@@ -134,35 +112,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Trust List. </p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ab384d907a71a3e5d261663d90e4e62b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab384d907a71a3e5d261663d90e4e62b4">&#9670;&nbsp;</a></span>vs_tl_element_e</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="trust__list_8h.html#ab384d907a71a3e5d261663d90e4e62b4">vs_tl_element_e</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Trust List element type. </p>
-<p>Used for save Trust List header, data or footer by <a class="el" href="trust__list_8h.html#a42f58cba3fa4298f7e6856ac689b7ddb" title="Trust List element saving.">vs_tl_save_part</a> call or load by <a class="el" href="trust__list_8h.html#a7abc0f3a88c4c9d509953e46f7a74dbb" title="Trust List element loading.">vs_tl_load_part</a> call </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab384d907a71a3e5d261663d90e4e62b4a6244e28692358df3b4d1ffba010b90ae"></a>VS_TL_ELEMENT_MIN&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab384d907a71a3e5d261663d90e4e62b4a3ca4ee89a756bd112d344bc49c894127"></a>VS_TL_ELEMENT_TLH&#160;</td><td class="fielddoc"><p>Trust List header. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ab384d907a71a3e5d261663d90e4e62b4ab5371b49bea65e5d01b36f74123afb3a"></a>VS_TL_ELEMENT_TLC&#160;</td><td class="fielddoc"><p>Trust List data chunk. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ab384d907a71a3e5d261663d90e4e62b4ad49e08f1668c10c47e8f1ea7429a2e8d"></a>VS_TL_ELEMENT_TLF&#160;</td><td class="fielddoc"><p>Trust List footer. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ab384d907a71a3e5d261663d90e4e62b4a2c5d1953e415ca1924a9788be9ed9e21"></a>VS_TL_ELEMENT_MAX&#160;</td><td class="fielddoc"></td></tr>
-</table>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="a31a3355d1cbec3d424133b7d4d716c10"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a31a3355d1cbec3d424133b7d4d716c10">&#9670;&nbsp;</a></span>vs_tl_deinit()</h2>
 

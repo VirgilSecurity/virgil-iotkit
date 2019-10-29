@@ -81,9 +81,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a941ce14b2cb29846f236b4e127dfab84"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__pubkey__t.html#a941ce14b2cb29846f236b4e127dfab84">ec_type</a></td></tr>
 <tr class="memdesc:a941ce14b2cb29846f236b4e127dfab84"><td class="mdescLeft">&#160;</td><td class="mdescRight">vs_hsm_keypair_type_e  <a href="structvs__pubkey__t.html#a941ce14b2cb29846f236b4e127dfab84">More...</a><br /></td></tr>
 <tr class="separator:a941ce14b2cb29846f236b4e127dfab84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab995a0dd97d0336cdc8b0ac849e84ca9"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__pubkey__t.html#ab995a0dd97d0336cdc8b0ac849e84ca9">pubkey</a> []</td></tr>
-<tr class="memdesc:ab995a0dd97d0336cdc8b0ac849e84ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">public key, size of element depends on <em>ec_type</em>  <a href="structvs__pubkey__t.html#ab995a0dd97d0336cdc8b0ac849e84ca9">More...</a><br /></td></tr>
-<tr class="separator:ab995a0dd97d0336cdc8b0ac849e84ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa355452c8f26280f23ea34987cb9c6"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__pubkey__t.html#a2aa355452c8f26280f23ea34987cb9c6">meta_data_sz</a></td></tr>
+<tr class="memdesc:a2aa355452c8f26280f23ea34987cb9c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Meta data size.  <a href="structvs__pubkey__t.html#a2aa355452c8f26280f23ea34987cb9c6">More...</a><br /></td></tr>
+<tr class="separator:a2aa355452c8f26280f23ea34987cb9c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5488fcd30f76f4efb78df78b2984aed"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__pubkey__t.html#ae5488fcd30f76f4efb78df78b2984aed">meta_and_pubkey</a> []</td></tr>
+<tr class="memdesc:ae5488fcd30f76f4efb78df78b2984aed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Meta data and public key, size of element depends on <em>ec_type</em>.  <a href="structvs__pubkey__t.html#ae5488fcd30f76f4efb78df78b2984aed">More...</a><br /></td></tr>
+<tr class="separator:ae5488fcd30f76f4efb78df78b2984aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Public key type. </p>
@@ -120,19 +123,35 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a id="ab995a0dd97d0336cdc8b0ac849e84ca9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab995a0dd97d0336cdc8b0ac849e84ca9">&#9670;&nbsp;</a></span>pubkey</h2>
+<a id="ae5488fcd30f76f4efb78df78b2984aed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5488fcd30f76f4efb78df78b2984aed">&#9670;&nbsp;</a></span>meta_and_pubkey</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t vs_pubkey_t::pubkey[]</td>
+          <td class="memname">uint8_t vs_pubkey_t::meta_and_pubkey[]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>public key, size of element depends on <em>ec_type</em> </p>
+<p>Meta data and public key, size of element depends on <em>ec_type</em>. </p>
+
+</div>
+</div>
+<a id="a2aa355452c8f26280f23ea34987cb9c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa355452c8f26280f23ea34987cb9c6">&#9670;&nbsp;</a></span>meta_data_sz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t vs_pubkey_t::meta_data_sz</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Meta data size. </p>
 
 </div>
 </div>

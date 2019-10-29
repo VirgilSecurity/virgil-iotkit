@@ -9,11 +9,8 @@ var searchData=
   ['describe_5fversion_46',['describe_version',['../structvs__update__interface__t.html#aa87faad7d97ad0b7a457b5af60791ced',1,'vs_update_interface_t']]],
   ['descriptor_47',['descriptor',['../structvs__firmware__footer__t.html#ad1dab4d5c1502d09b33e87333e0719eb',1,'vs_firmware_footer_t::descriptor()'],['../structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516',1,'vs_firmware_header_t::descriptor()']]],
   ['dest_48',['dest',['../structvs__ethernet__header__t.html#aa8163144ea0a01dbbff84909db3321e2',1,'vs_ethernet_header_t']]],
-  ['dev_5fbuild_49',['dev_build',['../structvs__file__version__t.html#ae3c62b851c9082c68d2b984cfc468940',1,'vs_file_version_t']]],
-  ['dev_5fmilestone_50',['dev_milestone',['../structvs__file__version__t.html#a2d50f0cdf1cba01b6d891bcb74e3fb32',1,'vs_file_version_t']]],
-  ['device_5froles_51',['device_roles',['../structvs__sdmp__info__device__t.html#a4e248a2cf8e5f824039c464b1bf8a65c',1,'vs_sdmp_info_device_t::device_roles()'],['../structvs__info__general__t.html#ab8d07a3814aaef98fd4f88cd4fa8dd57',1,'vs_info_general_t::device_roles()'],['../structvs__sdmp__prvs__dnid__element__t.html#a61670f7afdfac5e540fbb91bb72750e1',1,'vs_sdmp_prvs_dnid_element_t::device_roles()']]],
-  ['device_5fstart_5fcb_52',['device_start_cb',['../structvs__sdmp__info__callbacks__t.html#a59129b416c52b5242ad96752a690a1b1',1,'vs_sdmp_info_callbacks_t']]],
-  ['device_5ftype_53',['device_type',['../structvs__info__general__t.html#ab679cd8b7104772116dd4c59a1677202',1,'vs_info_general_t::device_type()'],['../structvs__sdmp__prvs__devi__t.html#a680bb8bdb43af729b80cb45990f71bae',1,'vs_sdmp_prvs_devi_t::device_type()'],['../structvs__file__info__t.html#a1877af345952fdfe75519c3089aab45d',1,'vs_file_info_t::device_type()']]],
-  ['dnid_5flist_5fsz_5fmax_54',['DNID_LIST_SZ_MAX',['../prvs-structs_8h.html#a04ebe79e0672de5e7ac6fef266389bfd',1,'prvs-structs.h']]],
-  ['dummy_55',['dummy',['../structvs__file__version__t.html#a3998d4632898ea535c1efdf0f1605b6a',1,'vs_file_version_t']]]
+  ['device_5froles_49',['device_roles',['../structvs__sdmp__info__device__t.html#a4e248a2cf8e5f824039c464b1bf8a65c',1,'vs_sdmp_info_device_t::device_roles()'],['../structvs__info__general__t.html#ab8d07a3814aaef98fd4f88cd4fa8dd57',1,'vs_info_general_t::device_roles()'],['../structvs__sdmp__prvs__dnid__element__t.html#a61670f7afdfac5e540fbb91bb72750e1',1,'vs_sdmp_prvs_dnid_element_t::device_roles()']]],
+  ['device_5fstart_5fcb_50',['device_start_cb',['../structvs__sdmp__info__callbacks__t.html#a59129b416c52b5242ad96752a690a1b1',1,'vs_sdmp_info_callbacks_t']]],
+  ['device_5ftype_51',['device_type',['../structvs__info__general__t.html#ab679cd8b7104772116dd4c59a1677202',1,'vs_info_general_t::device_type()'],['../structvs__sdmp__prvs__devi__t.html#a680bb8bdb43af729b80cb45990f71bae',1,'vs_sdmp_prvs_devi_t::device_type()'],['../structvs__file__info__t.html#a1877af345952fdfe75519c3089aab45d',1,'vs_file_info_t::device_type()']]],
+  ['dnid_5flist_5fsz_5fmax_52',['DNID_LIST_SZ_MAX',['../prvs-structs_8h.html#a04ebe79e0672de5e7ac6fef266389bfd',1,'prvs-structs.h']]]
 ];

@@ -108,22 +108,49 @@ $(function() {
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="hsm_8h.html">virgil/iot/hsm/hsm.h</a>&gt;</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<a class="code" href="hsm__helpers_8h.html#abd778b0a46c1e94d1fd6bdab3cd55886">vs_hsm_get_pubkey_len</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<a class="code" href="hsm__helpers_8h.html#abf6d1796e4fb16ad79d5d45d68a11a03">vs_hsm_get_signature_len</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type);</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#ac5210b0545f1f9dfec2c33a437828079">   45</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_SECP192_LEN (49)</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#afdc10b40e11819aeb27605f962d4af20">   46</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_SECP224_LEN (57)</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#acf525f46334b08d0372c3bceeb9a269f">   47</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_SECP256_LEN (65)</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#acdf78007d03f11e2bc52c1e767b1cf64">   48</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_SECP384_LEN (97)</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a30af65b2539eec0e54f09c7977b1f268">   49</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_SECP521_LEN (133)</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#ab5604817aaca34f486654063a414bb96">   50</a></span>&#160;<span class="preprocessor">#define VS_PUBKEY_25519_LEN (32)</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#if USE_RSA</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#define VS_PUBKEY_RSA2048_LEN (256)</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#af0de01b0f676623c19bfbc986087a7fd">   56</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_SECP192_LEN (48)</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a78a303d84a4acd15efc13e8aadfe5e06">   57</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_SECP224_LEN (56)</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a00a8b44eeba592a897c8b9e4d99b3c3c">   58</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_SECP256_LEN (64)</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#ae50484db06502b801cb6248258d25f2c">   59</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_SECP384_LEN (96)</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a60f7683fdea8c5ef0aa2fe2aa86108d0">   60</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_SECP521_LEN (132)</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a0c3f2f7c88f7fe7632619e2ec9de50f4">   61</a></span>&#160;<span class="preprocessor">#define VS_SIGNATURE_25519_LEN (64)</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<a class="code" href="hsm__helpers_8h.html#a52e6c332591cbe77cf3f26bcccb34399">vs_hsm_get_hash_len</a>(<a class="code" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a> hash_type);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#if USE_RSA</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#define VS_SIGNATURE_RSA2048_LEN (256)</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#aadd38e1c21e41b6067fdc72aef893565">   67</a></span>&#160;<span class="preprocessor">#define VS_HASH_SHA256_LEN (32)</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#a9b549caa6a3becec46a03feb32111cd5">   68</a></span>&#160;<span class="preprocessor">#define VS_HASH_SHA384_LEN (48)</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="hsm__helpers_8h.html#ac728506dc8003b68d7cebaf2cd439d23">   69</a></span>&#160;<span class="preprocessor">#define VS_HASH_SHA512_LEN (64)</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<a class="code" href="hsm__helpers_8h.html#a9db395c2456a8fc1d99c4a9bf4952462">vs_hsm_keypair_type_descr</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> type);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<a class="code" href="hsm__helpers_8h.html#abd778b0a46c1e94d1fd6bdab3cd55886">vs_hsm_get_pubkey_len</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<a class="code" href="hsm__helpers_8h.html#a7979cf410aa05b4e024a7e5f154f36ca">vs_hsm_hash_type_descr</a>(<a class="code" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a> type);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<a class="code" href="hsm__helpers_8h.html#abf6d1796e4fb16ad79d5d45d68a11a03">vs_hsm_get_signature_len</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type);</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#endif // VS_HSM_HELPERS_H_</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<a class="code" href="hsm__helpers_8h.html#a52e6c332591cbe77cf3f26bcccb34399">vs_hsm_get_hash_len</a>(<a class="code" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a> hash_type);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<a class="code" href="hsm__helpers_8h.html#a9db395c2456a8fc1d99c4a9bf4952462">vs_hsm_keypair_type_descr</a>(<a class="code" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> type);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> *</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<a class="code" href="hsm__helpers_8h.html#a7979cf410aa05b4e024a7e5f154f36ca">vs_hsm_hash_type_descr</a>(<a class="code" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a> type);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#endif // VS_HSM_HELPERS_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="ahsm__helpers_8h_html_a7979cf410aa05b4e024a7e5f154f36ca"><div class="ttname"><a href="hsm__helpers_8h.html#a7979cf410aa05b4e024a7e5f154f36ca">vs_hsm_hash_type_descr</a></div><div class="ttdeci">const char * vs_hsm_hash_type_descr(vs_hsm_hash_type_e type)</div><div class="ttdoc">Get hash type description.</div></div>
 <div class="ttc" id="ahsm_8h_html_aca816b5b4692543dc4846286f5a64aa4"><div class="ttname"><a href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a></div><div class="ttdeci">vs_hsm_hash_type_e</div><div class="ttdoc">Hash types.</div><div class="ttdef"><b>Definition:</b> hsm.h:74</div></div>
