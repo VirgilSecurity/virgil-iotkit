@@ -172,7 +172,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     // TODO: Need to support all hash types
-    uint8_t hash[32];
+    uint8_t hash[VS_HASH_SHA256_LEN];
 
     tl_ctx->ready = true;
     if (VS_CODE_OK != vs_tl_header_load(tl_ctx->storage.storage_type, &(tl_ctx->header))) {
@@ -353,12 +353,14 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
     }
 
     if (_verify_tl(&_tl_static_ctx)) {
-        if (VS_CODE_OK == _copy_tl_file(&_tl_dynamic_ctx, &_tl_static_ctx)) {
+        vs_status_e ret_code = _copy_tl_file(&_tl_dynamic_ctx, &_tl_static_ctx);
+        if (VS_CODE_OK == ret_code) {
             return _verify_tl(&_tl_dynamic_ctx) ? VS_CODE_OK : VS_CODE_ERR_VERIFY;
         }
+        return ret_code;
     }
 
-    return VS_CODE_ERR_VERIFY;
+    return VS_CODE_ERR_NOINIT;
 }
 
 /******************************************************************************/
@@ -440,6 +442,7 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
     CHECK_RET(tl_ctx->keys_qty.keys_amount == tl_ctx->keys_qty.keys_count,
               VS_CODE_ERR_INCORRECT_PARAMETER,
               "Keys amount is not equal");
+    CHECK_RET(footer_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLF, 0, file_id);
@@ -518,10 +521,11 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     CHECK_RET(key_len > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Unsupported ec_type");
     CHECK_RET(
             element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
+    CHECK_RET(key_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
-    key_len += sizeof(vs_pubkey_dated_t);
+    key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element->pubkey.meta_data_sz);
 
-    CHECK_RET(key_len == key_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid length key to save");
+    CHECK_RET(key_len == key_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     if (tl_ctx->keys_qty.keys_count >= tl_ctx->keys_qty.keys_amount) {
         tl_ctx->keys_qty.keys_count = tl_ctx->keys_qty.keys_amount;
@@ -567,7 +571,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(key_len > 0, VS_CODE_ERR_FILE_READ, "Unsupported ec_type");
 
     // Full size of key stuff is raw key size and meta info
-    key_len += sizeof(vs_pubkey_dated_t);
+    key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element.pubkey.meta_data_sz);
 
     CHECK_RET(key_len <= buf_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Out buffer too small");
 

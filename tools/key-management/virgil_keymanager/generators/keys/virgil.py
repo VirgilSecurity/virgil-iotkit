@@ -27,7 +27,7 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
         self.__hash_type = hash_type
         self.__key_type = key_type
         self.__ec_type = ec_type
-        self.__public_key = None if not private_key else b64_to_bytes(public_key)
+        self.__public_key = None if not public_key else b64_to_bytes(public_key)
         self.__private_key = None if not private_key else b64_to_bytes(private_key)
         self.__key_id = None
         self.__signature = None
@@ -40,7 +40,8 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
                  signer_key: Optional[KeyGeneratorInterface]=None,
                  private_key_base64: Optional[str]=None,
                  start_date: Optional[int]=0,
-                 expire_date: Optional[int]=0):
+                 expire_date: Optional[int]=0,
+                 meta_data: Optional[bytes]=bytes()):
         def make_signature():
             byte_buffer = io.BytesIO()
 
@@ -49,6 +50,8 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             byte_buffer.write(expire_date.to_bytes(4, byteorder='big', signed=False))
             byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(len(meta_data).to_bytes(2, byteorder='big', signed=False))
+            byte_buffer.write(meta_data)
             byte_buffer.write(b64_to_bytes(self.public_key))
 
             bytes_to_sign = byte_buffer.getvalue()
@@ -57,7 +60,9 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
         # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
-            self.__public_key = self._crypto.extract_public_key(self.__private_key).value[-65:]
+            virgil_priv_key = self._crypto.import_private_key(self.__private_key)
+            virgil_pubkey = self._crypto.extract_public_key(virgil_priv_key)
+            self.__public_key = VirgilKeyPair.publicKeyToDER(virgil_pubkey.raw_key)[-65:]
 
         if self.__private_key is None:
             virgil_key_pair = VirgilKeyPair.generate(self.ec_type)

@@ -10,19 +10,6 @@
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 
-typedef enum {
-    VS_TL_ELEMENT_MIN = 0,
-    VS_TL_ELEMENT_TLH,
-    VS_TL_ELEMENT_TLC,
-    VS_TL_ELEMENT_TLF,
-    VS_TL_ELEMENT_MAX,
-} vs_tl_element_e;
-
-typedef struct vs_tl_element_info_s {
-    vs_tl_element_e id;
-    size_t index;
-} vs_tl_element_info_t;
-
 vs_status_e
 vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
 
