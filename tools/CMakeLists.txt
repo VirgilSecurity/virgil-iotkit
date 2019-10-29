@@ -62,4 +62,4 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-sdmpd)
 #
 #   SDMP convert function generator
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/sdmp-codgen)
+#add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/sdmp-codgen)
