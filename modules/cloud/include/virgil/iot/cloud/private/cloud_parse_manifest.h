@@ -40,24 +40,25 @@
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
-#define MANUFACTURE_ID_STR_LEN (32 + 1)
-#define DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
-
+#define VS_MANUFACTURE_ID_STR_LEN (32 + 1)
+#define VS_DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
+#define VS_VERSION_STR_LEN (16 + 1)
+#define VS_TIMESTAMP_STR_LEN (8+1)
 typedef union {
     uint8_t id[VS_DEVICE_TYPE_SIZE];
-    char str[DEV_TYPE_ID_STR_LEN];
+    char str[VS_DEV_TYPE_ID_STR_LEN];
 } vs_readable_type_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer_id[MANUFACTURE_ID_STR_LEN];
+    uint8_t manufacturer_id[VS_MANUFACTURE_ID_STR_LEN];
     vs_readable_type_t device_type;
-    char version[16];
-    char timestamp[9];
+    char version[VS_VERSION_STR_LEN];
+    char timestamp[VS_TIMESTAMP_STR_LEN];
     char fw_file_url[VS_UPD_URL_STR_SIZE];
 } vs_firmware_manifest_entry_t;
 
 typedef struct {
-    int version;
+    char version[VS_VERSION_STR_LEN];
     int type;
 } vs_tl_info_t;
 
@@ -81,7 +82,7 @@ typedef struct {
 #define VS_TL_TYPE_FIELD "type"
 
 vs_status_e
-vs_cloud_is_new_tl_version_available(vs_tl_info_t *tl_info);
+vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version);
 
 vs_status_e
 vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc);

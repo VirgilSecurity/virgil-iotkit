@@ -37,6 +37,33 @@
 
 #include <virgil/iot/hsm/hsm.h>
 
+#define VS_PUBKEY_SECP192_LEN (49)
+#define VS_PUBKEY_SECP224_LEN (57)
+#define VS_PUBKEY_SECP256_LEN (65)
+#define VS_PUBKEY_SECP384_LEN (97)
+#define VS_PUBKEY_SECP521_LEN (133)
+#define VS_PUBKEY_25519_LEN (32)
+
+#if USE_RSA
+#define VS_PUBKEY_RSA2048_LEN (256)
+#endif
+
+#define VS_SIGNATURE_SECP192_LEN (48)
+#define VS_SIGNATURE_SECP224_LEN (56)
+#define VS_SIGNATURE_SECP256_LEN (64)
+#define VS_SIGNATURE_SECP384_LEN (96)
+#define VS_SIGNATURE_SECP521_LEN (132)
+#define VS_SIGNATURE_25519_LEN (64)
+
+#if USE_RSA
+#define VS_SIGNATURE_RSA2048_LEN (256)
+#endif
+
+#define VS_HASH_SHA256_LEN (32)
+#define VS_HASH_SHA384_LEN (48)
+#define VS_HASH_SHA512_LEN (64)
+
+
 int
 vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
 int

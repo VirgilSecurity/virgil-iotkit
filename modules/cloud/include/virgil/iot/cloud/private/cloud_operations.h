@@ -67,7 +67,7 @@ vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
 #endif
 
 vs_status_e
-vs_cloud_fetch_message_bin_credentials(char *out_answer, size_t *in_out_answer_len);
+vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len);
 
 vs_status_e
 vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl);

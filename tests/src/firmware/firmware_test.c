@@ -52,12 +52,10 @@ static uint8_t *_fw_footer = NULL;
 static vs_firmware_descriptor_t _test_descriptor = {
         .info.manufacture_id = TEST_MANUFACTURE_ID,
         .info.device_type = TEST_DEVICE_TYPE,
-        .info.version.dummy = {0, 0, 0, 0},
         .info.version.major = 0,
         .info.version.minor = 1,
         .info.version.patch = 3,
-        .info.version.dev_milestone = 'm',
-        .info.version.dev_build = 0,
+        .info.version.build = 0,
         .info.version.timestamp = 0,
         .padding = 0,
         .chunk_size = 256,
@@ -209,7 +207,7 @@ _test_firmware_install(vs_hsm_impl_t *hsm_impl) {
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&new_desc), "Error install firmware");
 
     new_desc.info.version.major++;
-    new_desc.info.version.dev_build++;
+    new_desc.info.version.build++;
     new_desc.padding = _test_descriptor.padding;
     new_desc.chunk_size = _test_descriptor.chunk_size;
     new_desc.firmware_length = _test_descriptor.firmware_length;

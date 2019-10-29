@@ -40,11 +40,19 @@ import (
 	"fmt"
 )
 
+type Go_file_version_t struct {
+    Major           uint8
+    Minor           uint8
+    Patch           uint8
+    Build           uint32
+    Timestamp       uint32
+}
+
 type Go_trust_list_header_t struct {
-	WholeTLSize      uint32
-	Version          uint16
-	PubKeysCount     uint16
-	SignaturesCount  uint8
+	WholeTLSize         uint32
+	Version				Go_file_version_t
+	PubKeysCount        uint16
+	SignaturesCount     uint8
 }
 
 type Go_trust_list_footer_t struct {

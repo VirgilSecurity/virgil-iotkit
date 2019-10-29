@@ -75,6 +75,9 @@ set(CMAKE_CGO_LDFLAGS
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
         )
 
+message("CMAKE_CGO_CFLAGS = ${CMAKE_CGO_CFLAGS}")
+message("CMAKE_CGO_LDFLAGS = ${CMAKE_CGO_LDFLAGS}")
+
 #
 # Workaround target
 # Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls

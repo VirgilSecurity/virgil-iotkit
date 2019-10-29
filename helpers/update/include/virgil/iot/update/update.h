@@ -41,11 +41,6 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
 
-#define FILE_VERSION_INFO_SZ (64) // vs_update_file_version_t.version field size
-
-#define UPDATE_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((ret_code = (OPERATION)) == VS_CODE_OK, ret_code, MESSAGE, ##__VA_ARGS__)
-
 enum vs_update_file_type_id_t {VS_UPDATE_FIRMWARE, VS_UPDATE_TRUST_LIST, USER = 256};
 
 typedef struct __attribute__((__packed__)) {

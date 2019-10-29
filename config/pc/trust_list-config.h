@@ -71,6 +71,6 @@
 #define VS_TL_SIGNER_TYPE_LIST {                                                                                       \
     VS_KEY_AUTH,                                                                                                    \
     VS_KEY_TRUSTLIST                                                                                                \
-};
+}
 
 #endif // VS_IOT_SDK_TL_CONFIG_H
