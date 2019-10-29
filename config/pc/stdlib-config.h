@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file stdlib-config.h
+ * \brief Standart Library calls configuration
+ */
 #ifndef VS_IOT_SDK_STDLIB_CONFIG_H
 #define VS_IOT_SDK_STDLIB_CONFIG_H
 
@@ -43,20 +46,49 @@
 
 #include "global-hal.h"
 
+/** assert call */
 #define VS_IOT_ASSERT    assert
+
+/** calloc call */
 #define VS_IOT_CALLOC    calloc
+
+/** free call */
 #define VS_IOT_FREE      free
+
+/** malloc call */
 #define VS_IOT_MALLOC    malloc
+
+/** memcmp call */
 #define VS_IOT_MEMCMP    memcmp
+
+/** memcpy call */
 #define VS_IOT_MEMCPY    memcpy
+
+/** memset call */
 #define VS_IOT_MEMSET    memset
+
+/** memmove call */
 #define VS_IOT_MEMMOVE   memmove
+
+/** snprintf call */
 #define VS_IOT_SNPRINTF  snprintf
+
+/** sprintf call */
 #define VS_IOT_SPRINTF   sprintf
+
+/** strcpy call */
 #define VS_IOT_STRCPY    strcpy
+
+/** strstr call */
 #define VS_IOT_STRSTR    strstr
+
+/** strlen call */
 #define VS_IOT_STRLEN    strlen
+
+/** vsnprintf call */
 #define VS_IOT_VSNPRINTF vsnprintf
+
+/** conversion from time_t to ASCIIZ */
 #define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))
 
 

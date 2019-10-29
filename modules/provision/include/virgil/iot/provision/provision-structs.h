@@ -32,6 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file provision-structs.h
+ * \brief Provision interface structures
+ */
+
 #ifndef VS_IOT_PROVISION_STRUCTS_H
 #define VS_IOT_PROVISION_STRUCTS_H
 
@@ -56,14 +60,19 @@
 #define VS_DEVICE_MANUFACTURE_ID_SIZE (16)
 #define VS_DEVICE_TYPE_SIZE (4)
 
+/** "Manufacture ID" type */
 typedef uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE];
+/** "Device type" type */
 typedef uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE];
+/** "Device serial number" type */
 typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
+/** PRVS SDMP service code */
 typedef enum { VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS') } vs_prvs_t;
 
+/** Provision operations */
 typedef enum {
     VS_PRVS_DNID = HTONL_IN_COMPILE_TIME('DNID'), /**< Discover Not Initialized Devices */
     VS_PRVS_SGNP = HTONL_IN_COMPILE_TIME('SGNP'), /**< Signature of own public key (by private key VS_PRVS_PBDM)  */
@@ -84,6 +93,7 @@ typedef enum {
 } vs_sdmp_prvs_element_e;
 #pragma GCC diagnostic pop
 
+/** Element ID */
 typedef enum {
     VS_PROVISION_SGNP = VS_PRVS_SGNP,
     VS_PROVISION_PBR1 = VS_PRVS_PBR1,
@@ -96,38 +106,44 @@ typedef enum {
     VS_PROVISION_PBF2 = VS_PRVS_PBF2
 } vs_provision_element_id_e;
 
+// TODO : are key description correct???
+/** Key type */
 typedef enum {
-    VS_KEY_RECOVERY = 0,
-    VS_KEY_AUTH,
-    VS_KEY_TRUSTLIST,
-    VS_KEY_FIRMWARE,
-    VS_KEY_FACTORY,
-    VS_KEY_IOT_DEVICE,
-    VS_KEY_USER_DEVICE,
-    VS_KEY_FIRMWARE_INTERNAL,
-    VS_KEY_AUTH_INTERNAL,
-    VS_KEY_CLOUD,
-    VS_KEY_UNSUPPORTED
+    VS_KEY_RECOVERY = 0, /**< Recovery key */
+    VS_KEY_AUTH, /**< Authentification key */
+    VS_KEY_TRUSTLIST, /**< Trust List key*/
+    VS_KEY_FIRMWARE, /**< Firmware key */
+    VS_KEY_FACTORY, /**< Factory key */
+    VS_KEY_IOT_DEVICE, /**< Key of IoT device */
+    VS_KEY_USER_DEVICE, /**< Key ofr user device*/
+    VS_KEY_FIRMWARE_INTERNAL, /**< Firmware internal key */
+    VS_KEY_AUTH_INTERNAL, /**< Authentification internal key */
+    VS_KEY_CLOUD, /**< Cloud key */
+    VS_KEY_UNSUPPORTED /**< Unsupported key */
 } vs_key_type_e;
 
+/** Signature type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t signer_type;       // vs_key_type_e
-    uint8_t ec_type;           // vs_hsm_keypair_type_e
-    uint8_t hash_type;         // vs_hsm_hash_type_e
-    uint8_t raw_sign_pubkey[]; // An array with raw signature and public key, size of elements depends on @ec_type
+    uint8_t signer_type;       /**< #vs_key_type_e */
+    uint8_t ec_type;           /**< #vs_hsm_keypair_type_e */
+    uint8_t hash_type;         /**< #vs_hsm_hash_type_e */
+    uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type */
 } vs_sign_t;
 
+/** Public key type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t key_type; // vs_key_type_e
-    uint8_t ec_type;  // vs_hsm_keypair_type_e
-    uint16_t meta_data_sz;
-    uint8_t meta_and_pubkey[]; // meta data and public key, size of element depends on @ec_type
+    uint8_t key_type; /**< vs_key_type_e */
+    uint8_t ec_type;  /**< vs_hsm_keypair_type_e */
+    uint16_t meta_data_sz; /**< Meta data size */
+    uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;
 
+// TODO : dates - in which units??? time_t ??? Or since 1 Jan 2015 ???
+/** Public key with date information */
 typedef struct __attribute__((__packed__)) {
-    uint32_t start_date;
-    uint32_t expire_date;
-    vs_pubkey_t pubkey;
+    uint32_t start_date; /**< Start date */
+    uint32_t expire_date; /**< Expiration date */
+    vs_pubkey_t pubkey; /**< Public key */
 } vs_pubkey_dated_t;
 
 typedef struct __attribute__((__packed__)) {
