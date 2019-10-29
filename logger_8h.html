@@ -150,7 +150,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fdaa7e2b4c9744ec847c504fa1b7aac390b">VS_LOGLEV_DEBUG</a> = 0xFD
 <br />
  }</td></tr>
-<tr class="memdesc:a97770dba68bf891ed7f6f2e9191ea6fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logging level.  <a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">More...</a><br /></td></tr>
+<tr class="memdesc:a97770dba68bf891ed7f6f2e9191ea6fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logging levels.  <a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">More...</a><br /></td></tr>
 <tr class="separator:a97770dba68bf891ed7f6f2e9191ea6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -179,7 +179,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Logger implementation. </p>
-<p>Logger allows to log messages to output stream that can be file or screen. User can enable different logging levels like debug, info, error etc. (see <a class="el" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd" title="Logging level.">vs_log_level_t</a>).</p>
+<p>Logger allows to log messages to output stream that can be file or screen. User can enable different logging levels like debug, info, error etc. (see <a class="el" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd" title="Logging levels.">vs_log_level_t</a>).</p>
 <h1><a class="anchor" id="logger_usage"></a>
 Logger Usage</h1>
 <p>User has to provide logger output function <a class="el" href="logger-hal_8h.html#ae24001779e98e808826579857ea04877" title="Function signature for unterminated string output.">vs_logger_output_hal</a> Client side downloads new file versions and checks them. <a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee" title="Got new file callback.">vs_fldt_got_file</a> function is called after file upgrading. In most case it used to output new file version information and gateway address. To successfully file downloading process <a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a> must be provided for each file type. You can see function <a class="el" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087" title="Return update file type.">vs_firmware_update_file_type</a> for Firmware example and <a class="el" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19" title="Trust List file type.">vs_tl_update_file_type</a> for Trust List one.</p>
@@ -663,7 +663,7 @@ Logger Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Logging level. </p>
+<p>Logging levels. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a97770dba68bf891ed7f6f2e9191ea6fda3e4a9fe7459d31820275752d98d840d9"></a>VS_LOGLEV_UNKNOWN&#160;</td><td class="fielddoc"><p>Errorneous logging level. </p>
 </td></tr>
