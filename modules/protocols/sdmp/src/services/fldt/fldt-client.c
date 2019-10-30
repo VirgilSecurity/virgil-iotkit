@@ -44,7 +44,7 @@
 #include <global-hal.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
-#define DEBUG_CHUNKS (1)
+#define DEBUG_CHUNKS (0)
 
 static vs_sdmp_service_t _fldt_client = {0};
 
@@ -656,6 +656,8 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
 
     file_type_request.type = *file_type;
+
+    vs_fldt_gfti_fileinfo_request_t_encode(&file_type_request);
     STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request),
                      "Unable to ask current file information");
 

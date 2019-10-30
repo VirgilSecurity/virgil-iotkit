@@ -43,7 +43,7 @@
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>
 
-#define DEBUG_CHUNKS (1)
+#define DEBUG_CHUNKS (0)
 
 static vs_sdmp_service_t _fldt_server = {0};
 
@@ -191,7 +191,7 @@ vs_fldt_GFTI_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    const vs_fldt_gfti_fileinfo_request_t *file_info_request = (const vs_fldt_gfti_fileinfo_request_t *)request;
+    vs_fldt_gfti_fileinfo_request_t *file_info_request = (vs_fldt_gfti_fileinfo_request_t *)request;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info;
     char file_descr[FLDT_FILEVER_BUF];
@@ -211,6 +211,7 @@ vs_fldt_GFTI_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must be of vs_fldt_file_info_t type");
 
+    vs_fldt_gfti_fileinfo_request_t_decode(file_info_request);
     file_type = &file_info_request->type;
     file_type_info = _get_mapping_elem(file_type);
 
