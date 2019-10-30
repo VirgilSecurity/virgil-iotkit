@@ -31,6 +31,16 @@ IoT SDK connects IoT devices to Virgil IoT Security PaaS. The IoT Device SDK hel
 
 
 ## SDK Modules
+Virgil IoT SDK is divided into the following modules:
+	
+- **Cloud**. Contains...
+- **Crypto**. Contains....	
+- **Firmware**. Contains...
+- **Logger**. Contains..
+- **Protocols**. Contains...
+- **Provision**. Contains...
+- **Secbox**. Contains..
+- **Tests**???????
 
 
 ## Installation
