@@ -13,28 +13,10 @@ endfunction(ExternalGoProject_Add)
 function(add_go_executable NAME)
     file(GLOB GO_SOURCE RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "*.go")
 
-    # Create target to install dependencies and fix Virgil Go Crypto
-    set (VSCRYPT "${GOPATH}/src/gopkg.in/virgilsecurity/virgil-crypto-go.v5")
-    set (VSLIB "${VSCRYPT}/lib/libvirgil_crypto_go.a")
-    set (TMP_SH "${GOTMP}/${NAME}-deps.sh")
-    set (DEPS_SH "${CMAKE_CURRENT_BINARY_DIR}/${NAME}-deps.sh")
-    file (WRITE ${TMP_SH} "cd ${CMAKE_CURRENT_LIST_DIR} && ${CMAKE_Go_COMPILER} get -d ./... && if [ -d ${VSCRYPT} ] && [ ! -f ${VSLIB} ]; then make -C ${VSCRYPT}; fi")
-
-    add_custom_command(
-            OUTPUT ${DEPS_SH}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TMP_SH}" "${DEPS_SH}"
-            COMMAND chmod +x "${DEPS_SH}"
-            )
-
-    add_custom_target(${NAME}-install-deps
-            COMMAND env GOPATH=${GOPATH} ${DEPS_SH}
-            DEPENDS ${DEPS_SH}
-            )
-
     add_custom_target(${NAME}-build ALL
             COMMAND env GOPATH=${GOPATH} CGO_CFLAGS="${CMAKE_CGO_CFLAGS}" CGO_LDFLAGS="${CMAKE_CGO_LDFLAGS}"
                     ${CMAKE_Go_COMPILER} build -o "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" ${CMAKE_GO_FLAGS} ${GO_SOURCE}
-            DEPENDS ${NAME}-install-deps
+            DEPENDS virgil-crypto-go-install-deps
             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
             )
     add_executable(${NAME} IMPORTED GLOBAL)
