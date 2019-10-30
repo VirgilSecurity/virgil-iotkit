@@ -16,7 +16,7 @@ IoT SDK connects IoT devices to Virgil IoT Security PaaS. The IoT Device SDK hel
 - Includes Crypto Library
 - Provides Secure Boot Manager
 - Provides secure storage for key data
-- Works with different hardware modules: IoTelic SP, ATECC508A, ATECC608A, custom, and no-HSM
+- Works with any hardware modules and HSM
 - IoT Device Provision
 - Works with Virgil IoT Security PaaS
 - Provides strong authentication for devices
@@ -40,8 +40,6 @@ Virgil IoT SDK is divided into the following modules:
 - **Protocols**. Contains...
 - **Provision**. Contains...
 - **Secbox**. Contains..
-- **Tests**???????
-
 
 ## Installation
 
