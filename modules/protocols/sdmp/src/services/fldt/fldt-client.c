@@ -33,7 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #if FLDT_CLIENT
-
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
@@ -480,6 +479,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             data_request.offset,
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
+
+        // Normalize byte order
+        vs_fldt_gnfd_data_request_t_encode(&data_request);
 
         CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
