@@ -38,7 +38,8 @@
 
 /******************************************************************************/
 // Converting encode function for ({{$StructDatas.StructName}})
-void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data) {
+void
+{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data) {
 {{- range $DataIndex,$StructItem  := $StructDatas.StructData}}
   {{- if $StructItem.TypeCascade }}
   {{$StructItem.TypeName}}{{ $.EncPref }}(&src_data->{{$StructItem.VarName}});
@@ -54,7 +55,8 @@ void  {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }}
 
 /******************************************************************************/
 // Converting decode function for ({{$StructDatas.StructName}})
-void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data) {
+void
+{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data) {
 {{- range $DataIndex,$StructItem  := $StructDatas.StructData}}
   {{- if $StructItem.TypeCascade }}
   {{$StructItem.TypeName}}{{ $.DecPref }}(&src_data->{{$StructItem.VarName}});
