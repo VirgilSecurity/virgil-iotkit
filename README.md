@@ -4,6 +4,8 @@
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iot-sdk)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iot-sdk/release/LICENSE)
 
+[Introduction](#introduction) | [SDK Features](#sdk-features) | [SDK Modules](#sdk-modules) | [Installation](#installation) | [Docs](#docs) | [Support](#support)
+
 ## Introduction
 
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices. In a few simple steps you can encrypt communication, securely store data, and ensure data integrity.
@@ -26,6 +28,9 @@ IoT SDK connects IoT devices to Virgil IoT Security PaaS. The IoT Device SDK hel
 - Secure Trust List Updating
 - Provides Logger Manager
 - Contains sets of tests for IoT projects
+
+
+## SDK Modules
 
 
 ## Installation
