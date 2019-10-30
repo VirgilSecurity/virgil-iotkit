@@ -6,15 +6,30 @@
 
 ## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices. In a few simple steps you can encrypt communication, securely store data, provide passwordless login, and ensure data integrity.
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices. In a few simple steps you can encrypt communication, securely store data, and ensure data integrity.
 
-The Virgil SDK allows developers to get up and running with Virgil API quickly and add full end-to-end security to their existing digital solutions to become HIPAA and GDPR compliant and more.
+IoT SDK connects IoT devices to Virgil IoT Security PaaS. The IoT Device SDK helps you easily and quickly add end-to-end encryption to your IoT devices at any lifecycle and enables devices securely to connect, authenticate, update firmware or trust chain, and exchange messages using the MQTT, HTTP, or WebSockets protocols.
 
 ## SDK Features
-
+- Includes Crypto Library
+- Provides Secure Boot Manager
+- Provides secure storage for key data
+- Supports different modules: IoTelic SP, ATECC508A, ATECC608A, custom, and no-HSM
+- IoT Device Provision
+- Works with Virgil IoT Security PaaS
+- Provides strong authentication for devices
+- IoT Device Enrollment
+- Possibility to change Network Security Protocols
+- Secure Messaging: cloud-to-device, device-to-device
+- Works with any Message Brokers
+- Secure Firmware Updating
+- Secure Trust List Updating
+- Provides Logger Manager
+- Contains sets of tests for IoT projects
 
 
 ## Installation
+
 ### Requirements
 
 - Install `clang-format`
@@ -24,3 +39,14 @@ The Virgil SDK allows developers to get up and running with Virgil API quickly a
 cd <virgil-iot-sdk>
 git config core.hooksPath git-hooks
 ```
+
+## License
+
+This library is released under the [3-clause BSD License](LICENSE.md).
+
+## Support
+Our developer support team is here to help you. Find more information on our [Help Center](https://help.virgilsecurity.com/).
+
+You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
+
+Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
