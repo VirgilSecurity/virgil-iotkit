@@ -44,6 +44,8 @@
 #include <global-hal.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
+#define DEBUG_CHUNKS (1)
+
 static vs_sdmp_service_t _fldt_client = {0};
 
 #define VS_FLDT_RETRY_MAX (5)
@@ -471,7 +473,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 #if DEBUG_CHUNKS
         VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file %s",
                      data_request.offset,
-                     _filever_descr(file_type_info, &data_request.version, file_descr, sizeof(file_descr)));
+                     _filever_descr(file_type_info, &data_request.type.info.version, file_descr, sizeof(file_descr)));
 #endif
         _update_process_set(&file_type_info->update_ctx,
                             file_type_info->gateway_mac,
