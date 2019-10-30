@@ -8,7 +8,7 @@
 
 ## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices. 
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
 
 Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.
 
@@ -27,7 +27,7 @@ Virgil IoTKit provides set of features for IoT device security and management:
 ## Installation
 
 Linux
-Mac OS 
+Mac OS
 
 
 ### Requirements
@@ -46,7 +46,7 @@ git config core.hooksPath git-hooks
 
 ## License
 
-This library is released under the [3-clause BSD License](LICENSE.md).
+This library is released under the [3-clause BSD License](LICENSE).
 
 ## Support
 Our developer support team is here to help you. Find more information on our [Help Center](https://help.virgilsecurity.com/).
