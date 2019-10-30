@@ -91,4 +91,4 @@ add_custom_target(factory-initializer-mbedtls
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(virgil-iot-factory-initializer tools-hal factory-initializer-mbedtls converters)
+add_go_executable(virgil-iot-factory-initializer tools-hal factory-initializer-mbedtls)
