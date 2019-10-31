@@ -211,7 +211,9 @@ vs_fldt_GFTI_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must be of vs_fldt_file_info_t type");
 
+    // Normalize byte order
     vs_fldt_gfti_fileinfo_request_t_decode(file_info_request);
+
     file_type = &file_info_request->type;
     file_type_info = _get_mapping_elem(file_type);
 
@@ -246,7 +248,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    const vs_fldt_gnfh_header_request_t *header_request = (const vs_fldt_gnfh_header_request_t *)request;
+    vs_fldt_gnfh_header_request_t *header_request = (vs_fldt_gnfh_header_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
@@ -267,6 +269,9 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     CHECK_RET(request_sz == sizeof(*header_request),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfh_header_request_t type");
+
+    // Normalize byte order
+    vs_fldt_gnfh_header_request_t_encode(header_request);
 
     file_ver = &header_request->type.info.version;
     file_type = &header_request->type;
@@ -460,7 +465,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    const vs_fldt_gnff_footer_request_t *footer_request = (const vs_fldt_gnff_footer_request_t *)request;
+    vs_fldt_gnff_footer_request_t *footer_request = (vs_fldt_gnff_footer_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
@@ -482,6 +487,9 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     CHECK_RET(request_sz == sizeof(*footer_request),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnff_footer_request_t type");
+
+    // Normalize byte order
+    vs_fldt_gnff_footer_request_t_decode(footer_request);
 
     file_ver = &footer_request->type.info.version;
     file_type = &footer_request->type;
@@ -641,6 +649,11 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
+
+    if (!is_ack) {
+        VS_LOG_WARNING("Received response packet with is_ack == false");
+        return VS_CODE_COMMAND_NO_RESPONSE;
+    }
 
     switch (element_id) {
 

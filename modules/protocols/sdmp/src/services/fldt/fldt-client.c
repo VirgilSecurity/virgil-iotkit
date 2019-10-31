@@ -85,7 +85,7 @@ static vs_fldt_got_file _got_file_callback = NULL;
 static void
 _update_process_reset(vs_fldt_update_ctx_t *update_ctx) {
     CHECK_NOT_ZERO(update_ctx);
-    memset(update_ctx, 0, sizeof(*update_ctx));
+    VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
 terminate:;
 }
 
@@ -107,7 +107,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
     update_ctx->command = command;
     update_ctx->gateway_mac = mac;
     update_ctx->expected_offset = expected_offset;
-    memcpy(update_ctx->data, request_data, request_data_sz);
+    VS_IOT_MEMCPY(update_ctx->data, request_data, request_data_sz);
     update_ctx->data_sz = request_data_sz;
 
     return VS_CODE_OK;
@@ -262,6 +262,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         VS_LOG_DEBUG("[FLDT] Ask file header for file %s",
                      _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
+        // Normalize byte order
+        vs_fldt_gnfh_header_request_t_encode(&header_request);
+
         _update_process_set(&file_type_info->update_ctx,
                             file_type_info->gateway_mac,
                             VS_FLDT_GNFH,
@@ -317,7 +320,9 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_gfti_fileinfo_response_t *new_file = (const vs_fldt_infv_new_file_request_t *)response;
     vs_status_e ret_code;
 
-    (void)is_ack;
+    // TODO: Need to retry GFTI request.
+    CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GFTI response");
+
     (void)response_sz;
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -341,7 +346,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
 
-    (void)is_ack;
+    CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GNFH response");
 
     // Normalize byte order
     vs_fldt_gnfh_header_response_t_decode(file_header);
@@ -392,15 +397,15 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                  data_request.offset,
                  _filever_descr(file_type_info, &data_request.type.info.version, file_descr, sizeof(file_descr)));
 
+    // Normalize byte order
+    vs_fldt_gnfd_data_request_t_encode(&data_request);
+
     _update_process_set(&file_type_info->update_ctx,
                         file_type_info->gateway_mac,
                         VS_FLDT_GNFD,
                         data_request.offset,
                         (const uint8_t *)&data_request,
                         sizeof(data_request));
-
-    // Normalize byte order
-    vs_fldt_gnfd_data_request_t_encode(&data_request);
 
     CHECK_RET(!vs_sdmp_send_request(NULL,
                                     &file_type_info->gateway_mac,
@@ -426,7 +431,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
 
-    (void)is_ack;
+    CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GNFD response");
 
     // Normalize byte order
     vs_fldt_gnfd_data_response_t_decode(file_data);
@@ -475,15 +480,15 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                      data_request.offset,
                      _filever_descr(file_type_info, &data_request.type.info.version, file_descr, sizeof(file_descr)));
 #endif
+        // Normalize byte order
+        vs_fldt_gnfd_data_request_t_encode(&data_request);
+
         _update_process_set(&file_type_info->update_ctx,
                             file_type_info->gateway_mac,
                             VS_FLDT_GNFD,
                             data_request.offset,
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
-
-        // Normalize byte order
-        vs_fldt_gnfd_data_request_t_encode(&data_request);
 
         CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -500,6 +505,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
         footer_request.type = *file_type;
         footer_request.type.info.version = file_data->type.info.version;
+
+        // Normalize byte order
+        vs_fldt_gnff_footer_request_t_encode(&footer_request);
 
         _update_process_set(&file_type_info->update_ctx,
                             file_type_info->gateway_mac,
@@ -551,7 +559,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     bool successfully_updated;
     vs_status_e ret_code;
 
-    (void)is_ack;
+    CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GNFF response");
 
     // Normalize byte order
     vs_fldt_gnff_footer_response_t_decode(file_footer);
@@ -657,7 +665,9 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 
     file_type_request.type = *file_type;
 
+    // Normalize byte order
     vs_fldt_gfti_fileinfo_request_t_encode(&file_type_request);
+
     STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request),
                      "Unable to ask current file information");
 
@@ -724,6 +734,9 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
+        if (!is_ack) {
+            VS_LOG_WARNING("GINF Received response packet with is_ack == false");
+        }
         return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_FLDT_GFTI:
