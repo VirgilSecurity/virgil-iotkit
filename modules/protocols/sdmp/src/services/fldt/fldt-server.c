@@ -384,11 +384,19 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnfd_data_response_t structure");
 
-    CHECK_RET(data_request->offset < file_type_info->file_size,
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Request's data offset %d is not inside file data size %d",
-              data_request->offset,
-              file_type_info->file_size);
+    if (data_request->offset >= file_type_info->file_size) {
+        VS_LOG_ERROR("Request's data offset %d is not inside file data size %d. Request_sz = %d",
+                     data_request->offset,
+                     file_type_info->file_size,
+                     request_sz);
+        VS_LOG_HEX(VS_LOGLEV_DEBUG, "GNFD request ", request, request_sz);
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
+    }
+    //    CHECK_RET(data_request->offset < file_type_info->file_size,
+    //              VS_CODE_ERR_INCORRECT_ARGUMENT,
+    //              "Request's data offset %d is not inside file data size %d",
+    //              data_request->offset,
+    //              file_type_info->file_size);
 
     data_response->type.info.version = data_request->type.info.version;
     data_response->type = data_request->type;
