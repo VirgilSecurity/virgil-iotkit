@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #if FLDT_CLIENT
+
 #include <virgil/iot/protocols/sdmp/fldt/fldt-private.h>
 #include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
 #include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
@@ -252,6 +253,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
                        cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
                "Unable to check download need");
 
+    // Stop retries for GFTI request if enabled
+    file_type_info->update_ctx.in_progress = false;
+
     if (download) {
 
         file_type_info->prev_file_version = file_type_info->cur_file_version;
@@ -320,7 +324,6 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
     const vs_fldt_gfti_fileinfo_response_t *new_file = (const vs_fldt_infv_new_file_request_t *)response;
     vs_status_e ret_code;
 
-    // TODO: Need to retry GFTI request.
     CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GFTI response");
 
     (void)response_sz;
@@ -530,25 +533,6 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 }
 
 /******************************************************************/
-static vs_status_e
-vs_fldt_ask_file_type_info(const char *file_type_descr, const vs_fldt_gfti_fileinfo_request_t *file_type) {
-    CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
-
-    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
-
-    CHECK_RET(!vs_sdmp_send_request(NULL,
-                                    vs_sdmp_broadcast_mac(),
-                                    VS_FLDT_SERVICE_ID,
-                                    VS_FLDT_GFTI,
-                                    (const uint8_t *)file_type,
-                                    sizeof(*file_type)),
-              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-              "Unable to send FLDT \"GFTI\" server request");
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************/
 static int
 vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     vs_fldt_gnff_footer_response_t *file_footer = (vs_fldt_gnff_footer_response_t *)response;
@@ -594,6 +578,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
     }
 
+    //Stop retries
     file_type_info->update_ctx.in_progress = !successfully_updated;
 
     _got_file_callback(file_type,
@@ -668,8 +653,22 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     // Normalize byte order
     vs_fldt_gfti_fileinfo_request_t_encode(&file_type_request);
 
-    STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request),
-                     "Unable to ask current file information");
+    _update_process_set(&file_type_info->update_ctx,
+                        file_type_info->gateway_mac,
+                        VS_FLDT_GFTI,
+                        0,
+                        (const uint8_t *)&file_type_request,
+                        sizeof(file_type_request));
+
+    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_descr);
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    vs_sdmp_broadcast_mac(),
+                                    VS_FLDT_SERVICE_ID,
+                                    VS_FLDT_GFTI,
+                                    (const uint8_t *)&file_type_request,
+                                    sizeof(file_type_request)),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Unable to send FLDT \"GFTI\" server request");
 
     return VS_CODE_OK;
 }
