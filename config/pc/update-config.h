@@ -32,25 +32,30 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file update-config.h
+ * \brief Update settings
+ *
+ * This file provides defines that set up Update behavior.
+ *
+ */
+
 #ifndef VS_IOT_SDK_UPDATE_CONFIG_H
 #define VS_IOT_SDK_UPDATE_CONFIG_H
 
 // TODO : correct size !!!
+/** Maximum size for Firmware file */
 #define VS_MAX_FIRMWARE_UPDATE_SIZE ((2 * 1024 * 1024) + 30)
+
 /*Firmware signature rules*/
 
-/*
- * VS_FW_SIGNATURES_QTY
- * Minimum quantity of required signatures, which must be in firmware footer
- */
+/** Minimum quantity of required signatures, which must be in firmware footer */
 #define VS_FW_SIGNATURES_QTY (2)
 
-/*
- * List of signer types, which must be among signatures in firmware footer
- * Quantity MUST be equal to VS_FW_SIGNATURES_QTY
+/** List of signer types, which must be among signatures in firmware footer
+ *
+ * Quantity MUST be equal to #VS_FW_SIGNATURES_QTY
  * It's values of vs_key_type_e from provision library
  */
-
 #define VS_FW_SIGNER_TYPE_LIST {                                                                                   \
     VS_KEY_AUTH,                                                                                                   \
     VS_KEY_FIRMWARE                                                                                                \

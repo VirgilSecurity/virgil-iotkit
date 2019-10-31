@@ -32,14 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file endian-config.h
+ * \brief Endianness configuration
+ */
+
 #ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
 #define VS_IOT_SDK_ENDIAN_CONFIG_H
 
 #include <arpa/inet.h>
 
+/** Converts the unsigned short integer from network byte order to host byte order */
 #define VS_IOT_NTOHS ntohs
+
+/** Converts the unsigned integer from network byte order to host byte order */
 #define VS_IOT_NTOHL ntohl
+
+/** Converts the unsigned short integer from host byte order to network byte order */
 #define VS_IOT_HTONS htons
+
+/** Converts the unsigned integer from host byte order to network byte order */
 #define VS_IOT_HTONL htonl
 
 #endif //VS_IOT_SDK_ENDIAN_CONFIG_H
