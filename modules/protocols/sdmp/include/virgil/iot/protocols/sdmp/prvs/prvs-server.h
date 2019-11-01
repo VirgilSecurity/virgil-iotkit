@@ -32,6 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file prvs-server.h
+ * \brief PRVS for server
+ */
+// TODO : examples!
+
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_PRVS_SERVER_H
 
@@ -45,6 +50,14 @@ extern "C" {
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/hsm/hsm.h>
 
+/** PRVS Server SDMP Service implementation
+ *
+ * This call returns PRVS server implementation. It must be called before any PRVS call.
+ *
+ * \param[in] impl Callback functions. Must not be NULL.
+ *
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ */
 const vs_sdmp_service_t *
 vs_sdmp_prvs_server(vs_hsm_impl_t *hsm);
 

@@ -180,3 +180,12 @@ endif()
 #   Tests
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+
+#
+#   Documentation
+#
+add_custom_target(documentation
+        COMMAND rm -fR docs/doxygen
+        COMMAND mkdir -p docs/doxygen
+        COMMAND doxygen
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})

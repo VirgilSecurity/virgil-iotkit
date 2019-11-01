@@ -44,7 +44,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/logger/private/logger_hal.h>
+#include <virgil/iot/logger/logger-hal.h>
 #include <virgil/iot/logger/private/utoa_fast_div.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
@@ -218,7 +218,6 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
         goto terminate;
     }
 
-    VS_IOT_ASSERT(cur_filename);
     VS_IOT_ASSERT(format);
 
     if (!vs_logger_output_preface(level, cur_filename, line_num)) {
