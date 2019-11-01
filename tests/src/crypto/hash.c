@@ -67,7 +67,7 @@ _test_sha_pass(vs_hsm_impl_t *hsm_impl,
 
     BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->hash(hash_type,
                                                 (uint8_t *)test_data,
-                                                strlen(test_data),
+                                                VS_IOT_STRLEN(test_data),
                                                 result_buf,
                                                 sizeof(result_buf),
                                                 &result_sz),
@@ -78,7 +78,7 @@ _test_sha_pass(vs_hsm_impl_t *hsm_impl,
 
     BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->hash(hash_type,
                                                 (uint8_t *)another_test_data,
-                                                strlen(another_test_data),
+                                                VS_IOT_STRLEN(another_test_data),
                                                 another_result_buf,
                                                 sizeof(another_result_buf),
                                                 &result_sz),
@@ -103,13 +103,13 @@ _test_partial_sha_pass(vs_hsm_impl_t *hsm_impl,
         static uint8_t another_result_buf[SHA256_SIZE];
 
         hsm_impl->hash_init(&ctx);
-        hsm_impl->hash_update(&ctx, (uint8_t *)test_data, strlen(test_data));
+        hsm_impl->hash_update(&ctx, (uint8_t *)test_data, VS_IOT_STRLEN(test_data));
         hsm_impl->hash_finish(&ctx, result_buf);
 
         MEMCMP_CHECK_RET(correct_result_raw, result_buf, sizeof(result_buf), false);
 
         hsm_impl->hash_init(&ctx);
-        hsm_impl->hash_update(&ctx, (uint8_t *)another_test_data, strlen(another_test_data));
+        hsm_impl->hash_update(&ctx, (uint8_t *)another_test_data, VS_IOT_STRLEN(another_test_data));
         hsm_impl->hash_finish(&ctx, another_result_buf);
 
         BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf)),

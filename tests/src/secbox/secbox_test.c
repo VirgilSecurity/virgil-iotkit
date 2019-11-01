@@ -74,7 +74,7 @@ _test_case_secbox_del(const char *filename) {
     VS_IOT_MEMSET(file_id, 0, sizeof(file_id));
     VS_IOT_STRCPY((char *)file_id, filename);
 
-    BOOL_CHECK_RET(_test_case_secbox_save_load(filename, VS_SECBOX_SIGNED, buf, strlen(buf)),
+    BOOL_CHECK_RET(_test_case_secbox_save_load(filename, VS_SECBOX_SIGNED, buf, VS_IOT_STRLEN(buf)),
                    "Error create file for delete test");
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_del(file_id), "Error delete file");
