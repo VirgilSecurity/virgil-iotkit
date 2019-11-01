@@ -461,8 +461,8 @@ Functions</h2></td></tr>
 <p>Sends <em>data</em> message <em>data_sz</em> bytes length by using SDMP protocol specified by <em>netif</em> network interface. <em>tx</em> callback from <a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> network interface is used.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. If NULL, default network interface specified by <em>default_netif</em> parameter for <a class="el" href="sdmp_8h.html#a5ebd26d0ad37dc34baf4fb7136cab29a" title="Init SDMP.">vs_sdmp_init</a> call is used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data buffer to be send. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. If NULL, default network interface specified by <em>default_netif</em> parameter for <a class="el" href="sdmp_8h.html#a5ebd26d0ad37dc34baf4fb7136cab29a" title="Init SDMP.">vs_sdmp_init</a> call is used.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data buffer to be send. Must not be NULL.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data_sz</td><td>Data size in bytes to be send. Must not be zero.</td></tr>
   </table>
   </dd>
@@ -525,9 +525,9 @@ Functions</h2></td></tr>
 <p>Sends <em>data</em> message <em>data_sz</em> bytes length by using <em>element_ID</em> element of <em>service_id</em> SDMP service to <em>mac</em> device by <em>netif</em> network interface.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. If NULL, default network interface specified by <em>default_netif</em> parameter for <a class="el" href="sdmp_8h.html#a5ebd26d0ad37dc34baf4fb7136cab29a" title="Init SDMP.">vs_sdmp_init</a> call is used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mac</td><td>MAC address. If NULL, broadcast MAC address is used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">service_id</td><td>Service ID registered by <a class="el" href="sdmp_8h.html#ab90e94a22bd56ef88607dcd6720e406b" title="Register SDMP service.">vs_sdmp_register_service</a> call. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. If NULL, default network interface specified by <em>default_netif</em> parameter for <a class="el" href="sdmp_8h.html#a5ebd26d0ad37dc34baf4fb7136cab29a" title="Init SDMP.">vs_sdmp_init</a> call is used.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mac</td><td>MAC address. If NULL, broadcast MAC address is used.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">service_id</td><td>Service ID registered by <a class="el" href="sdmp_8h.html#ab90e94a22bd56ef88607dcd6720e406b" title="Register SDMP service.">vs_sdmp_register_service</a> call.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element_id</td><td>Element ID of <em>service_id</em>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data buffer to be send. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data_sz</td><td>Data size in bytes to be send. Must not be zero.</td></tr>

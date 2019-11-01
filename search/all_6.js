@@ -14,10 +14,5 @@ var searchData=
   ['free_5fptr_82',['free_ptr',['../structjson__str.html#ac378edf14bf993f64f89557794e66fa2',1,'json_str']]],
   ['fw1_5fkey_5fslot_83',['FW1_KEY_SLOT',['../hsm__iotelic_8h.html#a0eed820d925b0636cd3036236680bd0e',1,'hsm_iotelic.h']]],
   ['fw2_5fkey_5fslot_84',['FW2_KEY_SLOT',['../hsm__iotelic_8h.html#a5783cef996959dc5cfe8bc08e09d93cb',1,'hsm_iotelic.h']]],
-  ['fw_5fdev_5fbuild_85',['fw_dev_build',['../structvs__info__general__t.html#a15ad71ffc094f14216745cc98d5de94f',1,'vs_info_general_t']]],
-  ['fw_5fdev_5fmilestone_86',['fw_dev_milestone',['../structvs__info__general__t.html#a8153afa2b85914f7de410b7f5763ca0e',1,'vs_info_general_t']]],
-  ['fw_5fmajor_87',['fw_major',['../structvs__info__general__t.html#a41a2179662f37ac731786e8bf90a9835',1,'vs_info_general_t']]],
-  ['fw_5fminor_88',['fw_minor',['../structvs__info__general__t.html#af2a2b217ccdc549a926bb11a11d96229',1,'vs_info_general_t']]],
-  ['fw_5fpatch_89',['fw_patch',['../structvs__info__general__t.html#a7347410f2f232a5f24e4ba9be154b36f',1,'vs_info_general_t']]],
-  ['fw_5ftimestamp_90',['fw_timestamp',['../structvs__info__general__t.html#a634e7aa2d7d8eec3e64b8217ed09fd86',1,'vs_info_general_t']]]
+  ['fw_5fver_85',['fw_ver',['../structvs__info__general__t.html#a522e2249afd8aaefa98e91818555e0a8',1,'vs_info_general_t']]]
 ];
