@@ -277,7 +277,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
               "Request buffer must be of vs_fldt_gnfh_header_request_t type");
 
     // Normalize byte order
-    vs_fldt_gnfh_header_request_t_encode(header_request);
+    vs_fldt_gnfh_header_request_t_decode(header_request);
 
     file_ver = &header_request->type.info.version;
     file_type = &header_request->type;
