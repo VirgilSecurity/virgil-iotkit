@@ -299,7 +299,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
 
-    const vs_fldt_infv_new_file_request_t *new_file = (const vs_fldt_infv_new_file_request_t *)request;
+    vs_fldt_infv_new_file_request_t *new_file = (vs_fldt_infv_new_file_request_t *)request;
     vs_status_e ret_code;
 
     (void)response;
@@ -313,6 +313,8 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
 
+    // Normalize byte order
+    vs_fldt_file_info_t_decode(new_file);
     STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;
@@ -322,7 +324,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
 static int
 vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
 
-    const vs_fldt_gfti_fileinfo_response_t *new_file = (const vs_fldt_infv_new_file_request_t *)response;
+    vs_fldt_gfti_fileinfo_response_t *new_file = (vs_fldt_infv_new_file_request_t *)response;
     vs_status_e ret_code;
 
     CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GFTI response");
@@ -334,6 +336,8 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
 
+    // Normalize byte order
+    vs_fldt_file_info_t_decode(new_file);
     STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;

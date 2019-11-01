@@ -241,6 +241,8 @@ vs_fldt_GFTI_request_processor(const uint8_t *request,
                      "Unable to get information for file %s",
                      _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
+    // Normalize byte order
+    vs_fldt_file_info_t_encode(file_info);
     *response_sz = sizeof(*file_info);
 
     return VS_CODE_OK;
@@ -562,6 +564,8 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
         VS_LOG_DEBUG("[FLDT] Broadcast new file information : %s",
                      _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
 
+        // Normalize byte order
+        vs_fldt_file_info_t_encode(&new_file);
         CHECK_RET(!vs_sdmp_send_request(NULL,
                                         vs_sdmp_broadcast_mac(),
                                         VS_FLDT_SERVICE_ID,
