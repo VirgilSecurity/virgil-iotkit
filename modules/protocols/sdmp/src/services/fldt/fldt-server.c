@@ -45,6 +45,8 @@
 
 #define DEBUG_CHUNKS (0)
 
+#define SERVER_FILE_TYPE_ARRAY_SIZE (10)
+
 static vs_sdmp_service_t _fldt_server = {0};
 
 // TODO : make a set!
@@ -57,7 +59,7 @@ typedef struct {
 } vs_fldt_server_file_type_mapping_t;
 
 static size_t _file_type_mapping_array_size = 0;
-static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[10];
+static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[SERVER_FILE_TYPE_ARRAY_SIZE];
 static vs_fldt_server_add_filetype _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
@@ -123,6 +125,10 @@ _file_info(const vs_update_file_type_t *file_type,
     file_type_info = _get_mapping_elem(file_type);
 
     if (!file_type_info) {
+        VS_IOT_ASSERT(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1));
+        CHECK_RET(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1),
+                  VS_CODE_ERR_NO_MEMORY,
+                  "[FLDT] Can't add new file type. Array is full");
         file_type_info = &_server_file_type_mapping[_file_type_mapping_array_size++];
         VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
                      _file_type_mapping_array_size);
@@ -665,6 +671,8 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
 /******************************************************************************/
 const vs_sdmp_service_t *
 vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
+
+    VS_IOT_ASSERT(SERVER_FILE_TYPE_ARRAY_SIZE);
     _fldt_server.user_data = 0;
     _fldt_server.id = VS_FLDT_SERVICE_ID;
     _fldt_server.request_process = _fldt_server_request_processor;

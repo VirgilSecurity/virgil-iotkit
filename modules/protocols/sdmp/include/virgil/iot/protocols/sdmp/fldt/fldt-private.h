@@ -140,11 +140,6 @@ typedef struct {
     vs_mac_addr_t gateway_mac; // for client only
 } vs_fldt_file_type_mapping_t;
 
-// Utilities
-#define FLDT_CHECK(OPERATION, MESSAGE, ...)                                                                            \
-    CHECK_RET((fldt_ret_code = (OPERATION)) == VS_CODE_OK, fldt_ret_code, MESSAGE, ##__VA_ARGS__)
-
-
 // Client request/response processing
 #ifdef __cplusplus
 }

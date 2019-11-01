@@ -53,6 +53,7 @@ static vs_sdmp_service_t _fldt_client = {0};
 #define VS_FLDT_WAIT_MAX (10) // Seconds
 
 #define VS_FLDT_REQUEST_SZ_MAX (150)
+#define CLIENT_FILE_TYPE_ARRAY_SIZE (10)
 
 typedef struct {
     bool in_progress;
@@ -79,7 +80,7 @@ typedef struct {
 } vs_fldt_client_file_type_mapping_t;
 
 static size_t _file_type_mapping_array_size = 0;
-static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[10];
+static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[CLIENT_FILE_TYPE_ARRAY_SIZE];
 static vs_fldt_got_file _got_file_callback = NULL;
 
 /******************************************************************/
@@ -230,7 +231,7 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     bool download;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_e fldt_ret_code;
+    vs_status_e ret_code;
 
     VS_IOT_ASSERT(cmd_prefix);
     VS_IOT_ASSERT(file_info);
@@ -249,9 +250,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
 
     file_type_info->gateway_mac = file_info->gateway_mac;
 
-    FLDT_CHECK(_check_download_need(
-                       cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
-               "Unable to check download need");
+    STATUS_CHECK_RET(_check_download_need(
+                             cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
+                     "Unable to check download need");
 
     // Stop retries for GFTI request if enabled
     file_type_info->update_ctx.in_progress = false;
@@ -578,7 +579,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
     }
 
-    //Stop retries
+    // Stop retries
     file_type_info->update_ctx.in_progress = !successfully_updated;
 
     _got_file_callback(file_type,
@@ -605,6 +606,10 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     file_type_info = _get_mapping_elem(file_type);
 
     if (!file_type_info) {
+        VS_IOT_ASSERT(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1));
+        CHECK_RET(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1),
+                  VS_CODE_ERR_NO_MEMORY,
+                  "[FLDT] Can't add new file type. Array is full");
         file_type_info = &_client_file_type_mapping[_file_type_mapping_array_size++];
         VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
                      _file_type_mapping_array_size);
@@ -783,6 +788,7 @@ const vs_sdmp_service_t *
 vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback) {
 
     VS_IOT_ASSERT(got_file_callback);
+    VS_IOT_ASSERT(CLIENT_FILE_TYPE_ARRAY_SIZE);
 
     _fldt_client.user_data = 0;
     _fldt_client.id = VS_FLDT_SERVICE_ID;
