@@ -34,7 +34,7 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/private_helpers.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <stdlib-config.h>
 
 #if IOTELIC_MCU_BUILD
@@ -46,13 +46,13 @@
 /******************************************************************************/
 #define STEPS 4
 static int
-_generate_random(uint8_t *sequence) {
+_generate_random(vs_hsm_impl_t *hsm_impl, uint8_t *sequence) {
     static const size_t size_step = SEQUENCE_SIZE / STEPS;
     size_t pos;
     int res;
 
     for (pos = 0; pos < STEPS; ++pos) {
-        res = vs_hsm_random(sequence, size_step);
+        res = hsm_impl->random(sequence, size_step);
 
         if (VS_CODE_OK != res) {
             VS_LOG_ERROR("Unable to generate random number, step = %d", pos);
@@ -195,14 +195,14 @@ _frequency_2bytes_diff(uint8_t *sequence) {
 
 /******************************************************************************/
 uint16_t
-test_random(void) {
+test_random(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
     uint8_t sequence[SEQUENCE_SIZE];
     int res;
 
     START_TEST("Random tests");
     START_ELEMENT("Generate random sequence");
-    res = _generate_random(sequence);
+    res = _generate_random(hsm_impl, sequence);
     if (VS_CODE_ERR_NOT_IMPLEMENTED == res) {
         VS_LOG_WARNING("Random function is not implemented");
         RESULT_OK;

@@ -1,7 +1,7 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/tests/private/private_helpers.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
 static uint8_t key_raw[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -16,12 +16,12 @@ static uint8_t input_raw[] = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x
 
 /******************************************************************************/
 static bool
-_test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t correct_sz) {
+_test_hmac_case(vs_hsm_impl_t *hsm_impl, vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t correct_sz) {
     uint8_t buf[128];
     uint16_t sz;
     int res;
 
-    res = vs_hsm_hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz);
+    res = hsm_impl->hmac(hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz);
 
     VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "HMAC for %s algorithm is not implemented", vs_hsm_hash_type_descr(hash_type));
     STATUS_CHECK_RET_BOOL(res, "vs_hsm_hmac incorrect result");
@@ -33,7 +33,7 @@ _test_hmac_case(vs_hsm_hash_type_e hash_type, const uint8_t *correct, uint16_t c
 
 /******************************************************************************/
 uint16_t
-test_hmac(void) {
+test_hmac(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
 
     uint8_t sha256_result_raw[] = {0x70, 0xa8, 0xe8, 0xa8, 0xb5, 0x24, 0x1b, 0x7e, 0x75, 0x84, 0x93,
@@ -54,11 +54,11 @@ test_hmac(void) {
     START_TEST("HMAC test");
 
     TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
-                 _test_hmac_case(VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
+                 _test_hmac_case(hsm_impl, VS_HASH_SHA_256, sha256_result_raw, sizeof(sha256_result_raw)));
     TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_384),
-                 _test_hmac_case(VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
+                 _test_hmac_case(hsm_impl, VS_HASH_SHA_384, sha384_result_raw, sizeof(sha384_result_raw)));
     TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_512),
-    _test_hmac_case(VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
+                 _test_hmac_case(hsm_impl, VS_HASH_SHA_512, sha512_result_raw, sizeof(sha512_result_raw)));
 
 terminate:
     return failed_test_result;

@@ -33,11 +33,12 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/tests/private/test_netif.h>
-#include <virgil/iot/protocols/sdmp/sdmp_structs.h>
+#include <virgil/iot/tests/private/netif_test_impl.h>
+#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 
-static vs_netif_t test_netif;
+
+static vs_netif_t *test_netif;
 
 /**********************************************************/
 static bool
@@ -50,14 +51,17 @@ test_sdmp_init_deinit(void) {
 
     netif_state.membuf = 0;
 
-    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
-    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+    CHECK(VS_CODE_OK == vs_sdmp_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
+          "vs_sdmp_init call");
+    CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_sdmp_init has not been called");
 
-    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
-    NETIF_OP_CHECK_GOTO(netif_state.deinitialized);
+    CHECK(VS_CODE_OK == vs_sdmp_deinit(test_netif), "vs_sdmp_deinit call");
+    CHECK((netif_state.deinitialized && !netif_state.initialized),
+          "netif operation vs_sdmp_deinit has not been called");
 
-    SDMP_CHECK_GOTO(vs_sdmp_init(&test_netif, manufacturer_id, device_type, device_serial, device_roles), "vs_sdmp_init call");
-    NETIF_OP_CHECK_GOTO(netif_state.initialized);
+    CHECK(VS_CODE_OK == vs_sdmp_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
+          "vs_sdmp_init call");
+    CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_sdmp_init has not been called");
 
     return true;
 
@@ -72,12 +76,12 @@ test_sdmp_send(void) {
     const uint16_t data_sz = sizeof(vs_sdmp_packet_t);
     uint8_t data[data_sz];
 
-    memset(data, 0, data_sz);
+    VS_IOT_MEMSET(data, 0, data_sz);
     netif_state.membuf = 0;
 
     netif_state.sent = 0;
     vs_sdmp_send(NULL, data, data_sz);
-    NETIF_OP_CHECK_GOTO(netif_state.sent);
+    CHECK(netif_state.sent, "netif operation vs_sdmp_send has not been called");
 
     return true;
 
@@ -93,8 +97,8 @@ test_sdmp_mac_addr(void) {
     vs_mac_addr_t mac_addr;
     netif_state.membuf = 0;
 
-    SDMP_CHECK_GOTO(vs_sdmp_mac_addr(0, &mac_addr), "vs_sdmp_mac_addr call");
-    NETIF_OP_CHECK_GOTO(netif_state.mac_addr_set_up);
+    CHECK(VS_CODE_OK == vs_sdmp_mac_addr(0, &mac_addr), "vs_sdmp_mac_addr call");
+    CHECK(netif_state.mac_addr_set_up, "netif operation vs_sdmp_mac_addr has not been called");
 
     return true;
 
@@ -105,21 +109,21 @@ terminate:
 
 /**********************************************************/
 uint16_t
-sdmp_tests(void) {
+vs_sdmp_tests(void) {
     uint16_t failed_test_result = 0;
 
     START_TEST("SDMP");
 
-    prepare_test_netif(&test_netif);
+    test_netif = vs_test_netif();
 
     TEST_CASE_OK("Initialization / deinitialization", test_sdmp_init_deinit());
     TEST_CASE_OK("Send", test_sdmp_send());
     TEST_CASE_OK("Mac address", test_sdmp_mac_addr());
 
-    SDMP_CHECK_GOTO(vs_sdmp_deinit(&test_netif), "vs_sdmp_deinit call");
+    CHECK(VS_CODE_OK == vs_sdmp_deinit(test_netif), "vs_sdmp_deinit call");
 
     // Call for possible crashes and memory leaks
-    SDMP_CHECK_GOTO(vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
+    CHECK(VS_CODE_OK == vs_sdmp_send(NULL, NULL, 0), "vs_sdmp_send call");
 
 terminate:;
     return failed_test_result;

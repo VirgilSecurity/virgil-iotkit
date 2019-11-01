@@ -39,20 +39,29 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/hsm/hsm.h>
+
+#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_10
+#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_11
+#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_12
+#define TEST_TL_KEYPAIR VS_KEY_SLOT_STD_MTP_13
+#define TEST_USER_KEYPAIR VS_KEY_SLOT_STD_MTP_14
 
 #define VS_HSM_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                       \
     do {                                                                                                               \
-        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                               \
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                              \
             VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
             return true;                                                                                               \
         }                                                                                                              \
     } while (0)
 
-#define CHECK_GOTO(OPERATION, DESCRIPTION, ...) do {                                                                       \
-    if (!(OPERATION)) {                                                                                                \
-        VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                      \
-        goto terminate;                                                                                                \
-    } } while(0)
+#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
+    do {                                                                                                               \
+        if (!(OPERATION)) {                                                                                            \
+            VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                  \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+    } while (0)
 
 #define RESULT_BUF_SIZE (1024)
 #define HASH_MAX_BUF_SIZE (64)
@@ -120,9 +129,13 @@
 #define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
 
 bool
-vs_test_erase_otp_provision();
+vs_test_erase_otp_provision(vs_hsm_impl_t *hsm_impl);
 bool
-vs_test_create_device_key();
+vs_test_create_device_key(vs_hsm_impl_t *hsm_impl);
 bool
-vs_test_save_hl_keys();
+vs_test_save_hl_pubkeys(vs_hsm_impl_t *hsm_impl);
+bool
+vs_test_create_test_hl_keys(vs_hsm_impl_t *hsm_impl);
+bool
+vs_test_create_test_tl(vs_hsm_impl_t *hsm_impl);
 #endif // VS_IOT_SDK_TESTS_HELPERS_H_

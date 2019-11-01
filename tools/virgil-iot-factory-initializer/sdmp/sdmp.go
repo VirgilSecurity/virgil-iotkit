@@ -35,7 +35,7 @@
 package sdmp
 
 /*
-#cgo LDFLAGS: -lsdmp-factory -ltools-hal -llogger
+#cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
@@ -67,7 +67,7 @@ import (
 
 
 const (
-    DEFAULT_TIMEOUT_MS = 7000
+    DEFAULT_TIMEOUT_MS = 3000
     ETH_ADDR_LEN       = int(C.ETH_ADDR_LEN)
     // algorithm, which is used by device in sign operations and signing device:
     DEVICE_HASH_ALGO   = common.VS_HASH_SHA_256
@@ -272,7 +272,7 @@ func (p *DeviceProcessor) SetTrustList() error {
                                        &mac,
                                        dataPtr,
                                        C.uint16_t(len(footerBytes)),
-                                       DEFAULT_TIMEOUT_MS) {
+                                       DEFAULT_TIMEOUT_MS * 3) {
         return fmt.Errorf("failed to set TrustList footer")
     }
 

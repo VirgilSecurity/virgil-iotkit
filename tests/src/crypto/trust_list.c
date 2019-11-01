@@ -11,7 +11,7 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/hsm/hsm_interface.h>
+#include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 
 #include <virgil/iot/tests/private/test_hl_keys_data.h>
@@ -63,10 +63,11 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
         key_len = vs_hsm_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
+        uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t *)ptr)->pubkey.meta_data_sz);
 
         BOOL_CHECK_RET(key_len > 0, "Key parse error");
 
-        test_tl_keys[i].size = key_len + sizeof(vs_pubkey_dated_t);
+        test_tl_keys[i].size = key_len + sizeof(vs_pubkey_dated_t) + key_meta_data_sz;
         if (test_key_max_size < test_tl_keys[i].size) {
             test_key_max_size = test_tl_keys[i].size;
         }
@@ -148,7 +149,7 @@ static bool
 _test_tl_header_save_pass() {
 
     STATUS_CHECK_RET_BOOL(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)test_header, test_header_sz),
-                     "Error write tl header");
+                          "Error write tl header");
     return true;
 }
 
@@ -196,8 +197,7 @@ _tl_keys_save_wrong_order() {
 
     if (pub_keys_count > 2) {
         for (i = 0; i < pub_keys_count - 2; ++i) {
-            BOOL_CHECK_RET(VS_CODE_OK ==
-                                   _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
+            BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
                            "Error write tl key %u",
                            i);
         }
@@ -412,7 +412,7 @@ _test_tl_read_pass() {
 
 /******************************************************************************/
 uint16_t
-test_keystorage_and_tl(void) {
+test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl) {
     uint16_t failed_test_result = 0;
 
     START_TEST("Provision and TL tests");
@@ -422,8 +422,8 @@ test_keystorage_and_tl(void) {
         RESULT_ERROR;
     }
 
-    TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision());
-    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_keys());
+    TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision(hsm_impl));
+    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_pubkeys(hsm_impl));
     TEST_CASE_OK("TL verify hl keys", _test_verify_hl_keys());
 
     TEST_CASE_OK("TL save", _test_tl_save_pass());

@@ -1,5 +1,5 @@
 import base64
-
+import string
 import binascii
 
 
@@ -43,6 +43,26 @@ class UI(object):
             try:
                 u_i = int(user_input)
             except ValueError:
+                return False
+            return True
+
+        @staticmethod
+        def tl_version_check(user_input):
+            """
+            Sample TL version: 0.1.30.2
+            """
+            user_input = user_input.split(".")
+            if len(user_input) != 4:
+                return False
+            major, minor, patch, build = user_input
+            try:
+                version_parts = [int(part) for part in (major, minor, patch)]
+                build = int(build)
+            except ValueError:  # each part should be an integer
+                return False
+            if not all(part in range(0, 255) for part in version_parts):  # each part should fit uint8
+                return False
+            if not (0 <= build <= 4294967295):  # build should fit uint32
                 return False
             return True
 
