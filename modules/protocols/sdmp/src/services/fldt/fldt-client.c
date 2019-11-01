@@ -74,12 +74,12 @@ typedef struct {
     vs_file_version_t cur_file_version;
     vs_update_interface_t *update_interface;
     void *file_header;
-    size_t file_size;
+    uint32_t file_size;
     vs_mac_addr_t gateway_mac;
     vs_fldt_update_ctx_t update_ctx;
 } vs_fldt_client_file_type_mapping_t;
 
-static size_t _file_type_mapping_array_size = 0;
+static uint32_t _file_type_mapping_array_size = 0;
 static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[CLIENT_FILE_TYPE_ARRAY_SIZE];
 static vs_fldt_got_file _got_file_callback = NULL;
 
@@ -98,7 +98,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
                     uint32_t command,
                     uint32_t expected_offset,
                     const uint8_t *request_data,
-                    size_t request_data_sz) {
+                    uint32_t request_data_sz) {
     CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
@@ -152,7 +152,7 @@ terminate:;
 static vs_fldt_client_file_type_mapping_t *
 _get_mapping_elem(const vs_update_file_type_t *file_type) {
     vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
-    size_t id;
+    uint32_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         if (vs_update_equal_file_type(&file_type_info->type, file_type)) {
@@ -170,7 +170,7 @@ static const char *
 _filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
                const vs_file_version_t *file_ver,
                char *file_descr,
-               size_t descr_buff_size) {
+               uint32_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
     return file_type_info->update_interface->describe_version(file_type_info->update_interface->storage_context,
                                                               &file_type_info->type,
@@ -182,7 +182,7 @@ _filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
 
 /******************************************************************/
 static const char *
-_filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
+_filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, uint32_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
     return vs_update_type_descr(&file_type_info->type, file_type_info->update_interface, file_descr, descr_buff_size);
 }
@@ -603,7 +603,7 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     vs_fldt_gfti_fileinfo_request_t file_type_request;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
-    size_t header_size;
+    uint32_t header_size;
 
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
@@ -685,7 +685,7 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 /******************************************************************/
 static vs_status_e
 _fldt_destroy_client(void) {
-    size_t id;
+    uint32_t id;
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
@@ -772,7 +772,7 @@ static int
 _fldt_client_periodical_processor(void) {
     vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
     vs_fldt_update_ctx_t *_update_ctx;
-    size_t id;
+    uint32_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         _update_ctx = &file_type_info->update_ctx;

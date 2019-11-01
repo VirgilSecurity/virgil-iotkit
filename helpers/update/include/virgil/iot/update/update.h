@@ -74,7 +74,7 @@ struct vs_update_interface_t;
  * \return Output buffer \a buf with file type description or NULL in case of error.
  */
 char *
-vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size);
+vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, uint32_t buf_size);
 
 /** Compare two file types
  *
@@ -106,7 +106,7 @@ vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_ver
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, size_t *header_size);
+typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_file_type_t *file_type, uint32_t *header_size);
 
 /** Get file size
  *
@@ -117,7 +117,7 @@ typedef vs_status_e (*vs_update_get_header_size_cb_t)(void *context, vs_update_f
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size);
+typedef vs_status_e (*vs_update_get_file_size_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, uint32_t *file_size);
 
 /** Checks that such file type has footer
  *
@@ -141,7 +141,7 @@ typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_t
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, size_t current_offset, size_t loaded_data_size, size_t *next_offset);
+typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_file_type_t *file_type, uint32_t current_offset, uint32_t loaded_data_size, uint32_t *next_offset);
 
 /** Get file header
  *
@@ -153,7 +153,7 @@ typedef vs_status_e (*vs_update_inc_data_offset_cb_t)(void *context, vs_update_f
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, size_t buffer_size, size_t *header_size);
+typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_type_t *file_type, void *header_buffer, uint32_t buffer_size, uint32_t *header_size);
 
 /** Get file data
  *
@@ -167,7 +167,7 @@ typedef vs_status_e (*vs_update_get_header_cb_t)(void *context, vs_update_file_t
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, size_t buffer_size, size_t *data_size, size_t data_offset);
+typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *data_buffer, uint32_t buffer_size, uint32_t *data_size, uint32_t data_offset);
 
 /** Get footer
  *
@@ -180,7 +180,7 @@ typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_typ
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, size_t buffer_size, size_t *footer_size);
+typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, void *footer_buffer, uint32_t buffer_size, uint32_t *footer_size);
 
 /** Set header
  *
@@ -192,7 +192,7 @@ typedef vs_status_e (*vs_update_get_footer_cb_t)(void *context, vs_update_file_t
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t header_size, size_t *file_size);
+typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, uint32_t header_size, uint32_t *file_size);
 
 /** Set data
  *
@@ -205,7 +205,7 @@ typedef vs_status_e (*vs_update_set_header_cb_t)(void *context, vs_update_file_t
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, size_t data_size, size_t data_offset);
+typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_data, uint32_t data_size, uint32_t data_offset);
 
 /** Set footer
  *
@@ -217,7 +217,7 @@ typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_typ
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, size_t footer_size);
+typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, uint32_t footer_size);
 
 /** Is file newer that current one
  *
@@ -246,7 +246,7 @@ typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *f
  *
  * \return \a buffer with file type description
  */
-typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type_t *file_type, char *buffer, size_t buf_size);
+typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size);
 
 /** Describe file version
  *
@@ -259,7 +259,7 @@ typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type
  *
  * \return \a buffer with file type description
  */
-typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, size_t buf_size, bool add_filetype_description);
+typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, uint32_t buf_size, bool add_filetype_description);
 
 /** Update interface context */
 typedef struct __attribute__((__packed__)) vs_update_interface_t {

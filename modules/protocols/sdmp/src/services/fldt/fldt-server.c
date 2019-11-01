@@ -55,10 +55,10 @@ typedef struct {
     vs_update_interface_t *update_context;
     vs_file_version_t current_version;
     void *file_header;
-    size_t file_size;
+    uint32_t file_size;
 } vs_fldt_server_file_type_mapping_t;
 
-static size_t _file_type_mapping_array_size = 0;
+static uint32_t _file_type_mapping_array_size = 0;
 static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[SERVER_FILE_TYPE_ARRAY_SIZE];
 static vs_fldt_server_add_filetype _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
@@ -70,7 +70,7 @@ _fldt_destroy_server(void);
 static vs_fldt_server_file_type_mapping_t *
 _get_mapping_elem(const vs_update_file_type_t *file_type) {
     vs_fldt_server_file_type_mapping_t *file_type_info = _server_file_type_mapping;
-    size_t id;
+    uint32_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         if (vs_update_equal_file_type(&file_type_info->type, file_type)) {
@@ -88,7 +88,7 @@ static const char *
 _filever_descr(vs_fldt_server_file_type_mapping_t *file_type_info,
                const vs_file_version_t *file_ver,
                char *file_descr,
-               size_t descr_buff_size) {
+               uint32_t descr_buff_size) {
     VS_IOT_ASSERT(file_type_info);
     return file_type_info->update_context->describe_version(file_type_info->update_context->storage_context,
                                                             &file_type_info->type,
@@ -100,7 +100,7 @@ _filever_descr(vs_fldt_server_file_type_mapping_t *file_type_info,
 
 /******************************************************************/
 static const char *
-_filetype_descr(vs_fldt_server_file_type_mapping_t *file_type_info, char *file_descr, size_t descr_buff_size) {
+_filetype_descr(vs_fldt_server_file_type_mapping_t *file_type_info, char *file_descr, uint32_t descr_buff_size) {
     if (!file_type_info) {
         return "";
     }
@@ -117,7 +117,7 @@ _file_info(const vs_update_file_type_t *file_type,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
-    size_t file_header_size;
+    uint32_t file_header_size;
 
     VS_IOT_ASSERT(file_type);
     VS_IOT_ASSERT(file_type_info_ptr);
@@ -262,7 +262,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    size_t header_size;
+    uint32_t header_size;
     vs_status_e ret_code;
     bool has_footer;
 
@@ -358,12 +358,12 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
-    static const size_t DATA_SZ = 512;
+    static const uint32_t DATA_SZ = 512;
     ssize_t max_data_size_to_read;
-    size_t data_size_read;
+    uint32_t data_size_read;
     vs_status_e ret_code;
-    size_t cur_offset;
-    size_t next_offset;
+    uint32_t cur_offset;
+    uint32_t next_offset;
 
     CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -472,7 +472,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const uint16_t DATA_SZ = 512;
-    size_t data_size;
+    uint32_t data_size;
     vs_status_e ret_code;
     bool has_footer;
 
@@ -596,7 +596,7 @@ terminate:;
 /******************************************************************/
 static vs_status_e
 _fldt_destroy_server(void) {
-    size_t id;
+    uint32_t id;
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
@@ -653,7 +653,7 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
                                 const uint16_t response_sz) {
 
     if (!is_ack) {
-        VS_LOG_WARNING("Received response packet with is_ack == false");
+        VS_LOG_WARNING("Received response %08x packet with is_ack == false", element_id);
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
