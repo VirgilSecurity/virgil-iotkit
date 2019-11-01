@@ -99,14 +99,14 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK) {
         goto terminate;
     } else {
-        crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)strlen(crypto_answer_b64));
+        crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)VS_IOT_STRLEN(crypto_answer_b64));
 
         if (0 >= crypto_answer_b64_len || crypto_answer_b64_len > buf_size) {
             goto terminate;
         }
 
         base64decode(crypto_answer_b64,
-                     (int)strlen(crypto_answer_b64),
+                     (int)VS_IOT_STRLEN(crypto_answer_b64),
                      (uint8_t *)crypto_answer_b64,
                      &crypto_answer_b64_len);
         size_t decrypted_data_sz;

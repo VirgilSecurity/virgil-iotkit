@@ -24,14 +24,18 @@ _test_kdf2_step(vs_hsm_impl_t *hsm_impl,
     uint8_t another_result_buf[result_len];
     int res;
 
-    res = hsm_impl->kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, strlen(key_raw), result_buf, result_len);
+    res = hsm_impl->kdf(VS_KDF_2, hash_type, (uint8_t *)key_raw, VS_IOT_STRLEN(key_raw), result_buf, result_len);
     CHECK_RET(VS_CODE_ERR_NOT_IMPLEMENTED != res, res, "");
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute kdf");
 
     CHECK_RET(0 == VS_IOT_MEMCMP(result_buf, correct_result, result_len), VS_CODE_ERR_CRYPTO, "kdf is wrong");
 
-    res = hsm_impl->kdf(
-            VS_KDF_2, hash_type, (uint8_t *)another_key_raw, strlen(another_key_raw), another_result_buf, result_len);
+    res = hsm_impl->kdf(VS_KDF_2,
+                        hash_type,
+                        (uint8_t *)another_key_raw,
+                        VS_IOT_STRLEN(another_key_raw),
+                        another_result_buf,
+                        result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute kdf");
 
     CHECK_RET(
@@ -51,11 +55,11 @@ _test_hkdf2_step(vs_hsm_impl_t *hsm_impl,
 
     res = hsm_impl->hkdf(hash_type,
                          (uint8_t *)hkdf_input,
-                         strlen(hkdf_input),
+                         VS_IOT_STRLEN(hkdf_input),
                          (uint8_t *)hkdf_salt,
-                         strlen(hkdf_salt),
+                         VS_IOT_STRLEN(hkdf_salt),
                          (uint8_t *)hkdf_info,
-                         strlen(hkdf_info),
+                         VS_IOT_STRLEN(hkdf_info),
                          result_buf,
                          result_len);
     CHECK_RET(VS_CODE_ERR_NOT_IMPLEMENTED != res, res, "");
@@ -67,11 +71,11 @@ _test_hkdf2_step(vs_hsm_impl_t *hsm_impl,
 
     res = hsm_impl->hkdf(hash_type,
                          (uint8_t *)hkdf_input,
-                         strlen(hkdf_input),
+                         VS_IOT_STRLEN(hkdf_input),
                          (uint8_t *)another_hkdf_salt,
-                         strlen(another_hkdf_salt),
+                         VS_IOT_STRLEN(another_hkdf_salt),
                          (uint8_t *)hkdf_info,
-                         strlen(hkdf_info),
+                         VS_IOT_STRLEN(hkdf_info),
                          result_buf,
                          result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
@@ -83,11 +87,11 @@ _test_hkdf2_step(vs_hsm_impl_t *hsm_impl,
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = hsm_impl->hkdf(hash_type,
                          (uint8_t *)another_hkdf_input,
-                         strlen(another_hkdf_input),
+                         VS_IOT_STRLEN(another_hkdf_input),
                          (uint8_t *)hkdf_salt,
-                         strlen(hkdf_salt),
+                         VS_IOT_STRLEN(hkdf_salt),
                          (uint8_t *)hkdf_info,
-                         strlen(hkdf_info),
+                         VS_IOT_STRLEN(hkdf_info),
                          result_buf,
                          result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
@@ -98,11 +102,11 @@ _test_hkdf2_step(vs_hsm_impl_t *hsm_impl,
     VS_IOT_MEMSET(result_buf, 0, result_len);
     res = hsm_impl->hkdf(hash_type,
                          (uint8_t *)hkdf_input,
-                         strlen(hkdf_input),
+                         VS_IOT_STRLEN(hkdf_input),
                          (uint8_t *)hkdf_salt,
-                         strlen(hkdf_salt),
+                         VS_IOT_STRLEN(hkdf_salt),
                          (uint8_t *)another_hkdf_info,
-                         strlen(another_hkdf_info),
+                         VS_IOT_STRLEN(another_hkdf_info),
                          result_buf,
                          result_len);
     CHECK_RET(VS_CODE_OK == res, res, "ERROR while execute hkdf");
