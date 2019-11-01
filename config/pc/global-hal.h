@@ -32,15 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+// TODO : title for file ???
+
 #ifndef VS_IOT_SDK_GLOBAL_HAL_H
 #define VS_IOT_SDK_GLOBAL_HAL_H
 
 #include <stdint.h>
 #include <stddef.h>
 
+/** Get serial number for current device
+ *
+ * \param[out] udid Serial device buffer. Cannot be NULL.
+ */
 void
 vs_impl_device_serial(uint8_t *udid);
 
+/** Sleep current thread
+ *
+ * \param[in] msec Time to sleep in milliseconds.
+ */
 void
 vs_impl_msleep(size_t msec);
 

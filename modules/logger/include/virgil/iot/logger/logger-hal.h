@@ -32,17 +32,63 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file logger-hal.h
+ * \brief Logger HAL functions declarations
+ *
+ * These functions have to be implemented to use logger module. See #logger_usage for details.
+ *
+ * \section logger_hal_implementation Logger HAL Implementation
+ *
+ * User has to provide logger output function #vs_logger_output_hal . The goal of this function is to output part
+ * of string to the output. Its implementation can be as listed below :
+ *
+ * \code
+ * #include <stdio.h>
+ * bool
+ * vs_logger_output_hal(const char *buffer) {
+ *     if (!buffer) {
+ *         return false;
+ *     }
+ *
+ *     return printf("%s", buffer) != 0;
+ * }
+ * \endcode
+ *
+ * If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
+ * outputs current time :
+ *
+ * \code
+ * #include <stdio.h>
+ * #include <time.h>
+ *
+ * #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+ * bool
+ * vs_logger_current_time_hal(void) {
+ *     time_t result = time(NULL);
+ *     if(result != -1) {
+ *         printf("%s", asctime(gmtime(&result)));
+ *         return true;
+ *     }
+ *     return false;
+ * }
+ * #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+ * \endcode
+ */
+
 #ifndef VS_IOT_SDK_LOGGER_HAL_H_
 #define VS_IOT_SDK_LOGGER_HAL_H_
 
 #include <stdbool.h>
 
-/*
- * Send string to the output.
- * buffer - pointer to the ASCIIZ string. Must not be NULL.
- * Returns true in case of success or false in any error occur
+/** Function signature for unterminated string output
+ *
+ * This is HAL function that has to be implemented by user.
+ * It sends string to the output.
+ *
+ * \param[in] buffer Buffer with part of the string. Cannot be NULL
+ *
+ * \return true in case of success or false in any error occur
  */
-
 bool
 vs_logger_output_hal(const char *buffer);
 
@@ -53,8 +99,17 @@ vs_logger_output_hal(const char *buffer);
  */
 
 #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+
+/** Output current date/time function signature
+ *
+ * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_OUTPUT_TIME == 1.
+ * It outputs current date and/or time to the output.
+ *
+ * \return true in case of success or false in any error occur
+ */
 bool
 vs_logger_current_time_hal(void);
+
 #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
 #endif // VS_IOT_SDK_LOGGER_HAL_H_

@@ -1,3 +1,6 @@
+
+// TODO : insert our copyright ???
+
 /*! \file json_generator.h
  *
  * \brief JSON generator module

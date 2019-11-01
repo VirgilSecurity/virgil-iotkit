@@ -32,6 +32,53 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file fldt-server.h
+ * \brief FLDT for server
+ *
+ * FLDT protocol is used to download new file version from gateway to client. This module is used to process server part
+ * of FLDT protocol.
+ *
+ * \section fldt_server_usage FLDT Server Usage
+ *
+ * Server side sends new file versions provided by #vs_fldt_server_add_file_type call. Also it sends information about
+ * present files by client requests. Files must be previously listed by #vs_fldt_server_add_file_type call. If requested
+ * file has not been added, #vs_fldt_server_add_filetype callback is called to provide such information.
+ * In most case it used to output new file version information and gateway address.
+ * To successfully file broadcasting #vs_update_interface_t must be provided for each file type. You can see
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
+ *
+ * Here you can see an example of FLDT server initialization :
+ * \code
+ *  const vs_sdmp_service_t *sdmp_fldt_server;
+ *  const vs_mac_addr_t mac_addr;
+ *  sdmp_fldt_server = vs_sdmp_fldt_server( &mac_addr, _add_filetype );
+ *  STATUS_CHECK( vs_sdmp_register_service(sdmp_fldt_server), "Cannot register FLDT server service" );
+ *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ),
+ * "Unable to add Firmware file type" ); STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(),
+ * vs_tl_update_ctx(), false ), "Unable to add Trust List file type" ); * \endcode
+ *
+ * You can see #vs_fldt_server_add_filetype function example below :
+ * \code
+ * static vs_status_e
+ * _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **update_ctx) {
+ *     switch (file_type->type) {
+ *     case VS_UPDATE_FIRMWARE:
+ *         *update_ctx = vs_firmware_update_ctx();
+ *         break;
+ *     case VS_UPDATE_TRUST_LIST:
+ *         *update_ctx = vs_tl_update_ctx();
+ *         break;
+ *     default:
+ *         VS_LOG_ERROR("Unsupported file type : %d", file_type->type);
+ *         return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
+ *     }
+ *
+ *     return VS_CODE_OK;
+ * }
+ * \endcode
+ *
+ */
+
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_SERVER_H
 
@@ -45,22 +92,44 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
-//
-//  Callbacks
-//
-
-// . "Add file type"
-// .  Add file type asked by client
+/** Add new file type callback
+ *
+ * Callback for #vs_sdmp_fldt_server function.
+ * This callback is used when gateway receives request for file type that has not been added by
+ * #vs_fldt_server_add_file_type call.
+ *
+ * \warning Valid pointer to the update context with all callback must be provided.
+ *
+ * \param[in] file_type File type descriptor. Cannot be NULL.
+ * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
                                                    vs_update_interface_t **update_ctx);
 
+/** FLDT Server SDMP Service implementation
+ *
+ * This call returns FLDT server implementation. It must be called before any FLDT call.
+ *
+ * \param[in] gateway_mac Gateway's MAC address. Must not be NULL.
+ * \param[in] add_filetype Callback. Must not be NULL.
+ *
+ * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ */
 const vs_sdmp_service_t *
 vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
 
-//
-//  Customer API
-//
-
+/** Add file type
+ *
+ * FLDT server has the list of file types that it processes. This call adds new file type or update previously added
+ * one.
+ *
+ * \param[in] file_type File type to be added. Must not be NULL.
+ * \param[in] update_ctx Update context for current file type. Must not be NULL.
+ * \param[in] broadcast_file_info true if gateways has to broadcast information about file provided.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
                              vs_update_interface_t *update_context,

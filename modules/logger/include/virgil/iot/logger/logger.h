@@ -32,6 +32,56 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file logger.h
+ * \brief Logger implementation
+ *
+ * Logger allows to log messages to output stream that can be file or screen. User can enable different logging levels
+ * like debug, info, error etc. (see #vs_log_level_t).
+ *
+ * \section logger_usage Logger Usage
+ *
+ * User has to provide logger output function #vs_logger_output_hal
+ * Client side downloads new file versions and checks them. #vs_fldt_got_file function is called after file upgrading.
+ * In most case it used to output new file version information and gateway address.
+ * To successfully file downloading process #vs_update_interface_t must be provided for each file type. You can see
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
+ *
+ * Here you can see an example of FLDT client initialization :
+ * \code
+ *  const vs_sdmp_service_t *sdmp_fldt_client;
+ *  sdmp_fldt_client = vs_sdmp_fldt_client( _on_file_updated );
+ *  STATUS_CHECK( vs_sdmp_register_service( sdmp_fldt_client ), "Cannot register FLDT client service");
+ *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to
+ * add Firmware file type" ); STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx()
+ * ), "Unable to add Trust List file type" ); \endcode
+ *
+ * You can see minimalistic #vs_fldt_got_file function example below :
+ * \code
+ * void _on_file_updated(vs_update_file_type_t *file_type,
+ *                  const vs_file_version_t *prev_file_ver,
+ *                  const vs_file_version_t *new_file_ver,
+ *                  vs_update_interface_t *update_interface,
+ *                  const vs_mac_addr_t *gateway,
+ *                  bool successfully_updated) {
+ *     (void) prev_file_ver;
+ *     (void) new_file_ver;
+ *     (void) update_interface;
+ *     (void) gateway;
+ *
+ *     switch(file_type->type) {
+ *     case VS_UPDATE_FIRMWARE :   VS_LOG_INFO( "New Firmware has been loaded" );   break;
+ *     case VS_UPDATE_TRUST_LIST : VS_LOG_INFO( "New Trust List has been loaded" ); break;
+ *     }
+ *
+ *     if (file_type->type == VS_UPDATE_FIRMWARE && successfully_updated) {
+ *         _app_restart();
+ *     }
+ * }
+ * \endcode
+ *
+ * In this example _app_restart() function is called for firmware that has been successfully updated.
+ */
+
 #ifndef AP_SECURITY_SDK_LOGGER_H
 #define AP_SECURITY_SDK_LOGGER_H
 
@@ -39,42 +89,71 @@
 #include <stdarg.h>
 #include <string.h>
 
-// Logging levels
+/** Logging level
+ */
 typedef enum {
-    VS_LOGLEV_UNKNOWN = 0xFF,   // Errorneous logging level
-    VS_LOGLEV_NO_LOGGER = 0xFE, // Logging is disabled
+    VS_LOGLEV_UNKNOWN = 0xFF,   /**< Errorneous logging level */
+    VS_LOGLEV_NO_LOGGER = 0xFE, /**< Logging is disabled */
 
-    VS_LOGLEV_INFO = 0x00,
-    VS_LOGLEV_FATAL = 0x10,
-    VS_LOGLEV_ALERT = 0x20,
-    VS_LOGLEV_CRITICAL = 0x30,
-    VS_LOGLEV_ERROR = 0x40,
-    VS_LOGLEV_WARNING = 0x50,
-    VS_LOGLEV_NOTICE = 0x60,
-    VS_LOGLEV_TRACE = 0x70,
+    VS_LOGLEV_INFO = 0x00,     /**< Information messages */
+    VS_LOGLEV_FATAL = 0x10,    /**< Fatal messages */
+    VS_LOGLEV_ALERT = 0x20,    /**< Alert messages */
+    VS_LOGLEV_CRITICAL = 0x30, /**< Critical messages */
+    VS_LOGLEV_ERROR = 0x40,    /**< Error messages */
+    VS_LOGLEV_WARNING = 0x50,  /**< Warning message */
+    VS_LOGLEV_NOTICE = 0x60,   /**< Notifications */
+    VS_LOGLEV_TRACE = 0x70,    /**< Trace messages */
 
-    VS_LOGLEV_DEBUG = 0xFD,
+    VS_LOGLEV_DEBUG = 0xFD, /**< Debug messages */
 } vs_log_level_t;
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
-// Helpers
+/** Get current logging level to \a LOGLEV_VARIABLE */
 #define VS_LOG_GET_LOGLEVEL(LOGLEV_VARIABLE) (LOGLEV_VARIABLE) = vs_logger_get_loglev()
+/** Is \a LOGLEV_VALUE logging level is enabled */
 #define VS_LOG_IS_LOGLEVEL(LOGLEV_VALUE) vs_logger_is_loglev(LOGLEV_VALUE)
+/** Set \a LOGLEV_VALUE as current logging level */
 #define VS_LOG_SET_LOGLEVEL(LOGLEV_VALUE) vs_logger_set_loglev(LOGLEV_VALUE)
 
+/** Log message
+ *
+ * Sends \a FRMT message by calling #vs_logger_message function.
+ *
+ * \param[in] LGLVL Logging level.
+ * \param[in] FRMT printf-like format string and arguments.
+ */
 #define VS_LOG(LGLVL, FRMT, ...) vs_logger_message((LGLVL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+
+/** Log HEX buffer
+ *
+ * Sends \a BUF as hex string by calling #vs_logger_message function.
+ *
+ * \param[in] LGLVL Logging level
+ * \param[in] PREFIX Prefix for output. Must not be NULL.
+ * \param[in] BUF Buffer to be output as HEX. Must not be NULL.
+ * \param[in] SIZE Array size to be output as HEX. Must not be zero.
+ */
 #define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
     vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
 
+/** Log message with #VS_LOGLEV_INFO level */
 #define VS_LOG_INFO(FRMT, ...) vs_logger_message(VS_LOGLEV_INFO, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_FATAL level */
 #define VS_LOG_FATAL(FRMT, ...) vs_logger_message(VS_LOGLEV_FATAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_ALERT level */
 #define VS_LOG_ALERT(FRMT, ...) vs_logger_message(VS_LOGLEV_ALERT, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_CRITICAL level */
 #define VS_LOG_CRITICAL(FRMT, ...) vs_logger_message(VS_LOGLEV_CRITICAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_ERROR level */
 #define VS_LOG_ERROR(FRMT, ...) vs_logger_message(VS_LOGLEV_ERROR, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_WARNING level */
 #define VS_LOG_WARNING(FRMT, ...) vs_logger_message(VS_LOGLEV_WARNING, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_NOTICE level */
 #define VS_LOG_NOTICE(FRMT, ...) vs_logger_message(VS_LOGLEV_NOTICE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_TRACE level */
 #define VS_LOG_TRACE(FRMT, ...) vs_logger_message(VS_LOGLEV_TRACE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+/** Log message with #VS_LOGLEV_DEBUG level */
 #define VS_LOG_DEBUG(FRMT, ...) vs_logger_message(VS_LOGLEV_DEBUG, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
 #if VS_IOT_LOGGER_USE_LIBRARY
@@ -86,60 +165,77 @@ typedef enum {
 
 // Functions
 
-// Last result
-// Return true if there were no errors during last call and log level was appropriate.
+/** Last result
+ *
+ * Return true if there were no errors during last call and log level was appropriate.
+ *
+ * \return true if last output was successful or false otherwise
+ */
 
 bool
 vs_logger_last_result(void);
 
-
-// Log text message
-// - level : log level
-// - cur_filename : source code file name
-// - line_num : source code line number
-// - log_format, ... : printf like string
-// Return true if there were no errors and string has not been cut
-// You can pass cur_filename = NULL and line_num = 0 to make output shorter
-
+/** Log text message
+ *
+ * Sends \a FRMT output message with current time if #VS_IOT_LOGGER_OUTPUT_TIME is enabled, filename, line number
+ * and user message. Buffer size is limited by #VS_IOT_LOGGER_MAX_BUFFER_SIZE define.
+ *
+ * \param[in] level Message log level
+ * \param[in] cur_filename Source code file name. If NULL, not output.
+ * \param[in] line_num Source code line number. If zero, not output.
+ * \param[in] log_format Printf like string
+ *
+ * \return true if there were no errors and string has not been cut
+ */
 void
 vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *log_format, ...);
 
-// Initialize logging level
-// - log_level : logging logging level to be initialized
-// - max_buf_size : maximum buffer size, in bytes. You can use VS_LOGGER_DEFAULT_BUF_SIZE if you are not sure
-// Return true if successful
-
+/** Initialize logging level
+ *
+ * \param[int] log_level Message log level
+ */
 void
 vs_logger_init(vs_log_level_t log_level);
 
-// Set current logging level
-// - new_level : new logging level to be initialized
-// Return previous logging level
+/** Set current logging level
+ *
+ * \param[in] new_level New logging level to be initialized
+ *
+ * \return vs_log_level_t previous log level
+ */
 
 vs_log_level_t
 vs_logger_set_loglev(vs_log_level_t new_level);
 
-// Get current logging level
-// Return VS_LOGLEV_UNKNOWN if any error
+/** Get current logging level
+ *
+ * \return #VS_LOGLEV_UNKNOWN if any error
+ */
 
 vs_log_level_t
 vs_logger_get_loglev(void);
 
-// Check that specified logging level is enabled
-// Return true if specified logging level is enabled and there are now any error
+/** Check that specified logging level is enabled
+ *
+ * \param[in] level Logging level to be tested
+ *
+ * \return true if specified logging level is enabled and there are now any error
+ */
 
 bool
 vs_logger_is_loglev(vs_log_level_t level);
 
-// Log message in hex format
-// - level : log level
-// - cur_filename : source code file name
-// - line_num : source code line number
-// - prefix : data to print before hex data
-// - data_buf : data sequence buffer
-// - date_size : data sequence size
-// - log_format, ... : printf like string
-// Return true if there were no errors
+/** Log HEX buffer
+ *
+ * Sends \a BUF as hex string by calling #vs_logger_message function.
+ *
+ * \param[in] level Logging level
+ * \param[in] cur_filename Source code file name. If NULL, not output.
+ * \param[in] line_num Source code line number. If zero, not output.
+ * \param[in] prefix Prefix for output. Must not be NULL.
+ * \param[in] data_buf Buffer to be output as HEX. Must not be NULL.
+ * \param[in] SIZE Array size to be output as HEX. Must not be zero.
+ */
 
 void
 vs_logger_message_hex(vs_log_level_t level,
