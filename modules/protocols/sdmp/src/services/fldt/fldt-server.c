@@ -370,6 +370,9 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
+#if DEBUG_CHUNKS
+    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Req dump = ", request, request_sz);
+#endif
     // Normalize byte order
     vs_fldt_gnfd_data_request_t_decode(data_request);
 

@@ -497,7 +497,9 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             data_request.offset,
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
-
+#if DEBUG_CHUNKS
+        VS_LOG_HEX(VS_LOGLEV_DEBUG, "Req dump = ", &data_request, sizeof(data_request));
+#endif
         CHECK_RET(!vs_sdmp_send_request(NULL,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
