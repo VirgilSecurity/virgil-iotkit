@@ -776,3 +776,25 @@ vs_firmware_ntoh_header(vs_firmware_header_t *header) {
 }
 
 /*************************************************************************/
+void
+vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc) {
+    desc->chunk_size = VS_IOT_HTONS(desc->chunk_size);
+    desc->app_size = VS_IOT_HTONL(desc->app_size);
+    desc->firmware_length = VS_IOT_HTONL(desc->firmware_length);
+    desc->info.version.timestamp = VS_IOT_HTONL(desc->info.version.timestamp);
+    desc->info.version.build = VS_IOT_HTONL(desc->info.version.build);
+}
+
+/*************************************************************************/
+void
+vs_firmware_hton_header(vs_firmware_header_t *header) {
+
+    vs_firmware_hton_descriptor(&header->descriptor);
+
+    header->code_length = VS_IOT_HTONL(header->code_length);
+    header->code_offset = VS_IOT_HTONL(header->code_offset);
+    header->footer_length = VS_IOT_HTONL(header->footer_length);
+    header->footer_offset = VS_IOT_HTONL(header->footer_offset);
+}
+
+/*************************************************************************/

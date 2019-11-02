@@ -254,4 +254,17 @@ vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc);
 void
 vs_firmware_ntoh_header(vs_firmware_header_t *header);
 
+/** hton convertor for descriptor
+ *
+ * \param[in,out] desc #vs_firmware_descriptor_t firmware descriptor
+ */
+void
+vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc);
+
+/** hton convertor for header
+ *
+ * \param[in,out] header #vs_firmware_header_t firmware header
+ */
+void
+vs_firmware_hton_header(vs_firmware_header_t *header);
 #endif // VS_FIRMWARE_H

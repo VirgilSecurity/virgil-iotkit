@@ -35,10 +35,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <endian-config.h>
+
 #include <virgil/iot/firmware/firmware.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/macros/macros.h>
+
 
 static vs_update_interface_t _fw_update_ctx = {.storage_context = NULL};
 static vs_device_manufacture_id_t _manufacture;
@@ -148,6 +151,9 @@ _fw_update_get_header(void *context,
 
     VS_IOT_MEMCPY(&file_type->info, &fw_descr->info, sizeof(fw_descr->info));
 
+    // Normalize byte order
+    vs_firmware_hton_descriptor(fw_descr);
+
     return VS_CODE_OK;
 }
 
@@ -202,7 +208,8 @@ _fw_update_get_footer(void *context,
                       void *footer_buffer,
                       uint32_t buffer_size,
                       uint32_t *footer_size) {
-    const vs_firmware_descriptor_t *descriptor = file_header;
+    const vs_firmware_descriptor_t *net_descr = file_header;
+    vs_firmware_descriptor_t descriptor;
     vs_status_e ret_code;
     (void)file_type;
     size_t data_sz;
@@ -212,13 +219,18 @@ _fw_update_get_footer(void *context,
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+    VS_IOT_MEMCPY(&descriptor, net_descr, sizeof(descriptor));
+
+    //Normalize byte order
+    vs_firmware_ntoh_descriptor(&descriptor);
+
     CHECK_RET(buffer_size <= UINT16_MAX,
               VS_CODE_ERR_FORMAT_OVERFLOW,
               "Buffer size %d is bigger than uint16_t %d",
               buffer_size,
               VS_CODE_ERR_FORMAT_OVERFLOW);
 
-    ret_code = vs_firmware_load_firmware_footer(descriptor, footer_buffer, buffer_size, &data_sz);
+    ret_code = vs_firmware_load_firmware_footer(&descriptor, footer_buffer, buffer_size, &data_sz);
     CHECK_RET(buffer_size >= data_sz,
               VS_CODE_ERR_TOO_SMALL_BUFFER,
               "Buffer size %d bytes is not enough to store footer %d bytes size",
@@ -236,11 +248,14 @@ _fw_update_set_header(void *context,
                       const void *file_header,
                       uint32_t header_size,
                       uint32_t *file_size) {
-    const vs_firmware_descriptor_t *descriptor = file_header;
+    vs_firmware_descriptor_t *descriptor = (vs_firmware_descriptor_t *)file_header;
     (void)file_type;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    // Normalize byte order
+    vs_firmware_ntoh_descriptor(descriptor);
     CHECK_RET(header_size == sizeof(*descriptor),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Incorrect header size %d byte while it must store vs_firmware_descriptor_t %d bytes length",
