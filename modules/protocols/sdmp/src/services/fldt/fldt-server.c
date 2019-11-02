@@ -43,7 +43,7 @@
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>
 
-#define DEBUG_CHUNKS (0)
+#define DEBUG_CHUNKS (1)
 
 #define SERVER_FILE_TYPE_ARRAY_SIZE (10)
 

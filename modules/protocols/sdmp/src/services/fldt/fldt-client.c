@@ -45,7 +45,7 @@
 #include <global-hal.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
-#define DEBUG_CHUNKS (0)
+#define DEBUG_CHUNKS (1)
 
 static vs_sdmp_service_t _fldt_client = {0};
 
