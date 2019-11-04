@@ -34,7 +34,6 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-
 include(../cmake/installVirgilCryptoGo.cmake)
 #
 #   C library for HAL implementation
