@@ -16,14 +16,14 @@ function(add_go_executable NAME)
     add_custom_target(${NAME} ALL
             COMMAND env GOPATH=${GOPATH} CGO_CFLAGS="${CMAKE_CGO_CFLAGS}" CGO_LDFLAGS="${CMAKE_CGO_LDFLAGS}"
                     ${CMAKE_Go_COMPILER} build -o "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" ${CMAKE_GO_FLAGS} ${GO_SOURCE}
-            DEPENDS virgil-crypto-go-install-deps
+            DEPENDS virgil-crypto-go-install-deps ${ARGN}
             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
             )
     add_executable(${NAME}-target IMPORTED GLOBAL)
 
     set_target_properties(${NAME}-target PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
 
-    add_dependencies(${NAME}-target ${NAME} ${ARGN})
+    add_dependencies(${NAME}-target ${NAME})
 
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${NAME} DESTINATION bin)
 endfunction(add_go_executable)
