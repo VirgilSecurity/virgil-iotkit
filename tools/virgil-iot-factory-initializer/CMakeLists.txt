@@ -73,6 +73,7 @@ set(CMAKE_CGO_LDFLAGS
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
+        -Wl,-rpath -Wl,${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
         )
 
 message("CMAKE_CGO_CFLAGS = ${CMAKE_CGO_CFLAGS}")
