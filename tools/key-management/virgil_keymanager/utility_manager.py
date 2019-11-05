@@ -1054,87 +1054,6 @@ class UtilityManager(object):
         ))
         self.__ui.print_message("Key restored")
 
-    # TODO: update for new TL
-    def __import_trust_list_to_db(self):
-        trust_list_folder = os.path.join(self.__key_storage_path, "trust_lists")
-        if os.path.exists(trust_list_folder):
-            trust_list_files = os.listdir(trust_list_folder)
-            if len(trust_list_files) == 0:
-                self.__logger.error("TrustList storage are empty at path: {}".format(trust_list_folder))
-                self.__ui.print_error("TrustList storage are empty at path: {}".format(trust_list_folder))
-
-            first_trust_list_file = None
-
-            for file in trust_list_files:
-                if "TrustList_" in file and ".tl" in file:
-                    first_trust_list_file = file
-                    break
-
-            if not first_trust_list_file:
-                self.__logger.error("Not found any TrustList in storage at {}".format(trust_list_folder))
-                self.__ui.print_error("Not found any TrustList in storage at {}".format(trust_list_folder))
-                return
-
-            self.__logger.debug("First finded trustlist: {}".format(first_trust_list_file))
-
-
-            trust_list_file = open(
-                os.path.join(trust_list_folder, first_trust_list_file),
-                "rb"
-            )
-            self.__logger.debug("Strat handlind finded TrustList file")
-
-            trust_list_file.seek(6)
-            pub_keys_count = int.from_bytes(
-                trust_list_file.read(2),
-                byteorder='big',
-                signed=False
-            )
-            self.__logger.debug("Finded TrustList have {} key(s)".format(pub_keys_count))
-            trust_list_file.seek(32)
-            key_type_names = {
-                int(consts.VSKeyTypeE.FACTORY): "factory",
-                int(consts.VSKeyTypeE.FIRMWARE): "firmware",
-                int(consts.VSKeyTypeE.FIRMWARE_INTERNAL): "firmware_internal",
-                int(consts.VSKeyTypeE.AUTH): "auth_internal"
-            }
-            while pub_keys_count > 0:
-                key_data = trust_list_file.read(96)
-                self.__logger.debug("Data bytearray size: {}".format(len(key_data)))
-                key_type_int = int.from_bytes(key_data[66:68], byteorder='big', signed=False)
-                key_id = int.from_bytes(key_data[64:66], byteorder='big', signed=False)
-                key_type_name = key_type_names[key_type_int]
-                key_bytes_base64 = base64.b64encode(bytes(key_data[:64])).decode()
-                if key_type_int not in list(key_type_names.keys()) or self.__trust_list_pub_keys.get_value(key_id):
-                    self.__logger.debug("Key with key type number {} skipped".format(key_type_int))
-                    pub_keys_count -= 1
-                    continue
-                key_data_message = "Importing Key type: {key_type} id: {key_id} content: {key_base64}".format(
-                    key_id=key_id,
-                    key_type=key_type_name,
-                    key_base64=key_bytes_base64
-                )
-                self.__ui.print_message(key_data_message)
-                self.__logger.debug(key_data_message)
-                key_comment = self.__ui.get_user_input(
-                    "Enter {} key comment: ".format(key_type_names[key_type_int]),
-                    empty_allow=False
-                )
-                self.__logger.debug("Adding comment: {} to key".format(key_comment))
-                key_info = {
-                    "type": key_type_name,
-                    "comment": key_comment,
-                    "key": key_bytes_base64,
-                }
-                self.__trust_list_pub_keys.save(str(key_id), key_info)
-                self.__logger.debug("{key_type} Key with id: {key_id} added to TrustListPubKeys db".format(
-                    key_type=key_type_names[key_type_int],
-                    key_id=key_id
-                ))
-                pub_keys_count -= 1
-        else:
-            self.__ui.print_error("TrustList storage not exists at path: {}".format(trust_list_folder))
-
     def __exit(self):
         sys.exit(0)
 
@@ -1236,7 +1155,6 @@ class UtilityManager(object):
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
                 ["Dump upper level Public Keys", self.__dump_upper_level_pub_keys],
-                ["Import TrustList to db", self.__import_trust_list_to_db],
                 ["---"],
                 ["Export Private Keys", self.__get_all_private_keys],
                 ["Export Internal Private Keys", self.__get_internal_private_keys],
