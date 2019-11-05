@@ -59,7 +59,6 @@ typedef struct {
 } vs_poll_ctx_t;
 
 static vs_sdmp_info_srv_callbacks_t _callbacks = {0};
-static vs_mac_addr_t _self_mac;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
@@ -258,6 +257,8 @@ static vs_status_e
 _snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)response;
     vs_sdmp_info_device_t device_info;
+    vs_mac_addr_t self_mac;
+    vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(response_sz == sizeof(*enum_data),
@@ -270,7 +271,9 @@ _snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
-    if (VS_IOT_MEMCMP(enum_data->mac.bytes, _self_mac.bytes, sizeof(_self_mac.bytes))) {
+    STATUS_CHECK_RET(vs_sdmp_mac_addr(vs_sdmp_default_netif(), &self_mac), "Unable to request self MAC address");
+
+    if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes))) {
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
@@ -392,10 +395,7 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    const vs_sdmp_info_srv_callbacks_t *cb,
-                    const vs_mac_addr_t self_mac) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, const vs_sdmp_info_srv_callbacks_t *cb) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -404,7 +404,6 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
 
     _tl_ctx = tl_ctx;
     _fw_ctx = fw_ctx;
-    _self_mac = self_mac;
 
     if (!cb) {
         VS_IOT_MEMSET(&_callbacks, 0, sizeof(_callbacks));

@@ -109,8 +109,8 @@ typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statis
 /** INFO client callbacks */
 typedef struct {
     vs_sdmp_info_start_notif_cb_t device_start_cb; /**< Startup notification */
-    vs_sdmp_info_general_cb_t general_info_cb; /**< General information */
-    vs_sdmp_info_statistics_cb_t statistics_cb; /**< Device statistics */
+    vs_sdmp_info_general_cb_t general_info_cb;     /**< General information */
+    vs_sdmp_info_statistics_cb_t statistics_cb;    /**< Device statistics */
 } vs_sdmp_info_callbacks_t;
 
 // TODO : members description???

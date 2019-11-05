@@ -73,15 +73,11 @@ typedef struct {
  * \param[in] tl_ctx Trust List storage context. Must not be NULL.
  * \param[in] fw_ctx Firmware storage context. Must not be NULL.
  * \param[in] cb Server callbacks. Must not be NULL.
- * \param[in] self_mac Self MAC address. Must neither be NULL nor broadcast.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    const vs_sdmp_info_srv_callbacks_t *cb,
-                    const vs_mac_addr_t self_mac);
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, const vs_sdmp_info_srv_callbacks_t *cb);
 
 /** INFO Server startup notification
  *
