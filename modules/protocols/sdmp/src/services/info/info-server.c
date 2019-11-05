@@ -125,9 +125,9 @@ _poll_request_processing(const uint8_t *request,
 
     VS_LOG_DEBUG("[info] poll request. en = %d, period = %d, mask = %08x, time = %d",
                  poll_request->enable,
-                 _poll_ctx.period_seconds,
-                 _poll_ctx.elements_mask,
-                 _poll_ctx.time_counter);
+                 poll_request->period_seconds,
+                 poll_request->elements,
+                 poll_request->period_seconds);
     if (poll_request->enable) {
         _poll_ctx.period_seconds = poll_request->period_seconds;
         _poll_ctx.elements_mask |= poll_request->elements;
