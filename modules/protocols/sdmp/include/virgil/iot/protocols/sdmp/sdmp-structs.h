@@ -259,12 +259,12 @@ typedef struct __attribute__((__packed__)) ethernet_header {
 /** SDMP packet header
  */
 typedef struct __attribute__((__packed__)) {
-    vs_sdmp_transaction_id_t transaction_id; /**< Transaction ID */
-    vs_sdmp_service_id_t service_id;         /**< SDMP service */ // CODEGEN: SKIP
-    vs_sdmp_element_t element_id;            /**< Service's command */ // CODEGEN: SKIP
-    uint32_t flags;                          /**< Packet flags */ // CODEGEN: SKIP
-    uint16_t padding;                        /**< Packet padding */
-    uint16_t content_size;                   /**< Packet #vs_sdmp_packet_t \a content data size */
+    vs_sdmp_transaction_id_t transaction_id;                /**< Transaction ID */
+    vs_sdmp_service_id_t service_id; /**< SDMP service */   // CODEGEN: SKIP
+    vs_sdmp_element_t element_id; /**< Service's command */ // CODEGEN: SKIP
+    uint32_t flags; /**< Packet flags */                    // CODEGEN: SKIP
+    uint16_t padding;                                       /**< Packet padding */
+    uint16_t content_size;                                  /**< Packet #vs_sdmp_packet_t \a content data size */
 } vs_sdmp_header_t;
 // TODO : what is it padding?
 
