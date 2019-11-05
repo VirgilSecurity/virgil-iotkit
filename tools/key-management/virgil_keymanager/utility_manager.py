@@ -1,5 +1,4 @@
 import base64
-import copy
 import io
 import json
 import os
@@ -419,48 +418,6 @@ class UtilityManager(object):
         self.__ui.print_message("TrustList generated and stored")
         self.__logger.info("TrustList generation completed")
 
-    def __revive_recovery_key(self):
-        self.__logger.info("Recovery Key revival started")
-        self.__revive_key("recovery")
-
-    def __re_generate_factory_key(self):
-        self.__logger.info("re-generation of Factory Key dongle from the existing key")
-        self.__ui.print_message("Creating Factory dongle from the existing Key...")
-        factory_key = self.key_chooser(consts.VSKeyTypeS.FACTORY, is_new_key=True, stage="re-generation of Factory Key")
-        factory_private_keys = list(
-            map(lambda x: ["factory: {}".format(x["comment"]), x], self.__factory_priv_keys.get_values())
-        )
-        if not factory_private_keys:
-            self.__logger.error("no Keys were found, re-generation failed")
-            self.__ui.print_error("Can't find any Factory Keys")
-            return
-        chosen_key = self.__ui.choose_from_list(factory_private_keys, "Please enter option number: ", "Factory Keys:")
-        signature_limit = self.__ui.get_user_input(
-            "Enter the signature limit number from 1 to 4294967295 [4294967295]: ",
-            input_checker_callback=self.__ui.InputCheckers.signature_input_check,
-            input_checker_msg="Only the number in range from 1 to 4294967295 is allowed. Please try again: ",
-            empty_allow=True
-        )
-        rec_pub_keys = self.__get_recovery_pub_keys()
-        if not factory_key.generate(
-                signature_limit=signature_limit,
-                rec_pub_keys=rec_pub_keys,
-                private_key_base64=factory_private_keys[chosen_key][1]["key"]
-        ):
-            self.__logger.error("Factory Key generation failed")
-            sys.exit("Factory Key generation failed")
-        if self._context.program_mode in (ProgramModes.ATMEL_DONGLES_EMULATOR, ProgramModes.ATMEL_DONGLES):
-            self.__dongle_unplug_and_mark(factory_key.device_serial, "factory")
-        key_id = factory_key.key_id
-        self.__ui.print_message("Generation finished")
-        self.__logger.info(
-            "Factory key id: [{key_id}] signature limit: [{signature_limit}] comment: [{comment}]"
-            " re-generation finished".format(
-                key_id=key_id,
-                signature_limit=signature_limit or "unlimited",
-                comment=factory_private_keys[chosen_key][1]["comment"]
-        ))
-
     def __delete_factory_key(self):
         self.__logger.info("Factory Key deleting")
         self.__ui.print_message("Deleting Factory Key...")
@@ -715,15 +672,6 @@ class UtilityManager(object):
             allowed_count=2
         )
 
-    def __revive_auth_key(self):
-        self.__revive_key("auth")
-
-    def __revive_tl_service_key(self):
-        self.__revive_key("tl_service")
-
-    def __revive_firmware_key(self):
-        self.__revive_key("firmware")
-
     def __manual_add_public_key(self):
         self.__logger.info("Adding Public Key to db")
         self.__ui.print_message("Manual adding Public Key to db...")
@@ -751,92 +699,6 @@ class UtilityManager(object):
             key_id=key_id
         ))
         self.__ui.print_message("Key added")
-
-    def __revive_key(self, key_type):
-
-        def check_key_info(check_id, check_info):
-            # type: (str, dict) -> bool
-            key_info_from_db = self.__upper_level_pub_keys.get_value(str(check_id))
-            if not key_info_from_db:
-                self.__ui.print_error("Restored data doesn't match the data in the UpperLevelPubKeys db!")
-                return False
-            else:
-                key_info_from_db["comment"] = str(key_info_from_db["comment"])
-                if key_type != "recovery":
-                    del key_info_from_db["signature"]
-                    del key_info_from_db["signer_key_id"]
-            if check_info != key_info_from_db:
-                self.__ui.print_error("Restored data doesn't match the data in the UpperLevelPubKeys db!")
-                return False
-            return True
-
-        self.__logger.info("Revive [{}] Key started".format(key_type))
-        self.__ui.print_message("Reviving [{}] Key...".format(key_type))
-        key_to_revive = self.key_chooser(key_type, is_new_key=True, stage="Reviving [{}] key".format(key_type))
-        if not key_to_revive:
-            return
-
-        private_key_base64 = self.__ui.get_user_input(
-            "Enter Private Key from the RestorePaper: ",
-            input_checker_callback=self.__ui.InputCheckers.check_base64,
-            input_checker_msg="Can't decode, please ensure it's base64 and try again",
-            empty_allow=False
-        )
-        if key_type == 'recovery':
-            comment = self.__ui.get_user_input(
-                "Enter comment for [{}] Key from RestorePaper: ".format(key_type),
-                input_checker_callback=self.__ui.InputCheckers.check_recovery_key_comment,
-                input_checker_msg="Allowed comment [1 or 2]. Please try again: "
-            )
-        else:
-            comment = self.__ui.get_user_input("Enter comment for [{}] Key from RestorePaper: ".format(key_type))
-
-        revive_result = None
-        if key_type == "recovery":
-            revive_result = key_to_revive.generate(private_key_base64=private_key_base64)
-        else:
-            rec_pub_keys = self.__get_recovery_pub_keys()
-            rec_key_for_sign = self.key_chooser(consts.VSKeyTypeS.RECOVERY, stage="Reviving [{}] key, select signer".format(key_type))
-            if key_type in ("auth", "tl_service", "firmware"):
-                revive_result = key_to_revive.generate(
-                    rec_pub_keys=rec_pub_keys,
-                    signer_key=rec_key_for_sign,
-                    private_key_base64=private_key_base64
-                )
-
-        if not revive_result:
-            self.__logger.info("Restoration failed")
-            self.__ui.print_error("Restoration failed")
-            return
-        # TODO: use dongles cache only in dongles mode
-        # cache_info = self.__dongles_cache.search_serial(device_serial)
-        # if cache_info:
-        #     public_key = cache_info["key"]
-        #     key_id = cache_info["key_id"]
-        # else:
-        #     ops_status = self.__atmel.get_public_key(device_serial)
-        #     if not ops_status[0]:
-        #         self.__logger.error("reviving failed: {}".format(ops_status[1]))
-        #         sys.exit(ops_status[1])
-        #     public_key = ops_status[1]
-        #     key_id = str(CRCCCITT().calculate(base64.b64decode(public_key)))
-        # del cache_info
-        public_key = key_to_revive.public_key
-        key_id = key_to_revive.key_id
-
-        key_info = {
-            "type": key_type,
-            "comment": comment,
-            "key": public_key
-        }
-        if not check_key_info(key_id, key_info):
-            return
-        self.__logger.info("[{key_type}] Key id: [{key_id}] comment: [{comment}] restoration completed".format(
-            key_type=key_type,
-            key_id=key_id,
-            comment=comment
-        ))
-        self.__ui.print_message("Restoration finished.")
 
     def __print_all_pub_keys_db(self):
         self.__logger.info("Printing Public Keys from db's started")
@@ -917,97 +779,6 @@ class UtilityManager(object):
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Firmware Key {}:".format(key_number))
                 self.__generate_firmware_key()
-
-    def __restore_upper_level_db_from_keys(self):
-        self.__logger.info("UpperLevelPubKeys db restoration started")
-        self.__ui.print_message("Restoring db from dongles...")
-
-        # get key type
-        key_type_list = [
-            [consts.VSKeyTypeS.RECOVERY.value],
-            [consts.VSKeyTypeS.AUTH.value],
-            [consts.VSKeyTypeS.FIRMWARE.value],
-            [consts.VSKeyTypeS.TRUSTLIST.value]
-        ]
-        type_choice = self.__ui.choose_from_list(key_type_list, "Please choose Key type: ", "Key types:")
-
-        # get chosen device serial, and start build real db record, from device info map
-        chosen_type = consts.VSKeyTypeS(key_type_list[type_choice][0])
-        choosed_device = self.key_chooser(
-            chosen_type,
-            stage="UpperLevelPubKeys db restoration",
-            hw_info=True,
-            suppress_db_warning=True
-        )
-        rec_key_for_sign = 0
-        if chosen_type in [consts.VSKeyTypeS.AUTH, consts.VSKeyTypeS.TRUSTLIST, consts.VSKeyTypeS.FIRMWARE]:
-            rec_key_for_sign = self.key_chooser(
-                consts.VSKeyTypeS.RECOVERY,
-                stage="UpperLevelPubKeys db restoration",
-                greeting_msg="Please choose Recovery Key for signing {}:".format(key_type_list[type_choice][0])
-            )
-
-        # get devices info list
-        ops_status = self.__atmel.list_devices()
-        if not ops_status[0]:
-            self.__logger.error("restoration failed: {}".format(ops_status[1]))
-            sys.exit(ops_status[1])
-        device_list_info = self.__dongle_chooser.list_devices_info_hw(ops_status[1])
-        del ops_status
-
-        # build device map closely related to db records
-        device_info_map = dict()
-        for dev_info in device_list_info:
-            cleaned_dev_info = copy.copy(dev_info)
-            del cleaned_dev_info["device_serial"]
-            device_info_map[dev_info["device_serial"]] = cleaned_dev_info
-
-        if choosed_device in device_info_map.keys():
-            db_row = device_info_map[choosed_device]
-            if chosen_type == consts.VSKeyTypeS.RECOVERY:
-                db_row["comment"] = self.__ui.get_user_input(
-                    "Enter comment for {} Key: ".format(key_type_list[type_choice][0]),
-                    input_checker_callback=self.__ui.InputCheckers.check_recovery_key_comment,
-                    input_checker_msg="Allowed comment [1 or 2]. Please try again: "
-                )
-            else:
-                db_row["comment"] = self.__ui.get_user_input(
-                    "Enter comment for {} Key: ".format(key_type_list[type_choice][0]),
-                )
-            key_id = db_row["key_id"]
-            if "public_key" in db_row.keys():
-                db_row["key"] = db_row["public_key"]
-                del db_row["public_key"]
-
-            del db_row["key_id"]
-
-            ops_status = self.__atmel.sign_by_device(db_row["key"], device_serial=rec_key_for_sign)
-            if not ops_status[0]:
-                self.__logger.error("generation failed: {}".format(ops_status[1]))
-                sys.exit(ops_status[1])
-            db_row["signature"] = ops_status[1]
-            del ops_status
-
-            ops_status = self.__atmel.get_public_key(device_serial=rec_key_for_sign)
-            if not ops_status[0]:
-                self.__logger.error("generation failed: {}".format(ops_status[1]))
-                sys.exit(ops_status[1])
-            signer_id = CRCCCITT().calculate(base64.b64decode(ops_status[1]))
-            db_row["signer_key_id"] = signer_id
-            del ops_status
-            if chosen_type == consts.VSKeyTypeS.RECOVERY:
-                self.__upper_level_pub_keys.save(key_id, db_row, suppress_db_warning=True)
-            else:
-                self.__upper_level_pub_keys.save(key_id, db_row)
-        else:
-            self.__ui.print_error("Unknown device")
-            return
-        self.__logger.info("[{key_type}] Key id: [{key_id}] comment: [{comment}] restoration completed".format(
-            key_type=key_type_list[type_choice][0],
-            key_id=key_id,
-            comment=db_row["comment"]
-        ))
-        self.__ui.print_message("Key restored")
 
     def __exit(self):
         sys.exit(0)
@@ -1114,42 +885,6 @@ class UtilityManager(object):
             ])
 
         return self._utility_list
-
-    def __update_signature_in_db(self):
-        self.__ui.print_message("Update Key signature in db...")
-        ops_status = self.__atmel.list_devices()
-        if not ops_status[0]:
-            self.__logger.error("operation failed: {}".format(ops_status[1]))
-            self.__ui.print_error(ops_status[1])
-            return
-        device_list = ops_status[1]
-        del ops_status
-
-        if device_list:
-            first_device = device_list[0]
-        else:
-            self.__ui.print_error("Can't find any dongles")
-            return
-
-        ops_status = self.__atmel.get_public_key(first_device)
-        if not ops_status[0]:
-            self.__logger.error("operation failed: {}".format(ops_status[1]))
-            self.__ui.print_error(ops_status[1])
-            return
-        pub_key = ops_status[1]
-        del ops_status
-
-        key_id = str(CRCCCITT().calculate(base64.b64decode(pub_key)))
-
-        if key_id in self.__upper_level_pub_keys.get_keys():
-            ops_status = self.__atmel.get_signature(first_device)
-            if not ops_status[0]:
-                self.__ui.print_error("Can't get Key signature from dongle")
-                return
-            self.__upper_level_pub_keys.save(key_id, ops_status[1])
-        del ops_status
-
-        self.__ui.print_message("Signature updated")
 
     def __save_key(self, key_data: dict, file_path: str, signer_key_data: Optional[dict]=None):
         byte_buffer = io.BytesIO()
