@@ -106,21 +106,11 @@ typedef vs_status_e (*vs_sdmp_info_general_cb_t)(vs_info_general_t *general_info
  */
 typedef vs_status_e (*vs_sdmp_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
-// TODO : description???
-/** INFO client callbacks
- *
- * INFO client callbacks for #vs_sdmp_info_client call.
- *
- * \param[in] device_start_cb #vs_sdmp_info_start_notif_cb_t startup notification.
- * \param[in] general_info_cb #vs_sdmp_info_general_cb_t general information.
- * \param[in] statistics_cb #vs_sdmp_info_statistics_cb_t device statistics.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
+/** INFO client callbacks */
 typedef struct {
-    vs_sdmp_info_start_notif_cb_t device_start_cb;
-    vs_sdmp_info_general_cb_t general_info_cb;
-    vs_sdmp_info_statistics_cb_t statistics_cb;
+    vs_sdmp_info_start_notif_cb_t device_start_cb; /**< Startup notification */
+    vs_sdmp_info_general_cb_t general_info_cb; /**< General information */
+    vs_sdmp_info_statistics_cb_t statistics_cb; /**< Device statistics */
 } vs_sdmp_info_callbacks_t;
 
 // TODO : members description???
