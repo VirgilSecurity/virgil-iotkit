@@ -40,7 +40,6 @@ package sdmp
 #include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/sdmp/ti_prvs_impl.h>
-#include <virgil/iot/logger/logger.h>
 
 int
 go_sdmp_init(void) {
@@ -48,9 +47,6 @@ go_sdmp_init(void) {
     vs_device_type_t device_type = {0};
     vs_device_serial_t serial = {0};
     uint32_t roles = VS_SDMP_DEV_CONTROL;
-
-    // Initialize Logger module
-    vs_logger_init(VS_LOGLEV_DEBUG);
 
     return vs_sdmp_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
 }

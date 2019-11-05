@@ -117,22 +117,9 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
 
     // Detect required command
-    bool is_service_found = false;
     for (i = 0; i < _sdmp_services_num; i++) {
         if (_sdmp_services[i]->id == packet->header.service_id) {
-            is_service_found = true;
-            VS_LOG_DEBUG(
-                    "[sdmp] received. mac = %02x:%02x:%02x:%02x:%02x:%02x service = %08x element = %08x transact_id = "
-                    "%d",
-                    packet->eth_header.src.bytes[0],
-                    packet->eth_header.src.bytes[1],
-                    packet->eth_header.src.bytes[2],
-                    packet->eth_header.src.bytes[3],
-                    packet->eth_header.src.bytes[4],
-                    packet->eth_header.src.bytes[5],
-                    packet->header.service_id,
-                    packet->header.element_id,
-                    packet->header.transaction_id);
+
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
                 if (_sdmp_services[i]->response_process) {
@@ -170,22 +157,6 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                 }
             }
         }
-    }
-
-    // Debug unknown packet
-    if (!is_service_found) {
-        VS_LOG_DEBUG(
-                "[sdmp] Unknown service = %08x. element = %08x, mac = %02x:%02x:%02x:%02x:%02x:%02x, transact_id = "
-                "%d",
-                packet->header.service_id,
-                packet->header.element_id,
-                packet->eth_header.src.bytes[0],
-                packet->eth_header.src.bytes[1],
-                packet->eth_header.src.bytes[2],
-                packet->eth_header.src.bytes[3],
-                packet->eth_header.src.bytes[4],
-                packet->eth_header.src.bytes[5],
-                packet->header.transaction_id);
     }
 
     if (need_response) {
@@ -419,10 +390,6 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 
     // Normalize byte order
     if (packet) {
-        VS_LOG_DEBUG("[sdmp] send. service = %08x element = %08x transact_id = %d",
-                     packet->header.service_id,
-                     packet->header.element_id,
-                     packet->header.transaction_id);
         vs_sdmp_packet_t_encode(packet);
     }
 
