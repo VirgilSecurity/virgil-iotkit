@@ -58,6 +58,8 @@ typedef struct {
     vs_mac_addr_t dest_mac;
 } vs_poll_ctx_t;
 
+static vs_sdmp_info_srv_callbacks_t _callbacks = {0};
+static vs_mac_addr_t _self_mac;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
@@ -253,6 +255,33 @@ _ginf_request_processing(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
+_snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+    const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)response;
+    vs_sdmp_info_device_t device_info;
+
+    CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(response_sz == sizeof(*enum_data),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
+              sizeof(*enum_data),
+              response_sz);
+
+    if (!_callbacks.device_start_cb || !is_ack || !(enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {
+        return VS_CODE_COMMAND_NO_RESPONSE;
+    }
+
+    if (VS_IOT_MEMCMP(enum_data->mac.bytes, _self_mac.bytes, sizeof(_self_mac.bytes))) {
+        return VS_CODE_COMMAND_NO_RESPONSE;
+    }
+
+    device_info.device_roles = enum_data->device_roles;
+    VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
+
+    return _callbacks.device_start_cb(&device_info);
+}
+
+/******************************************************************************/
+static vs_status_e
 _info_request_processor(const struct vs_netif_t *netif,
                         vs_sdmp_element_t element_id,
                         const uint8_t *request,
@@ -280,6 +309,37 @@ _info_request_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_STAT:
         return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+
+    default:
+        VS_LOG_ERROR("Unsupported INFO command");
+        VS_IOT_ASSERT(false);
+        return VS_CODE_COMMAND_NO_RESPONSE;
+    }
+}
+
+/******************************************************************************/
+static vs_status_e
+_info_server_response_processor(const struct vs_netif_t *netif,
+                                vs_sdmp_element_t element_id,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
+    (void)netif;
+
+    if (!is_ack) {
+        VS_LOG_WARNING("[INFO] Broken response packet has been received");
+    }
+
+    switch (element_id) {
+
+    case VS_INFO_SNOT:
+        return _snot_response_processor(is_ack, response, response_sz);
+
+    case VS_INFO_GINF:
+    case VS_INFO_STAT:
+    case VS_INFO_ENUM:
+    case VS_INFO_POLL:
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     default:
         VS_LOG_ERROR("Unsupported INFO command");
@@ -332,7 +392,10 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
+                    vs_storage_op_ctx_t *fw_ctx,
+                    const vs_sdmp_info_srv_callbacks_t *cb,
+                    const vs_mac_addr_t self_mac) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -341,11 +404,18 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
 
     _tl_ctx = tl_ctx;
     _fw_ctx = fw_ctx;
+    _self_mac = self_mac;
+
+    if (!cb) {
+        VS_IOT_MEMSET(&_callbacks, 0, sizeof(_callbacks));
+    } else {
+        _callbacks = *cb;
+    }
 
     _info.user_data = NULL;
     _info.id = VS_INFO_SERVICE_ID;
     _info.request_process = _info_request_processor;
-    _info.response_process = NULL;
+    _info.response_process = _info_server_response_processor;
     _info.periodical_process = _info_server_periodical_processor;
     //    _info.deinit =
 

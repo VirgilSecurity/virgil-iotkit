@@ -138,6 +138,16 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback);
 vs_status_e
 vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);
 
+/** Request all files data
+ *
+ * Request information about all previously registered files.
+ * This function can be executed after gateway restart notification.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_fldt_client_request_all_files(void);
+
 #ifdef __cplusplus
 }
 #endif

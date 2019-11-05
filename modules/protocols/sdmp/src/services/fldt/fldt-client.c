@@ -766,5 +766,31 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback) {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_fldt_client_request_all_files(void) {
+    size_t id;
+    vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_status_e ret_code;
+
+    if (!_file_type_mapping_array_size) {
+        VS_LOG_WARNING("[FLDT] No registered file types");
+        return VS_CODE_OK;
+    }
+
+    for (id = 0; id < _file_type_mapping_array_size; ++id) {
+        file_type_info = &_client_file_type_mapping[id];
+
+        VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+
+        file_type_request.type = file_type_info->type;
+
+        STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request),
+                         "Unable to ask current file information");
+    }
+
+    return VS_CODE_OK;
+}
 
 #endif // FLDT_CLIENT
