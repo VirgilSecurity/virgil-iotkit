@@ -385,6 +385,8 @@ _tl_inc_data_offset(void *context,
     (void)loaded_data_size;
 
     CHECK_NOT_ZERO_RET(next_offset, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(current_offset < UINT32_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Next offset is outside of file");
+
     *next_offset = current_offset + 1;
 
     return VS_CODE_OK;

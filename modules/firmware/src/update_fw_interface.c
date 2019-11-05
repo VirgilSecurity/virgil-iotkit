@@ -407,10 +407,14 @@ _fw_update_inc_data_offset(void *context,
                            uint32_t *next_offset) {
     (void)context;
     (void)file_type;
+    size_t offs;
 
     CHECK_NOT_ZERO_RET(next_offset, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    *next_offset = current_offset + loaded_data_size;
+    offs = current_offset + loaded_data_size;
+    CHECK_RET(offs < UINT32_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Next offset is outside of file");
+
+    *next_offset = offs;
 
     return VS_CODE_OK;
 }

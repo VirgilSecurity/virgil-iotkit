@@ -297,13 +297,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
 
     header_response->type = *file_type;
     header_response->type.info.version = header_request->type.info.version;
-    if (file_type_info->file_size > UINT32_MAX) {
-        VS_LOG_ERROR("File size %d is bigger that file_type_info->file_size %d can transmit",
-                     file_type_info->file_size,
-                     UINT32_MAX);
-    } else {
-        header_response->file_size = file_type_info->file_size;
-    }
+    header_response->file_size = file_type_info->file_size;
 
     STATUS_CHECK_RET(file_type_info->update_context->has_footer(
                              file_type_info->update_context->storage_context, &file_type_info->type, &has_footer),
@@ -435,13 +429,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                      "Unable to retrieve offset for file %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
-    if (next_offset > UINT32_MAX) {
-        VS_LOG_ERROR("Offset %d is bigger that vs_fldt_gnfd_data_response_t.next_offset %d can transmit",
-                     next_offset,
-                     UINT32_MAX);
-    } else {
-        data_response->next_offset = next_offset;
-    }
+    data_response->next_offset = next_offset;
 
     *response_sz = sizeof(vs_fldt_gnfd_data_response_t) + data_response->data_size;
 #if DEBUG_CHUNKS
