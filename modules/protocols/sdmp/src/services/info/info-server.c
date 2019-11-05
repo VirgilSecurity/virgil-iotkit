@@ -279,12 +279,16 @@ _snot_request_processor(const uint8_t *request,
 
     STATUS_CHECK_RET(vs_sdmp_mac_addr(vs_sdmp_default_netif(), &self_mac), "Unable to request self MAC address");
 
+    VS_LOG_DEBUG("[INFO] SNOT received - 2");
+
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes))) {
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
     device_info.device_roles = enum_data->device_roles;
     VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
+
+    VS_LOG_DEBUG("[INFO] SNOT received - 3");
 
     return _callbacks.device_start_cb(&device_info);
 }
