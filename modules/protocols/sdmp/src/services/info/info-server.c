@@ -260,6 +260,8 @@ _snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
     vs_mac_addr_t self_mac;
     vs_status_e ret_code;
 
+    VS_LOG_DEBUG("[INFO] SNOT received");
+
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(response_sz == sizeof(*enum_data),
               VS_CODE_ERR_INCORRECT_ARGUMENT,

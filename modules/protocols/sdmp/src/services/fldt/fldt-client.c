@@ -774,6 +774,8 @@ vs_fldt_client_request_all_files(void) {
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
 
+    VS_LOG_DBUG("[FLDT] Request all registered file types update");
+    
     if (!_file_type_mapping_array_size) {
         VS_LOG_WARNING("[FLDT] No registered file types");
         return VS_CODE_OK;
