@@ -123,6 +123,11 @@ _poll_request_processing(const uint8_t *request,
     // Normalize byte order
     vs_info_poll_request_t_decode(poll_request);
 
+    VS_LOG_DEBUG("[info] poll request. en = %d, period = %d, mask = %08x, time = %d",
+                 poll_request->enable,
+                 _poll_ctx.period_seconds,
+                 _poll_ctx.elements_mask,
+                 _poll_ctx.time_counter);
     if (poll_request->enable) {
         _poll_ctx.period_seconds = poll_request->period_seconds;
         _poll_ctx.elements_mask |= poll_request->elements;
@@ -276,6 +281,12 @@ _info_request_processor(const struct vs_netif_t *netif,
     (void)netif;
 
     *response_sz = 0;
+
+    if (request_sz) {
+        VS_LOG_HEX(VS_LOGLEV_DEBUG, "[info] packet debug = ", request, request_sz);
+    } else {
+        VS_LOG_DEBUG("[info] Empty  packet");
+    }
 
     switch (element_id) {
 

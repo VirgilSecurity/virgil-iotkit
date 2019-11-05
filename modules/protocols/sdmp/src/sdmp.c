@@ -117,9 +117,18 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
 
     // Detect required command
+    bool is_service_found = false;
     for (i = 0; i < _sdmp_services_num; i++) {
         if (_sdmp_services[i]->id == packet->header.service_id) {
-
+            is_service_found = true;
+            VS_LOG_DEBUG("[sdmp] received. mac = %02x:%02x:%02x:%02x:%02x:%02x transact_id = %d",
+                         packet->eth_header.src.bytes[0],
+                         packet->eth_header.src.bytes[1],
+                         packet->eth_header.src.bytes[2],
+                         packet->eth_header.src.bytes[3],
+                         packet->eth_header.src.bytes[4],
+                         packet->eth_header.src.bytes[5],
+                         packet->header.transaction_id);
             // Process response
             if (packet->header.flags & VS_SDMP_FLAG_ACK || packet->header.flags & VS_SDMP_FLAG_NACK) {
                 if (_sdmp_services[i]->response_process) {
@@ -157,6 +166,22 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
                 }
             }
         }
+    }
+
+    // Debug unknown packet
+    if (!is_service_found) {
+        VS_LOG_DEBUG(
+                "[sdmp] Unknown service = %08x. element = %08x, mac = %02x:%02x:%02x:%02x:%02x:%02x, mactransact_id = "
+                "%d",
+                packet->header.service_id,
+                packet->header.element_id,
+                packet->eth_header.src.bytes[0],
+                packet->eth_header.src.bytes[1],
+                packet->eth_header.src.bytes[2],
+                packet->eth_header.src.bytes[3],
+                packet->eth_header.src.bytes[4],
+                packet->eth_header.src.bytes[5],
+                packet->header.transaction_id);
     }
 
     if (need_response) {
@@ -496,6 +521,8 @@ vs_sdmp_send_request(const vs_netif_t *netif,
         VS_IOT_MEMCPY(packet->content, data, data_sz);
     }
     _sdmp_fill_header(mac, packet);
+
+    VS_LOG_DEBUG("[sdmp] send. transact_id = %d", packet->header.transaction_id);
 
     // Send request
     _statistics.sent++;

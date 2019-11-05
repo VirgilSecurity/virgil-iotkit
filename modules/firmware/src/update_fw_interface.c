@@ -221,7 +221,7 @@ _fw_update_get_footer(void *context,
 
     VS_IOT_MEMCPY(&descriptor, net_descr, sizeof(descriptor));
 
-    //Normalize byte order
+    // Normalize byte order
     vs_firmware_ntoh_descriptor(&descriptor);
 
     CHECK_RET(buffer_size <= UINT16_MAX,
