@@ -85,7 +85,6 @@ vs_sdmp_header_t_decode(vs_sdmp_header_t *src_data) {
 // Converting encode function for (vs_info_poll_request_t)
 void
 vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data) {
-    src_data->elements = VS_IOT_HTONL(src_data->elements);
     src_data->period_seconds = VS_IOT_HTONS(src_data->period_seconds);
 }
 
@@ -93,7 +92,6 @@ vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data) {
 // Converting decode function for (vs_info_poll_request_t)
 void
 vs_info_poll_request_t_decode(vs_info_poll_request_t *src_data) {
-    src_data->elements = VS_IOT_NTOHL(src_data->elements);
     src_data->period_seconds = VS_IOT_NTOHS(src_data->period_seconds);
 }
 
