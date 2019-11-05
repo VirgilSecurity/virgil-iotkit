@@ -264,7 +264,7 @@ _snot_request_processor(const uint8_t *request,
     vs_mac_addr_t self_mac;
     vs_status_e ret_code;
 
-    VS_LOG_DEBUG("[INFO] SNOT received");
+    VS_LOG_DEBUG("[INFO] SNOT received : %p, device's role = %x", _callbacks.device_start_cb, enum_data->device_roles);
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(request_sz == sizeof(*enum_data),
