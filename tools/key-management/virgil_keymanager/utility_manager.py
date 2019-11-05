@@ -56,9 +56,6 @@ class UtilityManager(object):
         self.__trust_list_pub_keys = self.__init_storage(
             "TrustListPubKeys", storage_class=KeysTinyDBStorage, storage_type=SignedByteStorage
         )
-        self.__internal_private_keys = self.__init_storage(
-            "InternalPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
         self.__factory_priv_keys = self.__init_storage(
             "FactoryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
@@ -86,8 +83,6 @@ class UtilityManager(object):
             consts.VSKeyTypeS.RECOVERY:          (self.__recovery_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
-            consts.VSKeyTypeS.AUTH_INTERNAL:     (self.__internal_private_keys, self.__trust_list_pub_keys),
-            consts.VSKeyTypeS.FIRMWARE_INTERNAL: (self.__internal_private_keys, self.__trust_list_pub_keys),
             consts.VSKeyTypeS.CLOUD:             (None, self.__trust_list_pub_keys),  # private key is stored on cloud
         }
         self.__dongle_chooser = DongleChooser(
@@ -359,24 +354,12 @@ class UtilityManager(object):
             self.__logger.info("Failed to retrieve Cloud key. Virgil api url: %s" % self._context.virgil_api_url)
             return
 
-        # Choose trust list type
-        trust_list_types = [["Dev"], ["Release"]]
-        trust_type_choice_raw = self.__ui.choose_from_list(
-            trust_list_types, "Please choose TrustList type: ",
-            "TrustList types:"
-        )
-        trust_type_choice = trust_list_types[trust_type_choice_raw][0]
-        self.__logger.info("{} TrustList generation started".format(trust_type_choice))
-        self.__ui.print_message("\nGenerating {} TrustList...".format(trust_type_choice))
+        self.__logger.info("TrustList generation started")
+        self.__ui.print_message("\nGenerating TrustList...")
 
-        if trust_type_choice == "Dev":
-            current_tl_version = self.__trust_list_version_db.get_dev_version()
-            save_as = "dev_version"
-            trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "dev")
-        else:
-            current_tl_version = self.__trust_list_version_db.get_release_version()
-            save_as = "release_version"
-            trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "release")
+        current_tl_version = self.__trust_list_version_db.get_release_version()
+        save_as = "release_version"
+        trust_list_storage_path = os.path.join(self.__key_storage_path, "trust_lists", "release")
 
         # Get version to generate
         self.__ui.print_message("Current TrustList version is {}".format(current_tl_version))
@@ -426,11 +409,7 @@ class UtilityManager(object):
         signer_keys = [auth_key, tl_key]
 
         # Generate Trust list
-        tl = self.__trust_list_generator.generate(
-            signer_keys,
-            tl_version,
-            trust_type_choice == "Dev"
-        )
+        tl = self.__trust_list_generator.generate(signer_keys, tl_version)
         self.__ui.print_message("Generation finished")
         self.__ui.print_message("Storing to file...")
         if not storage:
@@ -682,30 +661,6 @@ class UtilityManager(object):
             start_date_required=False,
             print_to_paper=True,
             stored_on_dongle=True,
-            extra_card_content=None
-        )
-
-    def __generate_auth_internal_key(self):
-        self.__generate_key(
-            key_type=consts.VSKeyTypeS.AUTH_INTERNAL,
-            name_for_log="AuthInternal",
-            sign_by_recovery_key=False,
-            add_signature_limit=False,
-            start_date_required=False,
-            print_to_paper=False,
-            stored_on_dongle=False,
-            extra_card_content=None
-        )
-
-    def __generate_firmware_internal_key(self):
-        self.__generate_key(
-            key_type=consts.VSKeyTypeS.FIRMWARE_INTERNAL,
-            name_for_log="FirmwareInternal",
-            sign_by_recovery_key=False,
-            add_signature_limit=False,
-            start_date_required=False,
-            print_to_paper=False,
-            stored_on_dongle=False,
             extra_card_content=None
         )
 
@@ -1127,7 +1082,6 @@ class UtilityManager(object):
         else:
             self.run_utility()
 
-
     @property
     def __utility_list(self):
         if not self._utility_list:
@@ -1139,7 +1093,6 @@ class UtilityManager(object):
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
                 ["---"],
                 ["Generate Auth Key ({})".format(self.__upper_level_keys_count), self.__generate_auth_by_count],
-                ["Generate AuthInternal Key", self.__generate_auth_internal_key],
                 ["---"],
                 ["Generate TrustList Service Key ({})".format(self.__upper_level_keys_count),
                  self.__generate_tl_key_by_count],
@@ -1148,16 +1101,14 @@ class UtilityManager(object):
                 ["Delete Factory Key", self.__delete_factory_key],
                 ["---"],
                 ["Generate Firmware Key ({})".format(self.__upper_level_keys_count), self.__generate_firmware_by_count],
-                ["Generate FirmwareInternal Key", self.__generate_firmware_internal_key],
                 ["---"],
                 ["Generate TrustList", self.__generate_trust_list],
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
-                ["Dump upper level Public Keys", self.__dump_upper_level_pub_keys],
+                ["Export upper level Public Keys", self.__dump_upper_level_pub_keys],
                 ["---"],
                 ["Export Private Keys", self.__get_all_private_keys],
-                ["Export Internal Private Keys", self.__get_internal_private_keys],
                 ["---"],
                 ["Exit", self.__exit]
             ])
@@ -1259,12 +1210,6 @@ class UtilityManager(object):
         self.__get_private_keys(self.__auth_private_keys)
         self.__get_private_keys(self.__recovery_private_keys)
         self.__get_private_keys(self.__trust_list_service_private_keys)
-        self.__get_private_keys(self.__internal_private_keys)
-        self.__ui.print_message("Export finished")
-
-    def __get_internal_private_keys(self):
-        self.__ui.print_message("Exporting Private Keys...")
-        self.__get_private_keys(self.__internal_private_keys)
         self.__ui.print_message("Export finished")
 
     def __check_db_path(self):
