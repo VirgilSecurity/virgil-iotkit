@@ -182,11 +182,6 @@ _fw_update_get_data(void *context,
               "Buffer size %d is bigger than uint16_t %d",
               buffer_size,
               VS_CODE_ERR_FORMAT_OVERFLOW);
-    CHECK_RET(data_offset <= UINT32_MAX,
-              VS_CODE_ERR_FORMAT_OVERFLOW,
-              "Data offset %d is bigger than uint16_t %d",
-              data_offset,
-              VS_CODE_ERR_FORMAT_OVERFLOW);
 
     ret_code = vs_firmware_load_firmware_chunk(descriptor, data_offset, data_buffer, buffer_size, &chunk_size);
     CHECK_RET(buffer_size >= chunk_size,
