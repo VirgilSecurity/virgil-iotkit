@@ -254,8 +254,12 @@ _ginf_request_processing(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-    const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)response;
+_snot_request_processor(const uint8_t *request,
+                        const uint16_t request_sz,
+                        uint8_t *response,
+                        const uint16_t response_buf_sz,
+                        uint16_t *response_sz) {
+    const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)request;
     vs_sdmp_info_device_t device_info;
     vs_mac_addr_t self_mac;
     vs_status_e ret_code;
@@ -263,13 +267,13 @@ _snot_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
     VS_LOG_DEBUG("[INFO] SNOT received");
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(response_sz == sizeof(*enum_data),
+    CHECK_RET(request_sz == sizeof(*enum_data),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
               sizeof(*enum_data),
               response_sz);
 
-    if (!_callbacks.device_start_cb || !is_ack || !(enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {
+    if (!_callbacks.device_start_cb || !(enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
@@ -301,7 +305,7 @@ _info_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_INFO_SNOT:
-        return VS_CODE_COMMAND_NO_RESPONSE;
+        return _snot_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_INFO_ENUM:
         return _enum_request_processing(request, request_sz, response, response_buf_sz, response_sz);
@@ -314,37 +318,6 @@ _info_request_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_STAT:
         return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
-    default:
-        VS_LOG_ERROR("Unsupported INFO command");
-        VS_IOT_ASSERT(false);
-        return VS_CODE_COMMAND_NO_RESPONSE;
-    }
-}
-
-/******************************************************************************/
-static vs_status_e
-_info_server_response_processor(const struct vs_netif_t *netif,
-                                vs_sdmp_element_t element_id,
-                                bool is_ack,
-                                const uint8_t *response,
-                                const uint16_t response_sz) {
-    (void)netif;
-
-    if (!is_ack) {
-        VS_LOG_WARNING("[INFO] Broken response packet has been received");
-    }
-
-    switch (element_id) {
-
-    case VS_INFO_SNOT:
-        return _snot_response_processor(is_ack, response, response_sz);
-
-    case VS_INFO_GINF:
-    case VS_INFO_STAT:
-    case VS_INFO_ENUM:
-    case VS_INFO_POLL:
-        return VS_CODE_COMMAND_NO_RESPONSE;
 
     default:
         VS_LOG_ERROR("Unsupported INFO command");
@@ -416,7 +389,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, co
     _info.user_data = NULL;
     _info.id = VS_INFO_SERVICE_ID;
     _info.request_process = _info_request_processor;
-    _info.response_process = _info_server_response_processor;
+    _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
     //    _info.deinit =
 
