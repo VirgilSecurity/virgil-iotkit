@@ -719,8 +719,6 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
 /*************************************************************************/
 char *
 vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size) {
-    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
-
     CHECK_NOT_ZERO_RET(fw_ver, NULL);
     CHECK_NOT_ZERO_RET(buffer, NULL);
     CHECK_NOT_ZERO_RET(buf_size, NULL);
@@ -756,6 +754,8 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
 /*************************************************************************/
 void
 vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
+    VS_IOT_ASSERT(desc);
+
     desc->chunk_size = VS_IOT_NTOHS(desc->chunk_size);
     desc->app_size = VS_IOT_NTOHL(desc->app_size);
     desc->firmware_length = VS_IOT_NTOHL(desc->firmware_length);
@@ -766,6 +766,7 @@ vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
 /*************************************************************************/
 void
 vs_firmware_ntoh_header(vs_firmware_header_t *header) {
+    VS_IOT_ASSERT(header);
 
     vs_firmware_ntoh_descriptor(&header->descriptor);
 
@@ -778,6 +779,7 @@ vs_firmware_ntoh_header(vs_firmware_header_t *header) {
 /*************************************************************************/
 void
 vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc) {
+    VS_IOT_ASSERT(desc);
     desc->chunk_size = VS_IOT_HTONS(desc->chunk_size);
     desc->app_size = VS_IOT_HTONL(desc->app_size);
     desc->firmware_length = VS_IOT_HTONL(desc->firmware_length);
@@ -788,6 +790,7 @@ vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc) {
 /*************************************************************************/
 void
 vs_firmware_hton_header(vs_firmware_header_t *header) {
+    VS_IOT_ASSERT(header);
 
     vs_firmware_hton_descriptor(&header->descriptor);
 

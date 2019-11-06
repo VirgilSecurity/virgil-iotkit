@@ -242,28 +242,28 @@ vs_firmware_update_file_type(void);
 
 /** ntoh convertor for descriptor
  *
- * \param[in,out] desc #vs_firmware_descriptor_t firmware descriptor
+ * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc);
 
 /** ntoh convertor for header
  *
- * \param[in,out] header #vs_firmware_header_t firmware header
+ * \param[in,out] header firmware header. Must not be NULL.
  */
 void
 vs_firmware_ntoh_header(vs_firmware_header_t *header);
 
 /** hton convertor for descriptor
  *
- * \param[in,out] desc #vs_firmware_descriptor_t firmware descriptor
+ * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc);
 
 /** hton convertor for header
  *
- * \param[in,out] header #vs_firmware_header_t firmware header
+ * \param[in,out] header firmware header. Must not be NULL.
  */
 void
 vs_firmware_hton_header(vs_firmware_header_t *header);

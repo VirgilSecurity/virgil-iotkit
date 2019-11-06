@@ -80,7 +80,6 @@ _fw_update_describe_version(void *context,
                             char *buffer,
                             uint32_t buf_size,
                             bool add_filetype_description) {
-    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
     char *output = buffer;
     uint32_t string_space = buf_size;
     uint32_t type_descr_size;
@@ -402,14 +401,14 @@ _fw_update_inc_data_offset(void *context,
                            uint32_t *next_offset) {
     (void)context;
     (void)file_type;
-    size_t offs;
+    size_t offset;
 
     CHECK_NOT_ZERO_RET(next_offset, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    offs = current_offset + loaded_data_size;
-    CHECK_RET(offs < UINT32_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Next offset is outside of file");
+    offset = current_offset + loaded_data_size;
+    CHECK_RET(offset < UINT32_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Next offset is outside of file");
 
-    *next_offset = offs;
+    *next_offset = offset;
 
     return VS_CODE_OK;
 }
