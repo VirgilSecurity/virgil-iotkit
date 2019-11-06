@@ -5,7 +5,6 @@
  *  Derived from:
  *  http://zserge.com/jsmn.html
  */
-#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <global-hal.h>
@@ -24,7 +23,8 @@
 /* Returns true if an exact string match is found, else false */
 static bool
 _json_token_streq(char *js, jsontok_t *t, char *s) {
-    return (strncmp(js + t->start, s, t->end - t->start) == 0 && strlen(s) == (size_t)(t->end - t->start));
+    return (VS_IOT_STRNCMP(js + t->start, s, t->end - t->start) == 0 &&
+            VS_IOT_STRLEN(s) == (size_t)(t->end - t->start));
 }
 
 /******************************************************************************/
@@ -117,7 +117,7 @@ _json_str_to_str(jobj_t *jobj, jsontok_t *t, char *value, int maxlen) {
         return -WM_E_JSON_INVALID_TYPE;
     if ((t->end - t->start) >= maxlen)
         return -WM_E_JSON_NOMEM;
-    strncpy(value, jobj->js + t->start, t->end - t->start);
+    VS_IOT_STRNCPY(value, jobj->js + t->start, t->end - t->start);
     value[t->end - t->start] = 0;
     return VS_JSON_ERR_OK;
 }

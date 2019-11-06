@@ -177,7 +177,7 @@
 #define CHECK_SNPRINTF(BUF, FORMAT, ...)                                                                               \
     do {                                                                                                               \
         int snprintf_res;                                                                                              \
-        if ((snprintf_res = snprintf((BUF), sizeof(BUF), (FORMAT), ##__VA_ARGS__)) <= 0) {                             \
+        if ((snprintf_res = VS_IOT_SNPRINTF((BUF), sizeof(BUF), (FORMAT), ##__VA_ARGS__)) <= 0) {                             \
             VS_LOG_ERROR("snprintf error result %d. errno = %d (%s)", snprintf_res, errno, strerror(errno));           \
             goto terminate;                                                                                            \
         }                                                                                                              \

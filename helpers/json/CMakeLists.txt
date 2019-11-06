@@ -18,6 +18,9 @@ target_sources(vs-json
 target_link_libraries(vs-json
         PUBLIC
         jsmn
+
+        PRIVATE
+        vs-module-logger
         )
 
 target_include_directories(vs-json

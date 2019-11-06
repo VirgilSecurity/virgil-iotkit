@@ -96,9 +96,9 @@ vs_virgil_ecies_test(vs_hsm_impl_t *hsm_impl) {
     TEST_CASE_OK("Encrypt/decrypt data",
                  _ecies_crypt_case(hsm_impl,
                                    (uint8_t *)test_recipient_id,
-                                   strlen(test_recipient_id),
+                                   VS_IOT_STRLEN(test_recipient_id),
                                    (uint8_t *)test_data,
-                                   strlen(test_data) + 1));
+                                   VS_IOT_STRLEN(test_data) + 1));
 
 terminate:
 

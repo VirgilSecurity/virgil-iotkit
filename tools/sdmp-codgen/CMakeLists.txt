@@ -52,6 +52,8 @@ set (SDMP_SRC_TYPES
         -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
         -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
         -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/provision/include/virgil/iot/provision/provision-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../helpers/update/include/virgil/iot/update/update.h
         )
 
 message("${SDMP_SRC_TYPES}")

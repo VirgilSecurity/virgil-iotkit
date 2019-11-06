@@ -56,6 +56,9 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
+/*The start time point for all timestamp variables. January 1, 2015 UTC*/
+#define START_EPOCH (1420070400);
+
 #define VS_DEVICE_SERIAL_SIZE (32) /*This is size of SHA256 data*/
 #define VS_DEVICE_MANUFACTURE_ID_SIZE (16)
 #define VS_DEVICE_TYPE_SIZE (4)

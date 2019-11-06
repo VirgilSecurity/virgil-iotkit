@@ -54,7 +54,7 @@ _test_sign_verify_pass(vs_hsm_impl_t *hsm_impl,
 
     STATUS_CHECK_RET_BOOL(hsm_impl->hash(hash_alg,
                                          (uint8_t *)input_data_raw,
-                                         strlen(input_data_raw),
+                                         VS_IOT_STRLEN(input_data_raw),
                                          hash_buf,
                                          sizeof(hash_buf),
                                          &result_sz),

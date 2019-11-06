@@ -37,6 +37,7 @@
 #include <virgil/iot/protocols/sdmp/info/info-server.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
+#include <virgil/iot/protocols/sdmp/generated/sdmp_cvt.h>
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/logger/logger.h>
@@ -75,6 +76,9 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set current device roles
     enum_data->device_roles = vs_sdmp_device_roles();
+
+    // Normalize byte order
+    vs_info_enum_response_t_encode(enum_data);
 
     return VS_CODE_OK;
 }
@@ -117,6 +121,9 @@ _poll_request_processing(const uint8_t *request,
     CHECK_NOT_ZERO(response_sz);
     CHECK(sizeof(vs_info_poll_request_t) == request_sz, "Wrong data size");
 
+    // Normalize byte order
+    vs_info_poll_request_t_decode(poll_request);
+
     if (poll_request->enable) {
         _poll_ctx.period_seconds = poll_request->period_seconds;
         _poll_ctx.elements_mask |= poll_request->elements;
@@ -152,6 +159,9 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
     VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
                  (unsigned long)stat_data->sent,
                  (unsigned long)stat_data->received);
+
+    // Normalize byte order
+    vs_info_stat_response_t_encode(stat_data);
 
     return VS_CODE_OK;
 }
@@ -227,6 +237,9 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
             general_info->tl_version.minor,
             general_info->tl_version.patch,
             general_info->tl_version.build);
+
+    // Normalize byte order
+    vs_info_ginf_response_t_encode(general_info);
 
     return VS_CODE_OK;
 }
