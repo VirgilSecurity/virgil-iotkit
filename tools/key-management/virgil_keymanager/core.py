@@ -37,7 +37,6 @@ class UtilContext:
 
         self.application_token = self._cli_args["app_token"]
         self.virgil_api_url = self._config["CARDS"]["virgil_api_url"]
-        self.card_registration_ep = self._config["CARDS"]["card_registration_endpoint"]
         self.factory_info_json = self._config["CARDS"]["factory_info_json"]
 
     @property
@@ -122,7 +121,6 @@ class UtilContext:
             ],
             "CARDS": [
                 "virgil_api_url",
-                "card_registration_endpoint",
                 "factory_info_json"
             ]
         }

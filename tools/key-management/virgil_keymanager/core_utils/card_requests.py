@@ -8,18 +8,18 @@ from virgil_crypto import VirgilCrypto
 from virgil_sdk.cards import RawCardContent
 from virgil_sdk.client import RawSignedModel, RawSignature
 
+from virgil_keymanager.consts import CARD_REGISTRATION_ENDPOINT
 from virgil_keymanager.core_utils.helpers import tiny_key_to_virgil
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
 
 
 class CardRequestsHandler:
-    def __init__(self, ui, logger, api_url, registration_endpoint, app_token):
+    def __init__(self, ui, logger, api_url, app_token):
         self._ui = ui
         self._logger = logger
         self._crypto = VirgilCrypto()
         self._api_host = urlparse(api_url).netloc
-        self._registration_ep = registration_endpoint
         self._app_token = app_token
 
     def _create_raw_card(self, key_pair: KeyGeneratorInterface, key_info: dict) -> str:
@@ -73,17 +73,18 @@ class CardRequestsHandler:
         """
         conn = http.client.HTTPSConnection(host=self._api_host)
         conn.request(method="POST",
-                     url=self._registration_ep,
+                     url=CARD_REGISTRATION_ENDPOINT,
                      body=card_b64,
                      headers={"AppToken": self._app_token})
         response = conn.getresponse()
         resp_body = response.read()
         if response.status != 200:
-            err_msg = ("[ERROR]: Failed to register Virgil card at {host}\n"
+            err_msg = ("[ERROR]: Failed to register Virgil card at {host}{endpoint}\n"
                        "Card: {card_b64}\n"
                        "Response status code: {status}\n"
                        "Response body: {body}".format(card_b64=card_b64,
                                                       host=self._api_host,
+                                                      endpoint=CARD_REGISTRATION_ENDPOINT,
                                                       status=response.status,
                                                       body=resp_body))
             self._ui.print_error(err_msg)

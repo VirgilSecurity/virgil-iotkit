@@ -1,4 +1,3 @@
-import base64
 import io
 import json
 import os
@@ -13,10 +12,10 @@ from virgil_crypto import VirgilKeyPair
 
 from virgil_keymanager import consts
 from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
-from virgil_keymanager.core_utils.helpers import b64_to_bytes
+from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
 
 from virgil_keymanager.consts.modes import ProgramModes
-from virgil_keymanager.core_utils import DonglesCache, DongleChooser
+from virgil_keymanager.core_utils import DonglesCache, DongleChooser, cloud_key
 from virgil_keymanager.core_utils.card_requests import CardRequestsHandler
 from virgil_keymanager.external_utils.printer_controller import PrinterController
 from virgil_keymanager.generators.trustlist import TrustListGenerator
@@ -110,7 +109,6 @@ class UtilityManager(object):
             self.__ui,
             self.__logger,
             self._context.virgil_api_url,
-            self._context.card_registration_ep,
             self._context.application_token
         )
 
@@ -348,9 +346,9 @@ class UtilityManager(object):
             return "{major}.{minor}.{patch}.{build}".format(**locals())
 
         # Trust list should contain Cloud key
-        if not self.__retrieve_cloud_key():
-            self.__ui.print_warning("Failed to retrieve Cloud key")
-            self.__logger.info("Failed to retrieve Cloud key. Virgil api url: %s" % self._context.virgil_api_url)
+        if not self.__receive_cloud_key():
+            self.__ui.print_warning("Failed to receive Cloud key")
+            self.__logger.info("Failed to receive Cloud key. Virgil api url: %s" % self._context.virgil_api_url)
             return
 
         self.__logger.info("TrustList generation started")
@@ -444,36 +442,40 @@ class UtilityManager(object):
         key_id = factory_keys_info[user_choice][1]
         self.__logger.info("Factory Key with id: [{}] deleted".format(key_id))
 
-    def __retrieve_cloud_key(self) -> bool:
+    def __receive_cloud_key(self) -> bool:
         """
-        Get cloud key from service and save it to db with trust list public keys
+        Receive Cloud key from service and save it to db with trust list public keys
         """
-        self.__ui.print_message("Retrieve Cloud key")
-        self.__logger.info("Retrieve Cloud key")
-        # TODO: remove stub - get key from service
-        private_b64 = "MHgCAQEEIQD9p5vfO1RijB3AvH7Pfq03PkXnKo9sg+bEoF8WLZoAOqAKBggqhkjOPQMBB6FEA0IABPTAylSzxD652nILN7Q5mwefEh/Of/pwDHCy4IAWNvDYWJtswcT6Rb65L+C0o82sQZpq5udk4Ox8zrxI+wVOcj0="
+        # Initialize cloud key (if needed)
+        self.__ui.print_message("Try to initialize Cloud key on service")
+        self.__logger.info("Try to initialize Cloud key on service")
+        cloud_key.init_cloud_key(self._context, self.__logger, self.__ui)
 
-        key_pair = VirgilKeyGenerator(consts.VSKeyTypeS.CLOUD.value,
-                                      ec_type=VirgilKeyPair.Type_EC_SECP256R1)
-        key_pair.generate(private_key_base64=private_b64)
+        # Retrieve public cloud key
+        self.__ui.print_message("Receive Cloud public key from service")
+        self.__logger.info("Receive Cloud public key from service")
+        cloud_key_response = cloud_key.receive_cloud_public_key(self._context, self.__logger, self.__ui)
+        self.__logger.info("Cloud key received: %s" % cloud_key_response)
 
         # Save public key to db
         # - prepare key info to be saved
+        # -- convert public key to tiny format
+        public_key = to_b64(b64_to_bytes(cloud_key_response["key"])[-65:])
         meta_data = self._context.virgil_api_url
         key_info = {
-            "type": key_pair.key_type,
-            "ec_type": key_pair.ec_type_hsm,
-            "start_date": 0,
-            "expiration_date": 0,
-            "comment": "cloud",
-            "key": key_pair.public_key,
+            "type": consts.VSKeyTypeS.CLOUD.value,
+            "ec_type": consts.ec_type_vs_to_hsm_map.get(VirgilKeyPair.Type_EC_SECP256R1),
+            "start_date": cloud_key_response["start_date"],
+            "expiration_date": cloud_key_response["end_date"],
+            "comment": "Cloud public key",
+            "key": public_key,
             "meta_data": meta_data
         }
         # - save
-        self.__trust_list_pub_keys.save(key_pair.key_id, key_info, suppress_db_warning=False)
+        self.__trust_list_pub_keys.save("cloud_key", key_info, suppress_db_warning=False)
 
-        self.__ui.print_message("Cloud key retrieved and stored")
-        self.__logger.info("Cloud key retrieved and stored. Metadata: %s" % meta_data)
+        self.__ui.print_message("Cloud key received and stored")
+        self.__logger.info("Cloud key stored. key_info: %s" % key_info)
         return True
 
     def __generate_key(
@@ -686,7 +688,7 @@ class UtilityManager(object):
             input_checker_msg="Can't decode, please ensure it's base64 and try again"
         )
         comment = self.__ui.get_user_input("Enter comment for [{}] Key: ".format(key_type_list[type_choice][0]))
-        key_id = CRCCCITT().calculate(base64.b64decode(public_key))
+        key_id = CRCCCITT().calculate(b64_to_bytes(public_key))
 
         key_data = {
             "type": key_type_list[type_choice][0],
@@ -877,8 +879,8 @@ class UtilityManager(object):
                 ["---"],
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
-                ["Export upper level Public Keys", self.__dump_upper_level_pub_keys],
                 ["---"],
+                ["Export upper level Public Keys", self.__dump_upper_level_pub_keys],
                 ["Export Private Keys", self.__get_all_private_keys],
                 ["---"],
                 ["Exit", self.__exit]
