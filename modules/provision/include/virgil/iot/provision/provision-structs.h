@@ -63,10 +63,17 @@
 #define VS_DEVICE_MANUFACTURE_ID_SIZE (16)
 #define VS_DEVICE_TYPE_SIZE (4)
 
-/** "Manufacture ID" type */
+/** "Manufacture ID" type
+ *
+ * This is manufacture identifier contains ASCII symbols and trailing zeroes.
+ */
 typedef uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE];
-/** "Device type" type */
+/** "Device type" type
+ *
+ * This is device type identifier contains ASCII symbols and trailing zeroes.
+ */
 typedef uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE];
+
 /** "Device serial number" type */
 typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
 
