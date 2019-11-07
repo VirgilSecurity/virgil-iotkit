@@ -89,6 +89,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     size_t buf_size = *in_out_answer_len;
     int crypto_answer_b64_decoded_len;
     int signature_b64_decoded_len;
+    int encrypted_sz;
     int signature_sz;
     char *signature_b64 = NULL;
     char *crypto_answer_b64 = NULL;
@@ -99,24 +100,26 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
         return VS_CODE_ERR_JSON;
     }
 
-    crypto_answer_b64 = (char *)VS_IOT_MALLOC(buf_size);
-    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", buf_size);
-
     /*----Find and decode from base64 the encrypted credentals and cloud signature----*/
-    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)buf_size) &&
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_ENCRYPTED_FIELD, &encrypted_sz) &&
                   VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_SIGNATURE_FIELD, &signature_sz) &&
                   signature_sz > 0,
-          "Wrong json format");
+          "Wrong JSON format");
+
+    crypto_answer_b64 = (char *)VS_IOT_MALLOC(encrypted_sz);
+    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", encrypted_sz);
+    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)encrypted_sz),
+          "Wrong JSON format");
 
     signature_b64 = (char *)VS_IOT_MALLOC(signature_sz);
     CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", signature_sz);
     CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)signature_sz),
-          "Wrong json format");
+          "Wrong JSON format");
 
     crypto_answer_b64_decoded_len = base64decode_len(crypto_answer_b64, (int)VS_IOT_STRLEN(crypto_answer_b64));
     signature_b64_decoded_len = base64decode_len(signature_b64, (int)VS_IOT_STRLEN(signature_b64));
 
-    CHECK(0 < crypto_answer_b64_decoded_len && crypto_answer_b64_decoded_len <= buf_size,
+    CHECK(0 < crypto_answer_b64_decoded_len && crypto_answer_b64_decoded_len <= encrypted_sz,
           "Base64 of encrypted value is wrong");
     CHECK(0 < signature_b64_decoded_len && signature_b64_decoded_len <= signature_sz, "Base64 of signature is wrong");
 
