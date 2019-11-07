@@ -134,7 +134,8 @@ _file_info(const vs_update_file_type_t *file_type,
                      _file_type_mapping_array_size);
         VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
     } else {
-        VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
+        VS_LOG_DEBUG("[FLDT] File type is initialized and present, update it");
+        VS_IOT_FREE(file_type_info->file_header);
     }
 
     file_type_info->type = *file_type;
@@ -165,6 +166,7 @@ _file_info(const vs_update_file_type_t *file_type,
 
         file_type_info->current_version = file_type_info->type.info.version;
     } else {
+        file_type_info->file_header = NULL;
         VS_LOG_WARNING("There is no header data for file type %s",
                        _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
     }
