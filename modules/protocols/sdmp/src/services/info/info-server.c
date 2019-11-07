@@ -277,7 +277,9 @@ _snot_request_processor(const uint8_t *request,
     vs_mac_addr_t self_mac;
     vs_status_e ret_code;
 
-    VS_LOG_DEBUG("[INFO] SNOT received");
+    VS_LOG_DEBUG("[INFO] SNOT received : _callbacks.device_start_cb = %p, enum_data->device_roles = %x",
+                 _callbacks.device_start_cb,
+                 enum_data->device_roles);
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(request_sz == sizeof(*enum_data),
@@ -291,6 +293,20 @@ _snot_request_processor(const uint8_t *request,
     }
 
     STATUS_CHECK_RET(vs_sdmp_mac_addr(vs_sdmp_default_netif(), &self_mac), "Unable to request self MAC address");
+
+    VS_LOG_DEBUG("... mac_address : enum_data->mac.bytes = %x:%x:%x:%x:%x:%x, self_mac.bytes = %x:%x:%x:%x:%x:%x",
+                 enum_data->mac.bytes[0],
+                 enum_data->mac.bytes[1],
+                 enum_data->mac.bytes[2],
+                 enum_data->mac.bytes[3],
+                 enum_data->mac.bytes[4],
+                 enum_data->mac.bytes[5],
+                 self_mac.bytes[0],
+                 self_mac.bytes[1],
+                 self_mac.bytes[2],
+                 self_mac.bytes[3],
+                 self_mac.bytes[4],
+                 self_mac.bytes[5]);
 
     if (!VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes))) {
         return VS_CODE_COMMAND_NO_RESPONSE;
