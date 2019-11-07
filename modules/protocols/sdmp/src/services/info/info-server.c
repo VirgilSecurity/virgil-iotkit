@@ -295,16 +295,20 @@ _snot_request_processor(const uint8_t *request,
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
         (vs_sdmp_device_roles() & VS_SDMP_DEV_THING) &&                                // current device is Thing
         (enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {                             // sender is Gateway
-        vs_fldt_client_request_all_files();
+        ret_code = vs_fldt_client_request_all_files();
+        if (ret_code != VS_CODE_OK) {
+            VS_LOG_ERROR("[INFO] Unable to request all files update");
+        }
     }
 #endif
 
     if (_startup_notification_cb) {
         device_info.device_roles = enum_data->device_roles;
         VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
-        ret_code = _startup_notification_cb(&device_info);
+        STATUS_CHECK_RET(_startup_notification_cb(&device_info), "Unable to call startup notification callback");
     }
-    return VS_CODE_OK;
+
+    return ret_code;
 };
 
 /******************************************************************************/
