@@ -17,7 +17,14 @@ def init_cloud_key(context, logger, ui):
                  headers={"AppToken": context.application_token})
     response = conn.getresponse()
     resp_body = response.read().decode()
-    if response.status not in (200, 400):  # 400 - cloud key was already initialized
+    if response.status != 200:
+        # Check if cloud key was already initialized
+        if all([response.status == 400,
+                json.loads(resp_body).get("message") == "cloud key was already initialized"]):
+            ui.print_message("Cloud key is already initialized")
+            logger.info("Cloud key is already initialized")
+            return
+        # Exit if error is not caused by already initialized key
         err_msg = ("[ERROR]: Failed to initialize cloud key at {api_url}{ep}\n"
                    "Response status code: {status}\n"
                    "Response body: {body}".format(api_url=context.virgil_api_url,
@@ -27,8 +34,9 @@ def init_cloud_key(context, logger, ui):
         ui.print_error(err_msg)
         logger.error(err_msg)
         sys.exit(1)
+    # Initialization done successfully
     ui.print_message("Cloud key initialized")
-    logger.error("Cloud key initialized")
+    logger.info("Cloud key initialized")
 
 
 def receive_cloud_public_key(context, logger, ui):
