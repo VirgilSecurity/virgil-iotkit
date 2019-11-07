@@ -34,6 +34,10 @@
 
 #if INFO_SERVER
 
+#if FLDT_CLIENT
+#include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
+#endif
+
 #include <virgil/iot/protocols/sdmp/info/info-server.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
@@ -59,7 +63,7 @@ typedef struct {
     vs_mac_addr_t dest_mac;
 } vs_poll_ctx_t;
 
-static vs_sdmp_info_srv_callbacks_t _callbacks = {NULL};
+static vs_sdmp_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
@@ -271,8 +275,10 @@ _snot_request_processor(const uint8_t *request,
                         uint16_t *response_sz) {
     const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)request;
     vs_sdmp_info_device_t device_info;
+    vs_status_e ret_code = VS_CODE_OK;
+#if FLDT_CLIENT
     vs_mac_addr_t self_mac;
-    vs_status_e ret_code;
+#endif
 
     VS_LOG_DEBUG("[INFO] SNOT received");
 
@@ -283,21 +289,23 @@ _snot_request_processor(const uint8_t *request,
               sizeof(*enum_data),
               response_sz);
 
-    if (!_callbacks.device_start_cb || !(enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {
-        return VS_CODE_COMMAND_NO_RESPONSE;
-    }
-
+#if FLDT_CLIENT
     STATUS_CHECK_RET(vs_sdmp_mac_addr(vs_sdmp_default_netif(), &self_mac), "Unable to request self MAC address");
 
-    if (!VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes))) {
-        return VS_CODE_COMMAND_NO_RESPONSE;
+    if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
+        (vs_sdmp_device_roles() & VS_SDMP_DEV_THING) &&                                // current device is Thing
+        (enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {                             // sender is Gateway
+        vs_fldt_client_request_all_files();
     }
+#endif
 
-    device_info.device_roles = enum_data->device_roles;
-    VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
-
-    return _callbacks.device_start_cb(&device_info);
-}
+    if (_startup_notification_cb) {
+        device_info.device_roles = enum_data->device_roles;
+        VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
+        ret_code = _startup_notification_cb(&device_info);
+    }
+    return VS_CODE_OK;
+};
 
 /******************************************************************************/
 static vs_status_e
@@ -380,7 +388,9 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, const vs_sdmp_info_srv_callbacks_t *cb) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
+                    vs_storage_op_ctx_t *fw_ctx,
+                    vs_sdmp_info_start_notif_srv_cb_t startup_cb) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -389,12 +399,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, co
 
     _tl_ctx = tl_ctx;
     _fw_ctx = fw_ctx;
-
-    if (!cb) {
-        VS_IOT_MEMSET(&_callbacks, 0, sizeof(_callbacks));
-    } else {
-        _callbacks = *cb;
-    }
+    _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
     _info.id = VS_INFO_SERVICE_ID;
