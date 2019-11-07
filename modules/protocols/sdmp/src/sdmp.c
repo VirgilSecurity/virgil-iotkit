@@ -110,10 +110,10 @@ _process_packet(const vs_netif_t *netif, vs_sdmp_packet_t *packet) {
     vs_sdmp_packet_t *response_packet = (vs_sdmp_packet_t *)response;
     bool need_response = false;
 
-    memset(response, 0, sizeof(response));
+    VS_IOT_MEMSET(response, 0, sizeof(response));
 
     // Prepare request
-    memcpy(&response_packet->header, &packet->header, sizeof(vs_sdmp_header_t));
+    VS_IOT_MEMCPY(&response_packet->header, &packet->header, sizeof(vs_sdmp_header_t));
     _sdmp_fill_header(&packet->eth_header.src, response_packet);
 
     // Detect required command
@@ -210,7 +210,7 @@ _sdmp_rx_cb(vs_netif_t *netif,
                 packet_sz = _packet_sz(&data[bytes_processed]);
 
                 if (LEFT_INCOMING < packet_sz) {
-                    memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                    VS_IOT_MEMCPY(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
                     netif->packet_buf_filled += LEFT_INCOMING;
                     bytes_processed += LEFT_INCOMING;
                 } else {
@@ -218,7 +218,7 @@ _sdmp_rx_cb(vs_netif_t *netif,
                     bytes_processed += packet_sz;
                 }
             } else {
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
+                VS_IOT_MEMCPY(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], LEFT_INCOMING);
                 netif->packet_buf_filled += LEFT_INCOMING;
                 bytes_processed += LEFT_INCOMING;
             }
@@ -230,7 +230,7 @@ _sdmp_rx_cb(vs_netif_t *netif,
                 need_bytes_for_header = sizeof(vs_sdmp_packet_t) - netif->packet_buf_filled;
 
                 copy_bytes = LEFT_INCOMING >= need_bytes_for_header ? need_bytes_for_header : LEFT_INCOMING;
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
+                VS_IOT_MEMCPY(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
                 bytes_processed += copy_bytes;
                 netif->packet_buf_filled += copy_bytes;
             }
@@ -242,7 +242,7 @@ _sdmp_rx_cb(vs_netif_t *netif,
                 need_bytes_for_packet = packet_sz - netif->packet_buf_filled;
 
                 copy_bytes = LEFT_INCOMING >= need_bytes_for_packet ? need_bytes_for_packet : LEFT_INCOMING;
-                memcpy(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
+                VS_IOT_MEMCPY(&netif->packet_buf[netif->packet_buf_filled], &data[bytes_processed], copy_bytes);
                 bytes_processed += copy_bytes;
                 netif->packet_buf_filled += copy_bytes;
 

@@ -79,7 +79,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_info_stat_response_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t elements;
+    uint32_t elements; // CODEGEN: SKIP
     uint8_t enable;
     uint16_t period_seconds;
     vs_mac_addr_t recipient_mac;

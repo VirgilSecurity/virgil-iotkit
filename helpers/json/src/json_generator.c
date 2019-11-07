@@ -9,11 +9,11 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib-config.h>
+
 #include <virgil/iot/json/json_generator.h>
 #include <virgil/iot/json/json_parser.h>
-
-#define json_e(m) puts("json: " m)
+#include <virgil/iot/logger/logger.h>
 
 /* Utility to jump whitespace and cr/lf */
 /******************************************************************************/
@@ -53,13 +53,13 @@ _print_float(float val, short precision, char *str_val, int len_str_val) {
     val_int = (int)val;
     val_frac = (int)((val - val_int) * scale);
 
-    snprintf(str_val, len_str_val, "%s%d.%.*d", sign, val_int, precision, val_frac);
+    VS_IOT_SNPRINTF(str_val, len_str_val, "%s%d.%.*d", sign, val_int, precision, val_frac);
 }
 #else
 /******************************************************************************/
 static void
 _print_float(float val, short precision, char *str_val, size_t len_str_val) {
-    snprintf(str_val, len_str_val, "\"unsupported\"");
+    VS_IOT_SNPRINTF(str_val, len_str_val, "\"unsupported\"");
 }
 #endif
 
@@ -68,7 +68,7 @@ const char *
 verify_json_start(const char *buff) {
     buff = _skip(buff);
     if (*buff != '{' && *buff != '[') {
-        json_e("Invalid JSON document");
+        VS_LOG_ERROR("Invalid JSON document");
         return NULL;
     } else {
         return ++buff;
@@ -80,11 +80,11 @@ static int
 _verify_buffer_limit(struct json_str *jptr) {
     /*
      * Check for buffer overflow condition here, and then copy remaining
-     * data using snprintf. This makes sure there is no mem corruption in
+     * data using VS_IOT_SNPRINTF. This makes sure there is no mem corruption in
      * json set operations.
      */
     if (jptr->free_ptr >= (jptr->len - 1)) {
-        json_e("buffer maximum limit reached");
+        VS_LOG_ERROR("buffer maximum limit reached");
         return -1;
     } else
         return VS_JSON_ERR_OK;
@@ -94,7 +94,7 @@ _verify_buffer_limit(struct json_str *jptr) {
 void
 json_str_init(struct json_str *jptr, char *buff, int len) {
     jptr->buff = buff;
-    memset(jptr->buff, 0, len);
+    VS_IOT_MEMSET(jptr->buff, 0, len);
     jptr->free_ptr = 0;
     jptr->len = len;
 }
@@ -126,9 +126,9 @@ json_push_object(struct json_str *jptr, const char *name) {
     if (*buff != '{') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
 
-    snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":{", name);
+    VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":{", name);
 
-    jptr->free_ptr = strlen(jptr->buff);
+    jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
     return VS_JSON_ERR_OK;
 }
 
@@ -145,9 +145,9 @@ json_push_array_object(struct json_str *jptr, const char *name) {
     if (*buff != '{') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
 
-    snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":[", name);
+    VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":[", name);
 
-    jptr->free_ptr = strlen(jptr->buff);
+    jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
     return VS_JSON_ERR_OK;
 }
 
@@ -243,22 +243,22 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
 
     switch (data) {
     case JSON_VAL_STR:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\"", str);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\"", str);
         break;
     case JSON_VAL_INT:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "%d", value);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "%d", value);
         break;
     case JSON_VAL_FLOAT:
         _print_float(val, 2, &jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr);
         break;
     case JSON_VAL_BOOL:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "%s", (value == 1) ? "true" : "false");
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "%s", (value == 1) ? "true" : "false");
         break;
     default:
-        json_e("Invalid case in array set");
+        VS_LOG_ERROR("Invalid case in array set");
     }
 
-    jptr->free_ptr = strlen(jptr->buff);
+    jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
     return VS_JSON_ERR_OK;
 }
 
@@ -290,54 +290,54 @@ json_set_object_value(struct json_str *jptr,
         /* First, check if the string can fit into the buffer.
          * The + 6 is used to account for "":"" and NULL termintaion
          */
-        if ((strlen(str) + strlen(name) + 6) > (jptr->len - jptr->free_ptr))
+        if ((VS_IOT_STRLEN(str) + VS_IOT_STRLEN(name) + 6) > (jptr->len - jptr->free_ptr))
             return -WM_E_JSON_OBUF;
 
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":\"", name);
-        jptr->free_ptr = strlen(jptr->buff);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":\"", name);
+        jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
         /* We use memmove in order to allow the source and destination
          * strings to overlap
          */
-        memmove(&jptr->buff[jptr->free_ptr], str, strlen(str) + 1);
-        jptr->free_ptr = strlen(jptr->buff);
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"");
+        VS_IOT_MEMMOVE(&jptr->buff[jptr->free_ptr], str, VS_IOT_STRLEN(str) + 1);
+        jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"");
         break;
 
     case JSON_VAL_INT:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":%d", name, (int)value);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":%d", name, (int)value);
         break;
 
     case JSON_VAL_UINT:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":%u", name, (unsigned)value);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":%u", name, (unsigned)value);
         break;
 
     case JSON_VAL_UINT_64:
-        snprintf(&jptr->buff[jptr->free_ptr],
-                 jptr->len - jptr->free_ptr,
-                 "\"%s\":%llu",
-                 name,
-                 (unsigned long long)value);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr],
+                        jptr->len - jptr->free_ptr,
+                        "\"%s\":%llu",
+                        name,
+                        (unsigned long long)value);
         break;
 
     case JSON_VAL_FLOAT:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":", name);
-        jptr->free_ptr = strlen(jptr->buff);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":", name);
+        jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
         _print_float(val, precision, &jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr);
         break;
     case JSON_VAL_BOOL:
-        snprintf(&jptr->buff[jptr->free_ptr],
-                 jptr->len - jptr->free_ptr,
-                 "\"%s\":%s",
-                 name,
-                 (value == 1) ? "true" : "false");
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr],
+                        jptr->len - jptr->free_ptr,
+                        "\"%s\":%s",
+                        name,
+                        (value == 1) ? "true" : "false");
         break;
     case JSON_VAL_NULL:
-        snprintf(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":null", name);
+        VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":null", name);
         break;
     default:
-        json_e("Invalid case in object set");
+        VS_LOG_ERROR("Invalid case in object set");
     }
 
-    jptr->free_ptr = strlen(jptr->buff);
+    jptr->free_ptr = VS_IOT_STRLEN(jptr->buff);
     return VS_JSON_ERR_OK;
 }

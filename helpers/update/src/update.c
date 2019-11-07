@@ -37,7 +37,7 @@
 
 /*************************************************************************/
 char *
-vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, size_t buf_size){
+vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, uint32_t buf_size){
     if(update_context){
         return update_context->describe_type(update_context->storage_context, file_type, buf, buf_size);
     } else {

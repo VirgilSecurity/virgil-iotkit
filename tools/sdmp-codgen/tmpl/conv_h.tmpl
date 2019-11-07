@@ -45,8 +45,10 @@
 
 /******************************************************************************/
 // Converting functions for ({{$StructDatas.StructName}})
-void {{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void {{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+void
+{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
+void
+{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
 
 {{- end}}
 

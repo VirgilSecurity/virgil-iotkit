@@ -35,10 +35,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <endian-config.h>
+
 #include <virgil/iot/firmware/firmware.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/macros/macros.h>
+
 
 static vs_update_interface_t _fw_update_ctx = {.storage_context = NULL};
 static vs_device_manufacture_id_t _manufacture;
@@ -46,7 +49,7 @@ static vs_device_type_t _device_type;
 
 /*************************************************************************/
 static char *
-_fw_update_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, size_t buf_size) {
+_fw_update_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size) {
     (void)context;
 
     CHECK_NOT_ZERO(buffer);
@@ -75,13 +78,12 @@ _fw_update_describe_version(void *context,
                             vs_update_file_type_t *file_type,
                             const vs_file_version_t *version,
                             char *buffer,
-                            size_t buf_size,
+                            uint32_t buf_size,
                             bool add_filetype_description) {
-    static const uint32_t START_EPOCH = 1420070400; // January 1, 2015 UTC
     char *output = buffer;
-    size_t string_space = buf_size;
-    size_t type_descr_size;
-    static const size_t TYPE_DESCR_POSTFIX = 2;
+    uint32_t string_space = buf_size;
+    uint32_t type_descr_size;
+    static const uint32_t TYPE_DESCR_POSTFIX = 2;
     const vs_file_version_t *fw_ver = (const vs_file_version_t *)version;
     (void)context;
 
@@ -115,8 +117,8 @@ static vs_status_e
 _fw_update_get_header(void *context,
                       vs_update_file_type_t *file_type,
                       void *header_buffer,
-                      size_t buffer_size,
-                      size_t *header_size) {
+                      uint32_t buffer_size,
+                      uint32_t *header_size) {
     (void)context;
     vs_firmware_descriptor_t *fw_descr = header_buffer;
 
@@ -148,6 +150,9 @@ _fw_update_get_header(void *context,
 
     VS_IOT_MEMCPY(&file_type->info, &fw_descr->info, sizeof(fw_descr->info));
 
+    // Normalize byte order
+    vs_firmware_hton_descriptor(fw_descr);
+
     return VS_CODE_OK;
 }
 
@@ -157,13 +162,14 @@ _fw_update_get_data(void *context,
                     vs_update_file_type_t *file_type,
                     const void *file_header,
                     void *data_buffer,
-                    size_t buffer_size,
-                    size_t *data_size,
-                    size_t data_offset) {
-    vs_storage_op_ctx_t *ctx = context;
+                    uint32_t buffer_size,
+                    uint32_t *data_size,
+                    uint32_t data_offset) {
+
     const vs_firmware_descriptor_t *descriptor = file_header;
     vs_status_e ret_code;
     (void)file_type;
+    size_t chunk_size;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -175,18 +181,15 @@ _fw_update_get_data(void *context,
               "Buffer size %d is bigger than uint16_t %d",
               buffer_size,
               VS_CODE_ERR_FORMAT_OVERFLOW);
-    CHECK_RET(data_offset <= UINT32_MAX,
-              VS_CODE_ERR_FORMAT_OVERFLOW,
-              "Data offset %d is bigger than uint16_t %d",
-              data_offset,
-              VS_CODE_ERR_FORMAT_OVERFLOW);
 
-    ret_code = vs_firmware_load_firmware_chunk(descriptor, data_offset, data_buffer, buffer_size, data_size);
-    CHECK_RET(buffer_size >= *data_size,
+    ret_code = vs_firmware_load_firmware_chunk(descriptor, data_offset, data_buffer, buffer_size, &chunk_size);
+    CHECK_RET(buffer_size >= chunk_size,
               VS_CODE_ERR_TOO_SMALL_BUFFER,
               "Buffer size %d bytes is not enough to store data %d bytes size",
               buffer_size,
-              *data_size);
+              chunk_size);
+
+    *data_size = chunk_size;
 
     return ret_code;
 }
@@ -197,17 +200,23 @@ _fw_update_get_footer(void *context,
                       vs_update_file_type_t *file_type,
                       const void *file_header,
                       void *footer_buffer,
-                      size_t buffer_size,
-                      size_t *footer_size) {
-    vs_storage_op_ctx_t *ctx = context;
-    const vs_firmware_descriptor_t *descriptor = file_header;
+                      uint32_t buffer_size,
+                      uint32_t *footer_size) {
+    const vs_firmware_descriptor_t *net_descr = file_header;
+    vs_firmware_descriptor_t descriptor;
     vs_status_e ret_code;
     (void)file_type;
+    size_t data_sz;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_buffer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buffer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(footer_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    VS_IOT_MEMCPY(&descriptor, net_descr, sizeof(descriptor));
+
+    // Normalize byte order
+    vs_firmware_ntoh_descriptor(&descriptor);
 
     CHECK_RET(buffer_size <= UINT16_MAX,
               VS_CODE_ERR_FORMAT_OVERFLOW,
@@ -215,12 +224,13 @@ _fw_update_get_footer(void *context,
               buffer_size,
               VS_CODE_ERR_FORMAT_OVERFLOW);
 
-    ret_code = vs_firmware_load_firmware_footer(descriptor, footer_buffer, buffer_size, footer_size);
-    CHECK_RET(buffer_size >= *footer_size,
+    ret_code = vs_firmware_load_firmware_footer(&descriptor, footer_buffer, buffer_size, &data_sz);
+    CHECK_RET(buffer_size >= data_sz,
               VS_CODE_ERR_TOO_SMALL_BUFFER,
               "Buffer size %d bytes is not enough to store footer %d bytes size",
               buffer_size,
-              *footer_size);
+              data_sz);
+    *footer_size = data_sz;
 
     return ret_code;
 }
@@ -230,14 +240,16 @@ static vs_status_e
 _fw_update_set_header(void *context,
                       vs_update_file_type_t *file_type,
                       const void *file_header,
-                      size_t header_size,
-                      size_t *file_size) {
-    vs_storage_op_ctx_t *ctx = context;
-    const vs_firmware_descriptor_t *descriptor = file_header;
+                      uint32_t header_size,
+                      uint32_t *file_size) {
+    vs_firmware_descriptor_t *descriptor = (vs_firmware_descriptor_t *)file_header;
     (void)file_type;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    // Normalize byte order
+    vs_firmware_ntoh_descriptor(descriptor);
     CHECK_RET(header_size == sizeof(*descriptor),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Incorrect header size %d byte while it must store vs_firmware_descriptor_t %d bytes length",
@@ -254,9 +266,8 @@ _fw_update_set_data(void *context,
                     vs_update_file_type_t *file_type,
                     const void *file_header,
                     const void *file_data,
-                    size_t data_size,
-                    size_t data_offset) {
-    vs_storage_op_ctx_t *ctx = context;
+                    uint32_t data_size,
+                    uint32_t data_offset) {
     const vs_firmware_descriptor_t *descriptor = file_header;
 
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -272,7 +283,7 @@ _fw_update_set_footer(void *context,
                       vs_update_file_type_t *file_type,
                       const void *file_header,
                       const void *file_footer,
-                      size_t footer_size) {
+                      uint32_t footer_size) {
     vs_storage_op_ctx_t *ctx = context;
     const vs_firmware_descriptor_t *fw_descr = file_header;
     vs_status_e res;
@@ -339,7 +350,7 @@ _fw_update_free_item(void *context, vs_update_file_type_t *file_type) {
 
 /*************************************************************************/
 static vs_status_e
-_fw_update_get_header_size(void *context, vs_update_file_type_t *file_type, size_t *header_size) {
+_fw_update_get_header_size(void *context, vs_update_file_type_t *file_type, uint32_t *header_size) {
     (void)context;
     (void)file_type;
 
@@ -352,7 +363,10 @@ _fw_update_get_header_size(void *context, vs_update_file_type_t *file_type, size
 
 /*************************************************************************/
 static vs_status_e
-_fw_update_get_file_size(void *context, vs_update_file_type_t *file_type, const void *file_header, size_t *file_size) {
+_fw_update_get_file_size(void *context,
+                         vs_update_file_type_t *file_type,
+                         const void *file_header,
+                         uint32_t *file_size) {
     const vs_firmware_descriptor_t *fw_header = file_header;
     (void)context;
     (void)file_type;
@@ -382,15 +396,19 @@ _fw_update_has_footer(void *context, vs_update_file_type_t *file_type, bool *has
 static vs_status_e
 _fw_update_inc_data_offset(void *context,
                            vs_update_file_type_t *file_type,
-                           size_t current_offset,
-                           size_t loaded_data_size,
-                           size_t *next_offset) {
+                           uint32_t current_offset,
+                           uint32_t loaded_data_size,
+                           uint32_t *next_offset) {
     (void)context;
     (void)file_type;
+    size_t offset;
 
     CHECK_NOT_ZERO_RET(next_offset, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    *next_offset = current_offset + loaded_data_size;
+    offset = current_offset + loaded_data_size;
+    CHECK_RET(offset < UINT32_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Next offset is outside of file");
+
+    *next_offset = offset;
 
     return VS_CODE_OK;
 }

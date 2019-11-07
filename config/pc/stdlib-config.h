@@ -79,6 +79,12 @@
 /** strcpy call */
 #define VS_IOT_STRCPY    strcpy
 
+/** strncpy call */
+#define VS_IOT_STRNCPY    strncpy
+
+/** strncmp call */
+#define VS_IOT_STRNCMP    strncmp
+
 /** strstr call */
 #define VS_IOT_STRSTR    strstr
 
