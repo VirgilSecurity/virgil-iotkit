@@ -40,6 +40,7 @@
 #define VS_IOT_PROVISION_STRUCTS_H
 
 #include <virgil/iot/status_code/status_code.h>
+#include <trust_list-config.h>
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define HTONL_IN_COMPILE_TIME(val)                                                                                     \
@@ -164,12 +165,10 @@ typedef struct __attribute__((__packed__)) {
     vs_file_version_t version;
 } vs_file_info_t;
 
-#define VS_SEARCH_KEY_BUF_SZ (512)
-
 typedef struct {
     int last_pos;
     vs_key_type_e key_type;
-    uint8_t element_buf[VS_SEARCH_KEY_BUF_SZ];
+    uint8_t element_buf[VS_TL_STORAGE_MAX_PART_SIZE];
 } vs_provision_tl_find_ctx_t;
 
 #endif // VS_IOT_PROVISION_STRUCTS_H

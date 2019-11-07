@@ -145,7 +145,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t i = 0;
     int ref_key_sz;
     // TODO: Fix buffer constant size
-    uint8_t buf[VS_SEARCH_KEY_BUF_SZ];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
     vs_status_e ret_code;
@@ -333,7 +333,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
     element.id = VS_TL_ELEMENT_TLC;
     element.index = search_ctx->last_pos + 1;
 
-    while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_SEARCH_KEY_BUF_SZ, &data_sz)) {
+    while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_TL_STORAGE_MAX_PART_SIZE, &data_sz)) {
         element.index++;
         if (pubkey_dated->pubkey.key_type != search_ctx->key_type) {
             continue;
