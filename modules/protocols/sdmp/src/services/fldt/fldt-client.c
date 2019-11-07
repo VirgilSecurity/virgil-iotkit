@@ -553,7 +553,7 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
                         VS_FLDT_GFTI,
                         0,
                         (const uint8_t *)file_type_request,
-                        sizeof(file_type_request));
+                        sizeof(*file_type_request));
 
     CHECK_RET(!vs_sdmp_send_request(NULL,
                                     vs_sdmp_broadcast_mac(),
