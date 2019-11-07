@@ -5,6 +5,9 @@ from virgil_crypto.hashes import HashAlgorithm
 
 
 TIME_OFFSET = 1420070400  # 01/01/2015 @ 12:00am (UTC)
+CARD_REGISTRATION_ENDPOINT = "/things/card/key"
+CLOUD_KEY_INIT_ENDPOINT = "/things/init"
+CLOUD_KEY_RECEIVE_ENDPOINT = "/things/cloudkey"
 
 
 class TrustListType(IntEnum):
