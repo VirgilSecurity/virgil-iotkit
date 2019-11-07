@@ -68,7 +68,7 @@ typedef struct __attribute__((__packed__)) {
 } vs_info_ginf_response_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t device_roles; // vs_sdmp_device_role_e
+    uint32_t device_roles; // vs_sdmp_device_role_e : CODEGEN: SKIP
     vs_mac_addr_t mac;
 } vs_info_enum_response_t;
 
