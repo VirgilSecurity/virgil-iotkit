@@ -8,7 +8,7 @@ from virgil_crypto import VirgilCrypto
 from virgil_sdk.cards import RawCardContent
 from virgil_sdk.client import RawSignedModel, RawSignature
 
-from virgil_keymanager.consts import CARD_REGISTRATION_ENDPOINT
+from virgil_keymanager.consts import CARD_REGISTRATION_ENDPOINT, VSKeyTypeS
 from virgil_keymanager.core_utils.helpers import tiny_key_to_virgil
 from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
 from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
@@ -22,14 +22,27 @@ class CardRequestsHandler:
         self._api_host = urlparse(api_url).netloc
         self._app_token = app_token
 
+        self._keys_counter = {}  # used for identities calculation: auth_1, auth_2
+
     def _create_raw_card(self, key_pair: KeyGeneratorInterface, key_info: dict) -> str:
         # Prepare public key in virgil format
         public_key = key_pair.public_key
         public_key = tiny_key_to_virgil(public_key)
         public_key = self._crypto.import_public_key(public_key)
 
-        # Calculate identity
-        identity = key_pair.key_type  # values from VSKeyTypeS
+        # Calculate identity.
+        identity = key_pair.key_type
+        # For keys which amount is 2 there should be identities like auth_1, auth_2
+        if key_pair.key_type in (VSKeyTypeS.RECOVERY.value,
+                                 VSKeyTypeS.AUTH.value,
+                                 VSKeyTypeS.TRUSTLIST.value,
+                                 VSKeyTypeS.FIRMWARE.value):
+            if key_pair.key_type not in self._keys_counter or self._keys_counter[key_pair.key_type] == 2:
+                key_number = 1
+            else:
+                key_number = 2
+            identity = "%s_%s" % (identity, key_number)
+            self._keys_counter[key_pair.key_type] = key_number
 
         # Prepare card content snapshot
         created_at = int(datetime.utcnow().timestamp())
