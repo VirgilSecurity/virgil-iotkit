@@ -59,7 +59,7 @@ typedef struct {
     vs_mac_addr_t dest_mac;
 } vs_poll_ctx_t;
 
-static vs_sdmp_info_srv_callbacks_t _callbacks = {0};
+static vs_sdmp_info_srv_callbacks_t _callbacks = {NULL};
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
