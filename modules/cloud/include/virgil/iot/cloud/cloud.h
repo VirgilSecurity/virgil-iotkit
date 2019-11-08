@@ -35,11 +35,14 @@
 // TODO : finish description !!!
 /*! \file cloud.h
  * \brief Cloud implementation
- * Cloud library is used to
+ *
+ * Cloud library is used for the goals listed below :
  * - obtaining credentials from thing service
  * - connecting to message bin broker over MQTT and subscribing list of topics
  * - processing received messages over message bin
  * - downloading firmware images and trust list files from cloud storage
+ *
+ * Virgil IoT SDK provides MQTT implementation based on AWS IoT library
  *
  * \section cloud_usage Cloud Usage
  *
@@ -52,12 +55,15 @@
  *  Cloud library uses provision and firmware modules, which must be initialized before.
  *
  *  Here you can see an example of Cloud library initialization :
+ *
  *  \code
  *  // Provision module
  *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
+ *
  *  // Firmware module
  *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
- *  //Cloud module
+ *
+ *  // Cloud module
  *  STATUS_CHECK(vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), hsm_impl), "Unable to initialize Cloud module");
  *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register handler for TL topic");
  *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, firmware_topic_process), "Error register handler for FW topic");
@@ -262,10 +268,10 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
 
 /** Message Bin initialization
  * 
- * \param[in] host 
- * \param[in] port 
- * \param[in] device_cert Device certificate to be send to broker.
- * \param[in] priv_key 
+ * \param[in] host Host URL. Must not be NULL.
+ * \param[in] port Port for host access.
+ * \param[in] device_cert Device certificate to be send to the broker.
+ * \param[in] priv_key Device private key.
  * \param[in] ca_cert Broker's certificate. Must not be NULL.
  * 
  * \return #VS_CODE_OK in case of success or error code.
@@ -276,7 +282,11 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
                                                const char *priv_key,
                                                const char *ca_cert);
 
-/** Message Bin connection
+/** Message Bin connection and topic subscribing implementation
+ *
+ * - connection to MQTT Broker (Message Bin implementation)
+ * - topic subscribing
+ *
  * \param[in] client_id
  * \param[in] login
  * \param[in] password
@@ -292,15 +302,18 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
                                                             vs_cloud_mb_process_custom_topic_cb_t process_topic);
 
 /** Message Bin processing
- * 
+ *
+ * - listening
+ * - calls
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
+/** Message Bin implementation */
 typedef struct {
-    vs_cloud_mb_init_func_t init; /**< */
-    vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< */
-    vs_cloud_mb_process_func_t process; /**< */
+    vs_cloud_mb_init_func_t init; /**< Message Bin initialization */
+    vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< Message Bin connection and topic subscribing */
+    vs_cloud_mb_process_func_t process; /**< Message Bin processing : listen incoming messages and callback calls */
 } vs_cloud_message_bin_impl_t;
 
 /** Process Message Bin
@@ -313,8 +326,8 @@ vs_cloud_message_bin_process(void);
 /** Initialize Message Bin
  *
  * \param[in] cloud_impl Cloud implementation. Must not be NULL.
- * \param[in] message_bin_impl Message bin implementation. Must not be NULL.
- * \param[in] hsm HSM implementation. Must not be NULL.
+ * \param[in] message_bin_impl Message Bin implementation. You can use default implementation #vs_aws_message_bin_impl. Must not be NULL.
+ * \param[in] hsm Security module implementation. You can use default implementation #vs_softhsm_impl. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
