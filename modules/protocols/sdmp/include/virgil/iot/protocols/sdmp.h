@@ -141,7 +141,7 @@ vs_sdmp_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
 
 /** Register SDMP service
  *
- * Initializes \a service SDMP service.
+ * Initializes SDMP service.
  *
  * \param[in] service SDMP service descriptor. Must not be NULL.
  *

@@ -538,6 +538,36 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 }
 
 /******************************************************************/
+static vs_status_e
+vs_fldt_ask_file_type_info(const char *file_type_descr,
+                           vs_fldt_gfti_fileinfo_request_t *file_type_request,
+                           vs_fldt_client_file_type_mapping_t *file_type_info) {
+    CHECK_NOT_ZERO_RET(file_type_request, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
+
+    vs_fldt_gfti_fileinfo_request_t_encode(file_type_request);
+
+    _update_process_set(&file_type_info->update_ctx,
+                        file_type_info->gateway_mac,
+                        VS_FLDT_GFTI,
+                        0,
+                        (const uint8_t *)file_type_request,
+                        sizeof(*file_type_request));
+
+    CHECK_RET(!vs_sdmp_send_request(NULL,
+                                    vs_sdmp_broadcast_mac(),
+                                    VS_FLDT_SERVICE_ID,
+                                    VS_FLDT_GFTI,
+                                    (const uint8_t *)file_type_request,
+                                    sizeof(*file_type_request)),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Unable to send FLDT \"GFTI\" server request");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
 static int
 vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     vs_fldt_gnff_footer_response_t *file_footer = (vs_fldt_gnff_footer_response_t *)response;
@@ -658,26 +688,8 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
 
     file_type_request.type = *file_type;
-
-    // Normalize byte order
-    vs_fldt_gfti_fileinfo_request_t_encode(&file_type_request);
-
-    _update_process_set(&file_type_info->update_ctx,
-                        file_type_info->gateway_mac,
-                        VS_FLDT_GFTI,
-                        0,
-                        (const uint8_t *)&file_type_request,
-                        sizeof(file_type_request));
-
-    VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_descr);
-    CHECK_RET(!vs_sdmp_send_request(NULL,
-                                    vs_sdmp_broadcast_mac(),
-                                    VS_FLDT_SERVICE_ID,
-                                    VS_FLDT_GFTI,
-                                    (const uint8_t *)&file_type_request,
-                                    sizeof(file_type_request)),
-              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-              "Unable to send FLDT \"GFTI\" server request");
+    STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request, file_type_info),
+                     "Unable to ask current file information");
 
     return VS_CODE_OK;
 }
@@ -807,5 +819,33 @@ vs_sdmp_fldt_client(vs_fldt_got_file got_file_callback) {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_fldt_client_request_all_files(void) {
+    size_t id;
+    vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
+    char file_descr[FLDT_FILEVER_BUF];
+    vs_status_e ret_code;
+
+    VS_LOG_DEBUG("[FLDT] Request all registered file types update");
+
+    if (!_file_type_mapping_array_size) {
+        VS_LOG_WARNING("[FLDT] No registered file types");
+        return VS_CODE_OK;
+    }
+
+    for (id = 0; id < _file_type_mapping_array_size; ++id) {
+        file_type_info = &_client_file_type_mapping[id];
+
+        VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+
+        file_type_request.type = file_type_info->type;
+
+        STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request, file_type_info),
+                         "Unable to ask current file information");
+    }
+
+    return VS_CODE_OK;
+}
 
 #endif // FLDT_CLIENT

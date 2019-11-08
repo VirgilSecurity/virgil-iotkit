@@ -272,20 +272,6 @@ vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data) {
 }
 
 /******************************************************************************/
-// Converting encode function for (vs_info_enum_response_t)
-void
-vs_info_enum_response_t_encode(vs_info_enum_response_t *src_data) {
-    src_data->device_roles = VS_IOT_HTONL(src_data->device_roles);
-}
-
-/******************************************************************************/
-// Converting decode function for (vs_info_enum_response_t)
-void
-vs_info_enum_response_t_decode(vs_info_enum_response_t *src_data) {
-    src_data->device_roles = VS_IOT_NTOHL(src_data->device_roles);
-}
-
-/******************************************************************************/
 // Converting encode function for (vs_info_stat_response_t)
 void
 vs_info_stat_response_t_encode(vs_info_stat_response_t *src_data) {
