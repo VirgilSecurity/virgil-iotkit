@@ -39,6 +39,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -288,6 +289,62 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
     }
 
     return false;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                        uint16_t virgil_sign_sz,
+                                        uint8_t *raw_signature,
+                                        uint16_t buf_sz) {
+    int pos = 0;
+
+    const uint8_t *p_r = 0;
+    size_t r_sz = 0;
+    const uint8_t *p_s = 0;
+    size_t s_sz = 0;
+
+    const int secp_sign_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    const uint16_t secp_mpi_sz = secp_sign_sz / 2;
+
+    CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(buf_sz >= secp_sign_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Buffer too small");
+
+    VS_IOT_MEMSET(raw_signature, 0, secp_sign_sz);
+    if (_asn1_step_into(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_skip(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_step_into(OCTET_STRING, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_step_into(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_r, &r_sz) &&
+        _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_s, &s_sz)) {
+
+        CHECK_RET(r_sz >= secp_mpi_sz && r_sz <= secp_mpi_sz + 2,
+                  VS_CODE_ERR_CRYPTO,
+                  "Incorrect signature r_part size %d",
+                  r_sz);
+        CHECK_RET(s_sz >= secp_mpi_sz && s_sz <= secp_mpi_sz + 2,
+                  VS_CODE_ERR_CRYPTO,
+                  "Incorrect signature s_part size %d",
+                  s_sz);
+
+        if (0 == p_r[0]) {
+            p_r += r_sz - secp_mpi_sz;
+            r_sz -= (r_sz - secp_mpi_sz);
+        }
+
+        if (0 == p_s[0]) {
+            p_s += s_sz - secp_mpi_sz;
+            s_sz -= (s_sz - secp_mpi_sz);
+        }
+
+        VS_IOT_MEMCPY(&raw_signature[secp_mpi_sz - r_sz], p_r, r_sz);
+        VS_IOT_MEMCPY(&raw_signature[secp_sign_sz - s_sz], p_s, s_sz);
+
+        return VS_CODE_OK;
+    }
+
+    return VS_CODE_ERR_CRYPTO;
 }
 
 /******************************************************************************/

@@ -43,7 +43,6 @@ target_sources(vs-module-hsm
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm_helpers.h
-
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_508a.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_atecc_608a.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_custom.h
@@ -52,6 +51,7 @@ target_sources(vs-module-hsm
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/asn1-cryptogram.c
         )
 #
 #   Set additional compiler flags

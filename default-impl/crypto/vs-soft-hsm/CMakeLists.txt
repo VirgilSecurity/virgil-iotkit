@@ -43,7 +43,7 @@ target_sources(vs-default-soft-hsm
 
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h
+
         ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
 
         # Sources
@@ -53,7 +53,6 @@ target_sources(vs-default-soft-hsm
         ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-sha2.c
         ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-crypto.c
         ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/asn1-cryptogram.c
         )
 
 #
