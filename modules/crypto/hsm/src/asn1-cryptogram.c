@@ -39,6 +39,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/hsm/hsm_helpers.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -288,6 +289,45 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
     }
 
     return false;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                        uint16_t virgil_sign_sz,
+                                        uint8_t *raw_signature,
+                                        uint16_t buf_sz) {
+    int pos = 0;
+    const uint8_t *sign_part = 0;
+    size_t sign_sz = 0;
+    const int secp_sign_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+
+    CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(buf_sz >= secp_sign_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Buffer too small");
+
+    VS_IOT_MEMSET(raw_signature, 0, sign_sz);
+    if (_asn1_step_into(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_skip(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_step_into(OCTET_STRING, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_step_into(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
+        _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &sign_part, &sign_sz)) {
+
+        CHECK_RET(sign_sz == secp_sign_sz / 2, VS_CODE_ERR_CRYPTO, "Wrong virgil signature format");
+
+        VS_IOT_MEMCPY(raw_signature, sign_part, sign_sz);
+
+        CHECK_RET(_asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &sign_part, &sign_sz),
+                  VS_CODE_ERR_CRYPTO,
+                  "Wrong virgil signature format");
+        CHECK_RET(sign_sz == secp_sign_sz / 2, VS_CODE_ERR_CRYPTO, "Wrong virgil signature format");
+
+        VS_IOT_MEMCPY(&raw_signature[secp_sign_sz / 2], sign_part, sign_sz);
+
+        return VS_CODE_OK;
+    }
+
+    return VS_CODE_ERR_CRYPTO;
 }
 
 /******************************************************************************/

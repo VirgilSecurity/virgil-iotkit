@@ -89,8 +89,8 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     size_t buf_size = *in_out_answer_len;
     int crypto_answer_b64_decoded_len;
     int signature_b64_decoded_len;
-    int encrypted_sz;
-    int signature_sz;
+    int b64_encrypted_sz;
+    int b64_signature_sz;
     char *signature_b64 = NULL;
     char *crypto_answer_b64 = NULL;
 
@@ -101,27 +101,32 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     }
 
     /*----Find and decode from base64 the encrypted credentals and cloud signature----*/
-    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_ENCRYPTED_FIELD, &encrypted_sz) &&
-                  VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_SIGNATURE_FIELD, &signature_sz) &&
-                  signature_sz > 0,
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_ENCRYPTED_FIELD, &b64_encrypted_sz) &&
+                  b64_encrypted_sz > 0 &&
+                  VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_SIGNATURE_FIELD, &b64_signature_sz) &&
+                  b64_signature_sz > 0,
           "Wrong JSON format");
 
-    crypto_answer_b64 = (char *)VS_IOT_MALLOC(encrypted_sz);
-    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", encrypted_sz);
-    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)encrypted_sz),
+    ++b64_encrypted_sz;
+    ++b64_signature_sz;
+    crypto_answer_b64 = (char *)VS_IOT_MALLOC(b64_encrypted_sz);
+    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
+    CHECK(VS_JSON_ERR_OK ==
+                  json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)(b64_encrypted_sz)),
           "Wrong JSON format");
 
-    signature_b64 = (char *)VS_IOT_MALLOC(signature_sz);
-    CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", signature_sz);
-    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)signature_sz),
+    signature_b64 = (char *)VS_IOT_MALLOC(b64_signature_sz);
+    CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
+    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)(b64_signature_sz)),
           "Wrong JSON format");
 
     crypto_answer_b64_decoded_len = base64decode_len(crypto_answer_b64, (int)VS_IOT_STRLEN(crypto_answer_b64));
-    signature_b64_decoded_len = base64decode_len(signature_b64, (int)VS_IOT_STRLEN(signature_b64));
-
-    CHECK(0 < crypto_answer_b64_decoded_len && crypto_answer_b64_decoded_len <= encrypted_sz,
+    CHECK(0 < crypto_answer_b64_decoded_len && crypto_answer_b64_decoded_len <= b64_encrypted_sz,
           "Base64 of encrypted value is wrong");
-    CHECK(0 < signature_b64_decoded_len && signature_b64_decoded_len <= signature_sz, "Base64 of signature is wrong");
+
+    signature_b64_decoded_len = base64decode_len(signature_b64, (int)VS_IOT_STRLEN(signature_b64));
+    CHECK(0 < signature_b64_decoded_len && signature_b64_decoded_len <= b64_signature_sz,
+          "Base64 of signature is wrong");
 
     CHECK(base64decode(crypto_answer_b64,
                        (int)VS_IOT_STRLEN(crypto_answer_b64),
@@ -141,31 +146,31 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     uint16_t pubkey_sz = 0;
     uint8_t *meta = NULL;
     uint16_t meta_sz = 0;
+    vs_hsm_keypair_type_e ec_type;
 
     uint8_t hash[VS_HASH_SHA256_LEN];
     uint16_t hash_sz;
 
-    VS_IOT_MEMSET(&search_ctx, 0, sizeof(search_ctx));
-
     CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz),
           "Can't find cloud key in TL");
+    ec_type = ((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type;
 
-    CHECK(VS_CODE_OK == _hsm->hash(VS_HASH_SHA_256,
-                                   (uint8_t *)signature_b64,
-                                   signature_b64_decoded_len,
-                                   hash,
-                                   sizeof(hash),
-                                   &hash_sz),
-          "Error during hash calculate");
+    {
+        uint8_t sign[vs_hsm_get_signature_len(ec_type)];
+        CHECK(VS_CODE_OK == vs_hsm_virgil_secp256_signature_to_tiny(
+                                    (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
+              "Wrong signature format");
+        CHECK(VS_CODE_OK == _hsm->hash(VS_HASH_SHA_256,
+                                       (uint8_t *)crypto_answer_b64,
+                                       crypto_answer_b64_decoded_len,
+                                       hash,
+                                       sizeof(hash),
+                                       &hash_sz),
+              "Error during hash calculate");
 
-    CHECK(VS_CODE_OK == _hsm->ecdsa_verify(((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type,
-                                           pubkey,
-                                           pubkey_sz,
-                                           VS_HASH_SHA_256,
-                                           hash,
-                                           (uint8_t *)signature_b64,
-                                           signature_b64_decoded_len),
-          "Wrong signature of cloud answer");
+        CHECK(VS_CODE_OK == _hsm->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
+              "Wrong signature of cloud answer");
+    }
 
     VS_IOT_FREE(signature_b64);
     signature_b64 = NULL;

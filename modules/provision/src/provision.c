@@ -269,8 +269,6 @@ vs_provision_cloud_url(void) {
     uint8_t *meta = NULL;
     uint16_t meta_sz = 0;
 
-    VS_IOT_MEMSET(&search_ctx, 0, sizeof(search_ctx));
-
     if (_base_url) {
         VS_IOT_FREE(_base_url);
         _base_url = NULL;
@@ -297,7 +295,9 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
                                uint8_t **meta,
                                uint16_t *meta_sz) {
 
+    CHECK_NOT_ZERO_RET(search_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     // Setup search context
+    VS_IOT_MEMSET(search_ctx, 0, sizeof(vs_provision_tl_find_ctx_t));
     search_ctx->key_type = key_type;
     search_ctx->last_pos = -1;
 
