@@ -149,13 +149,6 @@ void
 vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_info_enum_response_t)
-void
-vs_info_enum_response_t_encode(vs_info_enum_response_t *src_data);
-void
-vs_info_enum_response_t_decode(vs_info_enum_response_t *src_data);
-
-/******************************************************************************/
 // Converting functions for (vs_info_stat_response_t)
 void
 vs_info_stat_response_t_encode(vs_info_stat_response_t *src_data);
