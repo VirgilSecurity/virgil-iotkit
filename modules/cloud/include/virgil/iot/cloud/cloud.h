@@ -84,10 +84,11 @@
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
  * #vs_softhsm_impl() for \a hsm_impl.
  *
- * \a tl_topic_process is a Trust List topic downloader. This callback has to download new Trust List and to process it.
- * See \ref trust_list_usage for Trust List processing details.
+ * \a firmware_topic_process receives URL, where it can fetch a new version of Firmware.
+ * See \ref firmware_usage for details.
  *
- * Also Firmware has to be registered as a #VS_CLOUD_MB_TOPIC_FW topic. See \ref firmware_usage for details.
+ * \a tl_topic_process receives URL, where it can fetch a new version of Trust List.
+ * See \ref trust_list_usage for Trust List processing details.
  *
  *  Here you can see an example of Cloud library usage:
  *
@@ -228,7 +229,7 @@ typedef enum {
 // TODO : rename p_data to data
 /** Callback for custom topics processing
  *
- * This callback has to process topics as raw data.
+ * This callback has to process messages from topics as raw data.
  *
  * \param[in] topic Topic name. Cannot be NULL.
  * \param[in] topic_sz Topic name size. Cannot be zero.
@@ -242,15 +243,16 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
 
 /** Callback for default topics processing
  *
- * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this callback if it is necessary
+ * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this callback when received
+ * a notification about a new version of Trust List or Firmware
  * to load data for this topic.
  *
- * \param[in] url Topic URL. Cannot be NULL.
- * \param[in] length Topic URL size. Cannot be zero.
+ * \param[in] url URL where from user can fetch a new version of file.
+ * \param[in] length Topic URL size.
  */
 typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint16_t length);
 
-/** Register default processing for topic
+/** Register processing handlers for default topics from #vs_cloud_mb_topic_id_t enumeration
  *
  * Registers topic processing handlers.
  *
