@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/cloud/private/cloud_include.h>
+#include <private/cloud_include.h>
 
 static vs_cloud_message_bin_ctx_t _mb_ctx;
 static const vs_cloud_message_bin_impl_t *_impl;

@@ -43,25 +43,25 @@
  *
  * \section cloud_usage Cloud Usage
  *
- *  function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing service using
- *  #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t.
- *  Then it waits for new messages periodically calling #vs_cloud_mb_process_func_t.
- *  User can register own handlers for events about new firmware or trust list by calling
- *  #vs_cloud_message_bin_register_default_handler or custom handler for raw data processing from some topics by calling
- *  #vs_cloud_message_bin_register_custom_handler
- *  Cloud library uses provision and firmware modules, which must be initialized before.
+ *  function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
+ * service using #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t. Then it
+ * waits for new messages periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
+ * about new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for raw
+ * data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler Cloud library uses
+ * provision and firmware modules, which must be initialized before.
  *
  *  Here you can see an example of Cloud library initialization :
  *  \code
  *  // Provision module
  *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
  *  // Firmware module
- *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+ *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize
+ * Firmware module");
  *  //Cloud module
- *  STATUS_CHECK(vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), hsm_impl), "Unable to initialize Cloud module");
- *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register handler for TL topic");
- *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, firmware_topic_process), "Error register handler for FW topic");
- *  \endcode
+ *  STATUS_CHECK(vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), hsm_impl), "Unable to initialize Cloud
+ * module"); STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error
+ * register handler for TL topic"); STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW,
+ * firmware_topic_process), "Error register handler for FW topic"); \endcode
  *
  *  Here you can see an example of Cloud library usage:
  *  \code
@@ -119,11 +119,11 @@
 
 // TODO : contents must be const
 /** Callback for download file parts
- * 
+ *
  * \param[in] contents Input data. Must not be NULL.
  * \param[in] chunksize Input data size. Must not be zero.
  * \param[in,out] userdata Data context. Must not be NULL.
- * 
+ *
  * \return
  */
 typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
@@ -131,13 +131,13 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
 // TODO : hander_data ==> handler_data
 // TODO : it looks like hander_data is for CURL call
 /** Callback for GET request processing
- * 
+ *
  * \param[in] url URL for data download. Must not be NULL.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
- * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will be used.
- * \param[in] hander_data Context from \a fetch_handler \a userdata parameter.
- * \param[in,out] in_out_size Data size storage. Must not be NULL.
- * 
+ * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will
+ * be used. \param[in] hander_data Context from \a fetch_handler \a userdata parameter. \param[in,out] in_out_size Data
+ * size storage. Must not be NULL.
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
@@ -151,48 +151,20 @@ typedef struct {
     vs_cloud_http_get_func_t http_get; /**< Callback for GET request processing */
 } vs_cloud_impl_t;
 
-/** Parse Firmware manifest obtained by MQTT
- *
- * Parse Firmware manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload 
- * \param[in] payload_len 
- * \param[out] fw_url Buffer for Firmware download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
-
-/** Parse Trust List manifest obtained by MQTT
- *
- * Parse Trust List manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload
- * \param[in] payload_len
- * \param[out] tl_url Buffer for Trust List download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
-
 /** Load and store Firmware File
  *
- * \param[in] fw_file_url 
+ * \param[in] fw_file_url
  * \param[out] fetched_header
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header);
 
 /**
- * 
- * \param[in] tl_file_url 
- * 
+ *
+ * \param[in] tl_file_url
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
@@ -203,16 +175,16 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url);
  * Used for MQTT.
  */
 typedef struct {
-    char *topic_list; /**< Text string with all topics */
+    char *topic_list;         /**< Text string with all topics */
     uint16_t *topic_len_list; /**< List for each topis size */
-    size_t topic_count; /**< Topics amount for \a topic_list and \a topic_len_list */
+    size_t topic_count;       /**< Topics amount for \a topic_list and \a topic_len_list */
 } vs_cloud_mb_topics_list_t;
 
 /** Default topics */
 typedef enum {
     VS_CLOUD_MB_TOPIC_TL, /**< Trust List */
-    VS_CLOUD_MB_TOPIC_FW /**< Firmware */
-}vs_cloud_mb_topic_id_t;
+    VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
+} vs_cloud_mb_topic_id_t;
 
 // TODO : rename p_data to data
 /** Callback for custom processing of topics
@@ -225,9 +197,9 @@ typedef enum {
  * \param[in] length Topic data size.
  */
 typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
-                                               uint16_t topic_sz,
-                                               const uint8_t *p_data,
-                                               uint16_t length);
+                                                      uint16_t topic_sz,
+                                                      const uint8_t *p_data,
+                                                      uint16_t length);
 
 /** Callback for default processing of topics
  *
@@ -236,38 +208,38 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
  * \param[in] url Topic URL.
  * \param[in] length Topic URL size.
  */
-typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
-                                                      uint16_t length);
+typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint16_t length);
 
 /** Register default processing for topic
- * 
- * \param[in] topic_id 
- * \param[in] handler 
- * 
+ *
+ * \param[in] topic_id
+ * \param[in] handler
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler);
+vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
+                                              vs_cloud_mb_process_default_topic_cb_t handler);
 
 /** Register custom handler callback
  *
  * This callback is used for topics that have not been registered by #vs_cloud_message_bin_register_default_handler
  *
- * \param[in] handler 
- * 
+ * \param[in] handler
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb_t handler);
 
 /** Message Bin initialization
- * 
- * \param[in] host 
- * \param[in] port 
+ *
+ * \param[in] host
+ * \param[in] port
  * \param[in] device_cert Device certificate to be send to broker.
- * \param[in] priv_key 
+ * \param[in] priv_key
  * \param[in] ca_cert Broker's certificate. Must not be NULL.
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
@@ -292,15 +264,15 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
                                                             vs_cloud_mb_process_custom_topic_cb_t process_topic);
 
 /** Message Bin processing
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
 typedef struct {
-    vs_cloud_mb_init_func_t init; /**< */
+    vs_cloud_mb_init_func_t init;                           /**< */
     vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< */
-    vs_cloud_mb_process_func_t process; /**< */
+    vs_cloud_mb_process_func_t process;                     /**< */
 } vs_cloud_message_bin_impl_t;
 
 /** Process Message Bin
