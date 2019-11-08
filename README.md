@@ -12,6 +12,18 @@
 
 Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.
 
+## Content
+- [Features](#features)
+- [Run Demo](#run-demo)
+- [IoT Dev Tools](#iot-dev-tools)
+- [IoTKit Installation](#iotkit-installation)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+- [Modules](#modules)
+- [Tests](#tests)
+- [API Reference](#api-reference)
+- [License](#license)
+- [Support](#support)
 
 ## Features
 Virgil IoTKit provides set of features for IoT device security and management:
@@ -23,24 +35,91 @@ Virgil IoTKit provides set of features for IoT device security and management:
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interactes with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
 
+## Run Demo
 
-## Installation
 
-Linux
-Mac OS
+## IoT Dev Tools
+- KeyManager
+- Factory Initializer
+- IoT Device Registrar
+- Firmware Signer
 
+
+## IoTKit Installation
 
 ### Requirements
 
-- Install `clang-format`
-- Setup git hooks for automatic code formatting
+Product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and MacOS.
+- Install make, CMake version 3.11 or higher for project building
+- Install gcc or another toolchain for C/C++ compile
+- Install [Go](https://golang.org/) for utilities support
+- Install [git](https://git-scm.com/) for Virgil Crypto installation and update
+- Install [curl](https://curl.haxx.se/) for gateway target
+
+// TODO : TO REMOVE
+~~- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support~~
+
+
+
+### Installation
+- Install required components.
+
+For Ubuntu :
+```
+apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+```
+
+For Fedora, CentOS :
+```
+yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
+```
+
+For Mac OS :
+```
+brew install make cmake golang git gcc curl doxygen swig
+```
+
+- Check CMake version. It must be 3.11 or higher :
 
 ```
-cd <virgil-iot-sdk>
-git config core.hooksPath git-hooks
+$ cmake --version
+cmake version 3.14.5
 ```
 
-### Docs
+- Clone repository :
+
+```
+git clone --recurse-submodules -b develop git@github.com:VirgilSecurity/virgil-iot-sdk.git
+```
+
+- Install Virgil Crypto library :
+
+```
+virgil-iot-sdk/scripts/install-virgil-crypto.sh
+```
+
+- Initialize CMake :
+
+```
+mkdir -p build
+cd build
+cmake ..
+```
+
+## Modules
+- Crypto.
+- Provision.
+- Firmware.
+- Secbox.
+- Protocols.
+- Cloud.
+- Logger.
+
+
+## Tests
+
+
+## API Reference
 - [API Reference of IoTKit](http://VirgilSecurity.github.io/virgil-iot-sdk)
 
 
