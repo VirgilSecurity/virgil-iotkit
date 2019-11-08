@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT SDK: Virgil IoT SDK</title>
+<title>Virgil IoT SDK: Virgil IoTKit C</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,20 +62,78 @@ $(function() {
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Virgil IoT SDK </div>  </div>
+<div class="title">Virgil IoTKit C </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
-Requirmets</h1>
-<ol type="1">
-<li>Install <code>clang-format</code></li>
-</ol>
-<ol type="1">
-<li>Setup git hooks for automatic code formatting</li>
-</ol>
-<div class="fragment"><div class="line">cd &lt;virgil-iot-sdk&gt;</div>
-<div class="line">git config core.hooksPath git-hooks</div>
-</div><!-- fragment --> </div></div><!-- PageDoc -->
+<div class="textblock"><p><a href="https://travis-ci.com/VirgilSecurity/virgil-iot-sdk"><img src="https://travis-ci.com/VirgilSecurity/virgil-iot-sdk.svg?branch=master" alt="Build Status" class="inline"/></a> <a href="http://VirgilSecurity.github.io/virgil-iot-sdk"><img src="https://img.shields.io/badge/docs-doxygen-blue.svg" alt="Documentation Doxygen" class="inline"/></a> <a href="https://raw.githubusercontent.com/VirgilSecurity/virgil-iot-sdk/release/LICENSE"><img src="https://img.shields.io/badge/license-BSD%203--Clause-blue.svg" alt="GitHub license" class="inline"/></a></p>
+<p><a href="#introduction">Introduction</a> | <a href="#sdk-features">SDK Features</a> | <a href="#sdk-modules">SDK Modules</a> | <a href="#installation">Installation</a> | <a href="#docs">Docs</a> | <a href="#support">Support</a></p>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Introduction</h1>
+<p><a href="https://developer.virgilsecurity.com/docs"><img src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" alt="" width="230px" align="left" hspace="10" vspace="6" class="inline"/></a><a href="https://virgilsecurity.com">Virgil Security</a> provides a set of APIs for adding security to any application and devices.</p>
+<p>Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.</p>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Features</h1>
+<p>Virgil IoTKit provides set of features for IoT device security and management:</p><ul>
+<li><b>Crypto Module. Connect any crypto library and hard secure module (HSM)</b>. Virgil IoTKit provides flexible and simple API for any provides of crypto library and HSM. At the same time, the framework provides default software HSM implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).</li>
+<li><b>Provision Module. Secure IoT device provision</b>. In order to securely update firmware, securely register, authenticate or exchange messages between IoT devices, each IoT device must have its own tools, which allow the device to perform cryptographic operations, and these tools must contain the necessary information to identify the device or other participants (e.g. trust list provider). These tools are the device keys, trust chain, device card, etc. The process of providing your IoT devices with these tools is called device provision, and Virgil IoTKit gives you all the necessary functionality to make your IoT devices identifiable and verifiable, as a result, protect them from counterfeit and fabrication.</li>
+<li><b>Firmware Module. Secure firmware and trust chain verification and distribution</b>. IoTKit provides set of API for secure verification of firmware in a bootloader. Also, IoTKit provides an example of bootloader implementation in the form of emulator.</li>
+<li><b>Secbox Module. Secure software storage for any sensetive data</b>. IoTKit provides secure software storage that is called <b>Secbox</b> for storing any sensetive data, like private keys. The Secbox works in the two modes; the first mode - when data is only signed and the second one - when data is encrypted and then signed.</li>
+<li><b>Protocols Module</b>. IoTKit provides a flexible, programmable and simple device management protocol (SDMP) for device-to-device, device-to-cloud, and cloud-to-device communication. SDMP can be used for secure firmware distribution, secure notification about device state, secure device provision. Also, SDMP contains a set of functions and interfaces that allows you to work with any transport protocol (BLE, Wi-Fi, PLC, NoiseSocket, etc.). <br  />
+</li>
+<li><b>Cloud Module. API for working with Virgil IoT Security PaaS</b>. IoTKit interactes with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.</li>
+<li><b>Logger Module</b>. IoTKit contains a set of functions and interfaces for logging device events.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md3"></a>
+Requirements</h1>
+<p>Product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and MacOS.</p><ul>
+<li>Install make, CMake version 3.11 or higher for project building</li>
+<li>Install gcc or another toolchain for C/C++ compile</li>
+<li>Install <a href="https://golang.org/">Go</a> for utilities support</li>
+<li>Install <a href="https://git-scm.com/">git</a> for Virgil Crypto installation and update</li>
+<li>Install <a href="https://curl.haxx.se/">curl</a> for gateway target</li>
+</ul>
+<p>// TODO : TO REMOVE <strike>- Install <a href="http://www.doxygen.nl/">doxygen</a>, <a href="http://www.swig.org/">swig</a> for Virgil Crypto support</strike></p>
+<h1><a class="anchor" id="autotoc_md4"></a>
+Installation</h1>
+<ul>
+<li>Install required components.</li>
+</ul>
+<p>For Ubuntu : </p><div class="fragment"><div class="line">apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig</div>
+</div><!-- fragment --><p>For Fedora, CentOS : </p><div class="fragment"><div class="line">yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig</div>
+</div><!-- fragment --><p>For Mac OS : </p><div class="fragment"><div class="line">brew install make cmake golang git gcc curl doxygen swig</div>
+</div><!-- fragment --><ul>
+<li>Check CMake version. It must be 3.11 or higher :</li>
+</ul>
+<div class="fragment"><div class="line">$ cmake --version</div>
+<div class="line">cmake version 3.14.5</div>
+</div><!-- fragment --><ul>
+<li>Clone repository :</li>
+</ul>
+<div class="fragment"><div class="line">git clone --recurse-submodules -b develop git@github.com:VirgilSecurity/virgil-iot-sdk.git</div>
+</div><!-- fragment --><ul>
+<li>Install Virgil Crypto library :</li>
+</ul>
+<div class="fragment"><div class="line">virgil-iot-sdk/scripts/install-virgil-crypto.sh</div>
+</div><!-- fragment --><ul>
+<li>Initialize CMake :</li>
+</ul>
+<div class="fragment"><div class="line">mkdir -p build</div>
+<div class="line">cd build</div>
+<div class="line">cmake ..</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md5"></a>
+Docs</h1>
+<ul>
+<li><a href="http://VirgilSecurity.github.io/virgil-iot-sdk">API Reference of IoTKit</a></li>
+</ul>
+<h1><a class="anchor" id="autotoc_md6"></a>
+License</h1>
+<p>This library is released under the [3-clause BSD License](LICENSE).</p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Support</h1>
+<p>Our developer support team is here to help you. Find more information on our <a href="https://help.virgilsecurity.com/">Help Center</a>.</p>
+<p>You can find us on <a href="https://twitter.com/VirgilSecurity">Twitter</a> or send us email <a href="#" onclick="location.href='mai'+'lto:'+'sup'+'po'+'rt@'+'Vi'+'rgi'+'lS'+'ecu'+'ri'+'ty.'+'co'+'m'; return false;">suppo<span style="display: none;">.nosp@m.</span>rt@V<span style="display: none;">.nosp@m.</span>irgil<span style="display: none;">.nosp@m.</span>Secu<span style="display: none;">.nosp@m.</span>rity.<span style="display: none;">.nosp@m.</span>com</a>.</p>
+<p>Also, get extra help from our support team on <a href="https://virgilsecurity.com/join-community">Slack</a>. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

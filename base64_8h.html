@@ -71,6 +71,9 @@ $(function() {
 <div class="title">base64.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>base64 functions  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 </div>
 <p><a href="base64_8h_source.html">Go to the source code of this file.</a></p>
@@ -90,7 +93,51 @@ Functions</h2></td></tr>
 <tr class="memdesc:abf8e8c791f697eeb9ecc8ff2a0380e9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base64 Encode data.  <a href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">More...</a><br /></td></tr>
 <tr class="separator:abf8e8c791f697eeb9ecc8ff2a0380e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>base64 functions </p>
+<p>This header contains base64 encoders/decoders.</p>
+<p>You can see an example :</p>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span> *origin = <span class="stringliteral">&quot;Test vector&quot;</span>;</div>
+<div class="line"><span class="keywordtype">char</span> *encoded = NULL;</div>
+<div class="line"><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *decoded = NULL;</div>
+<div class="line"><span class="keywordtype">int</span> size_origin = 0;</div>
+<div class="line"><span class="keywordtype">int</span> size_encoded = 0;</div>
+<div class="line"><span class="keywordtype">int</span> size_decoded = 0;</div>
+<div class="line"><span class="keywordtype">bool</span> res = <span class="keyword">false</span>;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Encoding length</span></div>
+<div class="line">size_origin = strlen(origin);</div>
+<div class="line">size_encoded = <a class="code" href="base64_8h.html#a40268c2c2f0462bbd2895b74747319a8">base64encode_len</a>(size_origin);</div>
+<div class="line">assert(size_encoded &gt; 0);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Prepare encoding buffer</span></div>
+<div class="line">encoded = malloc(size_encoded);</div>
+<div class="line">assert(encoded);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Encode</span></div>
+<div class="line">res = <a class="code" href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">base64encode</a>((<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *)origin, size_origin, encoded, &amp;size_encoded);</div>
+<div class="line">assert(res &amp;&amp; size_encoded);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Decoded length</span></div>
+<div class="line">size_decoded = <a class="code" href="base64_8h.html#aa80d8b2eee8faccef48cb64a8dc23331">base64decode_len</a>(encoded, size_encoded);</div>
+<div class="line">assert(size_decoded &gt; 0);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Prepare decoding buffer</span></div>
+<div class="line">decoded = malloc(size_decoded);</div>
+<div class="line">assert(decoded);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Decode</span></div>
+<div class="line">res = <a class="code" href="base64_8h.html#a69a4ebdf4ec5275c547df7f8f9237145">base64decode</a>(encoded, size_encoded, decoded, &amp;size_decoded);</div>
+<div class="line">assert(res &amp;&amp; size_decoded);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Compare results</span></div>
+<div class="line">assert(size_decoded == size_origin &amp;&amp; !memcmp(origin, decoded, size_origin));</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Free buffers</span></div>
+<div class="line">free(decoded);</div>
+<div class="line">free(encoded);</div>
+</div><!-- fragment --><p>This product includes software developed by the Apache Group for use in the Apache HTTP server project (<a href="http://www.apache.org/">http://www.apache.org/</a>) </p>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="a69a4ebdf4ec5275c547df7f8f9237145"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69a4ebdf4ec5275c547df7f8f9237145">&#9670;&nbsp;</a></span>base64decode()</h2>
 
@@ -270,6 +317,10 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="abase64_8h_html_abf8e8c791f697eeb9ecc8ff2a0380e9b"><div class="ttname"><a href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">base64encode</a></div><div class="ttdeci">bool base64encode(const unsigned char *in, int inlen, char *out, int *outlen)</div><div class="ttdoc">Base64 Encode data.</div></div>
+<div class="ttc" id="abase64_8h_html_a40268c2c2f0462bbd2895b74747319a8"><div class="ttname"><a href="base64_8h.html#a40268c2c2f0462bbd2895b74747319a8">base64encode_len</a></div><div class="ttdeci">int base64encode_len(int len)</div><div class="ttdoc">Get Base64 Encoded len.</div></div>
+<div class="ttc" id="abase64_8h_html_a69a4ebdf4ec5275c547df7f8f9237145"><div class="ttname"><a href="base64_8h.html#a69a4ebdf4ec5275c547df7f8f9237145">base64decode</a></div><div class="ttdeci">bool base64decode(const char *in, int inlen, unsigned char *out, int *outlen)</div><div class="ttdoc">Base64 Decode string.</div></div>
+<div class="ttc" id="abase64_8h_html_aa80d8b2eee8faccef48cb64a8dc23331"><div class="ttname"><a href="base64_8h.html#aa80d8b2eee8faccef48cb64a8dc23331">base64decode_len</a></div><div class="ttdeci">int base64decode_len(const char *in, int inlen)</div><div class="ttdoc">Get Base64 Decoded len.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -76,7 +76,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Cloud implementation Cloud library is used to.  
+<p>Cloud implementation.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
@@ -96,6 +96,7 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of available topics.  <a href="structvs__cloud__mb__topics__list__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__cloud__message__bin__impl__t.html">vs_cloud_message_bin_impl_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message Bin implementation.  <a href="structvs__cloud__message__bin__impl__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -121,7 +122,7 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:ac69cd8ba939247438c21b729ba3c2a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message Bin initialization.  <a href="cloud_8h.html#ac69cd8ba939247438c21b729ba3c2a79">More...</a><br /></td></tr>
 <tr class="separator:ac69cd8ba939247438c21b729ba3c2a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afec5267e1321c587a1c13a100b0dbb5b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b">vs_cloud_mb_connect_subscribe_func_t</a>) (const char *client_id, const char *login, const char *password, const <a class="el" href="structvs__cloud__mb__topics__list__t.html">vs_cloud_mb_topics_list_t</a> *topic_list, <a class="el" href="cloud_8h.html#a3e3520259dbbe345eaf84b99e9118bbf">vs_cloud_mb_process_custom_topic_cb_t</a> process_topic)</td></tr>
-<tr class="memdesc:afec5267e1321c587a1c13a100b0dbb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message Bin connection.  <a href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b">More...</a><br /></td></tr>
+<tr class="memdesc:afec5267e1321c587a1c13a100b0dbb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message Bin connection and topic subscribing implementation.  <a href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b">More...</a><br /></td></tr>
 <tr class="separator:afec5267e1321c587a1c13a100b0dbb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a573e80c76f32bd60c36419b1d4b0523e"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cloud_8h.html#a573e80c76f32bd60c36419b1d4b0523e">vs_cloud_mb_process_func_t</a>) (void)</td></tr>
 <tr class="memdesc:a573e80c76f32bd60c36419b1d4b0523e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message Bin processing.  <a href="cloud_8h.html#a573e80c76f32bd60c36419b1d4b0523e">More...</a><br /></td></tr>
@@ -162,21 +163,25 @@ Functions</h2></td></tr>
 <tr class="separator:a42139c757181d7784901b42510239bb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Cloud implementation Cloud library is used to. </p>
-<ul>
+<div class="textblock"><p>Cloud implementation. </p>
+<p>Cloud library is used for the goals listed below :</p><ul>
 <li>obtaining credentials from thing service</li>
 <li>connecting to message bin broker over MQTT and subscribing list of topics</li>
 <li>processing received messages over message bin</li>
 <li>downloading firmware images and trust list files from cloud storage</li>
 </ul>
+<p>Virgil IoT SDK provides MQTT implementation based on AWS IoT library</p>
 <h1><a class="anchor" id="cloud_usage"></a>
 Cloud Usage</h1>
-<p>function <a class="el" href="cloud_8h.html#a86ba9b4f68babdb392aa7374fc4ea88d" title="Process Message Bin.">vs_cloud_message_bin_process</a> tries to obtain credentials for connecting to message bin broker from thing service using <a class="el" href="cloud_8h.html#ad4efdbb6b4a4f8afba0be72699ec6eef" title="Callback for GET request processing.">vs_cloud_http_get_func_t</a> and connect to broker using <a class="el" href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b" title="Message Bin connection.">vs_cloud_mb_connect_subscribe_func_t</a>. Then it waits for new messages periodically calling <a class="el" href="cloud_8h.html#a573e80c76f32bd60c36419b1d4b0523e" title="Message Bin processing.">vs_cloud_mb_process_func_t</a>. User can register own handlers for events about new firmware or trust list by calling <a class="el" href="cloud_8h.html#a41bb32cb7cabca47490643787c008907" title="Register default processing for topic.">vs_cloud_message_bin_register_default_handler</a> or custom handler for raw data processing from some topics by calling <a class="el" href="cloud_8h.html#a5987cdf399116a0b5066caae073b7f94" title="Register custom handler callback.">vs_cloud_message_bin_register_custom_handler</a> Cloud library uses provision and firmware modules, which must be initialized before.</p>
-<p>Here you can see an example of Cloud library initialization : </p><div class="fragment"><div class="line"><span class="comment">// Provision module</span></div>
+<p>function <a class="el" href="cloud_8h.html#a86ba9b4f68babdb392aa7374fc4ea88d" title="Process Message Bin.">vs_cloud_message_bin_process</a> tries to obtain credentials for connecting to message bin broker from thing service using <a class="el" href="cloud_8h.html#ad4efdbb6b4a4f8afba0be72699ec6eef" title="Callback for GET request processing.">vs_cloud_http_get_func_t</a> and connect to broker using <a class="el" href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b" title="Message Bin connection and topic subscribing implementation.">vs_cloud_mb_connect_subscribe_func_t</a>. Then it waits for new messages periodically calling <a class="el" href="cloud_8h.html#a573e80c76f32bd60c36419b1d4b0523e" title="Message Bin processing.">vs_cloud_mb_process_func_t</a>. User can register own handlers for events about new firmware or trust list by calling <a class="el" href="cloud_8h.html#a41bb32cb7cabca47490643787c008907" title="Register default processing for topic.">vs_cloud_message_bin_register_default_handler</a> or custom handler for raw data processing from some topics by calling <a class="el" href="cloud_8h.html#a5987cdf399116a0b5066caae073b7f94" title="Register custom handler callback.">vs_cloud_message_bin_register_custom_handler</a> Cloud library uses provision and firmware modules, which must be initialized before.</p>
+<p>Here you can see an example of Cloud library initialization :</p>
+<div class="fragment"><div class="line"><span class="comment">// Provision module</span></div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="provision_8h.html#a76606a23984995c11450f4df9c2abfab">vs_provision_init</a>(&amp;tl_storage_impl, hsm_impl), <span class="stringliteral">&quot;Cannot initialize Provision module&quot;</span>);</div>
+<div class="line"> </div>
 <div class="line"><span class="comment">// Firmware module</span></div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="firmware_8h.html#ac5c4fef2832bd0c3c545b86922fa15bd">vs_firmware_init</a>(&amp;fw_storage_impl, hsm_impl, manufacture_id, device_type), <span class="stringliteral">&quot;Unable to initialize Firmware module&quot;</span>);</div>
-<div class="line"><span class="comment">//Cloud module</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Cloud module</span></div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="cloud_8h.html#a42139c757181d7784901b42510239bb3">vs_cloud_init</a>(<a class="code" href="curl-http_8h.html#af1efbd7c6d3daf07c6b91238cf78bc73">vs_curl_http_impl</a>(), <a class="code" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl</a>(), hsm_impl), <span class="stringliteral">&quot;Unable to initialize Cloud module&quot;</span>);</div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="cloud_8h.html#a41bb32cb7cabca47490643787c008907">vs_cloud_message_bin_register_default_handler</a>(<a class="code" href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2a8aea50be81cac6ffa115fc1dfd6b4cf8">VS_CLOUD_MB_TOPIC_TL</a>, tl_topic_process), <span class="stringliteral">&quot;Error register handler for TL topic&quot;</span>);</div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="cloud_8h.html#a41bb32cb7cabca47490643787c008907">vs_cloud_message_bin_register_default_handler</a>(<a class="code" href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644">VS_CLOUD_MB_TOPIC_FW</a>, firmware_topic_process), <span class="stringliteral">&quot;Error register handler for FW topic&quot;</span>);</div>
@@ -271,13 +276,14 @@ Cloud Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Message Bin connection. </p>
+<p>Message Bin connection and topic subscribing implementation. </p>
+<p>This is callback must connect to the Message Bin broker and subscribe topics. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT SDK library. You can analyze function pointed by <em>connect_subscribe</em> member for an example.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">client_id</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">login</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">password</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">topic_list</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">client_id</td><td>Client identifier. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">login</td><td>Login. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">password</td><td>Password. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">topic_list</td><td>Pointer to the list of topics. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">process_topic</td><td></td></tr>
   </table>
   </dd>
@@ -301,10 +307,10 @@ Cloud Usage</h1>
 <p>Message Bin initialization. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">host</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">port</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">device_cert</td><td>Device certificate to be send to broker. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">priv_key</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">host</td><td>Host URL. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">port</td><td>Port for host access. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">device_cert</td><td>Device certificate to be send to the broker. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">priv_key</td><td>Device private key. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ca_cert</td><td>Broker's certificate. Must not be NULL.</td></tr>
   </table>
   </dd>
@@ -376,6 +382,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Message Bin processing. </p>
+<p>Callback for Message Bin processing.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>
@@ -528,8 +535,8 @@ Cloud Usage</h1>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">cloud_impl</td><td>Cloud implementation. Must not be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">message_bin_impl</td><td>Message bin implementation. Must not be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">hsm</td><td>HSM implementation. Must not be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">message_bin_impl</td><td>Message Bin implementation. You can use default implementation returned by <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a>. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">hsm</td><td>Security module implementation. You can use default implementation returned by <a class="el" href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d" title="Initialize software crypto implementation.">vs_softhsm_impl()</a>. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -554,6 +561,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Process Message Bin. </p>
+<p>Initializes Message Bin if needed and processes protocol. Normally this function is called in the MQTT processing infinite loop.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>
@@ -718,13 +726,13 @@ Cloud Usage</h1>
 </div>
 </div><!-- contents -->
 <div class="ttc" id="astructvs__firmware__header__t_html"><div class="ttname"><a href="structvs__firmware__header__t.html">vs_firmware_header_t</a></div><div class="ttdoc">Firmware header.</div><div class="ttdef"><b>Definition:</b> firmware.h:68</div></div>
-<div class="ttc" id="acloud_8h_html_ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644"><div class="ttname"><a href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644">VS_CLOUD_MB_TOPIC_FW</a></div><div class="ttdoc">Firmware.</div><div class="ttdef"><b>Definition:</b> cloud.h:214</div></div>
+<div class="ttc" id="acloud_8h_html_ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644"><div class="ttname"><a href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644">VS_CLOUD_MB_TOPIC_FW</a></div><div class="ttdoc">Firmware.</div><div class="ttdef"><b>Definition:</b> cloud.h:220</div></div>
 <div class="ttc" id="afirmware_8h_html_ab39bcd474177b330b11426f080212fab"><div class="ttname"><a href="firmware_8h.html#ab39bcd474177b330b11426f080212fab">vs_firmware_verify_firmware</a></div><div class="ttdeci">vs_status_e vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor)</div><div class="ttdoc">Verify firmware.</div></div>
 <div class="ttc" id="astructvs__firmware__header__t_html_a20bab7eda57f53e331d3fd41debc6516"><div class="ttname"><a href="structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516">vs_firmware_header_t::descriptor</a></div><div class="ttdeci">vs_firmware_descriptor_t descriptor</div><div class="ttdoc">Firnware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:74</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code Status code to be returned from function.</div><div class="ttdef"><b>Definition:</b> status_code.h:49</div></div>
 <div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
 <div class="ttc" id="afirmware_8h_html_ac5c4fef2832bd0c3c545b86922fa15bd"><div class="ttname"><a href="firmware_8h.html#ac5c4fef2832bd0c3c545b86922fa15bd">vs_firmware_init</a></div><div class="ttdeci">vs_status_e vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type)</div><div class="ttdoc">Initialize firmware.</div></div>
-<div class="ttc" id="acloud_8h_html_ad81282ea3af168d76e7f844ac1499dc2a8aea50be81cac6ffa115fc1dfd6b4cf8"><div class="ttname"><a href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2a8aea50be81cac6ffa115fc1dfd6b4cf8">VS_CLOUD_MB_TOPIC_TL</a></div><div class="ttdoc">Trust List.</div><div class="ttdef"><b>Definition:</b> cloud.h:213</div></div>
+<div class="ttc" id="acloud_8h_html_ad81282ea3af168d76e7f844ac1499dc2a8aea50be81cac6ffa115fc1dfd6b4cf8"><div class="ttname"><a href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2a8aea50be81cac6ffa115fc1dfd6b4cf8">VS_CLOUD_MB_TOPIC_TL</a></div><div class="ttdoc">Trust List.</div><div class="ttdef"><b>Definition:</b> cloud.h:219</div></div>
 <div class="ttc" id="acloud_8h_html_a41bb32cb7cabca47490643787c008907"><div class="ttname"><a href="cloud_8h.html#a41bb32cb7cabca47490643787c008907">vs_cloud_message_bin_register_default_handler</a></div><div class="ttdeci">vs_status_e vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler)</div><div class="ttdoc">Register default processing for topic.</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a></div><div class="ttdoc">Successful operation.</div><div class="ttdef"><b>Definition:</b> status_code.h:52</div></div>
 <div class="ttc" id="afirmware_8h_html_abd837887bf4afc3afbd8b7ea635fe967"><div class="ttname"><a href="firmware_8h.html#abd837887bf4afc3afbd8b7ea635fe967">vs_firmware_delete_firmware</a></div><div class="ttdeci">vs_status_e vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor)</div><div class="ttdoc">Delete firmware.</div></div>

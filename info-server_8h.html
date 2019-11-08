@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">info-server.h File Reference</div>  </div>
@@ -76,23 +77,55 @@ $(function() {
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;<a class="el" href="sdmp-structs_8h_source.html">virgil/iot/protocols/sdmp/sdmp-structs.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="firmware_8h_source.html">virgil/iot/firmware/firmware.h</a>&gt;</code><br />
+<code>#include &quot;<a class="el" href="info-structs_8h_source.html">info-structs.h</a>&quot;</code><br />
 </div>
 <p><a href="info-server_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a435ff0e3c915ec0720cec97480d9631f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a>) (<a class="el" href="structvs__sdmp__info__device__t.html">vs_sdmp_info_device_t</a> *device)</td></tr>
+<tr class="memdesc:a435ff0e3c915ec0720cec97480d9631f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start notification.  <a href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">More...</a><br /></td></tr>
+<tr class="separator:a435ff0e3c915ec0720cec97480d9631f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a407bf2844e356c453119cb63faf11a28"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-server_8h.html#a407bf2844e356c453119cb63faf11a28">vs_sdmp_info_server</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *tl_ctx, <a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *fw_ctx)</td></tr>
-<tr class="memdesc:a407bf2844e356c453119cb63faf11a28"><td class="mdescLeft">&#160;</td><td class="mdescRight">INFO Server SDMP Service implementation.  <a href="info-server_8h.html#a407bf2844e356c453119cb63faf11a28">More...</a><br /></td></tr>
-<tr class="separator:a407bf2844e356c453119cb63faf11a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56878c2336cc21fd262bf2e9f9ed194"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-server_8h.html#ae56878c2336cc21fd262bf2e9f9ed194">vs_sdmp_info_server</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *tl_ctx, <a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *fw_ctx, <a class="el" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a> startup_cb)</td></tr>
+<tr class="memdesc:ae56878c2336cc21fd262bf2e9f9ed194"><td class="mdescLeft">&#160;</td><td class="mdescRight">INFO Server SDMP Service implementation.  <a href="info-server_8h.html#ae56878c2336cc21fd262bf2e9f9ed194">More...</a><br /></td></tr>
+<tr class="separator:ae56878c2336cc21fd262bf2e9f9ed194"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adecd6e112906fd49d9014acfb69154cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-server_8h.html#adecd6e112906fd49d9014acfb69154cc">vs_sdmp_info_start_notification</a> (const <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif)</td></tr>
 <tr class="memdesc:adecd6e112906fd49d9014acfb69154cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">INFO Server startup notification.  <a href="info-server_8h.html#adecd6e112906fd49d9014acfb69154cc">More...</a><br /></td></tr>
 <tr class="separator:adecd6e112906fd49d9014acfb69154cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>INFO for server. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a407bf2844e356c453119cb63faf11a28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a407bf2844e356c453119cb63faf11a28">&#9670;&nbsp;</a></span>vs_sdmp_info_server()</h2>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a435ff0e3c915ec0720cec97480d9631f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435ff0e3c915ec0720cec97480d9631f">&#9670;&nbsp;</a></span>vs_sdmp_info_start_notif_srv_cb_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_sdmp_info_start_notif_srv_cb_t) (<a class="el" href="structvs__sdmp__info__device__t.html">vs_sdmp_info_device_t</a> *device)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start notification. </p>
+<p>Sends notification with device information.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td><a class="el" href="structvs__sdmp__info__device__t.html" title="Device information.">vs_sdmp_info_device_t</a> device information.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ae56878c2336cc21fd262bf2e9f9ed194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56878c2336cc21fd262bf2e9f9ed194">&#9670;&nbsp;</a></span>vs_sdmp_info_server()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -107,7 +140,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *&#160;</td>
-          <td class="paramname"><em>fw_ctx</em>&#160;</td>
+          <td class="paramname"><em>fw_ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a>&#160;</td>
+          <td class="paramname"><em>startup_cb</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -122,7 +161,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">tl_ctx</td><td>Trust List storage context. Must not be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fw_ctx</td><td>Firmware storage context. Must not be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fw_ctx</td><td>Firmware storage context. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startup_cb</td><td>Startup notification server callback. If NULL, it won't be used.</td></tr>
   </table>
   </dd>
 </dl>

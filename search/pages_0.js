@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['virgil_20iot_20sdk_1645',['Virgil IoT SDK',['../index.html',1,'']]]
+  ['virgil_20iotkit_20c_1649',['Virgil IoTKit C',['../index.html',1,'']]]
 ];

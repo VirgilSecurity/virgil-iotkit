@@ -95,6 +95,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a015bb40478f6a81b1a8657f4fd4539e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fldt-client_8h.html#a015bb40478f6a81b1a8657f4fd4539e2">vs_fldt_client_add_file_type</a> (const <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, <a class="el" href="structvs__update__interface__t.html">vs_update_interface_t</a> *update_ctx)</td></tr>
 <tr class="memdesc:a015bb40478f6a81b1a8657f4fd4539e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add file type.  <a href="fldt-client_8h.html#a015bb40478f6a81b1a8657f4fd4539e2">More...</a><br /></td></tr>
 <tr class="separator:a015bb40478f6a81b1a8657f4fd4539e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc4dd323fe4323c5f27e07390b724d67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fldt-client_8h.html#adc4dd323fe4323c5f27e07390b724d67">vs_fldt_client_request_all_files</a> (void)</td></tr>
+<tr class="memdesc:adc4dd323fe4323c5f27e07390b724d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request all files data.  <a href="fldt-client_8h.html#adc4dd323fe4323c5f27e07390b724d67">More...</a><br /></td></tr>
+<tr class="separator:adc4dd323fe4323c5f27e07390b724d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>FLDT for client. </p>
@@ -194,6 +197,28 @@ FLDT Client Usage</h1>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
+
+</div>
+</div>
+<a id="adc4dd323fe4323c5f27e07390b724d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc4dd323fe4323c5f27e07390b724d67">&#9670;&nbsp;</a></span>vs_fldt_client_request_all_files()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a> vs_fldt_client_request_all_files </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Request all files data. </p>
+<p>Request information about all previously registered files. This function can be executed after gateway restart notification.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>

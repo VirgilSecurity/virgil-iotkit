@@ -116,29 +116,38 @@ $(function() {
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="sdmp-structs_8h.html">virgil/iot/protocols/sdmp/sdmp-structs.h</a>&gt;</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="firmware_8h.html">virgil/iot/firmware/firmware.h</a>&gt;</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a> *</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<a class="code" href="info-server_8h.html#a407bf2844e356c453119cb63faf11a28">vs_sdmp_info_server</a>(<a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *tl_ctx, <a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *fw_ctx);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="info-structs_8h.html">info-structs.h</a>&quot;</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">// TODO : description???</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">   62</a></span>&#160;<span class="comment"></span><span class="keyword">typedef</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a> (*<a class="code" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a>)(<a class="code" href="structvs__sdmp__info__device__t.html">vs_sdmp_info_device_t</a> *device);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<a class="code" href="info-server_8h.html#adecd6e112906fd49d9014acfb69154cc">vs_sdmp_info_start_notification</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a> *</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<a class="code" href="info-server_8h.html#ae56878c2336cc21fd262bf2e9f9ed194">vs_sdmp_info_server</a>(<a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *tl_ctx,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                    <a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *fw_ctx,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                    <a class="code" href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a> startup_cb);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif // INFO_SERVER</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<a class="code" href="info-server_8h.html#adecd6e112906fd49d9014acfb69154cc">vs_sdmp_info_start_notification</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif // INFO_SERVER</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif // VS_SECURITY_SDK_SDMP_SERVICES_INFO_SERVER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="asdmp-structs_8h_html"><div class="ttname"><a href="sdmp-structs_8h.html">sdmp-structs.h</a></div><div class="ttdoc">SDMP structures.</div></div>
 <div class="ttc" id="astructvs__sdmp__service__t_html"><div class="ttname"><a href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a></div><div class="ttdoc">SDMP service descriptor.</div><div class="ttdef"><b>Definition:</b> sdmp-structs.h:305</div></div>
-<div class="ttc" id="ainfo-server_8h_html_a407bf2844e356c453119cb63faf11a28"><div class="ttname"><a href="info-server_8h.html#a407bf2844e356c453119cb63faf11a28">vs_sdmp_info_server</a></div><div class="ttdeci">const vs_sdmp_service_t * vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx)</div><div class="ttdoc">INFO Server SDMP Service implementation.</div></div>
+<div class="ttc" id="astructvs__sdmp__info__device__t_html"><div class="ttname"><a href="structvs__sdmp__info__device__t.html">vs_sdmp_info_device_t</a></div><div class="ttdoc">Device information.</div><div class="ttdef"><b>Definition:</b> info-structs.h:52</div></div>
 <div class="ttc" id="ainfo-server_8h_html_adecd6e112906fd49d9014acfb69154cc"><div class="ttname"><a href="info-server_8h.html#adecd6e112906fd49d9014acfb69154cc">vs_sdmp_info_start_notification</a></div><div class="ttdeci">vs_status_e vs_sdmp_info_start_notification(const vs_netif_t *netif)</div><div class="ttdoc">INFO Server startup notification.</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code Status code to be returned from function.</div><div class="ttdef"><b>Definition:</b> status_code.h:49</div></div>
+<div class="ttc" id="ainfo-server_8h_html_ae56878c2336cc21fd262bf2e9f9ed194"><div class="ttname"><a href="info-server_8h.html#ae56878c2336cc21fd262bf2e9f9ed194">vs_sdmp_info_server</a></div><div class="ttdeci">const vs_sdmp_service_t * vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, vs_sdmp_info_start_notif_srv_cb_t startup_cb)</div><div class="ttdoc">INFO Server SDMP Service implementation.</div></div>
 <div class="ttc" id="astructvs__netif__t_html"><div class="ttname"><a href="structvs__netif__t.html">vs_netif_t</a></div><div class="ttdoc">Network interface.</div><div class="ttdef"><b>Definition:</b> sdmp-structs.h:285</div></div>
 <div class="ttc" id="afirmware_8h_html"><div class="ttname"><a href="firmware_8h.html">firmware.h</a></div><div class="ttdoc">Firmware uploading/downloading and installation implementation.</div></div>
 <div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:196</div></div>
+<div class="ttc" id="ainfo-structs_8h_html"><div class="ttname"><a href="info-structs_8h.html">info-structs.h</a></div><div class="ttdoc">INFO structures.</div></div>
+<div class="ttc" id="ainfo-server_8h_html_a435ff0e3c915ec0720cec97480d9631f"><div class="ttname"><a href="info-server_8h.html#a435ff0e3c915ec0720cec97480d9631f">vs_sdmp_info_start_notif_srv_cb_t</a></div><div class="ttdeci">vs_status_e(* vs_sdmp_info_start_notif_srv_cb_t)(vs_sdmp_info_device_t *device)</div><div class="ttdoc">Start notification.</div><div class="ttdef"><b>Definition:</b> info-server.h:62</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
