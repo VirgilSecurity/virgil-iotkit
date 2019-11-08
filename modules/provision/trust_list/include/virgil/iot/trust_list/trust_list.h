@@ -34,6 +34,8 @@
 
 /*! \file trust_list.h
  * \brief Trust List
+ *
+ * \section trust_list_usage Trust List Usage
  */
 
 #ifndef TRUST_LIST_H
