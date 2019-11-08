@@ -34,6 +34,10 @@
 
 #if INFO_SERVER
 
+#if FLDT_CLIENT
+#include <virgil/iot/protocols/sdmp/fldt/fldt-client.h>
+#endif
+
 #include <virgil/iot/protocols/sdmp/info/info-server.h>
 #include <virgil/iot/protocols/sdmp/info/info-private.h>
 #include <virgil/iot/protocols/sdmp/info/info-structs.h>
@@ -59,6 +63,7 @@ typedef struct {
     vs_mac_addr_t dest_mac;
 } vs_poll_ctx_t;
 
+static vs_sdmp_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
 /******************************************************************/
@@ -75,9 +80,6 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set current device roles
     enum_data->device_roles = vs_sdmp_device_roles();
-
-    // Normalize byte order
-    vs_info_enum_response_t_encode(enum_data);
 
     return VS_CODE_OK;
 }
@@ -266,6 +268,51 @@ _ginf_request_processing(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
+_snot_request_processor(const uint8_t *request,
+                        const uint16_t request_sz,
+                        uint8_t *response,
+                        const uint16_t response_buf_sz,
+                        uint16_t *response_sz) {
+    const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)request;
+    vs_sdmp_info_device_t device_info;
+    vs_status_e ret_code = VS_CODE_OK;
+#if FLDT_CLIENT
+    vs_mac_addr_t self_mac;
+#endif
+
+    VS_LOG_DEBUG("[INFO] SNOT received");
+
+    CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(request_sz == sizeof(*enum_data),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
+              sizeof(*enum_data),
+              response_sz);
+
+#if FLDT_CLIENT
+    STATUS_CHECK_RET(vs_sdmp_mac_addr(vs_sdmp_default_netif(), &self_mac), "Unable to request self MAC address");
+
+    if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
+        (vs_sdmp_device_roles() & VS_SDMP_DEV_THING) &&                                // current device is Thing
+        (enum_data->device_roles & VS_SDMP_DEV_GATEWAY)) {                             // sender is Gateway
+        ret_code = vs_fldt_client_request_all_files();
+        if (ret_code != VS_CODE_OK) {
+            VS_LOG_ERROR("[INFO] Unable to request all files update");
+        }
+    }
+#endif
+
+    if (_startup_notification_cb) {
+        device_info.device_roles = enum_data->device_roles;
+        VS_IOT_MEMCPY(device_info.mac, enum_data->mac.bytes, sizeof(device_info.mac));
+        STATUS_CHECK_RET(_startup_notification_cb(&device_info), "Unable to call startup notification callback");
+    }
+
+    return ret_code;
+};
+
+/******************************************************************************/
+static vs_status_e
 _info_request_processor(const struct vs_netif_t *netif,
                         vs_sdmp_element_t element_id,
                         const uint8_t *request,
@@ -280,7 +327,7 @@ _info_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_INFO_SNOT:
-        return VS_CODE_COMMAND_NO_RESPONSE;
+        return _snot_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_INFO_ENUM:
         return _enum_request_processing(request, request_sz, response, response_buf_sz, response_sz);
@@ -345,7 +392,9 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
+                    vs_storage_op_ctx_t *fw_ctx,
+                    vs_sdmp_info_start_notif_srv_cb_t startup_cb) {
 
     static vs_sdmp_service_t _info = {0};
 
@@ -354,6 +403,7 @@ vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx) {
 
     _tl_ctx = tl_ctx;
     _fw_ctx = fw_ctx;
+    _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
     _info.id = VS_INFO_SERVICE_ID;

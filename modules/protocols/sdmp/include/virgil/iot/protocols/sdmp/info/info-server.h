@@ -48,6 +48,18 @@ extern "C" {
 
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/firmware/firmware.h>
+#include "info-structs.h"
+
+// TODO : description???
+/** Start notification
+ *
+ * Sends notification with device information.
+ *
+ * \param[in] device #vs_sdmp_info_device_t device information.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_sdmp_info_start_notif_srv_cb_t)(vs_sdmp_info_device_t *device);
 
 /** INFO Server SDMP Service implementation
  *
@@ -55,11 +67,14 @@ extern "C" {
  *
  * \param[in] tl_ctx Trust List storage context. Must not be NULL.
  * \param[in] fw_ctx Firmware storage context. Must not be NULL.
+ * \param[in] startup_cb Startup notification server callback. If NULL, it won't be used.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
-vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx);
+vs_sdmp_info_server(vs_storage_op_ctx_t *tl_ctx,
+                    vs_storage_op_ctx_t *fw_ctx,
+                    vs_sdmp_info_start_notif_srv_cb_t startup_cb);
 
 /** INFO Server startup notification
  *

@@ -254,9 +254,6 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
     CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
     CHECK_RET(sizeof(vs_info_enum_response_t) == response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 
-    // Normalize byte order
-    vs_info_enum_response_t_decode(enum_response);
-
     if (_devices_list && _devices_list_cnt < _devices_list_max) {
         VS_IOT_MEMCPY(_devices_list[_devices_list_cnt].mac, enum_response->mac.bytes, ETH_ADDR_LEN);
         _devices_list[_devices_list_cnt].device_roles = enum_response->device_roles;

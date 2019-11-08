@@ -171,7 +171,10 @@ typedef vs_status_e (*vs_storage_del_hal_t)(
 vs_status_e
 vs_impl_own_firmware_descriptor(void *descriptor);
 
-/** Storage implementation callbacks */
+/** Storage implementation callbacks
+ *
+ * This structure contains callbacks for all storage calls : open, load/save, size, synchronisation etc.
+ */
 typedef struct {
     vs_storage_deinit_hal_t deinit; /**< Destroy storage context callback */
 
@@ -186,7 +189,10 @@ typedef struct {
     vs_storage_del_hal_t del; /**< Delete storage element callback */
 } vs_storage_impl_func_t;
 
-/** Storage element context */
+/** Storage element context
+ *
+ * This structure contains callbacks and storage specific data
+ */
 typedef struct {
     vs_storage_impl_func_t impl_func; /**< Callbacks */
     vs_storage_impl_data_ctx_t impl_data; /**< Storage element specific data */
