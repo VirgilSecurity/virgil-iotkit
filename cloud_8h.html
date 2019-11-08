@@ -200,7 +200,7 @@ Cloud Usage</h1>
 <p><em>tl_topic_process</em> is a Trust List topic downloader. This callback has to download new Trust List and to process it. See <a class="el" href="trust__list_8h.html#trust_list_usage">Trust List Usage</a> for Trust List processing details.</p>
 <p>Also Firmware has to be registered as a <a class="el" href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644" title="Firmware.">VS_CLOUD_MB_TOPIC_FW</a> topic. See <a class="el" href="firmware_8h.html#firmware_usage">Firmware Usage</a> for details.</p>
 <p>Here you can see an example of Cloud library usage:</p>
-<div class="fragment"><div class="line"> <span class="comment">//handlers for default topics example</span></div>
+<div class="fragment"><div class="line"> <span class="comment">// Handlers for default topics example</span></div>
 <div class="line"><span class="keywordtype">void</span></div>
 <div class="line">firmware_topic_process(<span class="keyword">const</span> uint8_t *url, uint16_t length) {</div>
 <div class="line">     <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a> res;</div>
@@ -273,7 +273,7 @@ Cloud Usage</h1>
     <tr><td class="paramdir">[in]</td><td class="paramname">url</td><td>URL for data download. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">out_data</td><td>Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fetch_handler</td><td>Callback to process information that has been downloaded. If NULL, default processing will be used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">hander_data</td><td>Context from <em>fetch_handler</em> <em>userdata</em> parameter. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">hander_data</td><td>Context from <em>fetch_handler</em> . <em>userdata</em> parameter. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">in_out_size</td><td>Data size storage. Must not be NULL.</td></tr>
   </table>
   </dd>
