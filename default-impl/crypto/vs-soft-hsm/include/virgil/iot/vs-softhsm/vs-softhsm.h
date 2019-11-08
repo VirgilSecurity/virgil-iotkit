@@ -32,6 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file vs-softhsm.h
+ * @brief Software crypto implementation
+ *
+ * This library can be used when HSM is not available
+ */
+
 #ifndef HELPERS_VS_SOFTHSM_H
 #define HELPERS_VS_SOFTHSM_H
 
@@ -40,9 +47,19 @@
 
 #define VS_SLOTS_STORAGE_MAX_SIZE (1024)
 
+/** Initialize software crypto implementation
+ *
+ * \param[in] slots_storage_impl Storage context. Must not be NULL.
+ *
+ * \return HSM implementation
+ */
 vs_hsm_impl_t *
 vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
+/** Destroy software crypto implementation
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_softhsm_deinit(void);
 

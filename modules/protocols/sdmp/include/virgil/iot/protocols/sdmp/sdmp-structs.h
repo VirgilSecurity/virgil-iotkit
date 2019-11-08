@@ -279,6 +279,8 @@ typedef struct __attribute__((__packed__)) {
 
 /******************************************************************************/
 /** Network interface
+ *
+ * This structure contains network interface callbacks and packet data
  */
 typedef struct vs_netif_t {
     void *user_data; /**< User data */
@@ -297,6 +299,8 @@ typedef struct vs_netif_t {
 
 /******************************************************************************/
 /** SDMP service descriptor
+ *
+ * This structure contains SDMP service callbacks and service specific information
  */
 typedef struct {
     void *user_data;                                           /**< User data */
