@@ -157,9 +157,11 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
 
     {
         uint8_t sign[vs_hsm_get_signature_len(ec_type)];
+
         CHECK(VS_CODE_OK == vs_hsm_virgil_secp256_signature_to_tiny(
                                     (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
               "Wrong signature format");
+
         CHECK(VS_CODE_OK == _hsm->hash(VS_HASH_SHA_256,
                                        (uint8_t *)crypto_answer_b64,
                                        crypto_answer_b64_decoded_len,
