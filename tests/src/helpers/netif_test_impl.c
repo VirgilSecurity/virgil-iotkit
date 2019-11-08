@@ -34,7 +34,7 @@
 
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
-#include <virgil/iot/tests/private/netif_test_impl.h>
+#include <private/netif_test_impl.h>
 
 netif_state_t netif_state;
 vs_mac_addr_t mac_addr_client_call;

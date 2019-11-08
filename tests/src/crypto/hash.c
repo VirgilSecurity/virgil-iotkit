@@ -1,6 +1,6 @@
 
 #include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/tests/private/private_helpers.h>
+#include <private/private_helpers.h>
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
 

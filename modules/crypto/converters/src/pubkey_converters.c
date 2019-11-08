@@ -39,7 +39,7 @@
 
 #include <stdio.h>
 
-#include <virgil/iot/converters/private/macros.h>
+#include <private/macros.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <stdlib-config.h>
 

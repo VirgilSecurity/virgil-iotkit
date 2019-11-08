@@ -45,10 +45,10 @@ add_library(virgil-iot-sdk-tests)
 target_sources(virgil-iot-sdk-tests
         PRIVATE
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/private_helpers.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_hl_keys_data.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/netif_test_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/private/test_tl_data.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/private_helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/test_hl_keys_data.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/netif_test_impl.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/test_tl_data.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/helpers.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/tests.h
 

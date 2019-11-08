@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/tests/private/netif_test_impl.h>
+#include <private/netif_test_impl.h>
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/protocols/sdmp.h>
 

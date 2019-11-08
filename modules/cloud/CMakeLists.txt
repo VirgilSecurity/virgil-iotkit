@@ -40,9 +40,16 @@ add_library(vs-module-cloud)
 
 target_sources(vs-module-cloud
         PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_include.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_operations.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_parse_manifest.h
+
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/cloud/base64.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/cloud/cloud.h
+
         ${CMAKE_CURRENT_LIST_DIR}/src/cloud_parse_manifest.c
         ${CMAKE_CURRENT_LIST_DIR}/src/cloud.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/base64/base64.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/base64.c
         ${CMAKE_CURRENT_LIST_DIR}/src/message_bin.c
         )
 

@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/cloud/private/cloud_include.h>
+#include <private/cloud_include.h>
 
 /*************************************************************************/
 static int8_t

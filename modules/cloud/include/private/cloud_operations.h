@@ -32,59 +32,44 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef CLOUD_PARSE_MANIFEST_H
-#define CLOUD_PARSE_MANIFEST_H
+#ifndef VS_CLOUD_OPERATIONS_H
+#define VS_CLOUD_OPERATIONS_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
-#define VS_MANUFACTURE_ID_STR_LEN (32 + 1)
-#define VS_DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
-#define VS_VERSION_STR_LEN (16 + 1)
-#define VS_TIMESTAMP_STR_LEN (8+1)
-typedef union {
-    uint8_t id[VS_DEVICE_TYPE_SIZE];
-    char str[VS_DEV_TYPE_ID_STR_LEN];
-} vs_readable_type_t;
+#define VS_THING_EP "things"
+#define VS_AWS_ID "aws"
+#define VS_MQTT_ID "mqtt"
 
-typedef struct __attribute__((__packed__)) {
-    uint8_t manufacturer_id[VS_MANUFACTURE_ID_STR_LEN];
-    vs_readable_type_t device_type;
-    char version[VS_VERSION_STR_LEN];
-    char timestamp[VS_TIMESTAMP_STR_LEN];
-    char fw_file_url[VS_UPD_URL_STR_SIZE];
-} vs_firmware_manifest_entry_t;
+
+#define VS_FW_TOPIC_MASK "fw/"
+
+#define VS_TL_TOPIC_MASK "tl/"
 
 typedef struct {
-    char version[VS_VERSION_STR_LEN];
-    int type;
-} vs_tl_info_t;
+    char *login;
+    char *password;
+    char *cert;
+    char *root_ca_cert;
+    char *pk;
+    char *host;
+    vs_cloud_mb_topics_list_t topic_list;
+    char *client_id;
+    uint16_t port;
+    bool is_filled;
+    bool is_active;
+} vs_cloud_message_bin_ctx_t;
 
-typedef struct {
-    vs_tl_info_t info;
-    char file_url[VS_UPD_URL_STR_SIZE];
-} vs_tl_manifest_entry_t;
-
-#define VS_MANIFEST_FILED "manifest"
-
-#define VS_FW_URL_FIELD "download_url"
-#define VS_FW_MANUFACTURER_ID_FIELD "manufacturer_id"
-#define VS_FW_DEVICE_TYPE_FIELD "device_type"
-#define VS_FW_VERSION_FIELD "version"
-#define VS_FW_TIMESTAMP "build_timestamp"
-#define VS_FW_PERCENTAGE "percentage"
-#define VS_FW_LIST "devices"
-
-#define VS_TL_URL_FIELD "download_url"
-#define VS_TL_VERSION_FIELD "version"
-#define VS_TL_TYPE_FIELD "type"
+// TODO: Will be used for alexa
+#if 0
+vs_status_e
+vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
+#endif
 
 vs_status_e
-vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version);
+vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len);
 
 vs_status_e
-vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc);
+vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl);
 
-#endif // CLOUD_PARSE_MANIFEST_H
+#endif // VS_CLOUD_OPERATIONS_H
