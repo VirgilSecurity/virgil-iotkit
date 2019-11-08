@@ -40,7 +40,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <virgil/iot/cloud/private/cloud_include.h>
+#include <private/cloud_include.h>
 
 #define MAX_EP_SIZE (256)
 
