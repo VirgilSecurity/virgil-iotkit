@@ -36,7 +36,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
-#include <virgil/iot/tests/private/test_hl_keys_data.h>
+#include <private/test_hl_keys_data.h>
 
 #include <trust_list-config.h>
 

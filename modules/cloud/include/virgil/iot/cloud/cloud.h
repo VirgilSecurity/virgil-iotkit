@@ -183,34 +183,6 @@ typedef struct {
     vs_cloud_http_get_func_t http_get; /**< Callback for GET request processing */
 } vs_cloud_impl_t;
 
-/** Parse Firmware manifest obtained by MQTT
- *
- * Parse Firmware manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload 
- * \param[in] payload_len 
- * \param[out] fw_url Buffer for Firmware download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
-
-/** Parse Trust List manifest obtained by MQTT
- *
- * Parse Trust List manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload
- * \param[in] payload_len
- * \param[out] tl_url Buffer for Trust List download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
-
 /** Fetch and store Firmware
  *
  * Fetches Firmware and stores it in internal storage.
@@ -239,9 +211,9 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url);
  * This structure contains list of topics to be subscribed.
  */
 typedef struct {
-    char *topic_list; /**< Text string with all topics */
+    char *topic_list;         /**< Text string with all topics */
     uint16_t *topic_len_list; /**< List for each topis size */
-    size_t topic_count; /**< Topics amount for \a topic_list and \a topic_len_list */
+    size_t topic_count;       /**< Topics amount for \a topic_list and \a topic_len_list */
 } vs_cloud_mb_topics_list_t;
 
 /** Default topics
@@ -250,8 +222,8 @@ typedef struct {
  */
 typedef enum {
     VS_CLOUD_MB_TOPIC_TL, /**< Trust List */
-    VS_CLOUD_MB_TOPIC_FW /**< Firmware */
-}vs_cloud_mb_topic_id_t;
+    VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
+} vs_cloud_mb_topic_id_t;
 
 // TODO : rename p_data to data
 /** Callback for custom topics processing
@@ -264,9 +236,9 @@ typedef enum {
  * \param[in] length Topic data size. Cannot be zero.
  */
 typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
-                                               uint16_t topic_sz,
-                                               const uint8_t *p_data,
-                                               uint16_t length);
+                                                      uint16_t topic_sz,
+                                                      const uint8_t *p_data,
+                                                      uint16_t length);
 
 /** Callback for default topics processing
  *
@@ -276,8 +248,7 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
  * \param[in] url Topic URL. Cannot be NULL.
  * \param[in] length Topic URL size. Cannot be zero.
  */
-typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
-                                                      uint16_t length);
+typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint16_t length);
 
 /** Register default processing for topic
  *
@@ -289,7 +260,8 @@ typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id, vs_cloud_mb_process_default_topic_cb_t handler);
+vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
+                                              vs_cloud_mb_process_default_topic_cb_t handler);
 
 /** Register custom handler callback
  *
@@ -314,7 +286,7 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
  * \param[in] device_cert Device certificate to be send to the broker.
  * \param[in] priv_key Device private key.
  * \param[in] ca_cert Broker's certificate. Must not be NULL.
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
