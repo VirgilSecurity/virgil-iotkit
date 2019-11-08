@@ -151,36 +151,6 @@ typedef struct {
     vs_cloud_http_get_func_t http_get; /**< Callback for GET request processing */
 } vs_cloud_impl_t;
 
-/** Parse Firmware manifest obtained by MQTT
- *
- * Parse Firmware manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload
- * \param[in] payload_len
- * \param[out] fw_url Buffer for Firmware download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not be
- * NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
-
-/** Parse Trust List manifest obtained by MQTT
- *
- * Parse Trust List manifest obtained by MQTT and return URL for Firmware download.
- *
- * \param[in] payload
- * \param[in] payload_len
- * \param[out] tl_url Buffer for Trust List download URL. Must be enough to store #VS_UPD_URL_STR_SIZE bytes. Must not
- * be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-
-vs_status_e
-vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
-
 /** Load and store Firmware File
  *
  * \param[in] fw_file_url

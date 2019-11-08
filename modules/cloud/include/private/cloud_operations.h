@@ -72,4 +72,10 @@ vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer,
 vs_status_e
 vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl);
 
+vs_status_e
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
+
+vs_status_e
+vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
+
 #endif // VS_CLOUD_OPERATIONS_H
