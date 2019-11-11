@@ -41,7 +41,6 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/hsm/hsm.h>
 #include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/vs-softhsm/helpers/asn1-cryptogram.h>
 #include <virgil/iot/vs-softhsm/vs-softhsm.h>
 #include "private/vs-softhsm-internal.h"
 

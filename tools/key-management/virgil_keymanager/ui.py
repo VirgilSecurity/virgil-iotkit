@@ -60,7 +60,7 @@ class UI(object):
                 build = int(build)
             except ValueError:  # each part should be an integer
                 return False
-            if not all(part in range(0, 255) for part in version_parts):  # each part should fit uint8
+            if not all(part in range(0, 256) for part in version_parts):  # each part should fit uint8
                 return False
             if not (0 <= build <= 4294967295):  # build should fit uint32
                 return False

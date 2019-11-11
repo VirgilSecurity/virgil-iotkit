@@ -58,20 +58,13 @@
  *
  *  \code
  *
- *  // Necessary platform implementations of cloud library, which have to be initialized
  *  const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
  *  const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
  *  vs_hsm_impl_t *hsm_impl;                                    // Security module implementation
- *
- *  //Necessary storage implementations, which have to be initialized
- *  vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
- *  vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
- *
- *  //User callbacks
  *  vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
  *  vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
- *
- *  // Constants depending on a device
+ *  vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
+ *  vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
  *  static vs_device_manufacture_id_t _manufacture_id;          // Manufacture ID
  *  static vs_device_type_t _device_type;                       // Device type
  *
@@ -96,8 +89,7 @@
  * \a fw_topic_process receives URL, where it can fetch a new version of Firmware.
  * See \ref firmware_usage for details.
  *
- * \a tl_topic_process receives URL, where it can fetch a new version of Trust List.
- * See \ref trust_list_usage for Trust List processing details.
+ * Also \a fw_topic_process is a Firmware topic downloaded. See \ref firmware_usage for details.
  *
  *  Here you can see an example of Cloud library usage:
  *
