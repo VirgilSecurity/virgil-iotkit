@@ -51,6 +51,8 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
+const registrationEP  = "/things/card/iot"
+
 type cardsRegistrar struct {
 	dataFile             string             // file with card requests
 	cardService          *cardsServiceInfo
@@ -63,7 +65,7 @@ type cardsRegistrar struct {
 }
 
 type cardsServiceInfo struct {
-	RegistrationUrl      string  // url on which card requests will be send
+	ApiUrl               string
 	AppToken             string  // application token used for authorization on service
 }
 
@@ -87,11 +89,11 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 		return nil, cli.Exit("Virgil application token does't specified.", 1)
 	}
 	cardsService.AppToken = param
-	// registration_url
-	if param = context.String("registration_url"); param == "" {
+	// api_url
+	if param = context.String("api_url"); param == "" {
 		return nil, cli.Exit("URL used for Cards registration does't specified.", 1)
 	}
-	cardsService.RegistrationUrl = param
+	cardsService.ApiUrl = param
 
 	registrar.cardService = cardsService
 
@@ -179,7 +181,7 @@ func (r *cardsRegistrar) registerCard(requestB64 string) error {
 
 	// Prepare request
 	sendBytes := bytes.NewBuffer(cardRequest)
-	req, err := http.NewRequest("POST", r.cardService.RegistrationUrl, sendBytes)
+	req, err := http.NewRequest("POST", r.cardService.ApiUrl + registrationEP, sendBytes)
 	req.Header.Set("AppToken", r.cardService.AppToken)
 
 	// Send

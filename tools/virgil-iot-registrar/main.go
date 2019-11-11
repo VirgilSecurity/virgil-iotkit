@@ -60,9 +60,9 @@ func main()  {
 			Usage:   "Virgil application token",
 		},
 		&cli.StringFlag{
-			Name:    "registration_url",
+			Name:    "api_url",
 			Aliases: []string{"b"},
-			Usage:   "URL used for Cards registration",
+			Usage:   "API URL, used for cards registration",
 		},
 	}
 
