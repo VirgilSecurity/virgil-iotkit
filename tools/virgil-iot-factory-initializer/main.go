@@ -51,27 +51,12 @@ func main()  {
         &cli.StringFlag{
             Name:    "output",
             Aliases: []string{"o"},
-            Usage:   "Encrypted output file",
+            Usage:   "Output file",
         },
         &cli.StringFlag{
             Name:    "device_info_output",
             Aliases: []string{"i"},
             Usage:   "Device info output file",
-        },
-        &cli.StringFlag{
-            Name:    "file_transfer_key",
-            Aliases: []string{"t"},
-            Usage:   "File with private key for secure file transfer",
-        },
-        &cli.StringFlag{
-            Name:    "file_transfer_key_pass",
-            Aliases: []string{"a"},
-            Usage:   "Password for private key for secure file transfer",
-        },
-        &cli.StringFlag{
-            Name:    "file_recipient_key",
-            Aliases: []string{"r"},
-            Usage:   "Public key for recipient of exported data file",
         },
         &cli.StringFlag{
             Name:    "auth_pub_key_1",

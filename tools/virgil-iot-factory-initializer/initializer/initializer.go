@@ -44,15 +44,17 @@ import (
     "../sdmp"
 
     "gopkg.in/urfave/cli.v2"
+    "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
+)
+
+var (
+    crypto = virgil_crypto_go.NewVirgilCrypto()
 )
 
 
 type FactoryInitializer struct {
     OutputFile                       string
     DeviceInfoFile                   string
-    FileEncryptionPrivateKey         []byte
-    FileEncryptionPrivateKeyPassword string
-    FileRecipientPublicKey           []byte
     DeviceSignPrivateKey             []byte
     DeviceSignPrivateKeyPassword     string
     ProvisioningInfo                 *common.ProvisioningInfo
@@ -74,16 +76,6 @@ func New(context *cli.Context) (*FactoryInitializer, error) {
         return nil, fmt.Errorf("device info output file isn't specified")
     }
     fInit.DeviceInfoFile = filepath.Clean(param)
-    // file_transfer_key
-    if err := readFileFromContext(context, &fInit.FileEncryptionPrivateKey, "file_transfer_key"); err != nil {
-        return nil, err
-    }
-    // file_transfer_key_pass
-    fInit.FileEncryptionPrivateKeyPassword = context.Path("file_transfer_key_pass")
-    // file_recipient_key
-    if err := readFileFromContext(context, &fInit.FileRecipientPublicKey, "file_recipient_key"); err != nil {
-        return nil, err
-    }
     // auth_pub_key_1
     if err := readFileFromContext(context, &provInfo.AuthPubKey1, "auth_pub_key_1"); err != nil {
         return nil, err
@@ -149,28 +141,13 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
         return fmt.Errorf("failed to import device signer private key: %v", err)
     }
 
-    fileEncryptionPrivateKey, err := crypto.ImportPrivateKey(
-        initializer.FileEncryptionPrivateKey, initializer.FileEncryptionPrivateKeyPassword)
-    if err != nil {
-        return fmt.Errorf("failed to import file encryption private key: %v", err)
-    }
-
-    fileRecipientPublicKey, err := crypto.ImportPublicKey(initializer.FileRecipientPublicKey)
-    if err != nil {
-        return fmt.Errorf("failed to import file recipient public key: %v", err)
-    }
-
     // Prepare persistent managers
     deviceInfoPersistenceManager := PersistenceManager{
         FileName:             initializer.DeviceInfoFile,
-        EncryptionPrivateKey: fileEncryptionPrivateKey,
-        RecipientPublicKey:   fileRecipientPublicKey,
     }
 
     requestsPersistenceManager := PersistenceManager{
         FileName:             initializer.OutputFile,
-        EncryptionPrivateKey: fileEncryptionPrivateKey,
-        RecipientPublicKey:   fileRecipientPublicKey,
     }
 
     // Prepare device signer
