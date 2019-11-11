@@ -7,7 +7,6 @@ function(sign_firmware _target_name
         _app_version
         _manufacture_id
         _device_model
-        _chunk_size
         _app_type)
 
     if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
@@ -22,8 +21,7 @@ function(sign_firmware _target_name
             --file-size ${_app_size}
             --fw-version ${_app_version}
             --manufacturer ${_manufacture_id}
-            --model ${_device_model}
-            --chunk-size ${_chunk_size})
+            --model ${_device_model})
 
     add_custom_target(${_target_name}
             COMMAND ${SIGN_FIRMWARE_PROCESSING}
