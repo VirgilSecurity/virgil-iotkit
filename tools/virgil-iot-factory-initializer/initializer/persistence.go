@@ -36,7 +36,6 @@ package initializer
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -57,9 +56,8 @@ func (p PersistenceManager) Persist(data string) error {
 		return err
 	}
 
-	// Append line to file as base64 string
-	base64Data := base64.StdEncoding.EncodeToString(([]byte)(data))
-	if err := p.appendLine(base64Data); err != nil {
+	// Append line to file
+	if err := p.appendLine(data); err != nil {
 		return err
 	}
 
