@@ -51,8 +51,8 @@
 
 #include <virgil/iot/cloud/cloud.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
-#include <virgil/iot/cloud/private/cloud_parse_manifest.h>
-#include <virgil/iot/cloud/private/cloud_operations.h>
-#include <virgil/iot/cloud/base64/base64.h>
+#include <private/cloud_parse_manifest.h>
+#include <private/cloud_operations.h>
+#include <virgil/iot/cloud/base64.h>
 
 #endif // VS_CLOUD_INCLUDE_H

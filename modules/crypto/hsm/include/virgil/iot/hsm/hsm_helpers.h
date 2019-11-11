@@ -114,4 +114,82 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 const char *
 vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
 
+
+/** Parse asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM
+ *
+ * \param[in] cryptogram Pointer to cryptogram array for parsing. Cannot be NULL.
+ * \param[in] cryptogram_sz Size of cryptogram array.
+ * \param[in] recipient_id Pointer to recipient_id array. If NULL, it won't be used.
+ * \param[in] recipient_id_sz  Size of recipient_id array.
+ * \param[out] public_key Pointer to the recipient public key. Cannot be NULL.
+ * \param[out] iv_key Pointer to the iv vector of encrypted symmetric AES GCM key. Cannot be NULL.
+ * \param[out] encrypted_key Pointer to the encrypted symmetric AES GCM key. Cannot be NULL.
+ * \param[out] mac_data Pointer to the authentication data. Cannot be NULL.
+ * \param[out] iv_data Pointer to the iv vector of encrypted data. Cannot be NULL.
+ * \param[out] encrypted_data Pointer to the encrypted data. Cannot be NULL.
+ * \param[out] encrypted_data_sz Pointer to encrypted data size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                             size_t cryptogram_sz,
+                                             const uint8_t *recipient_id,
+                                             size_t recipient_id_sz,
+                                             uint8_t **public_key,
+                                             uint8_t **iv_key,
+                                             uint8_t **encrypted_key,
+                                             uint8_t **mac_data,
+                                             uint8_t **iv_data,
+                                             uint8_t **encrypted_data,
+                                             size_t *encrypted_data_sz);
+
+/** Create asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM
+ *
+ * \param[in] recipient_id Pointer to recipient_id array. Cannot be NULL.
+ * \param[in] recipient_id_sz  Size of recipient_id array.
+ * \param[in] encrypted_data_sz Size of encrypted data.
+ * \param[in] encrypted_data Pointer to the encrypted data. Cannot be NULL.
+ * \param[in] iv_data Pointer to the iv vector of encrypted data. Cannot be NULL.
+ * \param[in] encrypted_key Pointer to the encrypted symmetric AES GCM key. Cannot be NULL.
+ * \param[in] iv_key Pointer to the iv vector of encrypted symmetric AES GCM key. Cannot be NULL.
+ * \param[in] hmac Pointer to the authentication data. Cannot be NULL.
+ * \param[in] public_key Pointer to the recipient public key. Cannot be NULL.
+ * \param[in] public_key_sz Recipient public key size.
+ * \param[out] cryptogram Pointer to the buffer for created cryptogram. Cannot be NULL.
+ * \param[in] cryptogram_buf_sz Size of buffer for created cryptogram. Cannot be 0.
+ * \param[out] cryptogram_sz Pointer to size of created cryptogram. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                              size_t recipient_id_sz,
+                                              size_t encrypted_data_sz,
+                                              const uint8_t *encrypted_data,
+                                              const uint8_t *iv_data,
+                                              const uint8_t *encrypted_key,
+                                              const uint8_t *iv_key,
+                                              const uint8_t *hmac,
+                                              const uint8_t *public_key,
+                                              size_t public_key_sz,
+                                              uint8_t *cryptogram,
+                                              size_t cryptogram_buf_sz,
+                                              size_t *cryptogram_sz);
+
+/** Convert a nist256 signature from a virgil format to raw
+ *
+ * \param[in] virgil_sign Pointer to the signature in virgil format. Cannot be NULL.
+ * \param[in] virgil_sign_sz Size of the signature in virgil format.
+ * \param[out] raw_signature Pointer to the signature in raw format. Cannot be NULL.
+ * \param[in] buf_sz Size of buffer for raw signature
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                        uint16_t virgil_sign_sz,
+                                        uint8_t *raw_signature,
+                                        uint16_t buf_sz);
+
 #endif // VS_HSM_HELPERS_H_

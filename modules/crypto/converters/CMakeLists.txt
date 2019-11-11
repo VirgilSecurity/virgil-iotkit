@@ -68,7 +68,7 @@ target_sources(converters
         PRIVATE
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/crypto_format_converters.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/converters/private/macros.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/macros.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/signature_converters.c

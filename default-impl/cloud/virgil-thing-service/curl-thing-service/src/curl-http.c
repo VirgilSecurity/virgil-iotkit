@@ -78,7 +78,7 @@ static vs_status_e
 _curl_http_hal(const char *url,
                char *out_data,
                vs_fetch_handler_cb_t fetch_handler,
-               void *hander_data,
+               void *fetch_hander_data,
                size_t *in_out_size) {
     CURL *curl;
     CURLcode curl_res;
@@ -88,7 +88,7 @@ _curl_http_hal(const char *url,
         return VS_CODE_ERR_REQUEST_PREPARE;
     }
 
-    resp_buff_t resp = {(uint8_t *)out_data, *in_out_size, 0, fetch_handler, hander_data};
+    resp_buff_t resp = {(uint8_t *)out_data, *in_out_size, 0, fetch_handler, fetch_hander_data};
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 

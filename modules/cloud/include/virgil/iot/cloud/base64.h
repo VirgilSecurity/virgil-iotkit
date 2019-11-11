@@ -55,6 +55,59 @@
  *
  */
 
+/*! \file base64.h
+ * \brief base64 functions
+ *
+ * This header contains base64 encoders/decoders.
+ *
+ * You can see an example :
+ *
+ * \code
+ * const char *origin = "Test vector";
+ * char *encoded = NULL;
+ * unsigned char *decoded = NULL;
+ * int size_origin = 0;
+ * int size_encoded = 0;
+ * int size_decoded = 0;
+ * bool res = false;
+ *
+ * // Encoding length
+ * size_origin = strlen(origin);
+ * size_encoded = base64encode_len(size_origin);
+ * assert(size_encoded > 0);
+ *
+ * // Prepare encoding buffer
+ * encoded = malloc(size_encoded);
+ * assert(encoded);
+ *
+ * // Encode
+ * res = base64encode((const unsigned char *)origin, size_origin, encoded, &size_encoded);
+ * assert(res && size_encoded);
+ *
+ * // Decoded length
+ * size_decoded = base64decode_len(encoded, size_encoded);
+ * assert(size_decoded > 0);
+ *
+ * // Prepare decoding buffer
+ * decoded = malloc(size_decoded);
+ * assert(decoded);
+ *
+ * // Decode
+ * res = base64decode(encoded, size_encoded, decoded, &size_decoded);
+ * assert(res && size_decoded);
+ *
+ * // Compare results
+ * assert(size_decoded == size_origin && !memcmp(origin, decoded, size_origin));
+ *
+ * // Free buffers
+ * free(decoded);
+ * free(encoded);
+ *
+ * \endcode
+ *
+ * This product includes software developed by the Apache Group for use in the Apache HTTP server project (http://www.apache.org/)
+ */
+
 #ifndef _BASE64_H_
 #define _BASE64_H_
 
@@ -63,6 +116,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /** Get Base64 Decoded len
  *
  * Gives the length of the data that will be obtained after decoding the given

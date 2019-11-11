@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/cloud/private/cloud_include.h>
+#include <private/cloud_include.h>
 
 static vs_cloud_message_bin_ctx_t _mb_ctx;
 static const vs_cloud_message_bin_impl_t *_impl;
@@ -115,6 +115,7 @@ _str_to_int(const char *str) {
 /******************************************************************************/
 static vs_status_e
 _get_message_bin_credentials() {
+    const char *cloud_url;
 
     if (_mb_ctx.is_filled) {
         return VS_CODE_OK;
@@ -124,6 +125,9 @@ _get_message_bin_credentials() {
 
     VS_LOG_DEBUG("------------------------- LOAD MESSAGE BIN CREDENTIALS -------------------------");
 
+    cloud_url = vs_provision_cloud_url();
+    CHECK_NOT_ZERO_RET(cloud_url, VS_CODE_ERR_NOINIT);
+
     size_t answer_size = VS_HTTPS_INPUT_BUFFER_SIZE;
     char *answer = (char *)VS_IOT_MALLOC(answer_size);
     if (!answer) {
@@ -131,7 +135,7 @@ _get_message_bin_credentials() {
         return VS_CODE_ERR_NO_MEMORY;
     }
 
-    if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(vs_provision_cloud_url(), answer, &answer_size)) {
+    if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(cloud_url, answer, &answer_size)) {
         jobj_t jobj;
         int len;
         int val;

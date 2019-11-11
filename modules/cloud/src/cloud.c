@@ -40,7 +40,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <virgil/iot/cloud/private/cloud_include.h>
+#include <private/cloud_include.h>
 
 #define MAX_EP_SIZE (256)
 
@@ -80,12 +80,19 @@ _get_serial_number_in_hex_str(char _out_str[VS_DEVICE_SERIAL_SIZE * 2 + 1]) {
     _data_to_hex((uint8_t *)serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
 }
 
+#define VS_JSON_ENCRYPTED_FIELD "encrypted_value"
+#define VS_JSON_SIGNATURE_FIELD "signature"
 /******************************************************************************/
 static vs_status_e
 _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     jobj_t jobj;
     size_t buf_size = *in_out_answer_len;
-    int crypto_answer_b64_len;
+    int crypto_answer_b64_decoded_len;
+    int signature_b64_decoded_len;
+    int b64_encrypted_sz;
+    int b64_signature_sz;
+    char *signature_b64 = NULL;
+    char *crypto_answer_b64 = NULL;
 
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -93,37 +100,99 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
         return VS_CODE_ERR_JSON;
     }
 
-    char *crypto_answer_b64 = (char *)VS_IOT_MALLOC(buf_size);
-    CHECK(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", buf_size);
+    /*----Find and decode from base64 the encrypted credentals and cloud signature----*/
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_ENCRYPTED_FIELD, &b64_encrypted_sz) &&
+                  b64_encrypted_sz > 0 &&
+                  VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_JSON_SIGNATURE_FIELD, &b64_signature_sz) &&
+                  b64_signature_sz > 0,
+          "Wrong JSON format");
 
-    if (json_get_val_str(&jobj, "encrypted_value", crypto_answer_b64, (int)buf_size) != VS_JSON_ERR_OK) {
-        goto terminate;
-    } else {
-        crypto_answer_b64_len = base64decode_len(crypto_answer_b64, (int)VS_IOT_STRLEN(crypto_answer_b64));
+    ++b64_encrypted_sz;
+    ++b64_signature_sz;
+    crypto_answer_b64 = (char *)VS_IOT_MALLOC(b64_encrypted_sz);
+    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
+    CHECK(VS_JSON_ERR_OK ==
+                  json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)(b64_encrypted_sz)),
+          "Wrong JSON format");
 
-        if (0 >= crypto_answer_b64_len || crypto_answer_b64_len > buf_size) {
-            goto terminate;
-        }
+    signature_b64 = (char *)VS_IOT_MALLOC(b64_signature_sz);
+    CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
+    CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)(b64_signature_sz)),
+          "Wrong JSON format");
 
-        base64decode(crypto_answer_b64,
-                     (int)VS_IOT_STRLEN(crypto_answer_b64),
-                     (uint8_t *)crypto_answer_b64,
-                     &crypto_answer_b64_len);
-        size_t decrypted_data_sz;
+    crypto_answer_b64_decoded_len = base64decode_len(crypto_answer_b64, (int)VS_IOT_STRLEN(crypto_answer_b64));
+    CHECK(0 < crypto_answer_b64_decoded_len && crypto_answer_b64_decoded_len <= b64_encrypted_sz,
+          "Base64 of encrypted value is wrong");
 
-        if (VS_CODE_OK != _hsm->ecies_decrypt(NULL,
-                                              0,
-                                              (uint8_t *)crypto_answer_b64,
-                                              (size_t)crypto_answer_b64_len,
-                                              (uint8_t *)out_answer,
-                                              buf_size,
-                                              &decrypted_data_sz) ||
-            decrypted_data_sz > UINT16_MAX) {
-            goto terminate;
-        }
-        *in_out_answer_len = (uint16_t)decrypted_data_sz;
-        out_answer[*in_out_answer_len] = '\0';
+    signature_b64_decoded_len = base64decode_len(signature_b64, (int)VS_IOT_STRLEN(signature_b64));
+    CHECK(0 < signature_b64_decoded_len && signature_b64_decoded_len <= b64_signature_sz,
+          "Base64 of signature is wrong");
+
+    CHECK(base64decode(crypto_answer_b64,
+                       (int)VS_IOT_STRLEN(crypto_answer_b64),
+                       (uint8_t *)crypto_answer_b64,
+                       &crypto_answer_b64_decoded_len),
+          "Cant't decode base64 cloud answer");
+
+    CHECK(base64decode(signature_b64,
+                       (int)VS_IOT_STRLEN(signature_b64),
+                       (uint8_t *)signature_b64,
+                       &signature_b64_decoded_len),
+          "Cant't decode base64 cloud signature answer");
+
+    /*----Verify cloud signature----*/
+    vs_provision_tl_find_ctx_t search_ctx;
+    uint8_t *pubkey = NULL;
+    uint16_t pubkey_sz = 0;
+    uint8_t *meta = NULL;
+    uint16_t meta_sz = 0;
+    vs_hsm_keypair_type_e ec_type;
+
+    uint8_t hash[VS_HASH_SHA256_LEN];
+    uint16_t hash_sz;
+
+    CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz),
+          "Can't find cloud key in TL");
+    ec_type = ((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type;
+
+    {
+        uint8_t sign[vs_hsm_get_signature_len(ec_type)];
+
+        CHECK(VS_CODE_OK == vs_hsm_virgil_secp256_signature_to_tiny(
+                                    (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
+              "Wrong signature format");
+
+        CHECK(VS_CODE_OK == _hsm->hash(VS_HASH_SHA_256,
+                                       (uint8_t *)crypto_answer_b64,
+                                       crypto_answer_b64_decoded_len,
+                                       hash,
+                                       sizeof(hash),
+                                       &hash_sz),
+              "Error during hash calculate");
+
+        CHECK(VS_CODE_OK == _hsm->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
+              "Wrong signature of cloud answer");
     }
+
+    VS_IOT_FREE(signature_b64);
+    signature_b64 = NULL;
+
+    /*----Decrypt credentials----*/
+    size_t decrypted_data_sz;
+
+    CHECK(VS_CODE_OK == _hsm->ecies_decrypt(NULL,
+                                            0,
+                                            (uint8_t *)crypto_answer_b64,
+                                            (size_t)crypto_answer_b64_decoded_len,
+                                            (uint8_t *)out_answer,
+                                            buf_size,
+                                            &decrypted_data_sz) &&
+                  decrypted_data_sz <= UINT16_MAX,
+          "Can't decrypt the cloud answer");
+
+    *in_out_answer_len = (uint16_t)decrypted_data_sz;
+    out_answer[*in_out_answer_len] = '\0';
+
     json_parse_stop(&jobj);
     VS_IOT_FREE(crypto_answer_b64);
     return VS_CODE_OK;
@@ -132,6 +201,10 @@ terminate:
     json_parse_stop(&jobj);
     if (crypto_answer_b64) {
         VS_IOT_FREE(crypto_answer_b64);
+    }
+
+    if (signature_b64) {
+        VS_IOT_FREE(signature_b64);
     }
 
     *in_out_answer_len = 0;
