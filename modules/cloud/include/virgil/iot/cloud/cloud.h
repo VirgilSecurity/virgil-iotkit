@@ -44,8 +44,8 @@
  * \section cloud_usage Cloud Usage
  *
  *  function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
- * service using #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t. Then it
- * waits for new messages periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
+ * service using #vs_cloud_http_request_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t. Then
+ * it waits for new messages periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
  * about new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for raw
  * data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler Cloud library uses
  * provision and firmware modules, which must be initialized before.
@@ -128,11 +128,17 @@
  */
 typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
 
+typedef enum { VS_CLOUD_REQUEST_GET, VS_CLOUD_REQUEST_POST } vs_cloud_http_method_e;
+
 // TODO : hander_data ==> handler_data
 // TODO : it looks like hander_data is for CURL call
-/** Callback for GET request processing
+
+/** Callback for GET and POST requests processing
  *
+ * \param[in] method HTTP method, which will be performed
  * \param[in] url URL for data download. Must not be NULL.
+ * \param[in] request_body The body of the POST request.
+ * \param[in] request_body_size The size of the POST request body.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
  * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will
  * be used. \param[in] hander_data Context from \a fetch_handler \a userdata parameter. \param[in,out] in_out_size Data
@@ -140,15 +146,18 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
-                                                char *out_data,
-                                                vs_fetch_handler_cb_t fetch_handler,
-                                                void *hander_data,
-                                                size_t *in_out_size);
+typedef vs_status_e (*vs_cloud_http_request_func_t)(vs_cloud_http_method_e method,
+                                                    const char *url,
+                                                    const char *request_body,
+                                                    size_t request_body_size,
+                                                    char *out_data,
+                                                    vs_fetch_handler_cb_t fetch_handler,
+                                                    void *hander_data,
+                                                    size_t *in_out_size);
 
 /** Cloud implementation */
 typedef struct {
-    vs_cloud_http_get_func_t http_get; /**< Callback for GET request processing */
+    vs_cloud_http_request_func_t http_request; /**< Callback for GET request processing */
 } vs_cloud_impl_t;
 
 /** Load and store Firmware File

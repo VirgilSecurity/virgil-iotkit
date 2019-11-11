@@ -192,4 +192,9 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
                                         uint8_t *raw_signature,
                                         uint16_t buf_sz);
 
+vs_status_e
+vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                        uint8_t *virgil_sign,
+                                        uint16_t buf_sz,
+                                        uint16_t *virgil_sign_sz);
 #endif // VS_HSM_HELPERS_H_
