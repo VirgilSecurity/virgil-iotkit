@@ -58,15 +58,24 @@
  *
  *  \code
  *
+ *  // Necessary platform implementations of cloud library, which have to be initialized
  *  const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
  *  const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
  *  vs_hsm_impl_t *hsm_impl;                                    // Security module implementation
- *  vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
- *  vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
+ *
+ *  //Necessary storage implementations, which have to be initialized
  *  vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
  *  vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
+ *
+ *  //User callbacks
+ *  vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
+ *  vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
+ *
+ *  // Constants depending on a device
  *  static vs_device_manufacture_id_t _manufacture_id;          // Manufacture ID
  *  static vs_device_type_t _device_type;                       // Device type
+ *
+ *  //Need to initialize hsm_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl here
  *
  *  // Provision module
  *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
@@ -84,7 +93,7 @@
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
  * #vs_softhsm_impl() for \a hsm_impl.
  *
- * \a firmware_topic_process receives URL, where it can fetch a new version of Firmware.
+ * \a fw_topic_process receives URL, where it can fetch a new version of Firmware.
  * See \ref firmware_usage for details.
  *
  * \a tl_topic_process receives URL, where it can fetch a new version of Trust List.
@@ -93,9 +102,21 @@
  *  Here you can see an example of Cloud library usage:
  *
  *  \code
+ * // Processing of cloud library functionality example
+ * void
+ * message_bin_mqtt_task(void *params) {
+ *    while (true) {
+ *        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
+ *            sleep(500);
+ *        } else {
+ *            sleep(5000);
+ *        }
+ *     }
+ *  }
+ *
  *  // Handlers for default topics example
  * void
- * firmware_topic_process(const uint8_t *url, uint16_t length) {
+ * fw_topic_process(const uint8_t *url, uint16_t length) {
  *      vs_status_e res;
  *      vs_firmware_header_t header;
  *
@@ -120,17 +141,6 @@
  *      }
  *  }
  *
- * // Processing of cloud library functionality example
- * void
- * message_bin_mqtt_task(void *params) {
- *    while (true) {
- *        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
- *            sleep(500);
- *        } else {
- *            sleep(5000);
- *        }
- *     }
- *  }
  * \endcode
  *
  */
@@ -168,7 +178,7 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
  * \param[in] url URL for data download. Must not be NULL.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
  * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will be used.
- * \param[in] hander_data Context from \a fetch_handler . \a userdata parameter.
+ * \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter.
  * \param[in,out] in_out_size Data size storage. Must not be NULL.
  * 
  * \return #VS_CODE_OK in case of success or error code.
@@ -176,7 +186,7 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
 typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
                                                 char *out_data,
                                                 vs_fetch_handler_cb_t fetch_handler,
-                                                void *hander_data,
+                                                void *fetch_hander_data,
                                                 size_t *in_out_size);
 
 /** Cloud implementation */
