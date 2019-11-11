@@ -61,7 +61,6 @@ type SignerUtility struct {
 	FirmwareVersion string
 	Manufacturer    string
 	Model           string
-	ChunkSize       int
 
 	progFile *firmware.ProgFile
 }
@@ -131,7 +130,7 @@ func (s *SignerUtility) createProgFile(filePath string) error {
 	copy(descriptor.DeviceType[:], s.Model)
 	descriptor.Version = version
 	descriptor.Padding = 0x00
-	descriptor.ChunkSize = uint16(s.ChunkSize)
+	descriptor.ChunkSize = 0
 	descriptor.FirmwareLength = uint32(len(firmwareBytesWithoutSign))
 	descriptor.AppSize = uint32(s.ProgFileSize)
 
