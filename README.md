@@ -4,13 +4,25 @@
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iot-sdk)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iot-sdk/release/LICENSE)
 
-[Introduction](#introduction) | [SDK Features](#sdk-features) | [SDK Modules](#sdk-modules) | [Installation](#installation) | [Docs](#docs) | [Support](#support)
 
 ## Introduction
 
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
 
 Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.
+
+## Content
+- [Features](#features)
+- [Run Demo](#run-demo)
+- [IoT Dev Tools](#iot-dev-tools)
+- [IoTKit Installation](#iotkit-installation)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+- [Modules](#modules)
+- [Tests](#tests)
+- [API Reference](#api-reference)
+- [License](#license)
+- [Support](#support)
 
 ## Features
 Virgil IoTKit provides a set of features for IoT device security and management:
@@ -60,29 +72,26 @@ $ cmake --version
 cmake version 3.14.5
 ```
 
-- Clone repository :
+## IoT Dev Tools
+- KeyManager
+- Factory Initializer
+- IoT Device Registrar
+- Firmware Signer
 
-```
-git clone --recurse-submodules -b develop git@github.com:VirgilSecurity/virgil-iot-sdk.git
-```
+## Modules
+- [Crypto](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : Cloud library for obtaining credentials from
+thing service and downloading firmware images and trust list files from cloud storage.
+- Provision.
+- Firmware.
+- Secbox.
+- Protocols.
+- Cloud.
+- Logger.
 
-- Install Virgil Crypto library :
+## Tests
 
-```
-virgil-iot-sdk/scripts/install-virgil-crypto.sh
-```
-
-- Initialize CMake :
-
-```
-mkdir -p build
-cd build
-cmake ..
-```
-
-## Docs
+## API Reference
 - [API Reference of IoTKit](http://VirgilSecurity.github.io/virgil-iot-sdk)
-
 
 ## License
 
