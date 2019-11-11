@@ -235,8 +235,8 @@ func (s *SignerUtility) createUpdateFile(filePath string) error {
 func (s *SignerUtility) prepareVersion() (ver firmware.Version, err error) {
 	// Version parts
 	versionParts := strings.Split(s.FirmwareVersion, ".")
-	if len(versionParts) > 4 {
-		return ver, fmt.Errorf("version parts amount is > 4: %s", versionParts)
+	if len(versionParts) != 4 {
+		return ver, fmt.Errorf("version parts amount is not 4: %s", versionParts)
 	}
 
 	major, err := stringToUint8(versionParts[0])

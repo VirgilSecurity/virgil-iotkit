@@ -35,22 +35,16 @@
 package main
 
 import (
+    "./signers"
+    "./utility"
     "fmt"
     "log"
     "os"
-    "regexp"
-
-    "./signers"
-    "./utility"
 
     "gopkg.in/urfave/cli.v2"
 )
 
 var version = "0.1.0"
-
-const (
-    VERSION_PATTERN = "[0-255].[0-255].[0-255].[0-4294967295]"
-)
 
 
 func main()  {
@@ -72,7 +66,7 @@ func main()  {
         },
         &cli.StringFlag{
             Name:    "fw-version",
-            Usage:   fmt.Sprintf("Firmware version (%s)", VERSION_PATTERN),
+            Usage:   "Firmware version ([0-255].[0-255].[0-255].[0-4294967295])",
         },
         &cli.StringFlag{
             Name:    "manufacturer",
@@ -142,9 +136,6 @@ func signerFunc(context *cli.Context) (err error) {
     fwVersion := context.String("fw-version")
     if fwVersion == "" {
         return fmt.Errorf("--fw-version isn't specified")
-    }
-    if matched, _ := regexp.MatchString(fmt.Sprintf(`^%s$`, VERSION_PATTERN), fwVersion); !matched {
-        return fmt.Errorf("specified --fw-version %s doesn't match pattern %s", fwVersion, VERSION_PATTERN)
     }
     signerUtil.FirmwareVersion = fwVersion
 
