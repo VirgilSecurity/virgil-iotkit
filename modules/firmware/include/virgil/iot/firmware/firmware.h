@@ -37,6 +37,9 @@
  *
  * Firmware library is used to save firmware by gateway for different devices and downloading, installing them by
  * client.
+ *
+ * \section firmware_usage Firmware Usage
+ *
  */
 
 #ifndef VS_FIRMWARE_H
