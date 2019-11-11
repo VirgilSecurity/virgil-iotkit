@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Different conversion cases.  
+<p>Cryptographic convertors.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -103,7 +103,23 @@ Functions</h2></td></tr>
 <tr class="separator:aea1dfc6e08e39fdc5c595a054a2fdea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Different conversion cases. </p>
+<div class="textblock"><p>Cryptographic convertors. </p>
+<p>You can find here different conversion cases :</p>
+<ul>
+<li>Public key conversions :<ul>
+<li><a class="el" href="crypto__format__converters_8h.html#aef4752ef2e2fb5ae90698cf0956567d4" title="Convert public key from Virgil format to raw one.">vs_converters_pubkey_to_raw()</a> : from Virgil format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#a613fd394130783521499ba5f23f65cc4" title="Convert public key from raw format to Virgil one.">vs_converters_pubkey_to_virgil()</a> : from raw format to Virgil one</li>
+</ul>
+</li>
+<li><p class="startli">Signatures :</p><ul>
+<li><a class="el" href="crypto__format__converters_8h.html#aadc45fccf040ce1c19128d4ffd7ec539" title="Convert signature from Virgil format to raw one.">vs_converters_virgil_sign_to_raw()</a> : from Virgil format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#ac6f4c1da92d2d63755b82c858f4a301a" title="Convert signature from raw format to Virgil one.">vs_converters_raw_sign_to_virgil()</a> : from raw format to Virgil one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#acf638c084fce82ce2d9b2debd1c18369" title="Convert signature from MbedTLS format to raw one.">vs_converters_mbedtls_sign_to_raw()</a> : from MbedTLS format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#aea1dfc6e08e39fdc5c595a054a2fdea1" title="Convert signature from raw format to MbedTLS one.">vs_converters_raw_sign_to_mbedtls()</a> : from raw format to MbedTLS one</li>
+</ul>
+<p class="startli">Each function returns boolean value true if conversion has been successful or false in other case. </p>
+</li>
+</ul>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="acf638c084fce82ce2d9b2debd1c18369"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acf638c084fce82ce2d9b2debd1c18369">&#9670;&nbsp;</a></span>vs_converters_mbedtls_sign_to_raw()</h2>

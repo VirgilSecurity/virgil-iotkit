@@ -130,17 +130,18 @@ Functions</h2></td></tr>
 <tr class="memdesc:a7979cf410aa05b4e024a7e5f154f36ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get hash type description.  <a href="hsm__helpers_8h.html#a7979cf410aa05b4e024a7e5f154f36ca">More...</a><br /></td></tr>
 <tr class="separator:a7979cf410aa05b4e024a7e5f154f36ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c34a18f14859f9cfa7686d8f39bc3e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__helpers_8h.html#a7c34a18f14859f9cfa7686d8f39bc3e0">vs_hsm_virgil_cryptogram_parse_sha384_aes256</a> (const uint8_t *cryptogram, size_t cryptogram_sz, const uint8_t *recipient_id, size_t recipient_id_sz, uint8_t **public_key, uint8_t **iv_key, uint8_t **encrypted_key, uint8_t **mac_data, uint8_t **iv_data, uint8_t **encrypted_data, size_t *encrypted_data_sz)</td></tr>
-<tr class="memdesc:a7c34a18f14859f9cfa7686d8f39bc3e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM.  <a href="hsm__helpers_8h.html#a7c34a18f14859f9cfa7686d8f39bc3e0">More...</a><br /></td></tr>
+<tr class="memdesc:a7c34a18f14859f9cfa7686d8f39bc3e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse asn1 cryptogram in Virgil format with SHA-384 hmac and encrypted data by AES256 GCM.  <a href="hsm__helpers_8h.html#a7c34a18f14859f9cfa7686d8f39bc3e0">More...</a><br /></td></tr>
 <tr class="separator:a7c34a18f14859f9cfa7686d8f39bc3e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ea296f177eaff62ff3dfa5eaad25012"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__helpers_8h.html#a9ea296f177eaff62ff3dfa5eaad25012">vs_hsm_virgil_cryptogram_create_sha384_aes256</a> (const uint8_t *recipient_id, size_t recipient_id_sz, size_t encrypted_data_sz, const uint8_t *encrypted_data, const uint8_t *iv_data, const uint8_t *encrypted_key, const uint8_t *iv_key, const uint8_t *hmac, const uint8_t *public_key, size_t public_key_sz, uint8_t *cryptogram, size_t cryptogram_buf_sz, size_t *cryptogram_sz)</td></tr>
-<tr class="memdesc:a9ea296f177eaff62ff3dfa5eaad25012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM.  <a href="hsm__helpers_8h.html#a9ea296f177eaff62ff3dfa5eaad25012">More...</a><br /></td></tr>
+<tr class="memdesc:a9ea296f177eaff62ff3dfa5eaad25012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create asn1 cryptogram in Virgil format with SHA-384 HMAC and encrypted data by AES256 GCM.  <a href="hsm__helpers_8h.html#a9ea296f177eaff62ff3dfa5eaad25012">More...</a><br /></td></tr>
 <tr class="separator:a9ea296f177eaff62ff3dfa5eaad25012"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a352feac38ab5ffa707d11098eb95d6d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__helpers_8h.html#a352feac38ab5ffa707d11098eb95d6d8">vs_hsm_virgil_secp256_signature_to_tiny</a> (const uint8_t *virgil_sign, uint16_t virgil_sign_sz, uint8_t *raw_signature, uint16_t buf_sz)</td></tr>
-<tr class="memdesc:a352feac38ab5ffa707d11098eb95d6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a nist256 signature from a virgil format to raw.  <a href="hsm__helpers_8h.html#a352feac38ab5ffa707d11098eb95d6d8">More...</a><br /></td></tr>
+<tr class="memdesc:a352feac38ab5ffa707d11098eb95d6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a NIST256 signature from a virgil format to raw.  <a href="hsm__helpers_8h.html#a352feac38ab5ffa707d11098eb95d6d8">More...</a><br /></td></tr>
 <tr class="separator:a352feac38ab5ffa707d11098eb95d6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>HSM helper functions. </p>
+<p>This header contains different helper functions for cryptography </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aadd38e1c21e41b6067fdc72aef893565"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aadd38e1c21e41b6067fdc72aef893565">&#9670;&nbsp;</a></span>VS_HASH_SHA256_LEN</h2>
@@ -370,6 +371,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get hash length. </p>
+<p>This function returns hash length for supported and enabled hash types.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">hash_type</td><td>Hash type. Cannot be <a class="el" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>.</td></tr>
@@ -397,6 +399,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get public key length. </p>
+<p>This function returns public key length for supported and enabled key pair types.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">keypair_type</td><td>Key pair type. Cannot be <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3afe6e01c203db170245619a22990ee7d4" title="Invalid keypair.">VS_KEYPAIR_INVALID</a> or <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3a91fc067406fd017b5a6fed08f7e7a93e">VS_KEYPAIR_MAX</a>.</td></tr>
@@ -424,6 +427,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get signature length. </p>
+<p>This function returns signature length for supported and enabled signature types.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">keypair_type</td><td>Key pair type. Cannot be <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3afe6e01c203db170245619a22990ee7d4" title="Invalid keypair.">VS_KEYPAIR_INVALID</a> or <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3a91fc067406fd017b5a6fed08f7e7a93e">VS_KEYPAIR_MAX</a>.</td></tr>
@@ -451,6 +455,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get hash type description. </p>
+<p>This function returns hash ASCIIZ description for supported and enable hash types</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">hash_type</td><td>Hash type. Cannot be <a class="el" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>.</td></tr>
@@ -478,6 +483,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get key pair type description. </p>
+<p>This function returns key pair ASCIIZ description for supported and enable key pair types</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>Key pair type. Cannot be <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3afe6e01c203db170245619a22990ee7d4" title="Invalid keypair.">VS_KEYPAIR_INVALID</a> or <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3a91fc067406fd017b5a6fed08f7e7a93e">VS_KEYPAIR_MAX</a>.</td></tr>
@@ -580,7 +586,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM. </p>
+<p>Create asn1 cryptogram in Virgil format with SHA-384 HMAC and encrypted data by AES256 GCM. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">recipient_id</td><td>Pointer to recipient_id array. Cannot be NULL. </td></tr>
@@ -683,20 +689,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Parse asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM. </p>
+<p>Parse asn1 cryptogram in Virgil format with SHA-384 hmac and encrypted data by AES256 GCM. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">cryptogram</td><td>Pointer to cryptogram array for parsing. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cryptogram</td><td>Pointer to cryptogram array for parsing. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cryptogram_sz</td><td>Size of cryptogram array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">recipient_id</td><td>Pointer to recipient_id array. If NULL, it won't be used. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">recipient_id_sz</td><td>Size of recipient_id array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">public_key</td><td>Pointer to the recipient public key. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">iv_key</td><td>Pointer to the iv vector of encrypted symmetric AES GCM key. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_key</td><td>Pointer to the encrypted symmetric AES GCM key. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mac_data</td><td>Pointer to the authentication data. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">iv_data</td><td>Pointer to the iv vector of encrypted data. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_data</td><td>Pointer to the encrypted data. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_data_sz</td><td>Pointer to encrypted data size. Cannot be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">recipient_id_sz</td><td>Size of recipient_id array. Must not be zero. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">public_key</td><td>Pointer to the recipient public key. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">iv_key</td><td>Pointer to the iv vector of encrypted symmetric AES GCM key. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_key</td><td>Pointer to the encrypted symmetric AES GCM key. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mac_data</td><td>Pointer to the authentication data. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">iv_data</td><td>Pointer to the iv vector of encrypted data. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_data</td><td>Pointer to the encrypted data. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">encrypted_data_sz</td><td>Pointer to encrypted data size. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -742,7 +748,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Convert a nist256 signature from a virgil format to raw. </p>
+<p>Convert a NIST256 signature from a virgil format to raw. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in virgil format. Cannot be NULL. </td></tr>
