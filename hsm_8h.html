@@ -74,15 +74,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>HSM callbacks signatures.  
+<p>Security Module callbacks signatures.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="status__code_8h_source.html">virgil/iot/status_code/status_code.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm__none_8h_source.html">virgil/iot/hsm/devices/hsm_none.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm__custom_8h_source.html">virgil/iot/hsm/devices/hsm_custom.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm__atecc__508a_8h_source.html">virgil/iot/hsm/devices/hsm_atecc_508a.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm__atecc__608a_8h_source.html">virgil/iot/hsm/devices/hsm_atecc_608a.h</a>&gt;</code><br />
+<code>#include &lt;virgil/iot/hsm/devices/hsm_none.h&gt;</code><br />
+<code>#include &lt;virgil/iot/hsm/devices/hsm_custom.h&gt;</code><br />
+<code>#include &lt;virgil/iot/hsm/devices/hsm_atecc_508a.h&gt;</code><br />
+<code>#include &lt;virgil/iot/hsm/devices/hsm_atecc_608a.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="hsm__iotelic_8h_source.html">virgil/iot/hsm/devices/hsm_iotelic.h</a>&gt;</code><br />
 </div>
 <p><a href="hsm_8h_source.html">Go to the source code of this file.</a></p>
@@ -141,7 +141,7 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:a4dc988390e4a7f1587f4852d203678b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data decryption by AES algorithm.  <a href="hsm_8h.html#a4dc988390e4a7f1587f4852d203678b2">More...</a><br /></td></tr>
 <tr class="separator:a4dc988390e4a7f1587f4852d203678b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f00e7d9af6521a4f13c9948336f2a47"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm_8h.html#a6f00e7d9af6521a4f13c9948336f2a47">vs_hsm_aes_auth_decrypt_t</a>) (<a class="el" href="hsm_8h.html#a546035f9a1385c8d1bc671f0a0a87462">vs_iot_aes_type_e</a> aes_type, const uint8_t *key, uint16_t key_bitlen, const uint8_t *iv, uint16_t iv_len, const uint8_t *add, uint16_t add_len, uint16_t buf_len, const uint8_t *input, uint8_t *output, const uint8_t *tag, uint16_t tag_len)</td></tr>
-<tr class="memdesc:a6f00e7d9af6521a4f13c9948336f2a47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data decryption by AES algorithm with authetnification check.  <a href="hsm_8h.html#a6f00e7d9af6521a4f13c9948336f2a47">More...</a><br /></td></tr>
+<tr class="memdesc:a6f00e7d9af6521a4f13c9948336f2a47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data decryption by AES algorithm with authentification check.  <a href="hsm_8h.html#a6f00e7d9af6521a4f13c9948336f2a47">More...</a><br /></td></tr>
 <tr class="separator:a6f00e7d9af6521a4f13c9948336f2a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabeae2873c472d5c9330eba6e96f1edc"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm_8h.html#aabeae2873c472d5c9330eba6e96f1edc">vs_hsm_ecdh_t</a>) (<a class="el" href="hsm__iotelic_8h.html#a0f2c93841b1ddd3087e93255f69a8515">vs_iot_hsm_slot_e</a> slot, <a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, const uint8_t *public_key, uint16_t public_key_sz, uint8_t *shared_secret, uint16_t buf_sz, uint16_t *shared_secret_sz)</td></tr>
 <tr class="memdesc:aabeae2873c472d5c9330eba6e96f1edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for ECDH algorithm.  <a href="hsm_8h.html#aabeae2873c472d5c9330eba6e96f1edc">More...</a><br /></td></tr>
@@ -209,7 +209,18 @@ Enumerations</h2></td></tr>
 <tr class="separator:a546035f9a1385c8d1bc671f0a0a87462"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>HSM callbacks signatures. </p>
+<div class="textblock"><p>Security Module callbacks signatures. </p>
+<p>This header contains <a class="el" href="structvs__hsm__impl__t.html" title="HSM implementation.">vs_hsm_impl_t</a> structure that is used for crypto operations. User needs to return this function for library with crypto callbacks.</p>
+<p>Library provides standard software implementation. See <a class="el" href="vs-softhsm_8h.html#vs-softhsm-usage">Virgil Security Software Security Module Usage</a> for example.</p>
+<div class="fragment"><div class="line"><a class="code" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm_impl = NULL;  <span class="comment">// Security Module callbacks</span></div>
+<div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> slots_storage_impl;  <span class="comment">// Slots storage implementation</span></div>
+<div class="line"> </div>
+<div class="line">hsm_impl = <a class="code" href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d">vs_softhsm_impl</a>(&amp;slots_storage_impl);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// ... Library usage</span></div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="vs-softhsm_8h.html#af1f72535992e844c4ad98184bf79db66">vs_softhsm_deinit</a>();</div>
+</div><!-- fragment --><p>Software Security Module needs to have Slots Storage Implementation initialized. See <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> for details. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="a6f00e7d9af6521a4f13c9948336f2a47"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f00e7d9af6521a4f13c9948336f2a47">&#9670;&nbsp;</a></span>vs_hsm_aes_auth_decrypt_t</h2>
@@ -223,7 +234,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for data decryption by AES algorithm with authetnification check. </p>
+<p>Callback for data decryption by AES algorithm with authentification check. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">aes_type</td><td>Hash type. Cannot be <a class="el" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -927,6 +938,10 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="astructvs__hsm__impl__t_html"><div class="ttname"><a href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a></div><div class="ttdoc">HSM implementation.</div><div class="ttdef"><b>Definition:</b> hsm.h:494</div></div>
+<div class="ttc" id="avs-softhsm_8h_html_a69e91d29efbec80562216d03aba4e60d"><div class="ttname"><a href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d">vs_softhsm_impl</a></div><div class="ttdeci">vs_hsm_impl_t * vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl)</div><div class="ttdoc">Initialize software crypto implementation.</div></div>
+<div class="ttc" id="avs-softhsm_8h_html_af1f72535992e844c4ad98184bf79db66"><div class="ttname"><a href="vs-softhsm_8h.html#af1f72535992e844c4ad98184bf79db66">vs_softhsm_deinit</a></div><div class="ttdeci">vs_status_e vs_softhsm_deinit(void)</div><div class="ttdoc">Destroy software crypto implementation.</div></div>
+<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:198</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
