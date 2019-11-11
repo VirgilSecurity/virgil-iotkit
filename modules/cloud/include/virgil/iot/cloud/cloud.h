@@ -46,13 +46,12 @@
  *
  * \section cloud_usage Cloud Usage
  *
- *  Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing service using
- *  #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t.
- *  Then it waits for new messages periodically calling #vs_cloud_mb_process_func_t.
- *  User can register own handlers for events about new firmware or trust list by calling
- *  #vs_cloud_message_bin_register_default_handler or custom handler for raw data processing from some topics by calling
- *  #vs_cloud_message_bin_register_custom_handler
- *  Cloud library uses provision and firmware modules, which must be initialized before.
+ *  Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
+ * service using #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t. Then it
+ * waits for new messages periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
+ * about new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for raw
+ * data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler Cloud library uses
+ * provision and firmware modules, which must be initialized before.
  *
  *  Here you can see an example of Cloud library initialization :
  *
@@ -74,12 +73,14 @@
  *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
  *
  *  // Firmware module
- *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+ *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize
+ * Firmware module");
  *
  *  // Cloud module
  *  STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, hsm_impl), "Unable to initialize Cloud module");
- *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register handler for Trust List topic");
- *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, fw_topic_process), "Error register handler for Firmware topic");
+ *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register
+ * handler for Trust List topic"); STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW,
+ * fw_topic_process), "Error register handler for Firmware topic");
  *
  *  \endcode
  *
@@ -153,11 +154,11 @@
 /** Callback for data header download
  *
  * This function callback stores loaded handler in internal buffers.
- * 
+ *
  * \param[in] contents Input data. Must not be NULL.
  * \param[in] chunksize Input data size. Must not be zero.
  * \param[in,out] userdata Data specific context. Must not be NULL.
- * 
+ *
  * \return Loaded data size of #vs_status_e error code
  */
 typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
@@ -169,10 +170,10 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
  *
  * \param[in] url URL for data download. Must not be NULL.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
- * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will be used.
- * \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter.
- * \param[in,out] in_out_size Data size storage. Must not be NULL.
- * 
+ * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will
+ * be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
+ * in_out_size Data size storage. Must not be NULL.
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
@@ -192,7 +193,7 @@ typedef struct {
  *
  * \param[in] fw_file_url Firmware URL to fetch. Must not be NULL.
  * \param[out] fetched_header
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
@@ -203,7 +204,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *
  * Fetches Trust List and stores it in internal storage.
  *
  * \param[in] tl_file_url Trust List URL to fetch. Must not be NULL.
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
@@ -260,7 +261,7 @@ typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint1
  *
  * \param[in] topic_id Topic identifier.
  * \param[in] handler Topic processing callback. Must not be NULL.
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
@@ -273,7 +274,7 @@ vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
  * You can use #vs_cloud_message_bin_register_default_handler() if it is enough default topics processing.
  *
  * \param[in] handler Custom topics processing handler. Must not be NULL.
- * 
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
@@ -331,9 +332,10 @@ typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
 /** Message Bin implementation */
 typedef struct {
-    vs_cloud_mb_init_func_t init; /**< Message bin initialization */
+    vs_cloud_mb_init_func_t init;                           /**< Message bin initialization */
     vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< Message bin connection and topic subscribing */
-    vs_cloud_mb_process_func_t process; /**< Message bin processing : listen incoming messages and executing callback calls */
+    vs_cloud_mb_process_func_t
+            process; /**< Message bin processing : listen incoming messages and executing callback calls */
 } vs_cloud_message_bin_impl_t;
 
 /** Process message bin
@@ -349,8 +351,9 @@ vs_cloud_message_bin_process(void);
 /** Initialize message bin
  *
  * \param[in] cloud_impl Cloud implementation. Must not be NULL.
- * \param[in] message_bin_impl Message bin implementation. You can use default implementation returned by #vs_aws_message_bin_impl(). Must not be NULL.
- * \param[in] hsm Security module implementation. You can use default implementation returned by #vs_softhsm_impl(). Must not be NULL.
+ * \param[in] message_bin_impl Message bin implementation. You can use default implementation returned by
+ * #vs_aws_message_bin_impl(). Must not be NULL. \param[in] hsm Security module implementation. You can use default
+ * implementation returned by #vs_softhsm_impl(). Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

@@ -36,7 +36,20 @@
 
 /**
  * @file crypto_format_converters.h
- * @brief Different conversion cases
+ * @brief Cryptographic convertors
+ *
+ * You can find here different conversion cases :
+ *
+ * - Public key conversions :
+ *  - #vs_converters_pubkey_to_raw() : from Virgil format to raw one
+ *  - #vs_converters_pubkey_to_virgil() : from raw format to Virgil one
+ * - Signatures :
+ *  - #vs_converters_virgil_sign_to_raw() : from Virgil format to raw one
+ *  - #vs_converters_raw_sign_to_virgil() : from raw format to Virgil one
+ *  - #vs_converters_mbedtls_sign_to_raw() : from MbedTLS format to raw one
+ *  - #vs_converters_raw_sign_to_mbedtls() : from raw format to MbedTLS one
+ *
+ *  Each function returns boolean value true if conversion has been successful or false in other case.
  */
 
 #ifndef VS_CRYPTO_CONVERTERS_H
@@ -166,6 +179,7 @@ vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
                                   unsigned char *signature,
                                   uint16_t buf_sz,
                                   uint16_t *signature_sz);
+
 
 #ifdef __cplusplus
 }

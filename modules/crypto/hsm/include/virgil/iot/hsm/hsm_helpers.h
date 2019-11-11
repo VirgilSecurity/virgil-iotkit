@@ -35,6 +35,8 @@
 /**
  * @file hsm_helpers.h
  * @brief HSM helper functions
+ *
+ * This header contains different helper functions for cryptography
  */
 
 #ifndef VS_HSM_HELPERS_H_
@@ -71,6 +73,8 @@
 
 /** Get public key length
  *
+ * This function returns public key length for supported and enabled key pair types.
+ *
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
  * \return Public key length
@@ -79,6 +83,8 @@ int
 vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
 
 /** Get signature length
+ *
+ * This function returns signature length for supported and enabled signature types.
  *
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
@@ -89,6 +95,8 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
 
 /** Get hash length
  *
+ * This function returns hash length for supported and enabled hash types.
+ *
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  *
  * \return Hash length
@@ -97,6 +105,8 @@ int
 vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
 
 /** Get key pair type description
+ *
+ * This function returns key pair ASCIIZ description for supported and enable key pair types
  *
  * \param[in] type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  *
@@ -107,6 +117,8 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 
 /** Get hash type description
  *
+ * This function returns hash ASCIIZ description for supported and enable hash types
+ *
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  *
  * \return Hash type description in static buffer
@@ -114,20 +126,19 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
 const char *
 vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
 
-
-/** Parse asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM
+/** Parse asn1 cryptogram in Virgil format with SHA-384 hmac and encrypted data by AES256 GCM
  *
- * \param[in] cryptogram Pointer to cryptogram array for parsing. Cannot be NULL.
+ * \param[in] cryptogram Pointer to cryptogram array for parsing. Must not be NULL.
  * \param[in] cryptogram_sz Size of cryptogram array.
  * \param[in] recipient_id Pointer to recipient_id array. If NULL, it won't be used.
- * \param[in] recipient_id_sz  Size of recipient_id array.
- * \param[out] public_key Pointer to the recipient public key. Cannot be NULL.
- * \param[out] iv_key Pointer to the iv vector of encrypted symmetric AES GCM key. Cannot be NULL.
- * \param[out] encrypted_key Pointer to the encrypted symmetric AES GCM key. Cannot be NULL.
- * \param[out] mac_data Pointer to the authentication data. Cannot be NULL.
- * \param[out] iv_data Pointer to the iv vector of encrypted data. Cannot be NULL.
- * \param[out] encrypted_data Pointer to the encrypted data. Cannot be NULL.
- * \param[out] encrypted_data_sz Pointer to encrypted data size. Cannot be NULL.
+ * \param[in] recipient_id_sz Size of recipient_id array. Must not be zero.
+ * \param[out] public_key Pointer to the recipient public key. Must not be NULL.
+ * \param[out] iv_key Pointer to the iv vector of encrypted symmetric AES GCM key. Must not be NULL.
+ * \param[out] encrypted_key Pointer to the encrypted symmetric AES GCM key. Must not be NULL.
+ * \param[out] mac_data Pointer to the authentication data. Must not be NULL.
+ * \param[out] iv_data Pointer to the iv vector of encrypted data. Must not be NULL.
+ * \param[out] encrypted_data Pointer to the encrypted data. Must not be NULL.
+ * \param[out] encrypted_data_sz Pointer to encrypted data size. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -144,7 +155,7 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                                              uint8_t **encrypted_data,
                                              size_t *encrypted_data_sz);
 
-/** Create asn1 cryptogram in virgil format with sha384 hmac and encrypted data by AES256 GCM
+/** Create asn1 cryptogram in Virgil format with SHA-384 HMAC and encrypted data by AES256 GCM
  *
  * \param[in] recipient_id Pointer to recipient_id array. Cannot be NULL.
  * \param[in] recipient_id_sz  Size of recipient_id array.
@@ -177,7 +188,7 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
                                               size_t cryptogram_buf_sz,
                                               size_t *cryptogram_sz);
 
-/** Convert a nist256 signature from a virgil format to raw
+/** Convert a NIST256 signature from a virgil format to raw
  *
  * \param[in] virgil_sign Pointer to the signature in virgil format. Cannot be NULL.
  * \param[in] virgil_sign_sz Size of the signature in virgil format.

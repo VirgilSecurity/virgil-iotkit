@@ -34,6 +34,8 @@
 
 /*! \file storage_hal.h
  * \brief Storage HAL interface
+ *
+ * \section storage_hal Storage HAL Usage
  */
 
 #ifndef VS_STORAGE_HAL_H
