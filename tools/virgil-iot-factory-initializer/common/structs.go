@@ -43,7 +43,6 @@ import (
 type ProvisioningInfo struct {
     TlOnly            bool
     CardOnly          bool
-    FactoryKeyECType  uint8
     AuthPubKey1       []byte
     AuthPubKey2       []byte
     RecPubKey1        []byte

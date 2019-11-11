@@ -116,11 +116,6 @@ func New(context *cli.Context) (*FactoryInitializer, error) {
     if err := readFileFromContext(context, &fInit.DeviceSignPrivateKey, "factory_key"); err != nil {
         return nil, err
     }
-    // EC type of factory key
-    provInfo.FactoryKeyECType = uint8(context.Int("factory_key_ec_type"))
-    if provInfo.FactoryKeyECType == 0 {
-        return nil, fmt.Errorf("EC type for Factory key isn`t specified")
-    }
 
     // create_card_only
     provInfo.CardOnly = context.Bool("create_card_only")
