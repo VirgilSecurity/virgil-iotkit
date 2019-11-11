@@ -130,7 +130,7 @@ func (s *SignerUtility) createProgFile(filePath string) error {
 	copy(descriptor.DeviceType[:], s.Model)
 	descriptor.Version = version
 	descriptor.Padding = 0x00
-	descriptor.ChunkSize = 0
+	descriptor.ChunkSize = 512
 	descriptor.FirmwareLength = uint32(len(firmwareBytesWithoutSign))
 	descriptor.AppSize = uint32(s.ProgFileSize)
 
