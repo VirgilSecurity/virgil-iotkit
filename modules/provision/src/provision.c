@@ -145,7 +145,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     uint8_t i = 0;
     int ref_key_sz;
     // TODO: Fix buffer constant size
-    uint8_t buf[VS_SEARCH_KEY_BUF_SZ];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
     vs_status_e ret_code;
@@ -244,31 +244,6 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 }
 
 /******************************************************************************/
-static vs_status_e
-_load_cloud_url(void) {
-    vs_provision_tl_find_ctx_t search_ctx;
-    uint8_t *pubkey = NULL;
-    uint16_t pubkey_sz = 0;
-    uint8_t *meta = NULL;
-    uint16_t meta_sz = 0;
-
-    VS_IOT_MEMSET(&search_ctx, 0, sizeof(search_ctx));
-
-    if (VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
-        !meta_sz) {
-        _base_url = VS_IOT_MALLOC(meta_sz + 1);
-        CHECK_MEM_ALLOC(NULL != _base_url, "");
-        VS_IOT_MEMCPY(_base_url, meta, meta_sz);
-        _base_url[meta_sz] = 0x00;
-        return VS_CODE_OK;
-    }
-
-terminate:
-
-    return VS_CODE_ERR_NOT_FOUND;
-}
-
-/******************************************************************************/
 vs_status_e
 vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -288,10 +263,26 @@ vs_provision_deinit(void) {
 /******************************************************************************/
 const char *
 vs_provision_cloud_url(void) {
-    if (NULL == _base_url) {
-        _load_cloud_url();
+    vs_provision_tl_find_ctx_t search_ctx;
+    uint8_t *pubkey = NULL;
+    uint16_t pubkey_sz = 0;
+    uint8_t *meta = NULL;
+    uint16_t meta_sz = 0;
+
+    if (_base_url) {
+        VS_IOT_FREE(_base_url);
+        _base_url = NULL;
     }
 
+    if (VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
+        !meta_sz) {
+        _base_url = VS_IOT_MALLOC(meta_sz + 1);
+        CHECK_MEM_ALLOC(NULL != _base_url, "");
+        VS_IOT_MEMCPY(_base_url, meta, meta_sz);
+        _base_url[meta_sz] = 0x00;
+    }
+
+terminate:
     return _base_url;
 }
 
@@ -304,7 +295,9 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
                                uint8_t **meta,
                                uint16_t *meta_sz) {
 
+    CHECK_NOT_ZERO_RET(search_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     // Setup search context
+    VS_IOT_MEMSET(search_ctx, 0, sizeof(vs_provision_tl_find_ctx_t));
     search_ctx->key_type = key_type;
     search_ctx->last_pos = -1;
 
@@ -333,7 +326,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
     element.id = VS_TL_ELEMENT_TLC;
     element.index = search_ctx->last_pos + 1;
 
-    while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_SEARCH_KEY_BUF_SZ, &data_sz)) {
+    while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_TL_STORAGE_MAX_PART_SIZE, &data_sz)) {
         element.index++;
         if (pubkey_dated->pubkey.key_type != search_ctx->key_type) {
             continue;
