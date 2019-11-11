@@ -64,11 +64,6 @@
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
 #include <virgil/iot/hsm/devices/hsm_iotelic.h>
 
 /** Keypair types */
@@ -489,7 +484,8 @@ typedef void (*vs_hsm_deinit_t)(void);
 /** HSM implementation
  *
  * This structure contains all callbacks needed for cryptographic operations.
- * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC, HKDF, ECIES).
+ * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC,
+ * HKDF, ECIES).
  */
 typedef struct {
 
