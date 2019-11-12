@@ -34,12 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(sdmp-codgen VERSION 0.1.0 LANGUAGES Go)
+project(vs-tool-sdmp-codgen VERSION 0.1.0 LANGUAGES Go)
 
 #
 #   SDMP convert code generator
 #
-add_go_executable(sdmp-codgen)
+add_go_executable(vs-tool-sdmp-codgen sdmp-codegen)
 
 
 #
@@ -58,8 +58,8 @@ set (SDMP_SRC_TYPES
 
 message("${SDMP_SRC_TYPES}")
 
-add_custom_command(TARGET sdmp-codgen POST_BUILD
-        COMMAND ${sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
+add_custom_command(TARGET vs-tool-sdmp-codgen POST_BUILD
+        COMMAND ${vs-tool-sdmp-codgen_BINARY_DIR}/vs-tool-sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SDMP_SRC_TYPES}
                                                   -oc ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/src/generated/sdmp_cvt.c
                                                   -oh ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h

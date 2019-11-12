@@ -2,7 +2,7 @@ from virgil_keymanager import __version__, __author__
 from setuptools import setup, find_packages
 
 setup(
-    name="virgil-keymanager",
+    name="virgil-trust-provisioner",
     version=__version__,
     packages=find_packages(exclude=('tests',)),
     install_requires=[
@@ -39,6 +39,6 @@ setup(
         "Topic :: Security :: Cryptography",
         ],
     license="BSD",
-    description="Virgil key manager cli",
-    long_description="Virgil key manager cli",
+    description="Virgil Trust Provisioner cli",
+    long_description="Virgil Trust Provisioner cli",
 )

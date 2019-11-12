@@ -43,17 +43,17 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
 #
 #   Factory initalizer
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-iot-factory-initializer)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-initializer)
 
 #
 #   Registrar
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-iot-registrar)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-registrar)
 
 #
 #   Signer
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-signer)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-firmware-signer)
 
 #
 #   SDMPD

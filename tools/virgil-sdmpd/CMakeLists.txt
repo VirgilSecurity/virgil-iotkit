@@ -34,17 +34,17 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-sdmpd VERSION 0.1.0 LANGUAGES Go C)
+project(vs-tool-virgil-sdmpd VERSION 0.1.0 LANGUAGES Go C)
 
 #
 #   Check required CMake variables
 #
 if(NOT VIRGIL_IOT_DIRECTORY)
-    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+    message(FATAL_ERROR "[vs-tool-virgil-sdmpd] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
 endif()
 
 if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[virgil-sdmpd] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+    message(FATAL_ERROR "[vs-tool-virgil-sdmpd] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
 endif()
 
 #
@@ -81,4 +81,4 @@ set(CMAKE_CGO_LDFLAGS
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(virgil-sdmpd tools-hal vs-module-logger)
+add_go_executable(vs-tool-virgil-sdmpd virgil-sdmpd tools-hal vs-module-logger)

@@ -34,62 +34,60 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-iot-factory-initializer VERSION 0.1.0 LANGUAGES Go C)
+project(vs-tool-virgil-firmware-signer VERSION 0.1.0 LANGUAGES Go)
 
-#
-#   Check required CMake variables
-#
+
 if(NOT VIRGIL_IOT_DIRECTORY)
-    message(FATAL_ERROR "[virgil-iot-factory-initializer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+    message(FATAL_ERROR "[vs-tool-virgil-firmware-signer] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+else()
+    message(STATUS "[vs-tool-virgil-firmware-signer] path to the Virgil IOT SDK source : ${VIRGIL_IOT_DIRECTORY}")
 endif()
 
 if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[virgil-iot-factory-initializer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+    message(FATAL_ERROR "[vs-tool-virgil-firmware-signer] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
+else()
+    message(STATUS "[vs-tool-virgil-firmware-signer] path to the Virgil IOT SDK binary : ${VIRGIL_IOT_BINARY_DIRECTORY}")
 endif()
 
 #
-#   CFLAGS for CGO
+# CFLAGS for CGO
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
-        -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
         -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
         -I${VIRGIL_IOT_DIRECTORY}/helpers/macros/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/logger/include
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
-        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
-        -DPRVS_CLIENT=1
         )
 
 #
-#   LDFLAGS for CGO
+# LDFLAGS for CGO
 #
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
-        -Wl,-rpath -Wl,${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
+        -Wl,-rpath -Wl,${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters        
         )
-
-message("CMAKE_CGO_CFLAGS = ${CMAKE_CGO_CFLAGS}")
-message("CMAKE_CGO_LDFLAGS = ${CMAKE_CGO_LDFLAGS}")
 
 #
 # Workaround target
 # Copies mbedtls libs to /lib folder in order to avoid conflicts with virgil_crypto mbedtls
 #
-add_custom_target(factory-initializer-mbedtls
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_LIST_DIR}/lib
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
+set(INITIALIZER_LIB_DIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(LIBS_TARGET ${PROJECT_NAME}-libs)
+add_custom_target(${LIBS_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${INITIALIZER_LIB_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libmbedcrypto.a"
+        ${INITIALIZER_LIB_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a"
+        ${INITIALIZER_LIB_DIR}
         )
-add_dependencies(factory-initializer-mbedtls converters)
+
 #
-#   Virgil IoT Initializer
+#   Virgil Signer
 #
-add_go_executable(virgil-iot-factory-initializer tools-hal factory-initializer-mbedtls)
+add_go_executable(vs-tool-virgil-firmware-signer virgil-firmware-signer converters ${LIBS_TARGET})
