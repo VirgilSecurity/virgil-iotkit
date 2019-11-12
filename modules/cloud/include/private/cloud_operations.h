@@ -60,12 +60,6 @@ typedef struct {
     bool is_active;
 } vs_cloud_message_bin_ctx_t;
 
-// TODO: Will be used for alexa
-#if 0
-vs_status_e
-vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len);
-#endif
-
 vs_status_e
 vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len);
 
