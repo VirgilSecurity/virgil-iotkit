@@ -89,7 +89,6 @@ add_custom_target(factory-initializer-mbedtls
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/depends/installed/lib/libed25519.a" ${CMAKE_CURRENT_LIST_DIR}/lib/
         )
 add_dependencies(factory-initializer-mbedtls converters)
-
 #
 #   Virgil IoT Initializer
 #
