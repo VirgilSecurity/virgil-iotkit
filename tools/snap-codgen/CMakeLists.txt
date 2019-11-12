@@ -34,51 +34,32 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-tool-virgil-sdmpd VERSION 0.1.0 LANGUAGES Go C)
+project(vs-tool-snap-codgen VERSION 0.1.0 LANGUAGES Go)
 
 #
-#   Check required CMake variables
+#   SDMP convert code generator
 #
-if(NOT VIRGIL_IOT_DIRECTORY)
-    message(FATAL_ERROR "[vs-tool-virgil-sdmpd] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
-endif()
+add_go_executable(vs-tool-snap-codgen snap-codgen)
 
-if(NOT VIRGIL_IOT_BINARY_DIRECTORY)
-    message(FATAL_ERROR "[vs-tool-virgil-sdmpd] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
-endif()
 
 #
-#   CFLAGS for CGO
+# POST EXEC Generate convert code
 #
-set(CMAKE_CGO_CFLAGS
-        ${CMAKE_CGO_CFLAGS}
-        -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/provision/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/firmware/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/provision/trust_list/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/storage_hal/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/update/include
-        -I${VIRGIL_IOT_DIRECTORY}/helpers/macros/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/logger/include
-        -I${VIRGIL_IOT_DIRECTORY}/config/pc
-        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
-        -DINFO_CLIENT=1
+
+set (SNAP_SRC_TYPES
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+        -i ${PROJECT_SOURCE_DIR}/../../modules/provision/include/virgil/iot/provision/provision-structs.h
+        -i ${PROJECT_SOURCE_DIR}/../../helpers/update/include/virgil/iot/update/update.h
         )
 
-#
-#   LDFLAGS for CGO
-#
-set(CMAKE_CGO_LDFLAGS
-        ${CMAKE_CGO_LDFLAGS}
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
+add_custom_command(TARGET vs-tool-snap-codgen POST_BUILD
+        COMMAND ${vs-tool-snap-codgen_BINARY_DIR}/snap-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
+                                                  ${SNAP_SRC_TYPES}
+                                                  -oc ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/src/generated/sdmp_cvt.c
+                                                  -oh ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
+        COMMENT "Generate SNAP convert functions"
         )
-
-#
-#   Virgil IoT Initializer
-#
-add_go_executable(vs-tool-virgil-sdmpd virgil-sdmpd tools-hal vs-module-logger)

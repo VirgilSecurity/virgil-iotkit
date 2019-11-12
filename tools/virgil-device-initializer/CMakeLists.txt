@@ -60,7 +60,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/modules/logger/include
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
         -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
-        -I${CMAKE_CURRENT_LIST_DIR}/../c_libs/include
+        -I${CMAKE_CURRENT_LIST_DIR}/../c-implementation/include
         -DPRVS_CLIENT=1
         )
 
@@ -70,7 +70,7 @@ set(CMAKE_CGO_CFLAGS
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/sdmp
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c_libs
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c-implementation
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger
         -Wl,-rpath -Wl,${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
