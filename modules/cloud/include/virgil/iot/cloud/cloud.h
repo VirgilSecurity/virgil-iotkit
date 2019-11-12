@@ -161,12 +161,20 @@
  */
 typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
 
+typedef enum {
+    VS_CLOUD_REQUEST_GET, /**< HTTP request by GET method */
+    VS_CLOUD_REQUEST_POST /**< HTTP request by POST method */
+} vs_cloud_http_method_e;
+
 // TODO : hander_data ==> handler_data
-/** Callback for GET request processing
+// TODO : it looks like hander_data is for CURL call
+
+/** Callback for GET and POST requests processing
  *
- * This function callback has to load requested data and to store it in \a out_data output buffer.
- *
+ * \param[in] method HTTP method, which will be performed
  * \param[in] url URL for data download. Must not be NULL.
+ * \param[in] request_body The body of the POST request.
+ * \param[in] request_body_size The size of the POST request body.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
  * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will
  * be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
@@ -174,15 +182,18 @@ typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_cloud_http_get_func_t)(const char *url,
-                                                char *out_data,
-                                                vs_fetch_handler_cb_t fetch_handler,
-                                                void *fetch_hander_data,
-                                                size_t *in_out_size);
+typedef vs_status_e (*vs_cloud_http_request_func_t)(vs_cloud_http_method_e method,
+                                                    const char *url,
+                                                    const char *request_body,
+                                                    size_t request_body_size,
+                                                    char *out_data,
+                                                    vs_fetch_handler_cb_t fetch_handler,
+                                                    void *hander_data,
+                                                    size_t *in_out_size);
 
 /** Cloud implementation */
 typedef struct {
-    vs_cloud_http_get_func_t http_get; /**< Callback for GET request processing */
+    vs_cloud_http_request_func_t http_request; /**< Callback for GET request processing */
 } vs_cloud_impl_t;
 
 /** Fetch and store Firmware

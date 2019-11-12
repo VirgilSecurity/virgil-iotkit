@@ -203,4 +203,18 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
                                         uint8_t *raw_signature,
                                         uint16_t buf_sz);
 
+/** Convert a nist256 signature from a raw format to virgil format
+ *
+ * \param[in] raw_signature Pointer to the signature in raw format. Cannot be NULL.
+ * \param[in] virgil_sign Pointer to the signature in virgil format. Cannot be NULL.
+ * \param[in] buf_sz Size of buffer for raw signature
+ * \param[out] virgil_sign_sz Pointer to size of the signature in virgil format. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                        uint8_t *virgil_sign,
+                                        uint16_t buf_sz,
+                                        uint16_t *virgil_sign_sz);
 #endif // VS_HSM_HELPERS_H_
