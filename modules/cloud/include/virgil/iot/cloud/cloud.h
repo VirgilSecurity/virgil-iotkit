@@ -32,25 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-// TODO : finish description !!!
 /*! \file cloud.h
  * \brief Cloud implementation
  *
- * Cloud library is used for the goals listed below :
+ * Cloud is a library that implements functions for communication with the Cloud and is used for the following :
  * - obtaining credentials from thing service
- * - connecting to message bin broker over MQTT and subscribing list of topics
- * - processing received messages over message bin
+ * - connecting to message bin broker over MQTT and subscribing to the list of topics
+ * - processing messages received over message bin
  * - downloading firmware images and trust list files from cloud storage
  *
- * Virgil IoT SDK provides MQTT implementation based on AWS IoT library
+ * Virgil IoT SDK provides MQTT implementation based on AWS IoT library.
  *
  * \section cloud_usage Cloud Usage
  *
- *  Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
- * service using #vs_cloud_http_get_func_t and connect to broker using #vs_cloud_mb_connect_subscribe_func_t. Then it
- * waits for new messages periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
- * about new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for raw
- * data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler Cloud library uses
+ * Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
+ * service using #vs_cloud_http_get_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t. Then it
+ * waits for new messages, periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for events
+ * of new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for raw
+ * data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud library uses
  * provision and firmware modules, which must be initialized before.
  *
  *  Here you can see an example of Cloud library initialization :
@@ -87,7 +86,7 @@
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
  * #vs_softhsm_impl() for \a hsm_impl.
  *
- * \a fw_topic_process receives URL, where it can fetch a new version of Firmware.
+ * \a fw_topic_process receives an URL that can be used to fetch a new version of Firmware.
  * See \ref firmware_usage for details.
  *
  *  Here you can see an example of Cloud library usage:
@@ -146,6 +145,7 @@
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
+/** Length of the update URL string */
 #define VS_UPD_URL_STR_SIZE 200
 
 // TODO : contents must be const
@@ -166,10 +166,9 @@ typedef enum {
     VS_CLOUD_REQUEST_POST /**< HTTP request by POST method */
 } vs_cloud_http_method_e;
 
-// TODO : hander_data ==> handler_data
-// TODO : it looks like hander_data is for CURL call
-
 /** Callback for GET and POST requests processing
+ *
+ * This function callback loads requested data and stores it in the \a out_data output buffer.
  *
  * \param[in] method HTTP method, which will be performed
  * \param[in] url URL for data download. Must not be NULL.
@@ -241,7 +240,7 @@ typedef enum {
 // TODO : rename p_data to data
 /** Callback for custom topics processing
  *
- * This callback has to process messages from topics as raw data.
+ * This callback processes messages from topics as raw data.
  *
  * \param[in] topic Topic name. Cannot be NULL.
  * \param[in] topic_sz Topic name size. Cannot be zero.
@@ -255,11 +254,11 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
 
 /** Callback for default topics processing
  *
- * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this callback when received
+ * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this callback when receives
  * a notification about a new version of Trust List or Firmware
  * to load data for this topic.
  *
- * \param[in] url URL where from user can fetch a new version of file.
+ * \param[in] url URL where user can fetch a new version of file.
  * \param[in] length Topic URL size.
  */
 typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint16_t length);
@@ -280,7 +279,7 @@ vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
 /** Register custom handler callback
  *
  * Registers custom topics processing.
- * You can use #vs_cloud_message_bin_register_default_handler() if it is enough default topics processing.
+ * You can use #vs_cloud_message_bin_register_default_handler() if it is enough for your default topics processing.
  *
  * \param[in] handler Custom topics processing handler. Must not be NULL.
  *
@@ -291,9 +290,9 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
 
 /** Message bin initialization
  *
- * This callback must initialize MQTT with specified URL and certificates.
+ * This callback initializes MQTT with specified URL and certificates.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function pointed by \a init member for an example.
+ * Virgil IoT SDK library. You can analyze function which \a init member points to for an example.
  *
  * \param[in] host Host URL. Must not be NULL.
  * \param[in] port Port for host access.
@@ -309,11 +308,11 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
                                                const char *priv_key,
                                                const char *ca_cert);
 
-/** Message bin connection and topic subscribing implementation
+/** Message bin connection and subscription to topic implementation
  *
- * This callback must connect to the message bin broker and subscribe topics.
+ * This callback connects to the message bin broker and subscribes to topics.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function pointed by \a connect_subscribe member for an example.
+ * Virgil IoT SDK library. You can analyze function which \a connect_subscribe member points to for an example.
  *
  * \param[in] client_id Client identifier. Cannot be NULL.
  * \param[in] login Login. Cannot be NULL.
@@ -333,7 +332,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
  *
  * Callback for message bin processing.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function pointed by \a process member for an example.
+ * Virgil IoT SDK library. You can analyze function which \a process member points to for an example.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
