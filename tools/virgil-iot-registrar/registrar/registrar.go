@@ -49,18 +49,12 @@ import (
 	"time"
 
 	"gopkg.in/urfave/cli.v2"
-	"gopkg.in/virgil.v5/cryptoapi"
-	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
-var (
-	crypto = virgil_crypto_go.NewVirgilCrypto()
-)
+const registrationEP  = "/things/card/iot"
 
 type cardsRegistrar struct {
-	dataFile             string                // file with card requests
-	filePrivateKey       cryptoapi.PrivateKey  // private key for file decryption
-	filePublicSenderKey  cryptoapi.PublicKey   // public key of file sender to verify signature
+	dataFile             string             // file with card requests
 	cardService          *cardsServiceInfo
 	failedRequestsFile   string
 
@@ -71,13 +65,12 @@ type cardsRegistrar struct {
 }
 
 type cardsServiceInfo struct {
-	RegistrationUrl      string  // url on which card requests will be send
+	ApiUrl               string
 	AppToken             string  // application token used for authorization on service
 }
 
 func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	var param string
-	var err error
 
 	registrar := new(cardsRegistrar)
 	// data
@@ -89,35 +82,18 @@ func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
 	// file for requests which failed to be registered
 	registrar.failedRequestsFile = filepath.Join(filepath.Dir(registrar.dataFile), "card_requests_failed.txt")
 
-	// file_key
-	if param = context.String("file_key"); param == "" {
-		return nil, cli.Exit("Private key for file decryption doesn't specified.", 1)
-	}
-	registrar.filePrivateKey, err = importPrivateKey(param, context.String("file_key_pass"))
-	if err != nil {
-		return nil, err
-	}
-	// file_sender_key
-	if param = context.String("file_sender_key"); param == "" {
-		return nil, cli.Exit("File with public key of data sender doesn't specified.", 1)
-	}
-	registrar.filePublicSenderKey, err = importPublicKey(param)
-	if err != nil {
-		return nil, err
-	}
-
 	// Fill cardsServiceInfo struct
 	cardsService := new(cardsServiceInfo)
-	// app_id
+	// app_token
 	if param = context.String("app_token"); param == "" {
 		return nil, cli.Exit("Virgil application token does't specified.", 1)
 	}
 	cardsService.AppToken = param
-	// registration_url
-	if param = context.String("registration_url"); param == "" {
+	// api_url
+	if param = context.String("api_url"); param == "" {
 		return nil, cli.Exit("URL used for Cards registration does't specified.", 1)
 	}
-	cardsService.RegistrationUrl = param
+	cardsService.ApiUrl = param
 
 	registrar.cardService = cardsService
 
@@ -142,29 +118,20 @@ func (r *cardsRegistrar) ProcessRequests() error {
 	for requestNumber := 1; ; requestNumber++ {
 		lineNumber := requestNumber - 1
 
-		// Get encrypted request line from file
-		encryptedRequest, err := getRequest()
+		// Get request line from file
+		requestB64, err := getRequest()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			return err // failed to read line from file - exit immediately
 		}
-
-		// Decrypt then verify request
-		fmt.Println("\nProcessing request number", requestNumber)
-		decryptedRequest, err := r.decryptThenVerifyRequest(encryptedRequest)
-		if err != nil {
-			r.processError(err, lineNumber)
-			r.failedRequests = append(r.failedRequests, encryptedRequest)
-			continue
-		}
-		fmt.Println("Input: ", decryptedRequest)
+		fmt.Println("Input: ", requestB64)
 
 		// Register card
-		if err := r.registerCard(decryptedRequest); err != nil {
+		if err := r.registerCard(requestB64); err != nil {
 			r.processError(err, lineNumber)
-			r.failedRequests = append(r.failedRequests, encryptedRequest)
+			r.failedRequests = append(r.failedRequests, requestB64)
 			continue
 		}
 	}
@@ -205,28 +172,16 @@ func (r *cardsRegistrar) requestProvider(f *os.File) (func() (string, error), er
 	}, nil
 }
 
-func (r *cardsRegistrar) decryptThenVerifyRequest(request string) (string, error) {
-	data, err := base64.StdEncoding.DecodeString(request)
-	if err != nil {
-		return "", fmt.Errorf("b64 decode error: %s, line: %s", err, request)
-	}
-	decryptedData, err := crypto.DecryptThenVerify(data, r.filePrivateKey, r.filePublicSenderKey)
-	if err != nil {
-		return "", fmt.Errorf("DecryptThenVerify error: %s", err)
-	}
-	return string(decryptedData), nil
-}
-
-func (r *cardsRegistrar) registerCard(decryptedRequest string) error {
+func (r *cardsRegistrar) registerCard(requestB64 string) error {
 	// Decode base 64
-	cardRequest, err := base64.StdEncoding.DecodeString(decryptedRequest)
+	cardRequest, err := base64.StdEncoding.DecodeString(requestB64)
 	if err != nil {
 		return fmt.Errorf("failed to decode b64 request string: %v", err)
 	}
 
 	// Prepare request
 	sendBytes := bytes.NewBuffer(cardRequest)
-	req, err := http.NewRequest("POST", r.cardService.RegistrationUrl, sendBytes)
+	req, err := http.NewRequest("POST", r.cardService.ApiUrl + registrationEP, sendBytes)
 	req.Header.Set("AppToken", r.cardService.AppToken)
 
 	// Send
@@ -260,7 +215,7 @@ func (r *cardsRegistrar) saveFailedRequests() error {
 	}
 	defer file.Close()
 
-	// Write failed requests (encrypted) to file
+	// Write failed requests to file
 	for _, request := range r.failedRequests {
 		if _, err := fmt.Fprint(file, request); err != nil {
 			return fmt.Errorf("failed to write failed request to file: %v", err)
@@ -268,40 +223,4 @@ func (r *cardsRegistrar) saveFailedRequests() error {
 	}
 
 	return nil
-}
-
-func importPrivateKey(keyPath string, keyPass string) (cryptoapi.PrivateKey, error) {
-	keyBytes, err := getKeyFileBytes(keyPath)
-	if err != nil {
-		return nil, err
-	}
-	key, err := crypto.ImportPrivateKey(keyBytes, keyPass)
-	if err != nil {
-		return nil, fmt.Errorf("failed to import private key %s: %v", keyPath, err)
-	}
-
-	return key, nil
-}
-
-func importPublicKey(keyPath string) (cryptoapi.PublicKey, error) {
-	keyBytes, err := getKeyFileBytes(keyPath)
-	if err != nil {
-		return nil, err
-	}
-	key, err := crypto.ImportPublicKey(keyBytes)
-	if err != nil {
-		return nil, fmt.Errorf("failed to import public key %s: %v", keyPath, err)
-	}
-
-	return key, nil
-}
-
-
-func getKeyFileBytes(keyPath string) ([]byte, error){
-	cleanPath := filepath.Clean(keyPath)
-	fileKeyBytes, err := ioutil.ReadFile(cleanPath)
-	if err != nil {
-		return nil, fmt.Errorf("can`t read key (%s): %s", cleanPath, err)
-	}
-	return fileKeyBytes, nil
 }
