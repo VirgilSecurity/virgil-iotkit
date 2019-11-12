@@ -78,6 +78,11 @@ func main()  {
             Aliases: []string{"d"},
             Usage:   "Model",
         },
+        &cli.IntFlag{
+            Name:    "chunk-size",
+            Aliases: []string{"k"},
+            Usage:   "Chunk size",
+        },
     }
 
     app := &cli.App{
@@ -152,6 +157,9 @@ func signerFunc(context *cli.Context) (err error) {
         return fmt.Errorf("--model isn't specified")
     }
     signerUtil.Model = model
+
+    // --chunk-size
+    signerUtil.ChunkSize = context.Int("chunk-size")
 
     // Sign
     err = signerUtil.CreateSignedFirmware()
