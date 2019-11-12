@@ -103,9 +103,9 @@ var menudata={children:[
 {text:"Enumerations",url:"globals_enum.html"},
 {text:"Enumerator",url:"globals_eval.html",children:[
 {text:"j",url:"globals_eval.html#index_j"},
-{text:"t",url:"globals_eval.html#index_t"},
-{text:"v",url:"globals_eval.html#index_v"},
-{text:"w",url:"globals_eval.html#index_w"}]},
+{text:"t",url:"globals_eval_t.html#index_t"},
+{text:"v",url:"globals_eval_v.html#index_v"},
+{text:"w",url:"globals_eval_w.html#index_w"}]},
 {text:"Macros",url:"globals_defs.html",children:[
 {text:"_",url:"globals_defs.html#index__5F"},
 {text:"a",url:"globals_defs.html#index_a"},

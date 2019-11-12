@@ -138,6 +138,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a352feac38ab5ffa707d11098eb95d6d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__helpers_8h.html#a352feac38ab5ffa707d11098eb95d6d8">vs_hsm_virgil_secp256_signature_to_tiny</a> (const uint8_t *virgil_sign, uint16_t virgil_sign_sz, uint8_t *raw_signature, uint16_t buf_sz)</td></tr>
 <tr class="memdesc:a352feac38ab5ffa707d11098eb95d6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a NIST256 signature from a virgil format to raw.  <a href="hsm__helpers_8h.html#a352feac38ab5ffa707d11098eb95d6d8">More...</a><br /></td></tr>
 <tr class="separator:a352feac38ab5ffa707d11098eb95d6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e96ce02af3ad7de1b65e54dd0d9504f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__helpers_8h.html#a7e96ce02af3ad7de1b65e54dd0d9504f">vs_hsm_tiny_secp256_signature_to_virgil</a> (const uint8_t raw_signature[<a class="el" href="hsm__helpers_8h.html#a00a8b44eeba592a897c8b9e4d99b3c3c">VS_SIGNATURE_SECP256_LEN</a>], uint8_t *virgil_sign, uint16_t buf_sz, uint16_t *virgil_sign_sz)</td></tr>
+<tr class="memdesc:a7e96ce02af3ad7de1b65e54dd0d9504f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a nist256 signature from a raw format to virgil format.  <a href="hsm__helpers_8h.html#a7e96ce02af3ad7de1b65e54dd0d9504f">More...</a><br /></td></tr>
+<tr class="separator:a7e96ce02af3ad7de1b65e54dd0d9504f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>HSM helper functions. </p>
@@ -491,6 +494,58 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Key pair description in static buffer </dd></dl>
+
+</div>
+</div>
+<a id="a7e96ce02af3ad7de1b65e54dd0d9504f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e96ce02af3ad7de1b65e54dd0d9504f">&#9670;&nbsp;</a></span>vs_hsm_tiny_secp256_signature_to_virgil()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a> vs_hsm_tiny_secp256_signature_to_virgil </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>raw_signature</em>[VS_SIGNATURE_SECP256_LEN], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>virgil_sign</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>buf_sz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t *&#160;</td>
+          <td class="paramname"><em>virgil_sign_sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a nist256 signature from a raw format to virgil format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">raw_signature</td><td>Pointer to the signature in raw format. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in virgil format. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">buf_sz</td><td>Size of buffer for raw signature </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">virgil_sign_sz</td><td>Pointer to size of the signature in virgil format. Cannot be NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>
 </div>

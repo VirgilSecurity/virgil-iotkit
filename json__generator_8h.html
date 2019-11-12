@@ -179,8 +179,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a5f612558d19481da1f5044a903b17ba7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="json__generator_8h.html#a5f612558d19481da1f5044a903b17ba7">json_close_array</a> (struct <a class="el" href="structjson__str.html">json_str</a> *jptr)</td></tr>
 <tr class="memdesc:a5f612558d19481da1f5044a903b17ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close a JSON array.  <a href="json__generator_8h.html#a5f612558d19481da1f5044a903b17ba7">More...</a><br /></td></tr>
 <tr class="separator:a5f612558d19481da1f5044a903b17ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac50f08baa0504ba201699670fa8dec88"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="json__generator_8h.html#ac50f08baa0504ba201699670fa8dec88">json_cli_init</a> (void)</td></tr>
-<tr class="separator:ac50f08baa0504ba201699670fa8dec88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a250fa3471d0b46a45f68a6f7f20fd8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="json__generator_8h.html#a8a250fa3471d0b46a45f68a6f7f20fd8">json_set_array_value</a> (struct <a class="el" href="structjson__str.html">json_str</a> *jptr, char *str, int value, float val, <a class="el" href="json__generator_8h.html#a914b6da7b1da8584f7c44f8c20738e4f">json_data_types</a> data)</td></tr>
 <tr class="separator:a8a250fa3471d0b46a45f68a6f7f20fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -821,24 +819,6 @@ Usage</h1>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ac50f08baa0504ba201699670fa8dec88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac50f08baa0504ba201699670fa8dec88">&#9670;&nbsp;</a></span>json_cli_init()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int json_cli_init </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a5f612558d19481da1f5044a903b17ba7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f612558d19481da1f5044a903b17ba7">&#9670;&nbsp;</a></span>json_close_array()</h2>
 
@@ -1292,7 +1272,7 @@ WM_SUCCESS if operation successful. </dd></dl>
 <div class="ttc" id="ajson__generator_8h_html_aaa5bdf0a950ba686a320e17a25a9e994"><div class="ttname"><a href="json__generator_8h.html#aaa5bdf0a950ba686a320e17a25a9e994">json_start_object</a></div><div class="ttdeci">int json_start_object(struct json_str *jptr)</div><div class="ttdoc">Start a new JSON object.</div></div>
 <div class="ttc" id="ajson__generator_8h_html_afb0dd859c33ffc0a8707fd87fbe4d1b5"><div class="ttname"><a href="json__generator_8h.html#afb0dd859c33ffc0a8707fd87fbe4d1b5">json_pop_object</a></div><div class="ttdeci">#define json_pop_object(jptr)</div><div class="ttdoc">Close a composite object.</div><div class="ttdef"><b>Definition:</b> json_generator.h:175</div></div>
 <div class="ttc" id="ajson__generator_8h_html_ac70039a59d316033eae28e067dff2081"><div class="ttname"><a href="json__generator_8h.html#ac70039a59d316033eae28e067dff2081">json_push_object</a></div><div class="ttdeci">int json_push_object(struct json_str *jptr, const char *name)</div><div class="ttdoc">Start a new composite object.</div></div>
-<div class="ttc" id="ajson__generator_8h_html_a54dcf2b53be9d85fb17f53899d83060e"><div class="ttname"><a href="json__generator_8h.html#a54dcf2b53be9d85fb17f53899d83060e">json_set_array_int</a></div><div class="ttdeci">#define json_set_array_int(jptr, val)</div><div class="ttdoc">Create an integer array element.</div><div class="ttdef"><b>Definition:</b> json_generator.h:381</div></div>
+<div class="ttc" id="ajson__generator_8h_html_a54dcf2b53be9d85fb17f53899d83060e"><div class="ttname"><a href="json__generator_8h.html#a54dcf2b53be9d85fb17f53899d83060e">json_set_array_int</a></div><div class="ttdeci">#define json_set_array_int(jptr, val)</div><div class="ttdoc">Create an integer array element.</div><div class="ttdef"><b>Definition:</b> json_generator.h:378</div></div>
 <div class="ttc" id="ajson__generator_8h_html_ad85c0089dc361354be804af0994e7be5"><div class="ttname"><a href="json__generator_8h.html#ad85c0089dc361354be804af0994e7be5">json_push_array_object</a></div><div class="ttdeci">int json_push_array_object(struct json_str *jptr, const char *name)</div><div class="ttdoc">Start a JSON array object.</div></div>
 <div class="ttc" id="ajson__generator_8h_html_af4341cf2a39c9b45acc84f7bf3e32b18"><div class="ttname"><a href="json__generator_8h.html#af4341cf2a39c9b45acc84f7bf3e32b18">json_set_val_str</a></div><div class="ttdeci">#define json_set_val_str(jptr, name, val)</div><div class="ttdoc">Create a key with a string value.</div><div class="ttdef"><b>Definition:</b> json_generator.h:237</div></div>
 <div class="ttc" id="ajson__generator_8h_html_a9fd295ec968fa0bffa9f4ad223cf0f90"><div class="ttname"><a href="json__generator_8h.html#a9fd295ec968fa0bffa9f4ad223cf0f90">json_str_init</a></div><div class="ttdeci">void json_str_init(struct json_str *jptr, char *buff, int len)</div><div class="ttdoc">Initialize the JSON generator.</div></div>

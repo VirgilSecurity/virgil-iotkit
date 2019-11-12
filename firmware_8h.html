@@ -101,7 +101,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac5c4fef2832bd0c3c545b86922fa15bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize firmware.  <a href="firmware_8h.html#ac5c4fef2832bd0c3c545b86922fa15bd">More...</a><br /></td></tr>
 <tr class="separator:ac5c4fef2832bd0c3c545b86922fa15bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76c382b9c9dfae6a1dee864a4e5e4979"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#a76c382b9c9dfae6a1dee864a4e5e4979">vs_firmware_deinit</a> (void)</td></tr>
-<tr class="memdesc:a76c382b9c9dfae6a1dee864a4e5e4979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys firmware.  <a href="firmware_8h.html#a76c382b9c9dfae6a1dee864a4e5e4979">More...</a><br /></td></tr>
+<tr class="memdesc:a76c382b9c9dfae6a1dee864a4e5e4979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy firmware.  <a href="firmware_8h.html#a76c382b9c9dfae6a1dee864a4e5e4979">More...</a><br /></td></tr>
 <tr class="separator:a76c382b9c9dfae6a1dee864a4e5e4979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab76d1095de1268f0d7e5e6f2cb0335cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#ab76d1095de1268f0d7e5e6f2cb0335cc">vs_firmware_save_firmware_chunk</a> (const <a class="el" href="structvs__firmware__descriptor__t.html">vs_firmware_descriptor_t</a> *descriptor, const uint8_t *chunk, size_t chunk_sz, size_t offset)</td></tr>
 <tr class="memdesc:ab76d1095de1268f0d7e5e6f2cb0335cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save firmware data.  <a href="firmware_8h.html#ab76d1095de1268f0d7e5e6f2cb0335cc">More...</a><br /></td></tr>
@@ -143,29 +143,43 @@ Functions</h2></td></tr>
 <tr class="memdesc:abdbe6f807c03783df81b5581e2553835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get expected footer length.  <a href="firmware_8h.html#abdbe6f807c03783df81b5581e2553835">More...</a><br /></td></tr>
 <tr class="separator:abdbe6f807c03783df81b5581e2553835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39193f69c2067a1673ffdf85ea7a71ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structvs__update__interface__t.html">vs_update_interface_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff">vs_firmware_update_ctx</a> (void)</td></tr>
-<tr class="memdesc:a39193f69c2067a1673ffdf85ea7a71ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return update interface.  <a href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff">More...</a><br /></td></tr>
+<tr class="memdesc:a39193f69c2067a1673ffdf85ea7a71ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return Update interface.  <a href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff">More...</a><br /></td></tr>
 <tr class="separator:a39193f69c2067a1673ffdf85ea7a71ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb029f921e8e8008c76e44bcb28bc087"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">vs_firmware_update_file_type</a> (void)</td></tr>
-<tr class="memdesc:abb029f921e8e8008c76e44bcb28bc087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return update file type.  <a href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">More...</a><br /></td></tr>
+<tr class="memdesc:abb029f921e8e8008c76e44bcb28bc087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return file type for Update library.  <a href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">More...</a><br /></td></tr>
 <tr class="separator:abb029f921e8e8008c76e44bcb28bc087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97e6767e8ba7a563860a1a5ffcf2e706"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#a97e6767e8ba7a563860a1a5ffcf2e706">vs_firmware_ntoh_descriptor</a> (<a class="el" href="structvs__firmware__descriptor__t.html">vs_firmware_descriptor_t</a> *desc)</td></tr>
-<tr class="memdesc:a97e6767e8ba7a563860a1a5ffcf2e706"><td class="mdescLeft">&#160;</td><td class="mdescRight">ntoh convertor for descriptor  <a href="firmware_8h.html#a97e6767e8ba7a563860a1a5ffcf2e706">More...</a><br /></td></tr>
+<tr class="memdesc:a97e6767e8ba7a563860a1a5ffcf2e706"><td class="mdescLeft">&#160;</td><td class="mdescRight">ntoh conversion for descriptor  <a href="firmware_8h.html#a97e6767e8ba7a563860a1a5ffcf2e706">More...</a><br /></td></tr>
 <tr class="separator:a97e6767e8ba7a563860a1a5ffcf2e706"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af687baa6867c86d57e876714f61591cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#af687baa6867c86d57e876714f61591cb">vs_firmware_ntoh_header</a> (<a class="el" href="structvs__firmware__header__t.html">vs_firmware_header_t</a> *header)</td></tr>
-<tr class="memdesc:af687baa6867c86d57e876714f61591cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">ntoh convertor for header  <a href="firmware_8h.html#af687baa6867c86d57e876714f61591cb">More...</a><br /></td></tr>
+<tr class="memdesc:af687baa6867c86d57e876714f61591cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">ntoh conversion for header  <a href="firmware_8h.html#af687baa6867c86d57e876714f61591cb">More...</a><br /></td></tr>
 <tr class="separator:af687baa6867c86d57e876714f61591cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af270dac42ba44534dfb03b13ad36bc98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#af270dac42ba44534dfb03b13ad36bc98">vs_firmware_hton_descriptor</a> (<a class="el" href="structvs__firmware__descriptor__t.html">vs_firmware_descriptor_t</a> *desc)</td></tr>
-<tr class="memdesc:af270dac42ba44534dfb03b13ad36bc98"><td class="mdescLeft">&#160;</td><td class="mdescRight">hton convertor for descriptor  <a href="firmware_8h.html#af270dac42ba44534dfb03b13ad36bc98">More...</a><br /></td></tr>
+<tr class="memdesc:af270dac42ba44534dfb03b13ad36bc98"><td class="mdescLeft">&#160;</td><td class="mdescRight">hton conversion for descriptor  <a href="firmware_8h.html#af270dac42ba44534dfb03b13ad36bc98">More...</a><br /></td></tr>
 <tr class="separator:af270dac42ba44534dfb03b13ad36bc98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4aa665efbe2d8ca41401606ac11876d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="firmware_8h.html#ae4aa665efbe2d8ca41401606ac11876d">vs_firmware_hton_header</a> (<a class="el" href="structvs__firmware__header__t.html">vs_firmware_header_t</a> *header)</td></tr>
-<tr class="memdesc:ae4aa665efbe2d8ca41401606ac11876d"><td class="mdescLeft">&#160;</td><td class="mdescRight">hton convertor for header  <a href="firmware_8h.html#ae4aa665efbe2d8ca41401606ac11876d">More...</a><br /></td></tr>
+<tr class="memdesc:ae4aa665efbe2d8ca41401606ac11876d"><td class="mdescLeft">&#160;</td><td class="mdescRight">hton conversion for header  <a href="firmware_8h.html#ae4aa665efbe2d8ca41401606ac11876d">More...</a><br /></td></tr>
 <tr class="separator:ae4aa665efbe2d8ca41401606ac11876d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Firmware uploading/downloading and installation implementation. </p>
-<p>Firmware library is used to save firmware by gateway for different devices and downloading, installing them by client.</p>
-<h1><a class="anchor" id="firmware_usage"></a>
-Firmware Usage</h1>
+<p>Gateway uses Firmware library to save firmware for different devices and downloading. Thing uses Firmware library to delete, verify and install firmware obtained from Gateway.</p>
+<h1><a class="anchor" id="firmware_usage_gateway"></a>
+Firmware Usage by Gateway</h1>
+<h1><a class="anchor" id="firmware_usage_thing"></a>
+Firmware Usage by Thing</h1>
+<p>All Firmware functionality for Thing is implemented by Virgil IoT SDK. User needs only to initialize Firmware library and to destroy it at the end. See code example below :</p>
+<div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> fw_storage_impl;    <span class="comment">// Firmware storage implementation</span></div>
+<div class="line"><a class="code" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm_impl = NULL;         <span class="comment">// Security module implementation</span></div>
+<div class="line"><a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a> manufacture_id = {0};   <span class="comment">// Manufacture ID</span></div>
+<div class="line"><a class="code" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">vs_device_type_t</a> device_type = {0};                <span class="comment">// Device type</span></div>
+<div class="line"> </div>
+<div class="line">hsm_impl = <a class="code" href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d">vs_softhsm_impl</a>(&amp;slots_storage_impl);   <span class="comment">// Use Software Security Module</span></div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="firmware_8h.html#ac5c4fef2832bd0c3c545b86922fa15bd">vs_firmware_init</a>(&amp;fw_storage_impl, hsm_impl, manufacture_id, device_type), <span class="stringliteral">&quot;Unable to initialize Firmware module&quot;</span>);</div>
+</div><!-- fragment --><p>Firmware storage implementation <em>fw_storage_impl</em> initialization is described in <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> section.</p>
+<p>Security module implementation <em>hsm_impl</em> initialization is described in <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> section. You can use software security module <a class="el" href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d" title="Initialize software crypto implementation.">vs_softhsm_impl()</a> as it is done in this example.</p>
+<p><em>manufacture_id</em>, <em>device_type</em> are device unique characteristic and can be initialized by compile time constants. See <a class="el" href="provision-structs_8h.html#provision_structures_usage">Provision structure usage</a> for details </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a64bf6e5bd9c3ca95e73d1f4701ea1b10"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a64bf6e5bd9c3ca95e73d1f4701ea1b10">&#9670;&nbsp;</a></span>vs_firmware_compare_own_version()</h2>
@@ -184,6 +198,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Compare own version with given one. </p>
+<p>Things automatically compares its own version with <em>new_descriptor</em> one.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL.</td></tr>
@@ -210,7 +226,8 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Destroys firmware. </p>
+<p>Destroy firmware. </p>
+<p>Destroys Firmware library. Has to be executed before application finish. </p>
 
 </div>
 </div>
@@ -231,6 +248,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Delete firmware. </p>
+<p>Thing automatically deletes firmware in case of errorneous data.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL.</td></tr>
@@ -274,11 +293,12 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Describe version. </p>
+<p>Makes ASCIIZ description of firmware.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fw_ver</td><td><a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> File version. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">buffer</td><td>Output buffer. Must not be NULL. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">[int]</td><td>buf_size Buffer size. Must not be zero.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">buf_size</td><td>Buffer size. Must not be zero.</td></tr>
   </table>
   </dd>
 </dl>
@@ -303,6 +323,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Get expected footer length. </p>
+<p>This call returns firmware footer length.</p>
+<dl class="section return"><dt>Returns</dt><dd>Firmware length in bytes </dd></dl>
 
 </div>
 </div>
@@ -323,6 +345,7 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Get own firmware descriptor. </p>
+<p>Gets own firmware description by both Gateway and Thing.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> Output own firmware descriptor. Must not be NULL.</td></tr>
@@ -349,7 +372,9 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>hton convertor for descriptor </p>
+<p>hton conversion for descriptor </p>
+<p>This call makes host-to-network firmware descriptor conversion.</p>
+<dl class="section warning"><dt>Warning</dt><dd>This call changes <em>desc</em> input parameter.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">desc</td><td>firmware descriptor. Must not be NULL. </td></tr>
@@ -375,10 +400,12 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>hton convertor for header </p>
+<p>hton conversion for header </p>
+<p>This call makes host-to-network firmware header conversion.</p>
+<dl class="section warning"><dt>Warning</dt><dd>This call changes <em>desc</em> input parameter.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">header</td><td>firmware header. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">desc</td><td>firmware descriptor. Must not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -424,6 +451,7 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Initialize firmware. </p>
+<p>Firmware initialization has to be done before first Firmware calls.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td><a class="el" href="structvs__storage__op__ctx__t.html" title="Storage element context.">vs_storage_op_ctx_t</a> storage context. Must not be NULL. </td></tr>
@@ -454,6 +482,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Install firmware. </p>
+<p>Thing automatically installs firmware in case of successful verification.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL.</td></tr>
@@ -509,6 +539,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Load firmware data. </p>
+<p>Gateway loads a chunk of data to send it to Thing.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL. </td></tr>
@@ -556,6 +588,7 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Load firmware descriptor. </p>
+<p>Gets firmware descriptor for specified manufacture and device type.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">manufacture_id</td><td>Manufactured ID. </td></tr>
@@ -607,6 +640,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Load firmware footer. </p>
+<p>Gateway loads firmware footer to send it to Thing.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL. </td></tr>
@@ -636,7 +671,9 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>ntoh convertor for descriptor </p>
+<p>ntoh conversion for descriptor </p>
+<p>This call makes network-to-host firmware descriptor conversion.</p>
+<dl class="section warning"><dt>Warning</dt><dd>This call changes <em>desc</em> input parameter.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">desc</td><td>firmware descriptor. Must not be NULL. </td></tr>
@@ -662,10 +699,12 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>ntoh convertor for header </p>
+<p>ntoh conversion for header </p>
+<p>This call makes network-to-host firmware header conversion.</p>
+<dl class="section warning"><dt>Warning</dt><dd>This call changes <em>desc</em> input parameter.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">header</td><td>firmware header. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">desc</td><td>firmware descriptor. Must not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -711,6 +750,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Save firmware data. </p>
+<p>Gateway saves a chunk of data received from Cloud. Thing automatically saves a chunk of data received from Gateway.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL. </td></tr>
@@ -778,6 +819,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Save firmware footer. </p>
+<p>Gateway saves firmware footer received from Cloud. Thing automatically saves footer firmware received from Gateway.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL. </td></tr>
@@ -805,7 +848,9 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Return update interface. </p>
+<p>Return Update interface. </p>
+<p>This call returns Update implementation. It is used for Update calls.</p>
+<dl class="section return"><dt>Returns</dt><dd>Update interface implementation </dd></dl>
 
 </div>
 </div>
@@ -825,7 +870,9 @@ Firmware Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Return update file type. </p>
+<p>Return file type for Update library. </p>
+<p>This call returns file type information fro Update library. It is used for Update calls.</p>
+<dl class="section return"><dt>Returns</dt><dd>File type information for Update library </dd></dl>
 
 </div>
 </div>
@@ -846,6 +893,8 @@ Firmware Usage</h1>
 </div><div class="memdoc">
 
 <p>Verify firmware. </p>
+<p>Gateway verifies firmware received from Cloud. Thing verifies firmware before its installation.</p>
+<p>See <a class="el" href="firmware_8h.html#firmware_usage_gateway">Firmware Usage by Gateway</a> for data flow details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">descriptor</td><td><a class="el" href="structvs__firmware__descriptor__t.html" title="Firmware descriptor.">vs_firmware_descriptor_t</a> firmware descriptor. Must not be NULL.</td></tr>
@@ -857,6 +906,13 @@ Firmware Usage</h1>
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">&quot;Manufacture ID&quot; type</div><div class="ttdef"><b>Definition:</b> provision-structs.h:75</div></div>
+<div class="ttc" id="astructvs__hsm__impl__t_html"><div class="ttname"><a href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a></div><div class="ttdoc">HSM implementation.</div><div class="ttdef"><b>Definition:</b> hsm.h:490</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
+<div class="ttc" id="afirmware_8h_html_ac5c4fef2832bd0c3c545b86922fa15bd"><div class="ttname"><a href="firmware_8h.html#ac5c4fef2832bd0c3c545b86922fa15bd">vs_firmware_init</a></div><div class="ttdeci">vs_status_e vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type)</div><div class="ttdoc">Initialize firmware.</div></div>
+<div class="ttc" id="avs-softhsm_8h_html_a69e91d29efbec80562216d03aba4e60d"><div class="ttname"><a href="vs-softhsm_8h.html#a69e91d29efbec80562216d03aba4e60d">vs_softhsm_impl</a></div><div class="ttdeci">vs_hsm_impl_t * vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl)</div><div class="ttdoc">Initialize software crypto implementation.</div></div>
+<div class="ttc" id="aprovision-structs_8h_html_a608e891eb73f54baf5fc0e63b34d91d2"><div class="ttname"><a href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">vs_device_type_t</a></div><div class="ttdeci">uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE]</div><div class="ttdoc">&quot;Device type&quot; type</div><div class="ttdef"><b>Definition:</b> provision-structs.h:80</div></div>
+<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:198</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

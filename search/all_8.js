@@ -14,5 +14,5 @@ var searchData=
   ['hsm_5fiotelic_2eh_104',['hsm_iotelic.h',['../hsm__iotelic_8h.html',1,'']]],
   ['htonl_5fin_5fcompile_5ftime_105',['HTONL_IN_COMPILE_TIME',['../provision-structs_8h.html#abe60935d8cfe78ec7fd2aafcdec66105',1,'provision-structs.h']]],
   ['htons_5fin_5fcompile_5ftime_106',['HTONS_IN_COMPILE_TIME',['../provision-structs_8h.html#aeffdb5d6efa1355a7d8d887c86b53229',1,'provision-structs.h']]],
-  ['http_5fget_107',['http_get',['../structvs__cloud__impl__t.html#ac090d4ed933100cca365f63a839f5d70',1,'vs_cloud_impl_t']]]
+  ['http_5frequest_107',['http_request',['../structvs__cloud__impl__t.html#a627e0950859fdea6a202dcc45b9021ab',1,'vs_cloud_impl_t']]]
 ];
