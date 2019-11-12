@@ -1,10 +1,10 @@
 import io
 from typing import List
 
-from virgil_keymanager import consts
-from virgil_keymanager.core_utils import virgil_time
-from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
-from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
+from virgil_trust_provisioner import consts
+from virgil_trust_provisioner.core_utils import virgil_time
+from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
+from virgil_trust_provisioner.generators.keys.interface import KeyGeneratorInterface
 
 TL_BYTE_ORDER = 'big'
 

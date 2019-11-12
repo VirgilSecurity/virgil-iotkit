@@ -6,12 +6,12 @@ from base64 import b64encode, b64decode
 
 from PyCRC.CRCCCITT import CRCCCITT
 
-from virgil_keymanager.external_utils.atmel_dongles_controller import AtmelDonglesController
+from virgil_trust_provisioner.external_utils.atmel_dongles_controller import AtmelDonglesController
 
-from virgil_keymanager.ui import UI
+from virgil_trust_provisioner.ui import UI
 
-from virgil_keymanager.core_utils import DongleChooser, DonglesCache
-from virgil_keymanager.core_utils.config import Config
+from virgil_trust_provisioner.core_utils import DongleChooser, DonglesCache
+from virgil_trust_provisioner.core_utils.config import Config
 
 
 class KeySigner(object):
@@ -127,7 +127,7 @@ class KeySigner(object):
 
             if not self._atmel_util_path:
                 self._atmel_util_path = os.path.join(
-                    os.path.dirname(sys.modules["virgil_keymanager"].__file__),
+                    os.path.dirname(sys.modules["virgil_trust_provisioner"].__file__),
                     "external_utils",
                     "util",
                     "emulator" if self.__emulator_mode else "origin",

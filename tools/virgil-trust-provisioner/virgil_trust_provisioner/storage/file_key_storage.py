@@ -2,7 +2,7 @@ import os
 
 from PyCRC.CRCCCITT import CRCCCITT
 
-from virgil_keymanager.data_types import KeyPair, TrustList
+from virgil_trust_provisioner.data_types import KeyPair, TrustList
 
 
 class FileKeyStorage:

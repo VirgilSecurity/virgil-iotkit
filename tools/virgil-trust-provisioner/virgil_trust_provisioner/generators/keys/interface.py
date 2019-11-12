@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from virgil_keymanager import consts
+from virgil_trust_provisioner import consts
 
 
 class KeyGeneratorInterface(ABC):

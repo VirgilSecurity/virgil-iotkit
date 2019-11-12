@@ -9,7 +9,7 @@ from PyCRC.CRCCCITT import CRCCCITT
 from tinydb import Storage
 from tinydb.storages import touch
 
-from virgil_keymanager.consts import VSKeyTypeS
+from virgil_trust_provisioner.consts import VSKeyTypeS
 
 
 class SignedByteStorage(Storage):

@@ -10,23 +10,23 @@ from PyCRC.CRCCCITT import CRCCCITT
 from prettytable import PrettyTable
 from virgil_crypto import VirgilKeyPair
 
-from virgil_keymanager import consts
-from virgil_keymanager.core_utils.virgil_time import date_to_timestamp
-from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
+from virgil_trust_provisioner import consts
+from virgil_trust_provisioner.core_utils.virgil_time import date_to_timestamp
+from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
 
-from virgil_keymanager.consts.modes import ProgramModes
-from virgil_keymanager.core_utils import DonglesCache, DongleChooser, cloud_key
-from virgil_keymanager.core_utils.card_requests import CardRequestsHandler
-from virgil_keymanager.external_utils.printer_controller import PrinterController
-from virgil_keymanager.generators.trustlist import TrustListGenerator
-from virgil_keymanager.generators.keys.atmel import AtmelKeyGenerator
-from virgil_keymanager.generators.keys.virgil import VirgilKeyGenerator
-from virgil_keymanager.data_types.trustlist_type import Signature, PubKeyStructure
-from virgil_keymanager.storage import FileKeyStorage
-from virgil_keymanager.storage.db_storage import DBStorage
-from virgil_keymanager.storage.keys_tinydb_storage import KeysTinyDBStorage
-from virgil_keymanager.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
-from virgil_keymanager.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
+from virgil_trust_provisioner.consts.modes import ProgramModes
+from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key
+from virgil_trust_provisioner.core_utils.card_requests import CardRequestsHandler
+from virgil_trust_provisioner.external_utils.printer_controller import PrinterController
+from virgil_trust_provisioner.generators.trustlist import TrustListGenerator
+from virgil_trust_provisioner.generators.keys.atmel import AtmelKeyGenerator
+from virgil_trust_provisioner.generators.keys.virgil import VirgilKeyGenerator
+from virgil_trust_provisioner.data_types.trustlist_type import Signature, PubKeyStructure
+from virgil_trust_provisioner.storage import FileKeyStorage
+from virgil_trust_provisioner.storage.db_storage import DBStorage
+from virgil_trust_provisioner.storage.keys_tinydb_storage import KeysTinyDBStorage
+from virgil_trust_provisioner.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
+from virgil_trust_provisioner.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
 
 
 class UtilityManager(object):

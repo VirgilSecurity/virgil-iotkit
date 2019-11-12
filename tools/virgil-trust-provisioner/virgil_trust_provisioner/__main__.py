@@ -2,8 +2,8 @@ import os
 
 import logging
 
-from virgil_keymanager.core import Core
-from virgil_keymanager.external_entrypoints.key_signer import KeySigner
+from virgil_trust_provisioner.core import Core
+from virgil_trust_provisioner.external_entrypoints.key_signer import KeySigner
 from .external_entrypoints.db_converter import DbConverter
 
 

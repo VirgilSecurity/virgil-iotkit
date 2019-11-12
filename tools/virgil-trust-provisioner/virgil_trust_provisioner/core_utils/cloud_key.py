@@ -3,7 +3,7 @@ import http.client
 import sys
 from urllib.parse import urlparse
 
-from virgil_keymanager.consts import CLOUD_KEY_INIT_ENDPOINT, CLOUD_KEY_RECEIVE_ENDPOINT
+from virgil_trust_provisioner.consts import CLOUD_KEY_INIT_ENDPOINT, CLOUD_KEY_RECEIVE_ENDPOINT
 
 
 def init_cloud_key(context, logger, ui):

@@ -4,7 +4,7 @@ from json import JSONDecodeError
 import sys
 from typing import Union, Optional, Tuple
 
-from virgil_keymanager.core_utils.cmd_subprocess import CmdSubProcess
+from virgil_trust_provisioner.core_utils.cmd_subprocess import CmdSubProcess
 
 
 class AtmelDonglesController(object):

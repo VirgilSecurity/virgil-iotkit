@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from virgil_keymanager.consts import TIME_OFFSET
+from virgil_trust_provisioner.consts import TIME_OFFSET
 
 
 def date_to_timestamp(year: int, month: int, day: int) -> int:

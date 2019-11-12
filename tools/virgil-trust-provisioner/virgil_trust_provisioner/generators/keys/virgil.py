@@ -6,9 +6,9 @@ from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
 
-from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
-from virgil_keymanager.core_utils import VirgilSignExtractor
-from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
+from virgil_trust_provisioner.generators.keys.interface import KeyGeneratorInterface
+from virgil_trust_provisioner.core_utils import VirgilSignExtractor
+from virgil_trust_provisioner.core_utils.helpers import to_b64, b64_to_bytes
 
 
 class VirgilKeyGenerator(KeyGeneratorInterface):

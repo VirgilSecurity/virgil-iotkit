@@ -1,8 +1,8 @@
-from virgil_keymanager import __version__, __author__
+from virgil_trust_provisioner import __version__, __author__
 from setuptools import setup, find_packages
 
 setup(
-    name="virgil-trust-provisioner",
+    name="virgil_trust_provisioner",
     version=__version__,
     packages=find_packages(exclude=('tests',)),
     install_requires=[
@@ -16,7 +16,7 @@ setup(
         'tinydb'
     ],
     package_data={
-        "virgil_keymanager": [
+        "virgil_trust_provisioner": [
             "external_utils/util/origin/dongles-cli",
             "external_utils/util/emulator/dongles-cli"
         ],
@@ -24,8 +24,8 @@ setup(
     entry_points={
         'console_scripts':
             [
-                'keymanager = virgil_keymanager.__main__:main',
-                'dbconverter = virgil_keymanager.__main__:converter_main'
+                'virgil-trust-provisioner = virgil_trust_provisioner.__main__:main',
+                'virgil-dbconverter = virgil_trust_provisioner.__main__:converter_main'
             ]
     },
     author=__author__,

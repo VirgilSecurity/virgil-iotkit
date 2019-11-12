@@ -7,7 +7,7 @@ from io import BytesIO
 
 from PyCRC.CRCCCITT import CRCCCITT
 
-from virgil_keymanager.storage.tinydb_storage_extensions import SignedByteStorage
+from virgil_trust_provisioner.storage.tinydb_storage_extensions import SignedByteStorage
 
 
 class CryptoByteStorage(SignedByteStorage):

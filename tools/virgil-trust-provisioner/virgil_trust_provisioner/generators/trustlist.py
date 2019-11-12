@@ -1,5 +1,5 @@
-from virgil_keymanager import consts
-from virgil_keymanager.data_types.trustlist_type import TrustList
+from virgil_trust_provisioner import consts
+from virgil_trust_provisioner.data_types.trustlist_type import TrustList
 
 
 class TrustListGenerator(object):

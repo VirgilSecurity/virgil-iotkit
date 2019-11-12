@@ -8,10 +8,10 @@ from virgil_crypto import VirgilCrypto
 from virgil_sdk.cards import RawCardContent
 from virgil_sdk.client import RawSignedModel, RawSignature
 
-from virgil_keymanager.consts import CARD_REGISTRATION_ENDPOINT, VSKeyTypeS
-from virgil_keymanager.core_utils.helpers import tiny_key_to_virgil
-from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
-from virgil_keymanager.core_utils.helpers import to_b64, b64_to_bytes
+from virgil_trust_provisioner.consts import CARD_REGISTRATION_ENDPOINT, VSKeyTypeS
+from virgil_trust_provisioner.core_utils.helpers import tiny_key_to_virgil
+from virgil_trust_provisioner.generators.keys.interface import KeyGeneratorInterface
+from virgil_trust_provisioner.core_utils.helpers import to_b64, b64_to_bytes
 
 
 class CardRequestsHandler:

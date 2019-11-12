@@ -6,8 +6,8 @@ from PyCRC.CRCCCITT import CRCCCITT
 from virgil_crypto import VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
 
-from virgil_keymanager.generators.keys.interface import KeyGeneratorInterface
-from virgil_keymanager.core_utils.helpers import b64_to_bytes, to_b64
+from virgil_trust_provisioner.generators.keys.interface import KeyGeneratorInterface
+from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
 
 
 class AtmelKeyGenerator(KeyGeneratorInterface):

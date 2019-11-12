@@ -2,13 +2,13 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 import sys
 
-from virgil_keymanager.core_utils.config import Config
-from virgil_keymanager.external_utils.atmel_dongles_controller import AtmelDonglesController
-from virgil_keymanager.storage.db_storage import DBStorage
-from virgil_keymanager.storage.keys_tinydb_storage import KeysTinyDBStorage
-from virgil_keymanager.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
-from virgil_keymanager.ui import UI
-from virgil_keymanager.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
+from virgil_trust_provisioner.core_utils.config import Config
+from virgil_trust_provisioner.external_utils.atmel_dongles_controller import AtmelDonglesController
+from virgil_trust_provisioner.storage.db_storage import DBStorage
+from virgil_trust_provisioner.storage.keys_tinydb_storage import KeysTinyDBStorage
+from virgil_trust_provisioner.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
+from virgil_trust_provisioner.ui import UI
+from virgil_trust_provisioner.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
 import os
 
 
@@ -131,7 +131,7 @@ class DbConverter(object):
 
             if not self._atmel_util_path:
                 self._atmel_util_path = os.path.join(
-                    os.path.dirname(sys.modules["virgil_keymanager"].__file__),
+                    os.path.dirname(sys.modules["virgil_trust_provisioner"].__file__),
                     "external_utils",
                     "util",
                     "emulator" if self.__emulator else "origin",

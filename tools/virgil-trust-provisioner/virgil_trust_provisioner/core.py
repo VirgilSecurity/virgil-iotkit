@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from virgil_keymanager import __version__
-from virgil_keymanager.core_utils.config import Config
-from virgil_keymanager.external_utils.atmel_dongles_controller import AtmelDonglesController
-from virgil_keymanager.consts.modes import ProgramModes
+from virgil_trust_provisioner import __version__
+from virgil_trust_provisioner.core_utils.config import Config
+from virgil_trust_provisioner.external_utils.atmel_dongles_controller import AtmelDonglesController
+from virgil_trust_provisioner.consts.modes import ProgramModes
 from .ui import UI
 from .utility_manager import UtilityManager
 
@@ -144,7 +144,7 @@ class UtilContext:
 
         if not atmel_util_path:
             atmel_util_path = os.path.join(
-                os.path.dirname(sys.modules["virgil_keymanager"].__file__),
+                os.path.dirname(sys.modules["virgil_trust_provisioner"].__file__),
                 "external_utils",
                 "util",
                 "emulator" if self.program_mode == ProgramModes.ATMEL_DONGLES_EMULATOR else "origin",
