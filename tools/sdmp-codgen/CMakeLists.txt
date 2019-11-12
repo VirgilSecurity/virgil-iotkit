@@ -39,7 +39,7 @@ project(vs-tool-sdmp-codgen VERSION 0.1.0 LANGUAGES Go)
 #
 #   SDMP convert code generator
 #
-add_go_executable(vs-tool-sdmp-codgen sdmp-codegen)
+add_go_executable(vs-tool-sdmp-codgen sdmp-codgen)
 
 
 #
@@ -57,9 +57,10 @@ set (SDMP_SRC_TYPES
         )
 
 message("${SDMP_SRC_TYPES}")
-
+message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
+message("vs-tool-sdmp-codgen_BINARY_DIR = ${vs-tool-sdmp-codgen_BINARY_DIR}")
 add_custom_command(TARGET vs-tool-sdmp-codgen POST_BUILD
-        COMMAND ${vs-tool-sdmp-codgen_BINARY_DIR}/vs-tool-sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
+        COMMAND ${vs-tool-sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SDMP_SRC_TYPES}
                                                   -oc ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/src/generated/sdmp_cvt.c
                                                   -oh ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
