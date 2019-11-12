@@ -88,6 +88,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     char *crypto_answer_b64 = NULL;
 
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf_size, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
         return VS_CODE_ERR_JSON;
