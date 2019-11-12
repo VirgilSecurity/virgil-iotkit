@@ -213,6 +213,7 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     char serial_hex_str[VS_DEVICE_SERIAL_SIZE * 2 + 1];
     vs_device_serial_t serial_number;
     uint32_t _in_out_len = sizeof(serial_hex_str);
+    int encoded_len;
 
     uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
@@ -241,13 +242,14 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     STATUS_CHECK(_hsm->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
                  "Can't sign the serial number");
     STATUS_CHECK(vs_hsm_tiny_secp256_signature_to_virgil(sign, virgil_sign, sizeof(virgil_sign), &_sz),
-                 "Can't convert signature to virgil format");
+                 "Can't convert raw signature to virgil format");
+    encoded_len = base64encode_len(_sz);
+    CHECK(encoded_len > 0 && encoded_len <= VS_REQUEST_BODY_MAX_SIZE, "Incorrect Base64 eencoded len of signature");
     {
         struct json_str jobj;
-        char b64_virgil_sign[base64encode_len(_sz)];
-        int encoded_len;
+        char b64_virgil_sign[encoded_len];
         base64encode(virgil_sign, _sz, b64_virgil_sign, &encoded_len);
-        json_str_init(&jobj, (char *)request_body, sizeof(request_body));
+        json_str_init(&jobj, (char *)request_body, VS_REQUEST_BODY_MAX_SIZE);
         CHECK(VS_JSON_ERR_OK == json_start_object(&jobj) &&
                       VS_JSON_ERR_OK == json_set_val_str(&jobj, "signature", b64_virgil_sign) &&
                       VS_JSON_ERR_OK == json_close_object(&jobj),
@@ -292,15 +294,6 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
     _hsm = hsm;
     return vs_cloud_message_bin_init(message_bin_impl);
 }
-
-// TODO: Will be used for alexa
-#if 0
-/******************************************************************************/
-vs_status_e
-vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
-}
-#endif
 
 /******************************************************************************/
 vs_status_e

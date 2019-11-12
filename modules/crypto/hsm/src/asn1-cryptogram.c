@@ -300,14 +300,15 @@ vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE
                                         uint8_t *virgil_sign,
                                         uint16_t buf_sz,
                                         uint16_t *virgil_sign_sz) {
-    uint8_t buf[256];
-    int pos = sizeof(buf);
+    uint8_t *buf = virgil_sign;
+    int pos = buf_sz;
     size_t total_sz = 0, el_sz;
     const uint16_t secp_mpi_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1) / 2;
 
     CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(virgil_sign_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     if (!_asn1_put_array(INTEGER, &pos, buf, &raw_signature[secp_mpi_sz], secp_mpi_sz, &el_sz, &total_sz) ||
         !_asn1_put_array(INTEGER, &pos, buf, raw_signature, secp_mpi_sz, &el_sz, &total_sz) ||
@@ -318,7 +319,7 @@ vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE
         return VS_CODE_ERR_CRYPTO;
 
     *virgil_sign_sz = total_sz;
-    VS_IOT_MEMCPY(virgil_sign, &buf[pos], total_sz);
+    VS_IOT_MEMMOVE(virgil_sign, &buf[pos], total_sz);
 
     return VS_CODE_OK;
 }

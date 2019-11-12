@@ -103,15 +103,15 @@ _curl_http_hal(vs_cloud_http_method_e method,
         curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
-        curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
 
         switch (method) {
         case VS_CLOUD_REQUEST_GET:
+            curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
             break;
         case VS_CLOUD_REQUEST_POST:
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request_body);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, request_body_size);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request_body_size);
             break;
         default:
             res = VS_CODE_ERR_INCORRECT_PARAMETER;
