@@ -56,9 +56,6 @@ set (SDMP_SRC_TYPES
         -i ${PROJECT_SOURCE_DIR}/../../helpers/update/include/virgil/iot/update/update.h
         )
 
-message("${SDMP_SRC_TYPES}")
-message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
-message("vs-tool-sdmp-codgen_BINARY_DIR = ${vs-tool-sdmp-codgen_BINARY_DIR}")
 add_custom_command(TARGET vs-tool-sdmp-codgen POST_BUILD
         COMMAND ${vs-tool-sdmp-codgen_BINARY_DIR}/sdmp-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SDMP_SRC_TYPES}
