@@ -41,6 +41,8 @@
 #include <unistd.h>
 
 #include <private/cloud_include.h>
+#include <virgil/iot/json/json_parser.h>
+#include <virgil/iot/json/json_generator.h>
 
 #define MAX_EP_SIZE (256)
 
@@ -69,15 +71,6 @@ _data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *
         _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
     }
     return true;
-}
-
-/******************************************************************************/
-static void
-_get_serial_number_in_hex_str(char _out_str[VS_DEVICE_SERIAL_SIZE * 2 + 1]) {
-    vs_device_serial_t serial_number;
-    uint32_t _in_out_len = VS_DEVICE_SERIAL_SIZE * 2 + 1;
-    vs_impl_device_serial(serial_number);
-    _data_to_hex((uint8_t *)serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)_out_str, &_in_out_len);
 }
 
 #define VS_JSON_ENCRYPTED_FIELD "encrypted_value"
@@ -213,31 +206,79 @@ terminate:
     return VS_CODE_ERR_JSON;
 }
 
+#define VS_REQUEST_BODY_MAX_SIZE (256)
 /******************************************************************************/
 static vs_status_e
 _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t *in_out_answer_len) {
-    vs_status_e ret;
-    char serial[VS_DEVICE_SERIAL_SIZE * 2 + 1];
+    vs_status_e ret_code = VS_CODE_ERR_CLOUD;
+    char serial_hex_str[VS_DEVICE_SERIAL_SIZE * 2 + 1];
+    vs_device_serial_t serial_number;
+    uint32_t _in_out_len = sizeof(serial_hex_str);
+    int encoded_len;
 
+    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint8_t sign[sign_sz];
+
+    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
-    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_request, VS_CODE_ERR_NOINIT);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
+    CHECK_MEM_ALLOC(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
 
-    _get_serial_number_in_hex_str(serial);
+    uint8_t *request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
+    CHECK_MEM_ALLOC(NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
 
-    int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial, id);
-    if (res < 0 || res > MAX_EP_SIZE ||
-        VS_CODE_OK != _hal_impl->http_get(url, out_answer, NULL, NULL, in_out_answer_len)) {
-        ret = VS_CODE_ERR_CLOUD;
-    } else {
-        ret = _decrypt_answer(out_answer, in_out_answer_len);
+    vs_impl_device_serial(serial_number);
+
+    // Create POST request body - signature of serial number
+    uint8_t hash[VS_HASH_SHA256_LEN];
+    uint16_t _sz;
+    uint8_t virgil_sign[VS_REQUEST_BODY_MAX_SIZE];
+
+    STATUS_CHECK(_hsm->hash(VS_HASH_SHA_256, serial_number, sizeof(serial_number), hash, sizeof(hash), &_sz),
+                 "Can't create hash for serial number");
+    STATUS_CHECK(_hsm->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
+                 "Can't sign the serial number");
+    STATUS_CHECK(vs_hsm_tiny_secp256_signature_to_virgil(sign, virgil_sign, sizeof(virgil_sign), &_sz),
+                 "Can't convert raw signature to virgil format");
+    encoded_len = base64encode_len(_sz);
+    CHECK(encoded_len > 0 && encoded_len <= VS_REQUEST_BODY_MAX_SIZE, "Incorrect Base64 eencoded len of signature");
+    {
+        struct json_str jobj;
+        char b64_virgil_sign[encoded_len];
+        base64encode(virgil_sign, _sz, b64_virgil_sign, &encoded_len);
+        json_str_init(&jobj, (char *)request_body, VS_REQUEST_BODY_MAX_SIZE);
+        CHECK(VS_JSON_ERR_OK == json_start_object(&jobj) &&
+                      VS_JSON_ERR_OK == json_set_val_str(&jobj, "signature", b64_virgil_sign) &&
+                      VS_JSON_ERR_OK == json_close_object(&jobj),
+              "Can't create JSON body for POST request");
     }
 
+    // Perform http request
+    _data_to_hex((uint8_t *)serial_number, VS_DEVICE_SERIAL_SIZE, (uint8_t *)serial_hex_str, &_in_out_len);
+
+    int res = VS_IOT_SNPRINTF(url, MAX_EP_SIZE, "%s/%s/%s/%s", host, ep, serial_hex_str, id);
+    CHECK(res > 0 && res <= MAX_EP_SIZE, "Error create URL string");
+
+    CHECK(VS_CODE_OK == _hal_impl->http_request(VS_CLOUD_REQUEST_POST,
+                                                url,
+                                                (char *)request_body,
+                                                VS_IOT_STRLEN((char *)request_body),
+                                                out_answer,
+                                                NULL,
+                                                NULL,
+                                                in_out_answer_len),
+          "Error create url");
+
+    ret_code = _decrypt_answer(out_answer, in_out_answer_len);
+
+terminate:
     VS_IOT_FREE(url);
-    return ret;
+    VS_IOT_FREE(request_body);
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -248,21 +289,12 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hsm->ecies_decrypt, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(cloud_impl->http_get, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(cloud_impl->http_request, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _hal_impl = cloud_impl;
     _hsm = hsm;
     return vs_cloud_message_bin_init(message_bin_impl);
 }
-
-// TODO: Will be used for alexa
-#if 0
-/******************************************************************************/
-vs_status_e
-vs_cloud_fetch_amazon_credentials(char *out_answer, size_t *in_out_answer_len) {
-    return _get_credentials(VS_CLOUD_HOST, VS_THING_EP, VS_AWS_ID, out_answer, in_out_answer_len);
-}
-#endif
 
 /******************************************************************************/
 vs_status_e
@@ -446,7 +478,7 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *
     CHECK_NOT_ZERO_RET(fw_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fetched_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
-    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_request, VS_CODE_ERR_NOINIT);
     size_t in_out_answer_len = 0;
     fw_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
@@ -454,7 +486,14 @@ vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *
     resp.buff = VS_IOT_CALLOC(1, sizeof(vs_firmware_header_t));
     resp.buff_sz = sizeof(vs_firmware_header_t);
 
-    if (VS_CODE_OK != _hal_impl->http_get(fw_file_url, NULL, _store_fw_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != _hal_impl->http_request(VS_CLOUD_REQUEST_GET,
+                                              fw_file_url,
+                                              NULL,
+                                              0,
+                                              NULL,
+                                              _store_fw_handler,
+                                              &resp,
+                                              &in_out_answer_len) ||
         VS_CLOUD_FETCH_FW_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
 
@@ -644,14 +683,21 @@ vs_cloud_fetch_and_store_tl(const char *tl_file_url) {
     vs_status_e res = VS_CODE_OK;
     CHECK_NOT_ZERO_RET(tl_file_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
-    CHECK_NOT_ZERO_RET(_hal_impl->http_get, VS_CODE_ERR_NOINIT);
+    CHECK_NOT_ZERO_RET(_hal_impl->http_request, VS_CODE_ERR_NOINIT);
     size_t in_out_answer_len = 0;
     tl_resp_buff_t resp;
     VS_IOT_MEMSET(&resp, 0, sizeof(resp));
 
     resp.buff = VS_IOT_CALLOC(512, 1);
 
-    if (VS_CODE_OK != _hal_impl->http_get(tl_file_url, NULL, _store_tl_handler, &resp, &in_out_answer_len) ||
+    if (VS_CODE_OK != _hal_impl->http_request(VS_CLOUD_REQUEST_GET,
+                                              tl_file_url,
+                                              NULL,
+                                              0,
+                                              NULL,
+                                              _store_tl_handler,
+                                              &resp,
+                                              &in_out_answer_len) ||
         VS_CLOUD_FETCH_Tl_STEP_DONE != resp.step) {
         res = VS_CODE_ERR_CLOUD;
     }

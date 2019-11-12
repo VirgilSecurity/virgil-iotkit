@@ -353,9 +353,6 @@ int
 json_close_array(struct json_str *jptr);
 
 int
-json_cli_init(void);
-
-int
 json_set_array_value(struct json_str *jptr, char *str, int value, float val, json_data_types data);
 
 /** Create a string array element

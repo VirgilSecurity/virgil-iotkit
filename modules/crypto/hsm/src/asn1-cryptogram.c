@@ -85,6 +85,9 @@ static const uint8_t _ec_type_info[] = {0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48
 
 static const uint8_t _enveloped_data_oid[] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03};
 
+static const uint8_t _sha256_oid_sequence[] =
+        {0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00};
+
 /******************************************************************************/
 static bool
 _asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data) {
@@ -289,6 +292,36 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
     }
 
     return false;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                        uint8_t *virgil_sign,
+                                        uint16_t buf_sz,
+                                        uint16_t *virgil_sign_sz) {
+    uint8_t *buf = virgil_sign;
+    int pos = buf_sz;
+    size_t total_sz = 0, el_sz;
+    const uint16_t secp_mpi_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1) / 2;
+
+    CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(virgil_sign_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    if (!_asn1_put_array(INTEGER, &pos, buf, &raw_signature[secp_mpi_sz], secp_mpi_sz, &el_sz, &total_sz) ||
+        !_asn1_put_array(INTEGER, &pos, buf, raw_signature, secp_mpi_sz, &el_sz, &total_sz) ||
+        !_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz) ||
+        !_asn1_put_header(OCTET_STRING, &pos, buf, total_sz, &el_sz, &total_sz) ||
+        !_asn1_put_raw(&pos, buf, _sha256_oid_sequence, sizeof(_sha256_oid_sequence), &el_sz, &total_sz) ||
+        !_asn1_put_header(SEQUENCE, &pos, buf, total_sz, &el_sz, &total_sz) || (buf_sz < total_sz))
+        return VS_CODE_ERR_CRYPTO;
+
+    *virgil_sign_sz = total_sz;
+    VS_IOT_MEMMOVE(virgil_sign, &buf[pos], total_sz);
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

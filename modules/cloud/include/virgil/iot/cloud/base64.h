@@ -105,7 +105,8 @@
  *
  * \endcode
  *
- * This product includes software developed by the Apache Group for use in the Apache HTTP server project (http://www.apache.org/)
+ * This product includes software developed by the Apache Group for use in the Apache HTTP server project
+ * (http://www.apache.org/)
  */
 
 #ifndef _BASE64_H_
