@@ -38,7 +38,7 @@ include(installVirgilCryptoGo.cmake)
 #
 #   C library for HAL implementation
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c_libs)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c-implementation)
 
 #
 #   Factory initalizer
