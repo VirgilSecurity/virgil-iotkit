@@ -35,12 +35,11 @@
 package main
 
 import (
+    "./signers"
+    "./utility"
     "fmt"
     "log"
     "os"
-
-    "./signers"
-    "./utility"
 
     "gopkg.in/urfave/cli.v2"
 )
@@ -67,7 +66,7 @@ func main()  {
         },
         &cli.StringFlag{
             Name:    "fw-version",
-            Usage:   "Firmware version",
+            Usage:   "Firmware version ([0-255].[0-255].[0-255].[0-4294967295])",
         },
         &cli.StringFlag{
             Name:    "manufacturer",
@@ -103,20 +102,66 @@ func main()  {
 }
 
 func signerFunc(context *cli.Context) (err error) {
+    signerUtil := new(utility.SignerUtility)
+    var stat os.FileInfo
+
     // Create signer
     var fwSigner signers.SignerInterface
-    fwSigner, err = signers.NewVirgilCryptoSigner(context.Path("config"))
-
-    signerUtil := &utility.SignerUtility{
-        Signer:             fwSigner,
-        FirmwarePath:       context.Path("input"),
-        ProgFileSize:       context.Int("file-size"),
-        FirmwareVersion:    context.String("fw-version"),
-        Manufacturer:       context.String("manufacturer"),
-        Model:              context.String("model"),
-        ChunkSize:          context.Int("chunk-size"),
+    if fwSigner, err = signers.NewVirgilCryptoSigner(context.Path("config")); err != nil {
+        return err
     }
+    signerUtil.Signer = fwSigner
 
+    // Verify and set input parameters
+    // --input
+    var inputFile string
+    if inputFile = context.Path("input"); inputFile == "" {
+        return fmt.Errorf("--input isn't specified")
+    }
+    if stat, err = os.Stat(inputFile); err != nil {
+        if os.IsNotExist(err) {
+            return fmt.Errorf("input file by given path %s doesn't exist", inputFile)
+        }
+        return err
+    }
+    signerUtil.FirmwarePath = inputFile
+
+    // --file-size
+    var progFileSize int
+    if progFileSize = context.Int("file-size"); progFileSize == 0 {
+        return fmt.Errorf("--file-size isn't specified")
+    }
+    if int64(progFileSize) <= stat.Size() {
+        return fmt.Errorf("--file-size (%d) cannot be" +
+            " lesser than --input file size (%d)", progFileSize, stat.Size())
+    }
+    signerUtil.ProgFileSize = progFileSize
+
+    // --fw-version
+    fwVersion := context.String("fw-version")
+    if fwVersion == "" {
+        return fmt.Errorf("--fw-version isn't specified")
+    }
+    signerUtil.FirmwareVersion = fwVersion
+
+    // --manufacturer
+    manufacturer := context.String("manufacturer")
+    if manufacturer == "" {
+        return fmt.Errorf("--manufacturer isn't specified")
+    }
+    signerUtil.Manufacturer = manufacturer
+
+    // --model
+    model := context.String("model")
+    if model == "" {
+        return fmt.Errorf("--model isn't specified")
+    }
+    signerUtil.Model = model
+
+    // --chunk-size
+    signerUtil.ChunkSize = context.Int("chunk-size")
+
+    // Sign
     err = signerUtil.CreateSignedFirmware()
     if err != nil {
         msg := fmt.Sprintf("Error during signed firmware creation: %v", err)
