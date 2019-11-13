@@ -41,7 +41,7 @@ import (
 
     "../common"
     "../request"
-    "../sdmp"
+    "../snap"
 
     "gopkg.in/urfave/cli.v2"
 )
@@ -179,7 +179,7 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
     }
 
     // Prepare SDMP processor
-    sdmpProcessor := &sdmp.Processor{
+    sdmpProcessor := &snap.Processor{
         ProvisioningInfo: initializer.ProvisioningInfo,
     }
 
@@ -203,7 +203,7 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
         }
 
         if !initializer.ProvisioningInfo.TlOnly {
-            signer := &sdmp.Signer{Processor: deviceProcessor}
+            signer := &snap.Signer{Processor: deviceProcessor}
             requestBuilder := request.Builder{
                 Signer:          signer,
                 DeviceProcessor: deviceProcessor,

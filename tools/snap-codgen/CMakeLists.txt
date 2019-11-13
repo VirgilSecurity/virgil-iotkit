@@ -36,6 +36,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(vs-tool-snap-codgen VERSION 0.1.0 LANGUAGES Go)
 
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[vs-tool-snap-codgen] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+endif()
+
 #
 #   SDMP convert code generator
 #
@@ -47,19 +51,19 @@ add_go_executable(vs-tool-snap-codgen snap-codgen)
 #
 
 set (SNAP_SRC_TYPES
-        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
-        -i ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
-        -i ${PROJECT_SOURCE_DIR}/../../modules/provision/include/virgil/iot/provision/provision-structs.h
-        -i ${PROJECT_SOURCE_DIR}/../../helpers/update/include/virgil/iot/update/update.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/provision/include/virgil/iot/provision/provision-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/helpers/update/include/virgil/iot/update/update.h
         )
 
 add_custom_command(TARGET vs-tool-snap-codgen POST_BUILD
         COMMAND ${vs-tool-snap-codgen_BINARY_DIR}/snap-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SNAP_SRC_TYPES}
-                                                  -oc ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/src/generated/sdmp_cvt.c
-                                                  -oh ${PROJECT_SOURCE_DIR}/../../modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
+                                                  -oc ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/src/generated/sdmp_cvt.c
+                                                  -oh ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
         COMMENT "Generate SNAP convert functions"
         )

@@ -32,14 +32,14 @@
 //
 //   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package sdmp
+package snap
 
 /*
 #cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
 #include <virgil/iot/protocols/sdmp.h>
 #include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/tools/hal/sdmp/ti_prvs_impl.h>
+#include <virgil/iot/tools/hal/snap/ti_prvs_impl.h>
 
 int
 go_sdmp_init(void) {

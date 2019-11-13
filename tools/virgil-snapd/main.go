@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"./sdmp"
+	"./snap"
 	"./devices"
 	"./utils"
 )
@@ -58,13 +58,13 @@ func main() {
 	devicesInfo = devices.NewDevices()
 
 	// Start SDMP:INFO communication
-	err :=  sdmp.ConnectToDeviceNetwork()
+	err :=  snap.ConnectToDeviceNetwork()
 	if err != nil {
     	utils.Log.Println(err)
     	return
     }
 
-    err = sdmp.SetupPolling(GeneralInfoCb, StatCb)
+    err = snap.SetupPolling(GeneralInfoCb, StatCb)
     if err != nil {
         utils.Log.Println(err)
         return

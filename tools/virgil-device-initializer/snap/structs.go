@@ -32,7 +32,7 @@
 //
 //   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package sdmp
+package snap
 
 import (
     "bytes"

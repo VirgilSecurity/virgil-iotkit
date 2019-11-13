@@ -42,14 +42,14 @@ import (
 
     "../common"
     "../converters"
-    "../sdmp"
+    "../snap"
 
     "gopkg.in/virgil.v5/sdk"
 )
 
 type Builder struct {
     Signer          common.SignerInterface
-    DeviceProcessor *sdmp.DeviceProcessor
+    DeviceProcessor *snap.DeviceProcessor
 
     deviceInfo      *DeviceInfoJson
 }

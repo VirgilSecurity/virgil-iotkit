@@ -32,7 +32,7 @@
 //
 //   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package sdmp
+package snap
 
 /*
 #cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
@@ -40,7 +40,7 @@ package sdmp
 #include <virgil/iot/protocols/sdmp/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/tools/hal/sdmp/ti_info_impl.h>
+#include <virgil/iot/tools/hal/snap/ti_info_impl.h>
 extern int goDeviceStartNotifCb(vs_sdmp_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
 extern int goDeviceStatCb(vs_info_statistics_t *stat);
