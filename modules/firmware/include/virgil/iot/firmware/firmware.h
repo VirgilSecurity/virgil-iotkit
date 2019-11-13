@@ -48,11 +48,13 @@
  * First of all it is necessary to initialize Firmware library :
  *
  * \code
-vs_storage_op_ctx_t fw_storage_impl;               // Firmware storage implementation
-vs_hsm_impl_t *hsm_impl = NULL;                    // Security module implementation
-vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
-vs_device_type_t device_type = {0};                // Device type
 
+vs_storage_op_ctx_t fw_storage_impl;         // Firmware storage implementation
+vs_hsm_impl_t *hsm_impl = NULL;              // Security module implementation
+static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
+static vs_device_type_t device_type;                // Device type
+
+// Initialize fw_storage_impl, manufacture_id, device_type
 hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
@@ -68,7 +70,7 @@ STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device
  * See \ref provision_structures_usage for details
  *
  * For FLDT Server service (see \ref fldt_server_usage for details) it is necessary to implement
- * #vs_fldt_server_add_filetype_cb callback. Also it is necessary to add Firmware file type to the supported file types
+ * #vs_fldt_server_add_filetype_cb. Also it is necessary to add Firmware file type to the supported file types
  * list by #vs_fldt_server_add_file_type() call  :
  *
  * \code
@@ -107,9 +109,11 @@ STATUS_CHECK(vs_fldt_server_add_file_type(vs_firmware_update_file_type(), vs_fir
  * \code
 
 vs_firmware_header_t header;        // Firmware header
-const char *upd_file_url = ... ;    // URL for file update
+const char *upd_file_url;           // URL for file update
 vs_update_file_type_t fw_info;      // Update file information
 int res;
+
+// Initialize upd_file_url by download address
 
 res = vs_cloud_fetch_and_store_fw_file(upd_file_url, &header);
 if (VS_CODE_OK == res) {
@@ -173,10 +177,13 @@ _send_firmware(){
  * and to destroy it at the end. See code example below :
  *
  * \code
+
 vs_storage_op_ctx_t fw_storage_impl;    // Firmware storage implementation
 vs_hsm_impl_t *hsm_impl = NULL;         // Security module implementation
-vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
-vs_device_type_t device_type = {0};                // Device type
+static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
+static vs_device_type_t device_type;                // Device type
+
+// Initialize manufacture_id, device_type
 
 hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
 
