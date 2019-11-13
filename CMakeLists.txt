@@ -183,7 +183,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
 #
 #   Documentation
 #
-add_custom_target(documentation
+add_custom_target(vs_iot_sdk_documentation
         COMMAND rm -fR docs/doxygen
         COMMAND mkdir -p docs/doxygen
         COMMAND doxygen
