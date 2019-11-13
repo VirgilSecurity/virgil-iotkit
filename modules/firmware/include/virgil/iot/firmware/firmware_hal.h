@@ -77,8 +77,7 @@ vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
  * Signature for function that is called by #vs_firmware_get_own_firmware_descriptor Firmware library function to get
  * current firmware file footer.
  *
- * Footer must be previously stored at the end of executable file. This function can read
- * the end of current file.
+ * Footer is added by virgil-firmware-signer utility at the end of executable file. This function has to read the end of current file.
  *
  * \param[out] footer Device footer
  * \param[in] footer_sz Footer size

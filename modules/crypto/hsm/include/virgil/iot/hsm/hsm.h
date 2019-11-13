@@ -42,16 +42,17 @@
  * Library provides standard software implementation. See \ref vs-softhsm-usage for example.
  *
  * \code
- *
- * vs_hsm_impl_t *hsm_impl = NULL;  // Security Module callbacks
- * vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
- *
- * hsm_impl = vs_softhsm_impl(&slots_storage_impl);
- *
- * // ... Library usage
- *
- * vs_softhsm_deinit();
- *
+
+vs_hsm_impl_t *hsm_impl;                 // Security Module callbacks
+vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
+
+// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+
+// ... Library usage
+
+vs_softhsm_deinit();
+
  * \endcode
  *
  * Software Security Module needs to have Slots Storage Implementation initialized. See \ref storage_hal for details.

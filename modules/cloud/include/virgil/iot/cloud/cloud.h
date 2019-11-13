@@ -92,45 +92,45 @@ STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW,
  *  Here you can see an example of Cloud library usage:
  *
  *  \code
- * // Processing of cloud library functionality example
- * void
- * message_bin_mqtt_task(void *params) {
- *    while (true) {
- *        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
- *            sleep(500);
- *        } else {
- *            sleep(5000);
- *        }
- *     }
- *  }
- *
- *  // Handlers for default topics example
- * void
- * fw_topic_process(const uint8_t *url, uint16_t length) {
- *      vs_status_e res;
- *      vs_firmware_header_t header;
- *
- *      res = vs_cloud_fetch_and_store_fw_file(url, &header);
- *
- *      if (VS_CODE_OK == res) {
- *          res = vs_firmware_verify_firmware(&header.descriptor);
- *          if (VS_CODE_OK == res) {
- *             // Fetched firmware is correct. Process it
- *          } else {
- *              // Incorrect firmware image. You can delete it.
- *              vs_firmware_delete_firmware(&header.descriptor);
- *          }
- *      }
- *  }
- *
- * void
- * tl_topic_process(const uint8_t *url, uint16_t length) {
- *
- *      if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
- *          // Trust list is correct. Process it
- *      }
- *  }
- *
+// Processing of cloud library functionality example
+void
+message_bin_mqtt_task(void *params) {
+   while (true) {
+       if (VS_CODE_OK == vs_cloud_message_bin_process()) {
+           sleep(500);
+       } else {
+           sleep(5000);
+       }
+    }
+ }
+
+// Handlers for default topics example
+void
+fw_topic_process(const uint8_t *url, uint16_t length) {
+     vs_status_e res;
+     vs_firmware_header_t header;
+
+     res = vs_cloud_fetch_and_store_fw_file(url, &header);
+
+     if (VS_CODE_OK == res) {
+         res = vs_firmware_verify_firmware(&header.descriptor);
+         if (VS_CODE_OK == res) {
+            // Fetched firmware is correct. Process it
+         } else {
+             // Incorrect firmware image. You can delete it.
+             vs_firmware_delete_firmware(&header.descriptor);
+         }
+     }
+ }
+
+void
+tl_topic_process(const uint8_t *url, uint16_t length) {
+
+     if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
+         // Trust list is correct. Process it
+     }
+ }
+
  * \endcode
  *
  */

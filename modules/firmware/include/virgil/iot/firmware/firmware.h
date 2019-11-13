@@ -55,7 +55,9 @@ static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
 // Initialize fw_storage_impl, manufacture_id, device_type
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+
+// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+hsm_impl = vs_softhsm_impl(&slots_storage_impl);
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
 
@@ -79,10 +81,10 @@ vs_status_e
 _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **update_ctx) {
     switch (file_type->type) {
     case VS_UPDATE_FIRMWARE:    // Firmware file request
-        *update_ctx = vs_firmware_update_ctx();
+        *update_ctx = vs_firmware_update_ctx();     // Firmware's Update context
         break;
     case VS_UPDATE_TRUST_LIST:  // Trust List file request
-        *update_ctx = vs_tl_update_ctx();
+        *update_ctx = vs_tl_update_ctx();           // Trust List's Update context
         break;
     default:                    // Unsupported file type request
         VS_LOG_ERROR("Unsupported file type : %d", file_type->type);
@@ -92,7 +94,7 @@ _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **up
     return VS_CODE_OK;
 }
 
-// ...
+// Initialize mac_addr by current device MAC address
 
 sdmp_fldt_server = vs_sdmp_fldt_server(&mac_addr, _add_filetype);
 
