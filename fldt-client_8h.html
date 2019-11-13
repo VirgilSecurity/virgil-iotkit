@@ -84,7 +84,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:aac931412ad6df116ab4cd120255243ee"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee">vs_fldt_got_file</a>) (<a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *prev_file_ver, const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *new_file_ver, <a class="el" href="structvs__update__interface__t.html">vs_update_interface_t</a> *update_interface, const <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *gateway, bool successfully_updated)</td></tr>
-<tr class="memdesc:aac931412ad6df116ab4cd120255243ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Got new file callback.  <a href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee">More...</a><br /></td></tr>
+<tr class="memdesc:aac931412ad6df116ab4cd120255243ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Got new file implementation.  <a href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee">More...</a><br /></td></tr>
 <tr class="separator:aac931412ad6df116ab4cd120255243ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -104,14 +104,14 @@ Functions</h2></td></tr>
 <p>FLDT protocol is used to download new file version from gateway to client. This module is used to process client part of FLDT protocol.</p>
 <h1><a class="anchor" id="fldt_client_usage"></a>
 FLDT Client Usage</h1>
-<p>Client side downloads new file versions and checks them. <a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee" title="Got new file callback.">vs_fldt_got_file</a> function is called after file upgrading. In most case it used to output new file version information and gateway address. To successfully file downloading process <a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a> must be provided for each file type. You can see function <a class="el" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087" title="Return file type for Update library.">vs_firmware_update_file_type</a> for Firmware example and <a class="el" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19" title="Trust List file type.">vs_tl_update_file_type</a> for Trust List one.</p>
+<p>Client side downloads new file versions and checks them. <a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee" title="Got new file implementation.">vs_fldt_got_file</a> function is called after file upgrading. In most case it used to output new file version information and gateway address. To successfully file downloading process <a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a> must be provided for each file type. You can see function <a class="el" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087" title="Return file type for Update library.">vs_firmware_update_file_type</a> for Firmware example and <a class="el" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19" title="Trust List file type.">vs_tl_update_file_type</a> for Trust List one.</p>
 <p>Here you can see an example of FLDT client initialization : </p><div class="fragment"><div class="line"> <span class="keyword">const</span> <a class="code" href="structvs__sdmp__service__t.html">vs_sdmp_service_t</a> *sdmp_fldt_client;</div>
 <div class="line"> sdmp_fldt_client = <a class="code" href="fldt-client_8h.html#a6a10def6656d972bb6427ed5c62c6581">vs_sdmp_fldt_client</a>( _on_file_updated );</div>
 <div class="line"> <a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>( <a class="code" href="sdmp_8h.html#ab90e94a22bd56ef88607dcd6720e406b">vs_sdmp_register_service</a>( sdmp_fldt_client ), <span class="stringliteral">&quot;Cannot register FLDT client service&quot;</span>);</div>
 <div class="line"> <a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>( <a class="code" href="fldt-client_8h.html#a015bb40478f6a81b1a8657f4fd4539e2">vs_fldt_client_add_file_type</a>( <a class="code" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">vs_firmware_update_file_type</a>(), <a class="code" href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff">vs_firmware_update_ctx</a>() ), <span class="stringliteral">&quot;Unable to</span></div>
 <div class="line"><span class="stringliteral">add Firmware file type&quot;</span> ); <a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>( <a class="code" href="fldt-client_8h.html#a015bb40478f6a81b1a8657f4fd4539e2">vs_fldt_client_add_file_type</a>( <a class="code" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19">vs_tl_update_file_type</a>(), <a class="code" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a>()</div>
 <div class="line">), <span class="stringliteral">&quot;Unable to add Trust List file type&quot;</span> ); </div>
-</div><!-- fragment --><p>You can see minimalistic <a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee" title="Got new file callback.">vs_fldt_got_file</a> function example below : </p><div class="fragment"><div class="line"><span class="keywordtype">void</span> _on_file_updated(<a class="code" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type,</div>
+</div><!-- fragment --><p>You can see minimalistic <a class="el" href="fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee" title="Got new file implementation.">vs_fldt_got_file</a> function example below : </p><div class="fragment"><div class="line"><span class="keywordtype">void</span> _on_file_updated(<a class="code" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type,</div>
 <div class="line">                 <span class="keyword">const</span> <a class="code" href="structvs__file__version__t.html">vs_file_version_t</a> *prev_file_ver,</div>
 <div class="line">                 <span class="keyword">const</span> <a class="code" href="structvs__file__version__t.html">vs_file_version_t</a> *new_file_ver,</div>
 <div class="line">                 <a class="code" href="structvs__update__interface__t.html">vs_update_interface_t</a> *update_interface,</div>
@@ -145,8 +145,8 @@ FLDT Client Usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Got new file callback. </p>
-<p>Callback for <a class="el" href="fldt-client_8h.html#a6a10def6656d972bb6427ed5c62c6581" title="FLDT Client SDMP Service implementation.">vs_sdmp_fldt_client</a> function. This callback is used when new file has been fully loaded. See #fldt_client_usage for details.</p>
+<p>Got new file implementation. </p>
+<p>Implementation for <a class="el" href="fldt-client_8h.html#a6a10def6656d972bb6427ed5c62c6581" title="FLDT Client SDMP Service implementation.">vs_sdmp_fldt_client</a> function. This implementation is used when new file has been fully loaded. See #fldt_client_usage for details.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">file_type</td><td>File type descriptor. Cannot be NULL. </td></tr>
@@ -243,7 +243,7 @@ FLDT Client Usage</h1>
 <p>This call returns FLDT client implementation. It must be called before any FLDT call.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">got_file_callback</td><td>Callback. Must not be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">got_file_callback</td><td>Implementation. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>
