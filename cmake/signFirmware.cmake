@@ -14,7 +14,7 @@ function(sign_firmware _target_name
         message(FATAL_ERROR "[sign-firmware] VIRGIL_IOT_BINARY_DIRECTORY variable containing path to the Virgil IOT SDK binary is not specified")
     endif()
 
-    set(_path_to_signer "${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-signer/virgil-firmware-signer")
+    set(_path_to_signer "${VIRGIL_IOT_BINARY_DIRECTORY}/tools/virgil-firmware-signer/virgil-firmware-signer")
 
     set(SIGN_FIRMWARE_PROCESSING ${_path_to_signer}
             --config ${_path_to_config_file}
