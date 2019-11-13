@@ -92,6 +92,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Firmware HAL signatures. </p>
+<p>This header contains Firmware HAL signatures that Firmware library uses. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="aeddb14caa9557a737cef826449cf861f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeddb14caa9557a737cef826449cf861f">&#9670;&nbsp;</a></span>vs_firmware_get_own_firmware_footer_hal()</h2>
@@ -120,7 +121,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get own firmware footer. </p>
-<p>Signature for function that loads firmware footer for own device</p>
+<p>Signature for function that is called by <a class="el" href="firmware_8h.html#aef35f198f0991f67c1ccd9a43703380a" title="Get own firmware descriptor.">vs_firmware_get_own_firmware_descriptor</a> Firmware library function to get current firmware file footer.</p>
+<p>In case of UNIX system firmware footer can be previously stored at the end of executable file. This function can read the end of current file.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">footer</td><td>Device footer </td></tr>
@@ -159,7 +161,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Append data. </p>
-<p>Signature for function that prepares space for firmware installation</p>
+<p>Signature for function that is called by <a class="el" href="firmware_8h.html#a287fe128f67c521981c2e24e58459220" title="Install firmware.">vs_firmware_install_firmware</a> Firmware library function to append data for firmware new installation file.</p>
+<p>If filesystem is present, it can be opening file and appending <em>data</em> to the end.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data to be append </td></tr>
@@ -188,7 +191,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Prepare space. </p>
-<p>Signature for function that prepares space for firmware installation</p>
+<p>Signature for function that is called by <a class="el" href="firmware_8h.html#a287fe128f67c521981c2e24e58459220" title="Install firmware.">vs_firmware_install_firmware</a> Firmware library function to prepare space for newly loaded and verified firmware.</p>
+<p>If filesystem is present, it can be preparing new file name, for example "&lt;app-name&gt;.new" where &lt;app-name&gt; is the application filename. This function should remove filename with this name if it exists.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>

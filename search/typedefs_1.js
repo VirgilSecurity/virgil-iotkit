@@ -11,7 +11,7 @@ var searchData=
   ['vs_5fdevice_5ftype_5ft_1216',['vs_device_type_t',['../provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2',1,'provision-structs.h']]],
   ['vs_5ffetch_5fhandler_5fcb_5ft_1217',['vs_fetch_handler_cb_t',['../cloud_8h.html#abb5864f3b497bbf75bee2cdb1cf4c1cc',1,'cloud.h']]],
   ['vs_5ffldt_5fgot_5ffile_1218',['vs_fldt_got_file',['../fldt-client_8h.html#aac931412ad6df116ab4cd120255243ee',1,'fldt-client.h']]],
-  ['vs_5ffldt_5fserver_5fadd_5ffiletype_1219',['vs_fldt_server_add_filetype',['../fldt-server_8h.html#a91ae3e25ebb7bfb96a80b78e222fd158',1,'fldt-server.h']]],
+  ['vs_5ffldt_5fserver_5fadd_5ffiletype_5fcb_1219',['vs_fldt_server_add_filetype_cb',['../fldt-server_8h.html#a0e9c60ad35766f11a2adb9757799c9d2',1,'fldt-server.h']]],
   ['vs_5fhsm_5faes_5fauth_5fdecrypt_5ft_1220',['vs_hsm_aes_auth_decrypt_t',['../hsm_8h.html#a6f00e7d9af6521a4f13c9948336f2a47',1,'hsm.h']]],
   ['vs_5fhsm_5faes_5fdecrypt_5ft_1221',['vs_hsm_aes_decrypt_t',['../hsm_8h.html#a4dc988390e4a7f1587f4852d203678b2',1,'hsm.h']]],
   ['vs_5fhsm_5faes_5fencrypt_5ft_1222',['vs_hsm_aes_encrypt_t',['../hsm_8h.html#ae83338271e2b70fe2a133cba5491fe8c',1,'hsm.h']]],
