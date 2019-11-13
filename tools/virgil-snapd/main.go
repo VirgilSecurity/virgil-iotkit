@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"./sdmp"
+	"./snap"
 	"./devices"
 	"./utils"
 )
@@ -52,19 +52,19 @@ func main() {
     // Initialize logs
     utils.NewLog()
 
-   	// first - read from run params,  second from SDMPD_SERVICE_PORT env, third - set default 8080
+   	// first - read from run params,  second from SNAPD_SERVICE_PORT env, third - set default 8080
 	listeningPort := readListeningPort(os.Args)
 
 	devicesInfo = devices.NewDevices()
 
-	// Start SDMP:INFO communication
-	err :=  sdmp.ConnectToDeviceNetwork()
+	// Start SNAP:INFO communication
+	err :=  snap.ConnectToDeviceNetwork()
 	if err != nil {
     	utils.Log.Println(err)
     	return
     }
 
-    err = sdmp.SetupPolling(GeneralInfoCb, StatCb)
+    err = snap.SetupPolling(GeneralInfoCb, StatCb)
     if err != nil {
         utils.Log.Println(err)
         return
@@ -133,7 +133,7 @@ func main() {
 		}
 	})
 
-	utils.Log.Println(fmt.Sprintf("Service started. Web SDMPD interface located here: http://localhost:%d", listeningPort))
+	utils.Log.Println(fmt.Sprintf("Service started. Web SNAPD interface located here: http://localhost:%d", listeningPort))
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", listeningPort), nil)
 	if err != nil {
@@ -179,7 +179,7 @@ func readListeningPort(args []string) int {
 		utils.Log.Println("err reading port from args : " + err.Error())
 
 	}
-	port, ok := os.LookupEnv("SDMPD_SERVICE_PORT")
+	port, ok := os.LookupEnv("SNAPD_SERVICE_PORT")
 	if ok {
 		intPort, err := strconv.Atoi(port)
 		if err == nil {

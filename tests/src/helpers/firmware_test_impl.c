@@ -41,7 +41,7 @@
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/firmware/firmware.h>
 #include <virgil/iot/firmware/firmware_hal.h>
-#include <virgil/iot/protocols/sdmp.h>
+#include <virgil/iot/protocols/snap.h>
 
 /******************************************************************************/
 static void

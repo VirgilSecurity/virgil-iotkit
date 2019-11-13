@@ -32,11 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_SDK_TESTS_SDMP_H_
-#define VS_IOT_SDK_TESTS_SDMP_H_
+#ifndef VS_IOT_SDK_TESTS_SNAP_H_
+#define VS_IOT_SDK_TESTS_SNAP_H_
 
 #include <stdbool.h>
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/logger/logger.h>
 
 typedef union {
@@ -58,4 +58,4 @@ extern bool is_client_call;
 vs_netif_t *
 vs_test_netif(void);
 
-#endif // VS_IOT_SDK_TESTS_SDMP_H_
+#endif // VS_IOT_SDK_TESTS_SNAP_H_
