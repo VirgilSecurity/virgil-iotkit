@@ -53,7 +53,7 @@ class UtilContext:
         arguments.add_argument('-c', "--config", metavar="CONFIG_PATH", type=str, help="custom configuration file")
         arguments.add_argument('-t', "--app-token", required=True, type=str, help="Virgil application token")
         arguments.add_argument('-i', "--factory-info", required=True, type=str,
-                               help="path to json with factory info (will be add to Factory key Virgil card)")
+                               help="path to json with factory info (will be added to Factory key Virgil card)")
         arguments.add_argument('-v', "--version", action="version", version=__version__,
                                help="print application version and exit")
         self.__cli_args = vars(arguments.parse_args())
