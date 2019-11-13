@@ -104,8 +104,8 @@ extern "C" {
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *file_type,
-                                                   vs_update_interface_t **update_ctx);
+typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_t *file_type,
+                                                      vs_update_interface_t **update_ctx);
 
 /** FLDT Server SDMP Service implementation
  *
@@ -117,7 +117,7 @@ typedef vs_status_e (*vs_fldt_server_add_filetype)(const vs_update_file_type_t *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */
 const vs_sdmp_service_t *
-vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype);
+vs_sdmp_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype);
 
 /** Add file type
  *
