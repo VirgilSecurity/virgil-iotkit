@@ -95,7 +95,7 @@ target_include_directories(vs-module-provision
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/sdmp/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/snap/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>
         )
 

@@ -36,7 +36,7 @@
 #define VS_NETIF_UDP_BCAST_H
 
 
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
 #ifdef __cplusplus
 extern "C" {

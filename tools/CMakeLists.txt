@@ -56,11 +56,11 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-registrar)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-firmware-signer)
 
 #
-#   SDMPD
+#   SNAPD
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-snapd)
 
 #
-#   SDMP convert function generator
+#   SNAP convert function generator
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/snap-codgen)

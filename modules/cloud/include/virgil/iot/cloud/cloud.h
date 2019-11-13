@@ -72,14 +72,16 @@ static vs_device_type_t device_type;                        // Device type
 STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
 
 // Firmware module
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
+module");
 
 // Cloud module
 STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, hsm_impl), "Unable to initialize Cloud module");
 STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process),
     "Error register handler for Trust List topic");
 
-STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, fw_topic_process), "Error register handler for Firmware topic");
+STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, fw_topic_process), "Error register
+handler for Firmware topic");
 
  *  \endcode
  *
@@ -175,8 +177,8 @@ typedef enum {
  * \param[in] request_body The body of the POST request.
  * \param[in] request_body_size The size of the POST request body.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
- * \param[in] fetch_handler Implementation to process information that has been downloaded. If NULL, default processing will
- * be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
+ * \param[in] fetch_handler Implementation to process information that has been downloaded. If NULL, default processing
+ * will be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
  * in_out_size Data size storage. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.

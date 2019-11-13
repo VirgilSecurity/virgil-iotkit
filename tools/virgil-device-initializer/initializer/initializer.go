@@ -41,7 +41,7 @@ import (
 
     "../common"
     "../request"
-    "../sdmp"
+    "../snap"
 
     "gopkg.in/urfave/cli.v2"
     "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
@@ -150,32 +150,32 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
         PrivateKey: deviceSignerPrivateKey,
     }
 
-    // Prepare SDMP processor
-    sdmpProcessor := &sdmp.Processor{
+    // Prepare SNAP processor
+    snapProcessor := &snap.Processor{
         ProvisioningInfo: initializer.ProvisioningInfo,
     }
 
     // Connect to PLC bus
-    if err:= sdmpProcessor.ConnectToPLCBus(); err != nil {
+    if err:= snapProcessor.ConnectToPLCBus(); err != nil {
         return err
     }
-    defer sdmpProcessor.DisconnectFromPLCBus()
+    defer snapProcessor.DisconnectFromPLCBus()
 
     // Discover uninitialized devices
-    err = sdmpProcessor.DiscoverDevices()
+    err = snapProcessor.DiscoverDevices()
     if err != nil {
         return err
     }
 
     // Process each device
-    for i := 0; i < sdmpProcessor.DeviceCount; i++ {
-        deviceProcessor := sdmpProcessor.NewDeviceProcessor(i, deviceSigner)
+    for i := 0; i < snapProcessor.DeviceCount; i++ {
+        deviceProcessor := snapProcessor.NewDeviceProcessor(i, deviceSigner)
         if err:= deviceProcessor.Process(); err != nil {
             return err
         }
 
         if !initializer.ProvisioningInfo.TlOnly {
-            signer := &sdmp.Signer{Processor: deviceProcessor}
+            signer := &snap.Signer{Processor: deviceProcessor}
             requestBuilder := request.Builder{
                 Signer:          signer,
                 DeviceProcessor: deviceProcessor,
