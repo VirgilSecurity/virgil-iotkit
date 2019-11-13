@@ -35,11 +35,162 @@
 /*! \file firmware.h
  * \brief Firmware uploading/downloading and installation implementation
  *
- * Firmware library is used to save firmware by gateway for different devices and downloading, installing them by
- * client.
+ * Devices use Firmware library to delete, verify and install firmware obtained from Gateway (Thing devices) or cloud
+ * (Gateway devices).
  *
- * \section firmware_usage Firmware Usage
+ * \section firmware_usage_gateway Firmware Usage by Gateway
  *
+ * Gateway uses Firmware library for different goals :
+ * - Download, verify and save firmware from Cloud storage.
+ * - Install firmware for this Gateway.
+ * - Upload firmware for different devices inside its own network by using FLDT Server service.
+ *
+ * First of all it is necessary to initialize Firmware library :
+ *
+ * \code
+vs_storage_op_ctx_t fw_storage_impl;               // Firmware storage implementation
+vs_hsm_impl_t *hsm_impl = NULL;                    // Security module implementation
+vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
+vs_device_type_t device_type = {0};                // Device type
+
+hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+
+ * \endcode
+ *
+ * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
+ *
+ * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
+ * software security module #vs_softhsm_impl() as it is done in this example.
+ *
+ * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
+ * See \ref provision_structures_usage for details
+ *
+ * For FLDT Server service (see \ref fldt_server_usage for details) it is necessary to implement
+ * #vs_fldt_server_add_filetype_cb callback. Also it is necessary to add Firmware file type to the supported file types
+ * list by #vs_fldt_server_add_file_type() call  :
+ *
+ * \code
+ *
+vs_status_e
+_add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **update_ctx) {
+    switch (file_type->type) {
+    case VS_UPDATE_FIRMWARE:    // Firmware file request
+        *update_ctx = vs_firmware_update_ctx();
+        break;
+    case VS_UPDATE_TRUST_LIST:  // Trust List file request
+        *update_ctx = vs_tl_update_ctx();
+        break;
+    default:                    // Unsupported file type request
+        VS_LOG_ERROR("Unsupported file type : %d", file_type->type);
+        return VS_CODE_ERR_UNSUPPORTED_PARAMETER;
+    }
+
+    return VS_CODE_OK;
+}
+
+// ...
+
+sdmp_fldt_server = vs_sdmp_fldt_server(&mac_addr, _add_filetype);
+
+STATUS_CHECK(vs_fldt_server_add_file_type(vs_firmware_update_file_type(), vs_firmware_update_ctx(), false),
+            "Unable to add firmware file type");
+
+ * \endcode
+ *
+ * In this example \a _add_filetype processes 2 standard file types. One of them is Firmware file type.
+ *
+ * Gateway receives firmwares for different targets from Cloud. It necessary to verify them and to broadcast information
+ * about new firmware by using FLDT Server service :
+ *
+ * \code
+
+vs_firmware_header_t header;        // Firmware header
+const char *upd_file_url = ... ;    // URL for file update
+vs_update_file_type_t fw_info;      // Update file information
+int res;
+
+res = vs_cloud_fetch_and_store_fw_file(upd_file_url, &header);
+if (VS_CODE_OK == res) {
+    res = vs_firmware_verify_firmware(&header.descriptor);
+    if (VS_CODE_OK == res) {
+        fw_info.type = VS_UPDATE_FIRMWARE;
+        memcpy(&fw_info.info, &header.descriptor.info, sizeof(vs_file_info_t));
+        if(_is_self_firmware_image(&fw_info.info){
+            _process_own_firmware(&header);
+        } else {
+            STATUS_CHECK(vs_fldt_server_add_file_type(&fw_info, vs_firmware_update_ctx(), true), "Unable to add new firmware");
+        }
+    } else {
+        vs_firmware_delete_firmware(&header.descriptor);
+    }
+
+}
+
+ * \endcode
+ *
+ * In this example Gateway receives firmware header by using Cloud module (see \ref cloud_usage for details ). It
+ * verifies this firmware. In case of error it deletes it. In another case it analyzes this firmware type (\a _is_self_firmware_image
+ * call). If this is firmware for this gateway, it installs it (\a _process_own_firmware call). In another case it sends
+ * firmware by using FLDT Server service (#vs_fldt_server_add_file_type() call) :
+ *
+ * \code
+
+bool
+_is_self_firmware_image(vs_file_info_t *fw_info) {
+    vs_firmware_descriptor_t desc;
+    STATUS_CHECK_RET_BOOL(vs_firmware_get_own_firmware_descriptor(&desc), "Unable to get own firmware descriptor");
+
+    return (0 == VS_IOT_MEMCMP(desc.info.manufacture_id, fw_info->manufacture_id, sizeof(desc.info.manufacture_id)) &&
+            0 == VS_IOT_MEMCMP(desc.info.device_type, fw_info->device_type, sizeof(desc.info.device_type)));
+}
+
+void
+_process_own_firmware(vs_firmware_header_t *fw_info, vs_firmware_header_t *header){
+    vs_firmware_descriptor_t desc;
+    if ( VS_CODE_OK == vs_firmware_load_firmware_descriptor(fw_info->manufacture_id, request->device_type, &desc) &&
+        VS_CODE_OK == vs_firmware_install_firmware(&desc) ) // Installs application
+        {
+            // Restart application or reboot in case of MCU
+        }
+}
+
+void
+_send_firmware(){
+    if (vs_fldt_server_add_file_type(queued_file, vs_firmware_update_ctx(), true)) {
+        VS_LOG_ERROR("Unable to add new firmware");
+        // Error processing
+    }
+}
+
+ * \endcode
+ *
+ *
+ * \section firmware_usage_thing Firmware Usage by Thing
+ *
+ * All Firmware functionality for Thing is implemented by Virgil IoT SDK. User needs only to initialize Firmware library
+ * and to destroy it at the end. See code example below :
+ *
+ * \code
+vs_storage_op_ctx_t fw_storage_impl;    // Firmware storage implementation
+vs_hsm_impl_t *hsm_impl = NULL;         // Security module implementation
+vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
+vs_device_type_t device_type = {0};                // Device type
+
+hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+
+ * \endcode
+ *
+ * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
+ *
+ * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
+ * software security module #vs_softhsm_impl() as it is done in this example.
+ *
+ * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
+ * See \ref provision_structures_usage for details
  */
 
 #ifndef VS_FIRMWARE_H
@@ -79,6 +230,8 @@ typedef struct __attribute__((__packed__)) {
 
 /** Initialize firmware
  *
+ * Firmware initialization has to be done before first Firmware calls.
+ *
  * \param[in] ctx #vs_storage_op_ctx_t storage context. Must not be NULL.
  * \param[in] hsm #vs_hsm_impl_t HSM implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
@@ -92,11 +245,19 @@ vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type);
 
-/**  Destroys firmware */
+/**  Destroy firmware
+ *
+ * Destroys Firmware library. Has to be executed before application finish.
+ *
+ */
 vs_status_e
 vs_firmware_deinit(void);
 
 /** Save firmware data
+ *
+ * Gateway saves a chunk of data received from Cloud. Thing automatically saves a chunk of data received from Gateway.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[in] chunk Data buffer. Must not be NULL.
@@ -113,6 +274,10 @@ vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
 
 /** Save firmware footer
  *
+ * Gateway saves firmware footer received from Cloud. Thing automatically saves footer firmware received from Gateway.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
+ *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[in] footer Firmware footer. Must not be NULL.
  *
@@ -122,6 +287,10 @@ vs_status_e
 vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
 
 /** Load firmware data
+ *
+ * Gateway loads a chunk of data to send it to Thing.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[in] offset Data offset.
@@ -140,6 +309,10 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
 
 /** Load firmware footer
  *
+ * Gateway loads firmware footer to send it to Thing.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
+ *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[out] data Buffer to store firmware. Must not be NULL.
  * \param[in] buff_sz Buffer size. Must not be zero.
@@ -154,6 +327,10 @@ vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
                                  size_t *data_sz);
 
 /** Verify firmware
+ *
+ * Gateway verifies firmware received from Cloud. Thing verifies firmware before its installation.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
@@ -173,6 +350,8 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor)
 
 /** Get own firmware descriptor
  *
+ * Gets own firmware description by both Gateway and Thing.
+ *
  * \param[out] descriptor #vs_firmware_descriptor_t Output own firmware descriptor. Must not be NULL.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
@@ -181,6 +360,8 @@ vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
 
 /** Load firmware descriptor
+ *
+ * Gets firmware descriptor for specified manufacture and device type.
  *
  * \param[in] manufacture_id Manufactured ID.
  * \param[in] device_type Device type.
@@ -195,6 +376,10 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
 
 /** Delete firmware
  *
+ * Thing automatically deletes firmware in case of errorneous data.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
+ *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
@@ -203,6 +388,10 @@ vs_status_e
 vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
 
 /** Install firmware
+ *
+ * Thing automatically installs firmware in case of successful verification.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
@@ -213,9 +402,11 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 
 /** Describe version
  *
+ * Makes ASCIIZ description of firmware.
+ *
  * \param[in] fw_ver #vs_file_version_t File version. Must not be NULL.
  * \param[out] buffer Output buffer. Must not be NULL.
- * \param[int] buf_size Buffer size. Must not be zero.
+ * \param[in] buf_size Buffer size. Must not be zero.
  *
  * \return Buffer with description stored in \buffer
  */
@@ -224,6 +415,10 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
 
 /** Compare own version with given one
  *
+ * Things automatically compares its own version with \a new_descriptor one.
+ *
+ * See \ref firmware_usage_gateway for data flow details.
+ *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
@@ -231,43 +426,77 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
 
-/** Get expected footer length */
+/** Get expected footer length
+ *
+ * This call returns firmware footer length.
+ *
+ * \return Firmware length in bytes
+ */
 int
 vs_firmware_get_expected_footer_len(void);
 
-/** Return update interface */
+/** Return Update interface
+ *
+ * This call returns Update implementation. It is used for Update calls.
+ *
+ * \return Update interface implementation
+ *
+ */
 vs_update_interface_t *
 vs_firmware_update_ctx(void);
 
-/** Return update file type */
+/** Return file type for Update library
+ *
+ * This call returns file type information fro Update library. It is used for Update calls.
+ *
+ * \return File type information for Update library
+ *
+ */
 const vs_update_file_type_t *
 vs_firmware_update_file_type(void);
 
-/** ntoh convertor for descriptor
+/** ntoh conversion for descriptor
+ *
+ * This call makes network-to-host firmware descriptor conversion.
+ *
+ * \warning This call changes \a desc input parameter.
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc);
 
-/** ntoh convertor for header
+/** ntoh conversion for header
  *
- * \param[in,out] header firmware header. Must not be NULL.
+ * This call makes network-to-host firmware header conversion.
+ *
+ * \warning This call changes \a desc input parameter.
+ *
+ * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_ntoh_header(vs_firmware_header_t *header);
 
-/** hton convertor for descriptor
+/** hton conversion for descriptor
+ *
+ * This call makes host-to-network firmware descriptor conversion.
+ *
+ * \warning This call changes \a desc input parameter.
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc);
 
-/** hton convertor for header
+/** hton conversion for header
  *
- * \param[in,out] header firmware header. Must not be NULL.
+ * This call makes host-to-network firmware header conversion.
+ *
+ * \warning This call changes \a desc input parameter.
+ *
+ * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
 void
 vs_firmware_hton_header(vs_firmware_header_t *header);
+
 #endif // VS_FIRMWARE_H

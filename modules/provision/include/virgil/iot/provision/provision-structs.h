@@ -34,6 +34,10 @@
 
 /*! \file provision-structs.h
  * \brief Provision interface structures
+ *
+ * \section provision_structures_usage Provision structure usage
+ *
+ * TODO : manufacture, device id initialization
  */
 
 #ifndef VS_IOT_PROVISION_STRUCTS_H
