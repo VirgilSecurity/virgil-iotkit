@@ -60,7 +60,7 @@ class UtilContext:
         return self.__cli_args
 
     def __load_factory_info(self):
-        factory_info_json_path = os.path.expanduser(self._cli_args["factory_info_json"])
+        factory_info_json_path = os.path.expanduser(self._cli_args["factory_info"])
         if not os.path.exists(factory_info_json_path):
             sys.exit("File with Factory info '%s' does not exist" % factory_info_json_path)
         with open(factory_info_json_path, 'r') as f:
