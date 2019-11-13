@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+// TODO : do we need this file? Rename it to hsm_none.h or remove constants below to another place
 #ifndef VS_IOTELIC_HSM_H
 #define VS_IOTELIC_HSM_H
 
