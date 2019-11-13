@@ -79,8 +79,9 @@ cmake version 3.14.5
 - Firmware Signer
 
 ## Modules
-- [Crypto](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : Cloud library for obtaining credentials from
+- [Cloud](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : Cloud library for obtaining credentials from
 thing service and downloading firmware images and trust list files from cloud storage.
+- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html).
 - Provision.
 - Firmware.
 - Secbox.

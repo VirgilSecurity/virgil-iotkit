@@ -52,22 +52,7 @@ func main()  {
 		&cli.StringFlag{
 			Name:    "data",
 			Aliases: []string{"d"},
-			Usage:   "File with encrypted data",
-		},
-		&cli.StringFlag{
-			Name:    "file_key",
-			Aliases: []string{"k"},
-			Usage:   "File with private key to decrypt received data file",
-		},
-		&cli.StringFlag{
-			Name:    "file_key_pass",
-			Aliases: []string{"p"},
-			Usage:   "Password file with private key to decrypt received data file",
-		},
-		&cli.StringFlag{
-			Name:    "file_sender_key",
-			Aliases: []string{"s"},
-			Usage:   "Public key of sender of data file",
+			Usage:   "File with data",
 		},
 		&cli.StringFlag{
 			Name:    "app_token",
@@ -75,9 +60,9 @@ func main()  {
 			Usage:   "Virgil application token",
 		},
 		&cli.StringFlag{
-			Name:    "registration_url",
+			Name:    "api_url",
 			Aliases: []string{"b"},
-			Usage:   "URL used for Cards registration",
+			Usage:   "API URL, used for cards registration",
 		},
 	}
 

@@ -53,13 +53,17 @@ func init() {
     crypto.UseSha256Fingerprints = true
 }
 
+const (
+    // TODO: remove hardcoded EC type after KeyManager support of different EC types
+    SIGNER_KEY_EC_TYPE = converters.VS_KEYPAIR_EC_SECP256R1
+)
+
 type VirgilCryptoSigner struct {
     FileKeys     []FileKey
 }
 
 type FileKey struct {
     FilePath    string `json:"path"`
-    EcType      uint8  `json:"ec_type"`
     KeyType     uint8  `json:"key_type"`
 }
 
@@ -99,7 +103,7 @@ func (s VirgilCryptoSigner) Sign(data []byte) (signatures []firmware.Signature, 
 
         // Convert signature to raw format
         var rawSignature []byte
-        rawSignature, err = converters.VirgilSignToRaw(virgilSignature, fileKey.EcType)
+        rawSignature, err = converters.VirgilSignToRaw(virgilSignature, SIGNER_KEY_EC_TYPE)
         if err != nil {
             return nil, err
         }
@@ -115,14 +119,14 @@ func (s VirgilCryptoSigner) Sign(data []byte) (signatures []firmware.Signature, 
         }
 
         // Convert public key to raw format
-        rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, fileKey.EcType)
+        rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, SIGNER_KEY_EC_TYPE)
         if err != nil {
             return nil, fmt.Errorf("failed to prepare raw public key: %v", err)
         }
 
         signature := firmware.Signature{
             SignerType:       fileKey.KeyType,
-            ECType:           fileKey.EcType,
+            ECType:           SIGNER_KEY_EC_TYPE,
             HashType:         converters.VS_HASH_SHA_256,
             Sign:             rawSignature,
             SignerPublicKey:  rawPubKey,
@@ -138,9 +142,9 @@ func (s VirgilCryptoSigner) Sign(data []byte) (signatures []firmware.Signature, 
 }
 
 func (s VirgilCryptoSigner) SignerKeyEcTypes() []uint8 {
-    var types []uint8
-    for _, t := range s.FileKeys {
-        types = append(types, t.EcType)
+    types := make([]uint8, len(s.FileKeys))
+    for i := range types {
+        types[i] = SIGNER_KEY_EC_TYPE
     }
     return types
 }

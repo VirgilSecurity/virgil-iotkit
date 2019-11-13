@@ -36,7 +36,14 @@
  * @file vs-softhsm.h
  * @brief Software crypto implementation
  *
- * This library can be used when HSM is not available
+ * This library can be used when no Hardware Security Module support provided.
+ *
+ * \section vs-softhsm-usage Virgil Security Software Security Module Usage
+ *
+ * You need initialize vs-softhsm module before its usage and free it after. See code below for example :
+ *
+ *
+ *
  */
 
 #ifndef HELPERS_VS_SOFTHSM_H
