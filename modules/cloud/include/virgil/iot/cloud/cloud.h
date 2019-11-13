@@ -149,9 +149,9 @@
 #define VS_UPD_URL_STR_SIZE 200
 
 // TODO : contents must be const
-/** Callback for data header download
+/** Implementation for data header download
  *
- * This function callback stores loaded handler in internal buffers.
+ * This function implementation stores loaded handler in internal buffers.
  *
  * \param[in] contents Input data. Must not be NULL.
  * \param[in] chunksize Input data size. Must not be zero.
@@ -166,16 +166,16 @@ typedef enum {
     VS_CLOUD_REQUEST_POST /**< HTTP request by POST method */
 } vs_cloud_http_method_e;
 
-/** Callback for GET and POST requests processing
+/** Implementation for GET and POST requests processing
  *
- * This function callback loads requested data and stores it in the \a out_data output buffer.
+ * This function implementation loads requested data and stores it in the \a out_data output buffer.
  *
  * \param[in] method HTTP method, which will be performed
  * \param[in] url URL for data download. Must not be NULL.
  * \param[in] request_body The body of the POST request.
  * \param[in] request_body_size The size of the POST request body.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
- * \param[in] fetch_handler Callback to process information that has been downloaded. If NULL, default processing will
+ * \param[in] fetch_handler Implementation to process information that has been downloaded. If NULL, default processing will
  * be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
  * in_out_size Data size storage. Must not be NULL.
  *
@@ -192,7 +192,7 @@ typedef vs_status_e (*vs_cloud_http_request_func_t)(vs_cloud_http_method_e metho
 
 /** Cloud implementation */
 typedef struct {
-    vs_cloud_http_request_func_t http_request; /**< Callback for GET request processing */
+    vs_cloud_http_request_func_t http_request; /**< GET and POST requests processing */
 } vs_cloud_impl_t;
 
 /** Fetch and store Firmware
@@ -230,7 +230,7 @@ typedef struct {
 
 /** Default topics
  *
- * This is the list of default topics processed by #vs_cloud_mb_process_default_topic_cb_t() callback.
+ * This is the list of default topics processed by #vs_cloud_mb_process_default_topic_cb_t() implementation.
  */
 typedef enum {
     VS_CLOUD_MB_TOPIC_TL, /**< Trust List */
@@ -238,9 +238,9 @@ typedef enum {
 } vs_cloud_mb_topic_id_t;
 
 // TODO : rename p_data to data
-/** Callback for custom topics processing
+/** Implementation for custom topics processing
  *
- * This callback processes messages from topics as raw data.
+ * This implementation processes messages from topics as raw data.
  *
  * \param[in] topic Topic name. Cannot be NULL.
  * \param[in] topic_sz Topic name size. Cannot be zero.
@@ -252,9 +252,9 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
                                                       const uint8_t *p_data,
                                                       uint16_t length);
 
-/** Callback for default topics processing
+/** Implementation for default topics processing
  *
- * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this callback when receives
+ * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this function when receives
  * a notification about a new version of Trust List or Firmware
  * to load data for this topic.
  *
@@ -268,7 +268,7 @@ typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint1
  * Registers topic processing handlers.
  *
  * \param[in] topic_id Topic identifier.
- * \param[in] handler Topic processing callback. Must not be NULL.
+ * \param[in] handler Topic processing implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -276,7 +276,7 @@ vs_status_e
 vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
                                               vs_cloud_mb_process_default_topic_cb_t handler);
 
-/** Register custom handler callback
+/** Register custom handler implementation
  *
  * Registers custom topics processing.
  * You can use #vs_cloud_message_bin_register_default_handler() if it is enough for your default topics processing.
@@ -290,7 +290,7 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
 
 /** Message bin initialization
  *
- * This callback initializes MQTT with specified URL and certificates.
+ * This implementation initializes MQTT with specified URL and certificates.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
  * Virgil IoT SDK library. You can analyze function which \a init member points to for an example.
  *
@@ -310,7 +310,7 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
 
 /** Message bin connection and subscription to topic implementation
  *
- * This callback connects to the message bin broker and subscribes to topics.
+ * This implementation connects to the message bin broker and subscribes to topics.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
  * Virgil IoT SDK library. You can analyze function which \a connect_subscribe member points to for an example.
  *
@@ -318,7 +318,7 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
  * \param[in] login Login. Cannot be NULL.
  * \param[in] password Password. Cannot be NULL.
  * \param[in] topic_list Pointer to the list of topics. Cannot be NULL.
- * \param[in] process_topic Callback for topics processing. Cannot be NULL.
+ * \param[in] process_topic Implementation for topics processing. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -330,7 +330,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
 
 /** Message Bin processing
  *
- * Callback for message bin processing.
+ * Implementation for message bin processing.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
  * Virgil IoT SDK library. You can analyze function which \a process member points to for an example.
  *
@@ -343,7 +343,7 @@ typedef struct {
     vs_cloud_mb_init_func_t init;                           /**< Message bin initialization */
     vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< Message bin connection and topic subscribing */
     vs_cloud_mb_process_func_t
-            process; /**< Message bin processing : listen incoming messages and executing callback calls */
+            process; /**< Message bin processing : listen incoming messages and executing implementation calls */
 } vs_cloud_message_bin_impl_t;
 
 /** Process message bin

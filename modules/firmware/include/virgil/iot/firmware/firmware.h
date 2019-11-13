@@ -68,7 +68,7 @@ STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device
  * See \ref provision_structures_usage for details
  *
  * For FLDT Server service (see \ref fldt_server_usage for details) it is necessary to implement
- * #vs_fldt_server_add_filetype_cb callback. Also it is necessary to add Firmware file type to the supported file types
+ * #vs_fldt_server_add_filetype_cb. Also it is necessary to add Firmware file type to the supported file types
  * list by #vs_fldt_server_add_file_type() call  :
  *
  * \code

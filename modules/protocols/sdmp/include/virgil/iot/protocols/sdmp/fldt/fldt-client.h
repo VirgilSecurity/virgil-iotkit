@@ -94,10 +94,10 @@ extern "C" {
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
 
-/** Got new file callback
+/** Got new file implementation
  *
- * Callback for #vs_sdmp_fldt_client function.
- * This callback is used when new file has been fully loaded. See #fldt_client_usage for details.
+ * Implementation for #vs_sdmp_fldt_client function.
+ * This implementation is used when new file has been fully loaded. See #fldt_client_usage for details.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in] prev_file_ver Current file version before loading new one. Cannot be NULL.
@@ -118,7 +118,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * This call returns FLDT client implementation. It must be called before any FLDT call.
  *
- * \param[in] got_file_callback Callback. Must not be NULL.
+ * \param[in] got_file_callback Implementation. Must not be NULL.
  *
  * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
  */

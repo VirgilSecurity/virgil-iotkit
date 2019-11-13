@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
+// TODO : this file has to be moved to the private folder
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_INFO_PRIVATE_H
 

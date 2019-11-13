@@ -42,7 +42,7 @@
  *
  * Server side sends new file versions provided by #vs_fldt_server_add_file_type call. Also it sends information about
  * present files by client requests. Files must be previously listed by #vs_fldt_server_add_file_type call. If requested
- * file has not been added, #vs_fldt_server_add_filetype callback is called to provide such information.
+ * file has not been added, #vs_fldt_server_add_filetype is called to provide such information.
  * In most case it used to output new file version information and gateway address.
  * To successfully file broadcasting #vs_update_interface_t must be provided for each file type. You can see
  * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
@@ -92,13 +92,13 @@ extern "C" {
 #include <virgil/iot/protocols/sdmp/sdmp-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
-/** Add new file type callback
+/** Add new file type implementation
  *
- * Callback for #vs_sdmp_fldt_server function.
- * This callback is used when gateway receives request for file type that has not been added by
+ * Implementation for #vs_sdmp_fldt_server function.
+ * This function is used when gateway receives request for file type that has not been added by
  * #vs_fldt_server_add_file_type call.
  *
- * \warning Valid pointer to the update context with all callback must be provided.
+ * \warning Valid pointer to the update context with all implementations must be provided.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.

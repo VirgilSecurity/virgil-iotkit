@@ -32,6 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+// TODO : remove this file to the private section
+
 #ifndef VS_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
 #define VS_SECURITY_SDK_SDMP_SERVICES_FLDT_PRIVATE_H
 
