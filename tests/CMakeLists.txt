@@ -54,7 +54,7 @@ target_sources(virgil-iot-sdk-tests
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test_crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/sdmp/sdmp_tests.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/snap/snap_tests.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/aes.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdh.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/ecdsa.c
@@ -89,7 +89,7 @@ endif()
 
 target_link_libraries(virgil-iot-sdk-tests
         vs-module-secbox
-        vs-module-sdmp-factory
+        vs-module-snap-factory
         vs-module-firmware
         )
 

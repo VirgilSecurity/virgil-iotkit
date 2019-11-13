@@ -84,7 +84,7 @@ typedef struct __attribute__((__packed__)) {
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
@@ -103,7 +103,7 @@ vs_firmware_deinit(void);
  * \param[in] chunk_sz Data size. Must not be zero.
  * \param[in] offset Data offset.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
@@ -116,7 +116,7 @@ vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[in] footer Firmware footer. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
@@ -129,7 +129,7 @@ vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, con
  * \param[in] buf_sz Buffer size.
  * \param[out] data_sz Stored data size. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
@@ -145,7 +145,7 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
  * \param[in] buff_sz Buffer size. Must not be zero.
  * \param[out] data_sz Saved footer size. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
@@ -157,7 +157,7 @@ vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -166,7 +166,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor);
@@ -175,7 +175,7 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor)
  *
  * \param[out] descriptor #vs_firmware_descriptor_t Output own firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
@@ -186,7 +186,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
  * \param[in] device_type Device type.
  * \param[out] descriptor #vs_firmware_descriptor_t Output firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
@@ -197,7 +197,7 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -206,7 +206,7 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -226,7 +226,7 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);

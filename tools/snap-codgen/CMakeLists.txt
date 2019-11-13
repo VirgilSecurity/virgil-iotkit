@@ -41,7 +41,7 @@ if(NOT VIRGIL_IOT_DIRECTORY)
 endif()
 
 #
-#   SDMP convert code generator
+#   SNAP convert code generator
 #
 add_go_executable(vs-tool-snap-codgen snap-codgen)
 
@@ -51,11 +51,11 @@ add_go_executable(vs-tool-snap-codgen snap-codgen)
 #
 
 set (SNAP_SRC_TYPES
-        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/sdmp-structs.h
-        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/prvs/prvs-structs.h
-        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-structs.h
-        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/info-private.h
-        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/fldt/fldt-private.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/snap-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/prvs/prvs-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/info/info-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/info/info-private.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/fldt/fldt-private.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/provision/include/virgil/iot/provision/provision-structs.h
         -i ${VIRGIL_IOT_DIRECTORY}/helpers/update/include/virgil/iot/update/update.h
         )
@@ -63,7 +63,7 @@ set (SNAP_SRC_TYPES
 add_custom_command(TARGET vs-tool-snap-codgen POST_BUILD
         COMMAND ${vs-tool-snap-codgen_BINARY_DIR}/snap-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SNAP_SRC_TYPES}
-                                                  -oc ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/src/generated/sdmp_cvt.c
-                                                  -oh ${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/generated/sdmp_cvt.h
+                                                  -oc ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/src/generated/snap_cvt.c
+                                                  -oh ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/generated/snap_cvt.h
         COMMENT "Generate SNAP convert functions"
         )

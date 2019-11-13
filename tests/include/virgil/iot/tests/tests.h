@@ -42,7 +42,7 @@
 #define TEST_DEVICE_TYPE "TEST"
 
 uint16_t
-vs_sdmp_tests(void);
+vs_snap_tests(void);
 
 uint16_t
 vs_crypto_test(vs_hsm_impl_t *hsm_impl);

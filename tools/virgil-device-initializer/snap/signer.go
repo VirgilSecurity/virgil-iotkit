@@ -66,9 +66,9 @@ func (s *Signer) Verify(data []byte,
                         signature []byte,
                         pubKeyBytes []byte,
                         hash virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) error {
-    return fmt.Errorf("not implemented for sdmp signer")
+    return fmt.Errorf("not implemented for snap signer")
 }
 
 func (s *Signer) PublicKeyFull() ([]byte, error) {
-    return nil, fmt.Errorf("not implemented for sdmp signer")
+    return nil, fmt.Errorf("not implemented for snap signer")
 }

@@ -35,41 +35,41 @@
 package snap
 
 /*
-#cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/protocols/sdmp/info/info-client.h>
+#cgo LDFLAGS: -lvs-module-snap-factory -ltools-hal -lvs-module-logger
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/snap/ti_info_impl.h>
-extern int goDeviceStartNotifCb(vs_sdmp_info_device_t *device);
+extern int goDeviceStartNotifCb(vs_snap_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
 extern int goDeviceStatCb(vs_info_statistics_t *stat);
 
-static int go_sdmp_init(void) {
+static int go_snap_init(void) {
     vs_device_manufacture_id_t manufacture_id = {0};
     vs_device_type_t device_type = {0};
     vs_device_serial_t serial = {0};
-    uint32_t roles = VS_SDMP_DEV_SNIFFER;
+    uint32_t roles = VS_SNAP_DEV_SNIFFER;
 
-    return vs_sdmp_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
+    return vs_snap_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
 }
 
 static int _set_polling(void) {
-    return vs_sdmp_info_set_polling(NULL,
-                                    vs_sdmp_broadcast_mac(),
-                                    VS_SDMP_INFO_GENERAL | VS_SDMP_INFO_STATISTICS,
+    return vs_snap_info_set_polling(NULL,
+                                    vs_snap_broadcast_mac(),
+                                    VS_SNAP_INFO_GENERAL | VS_SNAP_INFO_STATISTICS,
                                     true,
                                     2);
 }
 
 static int _register_info_client(void) {
-    vs_sdmp_info_callbacks_t _cb;
+    vs_snap_info_callbacks_t _cb;
 
     _cb.device_start_cb = goDeviceStartNotifCb;
     _cb.general_info_cb = goGeneralInfoCb;
     _cb.statistics_cb = goDeviceStatCb;
 
-    return vs_sdmp_register_service(vs_sdmp_info_client(vs_info_impl(), _cb));
+    return vs_snap_register_service(vs_snap_info_client(vs_info_impl(), _cb));
 }
 */
 import "C"
@@ -97,12 +97,12 @@ func ConnectToDeviceNetwork() error {
     C.vs_logger_init(C.VS_LOGLEV_DEBUG)
 
     // Use UDP Broadcast as transport
-    if 0 != C.go_sdmp_init() {
-        return fmt.Errorf("can't start SDMP communication")
+    if 0 != C.go_snap_init() {
+        return fmt.Errorf("can't start SNAP communication")
     }
 
     if 0 != C._register_info_client() {
-        return fmt.Errorf("can't register SDMP:INFO client service")
+        return fmt.Errorf("can't register SNAP:INFO client service")
     }
 
     return nil
@@ -110,7 +110,7 @@ func ConnectToDeviceNetwork() error {
 
 func DisconnectDeviceNetwork() {
     utils.Log.Println("DisconnectDeviceNetwork")
-    C.vs_sdmp_deinit()
+    C.vs_snap_deinit()
 }
 
 func carray2string(array *C.uint8_t, sz C.int) string {
@@ -144,27 +144,27 @@ func fileVer2string(major C.uint8_t, minor C.uint8_t,
 func roles2strings(roles C.uint32_t) []string {
         res := []string{}
 
-        if (roles & C.VS_SDMP_DEV_GATEWAY) == C.VS_SDMP_DEV_GATEWAY {
+        if (roles & C.VS_SNAP_DEV_GATEWAY) == C.VS_SNAP_DEV_GATEWAY {
             res = append(res, "GATEWAY")
         }
 
-        if (roles & C.VS_SDMP_DEV_THING) == C.VS_SDMP_DEV_THING {
+        if (roles & C.VS_SNAP_DEV_THING) == C.VS_SNAP_DEV_THING {
             res = append(res, "THING")
         }
 
-        if (roles & C.VS_SDMP_DEV_CONTROL) == C.VS_SDMP_DEV_CONTROL {
+        if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
             res = append(res, "CONTROL")
         }
 
-        if (roles & C.VS_SDMP_DEV_LOGGER) == C.VS_SDMP_DEV_LOGGER {
+        if (roles & C.VS_SNAP_DEV_LOGGER) == C.VS_SNAP_DEV_LOGGER {
             res = append(res, "LOGGER")
         }
 
-        if (roles & C.VS_SDMP_DEV_SNIFFER) == C.VS_SDMP_DEV_SNIFFER {
+        if (roles & C.VS_SNAP_DEV_SNIFFER) == C.VS_SNAP_DEV_SNIFFER {
             res = append(res, "SNIFFER")
         }
 
-        if (roles & C.VS_SDMP_DEV_DEBUGGER) == C.VS_SDMP_DEV_DEBUGGER {
+        if (roles & C.VS_SNAP_DEV_DEBUGGER) == C.VS_SNAP_DEV_DEBUGGER {
             res = append(res, "DEBUGGER")
         }
 
@@ -172,9 +172,9 @@ func roles2strings(roles C.uint32_t) []string {
 }
 
 //export goDeviceStartNotifCb
-func goDeviceStartNotifCb(device *C.vs_sdmp_info_device_t) C.int {
+func goDeviceStartNotifCb(device *C.vs_snap_info_device_t) C.int {
      if 0 != C._set_polling() {
-        utils.Log.Println("can't set devices polling. SDMP:INFO:POLL error")
+        utils.Log.Println("can't set devices polling. SNAP:INFO:POLL error")
         return -1
      }
 
@@ -223,7 +223,7 @@ func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
                   _statisticsCb func(statistics devices.DeviceInfo) error) error {
 
     if 0 != C._set_polling() {
-        return fmt.Errorf("can't set devices polling. SDMP:INFO:POLL error")
+        return fmt.Errorf("can't set devices polling. SNAP:INFO:POLL error")
     }
 
     generalInfoCb = _generalInfoCb

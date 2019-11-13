@@ -178,26 +178,26 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
         PrivateKey: deviceSignerPrivateKey,
     }
 
-    // Prepare SDMP processor
-    sdmpProcessor := &snap.Processor{
+    // Prepare SNAP processor
+    snapProcessor := &snap.Processor{
         ProvisioningInfo: initializer.ProvisioningInfo,
     }
 
     // Connect to PLC bus
-    if err:= sdmpProcessor.ConnectToPLCBus(); err != nil {
+    if err:= snapProcessor.ConnectToPLCBus(); err != nil {
         return err
     }
-    defer sdmpProcessor.DisconnectFromPLCBus()
+    defer snapProcessor.DisconnectFromPLCBus()
 
     // Discover uninitialized devices
-    err = sdmpProcessor.DiscoverDevices()
+    err = snapProcessor.DiscoverDevices()
     if err != nil {
         return err
     }
 
     // Process each device
-    for i := 0; i < sdmpProcessor.DeviceCount; i++ {
-        deviceProcessor := sdmpProcessor.NewDeviceProcessor(i, deviceSigner)
+    for i := 0; i < snapProcessor.DeviceCount; i++ {
+        deviceProcessor := snapProcessor.NewDeviceProcessor(i, deviceSigner)
         if err:= deviceProcessor.Process(); err != nil {
             return err
         }

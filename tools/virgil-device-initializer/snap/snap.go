@@ -35,20 +35,20 @@
 package snap
 
 /*
-#cgo LDFLAGS: -lvs-module-sdmp-factory -ltools-hal -lvs-module-logger
-#include <virgil/iot/protocols/sdmp.h>
-#include <virgil/iot/protocols/sdmp/prvs/prvs-client.h>
+#cgo LDFLAGS: -lvs-module-snap-factory -ltools-hal -lvs-module-logger
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/prvs/prvs-client.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 #include <virgil/iot/tools/hal/snap/ti_prvs_impl.h>
 
 int
-go_sdmp_init(void) {
+go_snap_init(void) {
     vs_device_manufacture_id_t manufacture_id = {0};
     vs_device_type_t device_type = {0};
     vs_device_serial_t serial = {0};
-    uint32_t roles = VS_SDMP_DEV_CONTROL;
+    uint32_t roles = VS_SNAP_DEV_CONTROL;
 
-    return vs_sdmp_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
+    return vs_snap_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
 }
 
 */
@@ -78,13 +78,13 @@ type Processor struct {
     ProvisioningInfo    *common.ProvisioningInfo
 
     DeviceCount         int
-    devicesList         C.vs_sdmp_prvs_dnid_list_t
+    devicesList         C.vs_snap_prvs_dnid_list_t
 }
 
 type DeviceProcessor struct {
     ProvisioningInfo       *common.ProvisioningInfo
     DeviceSigner           common.SignerInterface
-    deviceInfo             C.vs_sdmp_prvs_dnid_element_t
+    deviceInfo             C.vs_snap_prvs_dnid_element_t
 
     Serial                 [32]uint8
     DeviceMacAddr          [6]byte
@@ -98,27 +98,27 @@ type DeviceProcessor struct {
 func roles2strings(roles C.uint32_t) []string {
         res := []string{}
 
-        if (roles & C.VS_SDMP_DEV_GATEWAY) == C.VS_SDMP_DEV_GATEWAY {
+        if (roles & C.VS_SNAP_DEV_GATEWAY) == C.VS_SNAP_DEV_GATEWAY {
             res = append(res, "GATEWAY")
         }
 
-        if (roles & C.VS_SDMP_DEV_THING) == C.VS_SDMP_DEV_THING {
+        if (roles & C.VS_SNAP_DEV_THING) == C.VS_SNAP_DEV_THING {
             res = append(res, "THING")
         }
 
-        if (roles & C.VS_SDMP_DEV_CONTROL) == C.VS_SDMP_DEV_CONTROL {
+        if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
             res = append(res, "CONTROL")
         }
 
-        if (roles & C.VS_SDMP_DEV_LOGGER) == C.VS_SDMP_DEV_LOGGER {
+        if (roles & C.VS_SNAP_DEV_LOGGER) == C.VS_SNAP_DEV_LOGGER {
             res = append(res, "LOGGER")
         }
 
-        if (roles & C.VS_SDMP_DEV_SNIFFER) == C.VS_SDMP_DEV_SNIFFER {
+        if (roles & C.VS_SNAP_DEV_SNIFFER) == C.VS_SNAP_DEV_SNIFFER {
             res = append(res, "SNIFFER")
         }
 
-        if (roles & C.VS_SDMP_DEV_DEBUGGER) == C.VS_SDMP_DEV_DEBUGGER {
+        if (roles & C.VS_SNAP_DEV_DEBUGGER) == C.VS_SNAP_DEV_DEBUGGER {
             res = append(res, "DEBUGGER")
         }
 
@@ -177,10 +177,10 @@ func (p *DeviceProcessor) Process() error {
 }
 
 func (p *Processor) DiscoverDevices() error {
-    list := C.vs_sdmp_prvs_dnid_list_t{}
+    list := C.vs_snap_prvs_dnid_list_t{}
 
-    if 0 != C.vs_sdmp_prvs_enum_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
-        return fmt.Errorf("can't find SDMP:PRVS uninitialized devices")
+    if 0 != C.vs_snap_prvs_enum_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
+        return fmt.Errorf("can't find SNAP:PRVS uninitialized devices")
     }
 
     p.devicesList = list
@@ -193,19 +193,19 @@ func (p *Processor) DiscoverDevices() error {
 func (p Processor ) ConnectToPLCBus() error {
 
     // Use UDP Broadcast as transport
-    if 0 != C.go_sdmp_init() {
-        return fmt.Errorf("can't start SDMP communication")
+    if 0 != C.go_snap_init() {
+        return fmt.Errorf("can't start SNAP communication")
     }
 
-    if 0 != C.vs_sdmp_register_service(C.vs_sdmp_prvs_client(C.vs_prvs_impl())) {
-        return fmt.Errorf("can't register SDMP:PRVS service")
+    if 0 != C.vs_snap_register_service(C.vs_snap_prvs_client(C.vs_prvs_impl())) {
+        return fmt.Errorf("can't register SNAP:PRVS service")
     }
 
     return nil
 }
 
 func (p Processor) DisconnectFromPLCBus(){
-    C.vs_sdmp_deinit()
+    C.vs_snap_deinit()
 }
 
 func (p *DeviceProcessor) SetTrustList() error {
@@ -227,7 +227,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     headerBytes := binBuf.Bytes()
     headerPtr := (*C.uchar)(unsafe.Pointer(&headerBytes[0]))
 
-    if 0 != C.vs_sdmp_prvs_set_tl_header(nil,
+    if 0 != C.vs_snap_prvs_set_tl_header(nil,
                                          &mac,
                                          headerPtr,
                                          C.uint16_t(len(headerBytes)),
@@ -268,7 +268,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
 
-    if 0 != C.vs_sdmp_prvs_set_tl_footer(nil,
+    if 0 != C.vs_snap_prvs_set_tl_footer(nil,
                                        &mac,
                                        dataPtr,
                                        C.uint16_t(len(footerBytes)),
@@ -287,8 +287,8 @@ func (p *DeviceProcessor) InitDevice() error {
     asavInfoPtr := (*C.uchar)(unsafe.Pointer(&asavInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_sdmp_prvs_save_provision(nil, &mac, asavInfoPtr, bufSize, DEFAULT_TIMEOUT_MS) {
-        return fmt.Errorf("InitDevice: vs_sdmp_prvs_save_provision error")
+    if 0 != C.vs_snap_prvs_save_provision(nil, &mac, asavInfoPtr, bufSize, DEFAULT_TIMEOUT_MS) {
+        return fmt.Errorf("InitDevice: vs_snap_prvs_save_provision error")
     }
 
     pubKeyT := common.Go_vs_pubkey_t{}
@@ -300,20 +300,20 @@ func (p *DeviceProcessor) InitDevice() error {
     return nil
 }
 
-// Calls vs_sdmp_prvs_set
-func (p *DeviceProcessor) uploadData(element C.vs_sdmp_prvs_element_e, data []byte, name string) error {
+// Calls vs_snap_prvs_set
+func (p *DeviceProcessor) uploadData(element C.vs_snap_prvs_element_e, data []byte, name string) error {
     fmt.Println("Upload", name)
 
     mac := p.deviceInfo.mac_addr
     dataPtr := (*C.uchar)(unsafe.Pointer(&data[0]))
-    if 0 != C.vs_sdmp_prvs_set(nil,
+    if 0 != C.vs_snap_prvs_set(nil,
                                &mac,
                                element,
                                dataPtr,
                                C.uint16_t(len(data)),
                                DEFAULT_TIMEOUT_MS) {
         fmt.Println("Failed: upload", name)
-        return fmt.Errorf("failed to set %s on device (vs_sdmp_prvs_set)", name)
+        return fmt.Errorf("failed to set %s on device (vs_snap_prvs_set)", name)
     }
     fmt.Println("Success: upload", name)
     return nil
@@ -438,19 +438,19 @@ func (p *DeviceProcessor) SignDevice() error {
 func (p *DeviceProcessor) GetProvisionInfo() error {
     const bufSize = 512
     var devInfoBuf [bufSize]uint8
-    deviceInfoPtr := (*C.vs_sdmp_prvs_devi_t)(unsafe.Pointer(&devInfoBuf[0]))
+    deviceInfoPtr := (*C.vs_snap_prvs_devi_t)(unsafe.Pointer(&devInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_sdmp_prvs_device_info(nil,
+    if 0 != C.vs_snap_prvs_device_info(nil,
                                        &mac,
                                        deviceInfoPtr,
                                        C.uint16_t(bufSize),
                                        DEFAULT_TIMEOUT_MS) {
-        return fmt.Errorf("failed to get device info (vs_sdmp_prvs_device_info)")
+        return fmt.Errorf("failed to get device info (vs_snap_prvs_device_info)")
     }
 
     // Convert to Go struct
-    deviceInfo := Go_vs_sdmp_prvs_devi_t{}
+    deviceInfo := Go_vs_snap_prvs_devi_t{}
     if err := deviceInfo.FromBytes(devInfoBuf[:]); err != nil {
         return err
     }
@@ -473,7 +473,7 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     signature_sz := C.uint16_t(0)
 
     // Prepare signing request
-    signRequestStruct := Go_vs_sdmp_prvs_sgnp_req_t{
+    signRequestStruct := Go_vs_snap_prvs_sgnp_req_t{
         HashType: DEVICE_HASH_ALGO,
         Data:     data,
     }
@@ -487,7 +487,7 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
     dataPtr := (*C.uchar)(unsafe.Pointer(&requestBytes[0]))
 
-    signRes := C.vs_sdmp_prvs_sign_data(nil,
+    signRes := C.vs_snap_prvs_sign_data(nil,
                                         &mac,
                                         dataPtr,
                                         C.uint16_t(len(requestBytes)),

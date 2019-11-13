@@ -79,7 +79,7 @@ target_include_directories(tools-hal
 #
 target_link_libraries(tools-hal
         PUBLIC
-        vs-module-sdmp-factory
+        vs-module-snap-factory
 
         PRIVATE
         enable_pedantic_mode

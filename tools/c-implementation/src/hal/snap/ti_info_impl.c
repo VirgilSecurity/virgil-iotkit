@@ -34,13 +34,13 @@
 
 #include <string.h>
 
-#include <virgil/iot/protocols/sdmp/info/info-client.h>
+#include <virgil/iot/protocols/snap/info/info-client.h>
 #include <virgil/iot/tools/helpers/ti_wait_functionality.h>
 
 /******************************************************************************/
-vs_sdmp_info_impl_t
+vs_snap_info_impl_t
 vs_info_impl() {
-    vs_sdmp_info_impl_t res;
+    vs_snap_info_impl_t res;
 
     memset(&res, 0, sizeof(res));
 
