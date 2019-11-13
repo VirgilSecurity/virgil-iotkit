@@ -229,7 +229,8 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     CHECK_MEM_ALLOC(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
 
     uint8_t *request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
-    CHECK_MEM_ALLOC(NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
+    CHECK_MEM_ALLOC(
+            NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
 
     vs_impl_device_serial(serial_number);
 
