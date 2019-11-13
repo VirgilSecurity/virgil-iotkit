@@ -34,7 +34,27 @@
 
 /**
  * @file hsm.h
- * @brief HSM callbacks signatures
+ * @brief Security Module callbacks signatures
+ *
+ * This header contains #vs_hsm_impl_t structure that is used for crypto operations.
+ * User needs to return this function for library with crypto callbacks.
+ *
+ * Library provides standard software implementation. See \ref vs-softhsm-usage for example.
+ *
+ * \code
+ *
+ * vs_hsm_impl_t *hsm_impl = NULL;  // Security Module callbacks
+ * vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
+ *
+ * hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+ *
+ * // ... Library usage
+ *
+ * vs_softhsm_deinit();
+ *
+ * \endcode
+ *
+ * Software Security Module needs to have Slots Storage Implementation initialized. See \ref storage_hal for details.
  */
 
 #ifndef VS_HSM_INTERFACE_API_H
@@ -44,11 +64,6 @@
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-
-#include <virgil/iot/hsm/devices/hsm_none.h>
-#include <virgil/iot/hsm/devices/hsm_custom.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_508a.h>
-#include <virgil/iot/hsm/devices/hsm_atecc_608a.h>
 #include <virgil/iot/hsm/devices/hsm_iotelic.h>
 
 /** Keypair types */
@@ -343,7 +358,7 @@ typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
                                             uint16_t tag_len);
 
 // TODO : correct title?
-/** Callback for data decryption by AES algorithm with authetnification check
+/** Callback for data decryption by AES algorithm with authentification check
  *
  * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
@@ -469,6 +484,8 @@ typedef void (*vs_hsm_deinit_t)(void);
 /** HSM implementation
  *
  * This structure contains all callbacks needed for cryptographic operations.
+ * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC,
+ * HKDF, ECIES).
  */
 typedef struct {
 

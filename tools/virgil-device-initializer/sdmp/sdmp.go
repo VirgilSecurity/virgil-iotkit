@@ -72,6 +72,8 @@ const (
     // algorithm, which is used by device in sign operations and signing device:
     DEVICE_HASH_ALGO   = common.VS_HASH_SHA_256
     FACTORY_KEY_TYPE   = 4
+    // TODO: remove hardcoded EC type after KeyManager support of different EC types
+    FACTORY_KEY_EC_TYPE = common.VS_KEYPAIR_EC_SECP256R1
 )
 
 type Processor struct {
@@ -380,7 +382,7 @@ func (p *DeviceProcessor) SignDevice() error {
 
     // Convert virgil signature to raw
     var rawSignature []byte
-    rawSignature, err = converters.VirgilSignToRaw(virgilSignature, p.ProvisioningInfo.FactoryKeyECType)
+    rawSignature, err = converters.VirgilSignToRaw(virgilSignature, FACTORY_KEY_EC_TYPE)
     if err != nil {
         return err
     }
@@ -390,7 +392,7 @@ func (p *DeviceProcessor) SignDevice() error {
     if err != nil {
         return fmt.Errorf("failed to get full Factory public key: %v", err)
     }
-    rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, p.ProvisioningInfo.FactoryKeyECType)
+    rawPubKey, err := converters.VirgilPubKeyToRaw(virgilPubKey, FACTORY_KEY_EC_TYPE)
     if err != nil {
         return fmt.Errorf("failed to prepare raw Factory public key: %v", err)
     }
@@ -398,7 +400,7 @@ func (p *DeviceProcessor) SignDevice() error {
     // Prepare structure with sign
     signatureStruct := common.Go_vs_sign_t{
         SignerType:   FACTORY_KEY_TYPE,
-        ECType:       p.ProvisioningInfo.FactoryKeyECType,
+        ECType:       FACTORY_KEY_EC_TYPE,
         HashType:     DEVICE_HASH_ALGO,
         RawSignature: rawSignature,
         RawPubKey:    rawPubKey,

@@ -90,8 +90,6 @@
  * \a fw_topic_process receives URL, where it can fetch a new version of Firmware.
  * See \ref firmware_usage for details.
  *
- * Also \a fw_topic_process is a Firmware topic downloaded. See \ref firmware_usage for details.
- *
  *  Here you can see an example of Cloud library usage:
  *
  *  \code

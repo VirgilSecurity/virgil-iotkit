@@ -36,25 +36,15 @@ package initializer
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
-
-	"gopkg.in/virgil.v5/cryptoapi"
-	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
 const BACKUP_FILE_SUFFIX = ".bak"
 
-var (
-	crypto = virgil_crypto_go.NewVirgilCrypto()
-)
-
 type PersistenceManager struct {
 	FileName             string
-	EncryptionPrivateKey cryptoapi.PrivateKey
-	RecipientPublicKey   cryptoapi.PublicKey
 }
 
 func (p PersistenceManager) Persist(data string) error {
@@ -66,15 +56,8 @@ func (p PersistenceManager) Persist(data string) error {
 		return err
 	}
 
-	// Encrypt data
-	encryptedData, err := crypto.SignThenEncrypt(([]byte)(data), p.EncryptionPrivateKey, p.RecipientPublicKey)
-	if err != nil {
-		return fmt.Errorf("failed to SignThenEncrypt: %v", err)
-	}
-
-	// Append encrypted line to file
-	base64EncryptedData := base64.StdEncoding.EncodeToString(encryptedData)
-	if err := p.appendLine(base64EncryptedData); err != nil {
+	// Append line to file
+	if err := p.appendLine(data); err != nil {
 		return err
 	}
 
