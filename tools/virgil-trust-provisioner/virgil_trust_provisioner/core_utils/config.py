@@ -1,7 +1,6 @@
 import os
 import sys
 from configparser import ConfigParser
-from pathlib import Path
 from collections import Mapping
 
 
@@ -41,7 +40,4 @@ class Config(Mapping):
 
 
 def _get_default_config_path():
-    home_config_path = os.path.join(str(Path.home()), '.keymanager', 'keymanager.conf')
-    if os.path.exists(home_config_path):
-        return home_config_path
-    return '/etc/keymanager/keymanager.conf'
+    return '/etc/virgil-trust-provisioner/provisioner.conf'

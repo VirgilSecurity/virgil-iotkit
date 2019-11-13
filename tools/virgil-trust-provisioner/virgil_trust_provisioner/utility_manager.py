@@ -1,5 +1,4 @@
 import io
-import json
 import os
 import shutil
 import sys
@@ -648,8 +647,7 @@ class UtilityManager(object):
         )
 
     def __generate_factory_key(self):
-        with open(self._context.factory_info_json, 'r') as f:
-            factory_info = json.load(f)
+        extra_card_content = {"factory_info": self._context.factory_info}
         self.__generate_key(
             key_type=consts.VSKeyTypeS.FACTORY,
             name_for_log="Factory",
@@ -658,7 +656,7 @@ class UtilityManager(object):
             start_date_required=True,
             print_to_paper=False,
             stored_on_dongle=True,
-            extra_card_content=factory_info
+            extra_card_content=extra_card_content
         )
 
     def __generate_recovery_key(self):
