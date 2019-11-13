@@ -34,33 +34,8 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-include(installVirgilCryptoGo.cmake)
+project(vs-tool-virgil-device-registrar VERSION 0.1.0 LANGUAGES Go)
 #
-#   C library for HAL implementation
+#   Virgil Cards Registrar
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c-implementation)
-
-#
-#   Factory initalizer
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-initializer)
-
-#
-#   Registrar
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-registrar)
-
-#
-#   Signer
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-firmware-signer)
-
-#
-#   SDMPD
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-snapd)
-
-#
-#   SDMP convert function generator
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/snap-codgen)
+add_go_executable(vs-tool-virgil-device-registrar virgil-device-registrar)
