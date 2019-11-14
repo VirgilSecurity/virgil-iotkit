@@ -45,7 +45,7 @@ import (
 )
 
 // Convert raw signature to Virgil format
-func RawSignToVirgil(rawSignature []byte, ecType uint8, hsmHashType uint8) ([]byte, error) {
+func RawSignToVirgil(rawSignature []byte, ecType uint8, secmoduleHashType uint8) ([]byte, error) {
     const signatureBufSize = 512
     var signatureBuf [signatureBufSize]uint8
 
@@ -53,7 +53,7 @@ func RawSignToVirgil(rawSignature []byte, ecType uint8, hsmHashType uint8) ([]by
     rawSignPointer := (*C.uchar)(unsafe.Pointer(&rawSignature[0]))
     signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
     keyType := C.vs_secmodule_keypair_type_e(ecType)
-    hashType := C.vs_secmodule_hash_type_e(hsmHashType)
+    hashType := C.vs_secmodule_hash_type_e(secmoduleHashType)
     rawSignSize := C.uint16_t(len(rawSignature))
     bufSize := C.uint16_t(signatureBufSize)
 
