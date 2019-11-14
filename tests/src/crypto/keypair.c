@@ -1,7 +1,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
-#include <virgil/iot/secmodule/hsm.h>
-#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule_helpers.h>
 #include <stdlib-config.h>
 
 typedef struct {

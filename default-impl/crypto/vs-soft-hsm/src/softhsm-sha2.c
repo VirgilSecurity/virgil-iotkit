@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdlib-config.h>
-#include "virgil/iot/secmodule/hsm.h"
+#include "virgil/iot/secmodule/secmodule.h"
 
 /*
  * 32-bit integer manipulation macros (big endian)

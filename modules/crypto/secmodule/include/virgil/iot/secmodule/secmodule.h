@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file hsm.h
+ * @file secmodule.h
  * @brief Security Module callbacks signatures
  *
  * This header contains #vs_hsm_impl_t structure that is used for crypto operations.
@@ -57,14 +57,14 @@
  * Software Security Module needs to have Slots Storage Implementation initialized. See \ref storage_hal for details.
  */
 
-#ifndef VS_HSM_INTERFACE_API_H
-#define VS_HSM_INTERFACE_API_H
+#ifndef VS_SECMODULE_INTERFACE_API_H
+#define VS_SECMODULE_INTERFACE_API_H
 
 #include <stdint.h>
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/secmodule/devices/hsm_iotelic.h>
+#include <virgil/iot/secmodule/devices/secmodule-soft.h>
 
 /** Keypair types */
 typedef enum {
@@ -536,4 +536,4 @@ typedef struct {
     vs_hsm_virgil_decrypt_sha384_aes256_t ecies_decrypt; /**< AES-256 with SHA-384 usage decrypt callback */
 } vs_hsm_impl_t;
 
-#endif // VS_HSM_INTERFACE_API_H
+#endif // VS_SECMODULE_INTERFACE_API_H

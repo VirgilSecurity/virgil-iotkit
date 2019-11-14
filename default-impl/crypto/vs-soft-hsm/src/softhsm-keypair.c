@@ -37,8 +37,8 @@
 
 #include "private/vs-softhsm-internal.h"
 
-#include <virgil/iot/secmodule/hsm.h>
-#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule_helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 

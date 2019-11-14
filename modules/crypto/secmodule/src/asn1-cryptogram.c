@@ -39,7 +39,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule_helpers.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04

@@ -43,7 +43,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>

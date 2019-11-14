@@ -34,7 +34,7 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <stdlib-config.h>
 
 #if IOTELIC_MCU_BUILD

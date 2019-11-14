@@ -1,8 +1,8 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
-#include <virgil/iot/secmodule/hsm.h>
-#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule_helpers.h>
 
 static const char key_raw[] = "Test data for kdf2";
 static const char another_key_raw[] = "Another test data for kdf2";

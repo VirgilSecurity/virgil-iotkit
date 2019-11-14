@@ -49,7 +49,7 @@
 #ifndef HELPERS_VS_SOFTHSM_H
 #define HELPERS_VS_SOFTHSM_H
 
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #define VS_SLOTS_STORAGE_MAX_SIZE (1024)

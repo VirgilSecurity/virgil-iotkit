@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib.h>
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 uint16_t
 test_hash(vs_hsm_impl_t *hsm_impl);

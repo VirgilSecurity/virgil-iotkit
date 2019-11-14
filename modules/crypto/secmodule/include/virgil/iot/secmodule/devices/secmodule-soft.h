@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOTELIC_HSM_H
-#define VS_IOTELIC_HSM_H
+#ifndef VS_SOFT_SECMODULE_H
+#define VS_SOFT_SECMODULE_H
 
 #define KEY_SLOT_STD_DATA_SIZE (380)  // Max data size of standard slot
 #define KEY_SLOT_EXT_DATA_SIZE (1532) // Max data size of extended slot
@@ -105,4 +105,4 @@ typedef enum {
 
 #define SIGNATURE_SLOT VS_KEY_SLOT_STD_MTP_8
 
-#endif // VS_IOTELIC_HSM_H
+#endif // VS_SOFT_SECMODULE_H

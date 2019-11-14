@@ -38,7 +38,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/secbox/secbox.h>
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #define TEST_FILENAME_LITTLE_DATA "test_little_file"
 #define TEST_FILENAME_BIG_DATA "test_big_file"

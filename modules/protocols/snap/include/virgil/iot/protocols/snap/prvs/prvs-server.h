@@ -48,7 +48,7 @@ extern "C" {
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /** PRVS Server SNAP Service implementation
  *

@@ -46,7 +46,7 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/firmware/firmware_hal.h>
-#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule_helpers.h>
 #include <virgil/iot/json/json_parser.h>
 
 #include <virgil/iot/cloud/cloud.h>

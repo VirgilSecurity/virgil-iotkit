@@ -33,16 +33,16 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file hsm_helpers.h
- * @brief HSM helper functions
+ * @file secmodule_helpers.h
+ * @brief Secmodule helper functions
  *
  * This header contains different helper functions for cryptography
  */
 
-#ifndef VS_HSM_HELPERS_H_
-#define VS_HSM_HELPERS_H_
+#ifndef VS_SECMODULE_HELPERS_H_
+#define VS_SECMODULE_HELPERS_H_
 
-#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #define VS_PUBKEY_SECP192_LEN (49)
 #define VS_PUBKEY_SECP224_LEN (57)
@@ -217,4 +217,4 @@ vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE
                                         uint8_t *virgil_sign,
                                         uint16_t buf_sz,
                                         uint16_t *virgil_sign_sz);
-#endif // VS_HSM_HELPERS_H_
+#endif // VS_SECMODULE_HELPERS_H_

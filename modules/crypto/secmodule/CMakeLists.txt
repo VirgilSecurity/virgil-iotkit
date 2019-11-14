@@ -41,12 +41,12 @@ add_library(vs-module-hsm)
 target_sources(vs-module-hsm
         PRIVATE
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/hsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/hsm_helpers.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/devices/hsm_iotelic.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule_helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/devices/secmodule-soft.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secmodule_helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/asn1-cryptogram.c
         )
 #
