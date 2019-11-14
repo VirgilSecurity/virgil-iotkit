@@ -47,7 +47,7 @@ class VSKeyTypeE(IntEnum):
 class VSKeyTypeS(Enum):
     RECOVERY = "recovery"
     AUTH = "auth"
-    TRUSTLIST = "tl_service"
+    TRUSTLIST = "tl"
     FIRMWARE = "firmware"
     FACTORY = "factory"
     IOT_DEVICE = "iot_device"
