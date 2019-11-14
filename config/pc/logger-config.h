@@ -47,7 +47,6 @@
  * Enables logger library.
  * Logger macroses will be empty if it is disabled.
  */
-
 #define VS_IOT_LOGGER_ENABLE 1
 
 #if VS_IOT_LOGGER_ENABLE
@@ -56,14 +55,12 @@
  *
  * Defines maximum internal char buffer for output purposes.
  */
-
 #define VS_IOT_LOGGER_MAX_BUFFER_SIZE 1024
 
 /** Use static buffer
  *
  * Enables static buffer usage instead of stack one. This can be done for single thread mode only.
  */
-
 #define VS_IOT_LOGGER_USE_STATIC_BUFFER 0
 
 /** Use logger library
@@ -71,7 +68,6 @@
  * Enables logger library usage with logger level, file name and line number.
  * If it is disabled, #VS_IOT_LOGGER_FUNCTION function will be called.
  */
-
 #define VS_IOT_LOGGER_USE_LIBRARY 1
 
 #if !VS_IOT_LOGGER_USE_LIBRARY && !VS_IOT_LOGGER_EXCLUDE_EXTERNAL_HEADERS
@@ -83,7 +79,6 @@
  * Sends string directly to the printf-like function defined by this macros.
  * Used when #VS_IOT_LOGGER_USE_LIBRARY == 0
  */
-
 #define VS_IOT_LOGGER_FUNCTION printf
 
 /** End-of-line string
@@ -91,7 +86,6 @@
  * ASCIIZ string placed at the end of the output string.
  * Normally this is "\n".
  */
-
 #define VS_IOT_LOGGER_EOL "\n"
 
 /** Output current time
@@ -99,13 +93,10 @@
  * Enables current time output at the beginning of log string.
  * Requires #vs_logger_current_time_hal function implementation.
  */
-
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
 
 #else  // VS_IOT_LOGGER_ENABLE
 #define VS_IOT_LOGGER_USE_LIBRARY 0
 #endif  // VS_IOT_LOGGER_ENABLE
-
-
 
 #endif // VS_IOT_SDK_LOGGER_CONFIG_H

@@ -120,7 +120,7 @@ static const uint8_t raw_CURVE25519_pubkey[] = {0x0E, 0x5D, 0xB3, 0x72, 0x55, 0x
 
 /******************************************************************************/
 static bool
-_test_case_converters_pubkey_pass(vs_hsm_keypair_type_e keypair_type,
+_test_case_converters_pubkey_pass(vs_secmodule_keypair_type_e keypair_type,
                                   const uint8_t *virgil_pubkey,
                                   uint16_t virgil_pubkey_sz,
                                   const uint8_t *raw_pubkey,

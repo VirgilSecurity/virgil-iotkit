@@ -86,7 +86,7 @@ init_manufacture_id(manufacture_id, MANUFACTURE_ID);
 #define HTONL_IN_COMPILE_TIME(val) (val)
 #endif
 
-/** htons in compile time */
+// Macro used to do htons in compile time
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define HTONS_IN_COMPILE_TIME(val) (uint16_t)(((uint16_t)val & 0xFF) << 8 | ((uint16_t)val & 0xFF00) >> 8)
 #else
@@ -146,9 +146,9 @@ typedef enum {
     VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set Trust List 2 */
     VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'), /**< Set Firmware Key 1 */
     VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'), /**< Set Firmware Key 2 */
-    VS_PRVS_TLH  = HTONL_IN_COMPILE_TIME('_TLH'), /**< Set Trust List Header */
-    VS_PRVS_TLC  = HTONL_IN_COMPILE_TIME('_TLC'), /**< Set Trust List Chunk */
-    VS_PRVS_TLF  = HTONL_IN_COMPILE_TIME('_TLF'), /**< Set Trust List Footer */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set Trust List Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set Trust List Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set Trust List Footer */
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
@@ -187,15 +187,16 @@ typedef enum {
 /** Signature type */
 typedef struct __attribute__((__packed__)) {
     uint8_t signer_type;       /**< #vs_key_type_e */
-    uint8_t ec_type;           /**< #vs_hsm_keypair_type_e */
-    uint8_t hash_type;         /**< #vs_hsm_hash_type_e */
-    uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type */
+    uint8_t ec_type;           /**< #vs_secmodule_keypair_type_e */
+    uint8_t hash_type;         /**< #vs_secmodule_hash_type_e */
+    uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type
+                                */
 } vs_sign_t;
 
 /** Public key type */
 typedef struct __attribute__((__packed__)) {
     uint8_t key_type;          /**< vs_key_type_e */
-    uint8_t ec_type;           /**< vs_hsm_keypair_type_e */
+    uint8_t ec_type;           /**< vs_secmodule_keypair_type_e */
     uint16_t meta_data_sz;     /**< Meta data size */
     uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;
@@ -209,18 +210,18 @@ typedef struct __attribute__((__packed__)) {
 
 /** File version information */
 typedef struct __attribute__((__packed__)) {
-    uint8_t major;  /**< Major version number */
-    uint8_t minor;  /**< Minor version number */
-    uint8_t patch;  /**< Patch number */
-    uint32_t build;  /**< Build number */
-    uint32_t timestamp;  /**< The number of seconds since #VS_START_EPOCH */
+    uint8_t major;      /**< Major version number */
+    uint8_t minor;      /**< Minor version number */
+    uint8_t patch;      /**< Patch number */
+    uint32_t build;     /**< Build number */
+    uint32_t timestamp; /**< The number of seconds since #VS_START_EPOCH */
 } vs_file_version_t;
 
 /** File information */
 typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;  /**< Manufacture ID */
-    vs_device_type_t device_type;  /**< Device type */
-    vs_file_version_t version;  /**< File version */
+    vs_device_manufacture_id_t manufacture_id; /**< Manufacture ID */
+    vs_device_type_t device_type;              /**< Device type */
+    vs_file_version_t version;                 /**< File version */
 } vs_file_info_t;
 
 /** Find context

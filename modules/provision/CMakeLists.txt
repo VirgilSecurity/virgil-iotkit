@@ -37,6 +37,13 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(vs-module-provision VERSION 0.1.0 LANGUAGES C)
 
 #
+#   Check required CMake variables
+#
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[vs-module-provision] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+endif()
+
+#
 #   Add TrustList library
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/trust_list)
@@ -93,15 +100,12 @@ target_include_directories(vs-module-provision
 
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../logger/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../crypto/hsm/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../protocols/snap/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../macros/include>
+         $<BUILD_INTERFACE:${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include>
         )
 
 target_link_libraries(vs-module-provision
         PUBLIC
-        vs-module-hsm
+        vs-module-secmodule
         storage_hal
         trust_list
         PRIVATE

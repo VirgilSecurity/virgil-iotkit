@@ -34,20 +34,21 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-module-hsm VERSION 0.1.0 LANGUAGES C)
+project(vs-module-secmodule VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-module-hsm)
+add_library(vs-module-secmodule)
 
-target_sources(vs-module-hsm
+target_sources(vs-module-secmodule
         PRIVATE
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/hsm_helpers.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/hsm/devices/hsm_iotelic.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule-helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/devices/secmodule-soft.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/hsm_helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secmodule-helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/asn1-cryptogram.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secmodule-ecies.c
         )
 #
 #   Set additional compiler flags
@@ -59,7 +60,7 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
-target_compile_options(vs-module-hsm
+target_compile_options(vs-module-secmodule
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
 #
@@ -67,16 +68,16 @@ target_compile_options(vs-module-hsm
 #
 
 if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[vs-module-hsm] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+    message(FATAL_ERROR "[vs-module-secmodule] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
 else()
-    message(STATUS "[vs-module-hsm] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+    message(STATUS "[vs-module-secmodule] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-target_compile_definitions(vs-module-hsm
+target_compile_definitions(vs-module-secmodule
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 
-target_link_libraries(vs-module-hsm
+target_link_libraries(vs-module-secmodule
         PUBLIC
         macros
         virgil-iot-status-code
@@ -84,7 +85,7 @@ target_link_libraries(vs-module-hsm
 #
 #   Common include directories
 #
-target_include_directories(vs-module-hsm
+target_include_directories(vs-module-secmodule
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
@@ -96,6 +97,6 @@ target_include_directories(vs-module-hsm
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(vs-module-hsm)
+    add_clangformat(vs-module-secmodule)
 endif()
 

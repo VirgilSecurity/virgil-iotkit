@@ -11,8 +11,8 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #include <private/test_hl_keys_data.h>
 #include <private/test_tl_data.h>
@@ -62,7 +62,7 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
 
     for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
-        key_len = vs_hsm_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
+        key_len = vs_secmodule_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
         uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t *)ptr)->pubkey.meta_data_sz);
 
         BOOL_CHECK_RET(key_len > 0, "Key parse error");
@@ -82,8 +82,8 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     for (i = 0; i < signatures_count; ++i) {
         test_footer_sz += sizeof(vs_sign_t);
 
-        sign_len = vs_hsm_get_signature_len(element->ec_type);
-        key_len = vs_hsm_get_pubkey_len(element->ec_type);
+        sign_len = vs_secmodule_get_signature_len(element->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(element->ec_type);
 
         BOOL_CHECK_RET((key_len > 0 && sign_len > 0), "Footer parse error");
 
@@ -384,7 +384,7 @@ _test_tl_save_footer_fail() {
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_HEADER_SUBCASE("footer signature has wrong signer public key");
-    sign_len = vs_hsm_get_signature_len(sign->ec_type);
+    sign_len = vs_secmodule_get_signature_len(sign->ec_type);
     sign->raw_sign_pubkey[sign_len] = ~sign->raw_sign_pubkey[sign_len];
     res = _test_tl_header_save_pass() && _test_tl_keys_save_pass();
     res &= (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLF, 0, footer, test_footer_sz));
@@ -412,7 +412,7 @@ _test_tl_read_pass() {
 
 /******************************************************************************/
 uint16_t
-test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl) {
+test_keystorage_and_tl(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     START_TEST("Provision and TL tests");
@@ -422,8 +422,8 @@ test_keystorage_and_tl(vs_hsm_impl_t *hsm_impl) {
         RESULT_ERROR;
     }
 
-    TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision(hsm_impl));
-    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_pubkeys(hsm_impl));
+    TEST_CASE_OK("Erase otp provision", vs_test_erase_otp_provision(secmodule_impl));
+    TEST_CASE_OK("TL save hl keys", vs_test_save_hl_pubkeys(secmodule_impl));
     TEST_CASE_OK("TL verify hl keys", _test_verify_hl_keys());
 
     TEST_CASE_OK("TL save", _test_tl_save_pass());

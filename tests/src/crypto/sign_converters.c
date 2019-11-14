@@ -119,8 +119,8 @@ static const uint8_t raw_SHA512_SECP256R1_sign[] = {
 
 /******************************************************************************/
 static bool
-_test_case_converters_sign_pass(vs_hsm_hash_type_e hash_alg,
-                                vs_hsm_keypair_type_e keypair_type,
+_test_case_converters_sign_pass(vs_secmodule_hash_type_e hash_alg,
+                                vs_secmodule_keypair_type_e keypair_type,
                                 const uint8_t *virgil_sign,
                                 uint16_t virgil_sign_sz,
                                 const uint8_t *raw_sign,
@@ -153,8 +153,8 @@ test_sign_converters(void) {
 
 #define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)                                                                       \
     do {                                                                                                               \
-        vs_hsm_hash_type_e hash_alg = VS_HASH_SHA_##HASH;                                                              \
-        vs_hsm_keypair_type_e keypair_type = VS_KEYPAIR_EC_##KEYPAIR;                                                  \
+        vs_secmodule_hash_type_e hash_alg = VS_HASH_SHA_##HASH;                                                        \
+        vs_secmodule_keypair_type_e keypair_type = VS_KEYPAIR_EC_##KEYPAIR;                                            \
         const uint8_t *virgil_sign = virgil_SHA##HASH##_##KEYPAIR##_sign;                                              \
         uint16_t virgil_sign_sz = sizeof(virgil_SHA##HASH##_##KEYPAIR##_sign);                                         \
         const uint8_t *raw_sign = raw_SHA##HASH##_##KEYPAIR##_sign;                                                    \

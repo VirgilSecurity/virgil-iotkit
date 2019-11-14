@@ -36,50 +36,33 @@
  * \brief Logger implementation
  *
  * Logger allows to log messages to output stream that can be file or screen. User can enable different logging levels
- * like debug, info, error etc. (see #vs_log_level_t).
+ * like debug, info, error etc. (see #vs_log_level_t). In future versions sending report through network is planned
  *
  * \section logger_usage Logger Usage
  *
- * User has to provide logger output function #vs_logger_output_hal
- * Client side downloads new file versions and checks them. #vs_fldt_got_file function is called after file upgrading.
- * In most case it used to output new file version information and gateway address.
- * To successfully file downloading process #vs_update_interface_t must be provided for each file type. You can see
- * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
+ * Logger usage examples you can see below :
  *
- * Here you can see an example of FLDT client initialization :
  * \code
- *  const vs_snap_service_t *snap_fldt_client;
- *  snap_fldt_client = vs_snap_fldt_client( _on_file_updated );
- *  STATUS_CHECK( vs_snap_register_service( snap_fldt_client ), "Cannot register FLDT client service");
- *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ), "Unable to
- * add Firmware file type" ); STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx()
- * ), "Unable to add Trust List file type" ); \endcode
- *
- * You can see minimalistic #vs_fldt_got_file function example below :
- * \code
- * void _on_file_updated(vs_update_file_type_t *file_type,
- *                  const vs_file_version_t *prev_file_ver,
- *                  const vs_file_version_t *new_file_ver,
- *                  vs_update_interface_t *update_interface,
- *                  const vs_mac_addr_t *gateway,
- *                  bool successfully_updated) {
- *     (void) prev_file_ver;
- *     (void) new_file_ver;
- *     (void) update_interface;
- *     (void) gateway;
- *
- *     switch(file_type->type) {
- *     case VS_UPDATE_FIRMWARE :   VS_LOG_INFO( "New Firmware has been loaded" );   break;
- *     case VS_UPDATE_TRUST_LIST : VS_LOG_INFO( "New Trust List has been loaded" ); break;
- *     }
- *
- *     if (file_type->type == VS_UPDATE_FIRMWARE && successfully_updated) {
- *         _app_restart();
- *     }
- * }
+
+vs_logger_init( VS_LOGLEV_WARNING );    // Warning level and upper ones are enabled
+VS_LOG_FATAL("Serious error");          // Outputs fatal error if enabled
+
+// Hex data output
+const uint8_t raw_data[] = "Some raw data";
+VS_LOG_HEX(VS_LOGLEV_DEBUG, "Raw data : ", raw_data, sizeof(raw_data));
+
+// Some operation with false positive errors, need to temporary disable error messages
+vs_log_level_t prev_log_level;
+prev_log_level = vs_logger_set_loglev(VS_LOGLEV_FATAL);  // Enable fatal level and upper ones
+// ...
+vs_logger_set_loglev(prev_log_level);       // Restore previous logger level
+
  * \endcode
  *
- * In this example _app_restart() function is called for firmware that has been successfully updated.
+ * If #VS_IOT_LOGGER_USE_LIBRARY == 1, #vs_logger_output_hal implementation is needed. See \ref
+logger_hal_implementation
+ * for details.
+ *
  */
 
 #ifndef AP_SECURITY_SDK_LOGGER_H

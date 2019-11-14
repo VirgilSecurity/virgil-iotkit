@@ -71,7 +71,7 @@ target_include_directories(tools-hal
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${VIRGIL_IOT_DIRECTORY}/modules/provision/include
-        ${VIRGIL_IOT_DIRECTORY}/modules/hsm/include
+        ${VIRGIL_IOT_DIRECTORY}/modules/crypto/secmodule/include
         )
 
 #

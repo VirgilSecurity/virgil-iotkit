@@ -1,7 +1,7 @@
 #ifndef TL_OPERATIONS_H
 #define TL_OPERATIONS_H
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
@@ -24,7 +24,7 @@ typedef struct {
 } vs_tl_context_t;
 
 vs_status_e
-vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm);
+vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 vs_status_e
 vs_tl_storage_deinit_internal();
 

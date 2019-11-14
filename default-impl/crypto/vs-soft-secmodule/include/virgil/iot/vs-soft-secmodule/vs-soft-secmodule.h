@@ -33,23 +33,23 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file vs-softhsm.h
- * @brief Software crypto implementation
+ * @file vs-soft-secmodule.h
+ * @brief Software Security Module implementation
  *
  * This library can be used when no Hardware Security Module support provided.
  *
- * \section vs-softhsm-usage Virgil Security Software Security Module Usage
+ * \section vs-soft-secmodule-usage Virgil Security Software Security Module Usage
  *
- * You need initialize vs-softhsm module before its usage and free it after. See code below for example :
+ * You need initialize vs-soft-secmodule module before its usage and free it after. See code below for example :
  *
  *
  *
  */
 
-#ifndef HELPERS_VS_SOFTHSM_H
-#define HELPERS_VS_SOFTHSM_H
+#ifndef VS_SOFT_SECMODULE_H
+#define VS_SOFT_SECMODULE_H
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #define VS_SLOTS_STORAGE_MAX_SIZE (1024)
@@ -58,16 +58,16 @@
  *
  * \param[in] slots_storage_impl Storage context. Must not be NULL.
  *
- * \return HSM implementation
+ * \return Security Module implementation
  */
-vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
+vs_secmodule_impl_t *
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
 /** Destroy software crypto implementation
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_softhsm_deinit(void);
+vs_soft_secmodule_deinit(void);
 
-#endif // HELPERS_VS_SOFTHSM_H
+#endif // VS_SOFT_SECMODULE_H

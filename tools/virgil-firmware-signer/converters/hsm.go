@@ -39,14 +39,14 @@ import (
     "log"
 )
 
-// vs_hsm_hash_type_e
+// vs_secmodule_hash_type_e
 const (
     VS_HASH_SHA_256 = iota
     VS_HASH_SHA_384
     VS_HASH_SHA_512
 )
 
-// vs_hsm_keypair_type_e
+// vs_secmodule_keypair_type_e
 const (
     VS_KEYPAIR_EC_SECP192R1 = iota + 1
     VS_KEYPAIR_EC_SECP224R1
