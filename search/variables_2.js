@@ -8,6 +8,6 @@ var searchData=
   ['content_1077',['content',['../structvs__snap__packet__t.html#ac1cfb6331e94ed12ccc3e0b179fdeb83',1,'vs_snap_packet_t']]],
   ['content_5fsize_1078',['content_size',['../structvs__snap__header__t.html#af761a853c9be840afcaf3e847bc3062d',1,'vs_snap_header_t']]],
   ['count_1079',['count',['../structvs__snap__prvs__dnid__list__t.html#a6c7f0da09cc4f5b6cad22df16bfa0d1a',1,'vs_snap_prvs_dnid_list_t']]],
-  ['create_5fkeypair_1080',['create_keypair',['../structvs__hsm__impl__t.html#a610289d936382a9a05caad06f02a6e3b',1,'vs_hsm_impl_t']]],
+  ['create_5fkeypair_1080',['create_keypair',['../structvs__secmodule__impl__t.html#a56767ede72145d12a3065d8f27b20808',1,'vs_secmodule_impl_t']]],
   ['cur_1081',['cur',['../structjobj__t.html#acca5380be9f93a1e8d66f4d3dcf54a61',1,'jobj_t']]]
 ];

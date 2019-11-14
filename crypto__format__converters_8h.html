@@ -77,52 +77,52 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm_8h_source.html">virgil/iot/hsm/hsm.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="secmodule_8h_source.html">virgil/iot/secmodule/secmodule.h</a>&gt;</code><br />
 </div>
 <p><a href="crypto__format__converters_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aef4752ef2e2fb5ae90698cf0956567d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#aef4752ef2e2fb5ae90698cf0956567d4">vs_converters_pubkey_to_raw</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, const uint8_t *public_key, uint16_t public_key_sz, uint8_t *pubkey_raw, uint16_t buf_sz, uint16_t *pubkey_raw_sz)</td></tr>
-<tr class="memdesc:aef4752ef2e2fb5ae90698cf0956567d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert public key from Virgil format to raw one.  <a href="crypto__format__converters_8h.html#aef4752ef2e2fb5ae90698cf0956567d4">More...</a><br /></td></tr>
-<tr class="separator:aef4752ef2e2fb5ae90698cf0956567d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a613fd394130783521499ba5f23f65cc4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#a613fd394130783521499ba5f23f65cc4">vs_converters_pubkey_to_virgil</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, const uint8_t *public_key_in, uint16_t public_key_in_sz, uint8_t *public_key_out, uint16_t buf_sz, uint16_t *public_key_out_sz)</td></tr>
-<tr class="memdesc:a613fd394130783521499ba5f23f65cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert public key from raw format to Virgil one.  <a href="crypto__format__converters_8h.html#a613fd394130783521499ba5f23f65cc4">More...</a><br /></td></tr>
-<tr class="separator:a613fd394130783521499ba5f23f65cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadc45fccf040ce1c19128d4ffd7ec539"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#aadc45fccf040ce1c19128d4ffd7ec539">vs_converters_virgil_sign_to_raw</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, const uint8_t *virgil_sign, uint16_t virgil_sign_sz, uint8_t *sign, uint16_t buf_sz, uint16_t *sign_sz)</td></tr>
-<tr class="memdesc:aadc45fccf040ce1c19128d4ffd7ec539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from Virgil format to raw one.  <a href="crypto__format__converters_8h.html#aadc45fccf040ce1c19128d4ffd7ec539">More...</a><br /></td></tr>
-<tr class="separator:aadc45fccf040ce1c19128d4ffd7ec539"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6f4c1da92d2d63755b82c858f4a301a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#ac6f4c1da92d2d63755b82c858f4a301a">vs_converters_raw_sign_to_virgil</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, <a class="el" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a> hash_type, const uint8_t *raw_sign, uint16_t raw_sign_sz, uint8_t *virgil_sign, uint16_t buf_sz, uint16_t *virgil_sign_sz)</td></tr>
-<tr class="memdesc:ac6f4c1da92d2d63755b82c858f4a301a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from raw format to Virgil one.  <a href="crypto__format__converters_8h.html#ac6f4c1da92d2d63755b82c858f4a301a">More...</a><br /></td></tr>
-<tr class="separator:ac6f4c1da92d2d63755b82c858f4a301a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf638c084fce82ce2d9b2debd1c18369"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#acf638c084fce82ce2d9b2debd1c18369">vs_converters_mbedtls_sign_to_raw</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, uint8_t *mbedtls_sign, uint16_t mbedtls_sign_sz, uint8_t *raw_sign, uint16_t buf_sz, uint16_t *raw_sz)</td></tr>
-<tr class="memdesc:acf638c084fce82ce2d9b2debd1c18369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from MbedTLS format to raw one.  <a href="crypto__format__converters_8h.html#acf638c084fce82ce2d9b2debd1c18369">More...</a><br /></td></tr>
-<tr class="separator:acf638c084fce82ce2d9b2debd1c18369"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea1dfc6e08e39fdc5c595a054a2fdea1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#aea1dfc6e08e39fdc5c595a054a2fdea1">vs_converters_raw_sign_to_mbedtls</a> (<a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a> keypair_type, const unsigned char *raw, uint16_t raw_sz, unsigned char *signature, uint16_t buf_sz, uint16_t *signature_sz)</td></tr>
-<tr class="memdesc:aea1dfc6e08e39fdc5c595a054a2fdea1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from raw format to MbedTLS one.  <a href="crypto__format__converters_8h.html#aea1dfc6e08e39fdc5c595a054a2fdea1">More...</a><br /></td></tr>
-<tr class="separator:aea1dfc6e08e39fdc5c595a054a2fdea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e777e040f600564a66a8b446277ffa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#a95e777e040f600564a66a8b446277ffa">vs_converters_pubkey_to_raw</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const uint8_t *public_key, uint16_t public_key_sz, uint8_t *pubkey_raw, uint16_t buf_sz, uint16_t *pubkey_raw_sz)</td></tr>
+<tr class="memdesc:a95e777e040f600564a66a8b446277ffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert public key from Virgil format to raw one.  <a href="crypto__format__converters_8h.html#a95e777e040f600564a66a8b446277ffa">More...</a><br /></td></tr>
+<tr class="separator:a95e777e040f600564a66a8b446277ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3bfc4e29447ef254f45553a46ce5378"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#aa3bfc4e29447ef254f45553a46ce5378">vs_converters_pubkey_to_virgil</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const uint8_t *public_key_in, uint16_t public_key_in_sz, uint8_t *public_key_out, uint16_t buf_sz, uint16_t *public_key_out_sz)</td></tr>
+<tr class="memdesc:aa3bfc4e29447ef254f45553a46ce5378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert public key from raw format to Virgil one.  <a href="crypto__format__converters_8h.html#aa3bfc4e29447ef254f45553a46ce5378">More...</a><br /></td></tr>
+<tr class="separator:aa3bfc4e29447ef254f45553a46ce5378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9207104b44cbbb5c756af2bea10b6119"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#a9207104b44cbbb5c756af2bea10b6119">vs_converters_virgil_sign_to_raw</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const uint8_t *virgil_sign, uint16_t virgil_sign_sz, uint8_t *sign, uint16_t buf_sz, uint16_t *sign_sz)</td></tr>
+<tr class="memdesc:a9207104b44cbbb5c756af2bea10b6119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from Virgil format to raw one.  <a href="crypto__format__converters_8h.html#a9207104b44cbbb5c756af2bea10b6119">More...</a><br /></td></tr>
+<tr class="separator:a9207104b44cbbb5c756af2bea10b6119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1b8daedef58ed3e2d987fb52eedd745"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#aa1b8daedef58ed3e2d987fb52eedd745">vs_converters_raw_sign_to_virgil</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *raw_sign, uint16_t raw_sign_sz, uint8_t *virgil_sign, uint16_t buf_sz, uint16_t *virgil_sign_sz)</td></tr>
+<tr class="memdesc:aa1b8daedef58ed3e2d987fb52eedd745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from raw format to Virgil one.  <a href="crypto__format__converters_8h.html#aa1b8daedef58ed3e2d987fb52eedd745">More...</a><br /></td></tr>
+<tr class="separator:aa1b8daedef58ed3e2d987fb52eedd745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557a95117ff26741a3dd014c30f99236"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#a557a95117ff26741a3dd014c30f99236">vs_converters_mbedtls_sign_to_raw</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, uint8_t *mbedtls_sign, uint16_t mbedtls_sign_sz, uint8_t *raw_sign, uint16_t buf_sz, uint16_t *raw_sz)</td></tr>
+<tr class="memdesc:a557a95117ff26741a3dd014c30f99236"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from MbedTLS format to raw one.  <a href="crypto__format__converters_8h.html#a557a95117ff26741a3dd014c30f99236">More...</a><br /></td></tr>
+<tr class="separator:a557a95117ff26741a3dd014c30f99236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6deb5b21b716209849fc4e723b3ab584"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crypto__format__converters_8h.html#a6deb5b21b716209849fc4e723b3ab584">vs_converters_raw_sign_to_mbedtls</a> (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const unsigned char *raw, uint16_t raw_sz, unsigned char *signature, uint16_t buf_sz, uint16_t *signature_sz)</td></tr>
+<tr class="memdesc:a6deb5b21b716209849fc4e723b3ab584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert signature from raw format to MbedTLS one.  <a href="crypto__format__converters_8h.html#a6deb5b21b716209849fc4e723b3ab584">More...</a><br /></td></tr>
+<tr class="separator:a6deb5b21b716209849fc4e723b3ab584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Cryptographic convertors. </p>
 <p>You can find here different conversion cases :</p>
 <ul>
 <li>Public key conversions :<ul>
-<li><a class="el" href="crypto__format__converters_8h.html#aef4752ef2e2fb5ae90698cf0956567d4" title="Convert public key from Virgil format to raw one.">vs_converters_pubkey_to_raw()</a> : from Virgil format to raw one</li>
-<li><a class="el" href="crypto__format__converters_8h.html#a613fd394130783521499ba5f23f65cc4" title="Convert public key from raw format to Virgil one.">vs_converters_pubkey_to_virgil()</a> : from raw format to Virgil one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#a95e777e040f600564a66a8b446277ffa" title="Convert public key from Virgil format to raw one.">vs_converters_pubkey_to_raw()</a> : from Virgil format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#aa3bfc4e29447ef254f45553a46ce5378" title="Convert public key from raw format to Virgil one.">vs_converters_pubkey_to_virgil()</a> : from raw format to Virgil one</li>
 </ul>
 </li>
 <li><p class="startli">Signatures :</p><ul>
-<li><a class="el" href="crypto__format__converters_8h.html#aadc45fccf040ce1c19128d4ffd7ec539" title="Convert signature from Virgil format to raw one.">vs_converters_virgil_sign_to_raw()</a> : from Virgil format to raw one</li>
-<li><a class="el" href="crypto__format__converters_8h.html#ac6f4c1da92d2d63755b82c858f4a301a" title="Convert signature from raw format to Virgil one.">vs_converters_raw_sign_to_virgil()</a> : from raw format to Virgil one</li>
-<li><a class="el" href="crypto__format__converters_8h.html#acf638c084fce82ce2d9b2debd1c18369" title="Convert signature from MbedTLS format to raw one.">vs_converters_mbedtls_sign_to_raw()</a> : from MbedTLS format to raw one</li>
-<li><a class="el" href="crypto__format__converters_8h.html#aea1dfc6e08e39fdc5c595a054a2fdea1" title="Convert signature from raw format to MbedTLS one.">vs_converters_raw_sign_to_mbedtls()</a> : from raw format to MbedTLS one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#a9207104b44cbbb5c756af2bea10b6119" title="Convert signature from Virgil format to raw one.">vs_converters_virgil_sign_to_raw()</a> : from Virgil format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#aa1b8daedef58ed3e2d987fb52eedd745" title="Convert signature from raw format to Virgil one.">vs_converters_raw_sign_to_virgil()</a> : from raw format to Virgil one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#a557a95117ff26741a3dd014c30f99236" title="Convert signature from MbedTLS format to raw one.">vs_converters_mbedtls_sign_to_raw()</a> : from MbedTLS format to raw one</li>
+<li><a class="el" href="crypto__format__converters_8h.html#a6deb5b21b716209849fc4e723b3ab584" title="Convert signature from raw format to MbedTLS one.">vs_converters_raw_sign_to_mbedtls()</a> : from raw format to MbedTLS one</li>
 </ul>
 <p class="startli">Each function returns boolean value true if conversion has been successful or false in other case. </p>
 </li>
 </ul>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="acf638c084fce82ce2d9b2debd1c18369"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf638c084fce82ce2d9b2debd1c18369">&#9670;&nbsp;</a></span>vs_converters_mbedtls_sign_to_raw()</h2>
+<a id="a557a95117ff26741a3dd014c30f99236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557a95117ff26741a3dd014c30f99236">&#9670;&nbsp;</a></span>vs_converters_mbedtls_sign_to_raw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -130,7 +130,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_mbedtls_sign_to_raw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>
@@ -187,8 +187,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aef4752ef2e2fb5ae90698cf0956567d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef4752ef2e2fb5ae90698cf0956567d4">&#9670;&nbsp;</a></span>vs_converters_pubkey_to_raw()</h2>
+<a id="a95e777e040f600564a66a8b446277ffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e777e040f600564a66a8b446277ffa">&#9670;&nbsp;</a></span>vs_converters_pubkey_to_raw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +196,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_pubkey_to_raw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>
@@ -253,8 +253,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a613fd394130783521499ba5f23f65cc4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a613fd394130783521499ba5f23f65cc4">&#9670;&nbsp;</a></span>vs_converters_pubkey_to_virgil()</h2>
+<a id="aa3bfc4e29447ef254f45553a46ce5378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3bfc4e29447ef254f45553a46ce5378">&#9670;&nbsp;</a></span>vs_converters_pubkey_to_virgil()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -262,7 +262,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_pubkey_to_virgil </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>
@@ -319,8 +319,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aea1dfc6e08e39fdc5c595a054a2fdea1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea1dfc6e08e39fdc5c595a054a2fdea1">&#9670;&nbsp;</a></span>vs_converters_raw_sign_to_mbedtls()</h2>
+<a id="a6deb5b21b716209849fc4e723b3ab584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6deb5b21b716209849fc4e723b3ab584">&#9670;&nbsp;</a></span>vs_converters_raw_sign_to_mbedtls()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -328,7 +328,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_raw_sign_to_mbedtls </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>
@@ -385,8 +385,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac6f4c1da92d2d63755b82c858f4a301a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6f4c1da92d2d63755b82c858f4a301a">&#9670;&nbsp;</a></span>vs_converters_raw_sign_to_virgil()</h2>
+<a id="aa1b8daedef58ed3e2d987fb52eedd745"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1b8daedef58ed3e2d987fb52eedd745">&#9670;&nbsp;</a></span>vs_converters_raw_sign_to_virgil()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -394,13 +394,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_raw_sign_to_virgil </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#aca816b5b4692543dc4846286f5a64aa4">vs_hsm_hash_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a>&#160;</td>
           <td class="paramname"><em>hash_type</em>, </td>
         </tr>
         <tr>
@@ -458,8 +458,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aadc45fccf040ce1c19128d4ffd7ec539"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadc45fccf040ce1c19128d4ffd7ec539">&#9670;&nbsp;</a></span>vs_converters_virgil_sign_to_raw()</h2>
+<a id="a9207104b44cbbb5c756af2bea10b6119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9207104b44cbbb5c756af2bea10b6119">&#9670;&nbsp;</a></span>vs_converters_virgil_sign_to_raw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -467,7 +467,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool vs_converters_virgil_sign_to_raw </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm_8h.html#a27121c5587cc1a40ddcaac471de864f3">vs_hsm_keypair_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a>&#160;</td>
           <td class="paramname"><em>keypair_type</em>, </td>
         </tr>
         <tr>

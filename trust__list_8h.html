@@ -76,7 +76,7 @@ $(function() {
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm_8h_source.html">virgil/iot/hsm/hsm.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="secmodule_8h_source.html">virgil/iot/secmodule/secmodule.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="storage__hal_8h_source.html">virgil/iot/storage_hal/storage_hal.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="status__code_8h_source.html">virgil/iot/status_code/status_code.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="update_8h_source.html">virgil/iot/update/update.h</a>&gt;</code><br />
@@ -86,9 +86,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a09d075a86829ff70d5d56f363e7a7cb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#a09d075a86829ff70d5d56f363e7a7cb6">vs_tl_init</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *op_ctx, <a class="el" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm)</td></tr>
-<tr class="memdesc:a09d075a86829ff70d5d56f363e7a7cb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust List initialization.  <a href="trust__list_8h.html#a09d075a86829ff70d5d56f363e7a7cb6">More...</a><br /></td></tr>
-<tr class="separator:a09d075a86829ff70d5d56f363e7a7cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e08d30dc1af7f09179dedd48350e744"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#a1e08d30dc1af7f09179dedd48350e744">vs_tl_init</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *op_ctx, <a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule)</td></tr>
+<tr class="memdesc:a1e08d30dc1af7f09179dedd48350e744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust List initialization.  <a href="trust__list_8h.html#a1e08d30dc1af7f09179dedd48350e744">More...</a><br /></td></tr>
+<tr class="separator:a1e08d30dc1af7f09179dedd48350e744"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31a3355d1cbec3d424133b7d4d716c10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#a31a3355d1cbec3d424133b7d4d716c10">vs_tl_deinit</a> ()</td></tr>
 <tr class="memdesc:a31a3355d1cbec3d424133b7d4d716c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust List destruction.  <a href="trust__list_8h.html#a31a3355d1cbec3d424133b7d4d716c10">More...</a><br /></td></tr>
 <tr class="separator:a31a3355d1cbec3d424133b7d4d716c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,8 +200,8 @@ Trust List Usage</h1>
 
 </div>
 </div>
-<a id="a09d075a86829ff70d5d56f363e7a7cb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09d075a86829ff70d5d56f363e7a7cb6">&#9670;&nbsp;</a></span>vs_tl_init()</h2>
+<a id="a1e08d30dc1af7f09179dedd48350e744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e08d30dc1af7f09179dedd48350e744">&#9670;&nbsp;</a></span>vs_tl_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -215,8 +215,8 @@ Trust List Usage</h1>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *&#160;</td>
-          <td class="paramname"><em>hsm</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *&#160;</td>
+          <td class="paramname"><em>secmodule</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -230,7 +230,7 @@ Trust List Usage</h1>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">op_ctx</td><td>Storage context. Must not be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">hsm</td><td>HSM implementation. Must not be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secmodule</td><td>Security Module implementation. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>

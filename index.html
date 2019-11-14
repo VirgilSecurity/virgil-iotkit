@@ -90,7 +90,7 @@ Content</h1>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Features</h1>
 <p>Virgil IoTKit provides a set of features for IoT device security and management:</p><ul>
-<li><b>Crypto Module. Connect any crypto library and hard secure module (HSM)</b>. Virgil IoTKit provides flexible and simple API for any types of crypto library and HSM. At the same time, the framework provides default software HSM implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).</li>
+<li><b>Crypto Module. Connect any crypto library and Security Module</b>. Virgil IoTKit provides flexible and simple API for any types of crypto library and SECMODULE. At the same time, the framework provides default Software Security Module implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).</li>
 <li><b>Provision Module. Secure IoT device provision</b>. In order to securely update firmware, securely register, authenticate or exchange messages between IoT devices, each IoT device must have its own tools, which allow the device to perform cryptographic operations. These tools must contain the necessary information to identify the device or other participants (e.g., trust list provider). These tools are the device keys, trust chain, device card, etc. The process of providing your IoT devices with these tools is called device provision, and Virgil IoTKit gives you all the necessary functionality to make your IoT devices identifiable and verifiable, as a result, protect them from counterfeit and fabrication.</li>
 <li><b>Firmware Module. Secure firmware and trust chain verification and distribution</b>. IoTKit provides a set of API for secure verification of firmware in a bootloader. Also, IoTKit provides an example of bootloader implementation in the form of emulator.</li>
 <li><b>Secbox Module. Secure software storage for any sensitive data</b>. IoTKit provides secure software storage that is called <b>Secbox</b> for storing any sensitive data, like private keys. The Secbox works in two modes; the first mode - when data is only signed, and the second one - when data is encrypted and then signed.</li>
@@ -137,7 +137,7 @@ Modules</h1>
 <li>Crypto : cryptographic operations callbacks for <a href="https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html">Hardware Security Modules supports</a> and <a href="https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html">cryptographic converters</a>.</li>
 <li><a href="https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html">Firmware</a> : Firmware download/upload by Gateway and Firmware download/processing by Thing.</li>
 <li><a href="https://virgilsecurity.github.io/virgil-iot-sdk/logger_8h.html">Logger</a> : tool to output logging messages to screen, file etc. See <a href="https://virgilsecurity.github.io/virgil-iot-sdk/logger-hal_8h.html">HAL functions declarations</a> for its implementation.</li>
-<li>Provision.</li>
+<li><a href="https://virgilsecurity.github.io/virgil-iot-sdk/provision_8h.html">Provision</a> : Trust List keys reading and verifying.</li>
 <li>Secbox.</li>
 <li>Protocols.</li>
 <li>Cloud.</li>

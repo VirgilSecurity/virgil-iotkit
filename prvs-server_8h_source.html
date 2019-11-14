@@ -116,10 +116,10 @@ $(function() {
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="snap-structs_8h.html">virgil/iot/protocols/snap/snap-structs.h</a>&gt;</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="prvs-structs_8h.html">virgil/iot/protocols/snap/prvs/prvs-structs.h</a>&gt;</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="provision_8h.html">virgil/iot/provision/provision.h</a>&gt;</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="hsm_8h.html">virgil/iot/hsm/hsm.h</a>&gt;</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="secmodule_8h.html">virgil/iot/secmodule/secmodule.h</a>&gt;</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<a class="code" href="prvs-server_8h.html#ab3f650018bc55e199e1e2cf47b1306fb">vs_snap_prvs_server</a>(<a class="code" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<a class="code" href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a>(<a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
@@ -129,13 +129,13 @@ $(function() {
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_SERVER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructvs__hsm__impl__t_html"><div class="ttname"><a href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a></div><div class="ttdoc">HSM implementation.</div><div class="ttdef"><b>Definition:</b> hsm.h:491</div></div>
-<div class="ttc" id="aprovision_8h_html"><div class="ttname"><a href="provision_8h.html">provision.h</a></div><div class="ttdoc">Provision interface implementation.</div></div>
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:456</div></div>
+<div class="ttc" id="aprovision_8h_html"><div class="ttname"><a href="provision_8h.html">provision.h</a></div><div class="ttdoc">Provision interface.</div></div>
 <div class="ttc" id="asnap-structs_8h_html"><div class="ttname"><a href="snap-structs_8h.html">snap-structs.h</a></div><div class="ttdoc">SNAP structures.</div></div>
 <div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:305</div></div>
 <div class="ttc" id="aprvs-structs_8h_html"><div class="ttname"><a href="prvs-structs_8h.html">prvs-structs.h</a></div><div class="ttdoc">PRVS structures.</div></div>
-<div class="ttc" id="ahsm_8h_html"><div class="ttname"><a href="hsm_8h.html">hsm.h</a></div><div class="ttdoc">Security Module callbacks signatures.</div></div>
-<div class="ttc" id="aprvs-server_8h_html_ab3f650018bc55e199e1e2cf47b1306fb"><div class="ttname"><a href="prvs-server_8h.html#ab3f650018bc55e199e1e2cf47b1306fb">vs_snap_prvs_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_server(vs_hsm_impl_t *hsm)</div><div class="ttdoc">PRVS Server SNAP Service implementation.</div></div>
+<div class="ttc" id="aprvs-server_8h_html_ad94bd9f42dce4e8a68bbab711baada8b"><div class="ttname"><a href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_server(vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">PRVS Server SNAP Service implementation.</div></div>
+<div class="ttc" id="asecmodule_8h_html"><div class="ttname"><a href="secmodule_8h.html">secmodule.h</a></div><div class="ttdoc">Security Module callbacks signatures.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['info_2dclient_2eh_876',['info-client.h',['../info-client_8h.html',1,'']]],
-  ['info_2dserver_2eh_877',['info-server.h',['../info-server_8h.html',1,'']]],
-  ['info_2dstructs_2eh_878',['info-structs.h',['../info-structs_8h.html',1,'']]]
+  ['json_5fgenerator_2eh_874',['json_generator.h',['../json__generator_8h.html',1,'']]],
+  ['json_5fparser_2eh_875',['json_parser.h',['../json__parser_8h.html',1,'']]]
 ];

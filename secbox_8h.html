@@ -78,7 +78,7 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="storage__hal_8h_source.html">virgil/iot/storage_hal/storage_hal.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="status__code_8h_source.html">virgil/iot/status_code/status_code.h</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="hsm_8h_source.html">virgil/iot/hsm/hsm.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="secmodule_8h_source.html">virgil/iot/secmodule/secmodule.h</a>&gt;</code><br />
 </div>
 <p><a href="secbox_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -92,9 +92,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0dc7e8e1f527cd29fd2bc5bf9c922a82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secbox_8h.html#a0dc7e8e1f527cd29fd2bc5bf9c922a82">vs_secbox_init</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *ctx, <a class="el" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *hsm)</td></tr>
-<tr class="memdesc:a0dc7e8e1f527cd29fd2bc5bf9c922a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Security Box.  <a href="secbox_8h.html#a0dc7e8e1f527cd29fd2bc5bf9c922a82">More...</a><br /></td></tr>
-<tr class="separator:a0dc7e8e1f527cd29fd2bc5bf9c922a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fda3030a2608ee0c1cc847384367d3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secbox_8h.html#a9fda3030a2608ee0c1cc847384367d3a">vs_secbox_init</a> (<a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> *ctx, <a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule)</td></tr>
+<tr class="memdesc:a9fda3030a2608ee0c1cc847384367d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Security Box.  <a href="secbox_8h.html#a9fda3030a2608ee0c1cc847384367d3a">More...</a><br /></td></tr>
+<tr class="separator:a9fda3030a2608ee0c1cc847384367d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a078386c9f11b40a65e4b12b8cd4eadc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secbox_8h.html#a078386c9f11b40a65e4b12b8cd4eadc4">vs_secbox_deinit</a> (void)</td></tr>
 <tr class="memdesc:a078386c9f11b40a65e4b12b8cd4eadc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy Security Box.  <a href="secbox_8h.html#a078386c9f11b40a65e4b12b8cd4eadc4">More...</a><br /></td></tr>
 <tr class="separator:a078386c9f11b40a65e4b12b8cd4eadc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,8 +212,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0dc7e8e1f527cd29fd2bc5bf9c922a82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0dc7e8e1f527cd29fd2bc5bf9c922a82">&#9670;&nbsp;</a></span>vs_secbox_init()</h2>
+<a id="a9fda3030a2608ee0c1cc847384367d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fda3030a2608ee0c1cc847384367d3a">&#9670;&nbsp;</a></span>vs_secbox_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -227,8 +227,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structvs__hsm__impl__t.html">vs_hsm_impl_t</a> *&#160;</td>
-          <td class="paramname"><em>hsm</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *&#160;</td>
+          <td class="paramname"><em>secmodule</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -242,7 +242,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>Storage context. Must not be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">hsm</td><td>HSM implementation. Must not be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secmodule</td><td>Security Module implementation. Must not be NULL.</td></tr>
   </table>
   </dd>
 </dl>

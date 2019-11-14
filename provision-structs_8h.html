@@ -94,10 +94,13 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Public key with date information.  <a href="structvs__pubkey__dated__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__file__version__t.html">vs_file_version_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">File version information.  <a href="structvs__file__version__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__file__info__t.html">vs_file_info_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">File information.  <a href="structvs__file__info__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__provision__tl__find__ctx__t.html">vs_provision_tl_find_ctx_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find context.  <a href="structvs__provision__tl__find__ctx__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -106,25 +109,29 @@ Macros</h2></td></tr>
 <tr class="separator:abe60935d8cfe78ec7fd2aafcdec66105"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeffdb5d6efa1355a7d8d887c86b53229"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#aeffdb5d6efa1355a7d8d887c86b53229">HTONS_IN_COMPILE_TIME</a>(val)&#160;&#160;&#160;(uint16_t)(((uint16_t)val &amp; 0xFF) &lt;&lt; 8 | ((uint16_t)val &amp; 0xFF00) &gt;&gt; 8)</td></tr>
 <tr class="separator:aeffdb5d6efa1355a7d8d887c86b53229"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71d19e3426fae1b7b1dc316b98bcead3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a71d19e3426fae1b7b1dc316b98bcead3">START_EPOCH</a>&#160;&#160;&#160;(1420070400);</td></tr>
-<tr class="separator:a71d19e3426fae1b7b1dc316b98bcead3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9602fd0c6eab3f4618927cee4452c632"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">VS_DEVICE_SERIAL_SIZE</a>&#160;&#160;&#160;(32) /*This is size of SHA256 data*/</td></tr>
+<tr class="memitem:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a663b5e774b602fac7e8276f7a6d4c6d2">VS_START_EPOCH</a>&#160;&#160;&#160;(1420070400);</td></tr>
+<tr class="memdesc:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The start time point for UNIX time format.  <a href="provision-structs_8h.html#a663b5e774b602fac7e8276f7a6d4c6d2">More...</a><br /></td></tr>
+<tr class="separator:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9602fd0c6eab3f4618927cee4452c632"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">VS_DEVICE_SERIAL_SIZE</a>&#160;&#160;&#160;(32)</td></tr>
+<tr class="memdesc:a9602fd0c6eab3f4618927cee4452c632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device serial ID size.  <a href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">More...</a><br /></td></tr>
 <tr class="separator:a9602fd0c6eab3f4618927cee4452c632"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af112d528390dd5f93420d003ae10ee1c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#af112d528390dd5f93420d003ae10ee1c">VS_DEVICE_MANUFACTURE_ID_SIZE</a>&#160;&#160;&#160;(16)</td></tr>
+<tr class="memdesc:af112d528390dd5f93420d003ae10ee1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manufacture ID size.  <a href="provision-structs_8h.html#af112d528390dd5f93420d003ae10ee1c">More...</a><br /></td></tr>
 <tr class="separator:af112d528390dd5f93420d003ae10ee1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56a6d2c2138d5af1f2d18634d00ba3e5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">VS_DEVICE_TYPE_SIZE</a>&#160;&#160;&#160;(4)</td></tr>
+<tr class="memdesc:a56a6d2c2138d5af1f2d18634d00ba3e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device type size.  <a href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">More...</a><br /></td></tr>
 <tr class="separator:a56a6d2c2138d5af1f2d18634d00ba3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:af50a14354959f598dabb99c25aecd685"><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a>[<a class="el" href="provision-structs_8h.html#af112d528390dd5f93420d003ae10ee1c">VS_DEVICE_MANUFACTURE_ID_SIZE</a>]</td></tr>
-<tr class="memdesc:af50a14354959f598dabb99c25aecd685"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Manufacture ID" type  <a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">More...</a><br /></td></tr>
+<tr class="memdesc:af50a14354959f598dabb99c25aecd685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manufacture ID type.  <a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">More...</a><br /></td></tr>
 <tr class="separator:af50a14354959f598dabb99c25aecd685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a608e891eb73f54baf5fc0e63b34d91d2"><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">vs_device_type_t</a>[<a class="el" href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">VS_DEVICE_TYPE_SIZE</a>]</td></tr>
-<tr class="memdesc:a608e891eb73f54baf5fc0e63b34d91d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Device type" type  <a href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">More...</a><br /></td></tr>
+<tr class="memdesc:a608e891eb73f54baf5fc0e63b34d91d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device type type.  <a href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">More...</a><br /></td></tr>
 <tr class="separator:a608e891eb73f54baf5fc0e63b34d91d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1">vs_device_serial_t</a>[<a class="el" href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">VS_DEVICE_SERIAL_SIZE</a>]</td></tr>
-<tr class="memdesc:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Device serial number" type  <a href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1">More...</a><br /></td></tr>
+<tr class="memdesc:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device serial number type.  <a href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1">More...</a><br /></td></tr>
 <tr class="separator:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -195,8 +202,28 @@ Enumerations</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provision interface structures. </p>
 <h1><a class="anchor" id="provision_structures_usage"></a>
-Provision structure usage</h1>
-<p>TODO : manufacture, device id initialization </p>
+Provision structures usage</h1>
+<p>See <a class="el" href="provision_8h.html#provision_usage">Provision Usage</a> for Provision module initialization and call.</p>
+<p>Device has 3 identifiers that are used by Cloud and Update interfaces : manufacture ID, device type and device serial number, <a class="el" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685" title="Manufacture ID type.">vs_device_manufacture_id_t</a>, <a class="el" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2" title="Device type type.">vs_device_type_t</a> and <a class="el" href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1" title="Device serial number type.">vs_device_serial_t</a> respectively. They must be initialized before any Virgil IoT calls.</p>
+<p>There is manufacture ID initialization example provided below :</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span></div>
+<div class="line">init_manufacture_id(<a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a> manufacture_id, <span class="keywordtype">void</span> *src_data) {</div>
+<div class="line">    <span class="keywordtype">size_t</span> pos;</div>
+<div class="line">    <span class="keyword">const</span> uint8_t *raw_data = src_data;</div>
+<div class="line"> </div>
+<div class="line">    memset(manufacture_id, 0, <span class="keyword">sizeof</span>(<a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a>));</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (pos = 0; pos &lt; <span class="keyword">sizeof</span>(<a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a>) &amp;&amp; raw_data[pos]; ++pos) {</div>
+<div class="line">        manufacture_id[pos] = raw_data[pos];</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// in main:</span></div>
+<div class="line"><a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a> manufacture_id;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// MANUFACTURE_ID is the compile time ASCII constant provided by -D compilation parameter</span></div>
+<div class="line">init_manufacture_id(manufacture_id, MANUFACTURE_ID);</div>
+</div><!-- fragment --><p>You can use function like this for device type filling and device serial number. </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="abe60935d8cfe78ec7fd2aafcdec66105"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abe60935d8cfe78ec7fd2aafcdec66105">&#9670;&nbsp;</a></span>HTONL_IN_COMPILE_TIME</h2>
@@ -236,20 +263,6 @@ Provision structure usage</h1>
 
 </div>
 </div>
-<a id="a71d19e3426fae1b7b1dc316b98bcead3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71d19e3426fae1b7b1dc316b98bcead3">&#9670;&nbsp;</a></span>START_EPOCH</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define START_EPOCH&#160;&#160;&#160;(1420070400);</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="af112d528390dd5f93420d003ae10ee1c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af112d528390dd5f93420d003ae10ee1c">&#9670;&nbsp;</a></span>VS_DEVICE_MANUFACTURE_ID_SIZE</h2>
 
@@ -262,6 +275,8 @@ Provision structure usage</h1>
       </table>
 </div><div class="memdoc">
 
+<p>Manufacture ID size. </p>
+
 </div>
 </div>
 <a id="a9602fd0c6eab3f4618927cee4452c632"></a>
@@ -271,10 +286,12 @@ Provision structure usage</h1>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define VS_DEVICE_SERIAL_SIZE&#160;&#160;&#160;(32) /*This is size of SHA256 data*/</td>
+          <td class="memname">#define VS_DEVICE_SERIAL_SIZE&#160;&#160;&#160;(32)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Device serial ID size. </p>
 
 </div>
 </div>
@@ -289,6 +306,25 @@ Provision structure usage</h1>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Device type size. </p>
+
+</div>
+</div>
+<a id="a663b5e774b602fac7e8276f7a6d4c6d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a663b5e774b602fac7e8276f7a6d4c6d2">&#9670;&nbsp;</a></span>VS_START_EPOCH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VS_START_EPOCH&#160;&#160;&#160;(1420070400);</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The start time point for UNIX time format. </p>
+<p>Timestamps are stored as seconds since January 1, 2015 UTC. This is constant for UNIX time conversions </p>
 
 </div>
 </div>
@@ -305,8 +341,8 @@ Provision structure usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>"Manufacture ID" type </p>
-<p>This is manufacture identifier contains ASCII symbols and trailing zeroes. </p>
+<p>Manufacture ID type. </p>
+<p>This is manufacture identifier containing ASCII symbols and trailing zeroes. </p>
 
 </div>
 </div>
@@ -322,7 +358,8 @@ Provision structure usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>"Device serial number" type </p>
+<p>Device serial number type. </p>
+<p>This is device serial number identifier contains ASCII symbols and trailing zeroes. </p>
 
 </div>
 </div>
@@ -338,7 +375,7 @@ Provision structure usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>"Device type" type </p>
+<p>Device type type. </p>
 <p>This is device type identifier contains ASCII symbols and trailing zeroes. </p>
 
 </div>
@@ -482,6 +519,7 @@ Provision structure usage</h1>
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:115</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
