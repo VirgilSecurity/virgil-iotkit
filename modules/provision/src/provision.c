@@ -140,7 +140,10 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz) {
+vs_provision_search_hl_pubkey(vs_key_type_e key_type,
+                              vs_hsm_keypair_type_e ec_type,
+                              const uint8_t *key,
+                              uint16_t key_sz) {
     vs_iot_hsm_slot_e slot;
     uint8_t i = 0;
     int ref_key_sz;

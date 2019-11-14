@@ -83,7 +83,7 @@ cmake version 3.11.0
 thing service and downloading firmware images and trust list files from cloud storage.
 - Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html).
 - [Firmware](https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
-- Provision.
+- [Provision](https://virgilsecurity.github.io/virgil-iot-sdk/provision_8h.html) : Trust List keys reading and verifying.
 - Secbox.
 - Protocols.
 - Cloud.
