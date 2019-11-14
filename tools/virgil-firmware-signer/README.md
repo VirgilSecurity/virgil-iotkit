@@ -1,15 +1,14 @@
 # Virgil Firmware Signer
 Virgil Firmware Signer is a CLI that allows you to sign a firmware using private keys.
 
+Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth Private Key and Firmware Private Key generated in the Virgil Trust Provisioner in order to provide firmware integrity before distributing it.
+
 ## Content
 - [Overview](#overview)
-- [Setting up Virgil Firmware Signer](#setting-up-virgil-firmware-signer)
+- [Setting up Firmware Signer](#setting-up-virgil-firmware-signer)
 - [Command Reference](#command-reference)
 - [Firmware Structure](#firmware-structure)
 
-
-### Overview
-Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth Private Key and Firmware Private Key generated in the Virgil Trust Provisioner in order to provide firmware integrity before distributing it.
 
 ## Setting up Firmware Signer
 This section demonstrates on how to install and configure Virgil Firmware Signer for preferred platform.
