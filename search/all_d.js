@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['mac_196',['mac',['../structvs__sdmp__info__device__t.html#adfe554f0978edb3811cd5e4b5c0b7c87',1,'vs_sdmp_info_device_t::mac()'],['../structvs__sdmp__prvs__devi__t.html#ac97d44e800b9c523933dcca6e70013fa',1,'vs_sdmp_prvs_devi_t::mac()']]],
-  ['mac_5faddr_197',['mac_addr',['../structvs__sdmp__prvs__dnid__element__t.html#ad2a5a28cf0d4d17bab6ce07532633a7a',1,'vs_sdmp_prvs_dnid_element_t::mac_addr()'],['../structvs__netif__t.html#acf9ea6301ac3a1581789e09a6ceb57bb',1,'vs_netif_t::mac_addr()']]],
+  ['mac_196',['mac',['../structvs__snap__info__device__t.html#aeede0e933b83c1a89b8ed29a36e462b2',1,'vs_snap_info_device_t::mac()'],['../structvs__snap__prvs__devi__t.html#a54b65ca024ceae0da6f326669a860e89',1,'vs_snap_prvs_devi_t::mac()']]],
+  ['mac_5faddr_197',['mac_addr',['../structvs__snap__prvs__dnid__element__t.html#ab3c02cc07bd92b479779872de7bcaabf',1,'vs_snap_prvs_dnid_element_t::mac_addr()'],['../structvs__netif__t.html#acf9ea6301ac3a1581789e09a6ceb57bb',1,'vs_netif_t::mac_addr()']]],
   ['macros_2eh_198',['macros.h',['../macros_8h.html',1,'']]],
   ['major_199',['major',['../structvs__file__version__unpacked__t.html#a18e5a6826f8aaaea9c4f478f14b9e5f9',1,'vs_file_version_unpacked_t::major()'],['../structvs__file__version__t.html#a3d368e94806fba3522ed7daad6520113',1,'vs_file_version_t::major()']]],
   ['manufacture_5fid_200',['manufacture_id',['../structvs__info__general__t.html#ac7fd6d7ae9f35975c9c0f124fe8fc513',1,'vs_info_general_t::manufacture_id()'],['../structvs__file__info__t.html#a0198ec4b24a3f68f281169aae3cfd70c',1,'vs_file_info_t::manufacture_id()']]],
-  ['manufacturer_201',['manufacturer',['../structvs__sdmp__prvs__devi__t.html#ae7cf133c6c5b3568fb6324a563dd3bdb',1,'vs_sdmp_prvs_devi_t']]],
+  ['manufacturer_201',['manufacturer',['../structvs__snap__prvs__devi__t.html#a401beffb587ed7afe30874ee42bb0f65',1,'vs_snap_prvs_devi_t']]],
   ['max_5fjson_5fstr_5flen_202',['MAX_JSON_STR_LEN',['../json__generator_8h.html#a50c8aaad406c05add4af5edb660468cd',1,'json_generator.h']]],
   ['max_5fjson_5fval_5flen_203',['MAX_JSON_VAL_LEN',['../json__generator_8h.html#a88b34fb69dc8e416322f2ec076261c42',1,'json_generator.h']]],
   ['memcmp_5fcheck_204',['MEMCMP_CHECK',['../macros_8h.html#a3d330862ac1ad03110e6d64a699d10dd',1,'macros.h']]],

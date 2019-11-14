@@ -7,8 +7,8 @@ var searchData=
   ['ecies_5fdecrypt_1098',['ecies_decrypt',['../structvs__hsm__impl__t.html#a716e547fa1ca31523750ed78d5fdf2ee',1,'vs_hsm_impl_t']]],
   ['ecies_5fencrypt_1099',['ecies_encrypt',['../structvs__hsm__impl__t.html#a8b69e67339b366f1577dc8bdca06c89f',1,'vs_hsm_impl_t']]],
   ['element_5fbuf_1100',['element_buf',['../structvs__provision__tl__find__ctx__t.html#a296b8f4cb64ba930903a18092f56c7b9',1,'vs_provision_tl_find_ctx_t']]],
-  ['element_5fid_1101',['element_id',['../structvs__sdmp__header__t.html#a00f852b8e8b0229890e14e73a92dba81',1,'vs_sdmp_header_t']]],
-  ['elements_1102',['elements',['../structvs__sdmp__prvs__dnid__list__t.html#a4caa10a7ca65dbd2d524045b791226ff',1,'vs_sdmp_prvs_dnid_list_t']]],
-  ['eth_5fheader_1103',['eth_header',['../structvs__sdmp__packet__t.html#a80e1b0901d5f38936b86626d5a167f82',1,'vs_sdmp_packet_t']]],
+  ['element_5fid_1101',['element_id',['../structvs__snap__header__t.html#a114f71bf87a33fa9d7829995b1e14289',1,'vs_snap_header_t']]],
+  ['elements_1102',['elements',['../structvs__snap__prvs__dnid__list__t.html#a5694d6a9ae386bd32bda02cdd51ed4db',1,'vs_snap_prvs_dnid_list_t']]],
+  ['eth_5fheader_1103',['eth_header',['../structvs__snap__packet__t.html#a74aa970c03c5ef8ad8f932c202d8e360',1,'vs_snap_packet_t']]],
   ['expire_5fdate_1104',['expire_date',['../structvs__pubkey__dated__t.html#a415ed02d7397eca920db5670805d5be9',1,'vs_pubkey_dated_t']]]
 ];

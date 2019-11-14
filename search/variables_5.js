@@ -3,7 +3,7 @@ var searchData=
   ['file_5fis_5fnewer_1105',['file_is_newer',['../structvs__update__interface__t.html#a2578d7b79ba1eff4bc48630500c023ac',1,'vs_update_interface_t']]],
   ['file_5fsz_5flimit_1106',['file_sz_limit',['../structvs__storage__op__ctx__t.html#af3761dadf7a3096169035d7dd827af10',1,'vs_storage_op_ctx_t']]],
   ['firmware_5flength_1107',['firmware_length',['../structvs__firmware__descriptor__t.html#af5b574db5e9a739aba9af613a5b1a2a5',1,'vs_firmware_descriptor_t']]],
-  ['flags_1108',['flags',['../structvs__sdmp__header__t.html#a7e33abcc94b7d32d518f41583a98c8f4',1,'vs_sdmp_header_t']]],
+  ['flags_1108',['flags',['../structvs__snap__header__t.html#a6572489c0b3019f91cce75fb1b95d690',1,'vs_snap_header_t']]],
   ['footer_5flength_1109',['footer_length',['../structvs__firmware__header__t.html#af30cae089c9f2b52540ca2e678df023b',1,'vs_firmware_header_t']]],
   ['footer_5foffset_1110',['footer_offset',['../structvs__firmware__header__t.html#a4a58067ec90bf54e19e887306b967259',1,'vs_firmware_header_t']]],
   ['free_5fitem_1111',['free_item',['../structvs__update__interface__t.html#a4658f588815949e8a65d9b7e979ef1f3',1,'vs_update_interface_t']]],

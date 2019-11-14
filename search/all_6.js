@@ -5,7 +5,7 @@ var searchData=
   ['firmware_2eh_72',['firmware.h',['../firmware_8h.html',1,'']]],
   ['firmware_5fhal_2eh_73',['firmware_hal.h',['../firmware__hal_8h.html',1,'']]],
   ['firmware_5flength_74',['firmware_length',['../structvs__firmware__descriptor__t.html#af5b574db5e9a739aba9af613a5b1a2a5',1,'vs_firmware_descriptor_t']]],
-  ['flags_75',['flags',['../structvs__sdmp__header__t.html#a7e33abcc94b7d32d518f41583a98c8f4',1,'vs_sdmp_header_t']]],
+  ['flags_75',['flags',['../structvs__snap__header__t.html#a6572489c0b3019f91cce75fb1b95d690',1,'vs_snap_header_t']]],
   ['fldt_2dclient_2eh_76',['fldt-client.h',['../fldt-client_8h.html',1,'']]],
   ['fldt_2dserver_2eh_77',['fldt-server.h',['../fldt-server_8h.html',1,'']]],
   ['footer_5flength_78',['footer_length',['../structvs__firmware__header__t.html#af30cae089c9f2b52540ca2e678df023b',1,'vs_firmware_header_t']]],

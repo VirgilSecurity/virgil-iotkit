@@ -5,7 +5,7 @@ var searchData=
   ['readme_2emd_232',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['rec1_5fkey_5fslot_233',['REC1_KEY_SLOT',['../hsm__iotelic_8h.html#a6c6825d21412ed0b90aa4c6eabc00d42',1,'hsm_iotelic.h']]],
   ['rec2_5fkey_5fslot_234',['REC2_KEY_SLOT',['../hsm__iotelic_8h.html#a8334eeec3de8f9d7aa1bf3f8ba21e1fc',1,'hsm_iotelic.h']]],
-  ['received_235',['received',['../structvs__info__statistics__t.html#af89842a20d646f78d97e9d694a44ef53',1,'vs_info_statistics_t::received()'],['../structvs__sdmp__stat__t.html#a8542a2d178be3354fcd7fb96fb5e3b72',1,'vs_sdmp_stat_t::received()']]],
-  ['request_5fprocess_236',['request_process',['../structvs__sdmp__service__t.html#a9dbbd6c93fdfd5c811fe685bb40cdb99',1,'vs_sdmp_service_t']]],
-  ['response_5fprocess_237',['response_process',['../structvs__sdmp__service__t.html#a5d4bfee997cef24fd0c7c23cdba69c99',1,'vs_sdmp_service_t']]]
+  ['received_235',['received',['../structvs__info__statistics__t.html#af89842a20d646f78d97e9d694a44ef53',1,'vs_info_statistics_t::received()'],['../structvs__snap__stat__t.html#a27bcd3b1f257e8a02a3a9684c9497665',1,'vs_snap_stat_t::received()']]],
+  ['request_5fprocess_236',['request_process',['../structvs__snap__service__t.html#a8ee712f41e53edc35785baa9386cbe8a',1,'vs_snap_service_t']]],
+  ['response_5fprocess_237',['response_process',['../structvs__snap__service__t.html#aaf8728bd1aa512326d5fef4893af3469',1,'vs_snap_service_t']]]
 ];

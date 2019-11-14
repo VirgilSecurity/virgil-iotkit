@@ -81,11 +81,11 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ab679cd8b7104772116dd4c59a1677202"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html#ab679cd8b7104772116dd4c59a1677202">device_type</a> [<a class="el" href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">VS_DEVICE_TYPE_SIZE</a>]</td></tr>
 <tr class="memdesc:ab679cd8b7104772116dd4c59a1677202"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device type.  <a href="structvs__info__general__t.html#ab679cd8b7104772116dd4c59a1677202">More...</a><br /></td></tr>
 <tr class="separator:ab679cd8b7104772116dd4c59a1677202"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7373186eb64b04b00dbb6afceb1acb47"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html#a7373186eb64b04b00dbb6afceb1acb47">default_netif_mac</a> [<a class="el" href="sdmp-structs_8h.html#a78fc3e3fe5c33412e9f47a214f6e0415">ETH_ADDR_LEN</a>]</td></tr>
+<tr class="memitem:a7373186eb64b04b00dbb6afceb1acb47"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html#a7373186eb64b04b00dbb6afceb1acb47">default_netif_mac</a> [<a class="el" href="snap-structs_8h.html#a78fc3e3fe5c33412e9f47a214f6e0415">ETH_ADDR_LEN</a>]</td></tr>
 <tr class="memdesc:a7373186eb64b04b00dbb6afceb1acb47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default network interface MAC address.  <a href="structvs__info__general__t.html#a7373186eb64b04b00dbb6afceb1acb47">More...</a><br /></td></tr>
 <tr class="separator:a7373186eb64b04b00dbb6afceb1acb47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8d07a3814aaef98fd4f88cd4fa8dd57"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html#ab8d07a3814aaef98fd4f88cd4fa8dd57">device_roles</a></td></tr>
-<tr class="memdesc:ab8d07a3814aaef98fd4f88cd4fa8dd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask based on <a class="el" href="sdmp-structs_8h.html#a6f55607e181609ed9996d2fe7c92a900" title="Device roles.">vs_sdmp_device_role_e</a> elements.  <a href="structvs__info__general__t.html#ab8d07a3814aaef98fd4f88cd4fa8dd57">More...</a><br /></td></tr>
+<tr class="memdesc:ab8d07a3814aaef98fd4f88cd4fa8dd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask based on <a class="el" href="snap-structs_8h.html#a23d572d92f113e147b49b57c5dcb05c9" title="Device roles.">vs_snap_device_role_e</a> elements.  <a href="structvs__info__general__t.html#ab8d07a3814aaef98fd4f88cd4fa8dd57">More...</a><br /></td></tr>
 <tr class="separator:ab8d07a3814aaef98fd4f88cd4fa8dd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a522e2249afd8aaefa98e91818555e0a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structvs__file__version__unpacked__t.html">vs_file_version_unpacked_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html#a522e2249afd8aaefa98e91818555e0a8">fw_ver</a></td></tr>
 <tr class="memdesc:a522e2249afd8aaefa98e91818555e0a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Firmware version.  <a href="structvs__info__general__t.html#a522e2249afd8aaefa98e91818555e0a8">More...</a><br /></td></tr>
@@ -96,7 +96,7 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Device general information. </p>
-<p>Device general information as parameter for <a class="el" href="info-client_8h.html#a0188fa4c122d4f3c015e37fbdc4ab495" title="Device information.">vs_sdmp_info_general_cb_t</a> call </p>
+<p>Device general information as parameter for <a class="el" href="info-client_8h.html#aac9f3d6bc7680c4b1c4a6d419a23749e" title="Device information.">vs_snap_info_general_cb_t</a> call </p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a7373186eb64b04b00dbb6afceb1acb47"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7373186eb64b04b00dbb6afceb1acb47">&#9670;&nbsp;</a></span>default_netif_mac</h2>
@@ -105,7 +105,7 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t vs_info_general_t::default_netif_mac[<a class="el" href="sdmp-structs_8h.html#a78fc3e3fe5c33412e9f47a214f6e0415">ETH_ADDR_LEN</a>]</td>
+          <td class="memname">uint8_t vs_info_general_t::default_netif_mac[<a class="el" href="snap-structs_8h.html#a78fc3e3fe5c33412e9f47a214f6e0415">ETH_ADDR_LEN</a>]</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -126,7 +126,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Mask based on <a class="el" href="sdmp-structs_8h.html#a6f55607e181609ed9996d2fe7c92a900" title="Device roles.">vs_sdmp_device_role_e</a> elements. </p>
+<p>Mask based on <a class="el" href="snap-structs_8h.html#a23d572d92f113e147b49b57c5dcb05c9" title="Device roles.">vs_snap_device_role_e</a> elements. </p>
 
 </div>
 </div>
@@ -195,7 +195,7 @@ Data Fields</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>modules/protocols/sdmp/include/virgil/iot/protocols/sdmp/info/<a class="el" href="info-structs_8h_source.html">info-structs.h</a></li>
+<li>modules/protocols/snap/include/virgil/iot/protocols/snap/info/<a class="el" href="info-structs_8h_source.html">info-structs.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

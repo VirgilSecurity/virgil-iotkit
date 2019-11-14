@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['wait_5ffunc_807',['wait_func',['../structvs__sdmp__info__impl__t.html#a23e462b0fd6634fab366e7b41e4451aa',1,'vs_sdmp_info_impl_t::wait_func()'],['../structvs__sdmp__prvs__client__impl__t.html#a9123f2253f29a5ba83d94a010e0edc48',1,'vs_sdmp_prvs_client_impl_t::wait_func()']]],
+  ['wait_5ffunc_807',['wait_func',['../structvs__snap__info__impl__t.html#ac9a0a5a1a932858c8a3fe0c5a28ef986',1,'vs_snap_info_impl_t::wait_func()'],['../structvs__snap__prvs__client__impl__t.html#a48383dfea426c0675ca72c5b0b882c0f',1,'vs_snap_prvs_client_impl_t::wait_func()']]],
   ['wm_5fe_5fjson_5ferrno_5fbase_808',['WM_E_JSON_ERRNO_BASE',['../json__parser_8h.html#a687f0ceb8d33e34359e7d9a9d4910ccea4bdfcbac685d303bb58883151f2ea283',1,'json_parser.h']]],
   ['wm_5fe_5fjson_5ffail_809',['WM_E_JSON_FAIL',['../json__parser_8h.html#a687f0ceb8d33e34359e7d9a9d4910ccea1e48cbb8918de2fdbde68cbe6f954b04',1,'json_parser.h']]],
   ['wm_5fe_5fjson_5fincomplete_810',['WM_E_JSON_INCOMPLETE',['../json__parser_8h.html#a687f0ceb8d33e34359e7d9a9d4910ccea3f59ec50d9b0e114dc4b04b34b0b8751',1,'json_parser.h']]],

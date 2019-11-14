@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['general_5finfo_5fcb_1114',['general_info_cb',['../structvs__sdmp__info__callbacks__t.html#a6584b7f048057798b448e8f26e163a11',1,'vs_sdmp_info_callbacks_t']]],
+  ['general_5finfo_5fcb_1114',['general_info_cb',['../structvs__snap__info__callbacks__t.html#acc603b4ffebd66690f51fdb8d1c1a721',1,'vs_snap_info_callbacks_t']]],
   ['get_5fdata_1115',['get_data',['../structvs__update__interface__t.html#a3222fc6c839f708fe6c81dabc693c63f',1,'vs_update_interface_t']]],
   ['get_5ffile_5fsize_1116',['get_file_size',['../structvs__update__interface__t.html#a93ccf1c64e65d642213554b07b4e989a',1,'vs_update_interface_t']]],
   ['get_5ffooter_1117',['get_footer',['../structvs__update__interface__t.html#afb679cb5814fb456d79278325a6f4afe',1,'vs_update_interface_t']]],

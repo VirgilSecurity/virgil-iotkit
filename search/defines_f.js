@@ -3,7 +3,7 @@ var searchData=
   ['vs_5fdevice_5fmanufacture_5fid_5fsize_1569',['VS_DEVICE_MANUFACTURE_ID_SIZE',['../provision-structs_8h.html#af112d528390dd5f93420d003ae10ee1c',1,'provision-structs.h']]],
   ['vs_5fdevice_5fserial_5fsize_1570',['VS_DEVICE_SERIAL_SIZE',['../provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632',1,'provision-structs.h']]],
   ['vs_5fdevice_5ftype_5fsize_1571',['VS_DEVICE_TYPE_SIZE',['../provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5',1,'provision-structs.h']]],
-  ['vs_5fethertype_5fvirgil_1572',['VS_ETHERTYPE_VIRGIL',['../sdmp-structs_8h.html#aa7f5a285ea36715aa54463878030865d',1,'sdmp-structs.h']]],
+  ['vs_5fethertype_5fvirgil_1572',['VS_ETHERTYPE_VIRGIL',['../snap-structs_8h.html#aa7f5a285ea36715aa54463878030865d',1,'snap-structs.h']]],
   ['vs_5ffw_5fsignatures_5fqty_1573',['VS_FW_SIGNATURES_QTY',['../update-config_8h.html#afbe65bd8857141940d8c5d4e69c768ae',1,'update-config.h']]],
   ['vs_5ffw_5fsigner_5ftype_5flist_1574',['VS_FW_SIGNER_TYPE_LIST',['../update-config_8h.html#af61f5d111d506f329a33de0bf7cc0e40',1,'update-config.h']]],
   ['vs_5fhash_5fsha256_5flen_1575',['VS_HASH_SHA256_LEN',['../hsm__helpers_8h.html#aadd38e1c21e41b6067fdc72aef893565',1,'hsm_helpers.h']]],
