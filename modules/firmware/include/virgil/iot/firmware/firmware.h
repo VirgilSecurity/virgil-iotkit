@@ -50,24 +50,24 @@
  * \code
 
 vs_storage_op_ctx_t fw_storage_impl;         // Firmware storage implementation
-vs_hsm_impl_t *hsm_impl = NULL;              // Security module implementation
+vs_secmodule_impl_t *secmodule_impl = NULL;              // Security module implementation
 static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
 // Initialize fw_storage_impl, manufacture_id, device_type
 
 // Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
-module");
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type), "Unable to initialize
+Firmware module");
 
  * \endcode
  *
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
- * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_softhsm_impl() as it is done in this example.
+ * Security module implementation \a secmodule_impl initialization is described in \ref storage_hal section. You can use
+ * software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
  * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
@@ -184,23 +184,23 @@ _send_firmware(){
  * \code
 
 vs_storage_op_ctx_t fw_storage_impl;    // Firmware storage implementation
-vs_hsm_impl_t *hsm_impl = NULL;         // Security module implementation
+vs_secmodule_impl_t *secmodule_impl = NULL;         // Security module implementation
 static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
 // Initialize manufacture_id, device_type
 
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);   // Use Software Security Module
 
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
-module");
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type), "Unable to initialize
+Firmware module");
 
  * \endcode
  *
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
- * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_softhsm_impl() as it is done in this example.
+ * Security module implementation \a secmodule_impl initialization is described in \ref storage_hal section. You can use
+ * software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
  * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
@@ -213,7 +213,7 @@ module");
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/update/update.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /** Firmware descriptor */
 typedef struct __attribute__((__packed__)) {
@@ -246,7 +246,7 @@ typedef struct __attribute__((__packed__)) {
  * Firmware initialization has to be done before first Firmware calls.
  *
  * \param[in] ctx #vs_storage_op_ctx_t storage context. Must not be NULL.
- * \param[in] hsm #vs_hsm_impl_t HSM implementation. Must not be NULL.
+ * \param[in] secmodule #vs_secmodule_impl_t SECMODULE implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
  *
@@ -254,7 +254,7 @@ typedef struct __attribute__((__packed__)) {
  */
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
-                 vs_hsm_impl_t *hsm,
+                 vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type);
 

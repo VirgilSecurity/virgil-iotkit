@@ -1,8 +1,8 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 static const char *test_data = "Data for hash creation ...";
 static const char *another_test_data = "Another data for hash creation ...";
@@ -37,8 +37,8 @@ static const uint8_t long_sha256_hash[] = {0x47, 0x79, 0x98, 0xCB, 0x39, 0xC5, 0
 
 /******************************************************************************/
 static bool
-_test_long_sha_pass(vs_hsm_impl_t *hsm_impl,
-                    vs_hsm_hash_type_e hash_type,
+_test_long_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+                    vs_secmodule_hash_type_e hash_type,
                     const uint8_t *data,
                     uint16_t data_sz,
                     const uint8_t *ref_result,
@@ -46,7 +46,8 @@ _test_long_sha_pass(vs_hsm_impl_t *hsm_impl,
     static uint8_t result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
 
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->hash(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
+    BOOL_CHECK_RET(VS_CODE_OK ==
+                           secmodule_impl->hash(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result");
 
@@ -57,31 +58,31 @@ _test_long_sha_pass(vs_hsm_impl_t *hsm_impl,
 
 /******************************************************************************/
 static bool
-_test_sha_pass(vs_hsm_impl_t *hsm_impl,
-               vs_hsm_hash_type_e hash_type,
+_test_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+               vs_secmodule_hash_type_e hash_type,
                const uint8_t *correct_result_raw,
                uint16_t correct_result_size) {
     static uint8_t result_buf[HASH_MAX_BUF_SIZE];
     static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
 
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->hash(hash_type,
-                                                (uint8_t *)test_data,
-                                                VS_IOT_STRLEN(test_data),
-                                                result_buf,
-                                                sizeof(result_buf),
-                                                &result_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->hash(hash_type,
+                                                      (uint8_t *)test_data,
+                                                      VS_IOT_STRLEN(test_data),
+                                                      result_buf,
+                                                      sizeof(result_buf),
+                                                      &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
 
     MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz, false);
 
-    BOOL_CHECK_RET(VS_CODE_OK == hsm_impl->hash(hash_type,
-                                                (uint8_t *)another_test_data,
-                                                VS_IOT_STRLEN(another_test_data),
-                                                another_result_buf,
-                                                sizeof(another_result_buf),
-                                                &result_sz),
+    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->hash(hash_type,
+                                                      (uint8_t *)another_test_data,
+                                                      VS_IOT_STRLEN(another_test_data),
+                                                      another_result_buf,
+                                                      sizeof(another_result_buf),
+                                                      &result_sz),
                    "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
     BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, result_sz), "Hash is constant");
@@ -91,26 +92,26 @@ _test_sha_pass(vs_hsm_impl_t *hsm_impl,
 
 /******************************************************************************/
 static bool
-_test_partial_sha_pass(vs_hsm_impl_t *hsm_impl,
-                       vs_hsm_hash_type_e hash_type,
+_test_partial_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+                       vs_secmodule_hash_type_e hash_type,
                        const uint8_t *correct_result_raw,
                        uint16_t correct_result_size) {
 
     switch (hash_type) {
     case VS_HASH_SHA_256: {
-        vs_hsm_sw_sha256_ctx ctx;
+        vs_secmodule_sw_sha256_ctx ctx;
         static uint8_t result_buf[SHA256_SIZE];
         static uint8_t another_result_buf[SHA256_SIZE];
 
-        hsm_impl->hash_init(&ctx);
-        hsm_impl->hash_update(&ctx, (uint8_t *)test_data, VS_IOT_STRLEN(test_data));
-        hsm_impl->hash_finish(&ctx, result_buf);
+        secmodule_impl->hash_init(&ctx);
+        secmodule_impl->hash_update(&ctx, (uint8_t *)test_data, VS_IOT_STRLEN(test_data));
+        secmodule_impl->hash_finish(&ctx, result_buf);
 
         MEMCMP_CHECK_RET(correct_result_raw, result_buf, sizeof(result_buf), false);
 
-        hsm_impl->hash_init(&ctx);
-        hsm_impl->hash_update(&ctx, (uint8_t *)another_test_data, VS_IOT_STRLEN(another_test_data));
-        hsm_impl->hash_finish(&ctx, another_result_buf);
+        secmodule_impl->hash_init(&ctx);
+        secmodule_impl->hash_update(&ctx, (uint8_t *)another_test_data, VS_IOT_STRLEN(another_test_data));
+        secmodule_impl->hash_finish(&ctx, another_result_buf);
 
         BOOL_CHECK_RET(0 != memcmp(correct_result_raw, another_result_buf, sizeof(another_result_buf)),
                        "Hash is constant");
@@ -124,7 +125,7 @@ _test_partial_sha_pass(vs_hsm_impl_t *hsm_impl,
 
 #define TEST_STEP(BITLEN)                                                                                              \
     do {                                                                                                               \
-        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
+        vs_secmodule_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                     \
         const uint8_t *correct_result_raw = correct_result_sha_##BITLEN##_raw;                                         \
         uint16_t correct_result_size = sizeof(correct_result_sha_##BITLEN##_raw);                                      \
                                                                                                                        \
@@ -133,24 +134,24 @@ _test_partial_sha_pass(vs_hsm_impl_t *hsm_impl,
         if (not_implemented) {                                                                                         \
             VS_LOG_WARNING("Hash for SHA_" #BITLEN " algorithm is not implemented");                                   \
         } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type),                                                            \
-                         _test_sha_pass(hsm_impl, hash_type, correct_result_raw, correct_result_size));                \
+            TEST_CASE_OK(vs_secmodule_hash_type_descr(hash_type),                                                      \
+                         _test_sha_pass(secmodule_impl, hash_type, correct_result_raw, correct_result_size));          \
         }                                                                                                              \
     } while (0)
 
 /******************************************************************************/
 uint16_t
-test_hash(vs_hsm_impl_t *hsm_impl) {
+test_hash(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     bool not_implemented = false;
 
-    VS_IOT_ASSERT(hsm_impl);
-    CHECK_NOT_ZERO_RET(hsm_impl, 1);
+    VS_IOT_ASSERT(secmodule_impl);
+    CHECK_NOT_ZERO_RET(secmodule_impl, 1);
 
     START_TEST("HASH tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
-                 _test_long_sha_pass(hsm_impl,
+    TEST_CASE_OK(vs_secmodule_hash_type_descr(VS_HASH_SHA_256),
+                 _test_long_sha_pass(secmodule_impl,
                                      VS_HASH_SHA_256,
                                      long_test_data,
                                      sizeof(long_test_data),
@@ -160,10 +161,11 @@ test_hash(vs_hsm_impl_t *hsm_impl) {
     TEST_STEP(256);
 
     if (!not_implemented) {
-        TEST_CASE_OK(
-                "SHA256 partial calculating pass",
-                _test_partial_sha_pass(
-                        hsm_impl, VS_HASH_SHA_256, correct_result_sha_256_raw, sizeof(correct_result_sha_256_raw)));
+        TEST_CASE_OK("SHA256 partial calculating pass",
+                     _test_partial_sha_pass(secmodule_impl,
+                                            VS_HASH_SHA_256,
+                                            correct_result_sha_256_raw,
+                                            sizeof(correct_result_sha_256_raw)));
     }
 
     TEST_STEP(384);

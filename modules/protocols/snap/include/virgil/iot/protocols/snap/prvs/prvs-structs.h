@@ -88,7 +88,7 @@ typedef struct __attribute__((__packed__)) {
  * Signed data from #vs_snap_prvs_sign_data
  */
 typedef struct __attribute__((__packed__)) {
-    uint8_t hash_type; /**< #vs_hsm_hash_type_e */
+    uint8_t hash_type; /**< #vs_secmodule_hash_type_e */
     uint8_t data[];    /**< signed data */
 } vs_snap_prvs_sgnp_req_t;
 

@@ -110,7 +110,7 @@ target_link_libraries (converters
         PRIVATE
         mbedtls::mbedcrypto
         mbedtls::ed25519
-        vs-module-hsm
+        vs-module-secmodule
         virgil-iot-status-code
         )
 

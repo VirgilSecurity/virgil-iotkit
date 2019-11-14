@@ -48,8 +48,8 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             # vs_pubkey_dated_t
             byte_buffer.write(start_date.to_bytes(4, byteorder='big', signed=False))
             byte_buffer.write(expire_date.to_bytes(4, byteorder='big', signed=False))
-            byte_buffer.write(self.key_type_hsm.to_bytes(1, byteorder='big', signed=False))
-            byte_buffer.write(self.ec_type_hsm.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self.key_type_secmodule.to_bytes(1, byteorder='big', signed=False))
+            byte_buffer.write(self.ec_type_secmodule.to_bytes(1, byteorder='big', signed=False))
             byte_buffer.write(len(meta_data).to_bytes(2, byteorder='big', signed=False))
             byte_buffer.write(meta_data)
             byte_buffer.write(b64_to_bytes(self.public_key))
