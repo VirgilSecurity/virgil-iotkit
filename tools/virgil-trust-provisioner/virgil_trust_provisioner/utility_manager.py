@@ -14,7 +14,7 @@ from virgil_trust_provisioner.core_utils.virgil_time import date_to_timestamp
 from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
 
 from virgil_trust_provisioner.consts.modes import ProgramModes
-from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key
+from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key, helpers
 from virgil_trust_provisioner.core_utils.card_requests import CardRequestsHandler
 from virgil_trust_provisioner.external_utils.printer_controller import PrinterController
 from virgil_trust_provisioner.generators.trustlist import TrustListGenerator
@@ -38,6 +38,8 @@ class UtilityManager(object):
         self.__ui = self._context.ui
         self.__logger = self._context.logger
         self.__key_storage_path = os.path.join(self._context.storage_path, "key_storage")
+        self.__key_storage_private_keys = os.path.join(self.__key_storage_path, "private")
+        self.__key_storage_public_keys = os.path.join(self.__key_storage_path, "pubkeys")
         self.__atmel = self._context.atmel
         self.__printer_controller = PrinterController(self.__ui)
         self.__upper_level_keys_count = 2
@@ -255,9 +257,7 @@ class UtilityManager(object):
                 shutil.rmtree(self.__key_storage_path)
                 self.__logger.debug("Creating {}".format(self.__key_storage_path))
                 os.makedirs(os.path.join(self.__key_storage_path, "db"))
-                private_keys_file_path = os.path.join(self.__key_storage_path, "private")
-                public_keys_file_path = os.path.join(self.__key_storage_path, "pubkeys")
-                for path in (private_keys_file_path, public_keys_file_path):
+                for path in (self.__key_storage_public_keys, self.__key_storage_private_keys):
                     if os.path.exists(path):
                         shutil.rmtree(path)
                 dongle_directory = os.path.join(
@@ -298,30 +298,24 @@ class UtilityManager(object):
         self.__generate_factory_key()
         self.__logger.info("initial generation stage completed")
 
-    def __dump_upper_level_pub_keys(self, filename="pubkeys"):
-        self.__logger.info("UpperLevelPublic Keys dumping")
-        self.__ui.print_message("Dumping upper level Public Keys")
-        pubkey_dir = os.path.join(self.__key_storage_path, filename)
-        if not os.path.exists(pubkey_dir):
-            os.mkdir(pubkey_dir)
+    def __export_upper_level_pub_keys(self):
+        self.__ui.print_message("Exporting upper level Public Keys...")
+        if not os.path.exists(self.__key_storage_public_keys):
+            os.mkdir(self.__key_storage_public_keys)
+        else:
+            helpers.clean_folder_content(self.__key_storage_public_keys)
 
         storage = self.__upper_level_pub_keys
         for key_id in storage.get_keys():
             key_data = storage.get_value(key_id)
+            file_name = key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"
+            file_path = os.path.join(self.__key_storage_public_keys, file_name)
             if key_data["type"] == consts.VSKeyTypeS.RECOVERY.value:
-                self.__save_key(
-                    key_data=key_data,
-                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
-                )
+                self.__save_key(key_data=key_data, file_path=file_path)
             else:
                 signer_key_data = storage.get_value(key_data["signer_key_id"])
-                self.__save_key(
-                    key_data=key_data,
-                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
-                    signer_key_data=signer_key_data
-                )
-        self.__ui.print_message("Keys dump finished")
-        self.__logger.info("UpperLevelPublicKeys dumping completed")
+                self.__save_key(key_data=key_data, file_path=file_path, signer_key_data=signer_key_data)
+        self.__ui.print_message("Export finished")
 
     def __generate_trust_list(self, storage=None):
         def increment_version(version):
@@ -878,7 +872,8 @@ class UtilityManager(object):
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
                 ["---"],
-                ["Export upper level Public Keys", self.__dump_upper_level_pub_keys],
+                ["Export data as provision package for Factory", self.__create_provision_pack],
+                ["Export upper level Public Keys", self.__export_upper_level_pub_keys],
                 ["Export Private Keys", self.__get_all_private_keys],
                 ["---"],
                 ["Exit", self.__exit]
@@ -922,7 +917,7 @@ class UtilityManager(object):
         open(file_path, "wb").write(bytes(byte_buffer.getvalue()))
 
     def __get_private_keys(self, storage):
-        private_dir = os.path.join(self.__key_storage_path, "private")
+        private_dir = self.__key_storage_private_keys
         if not os.path.exists(private_dir):
             os.mkdir(private_dir)
 
@@ -939,6 +934,7 @@ class UtilityManager(object):
             )
 
     def __get_all_private_keys(self):
+        helpers.clean_folder_content(self.__key_storage_private_keys)
         self.__ui.print_message("Exporting Private Keys...")
         self.__get_private_keys(self.__factory_priv_keys)
         self.__get_private_keys(self.__firmware_priv_keys)
@@ -946,6 +942,59 @@ class UtilityManager(object):
         self.__get_private_keys(self.__recovery_private_keys)
         self.__get_private_keys(self.__trust_list_service_private_keys)
         self.__ui.print_message("Export finished")
+
+    def __create_provision_pack(self):
+        # Prepare folder
+        if os.path.exists(self._context.provision_pack_path):
+            helpers.clean_folder_content(self._context.provision_pack_path)
+        else:
+            os.makedirs(self._context.provision_pack_path)
+        pack_private_keys = os.path.join(self._context.provision_pack_path, "private")
+        pack_public_keys = os.path.join(self._context.provision_pack_path, "pubkeys")
+        os.makedirs(pack_private_keys)
+        os.makedirs(pack_public_keys)
+
+        # Prepare private keys
+        self.__get_all_private_keys()
+        # - find Factory key
+        factory_keys = helpers.find_files(self.__key_storage_private_keys, "factory_")
+        if not factory_keys:
+            self.__ui.print_error("Factory key needed for provision package not found. Please generate it.")
+            return
+        *_, factory_key = factory_keys
+
+        # Prepare public keys
+        self.__export_upper_level_pub_keys()
+        auth_keys = helpers.find_files(self.__key_storage_public_keys, 'auth_')
+        recovery_keys = helpers.find_files(self.__key_storage_public_keys, 'recovery_')
+        tl_keys = helpers.find_files(self.__key_storage_public_keys, 'tl_service_')
+        firmware_keys = helpers.find_files(self.__key_storage_public_keys, 'firmware_')
+        if any(len(keys) != self.__upper_level_keys_count for keys in [auth_keys,
+                                                                       recovery_keys,
+                                                                       tl_keys,
+                                                                       firmware_keys]):
+            self.__ui.print_error(
+                "Upper level keys amount should be %s. Please generate them." % self.__upper_level_keys_count)
+            return
+
+        # TrustList
+        # - find latest TrustLIst
+        trust_lists = helpers.find_files(self.__key_storage_path, "TrustList_")
+        if not trust_lists:
+            self.__ui.print_error("TrustList needed for provision package not found. Please generate it.")
+            return
+        *_, latest_tl_path = sorted(trust_lists, key=lambda path: os.path.getmtime(path))
+
+        # Copy files to pack
+        # - private keys
+        shutil.copy(factory_key, pack_private_keys)
+        # - public keys
+        for keys in [auth_keys, recovery_keys, tl_keys, firmware_keys]:
+            for key_path in keys:
+                shutil.copy(key_path, pack_public_keys)
+        # - TrustList
+        shutil.copy(latest_tl_path, self._context.provision_pack_path)
+        self.__ui.print_message("Provision package for Factory saved as '%s' folder" % self._context.provision_pack_path)
 
     def __check_db_path(self):
         db_path = os.path.join(self.__key_storage_path, "db")
