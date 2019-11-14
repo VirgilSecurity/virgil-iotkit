@@ -151,7 +151,7 @@ This command allows generating all keys for the entire key management infrastruc
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
-| 1       | Virgil Trust Provisioner generates 2 Recovery Keys, 2 Auth Keys, 2 TL Keys, 2 Firmware Keys, 1 Factory Key one by one |
+| ```1```       | Virgil Trust Provisioner generates 2 Recovery Keys, 2 Auth Keys, 2 TL Keys, 2 Firmware Keys, 1 Factory Key one by one |
 
 User is able to make decisions and leave comments about all CLI actions within Initial Generation process.
 
@@ -324,7 +324,7 @@ The upper level key for recovery operations and for some keys creation. Recovery
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
-| 2      | Virgil Trust Provisioner generates 2 Recovery keys |
+| ```2```      | Virgil Trust Provisioner generates 2 Recovery keys |
 
 #### Generating Recovery Key
 Recovery Keys are used to sign other types of keys, and is known by every device. Public key is stored in Tust list and private key is stored in db.
@@ -363,7 +363,7 @@ The Auth Key is trusted as the second signer of the Firmware and Trust Lists.
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
-| 3      | Virgil Trust Provisioner generates 2 Auth Keys  |
+| ```3```      | Virgil Trust Provisioner generates 2 Auth Keys  |
 
 #### Generating Auth Key
 After Auth Keys are generated they have to be signed with one of the Recovery keys. You also can add a coment about the Key purpose. Auth Key guards against the unauthorized use of Firmware and Trust List. Auth Keys sign Firmwares and the Trust Lists. Public key is stored in Tust list and private key is stored in db.
@@ -431,7 +431,7 @@ The TL Key is the primary signer of the Trust Lists. The TL Key is trusted becau
 
 | Command | Result                                       |
 |---------|----------------------------------------------|
-| 5       | Virgil Trust Provisioner generates 2 TL Keys |
+| ```5```       | Virgil Trust Provisioner generates 2 TL Keys |
 
 #### Generating TrustList Key
 The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust list and private key is stored in db.
@@ -494,8 +494,8 @@ Factory Key signs devices and guarantees official device distribution from the f
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| 6       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
-| 7       | Virgil Trust Provisioner deletes Factory Key from own db               |
+| ```6```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
+| ```7```       | Virgil Trust Provisioner deletes Factory Key from own db               |
 
 #### Generating Factory Key
 After Factory Key is generated, private key is stored in private keys db and public key is stored in Trust List. Also, Factory Key has a signature number limit that allows you to prevent uncountable device release at a factory  (```4294967295```) and is stored in ```FactoryPrivateKeys.db.```
@@ -550,7 +550,7 @@ The Firmware Key is trusted as the primary signer of firmware and has no other c
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| 8       | Virgil Trust Provisioner generates 2 Firmware Keys |
+| ```8```       | Virgil Trust Provisioner generates 2 Firmware Keys |
 
 #### Generating Firmware Key
 Firmware Keys are stored on selected devices. They are signed by a Recovery Key.
@@ -683,7 +683,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| 10   | Virgil Trust Provisioner generates Trust List file |
+| ```10```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generating
 Trust List that contains Public Keys and signatures (signatures of Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db. TL contains signatures of Recovery Keys and Auth Keys.
@@ -731,16 +731,16 @@ This page contains information about Virgil Trust Provisioner database.
 ### Database Types
 Virgil Trust Provisioner contains following types of databases.
 
-| Daabase type            | Description                                                                                                                           |
+| Database type            | Description                                                                                                                           |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| UpperLevelKeys.db       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList Service public keys, Firmware public keys) |
-| TrustListPubKeys.db     | contains public keys of Factory, Auth Internal, Firmware Internal and,cloud                                                           |
-| TrustListVerions.db     | contains versions of created Trust Lists                                                                                              |
-| FactoryPrivateKeys.db   | contains private key of Factory key                                                                                                   |
-| FirmwarePrivateKeys.db  | contains private key of Firmware key                                                                                                  |
-| AuthPrivateKeys.db      | contains private key of Auth key                                                                                                      |
-| RecoveryPrivateKeys.db  | contains private key of Recovery key                                                                                                  |
-| TLServicePrivateKeys.db | contains private key of TrustListService key                                                                                          |
+| ```UpperLevelKeys.db```       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList Service public keys, Firmware public keys) |
+| ```TrustListPubKeys.db```     | contains public keys of Factory, Auth Internal, Firmware Internal and,cloud                                                           |
+| ```TrustListVerions.db```    | contains versions of created Trust Lists                                                                                              |
+| ```FactoryPrivateKeys.db```   | contains private key of Factory key                                                                                                   |
+| ```FirmwarePrivateKeys.db```  | contains private key of Firmware key                                                                                                  |
+| ```AuthPrivateKeys.db```      | contains private key of Auth key                                                                                                      |
+| ```RecoveryPrivateKeys.db```  | contains private key of Recovery key                                                                                                  |
+| ```TLServicePrivateKeys.db``` | contains private key of TrustListService key                                                                                          |
 ### Database Security
 Virgil Trust Provisioner doesn't provide any security mechanism for protecting databases, therefore it is very important to restrict access to Virgil Trust Provisioner for non authorized users.
 
@@ -749,7 +749,7 @@ This function helps to print all public keys from db.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| 11   | Virgil Trust Provisioner provide all public keys from db to the user |
+| ```11```   | Virgil Trust Provisioner provide all public keys from db to the user |
 
 You have a posiibility to print all public keys from Virgil Trust Provisioner database  on the screen or on the paper.
 
@@ -781,12 +781,12 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 | 11529  | firmware_internal |    3    |   My Firmware key   | 152236800 | 157680000 | BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4= |
 | 35430  |   auth_internal   |    3    | My AuthInternal key | 152236800 | 157680000 | BNbV+uCkGS9UOicMXgzXqiGWIYfD3CcI1+ssok7ZdGx5+9Wey7dr/kA+bON2L2//0e7zzmOIR1FFazeizzsP4tI= |
 +--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
-```
+
 #### Add Public Keys to Database
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| 12   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
+| ```12```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
 
 This command allows you to add additional public key of some participants like cloud to Virgil Trust Provisioner database
 User can also leave a comment about added key.
@@ -812,7 +812,7 @@ Public keys are uploaded to the storage which is specified in the config file.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| 13   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
+| ```13```   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
 
 **Example**
 
@@ -833,6 +833,6 @@ This command allows exporting private keys from Virgil Trust Provisioner databas
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| 15   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
+| ```15```   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
 
 After executing the export private key command, private key bytes are stored in the file in DER format (SECP256R1). The file with private key can be found in the storage specified in the Virgil Trust Provisioner configuration file.
