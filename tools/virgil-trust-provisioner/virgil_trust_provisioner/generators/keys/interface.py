@@ -23,9 +23,9 @@ class KeyGeneratorInterface(ABC):
 
     @property
     def ec_type_hsm(self) -> int:
-        t = consts.ec_type_vs_to_hsm_map.get(self.ec_type, None)
+        t = consts.ec_type_vs_to_secmodule_map.get(self.ec_type, None)
         if t is None:
-            raise ValueError("Can`t find HSM EC key type for %s Virgil type" % self.ec_type)
+            raise ValueError("Can`t find SECMODULE EC key type for %s Virgil type" % self.ec_type)
         return t.value
 
     @property
@@ -35,9 +35,9 @@ class KeyGeneratorInterface(ABC):
 
     @property
     def hash_type_hsm(self):
-        t = consts.hash_type_vs_to_hsm_map.get(self.hash_type, None)
+        t = consts.hash_type_vs_to_secmodule_map.get(self.hash_type, None)
         if t is None:
-            raise ValueError("Can`t find HSM hash type for %s Virgil hash type" % self.hash_type)
+            raise ValueError("Can`t find SECMODULE hash type for %s Virgil hash type" % self.hash_type)
         return t
 
     @property
@@ -70,7 +70,7 @@ class KeyGeneratorInterface(ABC):
         vs_type = consts.VSKeyTypeS(self.key_type)
         t = consts.key_type_str_to_num_map.get(vs_type, None)
         if t is None:
-            raise ValueError("Can`t find HSM key type for %s Virgil key type" % self.key_type)
+            raise ValueError("Can`t find SECMODULE key type for %s Virgil key type" % self.key_type)
         return t.value
 
     @abstractmethod

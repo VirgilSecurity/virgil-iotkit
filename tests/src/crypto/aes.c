@@ -38,7 +38,7 @@
 #include <stdlib-config.h>
 /******************************************************************************/
 static bool
-test_aes_cbc_cases(vs_hsm_impl_t *secmodule_impl) {
+test_aes_cbc_cases(vs_secmodule_impl_t *secmodule_impl) {
     static const uint8_t source[] = {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
                                      0x93, 0x17, 0x2a, 0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c, 0x9e, 0xb7,
                                      0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51, 0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4,
@@ -69,7 +69,7 @@ test_aes_cbc_cases(vs_hsm_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_encrypt(
             VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, data_sz, source, crypted, NULL, 0);
 
-    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC encrypt is not implemented");
+    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC encrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to encrypt data");
     MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source), false);
@@ -79,7 +79,7 @@ test_aes_cbc_cases(vs_hsm_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_decrypt(
             VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, sizeof(crypted), crypted, decrypted, NULL, 0);
 
-    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
+    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to decrypt");
     MEMCMP_CHECK_RET(source, decrypted, data_sz, false);
@@ -89,7 +89,7 @@ test_aes_cbc_cases(vs_hsm_impl_t *secmodule_impl) {
 
 /******************************************************************************/
 static bool
-test_aes_gcm_cases(vs_hsm_impl_t *secmodule_impl) {
+test_aes_gcm_cases(vs_secmodule_impl_t *secmodule_impl) {
 #if 0
     static const uint8_t source[] = "Input data to be crypted";
     static const uint8_t iv[] = {0xca, 0xfe, 0xba, 0xbe, 0xfa, 0xce, 0xdb, 0xad, 0xde, 0xca, 0xf8, 0x88};
@@ -128,16 +128,16 @@ test_aes_gcm_cases(vs_hsm_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_encrypt(
             VS_AES_GCM, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz);
 
-    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM encrypt is not implemented");
+    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM encrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to encrypt data");
 
 #if 0
     uint8_t decrypted[sizeof(source)];
-    res = vs_hsm_aes_decrypt(
+    res = vs_secmodule_aes_decrypt(
                         aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, decrypted, tag, tag_sz);
 
-    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM decrypt is not implemented");
+    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM decrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(ret,"Unable to decrypt data");
 #endif
@@ -145,7 +145,7 @@ test_aes_gcm_cases(vs_hsm_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_auth_decrypt(
             VS_AES_GCM, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, auth_decrypted, tag, tag_sz);
 
-    VS_HSM_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM auth decrypt is not implemented");
+    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM auth decrypt is not implemented");
 
     MEMCMP_CHECK_RET(source, auth_decrypted, data_sz, false);
 
@@ -156,7 +156,7 @@ test_aes_gcm_cases(vs_hsm_impl_t *secmodule_impl) {
 
 /******************************************************************************/
 uint16_t
-test_aes(vs_hsm_impl_t *secmodule_impl) {
+test_aes(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     START_TEST("AES tests");

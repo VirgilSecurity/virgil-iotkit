@@ -36,11 +36,11 @@
 #include <virgil/iot/macros/macros.h>
 #include "private/vs-soft-secmodule-internal.h"
 
-static vs_hsm_impl_t _soft_secmodule;
+static vs_secmodule_impl_t _soft_secmodule;
 static bool _soft_secmodule_ready = false;
 
 /******************************************************************************/
-vs_hsm_impl_t *
+vs_secmodule_impl_t *
 vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
     CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
@@ -60,13 +60,13 @@ vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 vs_status_e
 vs_soft_secmodule_deinit(void) {
     _soft_secmodule_ready = false;
-    _hsm_deinit();
+    _secmodule_deinit();
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
-const vs_hsm_impl_t *
+const vs_secmodule_impl_t *
 _soft_secmodule_intern(void) {
     if (_soft_secmodule_ready) {
         return &_soft_secmodule;
@@ -77,7 +77,7 @@ _soft_secmodule_intern(void) {
 
 /******************************************************************************/
 const char *
-get_slot_name(vs_iot_hsm_slot_e slot) {
+get_slot_name(vs_iot_secmodule_slot_e slot) {
     switch (slot) {
     case VS_KEY_SLOT_STD_OTP_0:
         return "STD_OTP_0";

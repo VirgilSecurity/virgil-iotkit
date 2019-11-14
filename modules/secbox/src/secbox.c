@@ -10,25 +10,25 @@
 #include <global-hal.h>
 
 static vs_storage_op_ctx_t *_storage_ctx = NULL;
-static vs_hsm_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 /******************************************************************************/
 static vs_status_e
 _secbox_verify_signature(vs_storage_file_t f, uint8_t data_type, uint8_t *data, size_t data_sz) {
     vs_status_e ret_code;
-    uint16_t hash_len = (uint16_t)vs_hsm_get_hash_len(VS_HASH_SHA_256);
+    uint16_t hash_len = (uint16_t)vs_secmodule_get_hash_len(VS_HASH_SHA_256);
     uint8_t hash[hash_len];
 
     VS_IOT_ASSERT(_secmodule);
 
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
 
-    vs_hsm_keypair_type_e pubkey_type;
-    uint16_t pubkey_sz = (uint16_t)vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    vs_secmodule_keypair_type_e pubkey_type;
+    uint16_t pubkey_sz = (uint16_t)vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t pubkey[pubkey_sz];
 
-    vs_hsm_sw_sha256_ctx hash_ctx;
+    vs_secmodule_sw_sha256_ctx hash_ctx;
     _secmodule->hash_init(&hash_ctx);
 
     _secmodule->hash_update(&hash_ctx, &data_type, 1);
@@ -52,7 +52,7 @@ _secbox_verify_signature(vs_storage_file_t f, uint8_t data_type, uint8_t *data, 
 
 /******************************************************************************/
 vs_status_e
-vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *secmodule) {
+vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule) {
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -80,7 +80,7 @@ vs_secbox_file_size(vs_storage_element_id_t id) {
     uint8_t type;
     vs_status_e ret_code = VS_CODE_ERR_FILE_READ;
 
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -149,15 +149,15 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
     size_t data_to_save_sz;
     uint8_t u8_type = (uint8_t)type;
 
-    uint16_t hash_len = (uint16_t)vs_hsm_get_hash_len(VS_HASH_SHA_256);
+    uint16_t hash_len = (uint16_t)vs_secmodule_get_hash_len(VS_HASH_SHA_256);
     uint8_t hash[hash_len];
-    vs_hsm_sw_sha256_ctx hash_ctx;
+    vs_secmodule_sw_sha256_ctx hash_ctx;
 
     VS_IOT_ASSERT(_secmodule);
 
     _secmodule->hash_init(&hash_ctx);
 
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -239,7 +239,7 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz) {
     uint8_t *data_load = NULL;
     size_t data_load_sz;
 
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);

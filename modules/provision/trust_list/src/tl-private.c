@@ -53,7 +53,7 @@ static vs_tl_context_t _tl_tmp_ctx;
 
 static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
 
-static vs_hsm_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 /*************************************************************************/
 static void
@@ -154,7 +154,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
-    vs_hsm_sw_sha256_ctx ctx;
+    vs_secmodule_sw_sha256_ctx ctx;
 
     vs_tl_footer_t *footer;
     vs_sign_t *sign;
@@ -216,8 +216,8 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     for (i = 0; i < host_header.signatures_count; ++i) {
         BOOL_CHECK_RET(sign->hash_type == VS_HASH_SHA_256, "Unsupported hash size for sign TL");
 
-        sign_len = vs_hsm_get_signature_len(sign->ec_type);
-        key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+        sign_len = vs_secmodule_get_signature_len(sign->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(sign->ec_type);
 
         BOOL_CHECK_RET(sign_len > 0 && key_len > 0, "Unsupported signature ec_type");
 
@@ -335,7 +335,7 @@ vs_tl_verify_storage(size_t storage_type) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *secmodule) {
+vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -486,8 +486,8 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
                   VS_CODE_ERR_FILE_READ,
                   "Error TL footer load");
 
-        sign_len = vs_hsm_get_signature_len(element->ec_type);
-        key_len = vs_hsm_get_pubkey_len(element->ec_type);
+        sign_len = vs_secmodule_get_signature_len(element->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(element->ec_type);
 
         CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_FILE_READ, "Unsupported signature ec_type");
 
@@ -513,7 +513,7 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 vs_status_e
 vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     vs_pubkey_dated_t *element = (vs_pubkey_dated_t *)key;
-    int key_len = vs_hsm_get_pubkey_len(element->pubkey.ec_type);
+    int key_len = vs_secmodule_get_pubkey_len(element->pubkey.ec_type);
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
 
@@ -566,7 +566,7 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
               VS_CODE_ERR_FILE_READ,
               "Error TL key load");
 
-    key_len = vs_hsm_get_pubkey_len(element.pubkey.ec_type);
+    key_len = vs_secmodule_get_pubkey_len(element.pubkey.ec_type);
 
     CHECK_RET(key_len > 0, VS_CODE_ERR_FILE_READ, "Unsupported ec_type");
 

@@ -52,13 +52,13 @@ static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLO
 
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
 
-static vs_hsm_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 static char *_base_url = NULL;
 
 /******************************************************************************/
 static vs_status_e
-_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_hsm_slot_e *slot) {
+_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_secmodule_slot_e *slot) {
     const size_t *ptr;
 
     switch (key_type) {
@@ -140,8 +140,11 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz) {
-    vs_iot_hsm_slot_e slot;
+vs_provision_search_hl_pubkey(vs_key_type_e key_type,
+                              vs_secmodule_keypair_type_e ec_type,
+                              uint8_t *key,
+                              uint16_t key_sz) {
+    vs_iot_secmodule_slot_e slot;
     uint8_t i = 0;
     int ref_key_sz;
     // TODO: Fix buffer constant size
@@ -158,7 +161,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
         STATUS_CHECK_RET(_get_pubkey_slot_num(key_type, i, &slot), "Unable to get public key from slot");
         STATUS_CHECK_RET(_secmodule->slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
 
-        ref_key_sz = vs_hsm_get_pubkey_len(ref_key->pubkey.ec_type);
+        ref_key_sz = vs_secmodule_get_pubkey_len(ref_key->pubkey.ec_type);
 
         if (ref_key_sz < 0) {
             return VS_CODE_ERR_INCORRECT_PARAMETER;
@@ -199,7 +202,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
         return VS_CODE_OK;
     }
 
-    key_len = vs_hsm_get_pubkey_len(key->pubkey.ec_type);
+    key_len = vs_secmodule_get_pubkey_len(key->pubkey.ec_type);
 
     CHECK_RET(key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported key ec_type");
 
@@ -213,8 +216,8 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, VS_CODE_ERR_CRYPTO, "Signer type must be RECOVERY");
 
-    sign_len = vs_hsm_get_signature_len(sign->ec_type);
-    key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+    sign_len = vs_secmodule_get_signature_len(sign->ec_type);
+    key_len = vs_secmodule_get_pubkey_len(sign->ec_type);
 
     CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported signature ec_type");
     CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len,
@@ -222,7 +225,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
               "key stuff is wrong");
 
     // Calculate hash of stuff under signature
-    hash_size = vs_hsm_get_hash_len(sign->hash_type);
+    hash_size = vs_secmodule_get_hash_len(sign->hash_type);
     CHECK_RET(hash_size > 0, VS_CODE_ERR_CRYPTO, "Unsupported hash type");
 
     uint8_t hash[hash_size];
@@ -245,7 +248,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *secmodule) {
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule) {
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _secmodule = secmodule;
 
@@ -334,7 +337,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
         if (element.index >= search_ctx->last_pos) {
             *meta_sz = VS_IOT_NTOHS(pubkey_dated->pubkey.meta_data_sz);
             *meta = pubkey_dated->pubkey.meta_and_pubkey;
-            *pubkey_sz = vs_hsm_get_pubkey_len(pubkey_dated->pubkey.ec_type);
+            *pubkey_sz = vs_secmodule_get_pubkey_len(pubkey_dated->pubkey.ec_type);
             *pubkey = &pubkey_dated->pubkey.meta_and_pubkey[*meta_sz];
             res = VS_CODE_OK;
             search_ctx->last_pos = element.index;

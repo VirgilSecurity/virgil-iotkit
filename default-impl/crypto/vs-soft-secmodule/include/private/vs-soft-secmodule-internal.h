@@ -44,41 +44,33 @@
 #define CHECK_VSCF(OPERATION, DESCRIPTION, ...)                                                                        \
     CHECK_BOOL((vscf_status_SUCCESS == (OPERATION)), DESCRIPTION, ##__VA_ARGS__)
 
-#define NOT_ZERO(ARG)                                                                                                  \
-    do {                                                                                                               \
-        if (!(ARG)) {                                                                                                  \
-            VS_LOG_ERROR("Argument " #ARG " must not be zero");                                                        \
-            return VS_HSM_ERR_INVAL;                                                                                   \
-        }                                                                                                              \
-    } while (0)
-
-const vs_hsm_impl_t *
+const vs_secmodule_impl_t *
 _soft_secmodule_intern(void);
 
 const char *
-get_slot_name(vs_iot_hsm_slot_e slot);
+get_slot_name(vs_iot_secmodule_slot_e slot);
 
 int
-vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
-                          uint8_t *buf,
-                          uint16_t buf_sz,
-                          uint16_t *key_sz,
-                          vs_hsm_keypair_type_e *keypair_type);
+vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
+                                uint8_t *buf,
+                                uint16_t buf_sz,
+                                uint16_t *key_sz,
+                                vs_secmodule_keypair_type_e *keypair_type);
 
 vs_status_e
-_fill_slots_impl(vs_hsm_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl);
+_fill_slots_impl(vs_secmodule_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl);
 
 vs_status_e
-_fill_crypto_impl(vs_hsm_impl_t *secmodule_impl);
+_fill_crypto_impl(vs_secmodule_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_keypair_impl(vs_hsm_impl_t *secmodule_impl);
+_fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_soft_hash_impl(vs_hsm_impl_t *secmodule_impl);
+_fill_soft_hash_impl(vs_secmodule_impl_t *secmodule_impl);
 
 void
-_hsm_deinit(void);
+_secmodule_deinit(void);
 
 
 #endif // VS_SOFT_SECMODULE_PRIVATE_H

@@ -25,8 +25,8 @@
 
 /******************************************************************************/
 void
-vs_hsm_sw_sha256_init(vs_hsm_sw_sha256_ctx *ctx) {
-    VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
+vs_secmodule_sw_sha256_init(vs_secmodule_sw_sha256_ctx *ctx) {
+    VS_IOT_MEMSET(ctx, 0, sizeof(vs_secmodule_sw_sha256_ctx));
     ctx->total[0] = 0;
     ctx->total[1] = 0;
 
@@ -76,7 +76,7 @@ static const uint32_t K[] = {
 
 /******************************************************************************/
 static void
-mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char data[64]) {
+mbedtls_internal_sha256_process(vs_secmodule_sw_sha256_ctx *ctx, const unsigned char data[64]) {
     uint32_t temp1, temp2, W[64];
     uint32_t A[8];
     unsigned int i;
@@ -115,7 +115,7 @@ mbedtls_internal_sha256_process(vs_hsm_sw_sha256_ctx *ctx, const unsigned char d
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
+vs_secmodule_sw_sha256_update(vs_secmodule_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
     size_t fill;
     uint32_t left;
 
@@ -156,7 +156,7 @@ vs_hsm_sw_sha256_update(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint3
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest) {
+vs_secmodule_sw_sha256_final(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest) {
     uint32_t used;
     uint32_t high, low;
 
@@ -203,7 +203,7 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest) {
 
     PUT_UINT32_BE(ctx->state[7], digest, 28);
 
-    VS_IOT_MEMSET(ctx, 0, sizeof(vs_hsm_sw_sha256_ctx));
+    VS_IOT_MEMSET(ctx, 0, sizeof(vs_secmodule_sw_sha256_ctx));
 
     return VS_CODE_OK;
 }
@@ -211,12 +211,12 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest) {
 /******************************************************************************/
 
 vs_status_e
-_fill_soft_hash_impl(vs_hsm_impl_t *secmodule_impl) {
+_fill_soft_hash_impl(vs_secmodule_impl_t *secmodule_impl) {
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    secmodule_impl->hash_init = vs_hsm_sw_sha256_init;
-    secmodule_impl->hash_update = vs_hsm_sw_sha256_update;
-    secmodule_impl->hash_finish = vs_hsm_sw_sha256_final;
+    secmodule_impl->hash_init = vs_secmodule_sw_sha256_init;
+    secmodule_impl->hash_update = vs_secmodule_sw_sha256_update;
+    secmodule_impl->hash_finish = vs_secmodule_sw_sha256_final;
 
     return VS_CODE_OK;
 }

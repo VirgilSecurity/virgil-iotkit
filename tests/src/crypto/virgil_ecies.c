@@ -44,7 +44,7 @@ const char *test_data = "this string will be encrypted";
 
 /**********************************************************/
 static bool
-_ecies_crypt_case(vs_hsm_impl_t *secmodule_impl,
+_ecies_crypt_case(vs_secmodule_impl_t *secmodule_impl,
                   const uint8_t *recipient_id,
                   size_t recipient_id_sz,
                   const uint8_t *data,
@@ -91,7 +91,7 @@ _ecies_crypt_case(vs_hsm_impl_t *secmodule_impl,
 
 /**********************************************************/
 uint16_t
-vs_virgil_ecies_test(vs_hsm_impl_t *secmodule_impl) {
+vs_virgil_ecies_test(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     START_TEST("Virgil ecies encryption");
 

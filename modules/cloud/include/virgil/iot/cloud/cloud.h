@@ -58,7 +58,7 @@
 
 const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
 const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
-vs_hsm_impl_t *secmodule_impl;                                    // Security module implementation
+vs_secmodule_impl_t *secmodule_impl;                                    // Security module implementation
 vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
 vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
 vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
@@ -371,6 +371,6 @@ vs_cloud_message_bin_process(void);
 vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
               const vs_cloud_message_bin_impl_t *message_bin_impl,
-              vs_hsm_impl_t *secmodule);
+              vs_secmodule_impl_t *secmodule);
 
 #endif // VS_CLOUD_H

@@ -463,7 +463,7 @@ class UtilityManager(object):
         meta_data = self._context.virgil_api_url
         key_info = {
             "type": consts.VSKeyTypeS.CLOUD.value,
-            "ec_type": consts.ec_type_vs_to_hsm_map.get(VirgilKeyPair.Type_EC_SECP256R1),
+            "ec_type": consts.ec_type_vs_to_secmodule_map.get(VirgilKeyPair.Type_EC_SECP256R1),
             "start_date": cloud_key_response["start_date"],
             "expiration_date": cloud_key_response["end_date"],
             "comment": "Cloud public key",

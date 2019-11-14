@@ -41,7 +41,7 @@
 
 /******************************************************************************/
 int
-vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
@@ -71,7 +71,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 int
-vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
@@ -100,7 +100,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 int
-vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
+vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type) {
     switch (hash_type) {
     case VS_HASH_SHA_256:
         return VS_HASH_SHA256_LEN;
@@ -116,7 +116,7 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type) {
 
 /******************************************************************************/
 const char *
-vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type) {
+vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type) {
     switch (type) {
     case VS_KEYPAIR_EC_SECP192R1:
         return "192-bits NIST";
@@ -148,7 +148,7 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type) {
 
 /******************************************************************************/
 const char *
-vs_hsm_hash_type_descr(vs_hsm_hash_type_e type) {
+vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type) {
     switch (type) {
     case VS_HASH_SHA_256:
         return "SHA 256";

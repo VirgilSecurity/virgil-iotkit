@@ -50,7 +50,7 @@
  * \code
 
 vs_storage_op_ctx_t fw_storage_impl;         // Firmware storage implementation
-vs_hsm_impl_t *secmodule_impl = NULL;              // Security module implementation
+vs_secmodule_impl_t *secmodule_impl = NULL;              // Security module implementation
 static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
@@ -184,7 +184,7 @@ _send_firmware(){
  * \code
 
 vs_storage_op_ctx_t fw_storage_impl;    // Firmware storage implementation
-vs_hsm_impl_t *secmodule_impl = NULL;         // Security module implementation
+vs_secmodule_impl_t *secmodule_impl = NULL;         // Security module implementation
 static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
@@ -246,7 +246,7 @@ typedef struct __attribute__((__packed__)) {
  * Firmware initialization has to be done before first Firmware calls.
  *
  * \param[in] ctx #vs_storage_op_ctx_t storage context. Must not be NULL.
- * \param[in] secmodule #vs_hsm_impl_t HSM implementation. Must not be NULL.
+ * \param[in] secmodule #vs_secmodule_impl_t SECMODULE implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
  *
@@ -254,7 +254,7 @@ typedef struct __attribute__((__packed__)) {
  */
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
-                 vs_hsm_impl_t *secmodule,
+                 vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type);
 

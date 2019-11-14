@@ -52,12 +52,12 @@
 /** Trust List initialization
  *
  * \param[in] op_ctx Storage context. Must not be NULL.
- * \param[in] secmodule HSM implementation. Must not be NULL.
+ * \param[in] secmodule SECMODULE implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *secmodule);
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 
 /** Trust List destruction
  *

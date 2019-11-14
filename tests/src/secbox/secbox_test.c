@@ -86,7 +86,7 @@ _test_case_secbox_del(const char *filename) {
 
 /**********************************************************/
 uint16_t
-vs_secbox_test(vs_hsm_impl_t *secmodule_impl) {
+vs_secbox_test(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     char *_big_test_data = NULL;
     START_TEST("Secbox tests");

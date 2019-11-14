@@ -65,15 +65,15 @@ static vs_firmware_descriptor_t _test_descriptor = {
 
 /**********************************************************/
 static bool
-_create_test_firmware_signature(vs_hsm_impl_t *secmodule_impl,
+_create_test_firmware_signature(vs_secmodule_impl_t *secmodule_impl,
                                 vs_key_type_e signer_type,
-                                vs_iot_hsm_slot_e slot_with_hl_keypair,
+                                vs_iot_secmodule_slot_e slot_with_hl_keypair,
                                 uint8_t fw_hash[32],
                                 vs_sign_t *sign_buf) {
-    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
-    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    int sign_len = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    int key_len = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     uint16_t _sz;
-    vs_hsm_keypair_type_e pubkey_type;
+    vs_secmodule_keypair_type_e pubkey_type;
 
     sign_buf->signer_type = signer_type;
     sign_buf->ec_type = VS_KEYPAIR_EC_SECP256R1;
@@ -94,10 +94,10 @@ _create_test_firmware_signature(vs_hsm_impl_t *secmodule_impl,
 
 /**********************************************************/
 static bool
-_create_test_firmware_footer(vs_hsm_impl_t *secmodule_impl, vs_firmware_descriptor_t *desc) {
+_create_test_firmware_footer(vs_secmodule_impl_t *secmodule_impl, vs_firmware_descriptor_t *desc) {
     vs_firmware_footer_t *footer;
-    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
-    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    int key_len = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    int sign_len = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
     uint8_t fill[VS_TEST_FILL_SIZE];
     VS_IOT_MEMSET(fill, 0xFF, sizeof(fill));
@@ -118,7 +118,7 @@ _create_test_firmware_footer(vs_hsm_impl_t *secmodule_impl, vs_firmware_descript
 
     footer = (vs_firmware_footer_t *)_fw_footer;
 
-    vs_hsm_sw_sha256_ctx hash_ctx;
+    vs_secmodule_sw_sha256_ctx hash_ctx;
     uint8_t hash[32];
     secmodule_impl->hash_init(&hash_ctx);
 
@@ -169,8 +169,8 @@ static bool
 _test_firmware_save_load_data(void) {
     uint8_t buf[sizeof(VS_TEST_FIRMWARE_DATA)];
     size_t _sz;
-    int key_len = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
-    int sign_len = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    int key_len = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    int sign_len = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint16_t footer_sz = sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_len + sign_len);
     uint8_t footer_buf[footer_sz];
 
@@ -201,7 +201,7 @@ _test_firmware_save_load_data(void) {
 
 /**********************************************************/
 static bool
-_test_firmware_install(vs_hsm_impl_t *secmodule_impl) {
+_test_firmware_install(vs_secmodule_impl_t *secmodule_impl) {
 
     vs_firmware_descriptor_t new_desc;
     BOOL_CHECK_RET(VS_CODE_OK == vs_firmware_get_own_firmware_descriptor(&new_desc), "Error install firmware");
@@ -236,7 +236,7 @@ _test_firmware_install(vs_hsm_impl_t *secmodule_impl) {
 
 /**********************************************************/
 uint16_t
-vs_firmware_test(vs_hsm_impl_t *secmodule_impl) {
+vs_firmware_test(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     VS_IOT_ASSERT(secmodule_impl);
 

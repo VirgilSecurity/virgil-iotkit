@@ -85,7 +85,7 @@ typedef enum {
     VS_KEY_SLOT_STD_TMP_MAX,
     VS_KEY_SLOT_EXT_TMP_0,
     VS_KEY_SLOT_TMP_MAX
-} vs_iot_hsm_slot_e;
+} vs_iot_secmodule_slot_e;
 
 #define PROVISION_KEYS_QTY 2
 

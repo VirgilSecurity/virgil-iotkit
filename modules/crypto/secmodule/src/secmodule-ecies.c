@@ -80,7 +80,7 @@ _remove_padding_size(uint8_t *data, size_t data_sz) {
 
 /******************************************************************************/
 vs_status_e
-vs_secmodule_ecies_decrypt(const vs_hsm_impl_t *secmodule_impl,
+vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
                            const uint8_t *recipient_id,
                            size_t recipient_id_sz,
                            const uint8_t *cryptogram,
@@ -119,23 +119,23 @@ vs_secmodule_ecies_decrypt(const vs_hsm_impl_t *secmodule_impl,
     CHECK_NOT_ZERO_RET(decrypted_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(decrypted_data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(vs_hsm_virgil_cryptogram_parse_sha384_aes256(cryptogram,
-                                                                  cryptogram_sz,
-                                                                  recipient_id,
-                                                                  recipient_id_sz,
-                                                                  &public_key,
-                                                                  &iv_key,
-                                                                  &encrypted_key,
-                                                                  &mac_data,
-                                                                  &iv_data,
-                                                                  &encrypted_data,
-                                                                  &encrypted_data_sz),
+    STATUS_CHECK_RET(vs_secmodule_virgil_cryptogram_parse_sha384_aes256(cryptogram,
+                                                                        cryptogram_sz,
+                                                                        recipient_id,
+                                                                        recipient_id_sz,
+                                                                        &public_key,
+                                                                        &iv_key,
+                                                                        &encrypted_key,
+                                                                        &mac_data,
+                                                                        &iv_data,
+                                                                        &encrypted_data,
+                                                                        &encrypted_data_sz),
                      "Unable to parse SHA384 AES256");
 
     STATUS_CHECK_RET(secmodule_impl->ecdh(PRIVATE_KEY_SLOT,
                                           VS_KEYPAIR_EC_SECP256R1,
                                           public_key,
-                                          vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
+                                          vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
                                           pre_master_key,
                                           sizeof(pre_master_key),
                                           &pre_master_key_sz),
@@ -212,7 +212,7 @@ _tiny_pubkey_to_virgil(uint8_t public_key[64], uint8_t *virgil_public_key, size_
 
 /******************************************************************************/
 vs_status_e
-vs_secmodule_ecies_encrypt(const vs_hsm_impl_t *secmodule_impl,
+vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
                            const uint8_t *recipient_id,
                            size_t recipient_id_sz,
                            const uint8_t *data,
@@ -233,8 +233,8 @@ vs_secmodule_ecies_encrypt(const vs_hsm_impl_t *secmodule_impl,
     CHECK_NOT_ZERO_RET(cryptogram, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cryptogram_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    vs_hsm_keypair_type_e ec_type;
-    uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    vs_secmodule_keypair_type_e ec_type;
+    uint16_t key_sz = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t pubkey[key_sz];
 
     uint8_t pre_master_key[VS_AES_256_KEY_SIZE];
@@ -266,7 +266,7 @@ vs_secmodule_ecies_encrypt(const vs_hsm_impl_t *secmodule_impl,
     STATUS_CHECK_RET(secmodule_impl->ecdh(PRIVATE_KEY_SLOT,
                                           VS_KEYPAIR_EC_SECP256R1,
                                           pubkey,
-                                          vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
+                                          vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
                                           pre_master_key,
                                           sizeof(pre_master_key),
                                           &pre_master_key_sz),
@@ -318,19 +318,19 @@ vs_secmodule_ecies_encrypt(const vs_hsm_impl_t *secmodule_impl,
                                                  VS_AES_256_GCM_AUTH_TAG_SIZE),
                      "Unable to encrypt by using AES");
 
-    return vs_hsm_virgil_cryptogram_create_sha384_aes256(recipient_id,
-                                                         recipient_id_sz,
-                                                         sizeof(encrypted_data),
-                                                         encrypted_data,
-                                                         iv_data,
-                                                         encrypted_key,
-                                                         iv_key,
-                                                         hmac,
-                                                         virgil_public_key,
-                                                         virgil_public_key_sz,
-                                                         cryptogram,
-                                                         buf_sz,
-                                                         cryptogram_sz);
+    return vs_secmodule_virgil_cryptogram_create_sha384_aes256(recipient_id,
+                                                               recipient_id_sz,
+                                                               sizeof(encrypted_data),
+                                                               encrypted_data,
+                                                               iv_data,
+                                                               encrypted_key,
+                                                               iv_key,
+                                                               hmac,
+                                                               virgil_public_key,
+                                                               virgil_public_key_sz,
+                                                               cryptogram,
+                                                               buf_sz,
+                                                               cryptogram_sz);
 }
 
 /******************************************************************************/

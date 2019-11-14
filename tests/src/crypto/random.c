@@ -46,7 +46,7 @@
 /******************************************************************************/
 #define STEPS 4
 static int
-_generate_random(vs_hsm_impl_t *secmodule_impl, uint8_t *sequence) {
+_generate_random(vs_secmodule_impl_t *secmodule_impl, uint8_t *sequence) {
     static const size_t size_step = SEQUENCE_SIZE / STEPS;
     size_t pos;
     int res;
@@ -195,7 +195,7 @@ _frequency_2bytes_diff(uint8_t *sequence) {
 
 /******************************************************************************/
 uint16_t
-test_random(vs_hsm_impl_t *secmodule_impl) {
+test_random(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     uint8_t sequence[SEQUENCE_SIZE];
     int res;

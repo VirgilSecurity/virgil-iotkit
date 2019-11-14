@@ -37,8 +37,8 @@ static const uint8_t long_sha256_hash[] = {0x47, 0x79, 0x98, 0xCB, 0x39, 0xC5, 0
 
 /******************************************************************************/
 static bool
-_test_long_sha_pass(vs_hsm_impl_t *secmodule_impl,
-                    vs_hsm_hash_type_e hash_type,
+_test_long_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+                    vs_secmodule_hash_type_e hash_type,
                     const uint8_t *data,
                     uint16_t data_sz,
                     const uint8_t *ref_result,
@@ -58,8 +58,8 @@ _test_long_sha_pass(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 static bool
-_test_sha_pass(vs_hsm_impl_t *secmodule_impl,
-               vs_hsm_hash_type_e hash_type,
+_test_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+               vs_secmodule_hash_type_e hash_type,
                const uint8_t *correct_result_raw,
                uint16_t correct_result_size) {
     static uint8_t result_buf[HASH_MAX_BUF_SIZE];
@@ -92,14 +92,14 @@ _test_sha_pass(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 static bool
-_test_partial_sha_pass(vs_hsm_impl_t *secmodule_impl,
-                       vs_hsm_hash_type_e hash_type,
+_test_partial_sha_pass(vs_secmodule_impl_t *secmodule_impl,
+                       vs_secmodule_hash_type_e hash_type,
                        const uint8_t *correct_result_raw,
                        uint16_t correct_result_size) {
 
     switch (hash_type) {
     case VS_HASH_SHA_256: {
-        vs_hsm_sw_sha256_ctx ctx;
+        vs_secmodule_sw_sha256_ctx ctx;
         static uint8_t result_buf[SHA256_SIZE];
         static uint8_t another_result_buf[SHA256_SIZE];
 
@@ -125,7 +125,7 @@ _test_partial_sha_pass(vs_hsm_impl_t *secmodule_impl,
 
 #define TEST_STEP(BITLEN)                                                                                              \
     do {                                                                                                               \
-        vs_hsm_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                           \
+        vs_secmodule_hash_type_e hash_type = VS_HASH_SHA_##BITLEN;                                                     \
         const uint8_t *correct_result_raw = correct_result_sha_##BITLEN##_raw;                                         \
         uint16_t correct_result_size = sizeof(correct_result_sha_##BITLEN##_raw);                                      \
                                                                                                                        \
@@ -134,14 +134,14 @@ _test_partial_sha_pass(vs_hsm_impl_t *secmodule_impl,
         if (not_implemented) {                                                                                         \
             VS_LOG_WARNING("Hash for SHA_" #BITLEN " algorithm is not implemented");                                   \
         } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(hash_type),                                                            \
+            TEST_CASE_OK(vs_secmodule_hash_type_descr(hash_type),                                                      \
                          _test_sha_pass(secmodule_impl, hash_type, correct_result_raw, correct_result_size));          \
         }                                                                                                              \
     } while (0)
 
 /******************************************************************************/
 uint16_t
-test_hash(vs_hsm_impl_t *secmodule_impl) {
+test_hash(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     bool not_implemented = false;
 
@@ -150,7 +150,7 @@ test_hash(vs_hsm_impl_t *secmodule_impl) {
 
     START_TEST("HASH tests");
 
-    TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_256),
+    TEST_CASE_OK(vs_secmodule_hash_type_descr(VS_HASH_SHA_256),
                  _test_long_sha_pass(secmodule_impl,
                                      VS_HASH_SHA_256,
                                      long_test_data,

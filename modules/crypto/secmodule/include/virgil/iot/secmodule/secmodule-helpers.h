@@ -80,7 +80,7 @@
  * \return Public key length
  */
 int
-vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
+vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type);
 
 /** Get signature length
  *
@@ -91,7 +91,7 @@ vs_hsm_get_pubkey_len(vs_hsm_keypair_type_e keypair_type);
  * \return Signature length
  */
 int
-vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
+vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type);
 
 /** Get hash length
  *
@@ -102,7 +102,7 @@ vs_hsm_get_signature_len(vs_hsm_keypair_type_e keypair_type);
  * \return Hash length
  */
 int
-vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
+vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type);
 
 /** Get key pair type description
  *
@@ -113,7 +113,7 @@ vs_hsm_get_hash_len(vs_hsm_hash_type_e hash_type);
  * \return Key pair description in static buffer
  */
 const char *
-vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
+vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type);
 
 /** Get hash type description
  *
@@ -124,7 +124,7 @@ vs_hsm_keypair_type_descr(vs_hsm_keypair_type_e type);
  * \return Hash type description in static buffer
  */
 const char *
-vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
+vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type);
 
 /** Parse asn1 cryptogram in Virgil format with SHA-384 hmac and encrypted data by AES256 GCM
  *
@@ -143,17 +143,17 @@ vs_hsm_hash_type_descr(vs_hsm_hash_type_e type);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                             size_t cryptogram_sz,
-                                             const uint8_t *recipient_id,
-                                             size_t recipient_id_sz,
-                                             uint8_t **public_key,
-                                             uint8_t **iv_key,
-                                             uint8_t **encrypted_key,
-                                             uint8_t **mac_data,
-                                             uint8_t **iv_data,
-                                             uint8_t **encrypted_data,
-                                             size_t *encrypted_data_sz);
+vs_secmodule_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                                   size_t cryptogram_sz,
+                                                   const uint8_t *recipient_id,
+                                                   size_t recipient_id_sz,
+                                                   uint8_t **public_key,
+                                                   uint8_t **iv_key,
+                                                   uint8_t **encrypted_key,
+                                                   uint8_t **mac_data,
+                                                   uint8_t **iv_data,
+                                                   uint8_t **encrypted_data,
+                                                   size_t *encrypted_data_sz);
 
 /** Create asn1 cryptogram in Virgil format with SHA-384 HMAC and encrypted data by AES256 GCM
  *
@@ -174,19 +174,19 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
-                                              size_t recipient_id_sz,
-                                              size_t encrypted_data_sz,
-                                              const uint8_t *encrypted_data,
-                                              const uint8_t *iv_data,
-                                              const uint8_t *encrypted_key,
-                                              const uint8_t *iv_key,
-                                              const uint8_t *hmac,
-                                              const uint8_t *public_key,
-                                              size_t public_key_sz,
-                                              uint8_t *cryptogram,
-                                              size_t cryptogram_buf_sz,
-                                              size_t *cryptogram_sz);
+vs_secmodule_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                                    size_t recipient_id_sz,
+                                                    size_t encrypted_data_sz,
+                                                    const uint8_t *encrypted_data,
+                                                    const uint8_t *iv_data,
+                                                    const uint8_t *encrypted_key,
+                                                    const uint8_t *iv_key,
+                                                    const uint8_t *hmac,
+                                                    const uint8_t *public_key,
+                                                    size_t public_key_sz,
+                                                    uint8_t *cryptogram,
+                                                    size_t cryptogram_buf_sz,
+                                                    size_t *cryptogram_sz);
 
 /** Convert a NIST256 signature from a virgil format to raw
  *
@@ -198,10 +198,10 @@ vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
-                                        uint16_t virgil_sign_sz,
-                                        uint8_t *raw_signature,
-                                        uint16_t buf_sz);
+vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                              uint16_t virgil_sign_sz,
+                                              uint8_t *raw_signature,
+                                              uint16_t buf_sz);
 
 /** Convert a nist256 signature from a raw format to virgil format
  *
@@ -213,8 +213,8 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
-                                        uint8_t *virgil_sign,
-                                        uint16_t buf_sz,
-                                        uint16_t *virgil_sign_sz);
+vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                              uint8_t *virgil_sign,
+                                              uint16_t buf_sz,
+                                              uint16_t *virgil_sign_sz);
 #endif // VS_SECMODULE_HELPERS_H_

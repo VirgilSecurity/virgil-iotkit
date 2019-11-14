@@ -5,8 +5,8 @@
 #include <stdlib-config.h>
 
 typedef struct {
-    vs_iot_hsm_slot_e slot;
-    vs_hsm_keypair_type_e keypair_type;
+    vs_iot_secmodule_slot_e slot;
+    vs_secmodule_keypair_type_e keypair_type;
     uint8_t buf[PUBKEY_MAX_BUF_SIZE];
     uint16_t key_sz;
     uint16_t expected_size;
@@ -15,17 +15,17 @@ typedef struct {
 
 /******************************************************************************/
 static bool
-_test_keypair_generate(vs_hsm_impl_t *secmodule_impl, _test_case_t *test_case) {
-    vs_hsm_keypair_type_e keypair;
+_test_keypair_generate(vs_secmodule_impl_t *secmodule_impl, _test_case_t *test_case) {
+    vs_secmodule_keypair_type_e keypair;
 
     test_case->initialized = true;
 
     STATUS_CHECK_RET_BOOL(secmodule_impl->create_keypair(test_case->slot, test_case->keypair_type),
-                          "vs_hsm_keypair_create call error");
+                          "vs_secmodule_keypair_create call error");
     STATUS_CHECK_RET_BOOL(
             secmodule_impl->get_pubkey(
                     test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
-            "vs_hsm_keypair_get_pubkey call error");
+            "vs_secmodule_keypair_get_pubkey call error");
     BOOL_CHECK_RET(keypair == test_case->keypair_type, "Received key pair type error");
     BOOL_CHECK_RET(test_case->key_sz == test_case->expected_size, "Received buffer error");
 
@@ -58,9 +58,9 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
                 VS_LOG_ERROR(
                         "The same keys are generated for (slot = %d, key type = %s) and (slot = %d, key type = %s)",
                         test_cases[pos].slot,
-                        vs_hsm_keypair_type_descr(test_cases[pos].keypair_type),
+                        vs_secmodule_keypair_type_descr(test_cases[pos].keypair_type),
                         test_cases[pos2].slot,
-                        vs_hsm_keypair_type_descr(test_cases[pos2].keypair_type));
+                        vs_secmodule_keypair_type_descr(test_cases[pos2].keypair_type));
 
                 return false;
             }
@@ -72,7 +72,7 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
 
 /******************************************************************************/
 uint16_t
-test_keypair(vs_hsm_impl_t *secmodule_impl) {
+test_keypair(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     _test_case_t test_cases[] = {
@@ -106,14 +106,15 @@ test_keypair(vs_hsm_impl_t *secmodule_impl) {
         TEST_KEYPAIR_NOT_IMPLEMENTED(test_case->slot, test_case->keypair_type);
 
         if (not_implemented) {
-            VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(test_case->keypair_type));
+            VS_LOG_WARNING("Keypair type %s is not implemented",
+                           vs_secmodule_keypair_type_descr(test_case->keypair_type));
             continue;
         }
 
         VS_IOT_STRCPY(buf, "Keypair type ");
-        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_hsm_keypair_type_descr(test_case->keypair_type));
+        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_secmodule_keypair_type_descr(test_case->keypair_type));
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), ", slot ");
-        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_test_hsm_slot_descr(test_case->slot));
+        VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_test_secmodule_slot_descr(test_case->slot));
 
         TEST_CASE_OK(buf, _test_keypair_generate(secmodule_impl, test_case));
     }

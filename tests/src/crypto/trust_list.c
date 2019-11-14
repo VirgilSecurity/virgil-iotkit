@@ -62,7 +62,7 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
 
     for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
-        key_len = vs_hsm_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
+        key_len = vs_secmodule_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
         uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t *)ptr)->pubkey.meta_data_sz);
 
         BOOL_CHECK_RET(key_len > 0, "Key parse error");
@@ -82,8 +82,8 @@ _parse_test_tl_data(const uint8_t *data, uint16_t size) {
     for (i = 0; i < signatures_count; ++i) {
         test_footer_sz += sizeof(vs_sign_t);
 
-        sign_len = vs_hsm_get_signature_len(element->ec_type);
-        key_len = vs_hsm_get_pubkey_len(element->ec_type);
+        sign_len = vs_secmodule_get_signature_len(element->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(element->ec_type);
 
         BOOL_CHECK_RET((key_len > 0 && sign_len > 0), "Footer parse error");
 
@@ -384,7 +384,7 @@ _test_tl_save_footer_fail() {
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_HEADER_SUBCASE("footer signature has wrong signer public key");
-    sign_len = vs_hsm_get_signature_len(sign->ec_type);
+    sign_len = vs_secmodule_get_signature_len(sign->ec_type);
     sign->raw_sign_pubkey[sign_len] = ~sign->raw_sign_pubkey[sign_len];
     res = _test_tl_header_save_pass() && _test_tl_keys_save_pass();
     res &= (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLF, 0, footer, test_footer_sz));
@@ -412,7 +412,7 @@ _test_tl_read_pass() {
 
 /******************************************************************************/
 uint16_t
-test_keystorage_and_tl(vs_hsm_impl_t *secmodule_impl) {
+test_keystorage_and_tl(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     START_TEST("Provision and TL tests");

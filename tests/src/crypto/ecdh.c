@@ -40,19 +40,19 @@
 
 /******************************************************************************/
 static bool
-_test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
-                vs_hsm_keypair_type_e keypair_type,
+_test_ecdh_pass(vs_secmodule_impl_t *secmodule_impl,
+                vs_secmodule_keypair_type_e keypair_type,
                 bool corrupt_key,
-                vs_iot_hsm_slot_e alice_slot,
-                vs_iot_hsm_slot_e bob_slot) {
+                vs_iot_secmodule_slot_e alice_slot,
+                vs_iot_secmodule_slot_e bob_slot) {
 
     uint8_t alice_public_key[256] = {0};
     uint16_t alice_public_key_sz = 0;
-    vs_hsm_keypair_type_e alice_keypair_type = VS_KEYPAIR_INVALID;
+    vs_secmodule_keypair_type_e alice_keypair_type = VS_KEYPAIR_INVALID;
 
     uint8_t bob_public_key[256] = {0};
     uint16_t bob_public_key_sz = 0;
-    vs_hsm_keypair_type_e bob_keypair_type = VS_KEYPAIR_INVALID;
+    vs_secmodule_keypair_type_e bob_keypair_type = VS_KEYPAIR_INVALID;
 
     uint8_t shared_secret_1[128] = {0};
     uint16_t shared_secret_sz_1 = 0;
@@ -64,13 +64,13 @@ _test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
     // Create key pair for Alice
     STATUS_CHECK_RET_BOOL(secmodule_impl->create_keypair(alice_slot, keypair_type),
                           "Can't create keypair %s for Alice",
-                          vs_hsm_keypair_type_descr(keypair_type));
+                          vs_secmodule_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
             secmodule_impl->get_pubkey(
                     alice_slot, alice_public_key, sizeof(alice_public_key), &alice_public_key_sz, &alice_keypair_type),
             "Can't load public key from slot %s for Alice",
-            vs_test_hsm_slot_descr(alice_slot));
+            vs_test_secmodule_slot_descr(alice_slot));
 
     if (corrupt_key) {
         ++alice_public_key[1];
@@ -79,13 +79,13 @@ _test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
     // Create key pair for Bob
     STATUS_CHECK_RET_BOOL(secmodule_impl->create_keypair(bob_slot, keypair_type),
                           "Can't create keypair %s for Bob",
-                          vs_hsm_keypair_type_descr(keypair_type));
+                          vs_secmodule_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
             secmodule_impl->get_pubkey(
                     bob_slot, bob_public_key, sizeof(bob_public_key), &bob_public_key_sz, &bob_keypair_type),
             "Can't load public key from slot %s for Bob",
-            vs_test_hsm_slot_descr(bob_slot));
+            vs_test_secmodule_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
     STATUS_CHECK_RET_BOOL(secmodule_impl->ecdh(alice_slot,
@@ -96,8 +96,8 @@ _test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
                                                sizeof(shared_secret_1),
                                                &shared_secret_sz_1),
                           "Can't process ECDH (slot %s, keypair type %s) for Alice",
-                          vs_test_hsm_slot_descr(alice_slot),
-                          vs_hsm_keypair_type_descr(bob_keypair_type));
+                          vs_test_secmodule_slot_descr(alice_slot),
+                          vs_secmodule_keypair_type_descr(bob_keypair_type));
 
     // ECDH for Bob - Alice
     if (VS_CODE_OK != secmodule_impl->ecdh(bob_slot,
@@ -109,8 +109,8 @@ _test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
                                            &shared_secret_sz_2)) {
         if (!corrupt_key) {
             VS_LOG_ERROR("Can't process ECDH (slot %s, keypair type %s) for Bob",
-                         vs_test_hsm_slot_descr(bob_slot),
-                         vs_hsm_keypair_type_descr(alice_keypair_type));
+                         vs_test_secmodule_slot_descr(bob_slot),
+                         vs_secmodule_keypair_type_descr(alice_keypair_type));
         }
 
         return false;
@@ -137,33 +137,33 @@ _test_ecdh_pass(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 static bool
-_prepare_and_test(vs_hsm_impl_t *secmodule_impl,
+_prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
                   char *descr,
-                  vs_hsm_keypair_type_e keypair_type,
-                  vs_iot_hsm_slot_e alice_slot,
-                  vs_iot_hsm_slot_e bob_slot,
+                  vs_secmodule_keypair_type_e keypair_type,
+                  vs_iot_secmodule_slot_e alice_slot,
+                  vs_iot_secmodule_slot_e bob_slot,
                   bool corrupt) {
     bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "Key ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_hsm_keypair_type_descr(keypair_type));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_secmodule_keypair_type_descr(keypair_type));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(alice_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(alice_slot));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_hsm_slot_descr(bob_slot));
+    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(bob_slot));
     if (corrupt) {
         VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");
     }
 
     TEST_KEYPAIR_NOT_IMPLEMENTED(alice_slot, keypair_type);
     if (not_implemented) {
-        VS_LOG_WARNING("Keypair type %s is not implemented", vs_hsm_keypair_type_descr(keypair_type));
+        VS_LOG_WARNING("Keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
         return false;
     }
 
     TEST_ECDH_NOT_IMPLEMENTED(alice_slot, keypair_type);
     if (not_implemented) {
-        VS_LOG_WARNING("ECDH for keypair type %s is not implemented", vs_hsm_keypair_type_descr(keypair_type));
+        VS_LOG_WARNING("ECDH for keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
         return false;
     }
 
@@ -172,7 +172,7 @@ _prepare_and_test(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 uint16_t
-test_ecdh(vs_hsm_impl_t *secmodule_impl) {
+test_ecdh(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     char descr[256];

@@ -128,7 +128,7 @@
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_secp256r1_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_secp256r1_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
     vscf_secp256r1_private_key_t *prvkey_ctx = NULL;
     vscf_secp256r1_public_key_t *pubkey_ctx = NULL;
     vsc_buffer_t keypair_buf;
@@ -136,11 +136,12 @@ vs_hsm_secp256r1_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e ke
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG(
-            "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
+    VS_LOG_DEBUG("Generate keypair %s and save it to slot %s",
+                 vs_secmodule_keypair_type_descr(keypair_type),
+                 get_slot_name(slot));
 
     CHECK_MEM_ALLOC(prvkey_ctx = vscf_secp256r1_private_key_new(),
                     "Unable to allocate memory for slot %s",
@@ -196,7 +197,7 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_curve25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_curve25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
     vscf_curve25519_private_key_t *prvkey_ctx = NULL;
     vscf_curve25519_public_key_t *pubkey_ctx = NULL;
     vsc_buffer_t keypair_buf;
@@ -204,11 +205,12 @@ vs_hsm_curve25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e k
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG(
-            "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
+    VS_LOG_DEBUG("Generate keypair %s and save it to slot %s",
+                 vs_secmodule_keypair_type_descr(keypair_type),
+                 get_slot_name(slot));
 
     CHECK_MEM_ALLOC(prvkey_ctx = vscf_curve25519_private_key_new(),
                     "Unable to allocate memory for slot %s",
@@ -265,7 +267,7 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_ed25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_ed25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
     vscf_ed25519_private_key_t *prvkey_ctx = NULL;
     vscf_ed25519_public_key_t *pubkey_ctx = NULL;
     vsc_buffer_t keypair_buf;
@@ -273,11 +275,12 @@ vs_hsm_ed25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keyp
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG(
-            "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
+    VS_LOG_DEBUG("Generate keypair %s and save it to slot %s",
+                 vs_secmodule_keypair_type_descr(keypair_type),
+                 get_slot_name(slot));
 
     CHECK_MEM_ALLOC(
             prvkey_ctx = vscf_ed25519_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
@@ -331,7 +334,7 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_rsa_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_rsa_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
     vscf_rsa_private_key_t *prvkey_ctx = NULL;
     vscf_rsa_public_key_t *pubkey_ctx = NULL;
     vsc_buffer_t keypair_buf;
@@ -339,11 +342,12 @@ vs_hsm_rsa_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG(
-            "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
+    VS_LOG_DEBUG("Generate keypair %s and save it to slot %s",
+                 vs_secmodule_keypair_type_descr(keypair_type),
+                 get_slot_name(slot));
 
     CHECK_MEM_ALLOC(
             prvkey_ctx = vscf_rsa_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
@@ -396,39 +400,39 @@ terminate:
 
 /********************************************************************************/
 vs_status_e
-vs_hsm_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type) {
+vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP256R1:
-        return vs_hsm_secp256r1_keypair_create(slot, keypair_type);
+        return vs_secmodule_secp256r1_keypair_create(slot, keypair_type);
 
     case VS_KEYPAIR_EC_CURVE25519:
-        return vs_hsm_curve25519_keypair_create(slot, keypair_type);
+        return vs_secmodule_curve25519_keypair_create(slot, keypair_type);
 
     case VS_KEYPAIR_EC_ED25519:
-        return vs_hsm_ed25519_keypair_create(slot, keypair_type);
+        return vs_secmodule_ed25519_keypair_create(slot, keypair_type);
 
     case VS_KEYPAIR_RSA_2048:
-        return vs_hsm_rsa_keypair_create(slot, keypair_type);
+        return vs_secmodule_rsa_keypair_create(slot, keypair_type);
 
     default:
-        VS_LOG_WARNING("Unsupported keypair type %s", vs_hsm_keypair_type_descr(keypair_type));
+        VS_LOG_WARNING("Unsupported keypair type %s", vs_secmodule_keypair_type_descr(keypair_type));
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 }
 
 /********************************************************************************/
 vs_status_e
-vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
-                          uint8_t *buf,
-                          uint16_t buf_sz,
-                          uint16_t *key_sz,
-                          vs_hsm_keypair_type_e *keypair_type) {
+vs_secmodule_keypair_get_pubkey(vs_iot_secmodule_slot_e slot,
+                                uint8_t *buf,
+                                uint16_t buf_sz,
+                                uint16_t *key_sz,
+                                vs_secmodule_keypair_type_e *keypair_type) {
     uint8_t keypair_buf[KEYPAIR_BUF_SZ];
     uint16_t keypair_buf_sz = sizeof(keypair_buf);
     uint8_t pubkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_secmodule->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
@@ -454,7 +458,7 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
     VS_LOG_DEBUG("Public key %d bytes from slot %s with keypair type %s has been loaded",
                  pubkey_sz,
                  get_slot_name(slot),
-                 vs_hsm_keypair_type_descr(*keypair_type));
+                 vs_secmodule_keypair_type_descr(*keypair_type));
     VS_LOG_HEX(VS_LOGLEV_DEBUG, "Public key : ", buf, *key_sz);
 
     ret_code = VS_CODE_OK;
@@ -466,17 +470,17 @@ terminate:
 
 /********************************************************************************/
 vs_status_e
-vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
-                          uint8_t *buf,
-                          uint16_t buf_sz,
-                          uint16_t *key_sz,
-                          vs_hsm_keypair_type_e *keypair_type) {
+vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
+                                uint8_t *buf,
+                                uint16_t buf_sz,
+                                uint16_t *key_sz,
+                                vs_secmodule_keypair_type_e *keypair_type) {
     uint8_t keypair_buf[KEYPAIR_BUF_SZ];
     uint16_t keypair_buf_sz = sizeof(keypair_buf);
     uint8_t prvkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_secmodule->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
@@ -502,7 +506,7 @@ vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
     VS_LOG_DEBUG("Private key %d bytes from slot %s with keypair type %s has been loaded",
                  prvkey_sz,
                  get_slot_name(slot),
-                 vs_hsm_keypair_type_descr(*keypair_type));
+                 vs_secmodule_keypair_type_descr(*keypair_type));
     VS_LOG_HEX(VS_LOGLEV_DEBUG, "Private key : ", buf, *key_sz);
 
     ret_code = VS_CODE_OK;
@@ -514,11 +518,11 @@ terminate:
 
 /********************************************************************************/
 vs_status_e
-_fill_keypair_impl(vs_hsm_impl_t *secmodule_impl) {
+_fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl) {
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    secmodule_impl->create_keypair = vs_hsm_keypair_create;
-    secmodule_impl->get_pubkey = vs_hsm_keypair_get_pubkey;
+    secmodule_impl->create_keypair = vs_secmodule_keypair_create;
+    secmodule_impl->get_pubkey = vs_secmodule_keypair_get_pubkey;
 
     return VS_CODE_OK;
 }

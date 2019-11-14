@@ -51,7 +51,7 @@
 static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;
 
-static vs_hsm_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 /******************************************************************************/
 static bool
@@ -64,7 +64,7 @@ vs_prvs_server_is_initialized(void) {
 static vs_status_e
 vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
     uint16_t key_sz = 0;
-    vs_hsm_keypair_type_e ec_type;
+    vs_secmodule_keypair_type_e ec_type;
     vs_pubkey_t *own_pubkey;
     uint16_t sign_sz = 0;
     vs_sign_t *sign;
@@ -128,7 +128,7 @@ vs_prvs_save_data(vs_snap_prvs_element_e element_id, const uint8_t *data, uint16
 static vs_status_e
 vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     uint16_t key_sz = 0;
-    vs_hsm_keypair_type_e ec_type;
+    vs_secmodule_keypair_type_e ec_type;
     vs_status_e ret_code;
 
     VS_IOT_ASSERT(asav_response);
@@ -204,8 +204,8 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
 
     vs_snap_prvs_sgnp_req_t *request = (vs_snap_prvs_sgnp_req_t *)data;
     vs_sign_t *response = (vs_sign_t *)signature;
-    int hash_len = vs_hsm_get_hash_len(request->hash_type);
-    vs_hsm_keypair_type_e keypair_type;
+    int hash_len = vs_secmodule_get_hash_len(request->hash_type);
+    vs_secmodule_keypair_type_e keypair_type;
 
     if (hash_len <= 0 || buf_sz <= sizeof(vs_sign_t)) {
         return VS_CODE_ERR_INCORRECT_PARAMETER;
@@ -416,7 +416,7 @@ _prepare_prvs_service() {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_prvs_server(vs_hsm_impl_t *secmodule) {
+vs_snap_prvs_server(vs_secmodule_impl_t *secmodule) {
 
     CHECK_NOT_ZERO_RET(secmodule, NULL);
 

@@ -52,7 +52,7 @@ func VirgilSignToRaw(virgilSign []byte, ecType uint8) ([]byte, error) {
     virgilSignPointer := (*C.uchar)(unsafe.Pointer(&virgilSign[0]))
     rawSignSize := C.uint16_t(0)
     rawSignPointer := (*C.uchar)(unsafe.Pointer(&rawSignBuf[0]))
-    keyType := C.vs_hsm_keypair_type_e(ecType)
+    keyType := C.vs_secmodule_keypair_type_e(ecType)
     signSize := C.uint16_t(len(virgilSign))
     bufSize := C.uint16_t(signatureBufSize)
 
@@ -73,7 +73,7 @@ func VirgilPubKeyToRaw(virgilPubKey []byte, ecType uint8) ([]byte, error) {
     const pubKeyBufSize = 512
     var pubKeyBuf [pubKeyBufSize]uint8
 
-    keyType := C.vs_hsm_keypair_type_e(ecType)
+    keyType := C.vs_secmodule_keypair_type_e(ecType)
     virgilPubKeyPtr := (*C.uchar)(unsafe.Pointer(&virgilPubKey[0]))
     virgilPubKeySize := C.uint16_t(len(virgilPubKey))
     rawPubKeyPointer := (*C.uchar)(unsafe.Pointer(&pubKeyBuf[0]))

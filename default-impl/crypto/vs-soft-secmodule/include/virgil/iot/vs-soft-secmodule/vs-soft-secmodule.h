@@ -58,9 +58,9 @@
  *
  * \param[in] slots_storage_impl Storage context. Must not be NULL.
  *
- * \return HSM implementation
+ * \return SECMODULE implementation
  */
-vs_hsm_impl_t *
+vs_secmodule_impl_t *
 vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
 /** Destroy software crypto implementation

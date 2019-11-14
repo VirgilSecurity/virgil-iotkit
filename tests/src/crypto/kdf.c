@@ -16,8 +16,8 @@ static const char *another_hkdf_info = "Another test info";
 
 /******************************************************************************/
 static int
-_test_kdf2_step(vs_hsm_impl_t *secmodule_impl,
-                vs_hsm_hash_type_e hash_type,
+_test_kdf2_step(vs_secmodule_impl_t *secmodule_impl,
+                vs_secmodule_hash_type_e hash_type,
                 const uint8_t *correct_result,
                 uint16_t result_len) {
     uint8_t result_buf[result_len];
@@ -45,8 +45,8 @@ _test_kdf2_step(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 static int
-_test_hkdf2_step(vs_hsm_impl_t *secmodule_impl,
-                 vs_hsm_hash_type_e hash_type,
+_test_hkdf2_step(vs_secmodule_impl_t *secmodule_impl,
+                 vs_secmodule_hash_type_e hash_type,
                  const uint8_t *correct_result,
                  uint16_t result_len) {
     uint8_t result_buf[result_len];
@@ -120,7 +120,7 @@ _test_hkdf2_step(vs_hsm_impl_t *secmodule_impl,
 
 /******************************************************************************/
 uint16_t
-test_kdf2(vs_hsm_impl_t *secmodule_impl) {
+test_kdf2(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
 #define TEST_STEP(COND, BITLEN, FUNC)                                                                                  \
@@ -129,7 +129,7 @@ test_kdf2(vs_hsm_impl_t *secmodule_impl) {
         if (VS_CODE_ERR_NOT_IMPLEMENTED == res) {                                                                      \
             VS_LOG_WARNING(#FUNC " for SHA_" #BITLEN " algorithm is not implemented");                                 \
         } else {                                                                                                       \
-            TEST_CASE_OK(vs_hsm_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_CODE_OK == res);                             \
+            TEST_CASE_OK(vs_secmodule_hash_type_descr(VS_HASH_SHA_##BITLEN), VS_CODE_OK == res);                       \
         }                                                                                                              \
     } while (0)
 

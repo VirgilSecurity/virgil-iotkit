@@ -36,33 +36,33 @@
 #include <virgil/iot/secmodule/secmodule.h>
 
 uint16_t
-test_hash(vs_hsm_impl_t *secmodule_impl);
+test_hash(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_hmac(vs_hsm_impl_t *secmodule_impl);
+test_hmac(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_kdf2(vs_hsm_impl_t *secmodule_impl);
+test_kdf2(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_ecdsa(vs_hsm_impl_t *secmodule_impl);
+test_ecdsa(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_ecdh(vs_hsm_impl_t *secmodule_impl);
+test_ecdh(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_keypair(vs_hsm_impl_t *secmodule_impl);
+test_keypair(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_random(vs_hsm_impl_t *secmodule_impl);
+test_random(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-test_aes(vs_hsm_impl_t *secmodule_impl);
+test_aes(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
 test_sign_converters(void);
 uint16_t
 test_pubkeys_converters(void);
 uint16_t
-test_keystorage_and_tl(vs_hsm_impl_t *secmodule_impl);
+test_keystorage_and_tl(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
-vs_virgil_ecies_test(vs_hsm_impl_t *secmodule_impl);
+vs_virgil_ecies_test(vs_secmodule_impl_t *secmodule_impl);
 
 /**********************************************************/
 uint16_t
-vs_crypto_test(vs_hsm_impl_t *secmodule_impl) {
+vs_crypto_test(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     VS_IOT_ASSERT(secmodule_impl);
