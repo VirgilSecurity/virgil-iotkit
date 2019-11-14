@@ -84,7 +84,7 @@ typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
-/** PRVS SDMP service code */
+/** PRVS SNAP service code */
 typedef enum { VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS') } vs_prvs_t;
 
 /** Provision operations */
@@ -105,7 +105,7 @@ typedef enum {
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
-} vs_sdmp_prvs_element_e;
+} vs_snap_prvs_element_e;
 #pragma GCC diagnostic pop
 
 /** Element ID */

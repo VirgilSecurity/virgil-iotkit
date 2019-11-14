@@ -48,14 +48,19 @@
  * First of all it is necessary to initialize Firmware library :
  *
  * \code
-vs_storage_op_ctx_t fw_storage_impl;               // Firmware storage implementation
-vs_hsm_impl_t *hsm_impl = NULL;                    // Security module implementation
-vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
-vs_device_type_t device_type = {0};                // Device type
 
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+vs_storage_op_ctx_t fw_storage_impl;         // Firmware storage implementation
+vs_hsm_impl_t *hsm_impl = NULL;              // Security module implementation
+static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
+static vs_device_type_t device_type;                // Device type
 
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+// Initialize fw_storage_impl, manufacture_id, device_type
+
+// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
+module");
 
  * \endcode
  *
@@ -77,10 +82,10 @@ vs_status_e
 _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **update_ctx) {
     switch (file_type->type) {
     case VS_UPDATE_FIRMWARE:    // Firmware file request
-        *update_ctx = vs_firmware_update_ctx();
+        *update_ctx = vs_firmware_update_ctx();     // Firmware's Update context
         break;
     case VS_UPDATE_TRUST_LIST:  // Trust List file request
-        *update_ctx = vs_tl_update_ctx();
+        *update_ctx = vs_tl_update_ctx();           // Trust List's Update context
         break;
     default:                    // Unsupported file type request
         VS_LOG_ERROR("Unsupported file type : %d", file_type->type);
@@ -90,9 +95,9 @@ _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **up
     return VS_CODE_OK;
 }
 
-// ...
+// Initialize mac_addr by current device MAC address
 
-sdmp_fldt_server = vs_sdmp_fldt_server(&mac_addr, _add_filetype);
+snap_fldt_server = vs_snap_fldt_server(&mac_addr, _add_filetype);
 
 STATUS_CHECK(vs_fldt_server_add_file_type(vs_firmware_update_file_type(), vs_firmware_update_ctx(), false),
             "Unable to add firmware file type");
@@ -107,9 +112,11 @@ STATUS_CHECK(vs_fldt_server_add_file_type(vs_firmware_update_file_type(), vs_fir
  * \code
 
 vs_firmware_header_t header;        // Firmware header
-const char *upd_file_url = ... ;    // URL for file update
+const char *upd_file_url;           // URL for file update
 vs_update_file_type_t fw_info;      // Update file information
 int res;
+
+// Initialize upd_file_url by download address
 
 res = vs_cloud_fetch_and_store_fw_file(upd_file_url, &header);
 if (VS_CODE_OK == res) {
@@ -120,7 +127,8 @@ if (VS_CODE_OK == res) {
         if(_is_self_firmware_image(&fw_info.info){
             _process_own_firmware(&header);
         } else {
-            STATUS_CHECK(vs_fldt_server_add_file_type(&fw_info, vs_firmware_update_ctx(), true), "Unable to add new firmware");
+            STATUS_CHECK(vs_fldt_server_add_file_type(&fw_info, vs_firmware_update_ctx(), true), "Unable to add new
+firmware");
         }
     } else {
         vs_firmware_delete_firmware(&header.descriptor);
@@ -131,7 +139,8 @@ if (VS_CODE_OK == res) {
  * \endcode
  *
  * In this example Gateway receives firmware header by using Cloud module (see \ref cloud_usage for details ). It
- * verifies this firmware. In case of error it deletes it. In another case it analyzes this firmware type (\a _is_self_firmware_image
+ * verifies this firmware. In case of error it deletes it. In another case it analyzes this firmware type (\a
+_is_self_firmware_image
  * call). If this is firmware for this gateway, it installs it (\a _process_own_firmware call). In another case it sends
  * firmware by using FLDT Server service (#vs_fldt_server_add_file_type() call) :
  *
@@ -173,14 +182,18 @@ _send_firmware(){
  * and to destroy it at the end. See code example below :
  *
  * \code
+
 vs_storage_op_ctx_t fw_storage_impl;    // Firmware storage implementation
 vs_hsm_impl_t *hsm_impl = NULL;         // Security module implementation
-vs_device_manufacture_id_t manufacture_id = {0};   // Manufacture ID
-vs_device_type_t device_type = {0};                // Device type
+static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
+static vs_device_type_t device_type;                // Device type
+
+// Initialize manufacture_id, device_type
 
 hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
 
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware module");
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
+module");
 
  * \endcode
  *
@@ -237,7 +250,7 @@ typedef struct __attribute__((__packed__)) {
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
@@ -264,7 +277,7 @@ vs_firmware_deinit(void);
  * \param[in] chunk_sz Data size. Must not be zero.
  * \param[in] offset Data offset.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
@@ -281,7 +294,7 @@ vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  * \param[in] footer Firmware footer. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
@@ -298,7 +311,7 @@ vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, con
  * \param[in] buf_sz Buffer size.
  * \param[out] data_sz Stored data size. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
@@ -318,7 +331,7 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
  * \param[in] buff_sz Buffer size. Must not be zero.
  * \param[out] data_sz Saved footer size. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
@@ -334,7 +347,7 @@ vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -343,7 +356,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor);
@@ -354,7 +367,7 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor)
  *
  * \param[out] descriptor #vs_firmware_descriptor_t Output own firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
@@ -367,7 +380,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
  * \param[in] device_type Device type.
  * \param[out] descriptor #vs_firmware_descriptor_t Output firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
@@ -382,7 +395,7 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -395,7 +408,7 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
@@ -421,7 +434,7 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
  *
- * \return #vs_sdmp_service_t SDMP service description. Use this pointer to call #vs_sdmp_register_service.
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);

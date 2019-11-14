@@ -1,5 +1,6 @@
 import collections
 import functools
+import json
 import logging
 import os
 import psutil
@@ -31,13 +32,14 @@ class UtilContext:
         self.skip_confirm = self._cli_args["skip_confirm"]
         self.disable_cache = None
         self.printer_enable = False
-        self.debug_logging = self._cli_args["verbose_logging"]
 
-        self.storage_path = self._config["MAIN"]["storage_path"]
+        self.storage_path = self.__prepare_storage_folder()
 
         self.application_token = self._cli_args["app_token"]
-        self.virgil_api_url = self._config["CARDS"]["virgil_api_url"]
-        self.factory_info_json = self._config["CARDS"]["factory_info_json"]
+        self.virgil_api_url = self._config["VIRGIL"]["iot_api_url"]
+
+        # Load factory info from specified json file
+        self.factory_info = self.__load_factory_info()
 
     @property
     def _cli_args(self):
@@ -47,67 +49,58 @@ class UtilContext:
             description='Key infrastructure management tool',
             formatter_class=RawTextHelpFormatter
         )
-        arguments.add_argument('-b', '--verbose-logging', action='store_true', help="enable debug logging")
         arguments.add_argument('-y', '--skip-confirm', action='store_true', help='skip all confirmation requests')
         arguments.add_argument('-c', "--config", metavar="CONFIG_PATH", type=str, help="custom configuration file")
         arguments.add_argument('-t', "--app-token", required=True, type=str, help="Virgil application token")
+        arguments.add_argument('-i', "--factory-info", required=True, type=str,
+                               help="path to json with factory info (will be added to Factory key Virgil card)")
         arguments.add_argument('-v', "--version", action="version", version=__version__,
                                help="print application version and exit")
         self.__cli_args = vars(arguments.parse_args())
         return self.__cli_args
 
-    def __prepare_logger(self):
-        log_levels = {
-            "DEBUG": logging.DEBUG,
-            "INFO": logging.INFO,
-            "WARNING": logging.WARNING,
-            "ERROR": logging.ERROR
-        }
+    def __load_factory_info(self):
+        factory_info_json_path = os.path.expanduser(self._cli_args["factory_info"])
+        if not os.path.exists(factory_info_json_path):
+            sys.exit("File with Factory info '%s' does not exist" % factory_info_json_path)
+        with open(factory_info_json_path, 'r') as f:
+            factory_info = json.load(f)
+        if not factory_info:
+            sys.exit("File with Factory info '%s' is empty" % factory_info)
+        return factory_info
 
-        if "log_level" in self._config["MAIN"].keys():
-            if self._config["MAIN"]["log_level"] in log_levels.keys():
-                log_level = self._config["MAIN"]["log_level"]
+    def __prepare_storage_folder(self):
+        # Create folder for storage if not exists and path specified for HOME
+        storage = os.path.expanduser(self._config["MAIN"]["storage_path"])
+        if not os.path.exists(storage):
+            if storage.startswith(str(Path.home())):
+                os.makedirs(storage)
             else:
-                sys.exit("[FATAL]: Logger miss configured please ensure you input correct log level ({})".format(
-                    " ,".join(log_levels.keys())
-                ))
-        else:
-            log_level = log_levels["INFO"]
+                sys.exit("[FATAL]: Path for storage specified in config doesn't exist: %s" % storage)
+        return storage
 
-        logger = logging.getLogger("keymanager_logger")
-        logger.setLevel(logging.DEBUG)
+    def __prepare_logger(self):
+        logger = logging.getLogger("virgil-trust-provisioner-logger")
+        logger.setLevel(logging.INFO)
 
-        # TODO enable when realize signed handler
-        if not os.path.exists(self._config["MAIN"]["log_path"]):
-            os.makedirs(self._config["MAIN"]["log_path"])
-        # lc = SignedHandlerLogger(self.__config["MAIN"]["log_path"], atmel=self._atmel)
-        access_log = logging.FileHandler(os.path.join(self._config["MAIN"]["log_path"], "keymanager.log"))
-        access_log.setLevel(log_level)
-        access_log.setFormatter(
+        # Create folder for logs if not exists and path specified for HOME
+        log_path = os.path.expanduser(self._config["MAIN"]["log_path"])
+        if not os.path.exists(log_path):
+            if log_path.startswith(str(Path.home())):
+                os.makedirs(log_path)
+            else:
+                sys.exit("[FATAL]: Path for logs specified in config doesn't exist: %s" % log_path)
+
+        # Add file handler
+        file_handler = logging.FileHandler(os.path.join(log_path, "virgil-trust-provisioner.log"))
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(
             logging.Formatter(
                 "[%(asctime)s][%(levelname)s]: %(message)s",
                 datefmt="%d/%m/%Y %H:%M:%S"
             )
         )
-
-        development_logger = logging.FileHandler(
-            os.path.join(
-                self._config["MAIN"]["log_path"],
-                "keymanager_dev.log"
-            ),
-            mode="w"
-        )
-        development_logger.setLevel(logging.DEBUG)
-        development_logger.setFormatter(
-            logging.Formatter(
-                "[%(asctime)s][%(levelname)s]: %(message)s",
-                datefmt="%d/%m/%Y %H:%M:%S"
-            )
-        )
-
-        logger.addHandler(access_log)
-        if self._cli_args["verbose_logging"]:
-            logger.addHandler(development_logger)
+        logger.addHandler(file_handler)
         return logger
 
     def __load_config(self):
@@ -119,9 +112,8 @@ class UtilContext:
                 "storage_path",
                 "log_path"
             ],
-            "CARDS": [
-                "virgil_api_url",
-                "factory_info_json"
+            "VIRGIL": [
+                "iot_api_url"
             ]
         }
 
@@ -160,7 +152,7 @@ class UtilContext:
 class Core:
     def __init__(self):
         self.__util_context = UtilContext()
-        self.pid_file_path = os.path.join(str(Path.home()), '.keymanager', 'keymanager.pid')
+        self.pid_file_path = os.path.join(str(Path.home()), '.virgil_trust_provisioner', 'virgil_trust_provisioner.pid')
         self._ui = None
         self._util_manager = None
 
@@ -197,7 +189,7 @@ class Core:
                     process_list = [p.as_dict(["pid", "cmdline"]) for p in psutil.process_iter()]
                     for process in process_list:
                         if process["cmdline"]:
-                            if "keymanager" in process["cmdline"] and proc_id == process["pid"]:
+                            if "virgil-trust-provisioner" in process["cmdline"] and proc_id == process["pid"]:
                                 checked_processess.append(process)
                         else:
                             continue

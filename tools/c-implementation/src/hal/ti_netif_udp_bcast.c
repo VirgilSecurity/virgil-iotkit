@@ -43,7 +43,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
 static vs_status_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);

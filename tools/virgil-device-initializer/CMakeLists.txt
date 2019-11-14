@@ -52,7 +52,7 @@ endif()
 #
 set(CMAKE_CGO_CFLAGS
         ${CMAKE_CGO_CFLAGS}
-        -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/sdmp/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
         -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
@@ -69,7 +69,7 @@ set(CMAKE_CGO_CFLAGS
 #
 set(CMAKE_CGO_LDFLAGS
         ${CMAKE_CGO_LDFLAGS}
-        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/sdmp
+        -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/protocols/snap
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/tools/c-implementation
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/crypto/converters
         -L${VIRGIL_IOT_BINARY_DIRECTORY}/modules/logger

@@ -40,7 +40,7 @@
 #include <virgil/iot/hsm/hsm_helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/protocols/sdmp/prvs/prvs-structs.h>
+#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/trust_list/trust_list.h>
 

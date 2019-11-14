@@ -55,32 +55,34 @@
  *  Here you can see an example of Cloud library initialization :
  *
  *  \code
- *
- *  const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
- *  const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
- *  vs_hsm_impl_t *hsm_impl;                                    // Security module implementation
- *  vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
- *  vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
- *  vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
- *  vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
- *  static vs_device_manufacture_id_t _manufacture_id;          // Manufacture ID
- *  static vs_device_type_t _device_type;                       // Device type
- *
- *  //Need to initialize hsm_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl here
- *
- *  // Provision module
- *  STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
- *
- *  // Firmware module
- *  STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize
- * Firmware module");
- *
- *  // Cloud module
- *  STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, hsm_impl), "Unable to initialize Cloud module");
- *  STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process), "Error register
- * handler for Trust List topic"); STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW,
- * fw_topic_process), "Error register handler for Firmware topic");
- *
+
+const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
+const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
+vs_hsm_impl_t *hsm_impl;                                    // Security module implementation
+vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
+vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
+vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
+vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
+static vs_device_manufacture_id_t manufacture_id;           // Manufacture ID
+static vs_device_type_t device_type;                        // Device type
+
+// Initialize hsm_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl, manufacture_id, device_type
+
+// Provision module
+STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
+
+// Firmware module
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
+module");
+
+// Cloud module
+STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, hsm_impl), "Unable to initialize Cloud module");
+STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process),
+    "Error register handler for Trust List topic");
+
+STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, fw_topic_process), "Error register
+handler for Firmware topic");
+
  *  \endcode
  *
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
@@ -92,45 +94,45 @@
  *  Here you can see an example of Cloud library usage:
  *
  *  \code
- * // Processing of cloud library functionality example
- * void
- * message_bin_mqtt_task(void *params) {
- *    while (true) {
- *        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
- *            sleep(500);
- *        } else {
- *            sleep(5000);
- *        }
- *     }
- *  }
- *
- *  // Handlers for default topics example
- * void
- * fw_topic_process(const uint8_t *url, uint16_t length) {
- *      vs_status_e res;
- *      vs_firmware_header_t header;
- *
- *      res = vs_cloud_fetch_and_store_fw_file(url, &header);
- *
- *      if (VS_CODE_OK == res) {
- *          res = vs_firmware_verify_firmware(&header.descriptor);
- *          if (VS_CODE_OK == res) {
- *             // Fetched firmware is correct. Process it
- *          } else {
- *              // Incorrect firmware image. You can delete it.
- *              vs_firmware_delete_firmware(&header.descriptor);
- *          }
- *      }
- *  }
- *
- * void
- * tl_topic_process(const uint8_t *url, uint16_t length) {
- *
- *      if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
- *          // Trust list is correct. Process it
- *      }
- *  }
- *
+// Processing of cloud library functionality example
+void
+message_bin_mqtt_task(void *params) {
+   while (true) {
+       if (VS_CODE_OK == vs_cloud_message_bin_process()) {
+           sleep(500);
+       } else {
+           sleep(5000);
+       }
+    }
+ }
+
+// Handlers for default topics example
+void
+fw_topic_process(const uint8_t *url, uint16_t length) {
+     vs_status_e res;
+     vs_firmware_header_t header;
+
+     res = vs_cloud_fetch_and_store_fw_file(url, &header);
+
+     if (VS_CODE_OK == res) {
+         res = vs_firmware_verify_firmware(&header.descriptor);
+         if (VS_CODE_OK == res) {
+            // Fetched firmware is correct. Process it
+         } else {
+             // Incorrect firmware image. You can delete it.
+             vs_firmware_delete_firmware(&header.descriptor);
+         }
+     }
+ }
+
+void
+tl_topic_process(const uint8_t *url, uint16_t length) {
+
+     if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
+         // Trust list is correct. Process it
+     }
+ }
+
  * \endcode
  *
  */
@@ -175,8 +177,8 @@ typedef enum {
  * \param[in] request_body The body of the POST request.
  * \param[in] request_body_size The size of the POST request body.
  * \param[out] out_data Output buffer to store processed data if fetch_handler has not been specified. Must not be NULL.
- * \param[in] fetch_handler Implementation to process information that has been downloaded. If NULL, default processing will
- * be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
+ * \param[in] fetch_handler Implementation to process information that has been downloaded. If NULL, default processing
+ * will be used. \param[in] fetch_hander_data Context from \a fetch_handler . \a userdata parameter. \param[in,out]
  * in_out_size Data size storage. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.

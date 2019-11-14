@@ -84,9 +84,9 @@ typedef enum {
 
     VS_CODE_ERR_PRVS_UNKNOWN = -60, /**< Provision error */
 
-    VS_CODE_ERR_SDMP_UNKNOWN = -70, /**< SDMP error */
-    VS_CODE_ERR_SDMP_NOT_MY_PACKET = -71, /**< SDMP error "not my packet" */
-    VS_CODE_ERR_SDMP_TOO_MUCH_SERVICES = -72, /**< Too much services to be registred by SDMP */
+    VS_CODE_ERR_SNAP_UNKNOWN = -70, /**< SNAP error */
+    VS_CODE_ERR_SNAP_NOT_MY_PACKET = -71, /**< SNAP error "not my packet" */
+    VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES = -72, /**< Too much services to be registred by SNAP */
 
     VS_CODE_ERR_THREAD = -80, /**< Error during thread processing */
     VS_CODE_ERR_NO_SIMULATOR = -81, /**< No sumilator has been found */

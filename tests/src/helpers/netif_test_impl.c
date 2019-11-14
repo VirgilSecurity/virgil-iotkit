@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdlib-config.h>
-#include <virgil/iot/protocols/sdmp/sdmp-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <private/netif_test_impl.h>
 
 netif_state_t netif_state;
