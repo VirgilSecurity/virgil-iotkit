@@ -1,6 +1,10 @@
 # Virgil Trust Provisioner
 The Virgil Trust Provisioner is a command-line interface (CLI) used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
 
+## Content
+- [Overview](#virgil-trust-provisioner-overview)
+- [Setting Up](#setting-up-virgil-trust- provisioner)
+
 #### Virgil Trust Provisioner Features
 - Generating and managing Key Pairs for upper level IoT parties
 - Generating and managing Trust Lists
@@ -31,7 +35,7 @@ This section demonstrates on how to install and configure Virgil Trust Provision
 ### Install Virgil Trust Provisioner
 This section provides instructions for installing Virgil Trust Provisioner.
 
-#### LinuxOS
+#### Linux OS
 In order to download and install the Virgil Trust Provisioner on Linux, use the YUM package manager and the following command:
 
 ```bash
@@ -120,26 +124,26 @@ Application commands are used to perform operations such as key generating, data
 ### Private keys
 | Command | Result                                                                                                                       |
 |---------|------------------------------------------------------------------------------------------------------------------------------|
-| 1       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
-| 2       | Generate 2 Recovery Keys                                                                                                     |
-| 3       | Generate 2 Auth Keys                                                                                                         |
-| 5       | Generate 2 keys of Trust List (TL) Service                                                                                   |
-| 6       | Generate a Factory Key                                                                                                       |
-| 7       | Delete a Factory Key                                                                                                         |
-| 8       | Generate 2 Firmware Keys                                                                                                     |
+| ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
+| ```2```       | Generate 2 Recovery Keys                                                                                                     |
+| ```3```       | Generate 2 Auth Keys                                                                                                         |
+| ```5```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
+| ```6```       | Generate a Factory Key                                                                                                       |
+| ```7```       | Delete a Factory Key                                                                                                         |
+| ```8```       | Generate 2 Firmware Keys                                                                                                     |
 
 ### Trust List
 | Command | Result                                                           |
 |---------|------------------------------------------------------------------|
-| 10      | Generate a TrustList and store it in Virgil Trust Provisioner db |
+| ```10```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
 
 ### KeyManager Database
 | Command | Result                         |
 |---------|--------------------------------|
-| 11      | Print all public keys from db  |
-| 12      | Add public key to db           |
-| 13      | Export upper level public keys |
-| 15      | Export private keys            |
+| ```11```      | Print all public keys from db  |
+| ```12```      | Add public key to db           |
+| ```13```      | Export upper level public keys |
+| ```15```      | Export private keys            |
 
 ## Private Keys
 This includes dealing with the generation, exchange, storage, use and replacement of keys
