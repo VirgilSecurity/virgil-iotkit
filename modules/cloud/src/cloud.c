@@ -47,7 +47,7 @@
 #define MAX_EP_SIZE (256)
 
 static const vs_cloud_impl_t *_hal_impl = NULL;
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 /******************************************************************************/
 static bool
@@ -87,7 +87,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     char *signature_b64 = NULL;
     char *crypto_answer_b64 = NULL;
 
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buf_size, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     if (json_parse_start(&jobj, out_answer, buf_size) != VS_JSON_ERR_OK) {
@@ -140,7 +140,7 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     uint16_t pubkey_sz = 0;
     uint8_t *meta = NULL;
     uint16_t meta_sz = 0;
-    vs_hsm_keypair_type_e ec_type;
+    vs_secmodule_keypair_type_e ec_type;
 
     uint8_t hash[VS_HASH_SHA256_LEN];
     uint16_t hash_sz;
@@ -150,21 +150,22 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     ec_type = ((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type;
 
     {
-        uint8_t sign[vs_hsm_get_signature_len(ec_type)];
+        uint8_t sign[vs_secmodule_get_signature_len(ec_type)];
 
-        CHECK(VS_CODE_OK == vs_hsm_virgil_secp256_signature_to_tiny(
+        CHECK(VS_CODE_OK == vs_secmodule_virgil_secp256_signature_to_tiny(
                                     (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
               "Wrong signature format");
 
-        CHECK(VS_CODE_OK == _hsm->hash(VS_HASH_SHA_256,
-                                       (uint8_t *)crypto_answer_b64,
-                                       crypto_answer_b64_decoded_len,
-                                       hash,
-                                       sizeof(hash),
-                                       &hash_sz),
+        CHECK(VS_CODE_OK == _secmodule->hash(VS_HASH_SHA_256,
+                                             (uint8_t *)crypto_answer_b64,
+                                             crypto_answer_b64_decoded_len,
+                                             hash,
+                                             sizeof(hash),
+                                             &hash_sz),
               "Error during hash calculate");
 
-        CHECK(VS_CODE_OK == _hsm->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
+        CHECK(VS_CODE_OK ==
+                      _secmodule->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
               "Wrong signature of cloud answer");
     }
 
@@ -174,13 +175,14 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     /*----Decrypt credentials----*/
     size_t decrypted_data_sz;
 
-    CHECK(VS_CODE_OK == _hsm->ecies_decrypt(NULL,
-                                            0,
-                                            (uint8_t *)crypto_answer_b64,
-                                            (size_t)crypto_answer_b64_decoded_len,
-                                            (uint8_t *)out_answer,
-                                            buf_size,
-                                            &decrypted_data_sz) &&
+    CHECK(VS_CODE_OK == vs_secmodule_ecies_decrypt(_secmodule,
+                                                   NULL,
+                                                   0,
+                                                   (uint8_t *)crypto_answer_b64,
+                                                   (size_t)crypto_answer_b64_decoded_len,
+                                                   (uint8_t *)out_answer,
+                                                   buf_size,
+                                                   &decrypted_data_sz) &&
                   decrypted_data_sz <= UINT16_MAX,
           "Can't decrypt the cloud answer");
 
@@ -216,10 +218,10 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     uint32_t _in_out_len = sizeof(serial_hex_str);
     int encoded_len;
 
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
 
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(out_answer, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(in_out_answer_len, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_hal_impl, VS_CODE_ERR_NOINIT);
@@ -239,11 +241,11 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     uint16_t _sz;
     uint8_t virgil_sign[VS_REQUEST_BODY_MAX_SIZE];
 
-    STATUS_CHECK(_hsm->hash(VS_HASH_SHA_256, serial_number, sizeof(serial_number), hash, sizeof(hash), &_sz),
+    STATUS_CHECK(_secmodule->hash(VS_HASH_SHA_256, serial_number, sizeof(serial_number), hash, sizeof(hash), &_sz),
                  "Can't create hash for serial number");
-    STATUS_CHECK(_hsm->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
+    STATUS_CHECK(_secmodule->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
                  "Can't sign the serial number");
-    STATUS_CHECK(vs_hsm_tiny_secp256_signature_to_virgil(sign, virgil_sign, sizeof(virgil_sign), &_sz),
+    STATUS_CHECK(vs_secmodule_tiny_secp256_signature_to_virgil(sign, virgil_sign, sizeof(virgil_sign), &_sz),
                  "Can't convert raw signature to virgil format");
     encoded_len = base64encode_len(_sz);
     CHECK(encoded_len > 0 && encoded_len <= VS_REQUEST_BODY_MAX_SIZE, "Incorrect Base64 eencoded len of signature");
@@ -286,14 +288,13 @@ terminate:
 vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
               const vs_cloud_message_bin_impl_t *message_bin_impl,
-              vs_hsm_impl_t *hsm) {
-    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(hsm->ecies_decrypt, VS_CODE_ERR_NULLPTR_ARGUMENT);
+              vs_secmodule_impl_t *secmodule) {
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl->http_request, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _hal_impl = cloud_impl;
-    _hsm = hsm;
+    _secmodule = secmodule;
     return vs_cloud_message_bin_init(message_bin_impl);
 }
 
@@ -584,7 +585,7 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
 
             } else {
                 vs_pubkey_dated_t *pubkey = (vs_pubkey_dated_t *)resp->buff;
-                int key_len = vs_hsm_get_pubkey_len(pubkey->pubkey.ec_type);
+                int key_len = vs_secmodule_get_pubkey_len(pubkey->pubkey.ec_type);
                 CHECK_RET(key_len > 0, 0, "Error fetch TL key. Unsupported ec type");
 
                 curr_key_sz = sizeof(vs_pubkey_dated_t) + key_len + VS_IOT_NTOHS(pubkey->pubkey.meta_data_sz);
@@ -639,8 +640,8 @@ _store_tl_handler(char *contents, size_t chunksize, void *userdata) {
                     int sign_len;
                     int key_len;
 
-                    sign_len = vs_hsm_get_signature_len(element->ec_type);
-                    key_len = vs_hsm_get_pubkey_len(element->ec_type);
+                    sign_len = vs_secmodule_get_signature_len(element->ec_type);
+                    key_len = vs_secmodule_get_pubkey_len(element->ec_type);
 
                     CHECK_RET((key_len > 0 && sign_len > 0), 0, "[CLOUD] TL footer parse error");
                     resp->footer_sz = sizeof(vs_tl_footer_t) +

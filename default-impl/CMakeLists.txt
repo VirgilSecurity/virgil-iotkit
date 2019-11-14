@@ -37,8 +37,8 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #
 #   Default Crypto implementations module
 #
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-hsm)
+if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
 endif()
 
 #

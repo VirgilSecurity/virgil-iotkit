@@ -32,45 +32,44 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/vs-softhsm/vs-softhsm.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h>
 #include <virgil/iot/macros/macros.h>
-#include "private/vs-softhsm-internal.h"
+#include "private/vs-soft-secmodule-internal.h"
 
-static vs_hsm_impl_t _softhsm;
-static bool _softhsm_ready = false;
+static vs_secmodule_impl_t _soft_secmodule;
+static bool _soft_secmodule_ready = false;
 
 /******************************************************************************/
-vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl) {
+vs_secmodule_impl_t *
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
     CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
 
-    if (!_softhsm_ready) {
-        _fill_slots_impl(&_softhsm, slots_storage_impl);
-        _fill_crypto_impl(&_softhsm);
-        _fill_keypair_impl(&_softhsm);
-        _fill_ecies_impl(&_softhsm);
-        _fill_soft_hash_impl(&_softhsm);
+    if (!_soft_secmodule_ready) {
+        _fill_slots_impl(&_soft_secmodule, slots_storage_impl);
+        _fill_crypto_impl(&_soft_secmodule);
+        _fill_keypair_impl(&_soft_secmodule);
+        _fill_soft_hash_impl(&_soft_secmodule);
 
-        _softhsm_ready = true;
+        _soft_secmodule_ready = true;
     }
-    return &_softhsm;
+    return &_soft_secmodule;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_softhsm_deinit(void) {
-    _softhsm_ready = false;
-    _hsm_deinit();
+vs_soft_secmodule_deinit(void) {
+    _soft_secmodule_ready = false;
+    _secmodule_deinit();
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
-const vs_hsm_impl_t *
-_softhsm_intern(void) {
-    if (_softhsm_ready) {
-        return &_softhsm;
+const vs_secmodule_impl_t *
+_soft_secmodule_intern(void) {
+    if (_soft_secmodule_ready) {
+        return &_soft_secmodule;
     }
 
     return NULL;
@@ -78,7 +77,7 @@ _softhsm_intern(void) {
 
 /******************************************************************************/
 const char *
-get_slot_name(vs_iot_hsm_slot_e slot) {
+get_slot_name(vs_iot_secmodule_slot_e slot) {
     switch (slot) {
     case VS_KEY_SLOT_STD_OTP_0:
         return "STD_OTP_0";

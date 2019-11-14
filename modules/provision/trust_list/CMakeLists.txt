@@ -85,7 +85,7 @@ target_compile_definitions(trust_list
 
 target_link_libraries(trust_list
         PUBLIC
-        vs-module-hsm
+        vs-module-secmodule
         macros
         vs-module-provision
         storage_hal

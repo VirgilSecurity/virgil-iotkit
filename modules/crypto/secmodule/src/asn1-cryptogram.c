@@ -39,7 +39,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -296,14 +296,14 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
-                                        uint8_t *virgil_sign,
-                                        uint16_t buf_sz,
-                                        uint16_t *virgil_sign_sz) {
+vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                              uint8_t *virgil_sign,
+                                              uint16_t buf_sz,
+                                              uint16_t *virgil_sign_sz) {
     uint8_t *buf = virgil_sign;
     int pos = buf_sz;
     size_t total_sz = 0, el_sz;
-    const uint16_t secp_mpi_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1) / 2;
+    const uint16_t secp_mpi_sz = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1) / 2;
 
     CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -326,10 +326,10 @@ vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
-                                        uint16_t virgil_sign_sz,
-                                        uint8_t *raw_signature,
-                                        uint16_t buf_sz) {
+vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                              uint16_t virgil_sign_sz,
+                                              uint8_t *raw_signature,
+                                              uint16_t buf_sz) {
     int pos = 0;
 
     const uint8_t *p_r = 0;
@@ -337,7 +337,7 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
     const uint8_t *p_s = 0;
     size_t s_sz = 0;
 
-    const int secp_sign_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    const int secp_sign_sz = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     const uint16_t secp_mpi_sz = secp_sign_sz / 2;
 
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -382,17 +382,17 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                             size_t cryptogram_sz,
-                                             const uint8_t *recipient_id,
-                                             size_t recipient_id_sz,
-                                             uint8_t **public_key,
-                                             uint8_t **iv_key,
-                                             uint8_t **encrypted_key,
-                                             uint8_t **mac_data,
-                                             uint8_t **iv_data,
-                                             uint8_t **encrypted_data,
-                                             size_t *encrypted_data_sz) {
+vs_secmodule_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                                   size_t cryptogram_sz,
+                                                   const uint8_t *recipient_id,
+                                                   size_t recipient_id_sz,
+                                                   uint8_t **public_key,
+                                                   uint8_t **iv_key,
+                                                   uint8_t **encrypted_key,
+                                                   uint8_t **mac_data,
+                                                   uint8_t **iv_data,
+                                                   uint8_t **encrypted_data,
+                                                   size_t *encrypted_data_sz) {
 
     int pos = 0, saved_pos, set_pos = 0;
     size_t _sz, ar_sz, asn1_sz;
@@ -526,19 +526,19 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
-                                              size_t recipient_id_sz,
-                                              size_t encrypted_data_sz,
-                                              const uint8_t *encrypted_data,
-                                              const uint8_t *iv_data,
-                                              const uint8_t *encrypted_key,
-                                              const uint8_t *iv_key,
-                                              const uint8_t *hmac,
-                                              const uint8_t *public_key,
-                                              size_t public_key_sz,
-                                              uint8_t *cryptogram,
-                                              size_t cryptogram_buf_sz,
-                                              size_t *cryptogram_sz) {
+vs_secmodule_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                                    size_t recipient_id_sz,
+                                                    size_t encrypted_data_sz,
+                                                    const uint8_t *encrypted_data,
+                                                    const uint8_t *iv_data,
+                                                    const uint8_t *encrypted_key,
+                                                    const uint8_t *iv_key,
+                                                    const uint8_t *hmac,
+                                                    const uint8_t *public_key,
+                                                    size_t public_key_sz,
+                                                    uint8_t *cryptogram,
+                                                    size_t cryptogram_buf_sz,
+                                                    size_t *cryptogram_sz) {
 
     uint8_t *buf = cryptogram;
     int pos = cryptogram_buf_sz;

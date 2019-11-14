@@ -32,9 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-// TODO : do we need this file? Rename it to hsm_none.h or remove constants below to another place
-#ifndef VS_IOTELIC_HSM_H
-#define VS_IOTELIC_HSM_H
+#ifndef VS_SECMODULE_SOFT_DEVICE_H
+#define VS_SECMODULE_SOFT_DEVICE_H
 
 #define KEY_SLOT_STD_DATA_SIZE (380)  // Max data size of standard slot
 #define KEY_SLOT_EXT_DATA_SIZE (1532) // Max data size of extended slot
@@ -86,7 +85,7 @@ typedef enum {
     VS_KEY_SLOT_STD_TMP_MAX,
     VS_KEY_SLOT_EXT_TMP_0,
     VS_KEY_SLOT_TMP_MAX
-} vs_iot_hsm_slot_e;
+} vs_iot_secmodule_slot_e;
 
 #define PROVISION_KEYS_QTY 2
 
@@ -106,4 +105,4 @@ typedef enum {
 
 #define SIGNATURE_SLOT VS_KEY_SLOT_STD_MTP_8
 
-#endif // VS_IOTELIC_HSM_H
+#endif // VS_SECMODULE_SOFT_DEVICE_H

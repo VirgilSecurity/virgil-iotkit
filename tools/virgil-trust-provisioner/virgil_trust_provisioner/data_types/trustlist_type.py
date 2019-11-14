@@ -298,9 +298,9 @@ class TrustList:
 
                 # Add signature to signatures list
                 s = Signature(
-                    signer_type=key.key_type_hsm,
-                    ec_type=key.ec_type_hsm,
-                    hash_type=key.hash_type_hsm,
+                    signer_type=key.key_type_secmodule,
+                    ec_type=key.ec_type_secmodule,
+                    hash_type=key.hash_type_secmodule,
                     sign=b64_to_bytes(signature),
                     signer_pub_key=b64_to_bytes(key.public_key)
                 )

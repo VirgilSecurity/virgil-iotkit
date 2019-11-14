@@ -26,7 +26,7 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 
 ## Features
 Virgil IoTKit provides a set of features for IoT device security and management:
-- **Crypto Module. Connect any crypto library and hard secure module (HSM)**. Virgil IoTKit provides flexible and simple API for any types of crypto library and HSM. At the same time, the framework provides default software HSM implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).
+- **Crypto Module. Connect any crypto library and Security Module**. Virgil IoTKit provides flexible and simple API for any types of crypto library and SECMODULE. At the same time, the framework provides default Software Security Module implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).
 - **Provision Module. Secure IoT device provision**. In order to securely update firmware, securely register, authenticate or exchange messages between IoT devices, each IoT device must have its own tools, which allow the device to perform cryptographic operations. These tools must contain the necessary information to identify the device or other participants (e.g., trust list provider). These tools are the device keys, trust chain, device card, etc. The process of providing your IoT devices with these tools is called device provision, and Virgil IoTKit gives you all the necessary functionality to make your IoT devices identifiable and verifiable, as a result, protect them from counterfeit and fabrication.
 - **Firmware Module. Secure firmware and trust chain verification and distribution**. IoTKit provides a set of API for secure verification of firmware in a bootloader. Also, IoTKit provides an example of bootloader implementation in the form of emulator.
 - **Secbox Module. Secure software storage for any sensitive data**. IoTKit provides secure software storage that is called **Secbox** for storing any sensitive data, like private keys. The Secbox works in two modes; the first mode - when data is only signed, and the second one - when data is encrypted and then signed.
@@ -83,11 +83,11 @@ cmake version 3.11.0
 thing service and downloading firmware images and trust list files from cloud storage.
 - Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html).
 - [Firmware](https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
+- [Logger](https://virgilsecurity.github.io/virgil-iot-sdk/logger_8h.html) : tool to output logging messages to screen, file etc. See [HAL functions declarations](https://virgilsecurity.github.io/virgil-iot-sdk/logger-hal_8h.html) for its implementation.
 - Provision.
 - Secbox.
 - Protocols.
 - Cloud.
-- Logger.
 
 ## Tests
 

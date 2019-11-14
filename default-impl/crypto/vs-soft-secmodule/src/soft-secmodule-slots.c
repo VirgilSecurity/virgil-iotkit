@@ -32,15 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/vs-softhsm/vs-softhsm.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h>
 #include <virgil/iot/macros/macros.h>
-#include "private/vs-softhsm-internal.h"
+#include "private/vs-soft-secmodule-internal.h"
 
 static vs_storage_op_ctx_t *_storage = NULL;
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_slot_save(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz) {
+vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
@@ -72,7 +72,7 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_hsm_slot_load(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
+vs_secmodule_slot_load(vs_iot_secmodule_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
@@ -110,7 +110,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
+vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot) {
     vs_storage_element_id_t id;
     const char *slot_name = get_slot_name(slot);
 
@@ -127,7 +127,7 @@ vs_hsm_slot_delete(vs_iot_hsm_slot_e slot) {
 
 /********************************************************************************/
 void
-_hsm_deinit(void) {
+_secmodule_deinit(void) {
     if (_storage && _storage->impl_func.deinit) {
         _storage->impl_func.deinit(_storage->impl_data);
     }
@@ -135,17 +135,17 @@ _hsm_deinit(void) {
 
 /******************************************************************************/
 vs_status_e
-_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *slots_storage_impl) {
-    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+_fill_slots_impl(vs_secmodule_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl) {
+    CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(slots_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _storage = slots_storage_impl;
 
-    hsm_impl->deinit = _hsm_deinit;
+    secmodule_impl->deinit = _secmodule_deinit;
 
-    hsm_impl->slot_load = vs_hsm_slot_load;
-    hsm_impl->slot_save = vs_hsm_slot_save;
-    hsm_impl->slot_clean = vs_hsm_slot_delete;
+    secmodule_impl->slot_load = vs_secmodule_slot_load;
+    secmodule_impl->slot_save = vs_secmodule_slot_save;
+    secmodule_impl->slot_clean = vs_secmodule_slot_delete;
 
     return VS_CODE_OK;
 }

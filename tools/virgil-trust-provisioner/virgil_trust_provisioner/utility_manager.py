@@ -457,7 +457,7 @@ class UtilityManager(object):
         meta_data = self._context.virgil_api_url
         key_info = {
             "type": consts.VSKeyTypeS.CLOUD.value,
-            "ec_type": consts.ec_type_vs_to_hsm_map.get(VirgilKeyPair.Type_EC_SECP256R1),
+            "ec_type": consts.ec_type_vs_to_secmodule_map.get(VirgilKeyPair.Type_EC_SECP256R1),
             "start_date": cloud_key_response["start_date"],
             "expiration_date": cloud_key_response["end_date"],
             "comment": "Cloud public key",
@@ -553,13 +553,13 @@ class UtilityManager(object):
         card_content["start_date"] = start_date
         card_content["expiration_date"] = expiration_date
         card_content["comment"] = comment
-        card_content["ec_type"] = key.ec_type_hsm
+        card_content["ec_type"] = key.ec_type_secmodule
         card_content["meta_data"] = meta_data
         card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
         if sign_by_recovery_key:
             card_content["signature"] = key.signature
             card_content["signer_public_key"] = rec_key_for_sign.public_key
-            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
+            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_secmodule
         if extra_card_content:
             card_content.update(extra_card_content)
         self.__card_requests_handler.create_and_register_card(key, key_info=card_content)
@@ -568,7 +568,7 @@ class UtilityManager(object):
         # - prepare key info to be saved
         key_info = {
             "type": key_type.value,
-            "ec_type": key.ec_type_hsm,
+            "ec_type": key.ec_type_secmodule,
             "start_date": start_date,
             "expiration_date": expiration_date,
             "comment": comment,
@@ -578,7 +578,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             key_info["signature"] = key.signature
             key_info["signer_key_id"] = rec_key_for_sign.key_id
-            key_info["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
+            key_info["signer_hash_type"] = rec_key_for_sign.hash_type_secmodule
 
         # - public
         public_keys_db.save(key.key_id, key_info, suppress_db_warning=False)

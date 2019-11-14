@@ -140,8 +140,8 @@ typedef enum {
 /** Signature type */
 typedef struct __attribute__((__packed__)) {
     uint8_t signer_type;       /**< #vs_key_type_e */
-    uint8_t ec_type;           /**< #vs_hsm_keypair_type_e */
-    uint8_t hash_type;         /**< #vs_hsm_hash_type_e */
+    uint8_t ec_type;           /**< #vs_secmodule_keypair_type_e */
+    uint8_t hash_type;         /**< #vs_secmodule_hash_type_e */
     uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type
                                 */
 } vs_sign_t;
@@ -149,7 +149,7 @@ typedef struct __attribute__((__packed__)) {
 /** Public key type */
 typedef struct __attribute__((__packed__)) {
     uint8_t key_type;          /**< vs_key_type_e */
-    uint8_t ec_type;           /**< vs_hsm_keypair_type_e */
+    uint8_t ec_type;           /**< vs_secmodule_keypair_type_e */
     uint16_t meta_data_sz;     /**< Meta data size */
     uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;

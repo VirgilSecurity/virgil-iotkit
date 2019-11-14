@@ -118,7 +118,7 @@ option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 #
 # Default crypto implementations
 #
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFTHSM "Enable default Virgil crypto soft HSM implementation" ON)
+option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" ON)
 
 #
 # Default cloud implementations

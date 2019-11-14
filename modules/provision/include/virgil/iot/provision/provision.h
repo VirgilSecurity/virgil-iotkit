@@ -39,7 +39,7 @@
 #ifndef VS_IOT_PROVISION_H
 #define VS_IOT_PROVISION_H
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
@@ -47,12 +47,12 @@
 /** Provision initialization
  *
  * \param[in] tl_storage_ctx Storage context. Must not be NULL.
- * \param[in] hsm HSM implementation. Must not be NULL.
+ * \param[in] secmodule SECMODULE implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm);
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule);
 
 /** Provision destruction
  *
@@ -64,7 +64,7 @@ vs_provision_deinit(void);
 /** Get slot number
  *
  * \param[in] id Storage context. Must not be NULL.
- * \param[in] hsm HSM implementation. Must not be NULL.
+ * \param[in] secmodule SECMODULE implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -81,7 +81,10 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_type, uint8_t *key, uint16_t key_sz);
+vs_provision_search_hl_pubkey(vs_key_type_e key_type,
+                              vs_secmodule_keypair_type_e ec_type,
+                              uint8_t *key,
+                              uint16_t key_sz);
 
 /** Verify high level public key
  *
