@@ -136,7 +136,7 @@ vs_hsm_secp256r1_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e ke
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
@@ -204,7 +204,7 @@ vs_hsm_curve25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e k
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
@@ -273,7 +273,7 @@ vs_hsm_ed25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keyp
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
@@ -339,7 +339,7 @@ vs_hsm_rsa_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
@@ -428,7 +428,7 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
     uint8_t pubkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_hsm->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
@@ -476,7 +476,7 @@ vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
     uint8_t prvkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _softhsm_intern();
+    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
     CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_hsm->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),

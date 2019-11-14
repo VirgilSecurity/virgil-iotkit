@@ -86,7 +86,7 @@ handler for Firmware topic");
  *  \endcode
  *
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
- * #vs_softhsm_impl() for \a hsm_impl.
+ * #vs_soft_secmodule_impl() for \a hsm_impl.
  *
  * \a fw_topic_process receives an URL that can be used to fetch a new version of Firmware.
  * See \ref firmware_usage for details.
@@ -363,7 +363,7 @@ vs_cloud_message_bin_process(void);
  * \param[in] cloud_impl Cloud implementation. Must not be NULL.
  * \param[in] message_bin_impl Message bin implementation. You can use default implementation returned by
  * #vs_aws_message_bin_impl(). Must not be NULL. \param[in] hsm Security module implementation. You can use default
- * implementation returned by #vs_softhsm_impl(). Must not be NULL.
+ * implementation returned by #vs_soft_secmodule_impl(). Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

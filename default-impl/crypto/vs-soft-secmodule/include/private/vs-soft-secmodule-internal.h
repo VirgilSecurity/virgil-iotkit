@@ -53,7 +53,7 @@
     } while (0)
 
 const vs_hsm_impl_t *
-_softhsm_intern(void);
+_soft_secmodule_intern(void);
 
 const char *
 get_slot_name(vs_iot_hsm_slot_e slot);

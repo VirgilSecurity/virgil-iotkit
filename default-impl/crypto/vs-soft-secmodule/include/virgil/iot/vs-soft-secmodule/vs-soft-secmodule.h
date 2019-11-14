@@ -61,13 +61,13 @@
  * \return HSM implementation
  */
 vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl);
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
 /** Destroy software crypto implementation
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_softhsm_deinit(void);
+vs_soft_secmodule_deinit(void);
 
 #endif // VS_SOFT_SECMODULE_H

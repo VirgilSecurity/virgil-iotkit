@@ -57,7 +57,7 @@ static vs_device_type_t device_type;                // Device type
 // Initialize fw_storage_impl, manufacture_id, device_type
 
 // Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+hsm_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
 module");
@@ -67,7 +67,7 @@ module");
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
  * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_softhsm_impl() as it is done in this example.
+ * software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
  * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
@@ -190,7 +190,7 @@ static vs_device_type_t device_type;                // Device type
 
 // Initialize manufacture_id, device_type
 
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);   // Use Software Security Module
+hsm_impl = vs_soft_secmodule_impl(&slots_storage_impl);   // Use Software Security Module
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
 module");
@@ -200,7 +200,7 @@ module");
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
  * Security module implementation \a hsm_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_softhsm_impl() as it is done in this example.
+ * software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
  * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details

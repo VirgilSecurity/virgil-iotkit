@@ -36,30 +36,30 @@
 #include <virgil/iot/macros/macros.h>
 #include "private/vs-soft-secmodule-internal.h"
 
-static vs_hsm_impl_t _softhsm;
-static bool _softhsm_ready = false;
+static vs_hsm_impl_t _soft_secmodule;
+static bool _soft_secmodule_ready = false;
 
 /******************************************************************************/
 vs_hsm_impl_t *
-vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl) {
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
     CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
 
-    if (!_softhsm_ready) {
-        _fill_slots_impl(&_softhsm, slots_storage_impl);
-        _fill_crypto_impl(&_softhsm);
-        _fill_keypair_impl(&_softhsm);
-        _fill_soft_hash_impl(&_softhsm);
+    if (!_soft_secmodule_ready) {
+        _fill_slots_impl(&_soft_secmodule, slots_storage_impl);
+        _fill_crypto_impl(&_soft_secmodule);
+        _fill_keypair_impl(&_soft_secmodule);
+        _fill_soft_hash_impl(&_soft_secmodule);
 
-        _softhsm_ready = true;
+        _soft_secmodule_ready = true;
     }
-    return &_softhsm;
+    return &_soft_secmodule;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_softhsm_deinit(void) {
-    _softhsm_ready = false;
+vs_soft_secmodule_deinit(void) {
+    _soft_secmodule_ready = false;
     _hsm_deinit();
 
     return VS_CODE_OK;
@@ -67,9 +67,9 @@ vs_softhsm_deinit(void) {
 
 /******************************************************************************/
 const vs_hsm_impl_t *
-_softhsm_intern(void) {
-    if (_softhsm_ready) {
-        return &_softhsm;
+_soft_secmodule_intern(void) {
+    if (_soft_secmodule_ready) {
+        return &_soft_secmodule;
     }
 
     return NULL;
