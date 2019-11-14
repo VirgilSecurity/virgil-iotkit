@@ -101,7 +101,7 @@ target_include_directories(vs-module-provision
 
 target_link_libraries(vs-module-provision
         PUBLIC
-        vs-module-hsm
+        vs-module-secmodule
         storage_hal
         trust_list
         PRIVATE

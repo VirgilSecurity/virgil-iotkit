@@ -36,7 +36,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 /******************************************************************************/
 static bool

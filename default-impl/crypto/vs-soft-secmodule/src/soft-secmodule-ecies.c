@@ -40,9 +40,9 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
-#include <virgil/iot/vs-softhsm/vs-softhsm.h>
-#include "private/vs-softhsm-internal.h"
+#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h>
+#include "private/vs-soft-secmodule-internal.h"
 
 #define VS_AES_256_KEY_SIZE (32)
 #define VS_AES_256_KEY_BITLEN (VS_AES_256_KEY_SIZE * 8)

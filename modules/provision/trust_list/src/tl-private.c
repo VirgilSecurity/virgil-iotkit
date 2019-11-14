@@ -39,7 +39,7 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
 

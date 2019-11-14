@@ -46,7 +46,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #include "private/firmware-private.h"
 

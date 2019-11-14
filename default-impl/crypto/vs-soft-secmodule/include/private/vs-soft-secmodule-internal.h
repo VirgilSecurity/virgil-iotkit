@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef HELPERS_VS_SOFTHSM_PRIVATE_H
-#define HELPERS_VS_SOFTHSM_PRIVATE_H
+#ifndef VS_SOFT_SECMODULE_PRIVATE_H
+#define VS_SOFT_SECMODULE_PRIVATE_H
 
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/status_code/status_code.h>
@@ -84,4 +84,4 @@ void
 _hsm_deinit(void);
 
 
-#endif // HELPERS_VS_SOFTHSM_PRIVATE_H
+#endif // VS_SOFT_SECMODULE_PRIVATE_H

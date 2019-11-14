@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file secmodule_helpers.h
+ * @file secmodule-helpers.h
  * @brief Secmodule helper functions
  *
  * This header contains different helper functions for cryptography

@@ -12,7 +12,7 @@
 #include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #include <private/test_hl_keys_data.h>
 #include <private/test_tl_data.h>

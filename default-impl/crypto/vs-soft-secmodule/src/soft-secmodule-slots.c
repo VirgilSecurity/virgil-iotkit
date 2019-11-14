@@ -32,9 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/vs-softhsm/vs-softhsm.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h>
 #include <virgil/iot/macros/macros.h>
-#include "private/vs-softhsm-internal.h"
+#include "private/vs-soft-secmodule-internal.h"
 
 static vs_storage_op_ctx_t *_storage = NULL;
 

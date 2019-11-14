@@ -3,7 +3,7 @@
 
 #include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>

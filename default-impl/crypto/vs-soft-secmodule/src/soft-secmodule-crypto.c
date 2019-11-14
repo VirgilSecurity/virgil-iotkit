@@ -36,10 +36,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "private/vs-softhsm-internal.h"
+#include "private/vs-soft-secmodule-internal.h"
 
 #include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/macros/macros.h>
