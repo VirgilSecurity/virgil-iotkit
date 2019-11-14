@@ -72,7 +72,7 @@ class UtilityManager(object):
         self.__recovery_private_keys = self.__init_storage(
             "RecoveryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
-        self.__trust_list_service_private_keys = self.__init_storage(
+        self.__trust_list_private_keys = self.__init_storage(
             "TLServicePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
 
@@ -80,7 +80,7 @@ class UtilityManager(object):
             consts.VSKeyTypeS.AUTH:              (self.__auth_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FIRMWARE:          (self.__firmware_priv_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.RECOVERY:          (self.__recovery_private_keys, self.__upper_level_pub_keys),
-            consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
             consts.VSKeyTypeS.CLOUD:             (None, self.__trust_list_pub_keys),  # private key is stored on cloud
         }
@@ -284,9 +284,9 @@ class UtilityManager(object):
             self.__generate_auth_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
-            self.__logger.info("TrustList Service Key {} generation (Initial Generation stage)".format(key_number))
-            self.__ui.print_message("\nTrustList Service Key {}:".format(key_number))
-            self.__generate_trust_list_service_key()
+            self.__logger.info("TrustList Key {} generation (Initial Generation stage)".format(key_number))
+            self.__ui.print_message("\nTrustList Key {}:".format(key_number))
+            self.__generate_trust_list_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Firmware Key {} generation (Initial Generation stage)".format(key_number))
@@ -388,8 +388,8 @@ class UtilityManager(object):
             return
         tl_key = self.key_chooser(
             consts.VSKeyTypeS.TRUSTLIST,
-            stage="TrustList generation, TrustList Service Key choosing",
-            greeting_msg="Please choose TrustList Service Key for TrustList signing: "
+            stage="TrustList generation, TrustList Key choosing",
+            greeting_msg="Please choose TrustList Key for TrustList signing: "
         )
         if not tl_key:
             return
@@ -616,10 +616,10 @@ class UtilityManager(object):
             extra_card_content=None
         )
 
-    def __generate_trust_list_service_key(self):
+    def __generate_trust_list_key(self):
         self.__generate_key(
             key_type=consts.VSKeyTypeS.TRUSTLIST,
-            name_for_log="TrustList Service",
+            name_for_log="TrustList",
             sign_by_recovery_key=True,
             add_signature_limit=False,
             start_date_required=False,
@@ -707,7 +707,7 @@ class UtilityManager(object):
         self.__logger.debug("\nUpper level Keys: \n{}".format(pt.get_string()))
         del pt
 
-        self.__ui.print_message("\nTrustList Service Keys: ")
+        self.__ui.print_message("\nTrustList Keys: ")
         pt = PrettyTable(["Key Id", "Type", "EC type", "Comment", "Start", "Expire", "Key"])
         for key in self.__trust_list_pub_keys.get_keys():
             row = self.__trust_list_pub_keys.get_value(key)
@@ -715,7 +715,7 @@ class UtilityManager(object):
                 [key, row["type"], row["ec_type"], row["comment"], row["start_date"], row["expiration_date"], row["key"]]
             )
         self.__ui.print_message(pt.get_string())
-        self.__logger.debug("\nTrustList Service Keys: \n{}".format(pt.get_string()))
+        self.__logger.debug("\nTrustList Keys: \n{}".format(pt.get_string()))
         del pt
         self.__logger.info("Printing Public Keys from db's completed")
 
@@ -742,8 +742,8 @@ class UtilityManager(object):
         for key in key_type_keys_info.keys():
             self.__upper_level_pub_keys.delete_key(key)
             if key_type == consts.VSKeyTypeS.TRUSTLIST:
-                if key in self.__trust_list_service_private_keys.get_keys():
-                    self.__trust_list_service_private_keys.delete_key(key)
+                if key in self.__trust_list_private_keys.get_keys():
+                    self.__trust_list_private_keys.delete_key(key)
             if key_type == consts.VSKeyTypeS.FACTORY:
                 if key in self.__factory_priv_keys.get_keys():
                     self.__factory_priv_keys.delete_key(key)
@@ -767,8 +767,8 @@ class UtilityManager(object):
                 self.__generate_auth_key()
         if key_type == consts.VSKeyTypeS.TRUSTLIST:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
-                self.__ui.print_message("\nGenerate TrustList Service Key {}:".format(key_number))
-                self.__generate_trust_list_service_key()
+                self.__ui.print_message("\nGenerate TrustList Key {}:".format(key_number))
+                self.__generate_trust_list_key()
         if key_type == consts.VSKeyTypeS.FIRMWARE:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Firmware Key {}:".format(key_number))
@@ -859,7 +859,7 @@ class UtilityManager(object):
                 ["---"],
                 ["Generate Auth Key ({})".format(self.__upper_level_keys_count), self.__generate_auth_by_count],
                 ["---"],
-                ["Generate TrustList Service Key ({})".format(self.__upper_level_keys_count),
+                ["Generate TrustList Key ({})".format(self.__upper_level_keys_count),
                  self.__generate_tl_key_by_count],
                 ["---"],
                 ["Generate Factory Key", self.__generate_factory_key],
@@ -940,7 +940,7 @@ class UtilityManager(object):
         self.__get_private_keys(self.__firmware_priv_keys)
         self.__get_private_keys(self.__auth_private_keys)
         self.__get_private_keys(self.__recovery_private_keys)
-        self.__get_private_keys(self.__trust_list_service_private_keys)
+        self.__get_private_keys(self.__trust_list_private_keys)
         self.__ui.print_message("Export finished")
 
     def __create_provision_pack(self):
@@ -967,7 +967,7 @@ class UtilityManager(object):
         self.__export_upper_level_pub_keys()
         auth_keys = helpers.find_files(self.__key_storage_public_keys, 'auth_')
         recovery_keys = helpers.find_files(self.__key_storage_public_keys, 'recovery_')
-        tl_keys = helpers.find_files(self.__key_storage_public_keys, 'tl_service_')
+        tl_keys = helpers.find_files(self.__key_storage_public_keys, 'tl_')
         firmware_keys = helpers.find_files(self.__key_storage_public_keys, 'firmware_')
         if any(len(keys) != self.__upper_level_keys_count for keys in [auth_keys,
                                                                        recovery_keys,
