@@ -21,9 +21,7 @@ In order to make your IoT device identifiable, verifiable and manageable, you ha
 
 Now, IoT device is ready for application development.
 
-```bash
-virgil-device-registrar [global options] command [command options] [arguments...]
-```
+
 
 ## Setting Up Device Registrar
 This section demonstrates on how to install and configure Virgil IoT Device Registrar for preferred platform.
@@ -55,7 +53,7 @@ In order to registrar IoT device, Virgil Device Registrar uses the following com
 
 | Command                                                                           | Description               |
 |-----------------------------------------------------------------------------------|---------------------------|
-| virgil-device-registrar [global options] command [command options] [arguments...] | IoT device is registrated |
+| ```virgil-device-registrar [global options] command [command options] [arguments...]``` | IoT device is registrated |
 
 ``` bash
 virgil-device-registrar --data "/root/current-credentials/card_requests_gateways.txt" --file_key "/root/current-credentials/factory-file-transfer/registrar-key/private.key" --file_key_pass qweASD123 --file_sender_key "/root/current-credentials/factory-file-transfer/factory-sender-key/public.key" --app_token "AT.K6E4PEeOdLfacsq0I9C1I34CSgitDKRB" --registration_url https://api-iot.virgilsecurity.com/things/card
