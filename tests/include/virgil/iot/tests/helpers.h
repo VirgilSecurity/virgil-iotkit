@@ -129,13 +129,13 @@
 #define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
 
 bool
-vs_test_erase_otp_provision(vs_hsm_impl_t *hsm_impl);
+vs_test_erase_otp_provision(vs_hsm_impl_t *secmodule_impl);
 bool
-vs_test_create_device_key(vs_hsm_impl_t *hsm_impl);
+vs_test_create_device_key(vs_hsm_impl_t *secmodule_impl);
 bool
-vs_test_save_hl_pubkeys(vs_hsm_impl_t *hsm_impl);
+vs_test_save_hl_pubkeys(vs_hsm_impl_t *secmodule_impl);
 bool
-vs_test_create_test_hl_keys(vs_hsm_impl_t *hsm_impl);
+vs_test_create_test_hl_keys(vs_hsm_impl_t *secmodule_impl);
 bool
-vs_test_create_test_tl(vs_hsm_impl_t *hsm_impl);
+vs_test_create_test_tl(vs_hsm_impl_t *secmodule_impl);
 #endif // VS_IOT_SDK_TESTS_HELPERS_H_

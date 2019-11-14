@@ -51,7 +51,7 @@
 static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;
 
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_hsm_impl_t *_secmodule = NULL;
 
 /******************************************************************************/
 static bool
@@ -72,9 +72,9 @@ vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     // Check input parameters
     VS_IOT_ASSERT(device_info);
-    VS_IOT_ASSERT(_hsm);
-    VS_IOT_ASSERT(_hsm->get_pubkey);
-    VS_IOT_ASSERT(_hsm->slot_load);
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->get_pubkey);
+    VS_IOT_ASSERT(_secmodule->slot_load);
 
     // Fill MAC address
     vs_snap_mac_addr(NULL, &device_info->mac);
@@ -90,8 +90,9 @@ vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     // Fill own public key
     own_pubkey = (vs_pubkey_t *)device_info->data;
-    STATUS_CHECK_RET(_hsm->get_pubkey(PRIVATE_KEY_SLOT, own_pubkey->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
-                     "Unable to get public key");
+    STATUS_CHECK_RET(
+            _secmodule->get_pubkey(PRIVATE_KEY_SLOT, own_pubkey->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
+            "Unable to get public key");
 
     own_pubkey->key_type = VS_KEY_IOT_DEVICE;
     own_pubkey->ec_type = ec_type;
@@ -102,7 +103,7 @@ vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
     buf_sz -= device_info->data_sz;
 
     // Load signature
-    STATUS_CHECK_RET(_hsm->slot_load(SIGNATURE_SLOT, (uint8_t *)sign, buf_sz, &sign_sz), "Unable to load slot");
+    STATUS_CHECK_RET(_secmodule->slot_load(SIGNATURE_SLOT, (uint8_t *)sign, buf_sz, &sign_sz), "Unable to load slot");
 
     device_info->data_sz += sign_sz;
 
@@ -115,12 +116,12 @@ vs_prvs_save_data(vs_snap_prvs_element_e element_id, const uint8_t *data, uint16
     uint16_t slot;
     vs_status_e ret_code;
 
-    VS_IOT_ASSERT(_hsm);
-    VS_IOT_ASSERT(_hsm->slot_save);
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->slot_save);
 
     STATUS_CHECK_RET(vs_provision_get_slot_num((vs_provision_element_id_e)element_id, &slot), "Unable to get slot");
 
-    return _hsm->slot_save(slot, data, data_sz);
+    return _secmodule->slot_save(slot, data, data_sz);
 }
 
 /******************************************************************************/
@@ -132,17 +133,17 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
 
     VS_IOT_ASSERT(asav_response);
     VS_IOT_ASSERT(resp_sz);
-    VS_IOT_ASSERT(_hsm);
-    VS_IOT_ASSERT(_hsm->slot_clean);
-    VS_IOT_ASSERT(_hsm->create_keypair);
-    VS_IOT_ASSERT(_hsm->get_pubkey);
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->slot_clean);
+    VS_IOT_ASSERT(_secmodule->create_keypair);
+    VS_IOT_ASSERT(_secmodule->get_pubkey);
 
-    STATUS_CHECK_RET(_hsm->slot_clean(PRIVATE_KEY_SLOT), "Unable to delete PRIVATE slot");
-    STATUS_CHECK_RET(_hsm->slot_clean(REC1_KEY_SLOT), "Unable to delete REC1_KEY slot");
-    STATUS_CHECK_RET(_hsm->slot_clean(REC2_KEY_SLOT), "Unable to delete REC2_KEY slot");
-    STATUS_CHECK_RET(_hsm->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1), "Unable to create keypair");
+    STATUS_CHECK_RET(_secmodule->slot_clean(PRIVATE_KEY_SLOT), "Unable to delete PRIVATE slot");
+    STATUS_CHECK_RET(_secmodule->slot_clean(REC1_KEY_SLOT), "Unable to delete REC1_KEY slot");
+    STATUS_CHECK_RET(_secmodule->slot_clean(REC2_KEY_SLOT), "Unable to delete REC2_KEY slot");
+    STATUS_CHECK_RET(_secmodule->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1), "Unable to create keypair");
     STATUS_CHECK_RET(
-            _hsm->get_pubkey(PRIVATE_KEY_SLOT, asav_response->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
+            _secmodule->get_pubkey(PRIVATE_KEY_SLOT, asav_response->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
             "Unable to get public key");
 
     asav_response->key_type = VS_KEY_IOT_DEVICE;
@@ -196,10 +197,10 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     VS_IOT_ASSERT(signature_sz);
     VS_IOT_ASSERT(data);
     VS_IOT_ASSERT(signature);
-    VS_IOT_ASSERT(_hsm);
-    VS_IOT_ASSERT(_hsm->hash);
-    VS_IOT_ASSERT(_hsm->ecdsa_sign);
-    VS_IOT_ASSERT(_hsm->get_pubkey);
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->hash);
+    VS_IOT_ASSERT(_secmodule->ecdsa_sign);
+    VS_IOT_ASSERT(_secmodule->get_pubkey);
 
     vs_snap_prvs_sgnp_req_t *request = (vs_snap_prvs_sgnp_req_t *)data;
     vs_sign_t *response = (vs_sign_t *)signature;
@@ -212,23 +213,23 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     uint8_t hash[hash_len];
     buf_sz -= sizeof(vs_sign_t);
 
-    STATUS_CHECK_RET(_hsm->hash(request->hash_type,
-                                (uint8_t *)&request->data,
-                                data_sz - sizeof(vs_snap_prvs_sgnp_req_t),
-                                hash,
-                                hash_len,
-                                &sign_sz),
+    STATUS_CHECK_RET(_secmodule->hash(request->hash_type,
+                                      (uint8_t *)&request->data,
+                                      data_sz - sizeof(vs_snap_prvs_sgnp_req_t),
+                                      hash,
+                                      hash_len,
+                                      &sign_sz),
                      "Unable to create hash");
 
-    STATUS_CHECK_RET(
-            _hsm->ecdsa_sign(PRIVATE_KEY_SLOT, request->hash_type, hash, response->raw_sign_pubkey, buf_sz, &sign_sz),
-            "Unable to sign");
+    STATUS_CHECK_RET(_secmodule->ecdsa_sign(
+                             PRIVATE_KEY_SLOT, request->hash_type, hash, response->raw_sign_pubkey, buf_sz, &sign_sz),
+                     "Unable to sign");
 
     buf_sz -= sign_sz;
 
-    STATUS_CHECK_RET(
-            _hsm->get_pubkey(PRIVATE_KEY_SLOT, response->raw_sign_pubkey + sign_sz, buf_sz, &pubkey_sz, &keypair_type),
-            "Unable to get public key");
+    STATUS_CHECK_RET(_secmodule->get_pubkey(
+                             PRIVATE_KEY_SLOT, response->raw_sign_pubkey + sign_sz, buf_sz, &pubkey_sz, &keypair_type),
+                     "Unable to get public key");
 
     response->signer_type = VS_KEY_IOT_DEVICE;
     response->hash_type = (uint8_t)request->hash_type;
@@ -415,14 +416,14 @@ _prepare_prvs_service() {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_prvs_server(vs_hsm_impl_t *hsm) {
+vs_snap_prvs_server(vs_hsm_impl_t *secmodule) {
 
-    CHECK_NOT_ZERO_RET(hsm, NULL);
+    CHECK_NOT_ZERO_RET(secmodule, NULL);
 
     if (!_prvs_service_ready) {
         _prepare_prvs_service();
         _prvs_service_ready = true;
-        _hsm = hsm;
+        _secmodule = secmodule;
     }
     return &_prvs_server;
 }

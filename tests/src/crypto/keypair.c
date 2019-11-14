@@ -15,15 +15,16 @@ typedef struct {
 
 /******************************************************************************/
 static bool
-_test_keypair_generate(vs_hsm_impl_t *hsm_impl, _test_case_t *test_case) {
+_test_keypair_generate(vs_hsm_impl_t *secmodule_impl, _test_case_t *test_case) {
     vs_hsm_keypair_type_e keypair;
 
     test_case->initialized = true;
 
-    STATUS_CHECK_RET_BOOL(hsm_impl->create_keypair(test_case->slot, test_case->keypair_type),
+    STATUS_CHECK_RET_BOOL(secmodule_impl->create_keypair(test_case->slot, test_case->keypair_type),
                           "vs_hsm_keypair_create call error");
     STATUS_CHECK_RET_BOOL(
-            hsm_impl->get_pubkey(test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
+            secmodule_impl->get_pubkey(
+                    test_case->slot, test_case->buf, sizeof(test_case->buf), &test_case->key_sz, &keypair),
             "vs_hsm_keypair_get_pubkey call error");
     BOOL_CHECK_RET(keypair == test_case->keypair_type, "Received key pair type error");
     BOOL_CHECK_RET(test_case->key_sz == test_case->expected_size, "Received buffer error");
@@ -71,7 +72,7 @@ _compare_outputs(_test_case_t *test_cases, size_t cases_amount) {
 
 /******************************************************************************/
 uint16_t
-test_keypair(vs_hsm_impl_t *hsm_impl) {
+test_keypair(vs_hsm_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     _test_case_t test_cases[] = {
@@ -114,7 +115,7 @@ test_keypair(vs_hsm_impl_t *hsm_impl) {
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), ", slot ");
         VS_IOT_STRCPY(buf + VS_IOT_STRLEN(buf), vs_test_hsm_slot_descr(test_case->slot));
 
-        TEST_CASE_OK(buf, _test_keypair_generate(hsm_impl, test_case));
+        TEST_CASE_OK(buf, _test_keypair_generate(secmodule_impl, test_case));
     }
 
     TEST_CASE_OK("Compare buffer outputs", _compare_outputs(test_cases, cases_amount));

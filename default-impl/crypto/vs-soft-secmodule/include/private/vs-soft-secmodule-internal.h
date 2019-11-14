@@ -66,16 +66,16 @@ vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
                           vs_hsm_keypair_type_e *keypair_type);
 
 vs_status_e
-_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *slots_storage_impl);
+_fill_slots_impl(vs_hsm_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl);
 
 vs_status_e
-_fill_crypto_impl(vs_hsm_impl_t *hsm_impl);
+_fill_crypto_impl(vs_hsm_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_keypair_impl(vs_hsm_impl_t *hsm_impl);
+_fill_keypair_impl(vs_hsm_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl);
+_fill_soft_hash_impl(vs_hsm_impl_t *secmodule_impl);
 
 void
 _hsm_deinit(void);

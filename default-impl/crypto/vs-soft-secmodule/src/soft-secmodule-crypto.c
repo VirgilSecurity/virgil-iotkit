@@ -847,26 +847,26 @@ terminate:
 
 /********************************************************************************/
 vs_status_e
-_fill_crypto_impl(vs_hsm_impl_t *hsm_impl) {
+_fill_crypto_impl(vs_hsm_impl_t *secmodule_impl) {
 
-    hsm_impl->random = vs_hsm_random;
+    secmodule_impl->random = vs_hsm_random;
 
-    hsm_impl->ecdsa_sign = vs_hsm_ecdsa_sign;
-    hsm_impl->ecdsa_verify = vs_hsm_ecdsa_verify;
+    secmodule_impl->ecdsa_sign = vs_hsm_ecdsa_sign;
+    secmodule_impl->ecdsa_verify = vs_hsm_ecdsa_verify;
 
-    hsm_impl->ecdh = vs_hsm_ecdh;
+    secmodule_impl->ecdh = vs_hsm_ecdh;
 
-    hsm_impl->aes_encrypt = vs_hsm_aes_encrypt;
-    hsm_impl->aes_decrypt = vs_hsm_aes_decrypt;
-    hsm_impl->aes_auth_decrypt = vs_hsm_aes_auth_decrypt;
+    secmodule_impl->aes_encrypt = vs_hsm_aes_encrypt;
+    secmodule_impl->aes_decrypt = vs_hsm_aes_decrypt;
+    secmodule_impl->aes_auth_decrypt = vs_hsm_aes_auth_decrypt;
 
-    hsm_impl->hash = vs_hsm_hash_create;
+    secmodule_impl->hash = vs_hsm_hash_create;
 
-    hsm_impl->hmac = vs_hsm_hmac;
+    secmodule_impl->hmac = vs_hsm_hmac;
 
-    hsm_impl->kdf = vs_hsm_kdf;
+    secmodule_impl->kdf = vs_hsm_kdf;
 
-    hsm_impl->hkdf = vs_hsm_hkdf;
+    secmodule_impl->hkdf = vs_hsm_hkdf;
 
     return VS_CODE_OK;
 }

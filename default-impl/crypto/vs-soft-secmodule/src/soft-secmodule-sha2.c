@@ -211,12 +211,12 @@ vs_hsm_sw_sha256_final(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest) {
 /******************************************************************************/
 
 vs_status_e
-_fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl) {
-    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+_fill_soft_hash_impl(vs_hsm_impl_t *secmodule_impl) {
+    CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    hsm_impl->hash_init = vs_hsm_sw_sha256_init;
-    hsm_impl->hash_update = vs_hsm_sw_sha256_update;
-    hsm_impl->hash_finish = vs_hsm_sw_sha256_final;
+    secmodule_impl->hash_init = vs_hsm_sw_sha256_init;
+    secmodule_impl->hash_update = vs_hsm_sw_sha256_update;
+    secmodule_impl->hash_finish = vs_hsm_sw_sha256_final;
 
     return VS_CODE_OK;
 }

@@ -53,7 +53,7 @@ static vs_tl_context_t _tl_tmp_ctx;
 
 static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
 
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_hsm_impl_t *_secmodule = NULL;
 
 /*************************************************************************/
 static void
@@ -164,10 +164,10 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     uint8_t sign_rules = 0;
     vs_tl_header_t host_header;
 
-    VS_IOT_ASSERT(_hsm);
-    VS_IOT_ASSERT(_hsm->hash_init);
-    VS_IOT_ASSERT(_hsm->hash_update);
-    VS_IOT_ASSERT(_hsm->hash_finish);
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->hash_init);
+    VS_IOT_ASSERT(_secmodule->hash_update);
+    VS_IOT_ASSERT(_secmodule->hash_finish);
 
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
@@ -187,8 +187,8 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         return false;
     }
 
-    _hsm->hash_init(&ctx);
-    _hsm->hash_update(&ctx, (uint8_t *)&tl_ctx->header, sizeof(vs_tl_header_t));
+    _secmodule->hash_init(&ctx);
+    _secmodule->hash_update(&ctx, (uint8_t *)&tl_ctx->header, sizeof(vs_tl_header_t));
 
     for (i = 0; i < host_header.pub_keys_count; ++i) {
 
@@ -196,7 +196,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
             tl_ctx->ready = false;
             return false;
         }
-        _hsm->hash_update(&ctx, buf, res_sz);
+        _secmodule->hash_update(&ctx, buf, res_sz);
     }
 
     if (VS_CODE_OK != vs_tl_footer_load(tl_ctx->storage.storage_type, buf, sizeof(buf), &res_sz)) {
@@ -205,8 +205,8 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     }
 
     footer = (vs_tl_footer_t *)buf;
-    _hsm->hash_update(&ctx, (uint8_t *)&footer->tl_type, sizeof(footer->tl_type));
-    _hsm->hash_finish(&ctx, hash);
+    _secmodule->hash_update(&ctx, (uint8_t *)&footer->tl_type, sizeof(footer->tl_type));
+    _secmodule->hash_finish(&ctx, hash);
 
     // First signature
     sign = (vs_sign_t *)footer->signatures;
@@ -229,13 +229,13 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
                        "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            BOOL_CHECK_RET(VS_CODE_OK == _hsm->ecdsa_verify(sign->ec_type,
-                                                            pubkey,
-                                                            (uint16_t)key_len,
-                                                            sign->hash_type,
-                                                            hash,
-                                                            sign->raw_sign_pubkey,
-                                                            (uint16_t)sign_len),
+            BOOL_CHECK_RET(VS_CODE_OK == _secmodule->ecdsa_verify(sign->ec_type,
+                                                                  pubkey,
+                                                                  (uint16_t)key_len,
+                                                                  sign->hash_type,
+                                                                  hash,
+                                                                  sign->raw_sign_pubkey,
+                                                                  (uint16_t)sign_len),
                            "Signature is wrong");
             sign_rules++;
         }
@@ -335,12 +335,12 @@ vs_tl_verify_storage(size_t storage_type) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *hsm) {
+vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_hsm_impl_t *secmodule) {
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    _hsm = hsm;
+    _secmodule = secmodule;
 
     vs_update_trust_list_init(op_ctx);
 

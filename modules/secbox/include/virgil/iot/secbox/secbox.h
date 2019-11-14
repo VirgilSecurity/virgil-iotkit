@@ -54,12 +54,12 @@ typedef enum {
 /** Initialize Security Box
  *
  * \param[in] ctx Storage context. Must not be NULL.
- * \param[in] hsm HSM implementation. Must not be NULL.
+ * \param[in] secmodule HSM implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm);
+vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *secmodule);
 
 /** Destroy Security Box
  *

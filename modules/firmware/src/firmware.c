@@ -55,7 +55,7 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 #define DESCRIPTORS_FILENAME "firmware_descriptors"
 
 static vs_storage_op_ctx_t *_storage_ctx = NULL;
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_hsm_impl_t *_secmodule = NULL;
 
 /*************************************************************************/
 static void
@@ -145,15 +145,15 @@ _write_data(vs_storage_element_id_t id, bool need_sync, uint32_t offset, const v
 /******************************************************************************/
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
-                 vs_hsm_impl_t *hsm,
+                 vs_hsm_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
-    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _storage_ctx = storage_ctx;
-    _hsm = hsm;
+    _secmodule = secmodule;
 
     return vs_update_firmware_init(storage_ctx, manufacture, device_type);
 }
@@ -519,7 +519,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     // TODO: Need to support all hash types
     uint8_t hash[VS_HASH_SHA256_LEN];
 
-    VS_IOT_ASSERT(_hsm);
+    VS_IOT_ASSERT(_secmodule);
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -542,7 +542,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     uint32_t offset = 0;
     size_t read_sz;
 
-    _hsm->hash_init(&hash_ctx);
+    _secmodule->hash_init(&hash_ctx);
 
     // Update hash by firmware
     while (offset < descriptor->firmware_length) {
@@ -553,7 +553,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
             return VS_CODE_ERR_FILE_READ;
         }
 
-        _hsm->hash_update(&hash_ctx, buf, required_chunk_size);
+        _secmodule->hash_update(&hash_ctx, buf, required_chunk_size);
         offset += required_chunk_size;
     }
 
@@ -566,7 +566,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     // Update hash by fill
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
-        _hsm->hash_update(&hash_ctx, buf, sz);
+        _secmodule->hash_update(&hash_ctx, buf, sz);
         fill_sz -= sz;
     }
 
@@ -575,8 +575,8 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
         return VS_CODE_ERR_FILE_READ;
     }
 
-    _hsm->hash_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
-    _hsm->hash_finish(&hash_ctx, hash);
+    _secmodule->hash_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
+    _secmodule->hash_finish(&hash_ctx, hash);
 
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
@@ -598,13 +598,13 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
                          "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            STATUS_CHECK_RET(_hsm->ecdsa_verify(sign->ec_type,
-                                                pubkey,
-                                                (uint16_t)key_len,
-                                                sign->hash_type,
-                                                hash,
-                                                sign->raw_sign_pubkey,
-                                                (uint16_t)sign_len),
+            STATUS_CHECK_RET(_secmodule->ecdsa_verify(sign->ec_type,
+                                                      pubkey,
+                                                      (uint16_t)key_len,
+                                                      sign->hash_type,
+                                                      hash,
+                                                      sign->raw_sign_pubkey,
+                                                      (uint16_t)sign_len),
                              "Signature is wrong");
             sign_rules++;
         }

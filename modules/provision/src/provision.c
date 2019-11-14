@@ -52,7 +52,7 @@ static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLO
 
 static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
 
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_hsm_impl_t *_secmodule = NULL;
 
 static char *_base_url = NULL;
 
@@ -151,12 +151,12 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type, vs_hsm_keypair_type_e ec_t
     vs_status_e ret_code;
     uint8_t *pubkey;
 
-    VS_IOT_ASSERT(_hsm);
+    VS_IOT_ASSERT(_secmodule);
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
         STATUS_CHECK_RET(_get_pubkey_slot_num(key_type, i, &slot), "Unable to get public key from slot");
-        STATUS_CHECK_RET(_hsm->slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
+        STATUS_CHECK_RET(_secmodule->slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
 
         ref_key_sz = vs_hsm_get_pubkey_len(ref_key->pubkey.ec_type);
 
@@ -187,7 +187,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     vs_sign_t *sign;
     vs_status_e ret_code;
 
-    VS_IOT_ASSERT(_hsm);
+    VS_IOT_ASSERT(_secmodule);
 
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
@@ -227,7 +227,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     uint8_t hash[hash_size];
 
-    STATUS_CHECK_RET(_hsm->hash(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
+    STATUS_CHECK_RET(_secmodule->hash(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
                      "Error hash create");
 
     // Signer raw key pointer
@@ -236,21 +236,21 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
                      "Signer key is not present");
 
-    STATUS_CHECK_RET(
-            _hsm->ecdsa_verify(sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
-            "Signature is wrong");
+    STATUS_CHECK_RET(_secmodule->ecdsa_verify(
+                             sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
+                     "Signature is wrong");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *hsm) {
-    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    _hsm = hsm;
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_hsm_impl_t *secmodule) {
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    _secmodule = secmodule;
 
     // TrustList module
-    return vs_tl_init(tl_storage_ctx, hsm);
+    return vs_tl_init(tl_storage_ctx, secmodule);
 }
 
 /******************************************************************************/

@@ -43,11 +43,11 @@
  *
  * \code
 
-vs_hsm_impl_t *hsm_impl;                 // Security Module callbacks
+vs_hsm_impl_t *secmodule_impl;                 // Security Module callbacks
 vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
 
 // Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
-hsm_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 // ... Library usage
 

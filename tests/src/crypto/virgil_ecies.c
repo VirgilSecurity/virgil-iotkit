@@ -44,7 +44,7 @@ const char *test_data = "this string will be encrypted";
 
 /**********************************************************/
 static bool
-_ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
+_ecies_crypt_case(vs_hsm_impl_t *secmodule_impl,
                   const uint8_t *recipient_id,
                   size_t recipient_id_sz,
                   const uint8_t *data,
@@ -56,7 +56,7 @@ _ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
     uint8_t decrypted_data[128];
     size_t decrypted_data_sz;
 
-    BOOL_CHECK_RET(VS_CODE_OK != vs_secmodule_ecies_encrypt(hsm_impl,
+    BOOL_CHECK_RET(VS_CODE_OK != vs_secmodule_ecies_encrypt(secmodule_impl,
                                                             recipient_id,
                                                             recipient_id_sz,
                                                             (uint8_t *)data,
@@ -66,7 +66,7 @@ _ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
                                                             &encrypted_data_sz),
                    "Success call with small output buffer");
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_secmodule_ecies_encrypt(hsm_impl,
+    BOOL_CHECK_RET(VS_CODE_OK == vs_secmodule_ecies_encrypt(secmodule_impl,
                                                             recipient_id,
                                                             recipient_id_sz,
                                                             (uint8_t *)data,
@@ -76,7 +76,7 @@ _ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
                                                             &encrypted_data_sz),
                    "Error encrypt data");
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_secmodule_ecies_decrypt(hsm_impl,
+    BOOL_CHECK_RET(VS_CODE_OK == vs_secmodule_ecies_decrypt(secmodule_impl,
                                                             recipient_id,
                                                             recipient_id_sz,
                                                             (uint8_t *)encrypted_data,
@@ -91,13 +91,14 @@ _ecies_crypt_case(vs_hsm_impl_t *hsm_impl,
 
 /**********************************************************/
 uint16_t
-vs_virgil_ecies_test(vs_hsm_impl_t *hsm_impl) {
+vs_virgil_ecies_test(vs_hsm_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     START_TEST("Virgil ecies encryption");
 
-    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision(hsm_impl) && vs_test_create_device_key(hsm_impl));
+    TEST_CASE_OK("Prepare keystorage",
+                 vs_test_erase_otp_provision(secmodule_impl) && vs_test_create_device_key(secmodule_impl));
     TEST_CASE_OK("Encrypt/decrypt data",
-                 _ecies_crypt_case(hsm_impl,
+                 _ecies_crypt_case(secmodule_impl,
                                    (uint8_t *)test_recipient_id,
                                    VS_IOT_STRLEN(test_recipient_id),
                                    (uint8_t *)test_data,

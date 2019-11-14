@@ -136,8 +136,8 @@ vs_hsm_secp256r1_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e ke
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
             "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
@@ -176,7 +176,7 @@ vs_hsm_secp256r1_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e ke
 
     LOG_PUBKEY(buf);
 
-    STATUS_CHECK(_hsm->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
+    STATUS_CHECK(_secmodule->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
                  "Unable to save keypair buffer to the slot %s",
                  get_slot_name(slot));
 
@@ -204,8 +204,8 @@ vs_hsm_curve25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e k
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
             "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
@@ -245,7 +245,7 @@ vs_hsm_curve25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e k
 
     LOG_PUBKEY(buf);
 
-    STATUS_CHECK(_hsm->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
+    STATUS_CHECK(_secmodule->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
                  "Unable to save keypair buffer to the slot %s",
                  get_slot_name(slot));
 
@@ -273,8 +273,8 @@ vs_hsm_ed25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keyp
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
             "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
@@ -311,7 +311,7 @@ vs_hsm_ed25519_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keyp
 
     LOG_PUBKEY(buf);
 
-    STATUS_CHECK(_hsm->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
+    STATUS_CHECK(_secmodule->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
                  "Unable to save keypair buffer to the slot %s",
                  get_slot_name(slot));
 
@@ -339,8 +339,8 @@ vs_hsm_rsa_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_
     uint8_t key_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG(
             "Generate keypair %s and save it to slot %s", vs_hsm_keypair_type_descr(keypair_type), get_slot_name(slot));
@@ -376,7 +376,7 @@ vs_hsm_rsa_keypair_create(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_
 
     LOG_PUBKEY(buf);
 
-    STATUS_CHECK_RET(_hsm->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
+    STATUS_CHECK_RET(_secmodule->slot_save(slot, buf, vsc_buffer_len(&keypair_buf)),
                      "Unable to save keypair buffer to the slot %s",
                      get_slot_name(slot));
 
@@ -428,10 +428,10 @@ vs_hsm_keypair_get_pubkey(vs_iot_hsm_slot_e slot,
     uint8_t pubkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(_hsm->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
+    STATUS_CHECK_RET(_secmodule->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
                      "Unable to load data from slot %d (%s)",
                      slot,
                      get_slot_name(slot));
@@ -476,10 +476,10 @@ vs_hsm_keypair_get_prvkey(vs_iot_hsm_slot_e slot,
     uint8_t prvkey_sz;
     vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
 
-    const vs_hsm_impl_t *_hsm = _soft_secmodule_intern();
-    CHECK_NOT_ZERO_RET(_hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    const vs_hsm_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(_hsm->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
+    STATUS_CHECK_RET(_secmodule->slot_load(slot, keypair_buf, keypair_buf_sz, &keypair_buf_sz),
                      "Unable to load data from slot %d (%s)",
                      slot,
                      get_slot_name(slot));
@@ -514,11 +514,11 @@ terminate:
 
 /********************************************************************************/
 vs_status_e
-_fill_keypair_impl(vs_hsm_impl_t *hsm_impl) {
-    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+_fill_keypair_impl(vs_hsm_impl_t *secmodule_impl) {
+    CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    hsm_impl->create_keypair = vs_hsm_keypair_create;
-    hsm_impl->get_pubkey = vs_hsm_keypair_get_pubkey;
+    secmodule_impl->create_keypair = vs_hsm_keypair_create;
+    secmodule_impl->get_pubkey = vs_hsm_keypair_get_pubkey;
 
     return VS_CODE_OK;
 }

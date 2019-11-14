@@ -86,12 +86,13 @@ _test_case_secbox_del(const char *filename) {
 
 /**********************************************************/
 uint16_t
-vs_secbox_test(vs_hsm_impl_t *hsm_impl) {
+vs_secbox_test(vs_hsm_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     char *_big_test_data = NULL;
     START_TEST("Secbox tests");
 
-    TEST_CASE_OK("Prepare keystorage", vs_test_erase_otp_provision(hsm_impl) && vs_test_create_device_key(hsm_impl));
+    TEST_CASE_OK("Prepare keystorage",
+                 vs_test_erase_otp_provision(secmodule_impl) && vs_test_create_device_key(secmodule_impl));
 
     TEST_CASE_OK("Read/write small piece of data. Signed only",
                  _test_case_secbox_save_load(

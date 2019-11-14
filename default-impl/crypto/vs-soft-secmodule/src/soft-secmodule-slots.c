@@ -135,17 +135,17 @@ _hsm_deinit(void) {
 
 /******************************************************************************/
 vs_status_e
-_fill_slots_impl(vs_hsm_impl_t *hsm_impl, vs_storage_op_ctx_t *slots_storage_impl) {
-    CHECK_NOT_ZERO_RET(hsm_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+_fill_slots_impl(vs_hsm_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl) {
+    CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(slots_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _storage = slots_storage_impl;
 
-    hsm_impl->deinit = _hsm_deinit;
+    secmodule_impl->deinit = _hsm_deinit;
 
-    hsm_impl->slot_load = vs_hsm_slot_load;
-    hsm_impl->slot_save = vs_hsm_slot_save;
-    hsm_impl->slot_clean = vs_hsm_slot_delete;
+    secmodule_impl->slot_load = vs_hsm_slot_load;
+    secmodule_impl->slot_save = vs_hsm_slot_save;
+    secmodule_impl->slot_clean = vs_hsm_slot_delete;
 
     return VS_CODE_OK;
 }

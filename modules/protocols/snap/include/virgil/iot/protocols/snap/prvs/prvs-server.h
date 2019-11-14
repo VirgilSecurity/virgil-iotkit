@@ -59,7 +59,7 @@ extern "C" {
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 const vs_snap_service_t *
-vs_snap_prvs_server(vs_hsm_impl_t *hsm);
+vs_snap_prvs_server(vs_hsm_impl_t *secmodule);
 
 #ifdef __cplusplus
 }
