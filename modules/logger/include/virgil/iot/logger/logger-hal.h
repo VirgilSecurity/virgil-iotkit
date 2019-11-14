@@ -43,6 +43,7 @@
  * The goal of this function is to output part of string to the output. Its implementation can be as listed below :
  *
  * \code
+
 #include <stdio.h>
 bool
 vs_logger_output_hal(const char *buffer) {
@@ -52,12 +53,14 @@ vs_logger_output_hal(const char *buffer) {
 
     return printf("%s", buffer) != 0;
 }
+
  * \endcode
  *
  * If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
  * outputs current time. Its implementation can be as listed below :
  *
  * \code
+
 #include <stdio.h>
 #include <time.h>
 
@@ -72,6 +75,7 @@ vs_logger_current_time_hal(void) {
     return false;
 }
 #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+
  * \endcode
  */
 
