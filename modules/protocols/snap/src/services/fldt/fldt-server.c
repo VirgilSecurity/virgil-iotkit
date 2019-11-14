@@ -60,7 +60,7 @@ typedef struct {
 
 static uint32_t _file_type_mapping_array_size = 0;
 static vs_fldt_server_file_type_mapping_t _server_file_type_mapping[SERVER_FILE_TYPE_ARRAY_SIZE];
-static vs_fldt_server_add_filetype _add_filetype_callback = NULL;
+static vs_fldt_server_add_filetype_cb _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
 static vs_status_e
@@ -571,7 +571,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
 
 /******************************************************************/
 static void
-_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
+_init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype) {
 
     CHECK_NOT_ZERO(add_filetype);
 
@@ -664,7 +664,7 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype add_filetype) {
+vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype) {
 
     VS_IOT_ASSERT(SERVER_FILE_TYPE_ARRAY_SIZE);
     _fldt_server.user_data = 0;
