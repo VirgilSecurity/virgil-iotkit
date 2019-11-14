@@ -34,7 +34,7 @@
 
 /**
  * @file vs-soft-secmodule.h
- * @brief Software crypto implementation
+ * @brief Software Security Module implementation
  *
  * This library can be used when no Hardware Security Module support provided.
  *

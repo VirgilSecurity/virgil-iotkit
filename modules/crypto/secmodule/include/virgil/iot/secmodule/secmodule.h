@@ -455,7 +455,7 @@ typedef void (*vs_secmodule_deinit_t)(void);
  */
 typedef struct {
 
-    vs_secmodule_deinit_t deinit; /**< SECMODULE destruction callback */
+    vs_secmodule_deinit_t deinit; /**< Security module destruction callback */
 
     // Slot operations
     vs_secmodule_slot_save_t slot_save;    /**< Slot save information callback */

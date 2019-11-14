@@ -58,7 +58,7 @@
 
 const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
 const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
-vs_secmodule_impl_t *secmodule_impl;                                    // Security module implementation
+vs_secmodule_impl_t *secmodule_impl;                        // Security module implementation
 vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
 vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
 vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
@@ -362,9 +362,10 @@ vs_cloud_message_bin_process(void);
 /** Initialize message bin
  *
  * \param[in] cloud_impl Cloud implementation. Must not be NULL.
- * \param[in] message_bin_impl Message bin implementation. You can use default implementation returned by
- * #vs_aws_message_bin_impl(). Must not be NULL. \param[in] secmodule Security module implementation. You can use
- * default implementation returned by #vs_soft_secmodule_impl(). Must not be NULL.
+ * \param[in] message_bin_impl Message bin implementation. You can use default implementation
+ * returned by #vs_aws_message_bin_impl(). Must not be NULL.
+ * \param[in] secmodule Security module implementation. You can use default implementation
+ * returned by #vs_soft_secmodule_impl(). Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

@@ -35,7 +35,7 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 #
-#   SECMODULE module
+#   Security module
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secmodule)
 

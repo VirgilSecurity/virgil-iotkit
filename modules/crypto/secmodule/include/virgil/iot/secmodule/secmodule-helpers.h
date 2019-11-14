@@ -34,7 +34,7 @@
 
 /**
  * @file secmodule-helpers.h
- * @brief Secmodule helper functions
+ * @brief Security module helper functions
  *
  * This header contains different helper functions for cryptography
  */
