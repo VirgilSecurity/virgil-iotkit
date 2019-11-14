@@ -1,6 +1,11 @@
 # Virgil Device Initializer
 The Virgil Device Initializer is a CLI utility used to make IoT devices provisioning and create their digital cards
 
+## Content
+- [Overview](#Overview)
+- [Setting up Virgil Device Initializer](#setting-up-virgil-device-initializer)
+- [Command Reference](#command-reference)
+
 ## Overview
 In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud.
 
