@@ -35,7 +35,7 @@
 #ifndef HELPERS_VS_SOFTHSM_PRIVATE_H
 #define HELPERS_VS_SOFTHSM_PRIVATE_H
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 

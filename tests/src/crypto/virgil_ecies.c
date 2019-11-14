@@ -37,7 +37,7 @@
 
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 
 const char *test_recipient_id = "test-recipient-id";
 const char *test_data = "this string will be encrypted";

@@ -42,7 +42,7 @@
 #ifndef VS_HSM_HELPERS_H_
 #define VS_HSM_HELPERS_H_
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 
 #define VS_PUBKEY_SECP192_LEN (49)
 #define VS_PUBKEY_SECP224_LEN (57)

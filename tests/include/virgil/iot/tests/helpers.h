@@ -39,7 +39,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 
 #define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_10
 #define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_11

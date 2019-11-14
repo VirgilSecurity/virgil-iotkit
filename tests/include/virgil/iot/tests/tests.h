@@ -36,7 +36,7 @@
 #define VS_IOT_SDK_TESTS_H
 
 #include <stdbool.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 
 #define TEST_MANUFACTURE_ID "VRGL"
 #define TEST_DEVICE_TYPE "TEST"

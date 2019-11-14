@@ -64,7 +64,7 @@
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+#include <virgil/iot/secmodule/devices/hsm_iotelic.h>
 
 /** Keypair types */
 typedef enum {

@@ -49,7 +49,7 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/update/update.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 
 /** Firmware descriptor */
 typedef struct __attribute__((__packed__)) {

@@ -1,7 +1,7 @@
 #ifndef TL_OPERATIONS_H
 #define TL_OPERATIONS_H
 
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>

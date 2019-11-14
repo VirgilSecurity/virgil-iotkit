@@ -44,8 +44,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <virgil/iot/hsm/hsm_helpers.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/hsm_helpers.h>
+#include <virgil/iot/secmodule/hsm.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
 static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0};

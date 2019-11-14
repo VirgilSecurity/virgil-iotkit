@@ -35,8 +35,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib-config.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/hsm_helpers.h>
 #include <virgil/iot/logger/logger.h>
 
 /******************************************************************************/

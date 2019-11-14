@@ -37,7 +37,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #
 #   HSM module
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/hsm)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secmodule)
 
 #
 #   Converters

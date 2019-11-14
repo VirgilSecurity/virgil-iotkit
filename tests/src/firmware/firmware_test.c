@@ -41,7 +41,7 @@
 #include <virgil/iot/macros/macros.h>
 
 #include <virgil/iot/firmware/firmware.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/hsm_helpers.h>
 #include <virgil/iot/provision/provision.h>
 
 #define VS_TEST_FIRMWARE_DATA "test firmware data for verifying update library"

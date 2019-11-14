@@ -45,8 +45,8 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/hsm_helpers.h>
 
 #include "private/firmware-private.h"
 

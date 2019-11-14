@@ -38,8 +38,8 @@
 
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/hsm.h>
+#include <virgil/iot/secmodule/hsm_helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
 
