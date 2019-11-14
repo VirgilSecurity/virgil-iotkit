@@ -11,13 +11,13 @@ Virgil Firmware Signer is a CLI that allows you to sign a firmware using private
 ### Overview
 Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth Private Key and Firmware Private Key generated in the Virgil Trust Provisioner in order to provide firmware integrity before distributing it.
 
-## Setting up Virgil Firmware Signer
+## Setting up Firmware Signer
 This section demonstrates on how to install and configure Virgil Firmware Signer for preferred platform.
 
-### Install Virgil Firmware Signer
+### Install Firmware Signer
 This section provides instructions for installing Virgil Firmware Signer.
 
-### LinuxOS
+#### LinuxOS
 Virgil Firmware Signer is distributed as a package.
 
 In order to download and install the Virgil Firmware Signer on Linux, use the YUM package manager and the following command:
@@ -29,7 +29,7 @@ yum -y install virgil-iot-sdk-tools
 ### Configure Virgil Firmware Signer
 After the Virgil Firmware Signer is installed, you need to set up the configuration file (```conf.json```).
 
-### Config File Structure
+#### Config File Structure
 By default, ```conf.json``` file is placed in root folder of Virgil Firmware Signer repository. The Virgil Firmware Signer configuration file has the following format:
 
 ```bash
@@ -46,7 +46,7 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
   }
 ]
 ```
-### Configurable Variables
+#### Configurable Variables
 
 | Variable | Description                                      |
 |----------|--------------------------------------------------|
@@ -128,8 +128,6 @@ virgil-firmware-signer --input “./keys/fw-VRGL-Cf01" --config “./conf.json�
 
 ## Firmware Structure
 This section contains information about the structure of signed firmware.
-
-### Firmware Structure Overview
 
 The structure below contains information about signed firmware structure of the ```_Update.bin file```.
 
