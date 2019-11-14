@@ -437,47 +437,6 @@ typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, cons
  */
 typedef vs_status_e (*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
 
-// TODO : vs_hsm_virgil_decrypt_sha384_aes256_t.cryptogram must be const ???
-/** Callback for AES-256 based on SHA-384 decryption
- *
- * \param[in] recipient_id Recipient ID. Cannot be NULL.
- * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
- * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
- * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
- * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
- * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
- * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-typedef vs_status_e (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                                             size_t recipient_id_sz,
-                                                             uint8_t *cryptogram,
-                                                             size_t cryptogram_sz,
-                                                             uint8_t *decrypted_data,
-                                                             size_t buf_sz,
-                                                             size_t *decrypted_data_sz);
-
-/** Callback for AES-256 based on SHA-384 encryption
- *
- * \param[in] recipient_id Recipient ID. Cannot be NULL.
- * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
- * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
- * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
- * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
- * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
- * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                                             size_t recipient_id_sz,
-                                                             uint8_t *data,
-                                                             size_t data_sz,
-                                                             uint8_t *cryptogram,
-                                                             size_t buf_sz,
-                                                             size_t *cryptogram_sz);
-
 /** Callback for HSM destruction */
 typedef void (*vs_hsm_deinit_t)(void);
 
@@ -531,9 +490,52 @@ typedef struct {
     // HKDF
     vs_hsm_hkdf_t hkdf; /**< HKDF calculate callback */
 
-    // ECIES
-    vs_hsm_virgil_encrypt_sha384_aes256_t ecies_encrypt; /**< AES-256 with SHA-384 usage encrypt callback */
-    vs_hsm_virgil_decrypt_sha384_aes256_t ecies_decrypt; /**< AES-256 with SHA-384 usage decrypt callback */
 } vs_hsm_impl_t;
+
+/** Ecies decryption for AES-256 based on SHA-384
+ *
+ * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
+ * \param[in] recipient_id Recipient ID. Cannot be NULL.
+ * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
+ * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
+ * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
+ * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
+ * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
+ * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_secmodule_ecies_decrypt(const vs_hsm_impl_t *secmodule_impl,
+                           const uint8_t *recipient_id,
+                           size_t recipient_id_sz,
+                           const uint8_t *cryptogram,
+                           size_t cryptogram_sz,
+                           uint8_t *decrypted_data,
+                           size_t buf_sz,
+                           size_t *decrypted_data_sz);
+
+/** Ecies encryption for AES-256 based on SHA-384
+ *
+ * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
+ * \param[in] recipient_id Recipient ID. Cannot be NULL.
+ * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
+ * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
+ * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
+ * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
+ * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
+ * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_secmodule_ecies_encrypt(const vs_hsm_impl_t *secmodule_impl,
+                           const uint8_t *recipient_id,
+                           size_t recipient_id_sz,
+                           const uint8_t *data,
+                           size_t data_sz,
+                           uint8_t *cryptogram,
+                           size_t buf_sz,
+                           size_t *cryptogram_sz);
 
 #endif // VS_SECMODULE_INTERFACE_API_H

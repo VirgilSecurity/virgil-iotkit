@@ -174,13 +174,14 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     /*----Decrypt credentials----*/
     size_t decrypted_data_sz;
 
-    CHECK(VS_CODE_OK == _hsm->ecies_decrypt(NULL,
-                                            0,
-                                            (uint8_t *)crypto_answer_b64,
-                                            (size_t)crypto_answer_b64_decoded_len,
-                                            (uint8_t *)out_answer,
-                                            buf_size,
-                                            &decrypted_data_sz) &&
+    CHECK(VS_CODE_OK == vs_secmodule_ecies_decrypt(_hsm,
+                                                   NULL,
+                                                   0,
+                                                   (uint8_t *)crypto_answer_b64,
+                                                   (size_t)crypto_answer_b64_decoded_len,
+                                                   (uint8_t *)out_answer,
+                                                   buf_size,
+                                                   &decrypted_data_sz) &&
                   decrypted_data_sz <= UINT16_MAX,
           "Can't decrypt the cloud answer");
 
@@ -288,7 +289,6 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
               const vs_cloud_message_bin_impl_t *message_bin_impl,
               vs_hsm_impl_t *hsm) {
     CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(hsm->ecies_decrypt, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(cloud_impl->http_request, VS_CODE_ERR_NULLPTR_ARGUMENT);
 

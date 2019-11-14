@@ -75,9 +75,6 @@ vs_status_e
 _fill_keypair_impl(vs_hsm_impl_t *hsm_impl);
 
 vs_status_e
-_fill_ecies_impl(vs_hsm_impl_t *hsm_impl);
-
-vs_status_e
 _fill_soft_hash_impl(vs_hsm_impl_t *hsm_impl);
 
 void

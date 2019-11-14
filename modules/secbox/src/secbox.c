@@ -109,13 +109,14 @@ vs_secbox_file_size(vs_storage_element_id_t id) {
         STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz),
                      "Can't load data from file");
 
-        STATUS_CHECK(_hsm->ecies_decrypt(id,
-                                         sizeof(vs_storage_element_id_t),
-                                         (uint8_t *)data_load,
-                                         data_load_sz,
-                                         data_load,
-                                         data_load_sz,
-                                         &data_load_sz),
+        STATUS_CHECK(vs_secmodule_ecies_decrypt(_hsm,
+                                                id,
+                                                sizeof(vs_storage_element_id_t),
+                                                (uint8_t *)data_load,
+                                                data_load_sz,
+                                                data_load,
+                                                data_load_sz,
+                                                &data_load_sz),
                      "Cannot decrypt");
 
         file_sz = data_load_sz;
@@ -172,13 +173,14 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
             return VS_CODE_ERR_NO_MEMORY;
         }
 
-        STATUS_CHECK(_hsm->ecies_encrypt(id,
-                                         sizeof(vs_storage_element_id_t),
-                                         (uint8_t *)data,
-                                         data_sz,
-                                         data_to_save,
-                                         data_sz + 512,
-                                         &data_to_save_sz),
+        STATUS_CHECK(vs_secmodule_ecies_encrypt(_hsm,
+                                                id,
+                                                sizeof(vs_storage_element_id_t),
+                                                (uint8_t *)data,
+                                                data_sz,
+                                                data_to_save,
+                                                data_sz + 512,
+                                                &data_to_save_sz),
                      "Cannot encrypt SHA384 AES256");
         break;
 
@@ -269,13 +271,14 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz) {
         STATUS_CHECK(_storage_ctx->impl_func.load(_storage_ctx->impl_data, f, 1, data_load, data_load_sz),
                      "Can't load data from file");
         STATUS_CHECK(_secbox_verify_signature(f, type, data_load, data_load_sz), "Can't verify signature");
-        STATUS_CHECK(_hsm->ecies_decrypt(id,
-                                         sizeof(vs_storage_element_id_t),
-                                         (uint8_t *)data_load,
-                                         data_load_sz,
-                                         data,
-                                         data_sz,
-                                         &data_load_sz),
+        STATUS_CHECK(vs_secmodule_ecies_decrypt(_hsm,
+                                                id,
+                                                sizeof(vs_storage_element_id_t),
+                                                (uint8_t *)data_load,
+                                                data_load_sz,
+                                                data,
+                                                data_sz,
+                                                &data_load_sz),
                      "Can't descrypt DHA384 AES256");
 
         CHECK(data_sz == data_load_sz, "Can't read requested data quantity");

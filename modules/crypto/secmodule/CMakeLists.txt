@@ -48,6 +48,7 @@ target_sources(vs-module-secmodule
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/secmodule-helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/asn1-cryptogram.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secmodule-ecies.c
         )
 #
 #   Set additional compiler flags

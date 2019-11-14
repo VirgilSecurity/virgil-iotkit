@@ -53,7 +53,6 @@ target_sources(vs-default-soft-secmodule
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/vs-soft-secmodule.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-slots.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-ecies.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-sha2.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-crypto.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-keypair.c

@@ -49,7 +49,6 @@ vs_softhsm_impl(vs_storage_op_ctx_t *slots_storage_impl) {
         _fill_slots_impl(&_softhsm, slots_storage_impl);
         _fill_crypto_impl(&_softhsm);
         _fill_keypair_impl(&_softhsm);
-        _fill_ecies_impl(&_softhsm);
         _fill_soft_hash_impl(&_softhsm);
 
         _softhsm_ready = true;
