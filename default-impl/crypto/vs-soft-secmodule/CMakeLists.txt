@@ -36,6 +36,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(vs-default-soft-secmodule VERSION 0.1.0 LANGUAGES C)
 
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[vs-default-soft-secmodule] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+endif()
+
 add_library(vs-default-soft-secmodule)
 
 target_sources(vs-default-soft-secmodule
@@ -59,11 +63,11 @@ target_sources(vs-default-soft-secmodule
 #	Path to crypto lib
 #
 if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips64")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips64")
 elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips32")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips32")
 else()
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/host")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/host")
 endif ()
 
 include(GNUInstallDirs)
