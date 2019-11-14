@@ -724,3 +724,115 @@ $ Please enter option number: 1
 
 ### TrustList Uploading
 Trust List updating is a release of the new Trust List. This function is used in case if you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new Trust List to your IoT device.
+
+## Virgil Trust Provisioner Database
+This page contains information about Virgil Trust Provisioner database.
+
+### Database Types
+Virgil Trust Provisioner contains following types of databases.
+
+| Daabase type            | Description                                                                                                                           |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| UpperLevelKeys.db       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList Service public keys, Firmware public keys) |
+| TrustListPubKeys.db     | contains public keys of Factory, Auth Internal, Firmware Internal and,cloud                                                           |
+| TrustListVerions.db     | contains versions of created Trust Lists                                                                                              |
+| FactoryPrivateKeys.db   | contains private key of Factory key                                                                                                   |
+| FirmwarePrivateKeys.db  | contains private key of Firmware key                                                                                                  |
+| AuthPrivateKeys.db      | contains private key of Auth key                                                                                                      |
+| RecoveryPrivateKeys.db  | contains private key of Recovery key                                                                                                  |
+| TLServicePrivateKeys.db | contains private key of TrustListService key                                                                                          |
+### Database Security
+Virgil Trust Provisioner doesn't provide any security mechanism for protecting databases, therefore it is very important to restrict access to Virgil Trust Provisioner for non authorized users.
+
+#### Print public keys from database
+This function helps to print all public keys from db.
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| 11   | Virgil Trust Provisioner provide all public keys from db to the user |
+
+You have a posiibility to print all public keys from Virgil Trust Provisioner database  on the screen or on the paper.
+
+**Example**
+
+```bash
+$ Please enter option number: 11
+$ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
+# Printing Public Keys from db's...
+
+# Upper level Keys:
++--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
+| Key Id |    Type    |         Comment          | Signed by |   Start   |   Expire  |                                           Key                                            |
++--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
+| 59802  |  recovery  |  My second recovery key  |           |     0     |     0     | BDHLav5qUoU2I0vkR5hxcKlGv8MFF8CqzmkCCr7UOroVaqNK0mRncZ0dSebW4xM9GmWpUPEaGdqfewaLPeszL8E= |
+|  3847  | tl_service | My second TL Service key |    2591   | 152236800 | 157680000 | BLVkY5A6k4hgAw/auNgJUOR07eDoVn+4aeAdqgn3XlapJr1E6R6+1ALw9my9EjaILFYq/2oMAPeNdwqSOfLvx2o= |
+|  8079  |  firmware  |     My Firmware key      |    2591   | 152236800 | 157680000 | BOBzJhYo9H4Zt8jpYBXOHU90UdDyRJ4EC0Jeaqn7tgXzzMa6PkvUSrS5Rpc9PR4Ljeot/a+6BE+A0rEVJ1LcUjY= |
+|  2591  |  recovery  |     My recovery key      |           | 152236800 | 157680000 | BCDE6GWvuQdRw8oXPqLBKG18VW8y4neenhpEcjKu51PxgnYW6fKd9OLdGWp7HmXz9/RVuk45f7/lFm5do8VIZSk= |
+| 17326  |    auth    |       My Auth key        |    2591   | 152236800 | 157680000 | BIutaAbco7P6ycw3p8mUXzlybkWPMG/pppvpkCOVpf0HbducgwYbOWrkaKtoTJrQNDNHLjPDgDqYUphtdPYpq1U= |
+| 56318  |    auth    |    My second Auth key    |    2591   | 152236800 | 157680000 | BO8dALo4qJWqACTgiPg+iT/H+5lWaoBzI43vygUUC4D+g1YNThjOjsqtBcx44p9QRFuQnAgNafOVaMmFCj2EsAM= |
+| 64076  | tl_service |    My TL Service key     |    2591   | 152236800 | 157680000 | BDzVCcbLFzyzEG5HjSPxdwDKY5jnTkwluQFTGQmmtFZPKHmbnLkMVXorSXhvYFV+25uyG+RRM0QZAtpoBSF5lOo= |
+| 32842  |  firmware  |  My second Firmware key  |    2591   | 152236800 | 157680000 | BNI+ES2Gyps499Ur1oOTVwUkW5prCU8hylgxaYbL3o6/6htXM5iAkGc1OClyjq3T9Sd6ZkFTVy39TmUasdUtic0= |
++--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
+
+# TrustList Service Keys:
++--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
+| Key Id |        Type       | EC type |       Comment       |   Start   |   Expire  |                                           Key                                            |
++--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
+| 11529  | firmware_internal |    3    |   My Firmware key   | 152236800 | 157680000 | BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4= |
+| 35430  |   auth_internal   |    3    | My AuthInternal key | 152236800 | 157680000 | BNbV+uCkGS9UOicMXgzXqiGWIYfD3CcI1+ssok7ZdGx5+9Wey7dr/kA+bON2L2//0e7zzmOIR1FFazeizzsP4tI= |
++--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
+```
+#### Add Public Keys to Database
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| 12   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
+
+This command allows you to add additional public key of some participants like cloud to Virgil Trust Provisioner database
+User can also leave a comment about added key.
+
+**Example**
+
+```#!/usr/bin/env bash
+$ Please enter option number: 12
+$ Are you sure you want to choose [Add Public Key to db (Factory)] [y/n]: y
+# Manual adding Public Key to db...
+# Key types:
+	1. factory
+$ Please choose Key type: 1
+$ Enter Public Key (tiny base64): BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4=
+$ Enter comment for [factory] Key: My Added public key
+# Key added
+```
+#### Export upper level public keys
+
+UpperLevelKeys Export – the process of uploading of all UpperLevelKeys from ```UpperLevelKeys.db```
+
+Public keys are uploaded to the storage which is specified in the config file.
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| 13   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
+
+**Example**
+
+```bash
+# Launch virgil-trust-provisioner
+$ virgil-trust-provisioner
+
+# Specify the cli command
+
+$ Please enter option number: 13
+$ Are you sure you want to choose [Dump upper level Public Keys] [y/n]: y
+# Dumping upper level Public Keys
+# Keys dump finished
+```
+
+#### Export Private Keys
+This command allows exporting private keys from Virgil Trust Provisioner databases.
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| 15   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
+
+After executing the export private key command, private key bytes are stored in the file in DER format (SECP256R1). The file with private key can be found in the storage specified in the Virgil Trust Provisioner configuration file.
