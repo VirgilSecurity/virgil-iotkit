@@ -4,6 +4,11 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
 ## Content
 - [Overview](#virgil-trust-provisioner-overview)
 - [Setting Up](#setting-up-virgil-trust- provisioner)
+  - [Linux OS](#linux-os)
+  - [Ubuntu OS, Debian OS](#ubuntu-os,-debian-os)
+  - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+  - [Mac OS](#mac-os)
+  - [Windows OS](#windows-os)
 
 #### Virgil Trust Provisioner Features
 - Generating and managing Key Pairs for upper level IoT parties
@@ -44,7 +49,7 @@ In order to download and install the Virgil Trust Provisioner on Linux, use the 
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
-#### Ubuntu, Debian
+#### Ubuntu OS, Debian OS
 Virgil Trust Provisioner is distributed as a package.
 
 In order to download and install the Virgil Trust Provisioner on Ubuntu, Debian, use the YUM package manager and the following command:
@@ -53,13 +58,23 @@ In order to download and install the Virgil Trust Provisioner on Ubuntu, Debian,
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
-#### CentOS, Fedora
+#### Cent OS, Fedora OS
 Virgil Trust Provisioner is distributed as a package.
 
 In order to download and install the Virgil Trust Provisioner on CentOS, Fedora, use the YUM package manager and the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
+```
+#### Mac OS
+At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+
+```bash
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
+$ cd virgil-iot-sdk
+$ mkdir build && cd build
+$ cmake ..
+$ make vs-tool-virgil-device-registrar
 ```
 
 #### Windows OS

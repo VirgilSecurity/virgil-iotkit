@@ -8,6 +8,11 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
 ## Content
 - [Setting Up SnapD](#setting-up-snapd)
   - [Install](#install-snapd)
+    - [Linux OS](#linux-os)
+    - [Ubuntu OS, Debian OS](#ubuntu-os,-debian-os)
+    - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+    - [Mac OS](#mac-os)
+    - [Windows OS](#windows-os)
   - [Configure and run](#configure-and-run-snapd)
 - [API Reference](#api-reference)
   - [Display all devices](#display-all-devices)
@@ -29,7 +34,7 @@ In order to download and install the Virgil SnapD on Linux, use the YUM package 
 $ sudo install virgil-iot-sdk-snapd
 ```
 
-#### Ubuntu, Debian
+#### Ubuntu OS, Debian OS
 Virgil SnapD is distributed as a package.
 
 In order to download and install the Virgil SnapD on Ubuntu, Debian, use the YUM package manager and the following command:
@@ -37,7 +42,7 @@ In order to download and install the Virgil SnapD on Ubuntu, Debian, use the YUM
 $ sudo apt-get install virgil-iot-sdk-snapd
 ```
 
-#### CentOS, Fedora
+#### Cent OS, Fedora OS
 Virgil SnapD is distributed as a package.
 
 In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM package manager and the following command:
@@ -45,14 +50,19 @@ In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM
 ```bash
 $ sudo yum install virgil-iot-sdk-snapd
 ```
+#### Mac OS
+At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+
+```bash
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
+$ cd virgil-iot-sdk
+$ mkdir build && cd build
+$ cmake ..
+$ make vs-tool-virgil-snapd
+```
 
 #### Windows OS
 Virgil SnapD package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
-
-#### MacOS
-
-
-
 
 ### Configure and run SnapD
 By default SnapD works under http://localhost:8080/, if other is not specified for the `SNAPD_SERVICE_PORT` variable.

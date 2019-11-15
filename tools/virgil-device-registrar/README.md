@@ -4,6 +4,11 @@ The Virgil IoT Device Registrar is a CLI utility used to registrar IoT devices a
 ## Content
 - [Overview](#overview)
 - [Setting Up Device Registrar](#set-up-device-registrar)
+  - [Linux OS](#linux-os)
+  - [Ubuntu OS, Debian OS](#ubuntu-os,-debian-os)
+  - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+  - [Mac OS](#mac-os)
+  - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
 
 
@@ -35,10 +40,10 @@ Virgil Device Registrar is distributed as a package.
 In order to download and install the Virgil Device Registrar on Linux, use the YUM package manager and the following command:
 
 ```bash
-yum -y install virgil-iot-sdk-tools
+$ sudo yum install virgil-iot-sdk-tools
 ```
 
-#### Ubuntu, Debian
+#### Ubuntu OS, Debian OS
 Virgil Virgil Device Registrar is distributed as a package.
 
 In order to download and install the Virgil Device Registrar on Ubuntu, Debian, use the YUM package manager and the following command:
@@ -46,13 +51,24 @@ In order to download and install the Virgil Device Registrar on Ubuntu, Debian, 
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
-#### CentOS, Fedora
+#### Cent OS, Fedora OS
 Virgil Device Registrar is distributed as a package.
 
 In order to download and install the Virgil Device Registrar on CentOS, Fedora, use the YUM package manager and the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
+```
+
+#### Mac OS
+At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+
+```bash
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
+$ cd virgil-iot-sdk
+$ mkdir build && cd build
+$ cmake ..
+$ make vs-tool-virgil-device-registrar
 ```
 
 #### Windows OS
