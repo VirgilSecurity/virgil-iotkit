@@ -28,7 +28,7 @@ In order to download and install the Virgil Firmware Signer on Linux, use the YU
 $ sudo yum install virgil-iot-sdk-tools
 ```
 
-#### Ubuntu, Debian OS
+#### Ubuntu OS, Debian OS
 Virgil Firmware Signer is distributed as a package.
 
 In order to download and install the Virgil Firmware Signer on Ubuntu, Debian, use the YUM package manager and the following command:
