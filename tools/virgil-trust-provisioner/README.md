@@ -166,7 +166,7 @@ virgil-trust-provisioner --app-token <token>
 In case you need to specify path to the custom config file, you use following syntax:
 
 ```bash
-virgil-trust-provisioner --app-token <token> -c ./test_fs/keymanager.conf
+virgil-trust-provisioner --app-token <token> -c ./test_fs/provisioner.conf
 ```
 | Option                              | Description                                                                                                                                                                  |
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
