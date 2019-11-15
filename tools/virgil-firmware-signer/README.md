@@ -5,6 +5,11 @@ Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth Pr
 
 ## Content
 - [Setting up Firmware Signer](#setting-up-firmware-signer)
+  - [Linux OS](#linux-os)
+  - [Ubuntu, Debian OS](#ubuntu,-debian-os)
+  - [CentOS, Fedora](#centos,-fedora)
+  - [Mac OS](#mac-os)
+  - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
 - [Firmware Structure](#firmware-structure)
 
@@ -23,7 +28,7 @@ In order to download and install the Virgil Firmware Signer on Linux, use the YU
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
-#### Ubuntu, Debian
+#### Ubuntu, Debian OS
 Virgil Firmware Signer is distributed as a package.
 
 In order to download and install the Virgil Firmware Signer on Ubuntu, Debian, use the YUM package manager and the following command:
@@ -38,6 +43,17 @@ In order to download and install the Virgil Firmware Signer on CentOS, Fedora, u
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
+```
+
+#### Mac OS
+At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+
+```bash
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
+$ cd virgil-iot-sdk
+$ mkdir build && cd build
+$ cmake ..
+$ make vs-tool-virgil-firmware-signer
 ```
 
 #### Windows OS
