@@ -9,8 +9,8 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
 - [Setting Up SnapD](#setting-up-snapd)
   - [Install](#install-snapd)
     - [Linux OS](#linux-os)
-    - [Ubuntu OS, Debian OS](#ubuntu-os,-debian-os)
-    - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+    - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
+    - [Cent OS, Fedora OS](#cent-os-fedora-os)
     - [Mac OS](#mac-os)
     - [Windows OS](#windows-os)
   - [Configure and run](#configure-and-run-snapd)
@@ -51,7 +51,7 @@ In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM
 $ sudo yum install virgil-iot-sdk-snapd
 ```
 #### Mac OS
-At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git

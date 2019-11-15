@@ -5,7 +5,7 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 - [Overview](#Overview)
 - [Setting up Device Initializer](#setting-up-device-initializer)
   - [Linux OS](#linux-os)
-  - [Ubuntu OS, Debian OS](#ubuntu-debian-os)
+  - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
   - [Cent OS, Fedora OS](#cent-os-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)

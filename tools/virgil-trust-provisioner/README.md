@@ -5,8 +5,8 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
 - [Overview](#virgil-trust-provisioner-overview)
 - [Setting Up](#setting-up-virgil-trust- provisioner)
   - [Linux OS](#linux-os)
-  - [Ubuntu OS, Debian OS](#ubuntu-os,-debian-os)
-  - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+  - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
+  - [Cent OS, Fedora OS](#cent-os-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
 
