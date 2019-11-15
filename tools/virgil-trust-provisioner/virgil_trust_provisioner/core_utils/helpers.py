@@ -1,4 +1,7 @@
 import base64
+import os
+import re
+import shutil
 
 
 def b64_to_bytes(data):
@@ -21,3 +24,29 @@ def tiny_key_to_virgil(tiny_key):
     key_data = asn_1_prefix + bytearray(base64.b64decode(tiny_key))
 
     return key_data
+
+
+def clean_folder_content(path):
+    if not os.path.exists(path):
+        return
+    for content in os.listdir(path):
+        to_clean = os.path.join(path, content)
+        if os.path.isdir(to_clean):
+            shutil.rmtree(to_clean)
+        else:
+            os.remove(to_clean)
+
+
+def find_files(path, pattern, regex=False):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for f_name in files:
+            full_path = os.path.join(root, f_name)
+            search_in = full_path.split(path)[-1]
+            if regex:
+                match = re.search(pattern, search_in)
+            else:
+                match = pattern in search_in
+            if match:
+                result.append(full_path)
+    return result
