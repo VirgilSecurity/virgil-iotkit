@@ -31,7 +31,7 @@ Virgil SnapD is distributed as a package.
 In order to download and install the Virgil SnapD on Linux, use the YUM package manager and the following command:
 
 ```bash
-$ sudo install virgil-iot-sdk-snapd
+$ sudo yum install virgil-iot-sdk-snapd
 ```
 
 #### Ubuntu OS, Debian OS
