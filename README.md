@@ -16,8 +16,11 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 - [Run Demo](#run-demo)
 - [IoT Dev Tools](#iot-dev-tools)
 - [IoTKit Installation](#iotkit-installation)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Ubuntu, Debian OS](#ubuntu-debian-os)
+  - [CentOS, Fedora OS](#centos-fedora-os)
+  - [MacOS](#macos)
+  - [Windows OS](#windows-os)
 - [Modules](#modules)
 - [Tests](#tests)
 - [API Reference](#api-reference)
@@ -46,7 +49,7 @@ To start working with Virgil IoTKit the following components are required:
 - [curl](https://curl.haxx.se/)
 
 
-### Ubuntu OS
+### Ubuntu, Debian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
 
 ```shell
@@ -60,7 +63,7 @@ To download and install the Virgil IoTKit on Fedora or CentOS, use the following
 $ yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
 ```
 
-### For MacOS
+### MacOS
 To download and install the Virgil IoTKit on MacOS, use the following command:
 ```shell
 $ brew install make cmake golang git gcc curl doxygen swig
@@ -72,6 +75,9 @@ $ brew install make cmake golang git gcc curl doxygen swig
 $ cmake --version
 cmake version 3.11.0
 ```
+
+### Windows OS
+Virgil IoTKit for Windows OS is currently in development. To be included to information update list please contact our support team: support@VirgilSecurity.com.
 
 ## IoT Dev Tools
 - KeyManager
