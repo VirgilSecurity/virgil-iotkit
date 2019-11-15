@@ -26,7 +26,16 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
   - [Private Keys](#private-keys)
   - [TrustList](#trustlist)
   - [Trust Provisioner Database](#trust-provisioner-database)
-  
+- [Private Keys Commands](#private-keys-commands)
+  - [Initial Generation](#initial-generation-get-everything-at-once)
+  - [Recovery Key](#recovery-key)
+  - [Auth Key](#auth-key)
+  - [TrustList Key](#trustlist-key)
+  - [Factory Key](#factory-key)
+  - [Firmware Key](#firmware-key)
+- [TrustList Commands](#trustlist-commands)
+  - [TrustList Overview](#trustlist-overview)
+
 
 ## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
@@ -669,13 +678,13 @@ $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Firmware Key: My second Firmware key
 # Generation finished
 ```
-## Trust List Commands
+## TrustList Commands
 Distributed list of trust that is used by IoT devices and applications to check Information about trusted parties.
 
 ### TrustList Overview
 TrustList is a distributed list of trust that introduced in way of a file that consists of public keys and signatures of all trusted parties in the your IoT system.
 
-TrustList has basic content structure that was created based on general best secuirty practices, but the final number of trusted participants in the TrustList is determined by you.
+TrustList has basic content structure that was created based on general best security practices, but the final number of trusted participants in the TrustList is determined by you.
 
 After the TrustList created and signed it's distributed to all participants (e.g. IoT devices, User Application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
 
