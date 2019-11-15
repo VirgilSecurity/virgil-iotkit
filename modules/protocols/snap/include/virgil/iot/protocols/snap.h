@@ -42,8 +42,8 @@
  * #fldt_server_usage for details
  * - INFO : devices information sent by clients for server to notify current software usage.
  *
- * \warning User has to provide network interface for #vs_snap_init call. As UDP broadcast example user can use c-implementation
- * tool.
+ * \warning User has to provide network interface for #vs_snap_init call. As UDP broadcast example user can use
+ * c-implementation tool.
  *
  * User can add his own protocols base on SNAP. It is necessary to provide service callbacks by filling
  * #vs_snap_service_t structure and register service by #vs_snap_register_service call.

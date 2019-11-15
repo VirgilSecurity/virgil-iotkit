@@ -59,7 +59,8 @@ vs_logger_set_loglev(prev_log_level);       // Restore previous logger level
 
  * \endcode
  *
- * \warning If #VS_IOT_LOGGER_USE_LIBRARY == 1, #vs_logger_output_hal implementation is needed. See \ref logger_hal_implementation
+ * \warning If #VS_IOT_LOGGER_USE_LIBRARY == 1, #vs_logger_output_hal implementation is needed. See \ref
+logger_hal_implementation
  * for details.
  *
  */

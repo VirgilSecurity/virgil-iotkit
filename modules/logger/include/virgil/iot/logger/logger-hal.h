@@ -39,7 +39,8 @@
  *
  * \section logger_hal_implementation Logger HAL Implementation
  *
- * \warning If #VS_IOT_LOGGER_USE_LIBRARY is set to 1, user has to provide logger output function #vs_logger_output_hal .
+ * \warning If #VS_IOT_LOGGER_USE_LIBRARY is set to 1, user has to provide logger output function #vs_logger_output_hal
+.
  * The goal of this function is to output part of string to the output. Its implementation can be as listed below :
  *
  * \code
@@ -86,7 +87,8 @@ vs_logger_current_time_hal(void) {
 
 /** Function signature for unterminated string output
  *
- * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the output.
+ * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the
+ * output.
  *
  * \param[in] buffer Buffer with part of the string. Cannot be NULL
  *
