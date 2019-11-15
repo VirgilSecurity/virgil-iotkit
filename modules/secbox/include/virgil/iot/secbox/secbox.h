@@ -54,7 +54,7 @@ typedef enum {
 /** Initialize Security Box
  *
  * \param[in] ctx Storage context. Must not be NULL.
- * \param[in] secmodule SECMODULE implementation. Must not be NULL.
+ * \param[in] secmodule Security Module implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
