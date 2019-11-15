@@ -49,7 +49,7 @@ Virgil Device Initializer is distributed as a package.
 In order to download and install the Virgil Device Initializer on Linux, use the YUM package manager and the following command:
 
 ```bash
-yum -y install virgil-iot-sdk-tools
+$ sudo yum install virgil-iot-sdk-tools
 ```
 #### Ubuntu, Debian
 Virgil Device Initializer is distributed as a package.
