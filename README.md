@@ -14,7 +14,6 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 ## Content
 - [Features](#features)
 - [IoT Dev Tools](#iot-dev-tools)
-  - []
 - [Run IoTKit Demo](#run-iotkit-demo)
 - [IoTKit Modules](#modules)
 - [Installation](#installation)
@@ -40,10 +39,10 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 
 ## IoT Dev Tools
 Virgil Security also provides set of tools for secure device lifecycle. 
-- **Virgil Trust Provisioner**. The Virgil Trust Provisioner is a CLI used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions. The CLI is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution. To start working with the tool read more [here](/tools/virgil-trust-provisioner)
-- **Virgil Device Initializer**. In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud. Virgil Device Initializer allows you to make IoT device provoisioning and prepare your IoT device (create digital cards) for its further registration in Virgil Cloud. To start working with the tool read more [here](/tools/virgil-device-initializer)
+- **Virgil Trust Provisioner**. The Virgil Trust Provisioner is a CLI used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions. The CLI is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution. To start working with the tool read more [here](/tools/virgil-trust-provisioner).
+- **Virgil Device Initializer**. In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud. Virgil Device Initializer allows you to make IoT device provoisioning and prepare your IoT device (create digital cards) for its further registration in Virgil Cloud. To start working with the tool read more [here](/tools/virgil-device-initializer).
 - **Virgil Device Registrar**. Virgil IoT Device Registrar is used to registrar IoT devices and their digital cards in the Virgil Security Cloud. To start working with the tool read more [here](/tools/virgil-device-registrar)
-- **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer)
+- **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer).
 - **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
 
 
