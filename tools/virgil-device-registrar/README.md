@@ -47,13 +47,16 @@ $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
 #### CentOS, Fedora
-Virgil Virgil Device Registrar is distributed as a package.
+Virgil Device Registrar is distributed as a package.
 
 In order to download and install the Virgil Device Registrar on CentOS, Fedora, use the YUM package manager and the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
 ```
+
+#### Windows OS
+Virgil Device Registrar package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
 
 ## Command Reference
 Here is the list of possible commands for Virgil IoT Device Regis

@@ -62,6 +62,10 @@ In order to download and install the Virgil Trust Provisioner on CentOS, Fedora,
 $ sudo yum install virgil-iot-sdk-tools
 ```
 
+#### Windows OS
+Virgil Trust Provisioner package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
+
+
 ### Configure Virgil Trust Provisioner
 After the KeyManer installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the KeyManager repository.  While it is here, every time you launch the KeyManager you have to specify the path to the config file:
 

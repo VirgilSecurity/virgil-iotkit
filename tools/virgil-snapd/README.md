@@ -45,6 +45,10 @@ In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM
 ```bash
 $ sudo yum install virgil-iot-sdk-snapd
 ```
+
+#### Windows OS
+Virgil SnapD package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
+
 #### MacOS
 
 

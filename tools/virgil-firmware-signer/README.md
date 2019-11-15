@@ -40,6 +40,9 @@ In order to download and install the Virgil Firmware Signer on CentOS, Fedora, u
 $ sudo yum install virgil-iot-sdk-tools
 ```
 
+#### Windows OS
+Virgil Firmware Signer package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
+
 ### Configure Virgil Firmware Signer
 After the Virgil Firmware Signer is installed, you need to set up the configuration file (```conf.json```).
 

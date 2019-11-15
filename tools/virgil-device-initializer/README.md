@@ -4,6 +4,10 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 ## Content
 - [Overview](#Overview)
 - [Setting up Device Initializer](#setting-up-device-initializer)
+  - [Linux OS](#linux-os)
+  - [Ubuntu, Debian OS](#ubuntu,-debian-os)
+  - [Cent OS, Fedora OS](#cent-os,-fedora-os)
+  - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
 
 ## Overview
@@ -67,6 +71,8 @@ In order to download and install the Virgil Device Initializer on CentOS, Fedora
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
 ```
+#### Windows OS
+Virgil Device Initializer package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
 
 ## Command Reference
 Here is the list of possible commands for Virgil Device Initializer.
