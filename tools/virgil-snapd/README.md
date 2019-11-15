@@ -7,6 +7,8 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
 
 ## Content
 - [Setting Up SnapD](#setting-up-snapd)
+  - [Install](#install-snapd)
+  - [Configure and run](#configure-and-run-snapd)
 - [API Reference](#api-reference)
   - [Display all devices](#display-all-devices)
   - [Display device by MAC](#display-device-by-mac)
@@ -15,7 +17,7 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
 ## Setting Up SnapD
 This section demonstrates on how to install and configure Virgil SnapD.
 
-### Install
+### Install SnapD
 This section provides instructions for installing Virgil SnapD.
 
 #### Linux OS
@@ -47,6 +49,7 @@ Virgil SnapD also provides api for obtaining IoT device information
 In order to display information about all available IoT devices use the following API:
 
 **Request info**
+
 ```shell
 Request URL: curl -i localhost:8081/devices
 
@@ -54,9 +57,11 @@ Request URL: curl -i localhost:8081/devices
 This endpoint returns HTTP 200 if successful or a corresponding error if it wasn't successful.
 
 **Request body**
+
 Request body should be empty.
 
 **Response info**
+
 ```shell
 HTTP/1.1 200 OK
 Date: Fri, 15 Nov 2019 09:04:36 GMT
@@ -65,6 +70,7 @@ Content-Type: text/plain; charset=utf-8
 ```
 
 **Response body**
+
 ```json
 {
 "2d:90:93:79:c6:35":
@@ -99,6 +105,7 @@ Content-Type: text/plain; charset=utf-8
 In order to display information about specific IoT device by its MAC use the following API:
 
 **Request info**
+
 ```shell
 Request URL: curl -i localhost:8081/devices?key=eb:da:c4:b5:f5:20
 
@@ -106,9 +113,11 @@ Request URL: curl -i localhost:8081/devices?key=eb:da:c4:b5:f5:20
 This endpoint returns HTTP 200 if successful or a corresponding error if it wasn't successful.
 
 **Request body**
+
 Request body should be empty.
 
 **Response info**
+
 ```shell
 HTTP/1.1 200 OK
 Date: Fri, 15 Nov 2019 09:08:33 GMT
@@ -117,6 +126,7 @@ Content-Type: text/plain; charset=utf-8
 ```
 
 **Response body**
+
 ```json
 {
     "id":"",
