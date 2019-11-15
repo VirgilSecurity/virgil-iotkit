@@ -3,7 +3,7 @@ The Virgil IoT Device Registrar is a CLI utility used to registrar IoT devices a
 
 ## Content
 - [Overview](#overview)
-- [Set Up Device Registrar](#set-up-device-registrar)
+- [Setting Up Device Registrar](#set-up-device-registrar)
 - [Command Reference](#command-reference)
 
 
@@ -26,7 +26,7 @@ Now, IoT device is ready for application development.
 ## Setting Up Device Registrar
 This section demonstrates on how to install and configure Virgil IoT Device Registrar for preferred platform.
 
-### Installing Virgil Device Registrar
+### Install Device Registrar
 This section provides instructions for installing Virgil IoT Device Registrar.
 
 #### Linux OS

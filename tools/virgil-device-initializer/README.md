@@ -3,7 +3,7 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 
 ## Content
 - [Overview](#Overview)
-- [Setting up Virgil Device Initializer](#setting-up-virgil-device-initializer)
+- [Setting up Device Initializer](#setting-up-device-initializer)
 - [Command Reference](#command-reference)
 
 ## Overview
@@ -37,10 +37,10 @@ In order to perform device initialization you have to go through the following s
 
 Initialization of each device is performed one by one.
 
-## Setting up Virgil Device Initializer
+## Setting up Device Initializer
 This section demonstrates on how to install and configure Virgil Device Initializer for preferred platform.
 
-### Installing Virgil Device Initializer
+### Install Device Initializer
 This section provides instructions for installing Virgil Device Initializer.
 
 #### Linux OS

@@ -7,17 +7,38 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
 
 ## Content
 - [Setting Up SnapD](#setting-up-snapd)
-- [Command Reference](#command-reference)
 - [API Reference](#api-reference)
+  - [Display all devices](#display-all-devices)
+  - [Display device by MAC](#display-device-by-mac)
 - [Samples](#samples)
 
 ## Setting Up SnapD
-By default, utility operates on the port 8080 if other value is not indicated for variable Snap Service Core. And if you work with Demo, utility operates at port 8081.
+This section demonstrates on how to install and configure Virgil SnapD.
 
-## Command Reference
+### Install
+This section provides instructions for installing Virgil SnapD.
 
+#### Linux OS
+Virgil SnapD is distributed as a package.
 
+In order to download and install the Virgil SnapD on Linux, use the YUM package manager and the following command:
 
+```bash
+yum -y install virgil-iot-sdk-snapd
+```
+
+### Configure and run SnapD
+By default SnapD works under http://localhost:8080/, if other is not specified for the `SNAPD_SERVICE_PORT` variable.
+
+In order to run Virgil SnapD under default port use the following command:
+```shell
+virgil-snapd
+```
+
+To run Virgil SnapD under specific port use the following command:
+```shell
+virgil-snapd 8081
+```
 
 ## API Reference
 Virgil SnapD also provides api for obtaining IoT device information
@@ -32,10 +53,10 @@ Request URL: curl -i localhost:8081/devices
 ```
 This endpoint returns HTTP 200 if successful or a corresponding error if it wasn't successful.
 
-**Request body** Request body should be empty.
+**Request body**
+Request body should be empty.
 
 **Response info**
-
 ```shell
 HTTP/1.1 200 OK
 Date: Fri, 15 Nov 2019 09:04:36 GMT
@@ -84,10 +105,10 @@ Request URL: curl -i localhost:8081/devices?key=eb:da:c4:b5:f5:20
 ```
 This endpoint returns HTTP 200 if successful or a corresponding error if it wasn't successful.
 
-**Request body** Request body should be empty.
+**Request body**
+Request body should be empty.
 
 **Response info**
-
 ```shell
 HTTP/1.1 200 OK
 Date: Fri, 15 Nov 2019 09:08:33 GMT
