@@ -34,40 +34,41 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interacts with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
 
-## Requirements
-
-The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macOS.
-- Install make, CMake version 3.11 or higher for project building 
-- Install gcc or another toolchain for C/C++ compile
-- Install [Go](https://golang.org/) for utilities support
-- Install [git](https://git-scm.com/) for Virgil Crypto installation and update
-- Install [curl](https://curl.haxx.se/) for gateway target
-
-// TODO : TO REMOVE
-~~- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support~~
-
 ## Installation
+Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
 
-- Install the required components.
+### Prerequisites
+To start working with Virgil IoTKit the following components are required: 
+- CMake v3.11 or higher, for project building 
+- GCC or another toolchain for C/C++ compile
+- [Go](https://golang.org/) library to work with Virgil IoT utilities
+- [git](https://git-scm.com/) for Virgil Crypto installation and update
+- [curl](https://curl.haxx.se/)
 
-For Ubuntu : 
-```
-apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+
+### Ubuntu OS
+To download and install the Virgil IoTKit on Ubuntu, use the following command:
+
+```shell
+$ apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
 
-For Fedora, CentOS :
-```
-yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
+### Fedora, CentOS
+To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
+
+```shell
+$ yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
 ```
 
-For Mac OS :
-```
-brew install make cmake golang git gcc curl doxygen swig
+### For MacOS
+To download and install the Virgil IoTKit on MacOS, use the following command:
+```shell
+$ brew install make cmake golang git gcc curl doxygen swig
 ```
 
-- Check CMake version. It must be 3.11 or higher :
+- Check CMake version. It must be 3.11 or higher:
 
-```
+```shell
 $ cmake --version
 cmake version 3.11.0
 ```
