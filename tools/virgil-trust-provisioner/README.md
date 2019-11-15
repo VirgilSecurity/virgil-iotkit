@@ -4,15 +4,24 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
 ## Content
 - [Features](#features)
 - [Trust Provisioner Overview](#trust-provisioner-overview)
-- [Setting up Trust Provisioner](#setting-up-trust- provisioner)
+- [Setting up Trust Provisioner](#setting-up-trust-provisioner)
   - [Install Trust Provisioner](#install-trust-provisioner)
-  - [Linux OS](#linux-os)
-  - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-  - [Cent OS, Fedora OS](#cent-os-fedora-os)
-  - [Mac OS](#mac-os)
-  - [Windows OS](#windows-os)
+    - [Linux OS](#linux-os)
+    - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
+    - [Cent OS, Fedora OS](#cent-os-fedora-os)
+    - [Mac OS](#mac-os)
+    - [Windows OS](#windows-os)
   - [Configure Trust Provisioner](#configure-trust-provisioner)
-
+    - [Config File Structure](#config-file-structure)
+    - [Configurable Variables](#configurable-variables)
+- [Launch Trust Provisioner](#launch-trust-provisioner)
+- [Command Reference](#command-reference)
+  - [Syntax](#syntax)
+  - [Application Commands](#application-commands)
+  - [Private Keys](#private-keys)
+  - [TrustList](#trustlist)
+  - [Trust Provisioner Database](#trust-provisioner-database)
+  -
 ## Features
 - Generating and managing Key Pairs for upper level IoT parties
 - Generating and managing Trust Lists
@@ -35,7 +44,7 @@ The diagram below demonstrates a standard IoT infrastructure and its parties tha
 | Factory                | Place where all IoT devices are manufactured and go through the provisioning step                                                                                    |
 | Cloud                  | Cloud service that is responsible for users and applications authorization and authentication.                                                                       |
 
-Virgil Trust Provisioner helps you to build up a trusted IoT solution ecosystem by creating and managing necessary key pairs and distibuted trust list for all participants. Then the keys and Trust Lists are distributed to all participants (e.g. IoT devices, user application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
+Virgil Trust Provisioner helps you to build up a trusted IoT solution ecosystem by creating and managing necessary key pairs and distributed trust list for all participants. Then the keys and Trust Lists are distributed to all participants (e.g. IoT devices, user application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
 
 ## Setting up Trust Provisioner
 This section demonstrates on how to install and configure Virgil Trust Provisioner for preferred platform.
@@ -85,7 +94,7 @@ Virgil Trust Provisioner package for Windows OS is currently in development. To 
 
 
 ### Configure Trust Provisioner
-After the KeyManer installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the KeyManager repository.  While it is here, every time you launch the KeyManager you have to specify the path to the config file:
+After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the Trust Provisioner repository. While it is here, every time you launch the KeyManager you have to specify the path to the config file:
 
 ```bash
 virgil-trust-provisioner -c ./test_fs/provisioner.conf
@@ -95,7 +104,7 @@ In order to not specify every time Virgil Trust Provisioner's configuration file
 - /etc/VirgilTrustProvisioner/provisioner.conf
 - ~/.VirgilTrustProvisioner/provisioner.conf
 
-### Config File Structure
+#### Config File Structure
 By default, the Virgil Trust Provisioner configuration file has the following format:
 
 ```bash
@@ -114,7 +123,7 @@ card_registration_endpoint = /things/card/key
 # json with factory info (will be add to Factory key card)
 factory_info_json = ./test_fs/factory_info_sample.json
 ```
-### Configurable Variables
+#### Configurable Variables
 The configuration file (default name: **provisioner.conf**) contains the following variables:
 
 | Name                       | Description                                                                                                                  |
@@ -135,7 +144,7 @@ The configuration file (default name: **provisioner.conf**) contains the followi
   }
 }
 ```
-### Launch Virgil Trust Provisioner
+## Launch Trust Provisioner
 To launch the Virgil Trust Provisioner use the following syntax:
 
 ```bash
@@ -163,7 +172,7 @@ Use  virgil-trust-provisioner --help to get information on a specific command.
 ### Application Commands
 Application commands are used to perform operations such as key generating, database (db) operations and printing options.
 
-### Private keys
+### Private Keys
 | Command | Result                                                                                                                       |
 |---------|------------------------------------------------------------------------------------------------------------------------------|
 | ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
@@ -174,12 +183,12 @@ Application commands are used to perform operations such as key generating, data
 | ```7```       | Delete a Factory Key                                                                                                         |
 | ```8```       | Generate 2 Firmware Keys                                                                                                     |
 
-### Trust List
+### TrustList
 | Command | Result                                                           |
 |---------|------------------------------------------------------------------|
 | ```10```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
 
-### KeyManager Database
+### Trust Provisioner Database
 | Command | Result                         |
 |---------|--------------------------------|
 | ```11```      | Print all public keys from db  |
@@ -187,12 +196,13 @@ Application commands are used to perform operations such as key generating, data
 | ```13```      | Export upper level public keys |
 | ```15```      | Export private keys            |
 
-## Private Keys
+
+## Private Keys Commands
 This includes dealing with the generation, exchange, storage, use and replacement of keys
 
 Each private key has its own card that contains a public part of the key. The card is registered in the Virgil Card Service.
 
-### Initial Generation (Get everything at once)
+### Initial Generation (get everything at once)
 This command allows generating all keys for the entire key management infrastructure.
 
 | Command | Result                                                                                                                |
@@ -659,7 +669,7 @@ $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Firmware Key: My second Firmware key
 # Generation finished
 ```
-## Trust List
+## Trust List Commands
 Distributed list of trust that is used by IoT devices and applications to check Information about trusted parties.
 
 ### TrustList Overview
@@ -771,7 +781,7 @@ $ Please enter option number: 1
 ### TrustList Uploading
 Trust List updating is a release of the new Trust List. This function is used in case if you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new Trust List to your IoT device.
 
-## Virgil Trust Provisioner Database
+## Trust Provisioner Database
 This page contains information about Virgil Trust Provisioner database.
 
 ### Database Types
@@ -789,6 +799,9 @@ Virgil Trust Provisioner contains following types of databases.
 | ```TLServicePrivateKeys.db``` | contains private key of TrustListService key                                                                                          |
 ### Database Security
 Virgil Trust Provisioner doesn't provide any security mechanism for protecting databases, therefore it is very important to restrict access to Virgil Trust Provisioner for non authorized users.
+
+
+###  Database Commands
 
 #### Print public keys from database
 This function helps to print all public keys from db.
