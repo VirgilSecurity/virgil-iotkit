@@ -86,7 +86,8 @@ vs_logger_current_time_hal(void) {
 
 /** Function signature for unterminated string output
  *
- * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the output.
+ * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the
+ * output.
  *
  * \param[in] buffer Buffer with part of the string. Cannot be NULL
  *

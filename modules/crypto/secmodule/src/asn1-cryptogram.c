@@ -88,6 +88,11 @@ static const uint8_t _enveloped_data_oid[] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86
 static const uint8_t _sha256_oid_sequence[] =
         {0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00};
 
+static const uint8_t _prime256v1_oid[] = {0x2a, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07};
+// static const uint8_t _sha384_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02};
+// static const uint8_t _aes256cbc_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A};
+// static const uint8_t _aes256gcm_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
+
 /******************************************************************************/
 static bool
 _asn1_step_into(uint8_t element, int *pos, const int sz, const uint8_t *data) {
@@ -437,8 +442,15 @@ vs_secmodule_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                 return VS_CODE_ERR_CRYPTO;
             }
 
-            if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(OCTET_STRING, &pos, _sz, _data) ||
-                !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data))
+            // OID of public key
+            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
+                !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+                0 != VS_IOT_MEMCMP(p_ar, _prime256v1_oid, sizeof(_prime256v1_oid))) {
+                return VS_CODE_ERR_CRYPTO;
+            }
+
+            if (!_asn1_step_into(OCTET_STRING, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data) ||
+                !_asn1_skip(INTEGER, &pos, _sz, _data))
                 return VS_CODE_ERR_CRYPTO;
 
             // Read public key

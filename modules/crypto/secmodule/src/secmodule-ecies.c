@@ -41,6 +41,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <private/asn1-cryptogram.h>
 
 #define VS_AES_256_KEY_SIZE (32)
 #define VS_AES_256_KEY_BITLEN (VS_AES_256_KEY_SIZE * 8)
@@ -99,7 +100,6 @@ vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
     uint8_t master_key[VS_AES_256_KEY_SIZE + VS_HMAC_SHA384_SIZE];
     uint8_t mac_buf[VS_HMAC_SHA384_SIZE];
     uint16_t mac_sz;
-
 
     uint8_t *public_key;
     uint8_t *iv_key;
