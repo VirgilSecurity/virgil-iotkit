@@ -11,14 +11,7 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
 - [Trust Provisioner Overview](#trust-provisioner-overview)
 - [Setting up Trust Provisioner](#setting-up-trust-provisioner)
   - [Install Trust Provisioner](#install-trust-provisioner)
-    - [Linux OS](#linux-os)
-    - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-    - [Cent OS, Fedora OS](#cent-os-fedora-os)
-    - [Mac OS](#mac-os)
-    - [Windows OS](#windows-os)
   - [Configure Trust Provisioner](#configure-trust-provisioner)
-    - [Config File Structure](#config-file-structure)
-    - [Configurable Variables](#configurable-variables)
 - [Launch Trust Provisioner](#launch-trust-provisioner)
 - [Command Reference](#command-reference)
   - [Syntax](#syntax)
@@ -35,7 +28,18 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
   - [Firmware Key](#firmware-key)
 - [TrustList Commands](#trustlist-commands)
   - [TrustList Overview](#trustlist-overview)
-
+  - [TrustList Content](#trustlist-content)
+  - [TrustList Structure](#trustlist-structure)
+  - [TrustList Management](#trustlist-management)
+    - [TrustList Generation](#trustlist-generation)
+    - [TrustList Uploading](#trustlist-uploading)
+- [Trust Provisioner Database](#trust-provisioner-database)
+  - [Database Types](#database-types)
+  - [Database Security](#database-security)
+  - [Database Commands](#database-commands)
+    - [Print public keys from database](#print-public-keys-from-database)
+    - [Export upper level public keys](#export-upper-level-public-keys)
+    - [Export Private Keys](#export-private-keys)
 
 ## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
@@ -750,7 +754,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 |------|----------------------------------------------------|
 | ```10```   | Virgil Trust Provisioner generates Trust List file |
 
-### TrustList Generating
+### TrustList Generation
 Trust List that contains Public Keys and signatures (signatures of Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db. TL contains signatures of Recovery Keys and Auth Keys.
 
 **Example**
