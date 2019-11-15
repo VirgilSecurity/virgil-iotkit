@@ -5,7 +5,7 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 - [Overview](#Overview)
 - [Setting up Device Initializer](#setting-up-device-initializer)
   - [Linux OS](#linux-os)
-  - [Ubuntu, Debian OS](#ubuntu,-debian-os)
+  - [Ubuntu OS, Debian OS](#ubuntu,-debian-os)
   - [Cent OS, Fedora OS](#cent-os,-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
@@ -74,7 +74,7 @@ $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Mac OS
-At tis moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
