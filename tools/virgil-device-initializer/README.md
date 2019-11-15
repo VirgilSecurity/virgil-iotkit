@@ -43,7 +43,7 @@ This section demonstrates on how to install and configure Virgil Device Initiali
 ### Installing Virgil Device Initializer
 This section provides instructions for installing Virgil Device Initializer.
 
-#### LinuxOS
+#### Linux OS
 Virgil Device Initializer is distributed as a package.
 
 In order to download and install the Virgil Device Initializer on Linux, use the YUM package manager and the following command:
