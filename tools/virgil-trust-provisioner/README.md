@@ -1,8 +1,13 @@
 # Virgil Trust Provisioner
 The Virgil Trust Provisioner is a command-line interface (CLI) used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
 
+## Features
+- Generating and managing Key Pairs for upper level IoT parties
+- Generating and managing Trust Lists
+- Provides databases for storing keys and Trust Lists
+- Creating and registering Virgil Cards of upper level IoT parties on Virgil Security Platform
+
 ## Content
-- [Features](#features)
 - [Trust Provisioner Overview](#trust-provisioner-overview)
 - [Setting up Trust Provisioner](#setting-up-trust-provisioner)
   - [Install Trust Provisioner](#install-trust-provisioner)
@@ -21,12 +26,7 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
   - [Private Keys](#private-keys)
   - [TrustList](#trustlist)
   - [Trust Provisioner Database](#trust-provisioner-database)
-  -
-## Features
-- Generating and managing Key Pairs for upper level IoT parties
-- Generating and managing Trust Lists
-- Provides databases for storing keys and Trust Lists
-- Creating and registering Virgil Cards of upper level IoT parties on Virgil Security Platform
+  
 
 ## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
