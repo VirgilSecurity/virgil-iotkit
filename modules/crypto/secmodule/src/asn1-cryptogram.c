@@ -284,7 +284,7 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
         _asn1_skip(SEQUENCE, &pos, virgil_public_key_sz, virgil_public_key) &&
         _asn1_get_array(BIT_STRING, &pos, virgil_public_key_sz, virgil_public_key, &key, &key_sz)) {
 
-        if (key_sz > 66 || key_sz < 64)
+        if (key_sz > 66 || key_sz < 65)
             return false;
 
         *public_key = (uint8_t *)&key[key_sz - 65];
@@ -352,14 +352,8 @@ vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
         _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_r, &r_sz) &&
         _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_s, &s_sz)) {
 
-        CHECK_RET(r_sz >= secp_mpi_sz && r_sz <= secp_mpi_sz + 2,
-                  VS_CODE_ERR_CRYPTO,
-                  "Incorrect signature r_part size %d",
-                  r_sz);
-        CHECK_RET(s_sz >= secp_mpi_sz && s_sz <= secp_mpi_sz + 2,
-                  VS_CODE_ERR_CRYPTO,
-                  "Incorrect signature s_part size %d",
-                  s_sz);
+        CHECK_RET(r_sz != 0 && r_sz <= secp_mpi_sz + 2, VS_CODE_ERR_CRYPTO, "Incorrect signature r_part size %d", r_sz);
+        CHECK_RET(s_sz != 0 && s_sz <= secp_mpi_sz + 2, VS_CODE_ERR_CRYPTO, "Incorrect signature s_part size %d", s_sz);
 
         if (0 == p_r[0]) {
             p_r += r_sz - secp_mpi_sz;
