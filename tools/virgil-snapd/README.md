@@ -26,8 +26,29 @@ Virgil SnapD is distributed as a package.
 In order to download and install the Virgil SnapD on Linux, use the YUM package manager and the following command:
 
 ```bash
-yum -y install virgil-iot-sdk-snapd
+$ sudo install virgil-iot-sdk-snapd
 ```
+
+#### Ubuntu, Debian
+Virgil SnapD is distributed as a package.
+
+In order to download and install the Virgil SnapD on Ubuntu, Debian, use the YUM package manager and the following command:
+```bash
+$ sudo apt-get install virgil-iot-sdk-snapd
+```
+
+#### CentOS, Fedora
+Virgil SnapD is distributed as a package.
+
+In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM package manager and the following command:
+
+```bash
+$ sudo yum install virgil-iot-sdk-snapd
+```
+#### MacOS
+
+ 
+
 
 ### Configure and run SnapD
 By default SnapD works under http://localhost:8080/, if other is not specified for the `SNAPD_SERVICE_PORT` variable.
