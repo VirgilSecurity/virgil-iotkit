@@ -2,21 +2,24 @@
 The Virgil Trust Provisioner is a command-line interface (CLI) used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
 
 ## Content
-- [Overview](#virgil-trust-provisioner-overview)
-- [Setting Up](#setting-up-virgil-trust- provisioner)
+- [Features](#features)
+- [Trust Provisioner Overview](#trust-provisioner-overview)
+- [Setting up Trust Provisioner](#setting-up-trust- provisioner)
+  - [Install Trust Provisioner](#install-trust-provisioner)
   - [Linux OS](#linux-os)
   - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
   - [Cent OS, Fedora OS](#cent-os-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
+  - [Configure Trust Provisioner](#configure-trust-provisioner)
 
-#### Virgil Trust Provisioner Features
+## Features
 - Generating and managing Key Pairs for upper level IoT parties
 - Generating and managing Trust Lists
 - Provides databases for storing keys and Trust Lists
 - Creating and registering Virgil Cards of upper level IoT parties on Virgil Security Platform
 
-## Virgil Trust Provisioner Overview
+## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
 
 Nowadays, each IoT device interacts with lots of services and application to provide the necessary features for end-users. At the same time, it's important to be sure that each IoT device is protected from unauthorized access at any its lifecycle stage, therefore each party and process have to be identifiable, verifiable and trusted.
@@ -34,10 +37,10 @@ The diagram below demonstrates a standard IoT infrastructure and its parties tha
 
 Virgil Trust Provisioner helps you to build up a trusted IoT solution ecosystem by creating and managing necessary key pairs and distibuted trust list for all participants. Then the keys and Trust Lists are distributed to all participants (e.g. IoT devices, user application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
 
-## Setting up Virgil Trust Provisioner
+## Setting up Trust Provisioner
 This section demonstrates on how to install and configure Virgil Trust Provisioner for preferred platform.
 
-### Install Virgil Trust Provisioner
+### Install Trust Provisioner
 This section provides instructions for installing Virgil Trust Provisioner.
 
 #### Linux OS
@@ -81,7 +84,7 @@ $ make vs-tool-virgil-device-registrar
 Virgil Trust Provisioner package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
 
 
-### Configure Virgil Trust Provisioner
+### Configure Trust Provisioner
 After the KeyManer installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the KeyManager repository.  While it is here, every time you launch the KeyManager you have to specify the path to the config file:
 
 ```bash
