@@ -67,7 +67,7 @@ In order to download and install the Virgil Trust Provisioner on CentOS, Fedora,
 $ sudo yum install virgil-iot-sdk-tools
 ```
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](#https://cmake.org).
+At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
