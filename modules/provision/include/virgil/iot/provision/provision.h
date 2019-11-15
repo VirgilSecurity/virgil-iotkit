@@ -49,13 +49,13 @@
  * \code
 vs_status_e ret_code;                   // Result code
 vs_storage_op_ctx_t tl_storage_impl;    // Trust List storage implementation
-vs_secmodule_impl_t *secmod_impl;       // Security Module implementation
+vs_secmodule_impl_t *secmodule_impl;    // Security Module implementation
 vs_storage_op_ctx_t slots_storage_impl; // Slots storage implementation
 
 // Initialize tl_storage_impl, secmod_impl, slots_storage_impl
 
 // Security module can be initialized by software implementation
-secmod_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 STATUS_CHECK(vs_provision_init(&tl_storage_impl, secmod_impl), "Unable to initialize Provision Module");
 
