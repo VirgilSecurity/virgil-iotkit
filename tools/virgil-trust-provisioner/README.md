@@ -107,7 +107,7 @@ Virgil Trust Provisioner package for Windows OS is currently in development. To 
 
 
 ### Configure Trust Provisioner
-After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the Trust Provisioner repository. While it is here, every time you launch the KeyManager you have to specify the path to the config file:
+After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the Trust Provisioner repository. While it is here, every time you launch the Trust Provisioner you have to specify the path to the config file:
 
 ```bash
 virgil-trust-provisioner -c ./test_fs/provisioner.conf
@@ -760,7 +760,7 @@ Trust List that contains Public Keys and signatures (signatures of Auth Key and 
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ keymanager
+$ virgil-trust-provisioner
 
 # Specify the cli command
 
