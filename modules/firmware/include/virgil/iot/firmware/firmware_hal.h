@@ -37,6 +37,7 @@
  *
  * This header contains Firmware HAL signatures that Firmware library uses.
  *
+ * \warning Firmware library uses functions listed below. They must be available for linking.
  */
 
 #ifndef VS_FIRMWARE_INTERFACE_H

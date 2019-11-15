@@ -34,6 +34,10 @@
 
 /*! \file prvs-client.h
  * \brief PRVS for client
+ *
+ * \warning #vs_snap_prvs_client_impl_t implementation has to be provided for #vs_snap_prvs_client call
+ *
+ * \note In next release default implementation for Firmware and Trust List will be provided.
  */
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_PRVS_CLIENT_H

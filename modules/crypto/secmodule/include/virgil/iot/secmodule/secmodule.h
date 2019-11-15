@@ -39,7 +39,7 @@
  * This header contains #vs_secmodule_impl_t structure that is used for crypto operations.
  * User needs to return this function for library with crypto callbacks.
  *
- * Library provides standard software implementation. See \ref vs-secmodule-usage for example.
+ * \note Library provides standard software implementation. See \ref vs-secmodule-usage for example.
  *
  * \code
 

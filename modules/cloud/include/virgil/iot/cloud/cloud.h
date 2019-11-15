@@ -52,6 +52,10 @@
  * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud library uses
  * provision and firmware modules, which must be initialized before.
  *
+ * \note #vs_cloud_init requires #vs_cloud_impl_t, #vs_cloud_message_bin_impl_t and #vs_secmodule_impl_t implementations.
+ * You can provide yours or use standard ones : #vs_curl_http_impl() that uses cURL HTTP, #vs_aws_message_bin_impl() that
+ * implements MQTT, #vs_soft_secmodule_impl() that returns software security module implementation.
+ *
  *  Here you can see an example of Cloud library initialization :
  *
  *  \code

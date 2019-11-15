@@ -98,7 +98,9 @@ extern "C" {
  * This callback is used when gateway receives request for file type that has not been added by
  * #vs_fldt_server_add_file_type call.
  *
- * \warning Valid pointer to the update context with all callback must be provided.
+ * \warning Valid pointer to the update context with all implementations must be provided.
+ *
+ * \note In next release default implementation for Firmware and Trust List will be provided.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
