@@ -84,7 +84,7 @@ thing service and downloading firmware images and trust list files from cloud st
 - Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html).
 - [Firmware](https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
 - [Logger](https://virgilsecurity.github.io/virgil-iot-sdk/logger_8h.html) : tool to output logging messages to screen, file etc. See [HAL functions declarations](https://virgilsecurity.github.io/virgil-iot-sdk/logger-hal_8h.html) for its implementation.
-- Provision.
+- [Provision](https://virgilsecurity.github.io/virgil-iot-sdk/provision_8h.html) : Trust List keys reading and verifying.
 - Secbox.
 - Protocols.
 - Cloud.

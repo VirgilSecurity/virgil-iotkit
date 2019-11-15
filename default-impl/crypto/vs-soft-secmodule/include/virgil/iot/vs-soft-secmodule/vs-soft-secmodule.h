@@ -58,7 +58,7 @@
  *
  * \param[in] slots_storage_impl Storage context. Must not be NULL.
  *
- * \return SECMODULE implementation
+ * \return Security Module implementation
  */
 vs_secmodule_impl_t *
 vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl);

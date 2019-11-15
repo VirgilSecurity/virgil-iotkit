@@ -35,9 +35,41 @@
 /*! \file provision-structs.h
  * \brief Provision interface structures
  *
- * \section provision_structures_usage Provision structure usage
+ * \section provision_structures_usage Provision structures usage
  *
- * TODO : manufacture, device id initialization
+ * See \ref provision_usage for Provision module initialization and call.
+ *
+ * Device has 3 identifiers that are used by Cloud and Update interfaces : manufacture ID, device type and device serial
+number,
+ * #vs_device_manufacture_id_t, #vs_device_type_t and #vs_device_serial_t respectively. They must be initialized before
+ * any Virgil IoT calls.
+ *
+ * There is manufacture ID initialization example provided below :
+ *
+ * \code
+
+void
+init_manufacture_id(vs_device_manufacture_id_t manufacture_id, void *src_data) {
+    size_t pos;
+    const uint8_t *raw_data = src_data;
+
+    memset(manufacture_id, 0, sizeof(vs_device_manufacture_id_t));
+
+    for (pos = 0; pos < sizeof(vs_device_manufacture_id_t) && raw_data[pos]; ++pos) {
+        manufacture_id[pos] = raw_data[pos];
+    }
+}
+
+// in main:
+vs_device_manufacture_id_t manufacture_id;
+
+// MANUFACTURE_ID is the compile time ASCII constant provided by -D compilation parameter
+init_manufacture_id(manufacture_id, MANUFACTURE_ID);
+
+ * \endcode
+ *
+ * You can use function like this for device type filling and device serial number.
+ *
  */
 
 #ifndef VS_IOT_PROVISION_STRUCTS_H
@@ -61,29 +93,44 @@
 #define HTONS_IN_COMPILE_TIME(val) (val)
 #endif
 
-/*The start time point for all timestamp variables. January 1, 2015 UTC*/
-#define START_EPOCH (1420070400);
+/** The start time point for UNIX time format
+ *
+ * Timestamps are stored as seconds since January 1, 2015 UTC. This is constant for UNIX time conversions
+ */
+#define VS_START_EPOCH (1420070400);
 
-#define VS_DEVICE_SERIAL_SIZE (32) /*This is size of SHA256 data*/
+/** Device serial ID size */
+#define VS_DEVICE_SERIAL_SIZE (32)
+
+/** Manufacture ID size */
 #define VS_DEVICE_MANUFACTURE_ID_SIZE (16)
+
+/** Device type size */
 #define VS_DEVICE_TYPE_SIZE (4)
 
-/** "Manufacture ID" type
+/** Manufacture ID type
  *
- * This is manufacture identifier contains ASCII symbols and trailing zeroes.
+ * This is manufacture identifier containing ASCII symbols and trailing zeroes.
  */
 typedef uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE];
-/** "Device type" type
+
+/** Device type type
  *
  * This is device type identifier contains ASCII symbols and trailing zeroes.
+ *
  */
 typedef uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE];
 
-/** "Device serial number" type */
+/** Device serial number type
+ *
+ * This is device serial number identifier contains ASCII symbols and trailing zeroes.
+ *
+ */
 typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmultichar"
+
 /** PRVS SNAP service code */
 typedef enum { VS_PRVS_SERVICE_ID = HTONL_IN_COMPILE_TIME('PRVS') } vs_prvs_t;
 
@@ -154,7 +201,6 @@ typedef struct __attribute__((__packed__)) {
     uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;
 
-// TODO : dates - in which units??? time_t ??? Or since 1 Jan 2015 ???
 /** Public key with date information */
 typedef struct __attribute__((__packed__)) {
     uint32_t start_date;  /**< Start date */
@@ -162,20 +208,27 @@ typedef struct __attribute__((__packed__)) {
     vs_pubkey_t pubkey;   /**< Public key */
 } vs_pubkey_dated_t;
 
+/** File version information */
 typedef struct __attribute__((__packed__)) {
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint32_t build;
-    uint32_t timestamp; // the number of seconds elapsed since January 1, 2015 UTC
+    uint8_t major;      /**< Major version number */
+    uint8_t minor;      /**< Minor version number */
+    uint8_t patch;      /**< Patch number */
+    uint32_t build;     /**< Build number */
+    uint32_t timestamp; /**< The number of seconds since #VS_START_EPOCH */
 } vs_file_version_t;
 
+/** File information */
 typedef struct __attribute__((__packed__)) {
-    vs_device_manufacture_id_t manufacture_id;
-    vs_device_type_t device_type;
-    vs_file_version_t version;
+    vs_device_manufacture_id_t manufacture_id; /**< Manufacture ID */
+    vs_device_type_t device_type;              /**< Device type */
+    vs_file_version_t version;                 /**< File version */
 } vs_file_info_t;
 
+/** Find context
+ *
+ * This structure is used by #vs_provision_tl_find_first_key, #vs_provision_tl_find_next_key keys. This is internal one
+ * and does not need to be neither initialized nor analyzed by user.
+ */
 typedef struct {
     int last_pos;
     vs_key_type_e key_type;

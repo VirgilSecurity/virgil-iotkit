@@ -724,9 +724,9 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     CHECK_NOT_ZERO_RET(buf_size, NULL);
 
 #ifdef VS_IOT_ASCTIME
-    time_t timestamp = fw_ver->timestamp + START_EPOCH;
+    time_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
 #else
-    uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
+    uint32_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
 #endif //   VS_IOT_ASCTIME
 
     VS_IOT_SNPRINTF(buffer,

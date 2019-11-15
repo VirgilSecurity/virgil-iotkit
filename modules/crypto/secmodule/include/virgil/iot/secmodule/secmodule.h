@@ -444,10 +444,10 @@ typedef vs_status_e (*vs_secmodule_sw_sha256_update_t)(vs_secmodule_sw_sha256_ct
  */
 typedef vs_status_e (*vs_secmodule_sw_sha256_final_t)(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest);
 
-/** Callback for SECMODULE destruction */
+/** Callback for Security Module destruction */
 typedef void (*vs_secmodule_deinit_t)(void);
 
-/** SECMODULE implementation
+/** Security Module implementation
  *
  * This structure contains all callbacks needed for cryptographic operations.
  * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC,

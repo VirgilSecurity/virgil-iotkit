@@ -246,7 +246,7 @@ typedef struct __attribute__((__packed__)) {
  * Firmware initialization has to be done before first Firmware calls.
  *
  * \param[in] ctx #vs_storage_op_ctx_t storage context. Must not be NULL.
- * \param[in] secmodule #vs_secmodule_impl_t SECMODULE implementation. Must not be NULL.
+ * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
  *
