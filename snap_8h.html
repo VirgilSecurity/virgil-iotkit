@@ -129,6 +129,7 @@ Functions</h2></td></tr>
 <li>FLDT : file data broadcast sent by server for clients to upgrade software. See #fldt_client_usage and #fldt_server_usage for details</li>
 <li>INFO : devices information sent by clients for server to notify current software usage.</li>
 </ul>
+<dl class="section warning"><dt>Warning</dt><dd>User has to provide network interface for <a class="el" href="snap_8h.html#a87bd3294eb685e92c4d98001f8185050" title="Init SNAP.">vs_snap_init</a> call. As UDP broadcast example user can use c-implementation tool.</dd></dl>
 <p>User can add his own protocols base on SNAP. It is necessary to provide service callbacks by filling <a class="el" href="structvs__snap__service__t.html" title="SNAP service descriptor.">vs_snap_service_t</a> structure and register service by <a class="el" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862" title="Register SNAP service.">vs_snap_register_service</a> call. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a8013e8ceba4e171069ad55fc3e7ed9f3"></a>
