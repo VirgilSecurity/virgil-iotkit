@@ -13,15 +13,16 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 
 ## Content
 - [Features](#features)
-- [Run Demo](#run-demo)
 - [IoT Dev Tools](#iot-dev-tools)
-- [IoTKit Installation](#iotkit-installation)
+  - []
+- [Run IoTKit Demo](#run-iotkit-demo)
+- [IoTKit Modules](#modules)
+- [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Ubuntu, Debian OS](#ubuntu-debian-os)
   - [CentOS, Fedora OS](#centos-fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
-- [Modules](#modules)
 - [Tests](#tests)
 - [API Reference](#api-reference)
 - [License](#license)
@@ -36,6 +37,32 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Protocols Module**. IoTKit provides a flexible, programmable and security network adaptive protocol (SNAP) for device-to-device, device-to-cloud, and cloud-to-device communication. SNAP can be used for secure firmware distribution, secure notification about device state, secure device provision. Also, SNAP contains a set of functions and interfaces that allows you to work with any transport protocol (BLE, Wi-Fi, PLC, NoiseSocket, etc.).  
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interacts with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
+
+## IoT Dev Tools
+Virgil Security also provides set of tools for secure device lifecycle. 
+- **Virgil Trust Provisioner**. The Virgil Trust Provisioner is a CLI used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions. The CLI is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution. To start working with the tool read more [here](/tools/virgil-trust-provisioner)
+- **Virgil Device Initializer**. In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud. Virgil Device Initializer allows you to make IoT device provoisioning and prepare your IoT device (create digital cards) for its further registration in Virgil Cloud. To start working with the tool read more [here](/tools/virgil-device-initializer)
+- **Virgil Device Registrar**. Virgil IoT Device Registrar is used to registrar IoT devices and their digital cards in the Virgil Security Cloud. To start working with the tool read more [here](/tools/virgil-device-registrar)
+- **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer)
+- **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
+
+
+## Run IoTKit Demo
+To demostrate you our IoTKit in action we developed Demo for NIX systems based on IoTKit toolkits.
+
+The IoTKit NIX Demo demontsrates....
+
+
+## IoTKit Modules
+- [Cloud](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : Cloud library for obtaining credentials from
+thing service and downloading firmware images and trust list files from cloud storage.
+- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html).
+- [Firmware](https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
+- Provision.
+- Secbox.
+- Protocols.
+- Cloud.
+- Logger.
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
@@ -79,22 +106,6 @@ cmake version 3.11.0
 ### Windows OS
 Virgil IoTKit for Windows OS is currently in development. To be included to information update list please contact our support team: support@VirgilSecurity.com.
 
-## IoT Dev Tools
-- KeyManager
-- Factory Initializer
-- IoT Device Registrar
-- Firmware Signer
-
-## Modules
-- [Cloud](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : Cloud library for obtaining credentials from
-thing service and downloading firmware images and trust list files from cloud storage.
-- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iot-sdk/crypto__format__converters_8h.html).
-- [Firmware](https://virgilsecurity.github.io/virgil-iot-sdk/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
-- Provision.
-- Secbox.
-- Protocols.
-- Cloud.
-- Logger.
 
 ## Tests
 
