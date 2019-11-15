@@ -20,7 +20,24 @@ Virgil Firmware Signer is distributed as a package.
 In order to download and install the Virgil Firmware Signer on Linux, use the YUM package manager and the following command:
 
 ```bash
-yum -y install virgil-iot-sdk-tools
+$ sudo apt-get install virgil-iot-sdk-tools
+```
+
+#### Ubuntu, Debian
+Virgil Firmware Signer is distributed as a package.
+
+In order to download and install the Virgil Firmware Signer on Ubuntu, Debian, use the YUM package manager and the following command:
+```bash
+$ sudo apt-get install virgil-iot-sdk-tools
+```
+
+#### CentOS, Fedora
+Virgil Firmware Signer is distributed as a package.
+
+In order to download and install the Virgil Firmware Signer on CentOS, Fedora, use the YUM package manager and the following command:
+
+```bash
+$ sudo yum install virgil-iot-sdk-tools
 ```
 
 ### Configure Virgil Firmware Signer

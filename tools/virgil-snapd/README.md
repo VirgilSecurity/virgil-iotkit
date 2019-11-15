@@ -47,7 +47,7 @@ $ sudo yum install virgil-iot-sdk-snapd
 ```
 #### MacOS
 
- 
+
 
 
 ### Configure and run SnapD

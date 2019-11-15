@@ -36,10 +36,30 @@ This section demonstrates on how to install and configure Virgil Trust Provision
 This section provides instructions for installing Virgil Trust Provisioner.
 
 #### Linux OS
+Virgil Trust Provisioner is distributed as a package.
+
 In order to download and install the Virgil Trust Provisioner on Linux, use the YUM package manager and the following command:
 
 ```bash
-yum -y install virgil-iot-sdk-tools
+$ sudo apt-get install virgil-iot-sdk-tools
+```
+
+#### Ubuntu, Debian
+Virgil Trust Provisioner is distributed as a package.
+
+In order to download and install the Virgil Trust Provisioner on Ubuntu, Debian, use the YUM package manager and the following command:
+
+```bash
+$ sudo apt-get install virgil-iot-sdk-tools
+```
+
+#### CentOS, Fedora
+Virgil Trust Provisioner is distributed as a package.
+
+In order to download and install the Virgil Trust Provisioner on CentOS, Fedora, use the YUM package manager and the following command:
+
+```bash
+$ sudo yum install virgil-iot-sdk-tools
 ```
 
 ### Configure Virgil Trust Provisioner

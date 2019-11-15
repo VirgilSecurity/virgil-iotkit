@@ -31,10 +31,28 @@ This section provides instructions for installing Virgil IoT Device Registrar.
 
 #### Linux OS
 Virgil Device Registrar is distributed as a package.
+
 In order to download and install the Virgil Device Registrar on Linux, use the YUM package manager and the following command:
 
 ```bash
 yum -y install virgil-iot-sdk-tools
+```
+
+#### Ubuntu, Debian
+Virgil Virgil Device Registrar is distributed as a package.
+
+In order to download and install the Virgil Device Registrar on Ubuntu, Debian, use the YUM package manager and the following command:
+```bash
+$ sudo apt-get install virgil-iot-sdk-tools
+```
+
+#### CentOS, Fedora
+Virgil Virgil Device Registrar is distributed as a package.
+
+In order to download and install the Virgil Device Registrar on CentOS, Fedora, use the YUM package manager and the following command:
+
+```bash
+$ sudo yum install virgil-iot-sdk-tools
 ```
 
 ## Command Reference
