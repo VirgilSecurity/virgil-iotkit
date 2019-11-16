@@ -117,6 +117,7 @@ Virgil IoTKit for Windows OS is currently in development. To be included to info
 
 
 ## Tests
+To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.
 
 ## API Reference
 - [API Reference of IoTKit](http://VirgilSecurity.github.io/virgil-iot-sdk)
