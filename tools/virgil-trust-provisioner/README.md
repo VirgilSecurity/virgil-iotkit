@@ -48,6 +48,10 @@ Nowadays, each IoT device interacts with lots of services and application to pro
 
 The diagram below demonstrates a standard IoT infrastructure and its parties that have to be identifiable and verifiable as a part of distributed trust.
 
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/provisioner.jpg" align="left" hspace="3" vspace="6"> &nbsp;
+
+
+
 | Participant            | Role                                                                                                                                                                 |
 |------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Auth and Recovery Keys | Upper Level Keys that are responsible for secure Trust Lists and participants's key pairs management                                                                 |
