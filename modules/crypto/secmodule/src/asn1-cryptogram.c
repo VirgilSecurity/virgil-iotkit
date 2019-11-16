@@ -290,7 +290,7 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_k
     const uint8_t *p_ar = 0;
 
     // OID of public key
-    if (!_asn1_step_into(SEQUENCE, &pos, virgil_key_sz, virgil_public_key) ||
+    if (!_asn1_step_into(SEQUENCE, &pos, virgil_key_sz, virgil_public_key) || //-V501
         !_asn1_step_into(SEQUENCE, &pos, virgil_key_sz, virgil_public_key) || //-V501
         !_asn1_skip(OID, &pos, virgil_key_sz, virgil_public_key) ||
         !_asn1_get_array(
