@@ -49,7 +49,16 @@ Virgil Security also provides set of tools for secure device lifecycle.
 ## Run IoTKit Demo
 To demostrate you our IoTKit in action we developed Demo for NIX systems based on IoTKit toolkits.
 
-The IoTKit NIX Demo demontsrates....
+The IoTKit NIX Demo demontsrates on how to:
+- **Generate trusted provisioning package**. Use Virgil CLI for generating provisioning files, such as private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
+- **Securely perform IoT device provisioning**. Use Virgil toolkits for IoT devices provisioning to make them identifiable, verifiable and trusted. Securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
+- **Register IoT devices on the security platform**. Use Virgil CLI to securely and easily sign and register digital cards of IoT devices at Virgil Cloud for further device authentication and management.
+- **Manage verifiable firmware and trust lists**. Use Virgil toolkits to sign and manage firmware and trust lists, and securely distribute them to IoT devices.
+- **Securely update firmware and trust list on IoT devices**. Use Virgil services to notify provisioned IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
+
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png" align="left" hspace="0" vspace="6"> &nbsp;
+
+To start working with the Demo head over to Demo [IoT Nix GitHub](https://github.com/VirgilSecurity/demo-iotkit-nix) repository and follow the instructions in the README.
 
 
 ## IoTKit Modules
