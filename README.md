@@ -47,7 +47,7 @@ Virgil Security also provides set of tools for secure device lifecycle.
 
 
 ## Run IoTKit Demo
-To demonstrate you our IoTKit in action we developed Demo for NIX systems based on IoTKit toolkits.
+To demonstrate our IoTKit in action we developed [Demo for NIX systems based on IoTKit toolkits](https://github.com/VirgilSecurity/demo-iotkit-nix).
 
 The IoTKit Demo is conditionally divided into 3 actors (Vendor, Factory and End-user) and shows secure lifecycle of IoT devices. The IoTKit Demo allows you to:
 - **Generate trusted provisioning package**. To start working with emulated IoT infrastructure the Demo uses Virgil Trust Provisioner utility for generating provisioning files, such as private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
