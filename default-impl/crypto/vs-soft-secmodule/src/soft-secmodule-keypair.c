@@ -103,8 +103,6 @@
 #define LOG_PRVKEY(BUF)                                                                                                \
     do {                                                                                                               \
         VS_LOG_DEBUG("Private key size : %d", (BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF]);                                        \
-        VS_LOG_HEX(                                                                                                    \
-                VS_LOGLEV_DEBUG, "Private key : ", (BUF) + KEYPAIR_BUF_PRVKEY_OFF, (BUF)[KEYPAIR_BUF_PRVKEYSZ_OFF]);   \
     } while (0)
 
 #define ADD_PUBKEYSZ(BUF, KEYPAIR_BUF, KEYSZ)                                                                          \
@@ -120,10 +118,6 @@
 #define LOG_PUBKEY(BUF)                                                                                                \
     do {                                                                                                               \
         VS_LOG_DEBUG("Public key size : %d", (BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)]);                                    \
-        VS_LOG_HEX(VS_LOGLEV_DEBUG,                                                                                    \
-                   "Public key : ",                                                                                    \
-                   (BUF) + KEYPAIR_BUF_PUBKEY_OFF(BUF),                                                                \
-                   (BUF)[KEYPAIR_BUF_PUBKEYSZ_OFF(BUF)]);                                                              \
     } while (0)
 
 /********************************************************************************/
@@ -451,7 +445,6 @@ vs_secmodule_keypair_get_pubkey(vs_iot_secmodule_slot_e slot,
                  pubkey_sz,
                  get_slot_name(slot),
                  vs_secmodule_keypair_type_descr(*keypair_type));
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Public key : ", buf, *key_sz);
 
     ret_code = VS_CODE_OK;
 
@@ -499,7 +492,6 @@ vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
                  prvkey_sz,
                  get_slot_name(slot),
                  vs_secmodule_keypair_type_descr(*keypair_type));
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Private key : ", buf, *key_sz);
 
     ret_code = VS_CODE_OK;
 

@@ -118,7 +118,6 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
     *hash_sz = vsc_buffer_len(&out_data);
 
     VS_LOG_DEBUG("Hash size %d, type %s", *hash_sz, vs_secmodule_hash_type_descr(hash_type));
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Hash : ", hash, *hash_sz);
 
     res = VS_CODE_OK;
 
@@ -306,14 +305,12 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
     *signature_sz = vsc_buffer_len(&sign_data);
 
     VS_LOG_DEBUG("Internal signature size : %d bytes", *signature_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Internal signature : ", vsc_buffer_begin(&sign_data), *signature_sz);
 
     CHECK(vs_converters_mbedtls_sign_to_raw(
                   keypair_type, vsc_buffer_begin(&sign_data), *signature_sz, signature, signature_buf_sz, signature_sz),
           "Unable to convert Virgil signature format to the raw one");
 
     VS_LOG_DEBUG("Output signature size : %d bytes", *signature_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Output signature : ", signature, *signature_sz);
 
     res = VS_CODE_OK;
 
@@ -354,7 +351,6 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
           "Unable to convert Virgil signature format to the raw one");
 
     VS_LOG_DEBUG("Internal signature size : %d bytes", int_sign_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Internal signature : ", int_sign, int_sign_sz);
 
     STATUS_CHECK(_create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey), "Unable to create public key");
 
