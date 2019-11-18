@@ -44,6 +44,7 @@ target_sources(vs-module-secmodule
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/secmodule-helpers.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/secmodule/devices/secmodule-soft.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/asn1-cryptogram.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/secmodule-helpers.c
