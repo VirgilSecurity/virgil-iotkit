@@ -72,6 +72,8 @@ The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macO
 // TODO : TO REMOVE
 - Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support
 
+<div id='modules'/>
+
 ## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
@@ -143,18 +145,6 @@ $ scripts/install-virgil-crypto.sh
 - Factory Initializer
 - IoT Device Registrar
 - Firmware Signer
-
-<div id='modules'/>
-
-## Modules
-- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : Cloud library for obtaining credentials from
-thing service and downloading firmware images and trust list files from cloud storage.
-- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
-- [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
-- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html) : tool to output logging messages to screen, file etc. See [HAL functions declarations](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for its implementation.
-- [Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html) : Trust List keys reading and verifying.
-- Secbox.
-- Protocols.
 
 <div id='tests'/>
 
