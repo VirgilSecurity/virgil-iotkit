@@ -35,6 +35,7 @@
 package initializer
 
 import (
+    "encoding/base64"
     "fmt"
     "io/ioutil"
     "path/filepath"
@@ -186,7 +187,7 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
             if err != nil {
                 return err
             }
-            fmt.Printf("Device info: %s\n", deviceInfo)
+            fmt.Println("Device info:", base64.StdEncoding.EncodeToString(deviceInfo))
             if err := deviceInfoPersistenceManager.Persist((string)(deviceInfo)); err != nil {
                 return err
             }
