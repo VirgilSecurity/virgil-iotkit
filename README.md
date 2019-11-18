@@ -79,7 +79,10 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
 - **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
 - Provision.
 - Secbox.
-- Protocols.
+- **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
+  - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
+  - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
+  - PRVS : service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
 - Cloud.
 - Logger.
 
