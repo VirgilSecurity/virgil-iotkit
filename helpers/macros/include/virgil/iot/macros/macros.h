@@ -162,15 +162,4 @@
  */
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
 
-#define CHECK_BOOL(OPERATION, DESCRIPTION, ...)                                                                        \
-    do {                                                                                                               \
-        if (!(OPERATION)) {                                                                                            \
-            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
-
-// TODO : make real mem alloc or remove it !!!
-#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) CHECK_BOOL(OPERATION, DESCRIPTION, ##__VA_ARGS__)
-
 #endif // VS_MACROS_H

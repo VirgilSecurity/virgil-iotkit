@@ -143,9 +143,7 @@ vs_secmodule_secp256r1_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule
                  vs_secmodule_keypair_type_descr(keypair_type),
                  get_slot_name(slot));
 
-    CHECK_MEM_ALLOC(prvkey_ctx = vscf_secp256r1_private_key_new(),
-                    "Unable to allocate memory for slot %s",
-                    get_slot_name(slot));
+    CHECK(prvkey_ctx = vscf_secp256r1_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
 
     CHECK_VSCF(vscf_secp256r1_private_key_setup_defaults(prvkey_ctx),
                "Unable to initialize defaults for private key class");
@@ -164,9 +162,8 @@ vs_secmodule_secp256r1_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule
 
     LOG_PRVKEY(buf);
 
-    CHECK_MEM_ALLOC(pubkey_ctx =
-                            (vscf_secp256r1_public_key_t *)vscf_secp256r1_private_key_extract_public_key(prvkey_ctx),
-                    "Unable to generate public key memory");
+    CHECK(pubkey_ctx = (vscf_secp256r1_public_key_t *)vscf_secp256r1_private_key_extract_public_key(prvkey_ctx),
+          "Unable to generate public key memory");
 
     key_sz = vscf_secp256r1_public_key_exported_public_key_len(pubkey_ctx);
     ADD_PUBKEYSZ(buf, keypair_buf, key_sz);
@@ -212,9 +209,7 @@ vs_secmodule_curve25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodul
                  vs_secmodule_keypair_type_descr(keypair_type),
                  get_slot_name(slot));
 
-    CHECK_MEM_ALLOC(prvkey_ctx = vscf_curve25519_private_key_new(),
-                    "Unable to allocate memory for slot %s",
-                    get_slot_name(slot));
+    CHECK(prvkey_ctx = vscf_curve25519_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
 
     CHECK_VSCF(vscf_curve25519_private_key_setup_defaults(prvkey_ctx),
                "Unable to initialize defaults for private key class");
@@ -234,9 +229,8 @@ vs_secmodule_curve25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodul
 
     LOG_PRVKEY(buf);
 
-    CHECK_MEM_ALLOC(pubkey_ctx =
-                            (vscf_curve25519_public_key_t *)vscf_curve25519_private_key_extract_public_key(prvkey_ctx),
-                    "Unable to generate public key memory");
+    CHECK(pubkey_ctx = (vscf_curve25519_public_key_t *)vscf_curve25519_private_key_extract_public_key(prvkey_ctx),
+          "Unable to generate public key memory");
 
     key_sz = vscf_curve25519_public_key_exported_public_key_len(pubkey_ctx);
     ADD_PUBKEYSZ(buf, keypair_buf, key_sz);
@@ -282,8 +276,7 @@ vs_secmodule_ed25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_k
                  vs_secmodule_keypair_type_descr(keypair_type),
                  get_slot_name(slot));
 
-    CHECK_MEM_ALLOC(
-            prvkey_ctx = vscf_ed25519_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
+    CHECK(prvkey_ctx = vscf_ed25519_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
 
     CHECK_VSCF(vscf_ed25519_private_key_setup_defaults(prvkey_ctx),
                "Unable to initialize defaults for private key class");
@@ -302,8 +295,8 @@ vs_secmodule_ed25519_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_k
 
     LOG_PRVKEY(buf);
 
-    CHECK_MEM_ALLOC(pubkey_ctx = (vscf_ed25519_public_key_t *)vscf_ed25519_private_key_extract_public_key(prvkey_ctx),
-                    "Unable to generate public key memory");
+    CHECK(pubkey_ctx = (vscf_ed25519_public_key_t *)vscf_ed25519_private_key_extract_public_key(prvkey_ctx),
+          "Unable to generate public key memory");
 
     key_sz = vscf_ed25519_public_key_exported_public_key_len(pubkey_ctx);
     ADD_PUBKEYSZ(buf, keypair_buf, key_sz);
@@ -349,8 +342,7 @@ vs_secmodule_rsa_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypa
                  vs_secmodule_keypair_type_descr(keypair_type),
                  get_slot_name(slot));
 
-    CHECK_MEM_ALLOC(
-            prvkey_ctx = vscf_rsa_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
+    CHECK(prvkey_ctx = vscf_rsa_private_key_new(), "Unable to allocate memory for slot %s", get_slot_name(slot));
 
     CHECK_VSCF(vscf_rsa_private_key_setup_defaults(prvkey_ctx), "Unable to initialize defaults for private key class");
 
@@ -368,8 +360,8 @@ vs_secmodule_rsa_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypa
 
     LOG_PRVKEY(buf);
 
-    CHECK_MEM_ALLOC(pubkey_ctx = (vscf_rsa_public_key_t *)vscf_rsa_private_key_extract_public_key(prvkey_ctx),
-                    "Unable to generate public key memory");
+    CHECK(pubkey_ctx = (vscf_rsa_public_key_t *)vscf_rsa_private_key_extract_public_key(prvkey_ctx),
+          "Unable to generate public key memory");
 
     key_sz = vscf_rsa_public_key_exported_public_key_len(pubkey_ctx);
     ADD_PUBKEYSZ(buf, keypair_buf, key_sz);

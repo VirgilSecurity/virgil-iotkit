@@ -281,7 +281,7 @@ vs_provision_cloud_url(void) {
                               &search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
         !meta_sz) {
         _base_url = VS_IOT_MALLOC(meta_sz + 1);
-        CHECK_MEM_ALLOC(NULL != _base_url, "");
+        CHECK(NULL != _base_url, "");
         VS_IOT_MEMCPY(_base_url, meta, meta_sz);
         _base_url[meta_sz] = 0x00;
     }

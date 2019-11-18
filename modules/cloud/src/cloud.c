@@ -104,13 +104,13 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     ++b64_encrypted_sz;
     ++b64_signature_sz;
     crypto_answer_b64 = (char *)VS_IOT_MALLOC(b64_encrypted_sz);
-    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
+    CHECK(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
     CHECK(VS_JSON_ERR_OK ==
                   json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)(b64_encrypted_sz)),
           "Wrong JSON format");
 
     signature_b64 = (char *)VS_IOT_MALLOC(b64_signature_sz);
-    CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
+    CHECK(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
     CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)(b64_signature_sz)),
           "Wrong JSON format");
 
@@ -236,11 +236,10 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     CHECK_NOT_ZERO_RET(_hal_impl->http_request, VS_CODE_ERR_NOINIT);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
-    CHECK_MEM_ALLOC(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
+    CHECK(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
 
     uint8_t *request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
-    CHECK_MEM_ALLOC(
-            NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
+    CHECK(NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
 
     vs_impl_device_serial(serial_number);
 
