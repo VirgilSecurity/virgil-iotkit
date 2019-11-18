@@ -38,6 +38,8 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
   - [Database Security](#database-security)
   - [Database Commands](#database-commands)
     - [Print public keys from database](#print-public-keys-from-database)
+    - [Add Public Keys to Database](#add-public-keys-to-database)
+    - [Export data as provision package for Factory](#export-data-as-provision-package-for-factory)
     - [Export upper level public keys](#export-upper-level-public-keys)
     - [Export Private Keys](#export-private-keys)
 
