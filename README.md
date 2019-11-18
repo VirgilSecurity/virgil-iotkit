@@ -61,16 +61,6 @@ The IoTKit Demo is conditionally divided into 3 actors (Vendor, Factory and End-
 
 <div id='run-demo'/>
 
-## Requirements
-
-The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macOS.
-- Install make, CMake version 3.11 or higher for project building 
-- Install gcc or another toolchain for C/C++ compile
-- Install [Go](https://golang.org/) for utilities support
-- Install [git](https://git-scm.com/) for Virgil Crypto installation and update
-- Install [curl](https://curl.haxx.se/) for gateway target
-// TODO : TO REMOVE
-- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support
 
 ## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
@@ -92,7 +82,7 @@ Virgil IoTKit is distributed as a package. This section demonstrates on how to i
 To start working with Virgil IoTKit the following components are required:
 - CMake v3.11 or higher, for project building
 - GCC or another toolchain for C/C++ compile
-- [Go](https://golang.org/) library to work with Virgil IoT utilities
+- [Go](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/)
 
@@ -135,13 +125,6 @@ $ scripts/install-virgil-crypto.sh
 
 <div id='iot-dev-tools'/>
 
-## IoT Dev Tools
-- KeyManager
-- Factory Initializer
-- IoT Device Registrar
-- Firmware Signer
-
-<div id='modules'/>
 
 ## Modules
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : Cloud library for obtaining credentials from
@@ -181,7 +164,7 @@ Or you can initialize CMake variable :
 
 `set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/virgil-iotkit/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")`
 
-### Mandatory implementations 
+### Mandatory implementations
 Some modules use external implementations. It is necessary to implement HAL functions by user :
 
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) : structure **vs_storage_op_ctx_t**
@@ -216,7 +199,7 @@ for details.
 structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation
 is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
-### Mandatory implementations with default ones 
+### Mandatory implementations with default ones
 There are other modules that need user implementation, but Virgil IoT SDK provides default implementations for them :
 
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t**
