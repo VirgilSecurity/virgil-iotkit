@@ -210,7 +210,7 @@ Application commands are used to perform operations such as key generating, data
 |---------|--------------------------------|
 | ```9```      | Print all public keys from db  |
 | ```10```      | Add public key to db           |
-| ```11```      |                                |
+| ```11```      | Export data as provision package for Factory |
 | ```12```      | Export upper level public keys |
 | ```13```      | Export private keys            |
 
@@ -858,6 +858,7 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 | 11529  | firmware_internal |    3    |   My Firmware key   | 152236800 | 157680000 | BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4= |
 | 35430  |   auth_internal   |    3    | My AuthInternal key | 152236800 | 157680000 | BNbV+uCkGS9UOicMXgzXqiGWIYfD3CcI1+ssok7ZdGx5+9Wey7dr/kA+bON2L2//0e7zzmOIR1FFazeizzsP4tI= |
 +--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
+```
 
 #### Add Public Keys to Database
 
