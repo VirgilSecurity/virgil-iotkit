@@ -35,10 +35,49 @@
 /*! \file secbox.h
  * \brief Security Box implementation
  *
+ * Security Box provides the ability to save/load/delete data on external storage with security options.
+ * Data can be save with signature without encryption. Or it can be saved with signature and encryption.
+ *
+ * \section secbox_usage Security Box Usage
+ *
+ * \code
+
+    vs_storage_op_ctx_t secbox_storage_impl;                    // Storage for Security Box
+    vs_secmodule_impl_t *secmodule_impl;                        // Security Module
+    vs_secbox_type_t type = VS_SECBOX_SIGNED_AND_ENCRYPTED;     // Security operation type : signed and encrypted
+    vs_storage_element_id_t file_id = "SOME_FILE";              // File identifier
+    static char data_to_save[] = "Data to save";                // Data to be saved
+    static char data_to_load[128];                              // Read data buffer
+    ssize_t file_size;                                          // File size
+    size_t data_size = sizeof(data_to_save);                    // Data size
+
+    // Initialize secbox_storage_impl, secmodule_impl
+
+    // Security Module can be initialized by default software implementation
+    secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+
+    // Initialize security box
+    STATUS_CHECK(vs_secbox_init(&secbox_storage_impl, secmodule_impl), "Unable to initialize Secbox module");
+
+    // Save data
+    STATUS_CHECK(vs_secbox_save(type, file_id, data_to_save, data_size), "Unable to save data");
+
+    // Get file size
+    file_size = vs_secbox_file_size(file_id);
+    assert(file_size > 0);
+
+    // Load file
+    STATUS_CHECK(vs_secbox_load(file_id, data_to_load, data_size), "Unable to load data");
+
+    // Delete file
+    STATUS_CHECK(vs_secbox_del(file_id), "Unable to delete file");
+
+ * \endcode
+ *
  */
 
-#ifndef SECBOX_H
-#define SECBOX_H
+#ifndef VS_IOT_SECBOX_H
+#define VS_IOT_SECBOX_H
 
 #include <stdint.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
@@ -53,6 +92,8 @@ typedef enum {
 
 /** Initialize Security Box
  *
+ * Initializes Security Box. This function must be called before any operations with Security Box.
+ *
  * \param[in] ctx Storage context. Must not be NULL.
  * \param[in] secmodule Security Module implementation. Must not be NULL.
  *
@@ -63,12 +104,16 @@ vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule);
 
 /** Destroy Security Box
  *
+ * Destroys Security Box. This function must be called after any operations with Security Box.
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_secbox_deinit(void);
 
 /** Security Box element size
+ *
+ * Get saved data size without signatures and encryption.
  *
  * \param[in] id Element ID
  *
@@ -78,6 +123,8 @@ ssize_t
 vs_secbox_file_size(vs_storage_element_id_t id);
 
 /** Security Box element save
+ *
+ * Saves data with specified crypto mode.
  *
  * \param[in] type Security operation type.
  * \param[in] id Element ID
@@ -91,6 +138,8 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
 
 /** Security Box element load
  *
+ * Loads data.
+ *
  * \param[in] id Element ID
  * \param[out] data Data buffer. Must not be NULL.
  * \param[in] data_sz Data size. Must not be zero.
@@ -103,6 +152,8 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
 
 /** Security Box element delete
  *
+ * Deletes file on the disk.
+ *
  * \param[in] id Element ID
  *
  * \return #VS_CODE_OK in case of success or error code.
@@ -110,4 +161,4 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
 vs_status_e
 vs_secbox_del(vs_storage_element_id_t id);
 
-#endif // SECBOX_H
+#endif // VS_IOT_SECBOX_H
