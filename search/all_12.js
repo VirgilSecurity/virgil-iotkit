@@ -30,7 +30,7 @@ var searchData=
   ['status_5fcheck_5fret_5fbool_260',['STATUS_CHECK_RET_BOOL',['../status__code_8h.html#a163136f17960c55a3c6652b52c93fff6',1,'status_code.h']]],
   ['status_5fcode_2eh_261',['status_code.h',['../status__code_8h.html',1,'']]],
   ['stdlib_2dconfig_2eh_262',['stdlib-config.h',['../stdlib-config_8h.html',1,'']]],
-  ['stop_5fwait_5ffunc_263',['stop_wait_func',['../structvs__snap__info__impl__t.html#a78685f6377e69c2adb8821f660828b3b',1,'vs_snap_info_impl_t::stop_wait_func()'],['../structvs__snap__prvs__client__impl__t.html#a35b92d7ec22ed5ce68717b598f297cd0',1,'vs_snap_prvs_client_impl_t::stop_wait_func()']]],
+  ['stop_5fwait_5ffunc_263',['stop_wait_func',['../structvs__snap__prvs__client__impl__t.html#a35b92d7ec22ed5ce68717b598f297cd0',1,'vs_snap_prvs_client_impl_t']]],
   ['storage_5fcontext_264',['storage_context',['../structvs__update__interface__t.html#aa87378582e790a26da35c232f350ed5b',1,'vs_update_interface_t']]],
   ['storage_5fhal_2eh_265',['storage_hal.h',['../storage__hal_8h.html',1,'']]],
   ['sync_266',['sync',['../structvs__storage__impl__func__t.html#adf5c1f58ec28bc1c472656fdef991d3d',1,'vs_storage_impl_func_t']]]

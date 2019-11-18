@@ -89,6 +89,7 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device information.  <a href="structvs__snap__info__device__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__file__version__unpacked__t.html">vs_file_version_unpacked_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">File version.  <a href="structvs__file__version__unpacked__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__info__general__t.html">vs_info_general_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device general information.  <a href="structvs__info__general__t.html#details">More...</a><br /></td></tr>
@@ -99,7 +100,7 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:afd046f89d5f1e7148ed6ee2a95e95cfc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfc">vs_snap_info_element_mask_e</a> { <a class="el" href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfca9ccef5beb2345cff7f83b0e70c9320b4">VS_SNAP_INFO_GENERAL</a> = HTONL_IN_COMPILE_TIME(0x0001), 
+<tr class="memitem:afd046f89d5f1e7148ed6ee2a95e95cfc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfc">vs_snap_info_element_mask_e</a> { <a class="el" href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfca9ccef5beb2345cff7f83b0e70c9320b4">VS_SNAP_INFO_GENERAL</a>, 
 <a class="el" href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfcaf2796988dee87a3e716ca0459946b995">VS_SNAP_INFO_STATISTICS</a> = HTONL_IN_COMPILE_TIME(0x0002)
  }</td></tr>
 <tr class="memdesc:afd046f89d5f1e7148ed6ee2a95e95cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device statistics.  <a href="info-structs_8h.html#afd046f89d5f1e7148ed6ee2a95e95cfc">More...</a><br /></td></tr>
@@ -107,6 +108,7 @@ Enumerations</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>INFO structures. </p>
+<p>In this file you can see structures used for INFO Client and INFO Server. </p>
 </div><h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="afd046f89d5f1e7148ed6ee2a95e95cfc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afd046f89d5f1e7148ed6ee2a95e95cfc">&#9670;&nbsp;</a></span>vs_snap_info_element_mask_e</h2>
@@ -123,8 +125,10 @@ Enumerations</h2></td></tr>
 <p>Device statistics. </p>
 <p>Element mask for <a class="el" href="info-client_8h.html#a9cd1cb39a2ba81fd13f191d1b29b53eb" title="Set pooling.">vs_snap_info_set_polling</a> call </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="afd046f89d5f1e7148ed6ee2a95e95cfca9ccef5beb2345cff7f83b0e70c9320b4"></a>VS_SNAP_INFO_GENERAL&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="afd046f89d5f1e7148ed6ee2a95e95cfcaf2796988dee87a3e716ca0459946b995"></a>VS_SNAP_INFO_STATISTICS&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="afd046f89d5f1e7148ed6ee2a95e95cfca9ccef5beb2345cff7f83b0e70c9320b4"></a>VS_SNAP_INFO_GENERAL&#160;</td><td class="fielddoc"><p>General device information <a class="el" href="structvs__info__general__t.html" title="Device general information.">vs_info_general_t</a> will be sent. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="afd046f89d5f1e7148ed6ee2a95e95cfcaf2796988dee87a3e716ca0459946b995"></a>VS_SNAP_INFO_STATISTICS&#160;</td><td class="fielddoc"><p>Devist statistic <a class="el" href="structvs__info__statistics__t.html" title="Device statistics.">vs_info_statistics_t</a> will be sent. </p>
+</td></tr>
 </table>
 
 </div>

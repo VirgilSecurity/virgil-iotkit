@@ -89,6 +89,22 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>PRVS for server. </p>
+<p>PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer utility. Client prepares device's card, server signs it, and client saves this information.</p>
+<h1><a class="anchor" id="prvs_server_usage"></a>
+PRVS Server usage</h1>
+<p>For server it is enough to prepare security module and pass it to the <a class="el" href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b" title="PRVS Server SNAP Service implementation.">vs_snap_prvs_server</a> initializer :</p>
+<div class="fragment"><div class="line"> <a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl;         <span class="comment">// Security module implementation</span></div>
+<div class="line"> <a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> slots_storage_impl;      <span class="comment">// Slots storage implementation</span></div>
+<div class="line"> <span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *snap_prvs_server;   <span class="comment">// PRVS Server</span></div>
+<div class="line"> </div>
+<div class="line"> <span class="comment">// Initialize slots_storage_impl, secmodule_impl.</span></div>
+<div class="line"> </div>
+<div class="line"> <span class="comment">// You can use software implementation :</span></div>
+<div class="line"> secmodule_impl = <a class="code" href="vs-soft-secmodule_8h.html#a8fca8d2dd7597bfab1b3fec482bc8854">vs_soft_secmodule_impl</a>(&amp;slots_storage_impl);</div>
+<div class="line"> </div>
+<div class="line"> snap_prvs_server = <a class="code" href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a>(secmodule_impl);</div>
+<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(snap_prvs_server), <span class="stringliteral">&quot;Cannot register PRVS service&quot;</span>);</div>
+</div><!-- fragment --><p>Virgil IoT KIT manages PRVS Server service automatically by using Provision module. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="ad94bd9f42dce4e8a68bbab711baada8b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad94bd9f42dce4e8a68bbab711baada8b">&#9670;&nbsp;</a></span>vs_snap_prvs_server()</h2>
@@ -107,7 +123,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>PRVS Server SNAP Service implementation. </p>
-<p>This call returns PRVS server implementation. It must be called before any PRVS call.</p>
+<p>This call returns PRVS Server implementation. It must be called before any PRVS call.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">impl</td><td>Callback functions. Must not be NULL.</td></tr>
@@ -119,6 +135,13 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:456</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:306</div></div>
+<div class="ttc" id="aprvs-server_8h_html_ad94bd9f42dce4e8a68bbab711baada8b"><div class="ttname"><a href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_server(vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">PRVS Server SNAP Service implementation.</div></div>
+<div class="ttc" id="avs-soft-secmodule_8h_html_a8fca8d2dd7597bfab1b3fec482bc8854"><div class="ttname"><a href="vs-soft-secmodule_8h.html#a8fca8d2dd7597bfab1b3fec482bc8854">vs_soft_secmodule_impl</a></div><div class="ttdeci">vs_secmodule_impl_t * vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl)</div><div class="ttdoc">Initialize software crypto implementation.</div></div>
+<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:200</div></div>
+<div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
