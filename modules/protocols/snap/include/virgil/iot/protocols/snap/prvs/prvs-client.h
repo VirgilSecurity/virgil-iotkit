@@ -35,9 +35,36 @@
 /*! \file prvs-client.h
  * \brief PRVS for client
  *
- * \warning #vs_snap_prvs_client_impl_t implementation has to be provided for #vs_snap_prvs_client call
+ * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer utility.
+ * Client prepares device's card, server signs it, and client saves this information.
  *
- * \note In next release default implementation for Firmware and Trust List will be provided.
+ * \section prvs_client_usage PRVS Client usage
+ *
+ * Before first call it is necessary to register PRVS service :
+ *
+ * \code
+ *    const vs_snap_service_t *snap_prvs_client;      // INFO service
+ *    vs_snap_prvs_dnid_list_t dnid_list;             // Array of "Do Not Initialized Devices"
+ *    uint32_t wait_ms = 3000;                        // Waiting 3 seconds for all devices enumerating
+ *
+ *    // Initialize snap_prvs_client
+ *
+ *    // Register PRVS Client service
+ *    snap_prvs_client = vs_snap_prvs_client(_snap_prvs_impl());
+ *    STATUS_CHECK(vs_snap_register_service(snap_prvs_client), "Cannot register PRVS client service");
+ *
+ *    // Enumerate uninitialized devices
+ *    STATUS_CHECK(vs_snap_prvs_enum_devices(NULL, &dnid_list, devices_max, &devices_amount, wait_ms),
+ *        "Unable to enumerate devices without provision");
+ *
+ * \endcode
+ *
+ * \a _snap_prvs_impl is the function that returns implementation for #vs_snap_prvs_client_impl_t. It requires two function
+ * to be present - #vs_snap_prvs_stop_wait_t and #vs_snap_prvs_wait_t. You can find an example of their implementation in the
+ * c-implementation tool.
+ *
+ * \note Almost all calls have \a netif parameter. If it is null, SNAP interface that has been initialized will be used.
+ * It is OK for default case.
  */
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_PRVS_CLIENT_H
@@ -54,36 +81,36 @@ extern "C" {
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision-structs.h>
 
-// TODO : description???
-/** Wait and stop callback
+/** Stop waiting implementation
+ *
+ * This function interrupts asynchronously waiting started by #wait_func and sets for \a condition the value \expect
  *
  * \a stop_wait_func member or #vs_snap_prvs_client_impl_t structure.
  * \a wait_func member or #vs_snap_prvs_client_impl_t structure.
  *
- * \param[in] condition
- * \param[in] expect
+ * \param[in] condition Condition buffer. Must not be NULL.
+ * \param[in] expect Expected value to be set.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int *condition, int expect);
 
-// TODO : description???
-/** Wait callback
+/** Wait implementation
  *
- * \param[in] wait_ms
- * \param[in] condition
- * \param[in] idle
+ * This function checks \a condition variable during \a wait_ms when it will be equal to the \a idle condition
+ *
+ * \param[in] wait_ms Wait in milliseconds.
+ * \param[in] condition Condition buffer. Must not be NULL.
+ * \param[in] idle Idle condition.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
-// TODO : members description???
-/** PRVS client implementation
- */
+/** PRVS client implementation */
 typedef struct {
-    vs_snap_prvs_stop_wait_t stop_wait_func;
-    vs_snap_prvs_wait_t wait_func;
+    vs_snap_prvs_stop_wait_t stop_wait_func;    /**< Stop waiting implementation */
+    vs_snap_prvs_wait_t wait_func;  /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;
 
 /** PRVS Client SNAP Service implementation
@@ -97,9 +124,9 @@ typedef struct {
 const vs_snap_service_t *
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
-/** Enumerate devices
+/** Enumerate devices without provision
  *
- * Sends request for all devices that have not been initialized.
+ * Enumerate devices that have not been initialized yet.
  *
  * \param[in] netif #vs_netif_t SNAP service descriptor. Must not be NULL.
  * \param[out] list #vs_snap_prvs_dnid_list_t Buffer with devices list. Must not be NULL.
@@ -110,15 +137,13 @@ vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 vs_status_e
 vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms);
 
-// TODO : check description
-// TODO : asav_res ?
 /** Save provision
  *
- * Sends request to save provision
+ * Sends request to initialize security module, generate key pairs and save it in the OTP memory.
  *
  * \param[in] netif SNAP service descriptor. Must not be NULL.
  * \param[in] mac Device MAC address.
- * \param[out] asav_res
+ * \param[out] asav_res #vs_pubkey_t buffer to be saved.
  * \param[in] buf_sz Buffer size
  * \param[in] wait_ms Time to wait response.
  *
@@ -133,9 +158,9 @@ vs_snap_prvs_save_provision(const vs_netif_t *netif,
 
 /** Request device information
  *
- * Sends request for \a mac device information
+ * Sends request for device information.
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
  * \param[out] device_info Device information output buffer. Must not be NULL.
  * \param[in] buf_sz Buffer size
@@ -150,12 +175,11 @@ vs_snap_prvs_device_info(const vs_netif_t *netif,
                          uint16_t buf_sz,
                          uint32_t wait_ms);
 
-// TODO : check description
 /** Sign data
  *
- * Sends request for \a mac device information
+ * Sends generated device information for the device. It signs it it returns signature back.
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
  * \param[in] data Data to be signed. Must not be NULL.
  * \param[in] data_sz \a data size. Must not be zero.
@@ -176,12 +200,13 @@ vs_snap_prvs_sign_data(const vs_netif_t *netif,
                        uint16_t *signature_sz,
                        uint32_t wait_ms);
 
-// TODO : check description
 /** Set data
  *
- * Sends request for set \a element provision data for \a mac device
+ * Sends request for set \a element provision data for \a mac device.
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * #vs_snap_prvs_set and #vs_snap_prvs_get calls are used for prepare device provision.
+ *
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
  * \param[in] element Element identificator.
  * \param[in] data Data to be saved. Must not be NULL.
@@ -198,15 +223,15 @@ vs_snap_prvs_set(const vs_netif_t *netif,
                  uint16_t data_sz,
                  uint32_t wait_ms);
 
-
-// TODO : check description
 /** Get data
  *
  * Sends request for get \a element provision data from \a mac device
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * #vs_snap_prvs_set and #vs_snap_prvs_get calls are used for prepare device provision.
+ *
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
- * \param[in] element Element identificator.
+ * \param[in] element Element identifier.
  * \param[out] data Output buffer for data. Must not be NULL.
  * \param[in] buf_sz \a signature buffer size. Must not be zero.
  * \param[out] data_sz Buffer to store \a data size. Must not be NULL.
@@ -223,12 +248,11 @@ vs_snap_prvs_get(const vs_netif_t *netif,
                  uint16_t *data_sz,
                  uint32_t wait_ms);
 
-// TODO : check description
 /** Set Trust List header
  *
- * Sends request for set \a data to Trust List header for \a mac device
+ * Sends request for set \a data to the Trust List header for \a mac device
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
  * \param[in] element Element identificator.
  * \param[in] data Data to be saved. Must not be NULL.
@@ -245,12 +269,11 @@ vs_snap_prvs_set_tl_header(const vs_netif_t *netif,
                            uint32_t wait_ms);
 
 
-// TODO : check description
 /** Set Trust List footer
  *
- * Sends request for set \a data to Trust List footer for \a mac device
+ * Sends request for set \a data to the Trust List footer for \a mac device
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
  * \param[in] data Data to be saved. Must not be NULL.
  * \param[in] wait_ms Time to wait response.

@@ -34,8 +34,32 @@
 
 /*! \file prvs-server.h
  * \brief PRVS for server
+ *
+ * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer utility.
+ * Client prepares device's card, server signs it, and client saves this information.
+ *
+ * \section prvs_server_usage PRVS Server usage
+ *
+ * For server it is enough to prepare security module and pass it to the #vs_snap_prvs_server initializer :
+ *
+ * \code
+ *
+ *     vs_secmodule_impl_t *secmodule_impl;         // Security module implementation
+ *     vs_storage_op_ctx_t slots_storage_impl;      // Slots storage implementation
+ *     const vs_snap_service_t *snap_prvs_server;   // PRVS Server
+
+ *     // Initialize slots_storage_impl, secmodule_impl.
+ *
+ *     // You can use software implementation :
+ *     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+ *
+ *     snap_prvs_server = vs_snap_prvs_server(secmodule_impl);
+ *    STATUS_CHECK(vs_snap_register_service(snap_prvs_server), "Cannot register PRVS service");
+ *
+ * \endcode
+ *
+ * Virgil IoT KIT manages PRVS Server service automatically by using Provision module.
  */
-// TODO : examples!
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_PRVS_SERVER_H
 #define VS_SECURITY_SDK_SNAP_SERVICES_PRVS_SERVER_H
@@ -52,7 +76,7 @@ extern "C" {
 
 /** PRVS Server SNAP Service implementation
  *
- * This call returns PRVS server implementation. It must be called before any PRVS call.
+ * This call returns PRVS Server implementation. It must be called before any PRVS call.
  *
  * \param[in] impl Callback functions. Must not be NULL.
  *

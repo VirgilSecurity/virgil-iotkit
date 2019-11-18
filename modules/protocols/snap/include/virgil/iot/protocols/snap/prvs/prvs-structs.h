@@ -34,6 +34,8 @@
 
 /*! \file prvs-structs.h
  * \brief PRVS structures
+ *
+ * This file provides structures for PRVS service
  */
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H
@@ -51,8 +53,9 @@ extern "C" {
 
 /** Device description
  *
- * Device description. This is response for #vs_snap_prvs_enum_devices call as an element from
- * #vs_snap_prvs_dnid_list_t.
+ * Device description.
+ *
+ * This is response for #vs_snap_prvs_enum_devices call as an element from #vs_snap_prvs_dnid_list_t.
  */
 typedef struct {
     vs_mac_addr_t mac_addr; /**< Device MAC address */
@@ -61,7 +64,9 @@ typedef struct {
 
 /** Devices enumeration
  *
- * The list of devices that have not been initialized. This is response for #vs_snap_prvs_enum_devices call.
+ * The list of devices that have not been initialized.
+ *
+ * This is response for #vs_snap_prvs_enum_devices call.
  */
 typedef struct {
     vs_snap_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX]; /**< elements array */
@@ -70,22 +75,22 @@ typedef struct {
 
 /** Device information
  *
- * Device information. This is response for #vs_snap_prvs_device_info call.
+ * Device information.
+ *
+ * This is response for #vs_snap_prvs_device_info call.
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< manufacture ID */
     uint8_t device_type[VS_DEVICE_TYPE_SIZE];            /**< device type */
     uint8_t serial[VS_DEVICE_SERIAL_SIZE];               /**< device serial number */
     vs_mac_addr_t mac;                                   /**< device MAC address */
-    uint16_t data_sz;                                    /**< \a data size*/
-
-    uint8_t data[]; /**< data : #vs_pubkey_t own_key + #vs_sign_t signature */
+    uint16_t data_sz;                                    /**< \a data size */
+    uint8_t data[]; /**< data : #vs_pubkey_t own key + #vs_sign_t signature */
 } vs_snap_prvs_devi_t;
 
-// TODO : check !!!
 /** Signed data
  *
- * Signed data from #vs_snap_prvs_sign_data
+ * Signed data from #vs_snap_prvs_sign_data.
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t hash_type; /**< #vs_secmodule_hash_type_e */
