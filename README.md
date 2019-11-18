@@ -104,11 +104,15 @@ thing service and downloading firmware images and trust list files from cloud st
 - [Provision](https://virgilsecurity.github.io/virgil-iot-sdk/provision_8h.html) : Trust List keys reading and verifying.
 - Secbox.
 - Protocols.
-- Cloud.
 
 <div id='tests'/>
 
 ## Tests
+- Crypto : Crypto algorithms and primitives tests (aes, hash ecdh, hmac, kdf, etc.)
+- Firmware : Firmware related functionality. Create device/firmware. Save firmware
+- Helpers : Create and save trust list
+- Secbox : Test storage module. Read write signed or/and encrypted data
+- SNAP : Secure Network Adjustable Protocol test
 
 <div id='SDK-usage'/>
 
