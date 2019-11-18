@@ -333,7 +333,7 @@ _check_firmware_header(vs_firmware_header_t *header) {
 
 /*************************************************************************/
 static size_t
-_store_fw_handler(char *contents, size_t chunksize, void *userdata) {
+_store_fw_handler(const char *contents, size_t chunksize, void *userdata) {
     fw_resp_buff_t *resp = (fw_resp_buff_t *)userdata;
     size_t rest_data_sz = chunksize;
     vs_firmware_descriptor_t old_desc;
@@ -528,7 +528,7 @@ typedef struct {
 
 /*************************************************************************/
 static size_t
-_store_tl_handler(char *contents, size_t chunksize, void *userdata) {
+_store_tl_handler(const char *contents, size_t chunksize, void *userdata) {
     tl_resp_buff_t *resp = (tl_resp_buff_t *)userdata;
     size_t rest_data_sz = chunksize;
     if (NULL == resp->buff) {

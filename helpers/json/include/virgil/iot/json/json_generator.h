@@ -1,5 +1,7 @@
-
-// TODO : insert our copyright ???
+/*
+ *  Copyright (C) 2014, Marvell International Ltd.
+ *  All Rights Reserved.
+ */
 
 /*! \file json_generator.h
  *
@@ -70,10 +72,6 @@
  * \endcode
  */
 
-/*
- *  Copyright (C) 2014, Marvell International Ltd.
- *  All Rights Reserved.
- */
 #ifndef _JSON_GENERATOR_H_
 #define _JSON_GENERATOR_H_
 
