@@ -45,8 +45,6 @@
 #include <global-hal.h>
 
 // External functions for access to upper level implementations
-static vs_snap_info_impl_t _info_impl = {0};
-
 static vs_snap_service_t _info_client = {0};
 
 static vs_snap_info_device_t *_devices_list = 0;
@@ -64,8 +62,6 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
                           size_t *devices_cnt,
                           uint32_t wait_ms) {
     vs_status_e ret_code;
-
-    VS_IOT_ASSERT(_info_impl.wait_func);
 
     // Set storage for ENUM request
     _devices_list = devices;
@@ -337,9 +333,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_client(vs_snap_info_impl_t impl, vs_snap_info_callbacks_t callbacks) {
-    // Save implementation
-    VS_IOT_MEMCPY(&_info_impl, &impl, sizeof(_info_impl));
+vs_snap_info_client(vs_snap_info_callbacks_t callbacks) {
 
     _info_client.user_data = 0;
     _info_client.id = VS_INFO_SERVICE_ID;
