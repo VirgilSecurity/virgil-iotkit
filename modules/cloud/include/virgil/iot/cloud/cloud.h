@@ -52,13 +52,19 @@
  * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud library uses
  * provision and firmware modules, which must be initialized before.
  *
+ * \note #vs_cloud_init requires #vs_cloud_impl_t, #vs_cloud_message_bin_impl_t and #vs_secmodule_impl_t
+implementations.
+ * You can provide yours or use standard ones : #vs_curl_http_impl() that uses cURL HTTP, #vs_aws_message_bin_impl()
+that
+ * implements MQTT, #vs_soft_secmodule_impl() that returns software security module implementation.
+ *
  *  Here you can see an example of Cloud library initialization :
  *
  *  \code
 
 const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
 const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
-vs_hsm_impl_t *hsm_impl;                                    // Security module implementation
+vs_secmodule_impl_t *secmodule_impl;                        // Security module implementation
 vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
 vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
 vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
@@ -66,17 +72,18 @@ vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage 
 static vs_device_manufacture_id_t manufacture_id;           // Manufacture ID
 static vs_device_type_t device_type;                        // Device type
 
-// Initialize hsm_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl, manufacture_id, device_type
+// Initialize secmodule_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl, manufacture_id,
+device_type
 
 // Provision module
-STATUS_CHECK(vs_provision_init(&tl_storage_impl, hsm_impl), "Cannot initialize Provision module");
+STATUS_CHECK(vs_provision_init(&tl_storage_impl, secmodule_impl), "Cannot initialize Provision module");
 
 // Firmware module
-STATUS_CHECK(vs_firmware_init(&fw_storage_impl, hsm_impl, manufacture_id, device_type), "Unable to initialize Firmware
-module");
+STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type), "Unable to initialize
+Firmware module");
 
 // Cloud module
-STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, hsm_impl), "Unable to initialize Cloud module");
+STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, secmodule_impl), "Unable to initialize Cloud module");
 STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process),
     "Error register handler for Trust List topic");
 
@@ -86,7 +93,7 @@ handler for Firmware topic");
  *  \endcode
  *
  * You can use #vs_curl_http_impl() for \a cloud_impl, #vs_aws_message_bin_impl() for \a message_bin_impl,
- * #vs_softhsm_impl() for \a hsm_impl.
+ * #vs_soft_secmodule_impl() for \a secmodule_impl.
  *
  * \a fw_topic_process receives an URL that can be used to fetch a new version of Firmware.
  * See \ref firmware_usage for details.
@@ -361,15 +368,16 @@ vs_cloud_message_bin_process(void);
 /** Initialize message bin
  *
  * \param[in] cloud_impl Cloud implementation. Must not be NULL.
- * \param[in] message_bin_impl Message bin implementation. You can use default implementation returned by
- * #vs_aws_message_bin_impl(). Must not be NULL. \param[in] hsm Security module implementation. You can use default
- * implementation returned by #vs_softhsm_impl(). Must not be NULL.
+ * \param[in] message_bin_impl Message bin implementation. You can use default implementation
+ * returned by #vs_aws_message_bin_impl(). Must not be NULL.
+ * \param[in] secmodule Security module implementation. You can use default implementation
+ * returned by #vs_soft_secmodule_impl(). Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
               const vs_cloud_message_bin_impl_t *message_bin_impl,
-              vs_hsm_impl_t *hsm);
+              vs_secmodule_impl_t *secmodule);
 
 #endif // VS_CLOUD_H

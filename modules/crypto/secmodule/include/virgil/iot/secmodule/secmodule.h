@@ -33,39 +33,39 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file hsm.h
+ * @file secmodule.h
  * @brief Security Module callbacks signatures
  *
- * This header contains #vs_hsm_impl_t structure that is used for crypto operations.
+ * This header contains #vs_secmodule_impl_t structure that is used for crypto operations.
  * User needs to return this function for library with crypto callbacks.
  *
- * Library provides standard software implementation. See \ref vs-softhsm-usage for example.
+ * \note Library provides standard software implementation. See \ref vs-secmodule-usage for example.
  *
  * \code
 
-vs_hsm_impl_t *hsm_impl;                 // Security Module callbacks
+vs_secmodule_impl_t *secmodule_impl;                 // Security Module callbacks
 vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
 
 // Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
-hsm_impl = vs_softhsm_impl(&slots_storage_impl);
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 // ... Library usage
 
-vs_softhsm_deinit();
+vs_soft_secmodule_deinit();
 
  * \endcode
  *
  * Software Security Module needs to have Slots Storage Implementation initialized. See \ref storage_hal for details.
  */
 
-#ifndef VS_HSM_INTERFACE_API_H
-#define VS_HSM_INTERFACE_API_H
+#ifndef VS_SECMODULE_INTERFACE_API_H
+#define VS_SECMODULE_INTERFACE_API_H
 
 #include <stdint.h>
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/devices/hsm_iotelic.h>
+#include <virgil/iot/secmodule/devices/secmodule-soft.h>
 
 /** Keypair types */
 typedef enum {
@@ -84,7 +84,7 @@ typedef enum {
     VS_KEYPAIR_EC_ED25519,    /**< Ed25519 */
     VS_KEYPAIR_RSA_2048,      /**< RSA 2048 bit */
     VS_KEYPAIR_MAX
-} vs_hsm_keypair_type_e;
+} vs_secmodule_keypair_type_e;
 
 /** Hash types */
 typedef enum {
@@ -92,13 +92,13 @@ typedef enum {
     VS_HASH_SHA_256 = 0,      /**< SHA-256 */
     VS_HASH_SHA_384,          /**< SHA-384*/
     VS_HASH_SHA_512,          /**< SHA-512*/
-} vs_hsm_hash_type_e;
+} vs_secmodule_hash_type_e;
 
 /** KDF type */
 typedef enum {
     VS_KDF_INVALID = -1,
     VS_KDF_2 = 0,
-} vs_hsm_kdf_type_e;
+} vs_secmodule_kdf_type_e;
 
 /** AES mode */
 typedef enum {
@@ -111,7 +111,7 @@ typedef struct {
     uint32_t total[2];        /**< The number of bytes processed */
     uint32_t state[8];        /**< The intermediate digest state */
     unsigned char buffer[64]; /**< The data block being processed */
-} vs_hsm_sw_sha256_ctx;
+} vs_secmodule_sw_sha256_ctx;
 
 /** Callback for save information to the slot
  *
@@ -121,7 +121,7 @@ typedef struct {
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_secmodule_slot_save_t)(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz);
 
 /** Callback for load information to the slot
  *
@@ -132,7 +132,10 @@ typedef vs_status_e (*vs_hsm_slot_save_t)(vs_iot_hsm_slot_e slot, const uint8_t 
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
+typedef vs_status_e (*vs_secmodule_slot_load_t)(vs_iot_secmodule_slot_e slot,
+                                                uint8_t *data,
+                                                uint16_t buf_sz,
+                                                uint16_t *out_sz);
 
 /** Callback for delete information from the slot
  *
@@ -140,7 +143,7 @@ typedef vs_status_e (*vs_hsm_slot_load_t)(vs_iot_hsm_slot_e slot, uint8_t *data,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_slot_delete_t)(vs_iot_hsm_slot_e slot);
+typedef vs_status_e (*vs_secmodule_slot_delete_t)(vs_iot_secmodule_slot_e slot);
 
 /** Callback for hash generation
  *
@@ -153,12 +156,12 @@ typedef vs_status_e (*vs_hsm_slot_delete_t)(vs_iot_hsm_slot_e slot);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
-                                            const uint8_t *data,
-                                            uint16_t data_sz,
-                                            uint8_t *hash,
-                                            uint16_t hash_buf_sz,
-                                            uint16_t *hash_sz);
+typedef vs_status_e (*vs_secmodule_hash_create_t)(vs_secmodule_hash_type_e hash_type,
+                                                  const uint8_t *data,
+                                                  uint16_t data_sz,
+                                                  uint8_t *hash,
+                                                  uint16_t hash_buf_sz,
+                                                  uint16_t *hash_sz);
 
 /** Callback for key pair generate
  *
@@ -167,11 +170,12 @@ typedef vs_status_e (*vs_hsm_hash_create_t)(vs_hsm_hash_type_e hash_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_keypair_type_e keypair_type);
+typedef vs_status_e (*vs_secmodule_keypair_create_t)(vs_iot_secmodule_slot_e slot,
+                                                     vs_secmodule_keypair_type_e keypair_type);
 
 /** Callback for public key retrieval
  *
- * Before this call /ref vs_hsm_keypair_create_t callback is called and public key is stored to \a slot.
+ * Before this call /ref vs_secmodule_keypair_create_t callback is called and public key is stored to \a slot.
  *
  * \param[in] slot Slot number.
  * \param[out] buf Output buffer to store public key. Cannot be NULL.
@@ -181,11 +185,11 @@ typedef vs_status_e (*vs_hsm_keypair_create_t)(vs_iot_hsm_slot_e slot, vs_hsm_ke
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
-                                                   uint8_t *buf,
-                                                   uint16_t buf_sz,
-                                                   uint16_t *key_sz,
-                                                   vs_hsm_keypair_type_e *keypair_type);
+typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(vs_iot_secmodule_slot_e slot,
+                                                         uint8_t *buf,
+                                                         uint16_t buf_sz,
+                                                         uint16_t *key_sz,
+                                                         vs_secmodule_keypair_type_e *keypair_type);
 
 /** Callback for signature calculation based on ECDSA
  *
@@ -198,12 +202,12 @@ typedef vs_status_e (*vs_hsm_keypair_get_pubkey_t)(vs_iot_hsm_slot_e slot,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
-                                           vs_hsm_hash_type_e hash_type,
-                                           const uint8_t *hash,
-                                           uint8_t *signature,
-                                           uint16_t signature_buf_sz,
-                                           uint16_t *signature_sz);
+typedef vs_status_e (*vs_secmodule_ecdsa_sign_t)(vs_iot_secmodule_slot_e key_slot,
+                                                 vs_secmodule_hash_type_e hash_type,
+                                                 const uint8_t *hash,
+                                                 uint8_t *signature,
+                                                 uint16_t signature_buf_sz,
+                                                 uint16_t *signature_sz);
 
 /** Callback for signature verify based on ECDSA
  *
@@ -217,13 +221,13 @@ typedef vs_status_e (*vs_hsm_ecdsa_sign_t)(vs_iot_hsm_slot_e key_slot,
  *
  * \return #VS_CODE_OK in case of successful verifying or error code.
  */
-typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
-                                             const uint8_t *public_key,
-                                             uint16_t public_key_sz,
-                                             vs_hsm_hash_type_e hash_type,
-                                             const uint8_t *hash,
-                                             const uint8_t *signature,
-                                             uint16_t signature_sz);
+typedef vs_status_e (*vs_secmodule_ecdsa_verify_t)(vs_secmodule_keypair_type_e keypair_type,
+                                                   const uint8_t *public_key,
+                                                   uint16_t public_key_sz,
+                                                   vs_secmodule_hash_type_e hash_type,
+                                                   const uint8_t *hash,
+                                                   const uint8_t *signature,
+                                                   uint16_t signature_sz);
 
 /** Callback for HMAC calculation
  *
@@ -238,14 +242,14 @@ typedef vs_status_e (*vs_hsm_ecdsa_verify_t)(vs_hsm_keypair_type_e keypair_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
-                                     const uint8_t *key,
-                                     uint16_t key_sz,
-                                     const uint8_t *input,
-                                     uint16_t input_sz,
-                                     uint8_t *output,
-                                     uint16_t output_buf_sz,
-                                     uint16_t *output_sz);
+typedef vs_status_e (*vs_secmodule_hmac_t)(vs_secmodule_hash_type_e hash_type,
+                                           const uint8_t *key,
+                                           uint16_t key_sz,
+                                           const uint8_t *input,
+                                           uint16_t input_sz,
+                                           uint8_t *output,
+                                           uint16_t output_buf_sz,
+                                           uint16_t *output_sz);
 
 /** Callback for KDF calculation
  *
@@ -258,12 +262,12 @@ typedef vs_status_e (*vs_hsm_hmac_t)(vs_hsm_hash_type_e hash_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
-                                    vs_hsm_hash_type_e hash_type,
-                                    const uint8_t *input,
-                                    uint16_t input_sz,
-                                    uint8_t *output,
-                                    uint16_t output_sz);
+typedef vs_status_e (*vs_secmodule_kdf_t)(vs_secmodule_kdf_type_e kdf_type,
+                                          vs_secmodule_hash_type_e hash_type,
+                                          const uint8_t *input,
+                                          uint16_t input_sz,
+                                          uint8_t *output,
+                                          uint16_t output_sz);
 
 /** Callback for HKDF calculation
  *
@@ -279,15 +283,15 @@ typedef vs_status_e (*vs_hsm_kdf_t)(vs_hsm_kdf_type_e kdf_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
-                                     const uint8_t *input,
-                                     uint16_t input_sz,
-                                     const uint8_t *salt,
-                                     uint16_t salt_sz,
-                                     const uint8_t *info,
-                                     uint16_t info_sz,
-                                     uint8_t *output,
-                                     uint16_t output_sz);
+typedef vs_status_e (*vs_secmodule_hkdf_t)(vs_secmodule_hash_type_e hash_type,
+                                           const uint8_t *input,
+                                           uint16_t input_sz,
+                                           const uint8_t *salt,
+                                           uint16_t salt_sz,
+                                           const uint8_t *info,
+                                           uint16_t info_sz,
+                                           uint8_t *output,
+                                           uint16_t output_sz);
 
 /** Callback for random data generation
  *
@@ -296,7 +300,7 @@ typedef vs_status_e (*vs_hsm_hkdf_t)(vs_hsm_hash_type_e hash_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
+typedef vs_status_e (*vs_secmodule_random_t)(uint8_t *output, uint16_t output_sz);
 
 /** Callback for data encryption by AES algorithm
  *
@@ -315,18 +319,18 @@ typedef vs_status_e (*vs_hsm_random_t)(uint8_t *output, uint16_t output_sz);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
-                                            const uint8_t *key,
-                                            uint16_t key_bitlen,
-                                            const uint8_t *iv,
-                                            uint16_t iv_len,
-                                            const uint8_t *add,
-                                            uint16_t add_len,
-                                            uint16_t buf_len,
-                                            const uint8_t *input,
-                                            uint8_t *output,
-                                            uint8_t *tag,
-                                            uint16_t tag_len);
+typedef vs_status_e (*vs_secmodule_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
+                                                  const uint8_t *key,
+                                                  uint16_t key_bitlen,
+                                                  const uint8_t *iv,
+                                                  uint16_t iv_len,
+                                                  const uint8_t *add,
+                                                  uint16_t add_len,
+                                                  uint16_t buf_len,
+                                                  const uint8_t *input,
+                                                  uint8_t *output,
+                                                  uint8_t *tag,
+                                                  uint16_t tag_len);
 
 /** Callback for data decryption by AES algorithm
  *
@@ -345,18 +349,18 @@ typedef vs_status_e (*vs_hsm_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
-                                            const uint8_t *key,
-                                            uint16_t key_bitlen,
-                                            const uint8_t *iv,
-                                            uint16_t iv_len,
-                                            const uint8_t *add,
-                                            uint16_t add_len,
-                                            uint16_t buf_len,
-                                            const uint8_t *input,
-                                            uint8_t *output,
-                                            uint8_t *tag,
-                                            uint16_t tag_len);
+typedef vs_status_e (*vs_secmodule_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
+                                                  const uint8_t *key,
+                                                  uint16_t key_bitlen,
+                                                  const uint8_t *iv,
+                                                  uint16_t iv_len,
+                                                  const uint8_t *add,
+                                                  uint16_t add_len,
+                                                  uint16_t buf_len,
+                                                  const uint8_t *input,
+                                                  uint8_t *output,
+                                                  uint8_t *tag,
+                                                  uint16_t tag_len);
 
 // TODO : correct title?
 /** Callback for data decryption by AES algorithm with authentification check
@@ -376,18 +380,18 @@ typedef vs_status_e (*vs_hsm_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
-                                                 const uint8_t *key,
-                                                 uint16_t key_bitlen,
-                                                 const uint8_t *iv,
-                                                 uint16_t iv_len,
-                                                 const uint8_t *add,
-                                                 uint16_t add_len,
-                                                 uint16_t buf_len,
-                                                 const uint8_t *input,
-                                                 uint8_t *output,
-                                                 const uint8_t *tag,
-                                                 uint16_t tag_len);
+typedef vs_status_e (*vs_secmodule_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
+                                                       const uint8_t *key,
+                                                       uint16_t key_bitlen,
+                                                       const uint8_t *iv,
+                                                       uint16_t iv_len,
+                                                       const uint8_t *add,
+                                                       uint16_t add_len,
+                                                       uint16_t buf_len,
+                                                       const uint8_t *input,
+                                                       uint8_t *output,
+                                                       const uint8_t *tag,
+                                                       uint16_t tag_len);
 
 // TODO : shared_secret - is in,out?
 /** Callback for ECDH algorithm
@@ -402,13 +406,13 @@ typedef vs_status_e (*vs_hsm_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_type,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
-                                     vs_hsm_keypair_type_e keypair_type,
-                                     const uint8_t *public_key,
-                                     uint16_t public_key_sz,
-                                     uint8_t *shared_secret,
-                                     uint16_t buf_sz,
-                                     uint16_t *shared_secret_sz);
+typedef vs_status_e (*vs_secmodule_ecdh_t)(vs_iot_secmodule_slot_e slot,
+                                           vs_secmodule_keypair_type_e keypair_type,
+                                           const uint8_t *public_key,
+                                           uint16_t public_key_sz,
+                                           uint8_t *shared_secret,
+                                           uint16_t buf_sz,
+                                           uint16_t *shared_secret_sz);
 
 /** Callback for SHA-256 context initialization
  *
@@ -416,7 +420,7 @@ typedef vs_status_e (*vs_hsm_ecdh_t)(vs_iot_hsm_slot_e slot,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef void (*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
+typedef void (*vs_secmodule_sw_sha256_init_t)(vs_secmodule_sw_sha256_ctx *ctx);
 
 /** Callback for SHA-256 context update
  *
@@ -426,7 +430,9 @@ typedef void (*vs_hsm_sw_sha256_init_t)(vs_hsm_sw_sha256_ctx *ctx);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len);
+typedef vs_status_e (*vs_secmodule_sw_sha256_update_t)(vs_secmodule_sw_sha256_ctx *ctx,
+                                                       const uint8_t *message,
+                                                       uint32_t len);
 
 // TODO : digest - correct description?
 /** Callback for SHA-256 context finalize
@@ -436,53 +442,12 @@ typedef vs_status_e (*vs_hsm_sw_sha256_update_t)(vs_hsm_sw_sha256_ctx *ctx, cons
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_hsm_sw_sha256_final_t)(vs_hsm_sw_sha256_ctx *ctx, uint8_t *digest);
+typedef vs_status_e (*vs_secmodule_sw_sha256_final_t)(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest);
 
-// TODO : vs_hsm_virgil_decrypt_sha384_aes256_t.cryptogram must be const ???
-/** Callback for AES-256 based on SHA-384 decryption
- *
- * \param[in] recipient_id Recipient ID. Cannot be NULL.
- * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
- * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
- * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
- * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
- * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
- * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-typedef vs_status_e (*vs_hsm_virgil_decrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                                             size_t recipient_id_sz,
-                                                             uint8_t *cryptogram,
-                                                             size_t cryptogram_sz,
-                                                             uint8_t *decrypted_data,
-                                                             size_t buf_sz,
-                                                             size_t *decrypted_data_sz);
+/** Callback for Security Module destruction */
+typedef void (*vs_secmodule_deinit_t)(void);
 
-/** Callback for AES-256 based on SHA-384 encryption
- *
- * \param[in] recipient_id Recipient ID. Cannot be NULL.
- * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
- * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
- * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
- * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
- * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
- * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-typedef vs_status_e (*vs_hsm_virgil_encrypt_sha384_aes256_t)(const uint8_t *recipient_id,
-                                                             size_t recipient_id_sz,
-                                                             uint8_t *data,
-                                                             size_t data_sz,
-                                                             uint8_t *cryptogram,
-                                                             size_t buf_sz,
-                                                             size_t *cryptogram_sz);
-
-/** Callback for HSM destruction */
-typedef void (*vs_hsm_deinit_t)(void);
-
-/** HSM implementation
+/** Security Module implementation
  *
  * This structure contains all callbacks needed for cryptographic operations.
  * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC,
@@ -490,51 +455,94 @@ typedef void (*vs_hsm_deinit_t)(void);
  */
 typedef struct {
 
-    vs_hsm_deinit_t deinit; /**< HSM destruction callback */
+    vs_secmodule_deinit_t deinit; /**< Security module destruction callback */
 
     // Slot operations
-    vs_hsm_slot_save_t slot_save;    /**< Slot save information callback */
-    vs_hsm_slot_load_t slot_load;    /**< Slot load information callback */
-    vs_hsm_slot_delete_t slot_clean; /**< Slot delete callback */
+    vs_secmodule_slot_save_t slot_save;    /**< Slot save information callback */
+    vs_secmodule_slot_load_t slot_load;    /**< Slot load information callback */
+    vs_secmodule_slot_delete_t slot_clean; /**< Slot delete callback */
 
     // RNG
-    vs_hsm_random_t random; /**< Get random data callback */
+    vs_secmodule_random_t random; /**< Get random data callback */
 
     // Key-pair in slot
-    vs_hsm_keypair_create_t create_keypair; /**< Key pair generate callback */
-    vs_hsm_keypair_get_pubkey_t get_pubkey; /**< Get public key callback */
+    vs_secmodule_keypair_create_t create_keypair; /**< Key pair generate callback */
+    vs_secmodule_keypair_get_pubkey_t get_pubkey; /**< Get public key callback */
 
     // ECDSA
-    vs_hsm_ecdsa_sign_t ecdsa_sign;     /**< ECDSA sign callback */
-    vs_hsm_ecdsa_verify_t ecdsa_verify; /**< ECDSA verify callback */
+    vs_secmodule_ecdsa_sign_t ecdsa_sign;     /**< ECDSA sign callback */
+    vs_secmodule_ecdsa_verify_t ecdsa_verify; /**< ECDSA verify callback */
 
     // ECDH
-    vs_hsm_ecdh_t ecdh; /**< ECDH callback */
+    vs_secmodule_ecdh_t ecdh; /**< ECDH callback */
 
     // AES
-    vs_hsm_aes_encrypt_t aes_encrypt; /**< AES encrypt callback */
-    vs_hsm_aes_decrypt_t aes_decrypt; /**< AES decrypt callback */
+    vs_secmodule_aes_encrypt_t aes_encrypt; /**< AES encrypt callback */
+    vs_secmodule_aes_decrypt_t aes_decrypt; /**< AES decrypt callback */
     // TODO: Remove it
-    vs_hsm_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentification callback */
+    vs_secmodule_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentification callback */
 
     // Hash
-    vs_hsm_sw_sha256_init_t hash_init;     /**< SHA-256 hash initialize callback */
-    vs_hsm_sw_sha256_update_t hash_update; /**< SHA-256 update callback */
-    vs_hsm_sw_sha256_final_t hash_finish;  /**< SHA-256 finalize callback */
-    vs_hsm_hash_create_t hash;             /**< Create hash callback */
+    vs_secmodule_sw_sha256_init_t hash_init;     /**< SHA-256 hash initialize callback */
+    vs_secmodule_sw_sha256_update_t hash_update; /**< SHA-256 update callback */
+    vs_secmodule_sw_sha256_final_t hash_finish;  /**< SHA-256 finalize callback */
+    vs_secmodule_hash_create_t hash;             /**< Create hash callback */
 
     // HMAC
-    vs_hsm_hmac_t hmac; /**< HMAC calculate callback */
+    vs_secmodule_hmac_t hmac; /**< HMAC calculate callback */
 
     // KDF
-    vs_hsm_kdf_t kdf; /**< KDF calculate callback */
+    vs_secmodule_kdf_t kdf; /**< KDF calculate callback */
 
     // HKDF
-    vs_hsm_hkdf_t hkdf; /**< HKDF calculate callback */
+    vs_secmodule_hkdf_t hkdf; /**< HKDF calculate callback */
 
-    // ECIES
-    vs_hsm_virgil_encrypt_sha384_aes256_t ecies_encrypt; /**< AES-256 with SHA-384 usage encrypt callback */
-    vs_hsm_virgil_decrypt_sha384_aes256_t ecies_decrypt; /**< AES-256 with SHA-384 usage decrypt callback */
-} vs_hsm_impl_t;
+} vs_secmodule_impl_t;
 
-#endif // VS_HSM_INTERFACE_API_H
+/** Ecies decryption for AES-256 based on SHA-384
+ *
+ * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
+ * \param[in] recipient_id Recipient ID. Cannot be NULL.
+ * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
+ * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
+ * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
+ * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
+ * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
+ * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
+                           const uint8_t *recipient_id,
+                           size_t recipient_id_sz,
+                           const uint8_t *cryptogram,
+                           size_t cryptogram_sz,
+                           uint8_t *decrypted_data,
+                           size_t buf_sz,
+                           size_t *decrypted_data_sz);
+
+/** Ecies encryption for AES-256 based on SHA-384
+ *
+ * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
+ * \param[in] recipient_id Recipient ID. Cannot be NULL.
+ * \param[in] recipient_id_sz Recipient ID size. Cannot be NULL.
+ * \param[in] cryptogram Cryptogram buffer. Cannot be NULL.
+ * \param[in] cryptogram_sz Cryptogram buffer size. Cannot be NULL.
+ * \param[out] decrypted_data Decrypted data output buffer. Cannot be NULL.
+ * \param[in] buf_sz Decrypted data buffer size. Cannot be zero.
+ * \param[out] decrypted_data_sz Decrypted data size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
+                           const uint8_t *recipient_id,
+                           size_t recipient_id_sz,
+                           const uint8_t *data,
+                           size_t data_sz,
+                           uint8_t *cryptogram,
+                           size_t buf_sz,
+                           size_t *cryptogram_sz);
+
+#endif // VS_SECMODULE_INTERFACE_API_H

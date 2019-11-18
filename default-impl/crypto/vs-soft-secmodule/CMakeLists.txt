@@ -34,36 +34,39 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-default-soft-hsm VERSION 0.1.0 LANGUAGES C)
+project(vs-default-soft-secmodule VERSION 0.1.0 LANGUAGES C)
 
-add_library(vs-default-soft-hsm)
+if(NOT VIRGIL_IOT_DIRECTORY)
+    message(FATAL_ERROR "[vs-default-soft-secmodule] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
+endif()
 
-target_sources(vs-default-soft-hsm
+add_library(vs-default-soft-secmodule)
+
+target_sources(vs-default-soft-secmodule
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-softhsm/vs-softhsm.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h
 
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-softhsm-internal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-soft-secmodule-internal.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/vs-softhsm.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-slots.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-ecies.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-sha2.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-crypto.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/softhsm-keypair.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-soft-secmodule.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-slots.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-sha2.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-crypto.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-keypair.c
         )
 
 #
 #	Path to crypto lib
 #
 if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips64")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips64")
 elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/mips32")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips32")
 else()
-    set(CRYPTO_C_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../ext/deps/host")
+    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/host")
 endif ()
 
 include(GNUInstallDirs)
@@ -78,7 +81,7 @@ endif ()
 #
 #   Common include directories
 #
-target_include_directories(vs-default-soft-hsm
+target_include_directories(vs-default-soft-secmodule
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         ${CRYPTO_C_INCLUDES}
@@ -91,10 +94,10 @@ target_include_directories(vs-default-soft-hsm
 #
 #   Link libraries
 #
-target_link_libraries(vs-default-soft-hsm
+target_link_libraries(vs-default-soft-secmodule
         PUBLIC
         converters
-        vs-module-hsm
+        vs-module-secmodule
         storage_hal
         ${CRYPTO_C_LIBS}/libvsc_foundation.a
         ${CRYPTO_C_LIBS}/libvsc_common.a
@@ -103,7 +106,7 @@ target_link_libraries(vs-default-soft-hsm
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(vs-default-soft-hsm)
+    add_clangformat(vs-default-soft-secmodule)
 endif()
 
 

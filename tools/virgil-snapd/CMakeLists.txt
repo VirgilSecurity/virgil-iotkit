@@ -55,7 +55,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/provision/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/converters/include
-        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/hsm/include
+        -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/secmodule/include
         -I${VIRGIL_IOT_DIRECTORY}/helpers/status_code/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/firmware/include
         -I${VIRGIL_IOT_DIRECTORY}/modules/provision/trust_list/include

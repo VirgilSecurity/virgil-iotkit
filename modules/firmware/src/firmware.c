@@ -45,8 +45,8 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/hsm/hsm.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #include "private/firmware-private.h"
 
@@ -55,7 +55,7 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 #define DESCRIPTORS_FILENAME "firmware_descriptors"
 
 static vs_storage_op_ctx_t *_storage_ctx = NULL;
-static vs_hsm_impl_t *_hsm = NULL;
+static vs_secmodule_impl_t *_secmodule = NULL;
 
 /*************************************************************************/
 static void
@@ -145,15 +145,15 @@ _write_data(vs_storage_element_id_t id, bool need_sync, uint32_t offset, const v
 /******************************************************************************/
 vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
-                 vs_hsm_impl_t *hsm,
+                 vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
-    CHECK_NOT_ZERO_RET(hsm, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     _storage_ctx = storage_ctx;
-    _hsm = hsm;
+    _secmodule = secmodule;
 
     return vs_update_firmware_init(storage_ctx, manufacture, device_type);
 }
@@ -222,8 +222,8 @@ vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, con
         int sign_len;
         vs_sign_t *sign = (vs_sign_t *)(footer + footer_sz);
 
-        sign_len = vs_hsm_get_signature_len(sign->ec_type);
-        key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+        sign_len = vs_secmodule_get_signature_len(sign->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(sign->ec_type);
 
         CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_FILE, "Unsupported signature ec_type");
 
@@ -480,8 +480,8 @@ _is_rule_equal_to(vs_key_type_e type) {
 /*************************************************************************/
 int
 vs_firmware_get_expected_footer_len(void) {
-    uint16_t key_sz = vs_hsm_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
-    uint16_t sign_sz = (uint16_t)vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t key_sz = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
+    uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     return sizeof(vs_firmware_footer_t) + VS_FW_SIGNATURES_QTY * (sizeof(vs_sign_t) + key_sz + sign_sz);
 }
 
@@ -513,13 +513,13 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     int key_len;
     uint8_t sign_rules = 0;
     uint16_t i;
-    vs_hsm_sw_sha256_ctx hash_ctx;
+    vs_secmodule_sw_sha256_ctx hash_ctx;
     vs_status_e ret_code;
 
     // TODO: Need to support all hash types
     uint8_t hash[VS_HASH_SHA256_LEN];
 
-    VS_IOT_ASSERT(_hsm);
+    VS_IOT_ASSERT(_secmodule);
 
     CHECK_NOT_ZERO_RET(descriptor, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -542,7 +542,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     uint32_t offset = 0;
     size_t read_sz;
 
-    _hsm->hash_init(&hash_ctx);
+    _secmodule->hash_init(&hash_ctx);
 
     // Update hash by firmware
     while (offset < descriptor->firmware_length) {
@@ -553,7 +553,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
             return VS_CODE_ERR_FILE_READ;
         }
 
-        _hsm->hash_update(&hash_ctx, buf, required_chunk_size);
+        _secmodule->hash_update(&hash_ctx, buf, required_chunk_size);
         offset += required_chunk_size;
     }
 
@@ -566,7 +566,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     // Update hash by fill
     while (fill_sz) {
         uint16_t sz = descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size;
-        _hsm->hash_update(&hash_ctx, buf, sz);
+        _secmodule->hash_update(&hash_ctx, buf, sz);
         fill_sz -= sz;
     }
 
@@ -575,8 +575,8 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
         return VS_CODE_ERR_FILE_READ;
     }
 
-    _hsm->hash_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
-    _hsm->hash_finish(&hash_ctx, hash);
+    _secmodule->hash_update(&hash_ctx, buf, sizeof(vs_firmware_footer_t));
+    _secmodule->hash_finish(&hash_ctx, hash);
 
     // First signature
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
@@ -586,8 +586,8 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
     for (i = 0; i < footer->signatures_count; ++i) {
         CHECK_RET(sign->hash_type == VS_HASH_SHA_256, VS_CODE_ERR_UNSUPPORTED, "Unsupported hash size for sign FW");
 
-        sign_len = vs_hsm_get_signature_len(sign->ec_type);
-        key_len = vs_hsm_get_pubkey_len(sign->ec_type);
+        sign_len = vs_secmodule_get_signature_len(sign->ec_type);
+        key_len = vs_secmodule_get_pubkey_len(sign->ec_type);
 
         CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_UNSUPPORTED, "Unsupported signature ec_type");
 
@@ -598,13 +598,13 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
                          "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            STATUS_CHECK_RET(_hsm->ecdsa_verify(sign->ec_type,
-                                                pubkey,
-                                                (uint16_t)key_len,
-                                                sign->hash_type,
-                                                hash,
-                                                sign->raw_sign_pubkey,
-                                                (uint16_t)sign_len),
+            STATUS_CHECK_RET(_secmodule->ecdsa_verify(sign->ec_type,
+                                                      pubkey,
+                                                      (uint16_t)key_len,
+                                                      sign->hash_type,
+                                                      hash,
+                                                      sign->raw_sign_pubkey,
+                                                      (uint16_t)sign_len),
                              "Signature is wrong");
             sign_rules++;
         }
@@ -724,9 +724,9 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
     CHECK_NOT_ZERO_RET(buf_size, NULL);
 
 #ifdef VS_IOT_ASCTIME
-    time_t timestamp = fw_ver->timestamp + START_EPOCH;
+    time_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
 #else
-    uint32_t timestamp = fw_ver->timestamp + START_EPOCH;
+    uint32_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
 #endif //   VS_IOT_ASCTIME
 
     VS_IOT_SNPRINTF(buffer,

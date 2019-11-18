@@ -39,7 +39,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/hsm_helpers.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
 
 #define SEQUENCE 0x30
 #define OCTET_STRING 0x04
@@ -47,6 +47,7 @@
 #define BIT_STRING 0x03
 #define ZERO_TAG 0xA0
 #define OID 0x06
+#define NULL_FILED 0x05
 #define SET 0x31
 
 static const uint8_t _aes256_gcm[] =
@@ -87,6 +88,11 @@ static const uint8_t _enveloped_data_oid[] = {0x06, 0x09, 0x2A, 0x86, 0x48, 0x86
 
 static const uint8_t _sha256_oid_sequence[] =
         {0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00};
+
+static const uint8_t _prime256v1_oid[] = {0x2a, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07};
+static const uint8_t _sha384_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02};
+static const uint8_t _aes256cbc_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A};
+static const uint8_t _aes256gcm_oid[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
 
 /******************************************************************************/
 static bool
@@ -275,19 +281,30 @@ _asn1_put_raw(int *pos, uint8_t *data, const uint8_t *raw_data, size_t data_size
 
 /******************************************************************************/
 static bool
-_virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_public_key_sz, uint8_t **public_key) {
+_virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_key_sz, uint8_t **public_key) {
     int pos = 0;
     const uint8_t *key = 0;
     size_t key_sz = 0;
 
-    if (_asn1_step_into(SEQUENCE, &pos, virgil_public_key_sz, virgil_public_key) &&
-        _asn1_skip(SEQUENCE, &pos, virgil_public_key_sz, virgil_public_key) &&
-        _asn1_get_array(BIT_STRING, &pos, virgil_public_key_sz, virgil_public_key, &key, &key_sz)) {
+    size_t ar_sz;
+    const uint8_t *p_ar = 0;
 
-        if (key_sz > 66 || key_sz < 64)
+    // OID of public key
+    if (!_asn1_step_into(SEQUENCE, &pos, virgil_key_sz, virgil_public_key) || //-V501
+        !_asn1_step_into(SEQUENCE, &pos, virgil_key_sz, virgil_public_key) || //-V501
+        !_asn1_skip(OID, &pos, virgil_key_sz, virgil_public_key) ||
+        !_asn1_get_array(
+                OID, &pos, _asn1_get_size(virgil_key_sz, virgil_public_key), virgil_public_key, &p_ar, &ar_sz) ||
+        0 != VS_IOT_MEMCMP(p_ar, _prime256v1_oid, sizeof(_prime256v1_oid))) {
+        return VS_CODE_ERR_CRYPTO;
+    }
+
+    if (_asn1_get_array(BIT_STRING, &pos, virgil_key_sz, virgil_public_key, &key, &key_sz)) {
+
+        if (key_sz > (VS_PUBKEY_SECP256_LEN + 1) || key_sz < VS_PUBKEY_SECP256_LEN)
             return false;
 
-        *public_key = (uint8_t *)&key[key_sz - 65];
+        *public_key = (uint8_t *)&key[key_sz - VS_PUBKEY_SECP256_LEN];
         return true;
     }
 
@@ -296,14 +313,14 @@ _virgil_pubkey_to_tiny_no_copy(const uint8_t *virgil_public_key, size_t virgil_p
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
-                                        uint8_t *virgil_sign,
-                                        uint16_t buf_sz,
-                                        uint16_t *virgil_sign_sz) {
+vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
+                                              uint8_t *virgil_sign,
+                                              uint16_t buf_sz,
+                                              uint16_t *virgil_sign_sz) {
     uint8_t *buf = virgil_sign;
     int pos = buf_sz;
     size_t total_sz = 0, el_sz;
-    const uint16_t secp_mpi_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1) / 2;
+    const uint16_t secp_mpi_sz = VS_SIGNATURE_SECP256_LEN / 2;
 
     CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -326,10 +343,10 @@ vs_hsm_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
-                                        uint16_t virgil_sign_sz,
-                                        uint8_t *raw_signature,
-                                        uint16_t buf_sz) {
+vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                              uint16_t virgil_sign_sz,
+                                              uint8_t *raw_signature,
+                                              uint16_t buf_sz) {
     int pos = 0;
 
     const uint8_t *p_r = 0;
@@ -337,7 +354,7 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
     const uint8_t *p_s = 0;
     size_t s_sz = 0;
 
-    const int secp_sign_sz = vs_hsm_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
+    const int secp_sign_sz = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     const uint16_t secp_mpi_sz = secp_sign_sz / 2;
 
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -352,14 +369,8 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
         _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_r, &r_sz) &&
         _asn1_get_array(INTEGER, &pos, virgil_sign_sz, virgil_sign, &p_s, &s_sz)) {
 
-        CHECK_RET(r_sz >= secp_mpi_sz && r_sz <= secp_mpi_sz + 2,
-                  VS_CODE_ERR_CRYPTO,
-                  "Incorrect signature r_part size %d",
-                  r_sz);
-        CHECK_RET(s_sz >= secp_mpi_sz && s_sz <= secp_mpi_sz + 2,
-                  VS_CODE_ERR_CRYPTO,
-                  "Incorrect signature s_part size %d",
-                  s_sz);
+        CHECK_RET(r_sz != 0 && r_sz <= secp_mpi_sz + 2, VS_CODE_ERR_CRYPTO, "Incorrect signature r_part size %d", r_sz);
+        CHECK_RET(s_sz != 0 && s_sz <= secp_mpi_sz + 2, VS_CODE_ERR_CRYPTO, "Incorrect signature s_part size %d", s_sz);
 
         if (0 == p_r[0]) {
             p_r += r_sz - secp_mpi_sz;
@@ -382,17 +393,17 @@ vs_hsm_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
-                                             size_t cryptogram_sz,
-                                             const uint8_t *recipient_id,
-                                             size_t recipient_id_sz,
-                                             uint8_t **public_key,
-                                             uint8_t **iv_key,
-                                             uint8_t **encrypted_key,
-                                             uint8_t **mac_data,
-                                             uint8_t **iv_data,
-                                             uint8_t **encrypted_data,
-                                             size_t *encrypted_data_sz) {
+vs_secmodule_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
+                                                   size_t cryptogram_sz,
+                                                   const uint8_t *recipient_id,
+                                                   size_t recipient_id_sz,
+                                                   uint8_t **public_key,
+                                                   uint8_t **iv_key,
+                                                   uint8_t **encrypted_key,
+                                                   uint8_t **mac_data,
+                                                   uint8_t **iv_data,
+                                                   uint8_t **encrypted_data,
+                                                   size_t *encrypted_data_sz) {
 
     int pos = 0, saved_pos, set_pos = 0;
     size_t _sz, ar_sz, asn1_sz;
@@ -443,36 +454,48 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                 return VS_CODE_ERR_CRYPTO;
             }
 
-            if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(OCTET_STRING, &pos, _sz, _data) ||
-                !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(INTEGER, &pos, _sz, _data))
+            // OID of public key
+            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
+                !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+                0 != VS_IOT_MEMCMP(p_ar, _prime256v1_oid, sizeof(_prime256v1_oid))) {
+                return VS_CODE_ERR_CRYPTO;
+            }
+
+            if (!_asn1_step_into(OCTET_STRING, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data) ||
+                !_asn1_skip(INTEGER, &pos, _sz, _data))
                 return VS_CODE_ERR_CRYPTO;
 
             // Read public key
-            if (!_virgil_pubkey_to_tiny_no_copy(&_data[pos], _asn1_get_size(pos, _data), public_key))
+            if (!_virgil_pubkey_to_tiny_no_copy(&_data[pos], _asn1_get_size(pos, _data), public_key) ||
+                !_asn1_skip(SEQUENCE, &pos, _sz, _data))
                 return VS_CODE_ERR_CRYPTO;
 
-            if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data)) //-V501
+            // OID of hash for kdf
+            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
+                !_asn1_step_into(SEQUENCE, &pos, _sz, _data) ||
+                !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+                0 != VS_IOT_MEMCMP(p_ar, _sha384_oid, sizeof(_sha384_oid)) ||
+                !_asn1_skip(NULL_FILED, &pos, _sz, _data)) {
                 return VS_CODE_ERR_CRYPTO;
+            }
 
-            saved_pos = pos;
-            // Read mac
-            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
-                !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
+            // Read hmac and check OID for hash
+            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || //-V501
+                !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+                0 != VS_IOT_MEMCMP(p_ar, _sha384_oid, sizeof(_sha384_oid)) ||
+                !_asn1_skip(NULL_FILED, &pos, _sz, _data) ||
+                !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz)) {
                 return VS_CODE_ERR_CRYPTO;
+            }
 
             if (ar_sz != 48)
                 return VS_CODE_ERR_CRYPTO;
             *mac_data = (uint8_t *)p_ar;
 
-            pos = saved_pos;
-
-            if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data))
-                return VS_CODE_ERR_CRYPTO;
-
-            saved_pos = pos;
-
-            // Read iv_key
-            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
+            // Read iv_key and check a key encryption OID
+            if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || //-V501
+                !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+                0 != VS_IOT_MEMCMP(p_ar, _aes256cbc_oid, sizeof(_aes256cbc_oid)) ||
                 !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
                 return false;
 
@@ -480,11 +503,8 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
                 return VS_CODE_ERR_CRYPTO;
             *iv_key = (uint8_t *)p_ar;
 
-            pos = saved_pos;
-
             // Read encrypted_key
-            if (!_asn1_skip(SEQUENCE, &pos, _sz, _data) ||
-                !_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
+            if (!_asn1_get_array(OCTET_STRING, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz))
                 return VS_CODE_ERR_CRYPTO;
 
 
@@ -498,8 +518,11 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
             break;
         }
 
+        // check a data encryption OID
         if (!_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data) ||
-            !_asn1_step_into(SEQUENCE, &pos, _sz, _data) || !_asn1_skip(OID, &pos, _sz, _data))
+            !_asn1_step_into(SEQUENCE, &pos, _sz, _data) ||
+            !_asn1_get_array(OID, &pos, _asn1_get_size(pos, _data), _data, &p_ar, &ar_sz) ||
+            0 != VS_IOT_MEMCMP(p_ar, _aes256gcm_oid, sizeof(_aes256gcm_oid)))
             return VS_CODE_ERR_CRYPTO;
 
         // Get IV for data (AES)
@@ -526,19 +549,19 @@ vs_hsm_virgil_cryptogram_parse_sha384_aes256(const uint8_t *cryptogram,
 
 /******************************************************************************/
 vs_status_e
-vs_hsm_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
-                                              size_t recipient_id_sz,
-                                              size_t encrypted_data_sz,
-                                              const uint8_t *encrypted_data,
-                                              const uint8_t *iv_data,
-                                              const uint8_t *encrypted_key,
-                                              const uint8_t *iv_key,
-                                              const uint8_t *hmac,
-                                              const uint8_t *public_key,
-                                              size_t public_key_sz,
-                                              uint8_t *cryptogram,
-                                              size_t cryptogram_buf_sz,
-                                              size_t *cryptogram_sz) {
+vs_secmodule_virgil_cryptogram_create_sha384_aes256(const uint8_t *recipient_id,
+                                                    size_t recipient_id_sz,
+                                                    size_t encrypted_data_sz,
+                                                    const uint8_t *encrypted_data,
+                                                    const uint8_t *iv_data,
+                                                    const uint8_t *encrypted_key,
+                                                    const uint8_t *iv_key,
+                                                    const uint8_t *hmac,
+                                                    const uint8_t *public_key,
+                                                    size_t public_key_sz,
+                                                    uint8_t *cryptogram,
+                                                    size_t cryptogram_buf_sz,
+                                                    size_t *cryptogram_sz) {
 
     uint8_t *buf = cryptogram;
     int pos = cryptogram_buf_sz;

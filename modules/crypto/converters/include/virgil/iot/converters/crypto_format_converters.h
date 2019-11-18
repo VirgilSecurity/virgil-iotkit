@@ -58,7 +58,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,7 +76,7 @@ extern "C" {
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
                             const uint8_t *public_key,
                             uint16_t public_key_sz,
                             uint8_t *pubkey_raw,
@@ -95,7 +95,7 @@ vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_pubkey_to_virgil(vs_hsm_keypair_type_e keypair_type,
+vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                const uint8_t *public_key_in,
                                uint16_t public_key_in_sz,
                                uint8_t *public_key_out,
@@ -114,7 +114,7 @@ vs_converters_pubkey_to_virgil(vs_hsm_keypair_type_e keypair_type,
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                  const uint8_t *virgil_sign,
                                  uint16_t virgil_sign_sz,
                                  uint8_t *sign,
@@ -134,8 +134,8 @@ vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
-                                 vs_hsm_hash_type_e hash_type,
+vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
+                                 vs_secmodule_hash_type_e hash_type,
                                  const uint8_t *raw_sign,
                                  uint16_t raw_sign_sz,
                                  uint8_t *virgil_sign,
@@ -154,7 +154,7 @@ vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                   uint8_t *mbedtls_sign,
                                   uint16_t mbedtls_sign_sz,
                                   uint8_t *raw_sign,
@@ -173,7 +173,7 @@ vs_converters_mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
  * \return true in case of success or false otherwise
  */
 bool
-vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
+vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                                   const unsigned char *raw,
                                   uint16_t raw_sz,
                                   unsigned char *signature,

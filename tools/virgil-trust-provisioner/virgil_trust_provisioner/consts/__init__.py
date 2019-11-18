@@ -47,7 +47,7 @@ class VSKeyTypeE(IntEnum):
 class VSKeyTypeS(Enum):
     RECOVERY = "recovery"
     AUTH = "auth"
-    TRUSTLIST = "tl_service"
+    TRUSTLIST = "tl"
     FIRMWARE = "firmware"
     FACTORY = "factory"
     IOT_DEVICE = "iot_device"
@@ -57,13 +57,13 @@ class VSKeyTypeS(Enum):
     CLOUD = "cloud"
 
 
-hash_type_vs_to_hsm_map = {
+hash_type_vs_to_secmodule_map = {
     HashAlgorithm.SHA256: 0,
     HashAlgorithm.SHA384: 1,
     HashAlgorithm.SHA512: 2
 }
 
-ec_type_vs_to_hsm_map = {
+ec_type_vs_to_secmodule_map = {
     VirgilKeyPair.Type_RSA_2048:        VsEcTypeE.VS_KEYPAIR_RSA_2048,
     VirgilKeyPair.Type_EC_SECP192R1:    VsEcTypeE.VS_KEYPAIR_EC_SECP192R1,
     VirgilKeyPair.Type_EC_SECP192K1:    VsEcTypeE.VS_KEYPAIR_EC_SECP192K1,

@@ -39,39 +39,44 @@
  *
  * \section logger_hal_implementation Logger HAL Implementation
  *
- * User has to provide logger output function #vs_logger_output_hal . The goal of this function is to output part
- * of string to the output. Its implementation can be as listed below :
+ * \warning If #VS_IOT_LOGGER_USE_LIBRARY is set to 1, user has to provide logger output function #vs_logger_output_hal
+.
+ * The goal of this function is to output part of string to the output. Its implementation can be as listed below :
  *
  * \code
- * #include <stdio.h>
- * bool
- * vs_logger_output_hal(const char *buffer) {
- *     if (!buffer) {
- *         return false;
- *     }
- *
- *     return printf("%s", buffer) != 0;
- * }
+
+#include <stdio.h>
+bool
+vs_logger_output_hal(const char *buffer) {
+    if (!buffer) {
+        return false;
+    }
+
+    return printf("%s", buffer) != 0;
+}
+
  * \endcode
  *
- * If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
- * outputs current time :
+ * \warning If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
+ * outputs current time. Its implementation can be as listed below :
  *
  * \code
- * #include <stdio.h>
- * #include <time.h>
- *
- * #if VS_IOT_LOGGER_OUTPUT_TIME == 1
- * bool
- * vs_logger_current_time_hal(void) {
- *     time_t result = time(NULL);
- *     if(result != -1) {
- *         printf("%s", asctime(gmtime(&result)));
- *         return true;
- *     }
- *     return false;
- * }
- * #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+
+#include <stdio.h>
+#include <time.h>
+
+#if VS_IOT_LOGGER_OUTPUT_TIME == 1
+bool
+vs_logger_current_time_hal(void) {
+    time_t result = time(NULL);
+    if(result != -1) {
+        printf( "%s", asctime(gmtime(&result)) );
+        return true;
+    }
+    return false;
+}
+#endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
+
  * \endcode
  */
 
@@ -82,8 +87,8 @@
 
 /** Function signature for unterminated string output
  *
- * This is HAL function that has to be implemented by user.
- * It sends string to the output.
+ * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the
+ * output.
  *
  * \param[in] buffer Buffer with part of the string. Cannot be NULL
  *
@@ -92,18 +97,12 @@
 bool
 vs_logger_output_hal(const char *buffer);
 
-/*
- * Generate current time directly to the output buffer, i. e. by using
- * vs_logger_output_hal.
- * Must return true in case of success or false.
- */
-
 #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 
 /** Output current date/time function signature
  *
  * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_OUTPUT_TIME == 1.
- * It outputs current date and/or time to the output.
+ * It outputs current date and/or time to the output, i. e. by using vs_logger_output_hal.
  *
  * \return true in case of success or false in any error occur
  */

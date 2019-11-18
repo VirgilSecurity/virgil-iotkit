@@ -34,6 +34,7 @@ class UtilContext:
         self.printer_enable = False
 
         self.storage_path = self.__prepare_storage_folder()
+        self.provision_pack_path = os.path.expanduser(self._config["MAIN"]["provision_pack_path"])
 
         self.application_token = self._cli_args["app_token"]
         self.virgil_api_url = self._config["VIRGIL"]["iot_api_url"]
@@ -110,7 +111,8 @@ class UtilContext:
         required_content = {
             "MAIN": [
                 "storage_path",
-                "log_path"
+                "log_path",
+                "provision_pack_path"
             ],
             "VIRGIL": [
                 "iot_api_url"

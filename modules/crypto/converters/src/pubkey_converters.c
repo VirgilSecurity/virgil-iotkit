@@ -45,13 +45,13 @@
 
 /******************************************************************************/
 static bool
-_keypair_is_25519(vs_hsm_keypair_type_e keypair_type) {
+_keypair_is_25519(vs_secmodule_keypair_type_e keypair_type) {
     return VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type;
 }
 
 /******************************************************************************/
 static bool
-_keypair_is_rsa(vs_hsm_keypair_type_e keypair_type) {
+_keypair_is_rsa(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_RSA_2048:
         return true;
@@ -63,7 +63,7 @@ _keypair_is_rsa(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static uint16_t
-_keypair_rsa_key_size(vs_hsm_keypair_type_e keypair_type) {
+_keypair_rsa_key_size(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_RSA_2048:
         return (2048 / 8);
@@ -75,7 +75,7 @@ _keypair_rsa_key_size(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static uint16_t
-_keypair_ec_mpi_size(vs_hsm_keypair_type_e keypair_type) {
+_keypair_ec_mpi_size(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
@@ -103,7 +103,7 @@ _keypair_ec_mpi_size(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static mbedtls_ecp_group_id
-_keypair_type_to_ecp_group_id(vs_hsm_keypair_type_e keypair_type) {
+_keypair_type_to_ecp_group_id(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP192R1:
         return MBEDTLS_ECP_DP_SECP192R1;
@@ -130,7 +130,7 @@ _keypair_type_to_ecp_group_id(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static bool
-_keypair_ec_key_to_internal(vs_hsm_keypair_type_e keypair_type,
+_keypair_ec_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
                             const uint8_t *public_key_in,
                             uint16_t public_key_in_sz,
                             uint8_t *public_key_out,
@@ -176,7 +176,7 @@ terminate:
 
 /******************************************************************************/
 static bool
-_keypair_rsa_key_to_internal(vs_hsm_keypair_type_e keypair_type,
+_keypair_rsa_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
                              const uint8_t *public_key_in,
                              uint16_t public_key_in_sz,
                              uint8_t *public_key_out,
@@ -214,7 +214,7 @@ _keypair_rsa_key_to_internal(vs_hsm_keypair_type_e keypair_type,
 
 /******************************************************************************/
 static bool
-_keypair_25519_key_to_internal(vs_hsm_keypair_type_e keypair_type,
+_keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
                                const uint8_t *public_key_in,
                                uint16_t public_key_in_sz,
                                uint8_t *public_key_out,
@@ -260,7 +260,7 @@ _keypair_25519_key_to_internal(vs_hsm_keypair_type_e keypair_type,
 
 /******************************************************************************/
 bool
-vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
                             const uint8_t *public_key,
                             uint16_t public_key_sz,
                             uint8_t *pubkey_raw,
@@ -308,7 +308,7 @@ vs_converters_pubkey_to_raw(vs_hsm_keypair_type_e keypair_type,
 
 /******************************************************************************/
 bool
-vs_converters_pubkey_to_virgil(vs_hsm_keypair_type_e keypair_type,
+vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                const uint8_t *public_key_in,
                                uint16_t public_key_in_sz,
                                uint8_t *public_key_out,

@@ -57,7 +57,7 @@ set_target_properties(vs-module-secbox PROPERTIES COMPILE_FLAGS "-Wall -Werror")
 
 target_link_libraries(vs-module-secbox
         PUBLIC
-        vs-module-hsm
+        vs-module-secmodule
         vs-module-provision
         macros
         storage_hal

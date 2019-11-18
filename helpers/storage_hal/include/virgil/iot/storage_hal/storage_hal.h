@@ -36,6 +36,8 @@
  * \brief Storage HAL interface
  *
  * \section storage_hal Storage HAL Usage
+ *
+ * \warning #vs_storage_op_ctx_t has to be implemented by user.
  */
 
 #ifndef VS_STORAGE_HAL_H

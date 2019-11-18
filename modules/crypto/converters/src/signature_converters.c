@@ -44,11 +44,11 @@
 
 #include "private/macros.h"
 #include <virgil/iot/converters/crypto_format_converters.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /******************************************************************************/
 static int
-_coord_sz(vs_hsm_keypair_type_e keypair_type) {
+_coord_sz(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
@@ -76,7 +76,7 @@ _coord_sz(vs_hsm_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static mbedtls_md_type_t
-_hsm_hash_to_mbedtls(vs_hsm_hash_type_e hash_type) {
+_secmodule_hash_to_mbedtls(vs_secmodule_hash_type_e hash_type) {
     switch (hash_type) {
     case VS_HASH_SHA_256:
         return MBEDTLS_MD_SHA256;
@@ -91,7 +91,7 @@ _hsm_hash_to_mbedtls(vs_hsm_hash_type_e hash_type) {
 
 /*******************************************************************************/
 static bool
-_raw_ec_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
+_raw_ec_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                         const unsigned char *raw,
                         uint16_t raw_sz,
                         unsigned char *signature,
@@ -138,7 +138,7 @@ terminate:
 
 ///*******************************************************************************/
 bool
-vs_converters_raw_sign_to_mbedtls(vs_hsm_keypair_type_e keypair_type,
+vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                                   const unsigned char *raw,
                                   uint16_t raw_sz,
                                   unsigned char *signature,
@@ -166,7 +166,7 @@ terminate:
 
 /*******************************************************************************/
 static bool
-_mbedtls_sign_to_raw_ec(vs_hsm_keypair_type_e keypair_type,
+_mbedtls_sign_to_raw_ec(vs_secmodule_keypair_type_e keypair_type,
                         uint8_t *mbedtls_sign,
                         uint16_t mbedtls_sign_sz,
                         uint8_t *raw_sign,
@@ -216,7 +216,7 @@ terminate:
 
 /******************************************************************************/
 bool
-vs_converters_mbedtls_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                   uint8_t *mbedtls_sign,
                                   uint16_t mbedtls_sign_sz,
                                   uint8_t *raw_sign,
@@ -267,7 +267,7 @@ _virgil_sign_to_mbedtls(const uint8_t *virgil_sign, uint16_t virgil_sign_sz, con
 
 /******************************************************************************/
 static bool
-_mbedtls_sign_to_virgil(vs_hsm_hash_type_e hash_type,
+_mbedtls_sign_to_virgil(vs_secmodule_hash_type_e hash_type,
                         uint8_t *mbedtls_sign,
                         uint16_t mbedtls_sign_sz,
                         uint8_t *virgil_sign,
@@ -287,7 +287,7 @@ _mbedtls_sign_to_virgil(vs_hsm_hash_type_e hash_type,
 
     ASN1_CHK_ADD(hash_type_len, mbedtls_asn1_write_null(&p, buf));
 
-    if (0 != mbedtls_oid_get_oid_by_md(_hsm_hash_to_mbedtls(hash_type), &oid, &oid_len))
+    if (0 != mbedtls_oid_get_oid_by_md(_secmodule_hash_to_mbedtls(hash_type), &oid, &oid_len))
         return false;
 
     ASN1_CHK_ADD(hash_type_len, mbedtls_asn1_write_oid(&p, buf, oid, oid_len));
@@ -311,7 +311,7 @@ _mbedtls_sign_to_virgil(vs_hsm_hash_type_e hash_type,
 
 /******************************************************************************/
 bool
-vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
+vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                  const uint8_t *virgil_sign,
                                  uint16_t virgil_sign_sz,
                                  uint8_t *sign,
@@ -333,8 +333,8 @@ vs_converters_virgil_sign_to_raw(vs_hsm_keypair_type_e keypair_type,
 
 /******************************************************************************/
 bool
-vs_converters_raw_sign_to_virgil(vs_hsm_keypair_type_e keypair_type,
-                                 vs_hsm_hash_type_e hash_type,
+vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
+                                 vs_secmodule_hash_type_e hash_type,
                                  const uint8_t *raw_sign,
                                  uint16_t raw_sign_sz,
                                  uint8_t *virgil_sign,

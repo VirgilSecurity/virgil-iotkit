@@ -43,7 +43,7 @@
 #include <stdint.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/hsm/hsm.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /** Security box operation type */
 typedef enum {
@@ -54,12 +54,12 @@ typedef enum {
 /** Initialize Security Box
  *
  * \param[in] ctx Storage context. Must not be NULL.
- * \param[in] hsm HSM implementation. Must not be NULL.
+ * \param[in] secmodule Security Module implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_hsm_impl_t *hsm);
+vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule);
 
 /** Destroy Security Box
  *

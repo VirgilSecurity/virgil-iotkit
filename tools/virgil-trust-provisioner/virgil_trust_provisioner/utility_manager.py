@@ -14,7 +14,7 @@ from virgil_trust_provisioner.core_utils.virgil_time import date_to_timestamp
 from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
 
 from virgil_trust_provisioner.consts.modes import ProgramModes
-from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key
+from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key, helpers
 from virgil_trust_provisioner.core_utils.card_requests import CardRequestsHandler
 from virgil_trust_provisioner.external_utils.printer_controller import PrinterController
 from virgil_trust_provisioner.generators.trustlist import TrustListGenerator
@@ -38,6 +38,8 @@ class UtilityManager(object):
         self.__ui = self._context.ui
         self.__logger = self._context.logger
         self.__key_storage_path = os.path.join(self._context.storage_path, "key_storage")
+        self.__key_storage_private_keys = os.path.join(self.__key_storage_path, "private")
+        self.__key_storage_public_keys = os.path.join(self.__key_storage_path, "pubkeys")
         self.__atmel = self._context.atmel
         self.__printer_controller = PrinterController(self.__ui)
         self.__upper_level_keys_count = 2
@@ -70,7 +72,7 @@ class UtilityManager(object):
         self.__recovery_private_keys = self.__init_storage(
             "RecoveryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
-        self.__trust_list_service_private_keys = self.__init_storage(
+        self.__trust_list_private_keys = self.__init_storage(
             "TLServicePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
         )
 
@@ -78,7 +80,7 @@ class UtilityManager(object):
             consts.VSKeyTypeS.AUTH:              (self.__auth_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FIRMWARE:          (self.__firmware_priv_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.RECOVERY:          (self.__recovery_private_keys, self.__upper_level_pub_keys),
-            consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_service_private_keys, self.__upper_level_pub_keys),
+            consts.VSKeyTypeS.TRUSTLIST:         (self.__trust_list_private_keys, self.__upper_level_pub_keys),
             consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
             consts.VSKeyTypeS.CLOUD:             (None, self.__trust_list_pub_keys),  # private key is stored on cloud
         }
@@ -255,9 +257,7 @@ class UtilityManager(object):
                 shutil.rmtree(self.__key_storage_path)
                 self.__logger.debug("Creating {}".format(self.__key_storage_path))
                 os.makedirs(os.path.join(self.__key_storage_path, "db"))
-                private_keys_file_path = os.path.join(self.__key_storage_path, "private")
-                public_keys_file_path = os.path.join(self.__key_storage_path, "pubkeys")
-                for path in (private_keys_file_path, public_keys_file_path):
+                for path in (self.__key_storage_public_keys, self.__key_storage_private_keys):
                     if os.path.exists(path):
                         shutil.rmtree(path)
                 dongle_directory = os.path.join(
@@ -284,9 +284,9 @@ class UtilityManager(object):
             self.__generate_auth_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
-            self.__logger.info("TrustList Service Key {} generation (Initial Generation stage)".format(key_number))
-            self.__ui.print_message("\nTrustList Service Key {}:".format(key_number))
-            self.__generate_trust_list_service_key()
+            self.__logger.info("TrustList Key {} generation (Initial Generation stage)".format(key_number))
+            self.__ui.print_message("\nTrustList Key {}:".format(key_number))
+            self.__generate_trust_list_key()
 
         for key_number in range(1, int(self.__upper_level_keys_count) + 1):
             self.__logger.info("Firmware Key {} generation (Initial Generation stage)".format(key_number))
@@ -298,30 +298,24 @@ class UtilityManager(object):
         self.__generate_factory_key()
         self.__logger.info("initial generation stage completed")
 
-    def __dump_upper_level_pub_keys(self, filename="pubkeys"):
-        self.__logger.info("UpperLevelPublic Keys dumping")
-        self.__ui.print_message("Dumping upper level Public Keys")
-        pubkey_dir = os.path.join(self.__key_storage_path, filename)
-        if not os.path.exists(pubkey_dir):
-            os.mkdir(pubkey_dir)
+    def __export_upper_level_pub_keys(self):
+        self.__ui.print_message("Exporting upper level Public Keys...")
+        if not os.path.exists(self.__key_storage_public_keys):
+            os.mkdir(self.__key_storage_public_keys)
+        else:
+            helpers.clean_folder_content(self.__key_storage_public_keys)
 
         storage = self.__upper_level_pub_keys
         for key_id in storage.get_keys():
             key_data = storage.get_value(key_id)
+            file_name = key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"
+            file_path = os.path.join(self.__key_storage_public_keys, file_name)
             if key_data["type"] == consts.VSKeyTypeS.RECOVERY.value:
-                self.__save_key(
-                    key_data=key_data,
-                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
-                )
+                self.__save_key(key_data=key_data, file_path=file_path)
             else:
                 signer_key_data = storage.get_value(key_data["signer_key_id"])
-                self.__save_key(
-                    key_data=key_data,
-                    file_path=os.path.join(pubkey_dir, key_data["type"] + "_" + key_id + "_" + str(key_data["comment"]) + ".pub"),
-                    signer_key_data=signer_key_data
-                )
-        self.__ui.print_message("Keys dump finished")
-        self.__logger.info("UpperLevelPublicKeys dumping completed")
+                self.__save_key(key_data=key_data, file_path=file_path, signer_key_data=signer_key_data)
+        self.__ui.print_message("Export finished")
 
     def __generate_trust_list(self, storage=None):
         def increment_version(version):
@@ -394,8 +388,8 @@ class UtilityManager(object):
             return
         tl_key = self.key_chooser(
             consts.VSKeyTypeS.TRUSTLIST,
-            stage="TrustList generation, TrustList Service Key choosing",
-            greeting_msg="Please choose TrustList Service Key for TrustList signing: "
+            stage="TrustList generation, TrustList Key choosing",
+            greeting_msg="Please choose TrustList Key for TrustList signing: "
         )
         if not tl_key:
             return
@@ -463,7 +457,7 @@ class UtilityManager(object):
         meta_data = self._context.virgil_api_url
         key_info = {
             "type": consts.VSKeyTypeS.CLOUD.value,
-            "ec_type": consts.ec_type_vs_to_hsm_map.get(VirgilKeyPair.Type_EC_SECP256R1),
+            "ec_type": consts.ec_type_vs_to_secmodule_map.get(VirgilKeyPair.Type_EC_SECP256R1),
             "start_date": cloud_key_response["start_date"],
             "expiration_date": cloud_key_response["end_date"],
             "comment": "Cloud public key",
@@ -559,13 +553,13 @@ class UtilityManager(object):
         card_content["start_date"] = start_date
         card_content["expiration_date"] = expiration_date
         card_content["comment"] = comment
-        card_content["ec_type"] = key.ec_type_hsm
+        card_content["ec_type"] = key.ec_type_secmodule
         card_content["meta_data"] = meta_data
         card_content["key_type"] = consts.key_type_str_to_num_map[key_type]
         if sign_by_recovery_key:
             card_content["signature"] = key.signature
             card_content["signer_public_key"] = rec_key_for_sign.public_key
-            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
+            card_content["signer_hash_type"] = rec_key_for_sign.hash_type_secmodule
         if extra_card_content:
             card_content.update(extra_card_content)
         self.__card_requests_handler.create_and_register_card(key, key_info=card_content)
@@ -574,7 +568,7 @@ class UtilityManager(object):
         # - prepare key info to be saved
         key_info = {
             "type": key_type.value,
-            "ec_type": key.ec_type_hsm,
+            "ec_type": key.ec_type_secmodule,
             "start_date": start_date,
             "expiration_date": expiration_date,
             "comment": comment,
@@ -584,7 +578,7 @@ class UtilityManager(object):
         if sign_by_recovery_key:
             key_info["signature"] = key.signature
             key_info["signer_key_id"] = rec_key_for_sign.key_id
-            key_info["signer_hash_type"] = rec_key_for_sign.hash_type_hsm
+            key_info["signer_hash_type"] = rec_key_for_sign.hash_type_secmodule
 
         # - public
         public_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
@@ -622,10 +616,10 @@ class UtilityManager(object):
             extra_card_content=None
         )
 
-    def __generate_trust_list_service_key(self):
+    def __generate_trust_list_key(self):
         self.__generate_key(
             key_type=consts.VSKeyTypeS.TRUSTLIST,
-            name_for_log="TrustList Service",
+            name_for_log="TrustList",
             sign_by_recovery_key=True,
             add_signature_limit=False,
             start_date_required=False,
@@ -713,7 +707,7 @@ class UtilityManager(object):
         self.__logger.debug("\nUpper level Keys: \n{}".format(pt.get_string()))
         del pt
 
-        self.__ui.print_message("\nTrustList Service Keys: ")
+        self.__ui.print_message("\nTrustList Keys: ")
         pt = PrettyTable(["Key Id", "Type", "EC type", "Comment", "Start", "Expire", "Key"])
         for key in self.__trust_list_pub_keys.get_keys():
             row = self.__trust_list_pub_keys.get_value(key)
@@ -721,7 +715,7 @@ class UtilityManager(object):
                 [key, row["type"], row["ec_type"], row["comment"], row["start_date"], row["expiration_date"], row["key"]]
             )
         self.__ui.print_message(pt.get_string())
-        self.__logger.debug("\nTrustList Service Keys: \n{}".format(pt.get_string()))
+        self.__logger.debug("\nTrustList Keys: \n{}".format(pt.get_string()))
         del pt
         self.__logger.info("Printing Public Keys from db's completed")
 
@@ -748,8 +742,8 @@ class UtilityManager(object):
         for key in key_type_keys_info.keys():
             self.__upper_level_pub_keys.delete_key(key)
             if key_type == consts.VSKeyTypeS.TRUSTLIST:
-                if key in self.__trust_list_service_private_keys.get_keys():
-                    self.__trust_list_service_private_keys.delete_key(key)
+                if key in self.__trust_list_private_keys.get_keys():
+                    self.__trust_list_private_keys.delete_key(key)
             if key_type == consts.VSKeyTypeS.FACTORY:
                 if key in self.__factory_priv_keys.get_keys():
                     self.__factory_priv_keys.delete_key(key)
@@ -773,8 +767,8 @@ class UtilityManager(object):
                 self.__generate_auth_key()
         if key_type == consts.VSKeyTypeS.TRUSTLIST:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
-                self.__ui.print_message("\nGenerate TrustList Service Key {}:".format(key_number))
-                self.__generate_trust_list_service_key()
+                self.__ui.print_message("\nGenerate TrustList Key {}:".format(key_number))
+                self.__generate_trust_list_key()
         if key_type == consts.VSKeyTypeS.FIRMWARE:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Firmware Key {}:".format(key_number))
@@ -865,7 +859,7 @@ class UtilityManager(object):
                 ["---"],
                 ["Generate Auth Key ({})".format(self.__upper_level_keys_count), self.__generate_auth_by_count],
                 ["---"],
-                ["Generate TrustList Service Key ({})".format(self.__upper_level_keys_count),
+                ["Generate TrustList Key ({})".format(self.__upper_level_keys_count),
                  self.__generate_tl_key_by_count],
                 ["---"],
                 ["Generate Factory Key", self.__generate_factory_key],
@@ -878,7 +872,8 @@ class UtilityManager(object):
                 ["Print all Public Keys from db's", self.__print_all_pub_keys_db],
                 ["Add Public Key to db (Factory)", self.__manual_add_public_key],
                 ["---"],
-                ["Export upper level Public Keys", self.__dump_upper_level_pub_keys],
+                ["Export data as provision package for Factory", self.__create_provision_pack],
+                ["Export upper level Public Keys", self.__export_upper_level_pub_keys],
                 ["Export Private Keys", self.__get_all_private_keys],
                 ["---"],
                 ["Exit", self.__exit]
@@ -922,7 +917,7 @@ class UtilityManager(object):
         open(file_path, "wb").write(bytes(byte_buffer.getvalue()))
 
     def __get_private_keys(self, storage):
-        private_dir = os.path.join(self.__key_storage_path, "private")
+        private_dir = self.__key_storage_private_keys
         if not os.path.exists(private_dir):
             os.mkdir(private_dir)
 
@@ -939,13 +934,67 @@ class UtilityManager(object):
             )
 
     def __get_all_private_keys(self):
+        helpers.clean_folder_content(self.__key_storage_private_keys)
         self.__ui.print_message("Exporting Private Keys...")
         self.__get_private_keys(self.__factory_priv_keys)
         self.__get_private_keys(self.__firmware_priv_keys)
         self.__get_private_keys(self.__auth_private_keys)
         self.__get_private_keys(self.__recovery_private_keys)
-        self.__get_private_keys(self.__trust_list_service_private_keys)
+        self.__get_private_keys(self.__trust_list_private_keys)
         self.__ui.print_message("Export finished")
+
+    def __create_provision_pack(self):
+        # Prepare folder
+        if os.path.exists(self._context.provision_pack_path):
+            helpers.clean_folder_content(self._context.provision_pack_path)
+        else:
+            os.makedirs(self._context.provision_pack_path)
+        pack_private_keys = os.path.join(self._context.provision_pack_path, "private")
+        pack_public_keys = os.path.join(self._context.provision_pack_path, "pubkeys")
+        os.makedirs(pack_private_keys)
+        os.makedirs(pack_public_keys)
+
+        # Prepare private keys
+        self.__get_all_private_keys()
+        # - find Factory key
+        factory_keys = helpers.find_files(self.__key_storage_private_keys, "factory_")
+        if not factory_keys:
+            self.__ui.print_error("Factory key needed for provision package not found. Please generate it.")
+            return
+        *_, factory_key = factory_keys
+
+        # Prepare public keys
+        self.__export_upper_level_pub_keys()
+        auth_keys = helpers.find_files(self.__key_storage_public_keys, 'auth_')
+        recovery_keys = helpers.find_files(self.__key_storage_public_keys, 'recovery_')
+        tl_keys = helpers.find_files(self.__key_storage_public_keys, 'tl_')
+        firmware_keys = helpers.find_files(self.__key_storage_public_keys, 'firmware_')
+        if any(len(keys) != self.__upper_level_keys_count for keys in [auth_keys,
+                                                                       recovery_keys,
+                                                                       tl_keys,
+                                                                       firmware_keys]):
+            self.__ui.print_error(
+                "Upper level keys amount should be %s. Please generate them." % self.__upper_level_keys_count)
+            return
+
+        # TrustList
+        # - find latest TrustLIst
+        trust_lists = helpers.find_files(self.__key_storage_path, "TrustList_")
+        if not trust_lists:
+            self.__ui.print_error("TrustList needed for provision package not found. Please generate it.")
+            return
+        *_, latest_tl_path = sorted(trust_lists, key=lambda path: os.path.getmtime(path))
+
+        # Copy files to pack
+        # - private keys
+        shutil.copy(factory_key, pack_private_keys)
+        # - public keys
+        for keys in [auth_keys, recovery_keys, tl_keys, firmware_keys]:
+            for key_path in keys:
+                shutil.copy(key_path, pack_public_keys)
+        # - TrustList
+        shutil.copy(latest_tl_path, self._context.provision_pack_path)
+        self.__ui.print_message("Provision package for Factory saved as '%s' folder" % self._context.provision_pack_path)
 
     def __check_db_path(self):
         db_path = os.path.join(self.__key_storage_path, "db")
