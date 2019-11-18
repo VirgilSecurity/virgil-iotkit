@@ -42,6 +42,9 @@
  *
  * Client side downloads new file versions and checks them. #vs_fldt_got_file function is called after file upgrading.
  * In most case it used to output new file version information and gateway address.
+ *
+ * \warning User has to provide #vs_fldt_got_file function implementation for FLDT Client.
+ *
  * To successfully file downloading process #vs_update_interface_t must be provided for each file type. You can see
  * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
  *

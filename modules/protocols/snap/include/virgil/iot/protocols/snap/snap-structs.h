@@ -34,6 +34,7 @@
 
 /*! \file snap-structs.h
  * \brief SNAP structures
+ *
  */
 
 #ifndef VS_SNAP_STRUCTS_H
