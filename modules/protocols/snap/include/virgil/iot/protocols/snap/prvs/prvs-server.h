@@ -35,7 +35,8 @@
 /*! \file prvs-server.h
  * \brief PRVS for server
  *
- * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer utility.
+ * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer
+ utility.
  * Client prepares device's card, server signs it, and client saves this information.
  *
  * \section prvs_server_usage PRVS Server usage

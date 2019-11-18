@@ -69,15 +69,15 @@
  *        "Unable to enumerate devices in the network");
  *
  *     // Request periodical state sending for all parameters
- *     STATUS_CHECK(vs_snap_info_set_polling(NULL, &own_mac, VS_SNAP_INFO_GENERAL | VS_SNAP_INFO_STATISTICS, true, poll_period_sec),
- *        "Unable to request periodical polling sends");
+ *     STATUS_CHECK(vs_snap_info_set_polling(NULL, &own_mac, VS_SNAP_INFO_GENERAL | VS_SNAP_INFO_STATISTICS, true,
+ *        poll_period_sec), "Unable to request periodical polling sends");
  *
  * \endcode
  *
  * own_mac is initialized by current device MAC address. It can be provided by #vs_snap_mac_addr call.
  *
- * #vs_snap_info_client receives INFO service implementation for SNAP protocol. You can see an example in c-implementation tool.
- * Also it receives implementations list with notification implementations.
+ * #vs_snap_info_client receives INFO service implementation for SNAP protocol. You can see an example in
+ * c-implementation tool. Also it receives implementations list with notification implementations.
  *
  * \note All callbacks can be NULL.
  *
@@ -207,7 +207,8 @@ vs_snap_info_client(vs_snap_info_callbacks_t callbacks);
 
 /** Enumerate devices
  *
- * This call enumerates all devices present in the current network. It waits for \a wait_ms and returns collected information.
+ * This call enumerates all devices present in the current network. It waits for \a wait_ms and returns collected
+ * information.
  *
  * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
  * \param[out] devices #vs_snap_info_device_t Devices information list. Must not be NULL.
@@ -226,13 +227,11 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
 
 /** Set pooling
  *
- * This call enables or disables polling for elements masked in \a elements field that contains mask  with #vs_snap_info_element_mask_e
- * fields.
- * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
- * \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL.
- * \param[in] elements #vs_snap_info_element_mask_e mask.
- * \param[out] enable Enable or disable \a elements to be sent.
- * \param[in] period_seconds Period in seconds for statistics sending
+ * This call enables or disables polling for elements masked in \a elements field that contains mask  with
+ * #vs_snap_info_element_mask_e fields. \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will
+ * be used. \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL. \param[in] elements
+ * #vs_snap_info_element_mask_e mask. \param[out] enable Enable or disable \a elements to be sent. \param[in]
+ * period_seconds Period in seconds for statistics sending
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

@@ -35,8 +35,8 @@
 /*! \file prvs-client.h
  * \brief PRVS for client
  *
- * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer utility.
- * Client prepares device's card, server signs it, and client saves this information.
+ * PRVS is the provision service. PRVS Server is a device, PRVS Client is the factory server with factory initializer
+ * utility. Client prepares device's card, server signs it, and client saves this information.
  *
  * \section prvs_client_usage PRVS Client usage
  *
@@ -59,9 +59,9 @@
  *
  * \endcode
  *
- * \a _snap_prvs_impl is the function that returns implementation for #vs_snap_prvs_client_impl_t. It requires two function
- * to be present - #vs_snap_prvs_stop_wait_t and #vs_snap_prvs_wait_t. You can find an example of their implementation in the
- * c-implementation tool.
+ * \a _snap_prvs_impl is the function that returns implementation for #vs_snap_prvs_client_impl_t. It requires two
+ * function to be present - #vs_snap_prvs_stop_wait_t and #vs_snap_prvs_wait_t. You can find an example of their
+ * implementation in the c-implementation tool.
  *
  * \note Almost all calls have \a netif parameter. If it is null, SNAP interface that has been initialized will be used.
  * It is OK for default case.
@@ -109,8 +109,8 @@ typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int *condition, int
 
 /** PRVS client implementation */
 typedef struct {
-    vs_snap_prvs_stop_wait_t stop_wait_func;    /**< Stop waiting implementation */
-    vs_snap_prvs_wait_t wait_func;  /**< Wait implementation */
+    vs_snap_prvs_stop_wait_t stop_wait_func; /**< Stop waiting implementation */
+    vs_snap_prvs_wait_t wait_func;           /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;
 
 /** PRVS Client SNAP Service implementation
