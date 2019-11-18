@@ -113,25 +113,16 @@ typedef struct {
     vs_snap_info_statistics_cb_t statistics_cb;    /**< Device statistics */
 } vs_snap_info_callbacks_t;
 
-// TODO : members description???
-/** INFO client implementation
- */
-typedef struct {
-    vs_snap_info_wait_t wait_func;           /**< Wait function callback */
-    vs_snap_info_stop_wait_t stop_wait_func; /**< Stop and wait function callback */
-} vs_snap_info_impl_t;
-
 /** INFO Client SNAP Service implementation
  *
  * This call returns INFO client implementation. It must be called before any INFO call.
  *
- * \param[in] impl #vs_snap_info_impl_t SNAP implementation. Must not be NULL.
  * \param[in] callbacks #vs_snap_info_callbacks_t callbacks. Must not be NULL.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 const vs_snap_service_t *
-vs_snap_info_client(vs_snap_info_impl_t impl, vs_snap_info_callbacks_t callbacks);
+vs_snap_info_client(vs_snap_info_callbacks_t callbacks);
 
 /** Enumerate devices
  *
