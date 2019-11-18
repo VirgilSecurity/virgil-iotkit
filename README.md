@@ -171,41 +171,32 @@ Some modules use external implementations. It is necessary to implement HAL func
 contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal)
 for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html)
 for details.
-
 - [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html) : **vs_firmware_install_prepare_space_hal**,
-**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions need to be implemented for firmware processing. If filesystem
-is present, those functions implement read/write operations with firmware file. See [Firmware HAL signatures](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html)
+**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions need to be implemented for firmware processing. If filesystem is present, those functions implement read/write operations with firmware file. See [Firmware HAL signatures](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html)
 for details.
-
 - [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html) : depending on [logger-config.h](https://virgilsecurity.github.io/virgil-iotkit/logger-config_8h.html)
 configurations **vs_logger_output_hal** for string output and/or **vs_logger_current_time_hal** for current time output would be
 necessary to be implemented. See [Logger HAL Implementation](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for details.
-
 - [SNAP protocol](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) : **vs_netif_t** network interface as
 transport level for SNAP protocol has to be implemented. As UDP broadcast example user can use c-implementation tool.
 See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-structs_8h.html) for details.
-
 - [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only : **vs_fldt_got_file**
 function has to be implemented by user. This is FLDT Client notification about new file retrieval and installation. In case of successful
 installation application must be restarted. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
 for details.
-
 - [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only : **vs_fldt_server_add_filetype_cb**
 function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to
 return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html)
 for details.
-
 - [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only : **vs_snap_prvs_client_impl_t**
 structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation
 is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
 ### Mandatory implementations with default ones
 There are other modules that need user implementation, but Virgil IoT SDK provides default implementations for them :
-
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t**
 are required by vs_cloud_init call. Function vs_curl_http_impl returns cURL HTTP implementation, vs_cloud_message_bin_impl_t
 returns MQTT implementation.
-
 - [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure
 **vs_secmodule_impl_t** that is used by many functions. Function vs_soft_secmodule_impl returns software implementation.
 
