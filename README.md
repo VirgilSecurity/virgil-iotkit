@@ -1,6 +1,5 @@
 # Virgil IoTKit C
 
-[![Build Status](https://travis-ci.com/VirgilSecurity/virgil-iotkit.svg?branch=master)](https://travis-ci.com/VirgilSecurity/virgil-iotkit)
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iotkit)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
@@ -13,12 +12,15 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 
 ## Content
 - [Features](#features)
-- [Run Demo](#rundemo)
-- [IoT Dev Tools](#tools)
-- [IoTKit Installation](#installation)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-- [Modules](#modules)
+- [IoT Dev Tools](#iot-dev-tools)
+- [Run IoTKit Demo](#run-iotkit-demo)
+- [IoTKit Modules](#modules)
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Ubuntu, Debian OS](#ubuntu-debian-os)
+  - [CentOS, Fedora OS](#centos-fedora-os)
+  - [MacOS](#macos)
+  - [Windows OS](#windows-os)
 - [Tests](#tests)
 - [SDK usage](#usage)
 - [API Reference](#api-reference)
@@ -37,7 +39,27 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interacts with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
 
-<div id='requirements'/>
+## IoT Dev Tools
+Virgil Security also provides set of tools for secure device lifecycle.
+- **Virgil Trust Provisioner**. The Virgil Trust Provisioner is a CLI used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions. The CLI is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution. To start working with the tool read more [here](/tools/virgil-trust-provisioner).
+- **Virgil Device Initializer**. In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud. Virgil Device Initializer allows you to make IoT device provisioning and prepare your IoT device (create digital cards) for its further registration in Virgil Cloud. To start working with the tool read more [here](/tools/virgil-device-initializer).
+- **Virgil Device Registrar**. Virgil IoT Device Registrar is used to registrar IoT devices and their digital cards in the Virgil Security Cloud. To start working with the tool read more [here](/tools/virgil-device-registrar).
+- **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer).
+- **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
+
+
+## Run IoTKit Demo
+To demonstrate our IoTKit in action we developed [Demo for UNIX-like OS based on IoTKit toolkits](https://github.com/VirgilSecurity/demo-iotkit-nix).
+
+The IoTKit Demo is conditionally divided into 3 actors (Vendor, Factory and End-user) and shows secure lifecycle of IoT devices. The IoTKit Demo allows you to:
+- **Generate trusted provisioning package**. To start working with emulated IoT infrastructure the Demo uses Virgil Trust Provisioner utility for generating provisioning files, such as private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
+- **Emulate IoT devices**. Then, you can emulate two IoT device types: IoT Gateway - an internet-capable smart device that communicates with other IoT devices and Clouds; and IoT Device - end-device, like smart bulb, that can be controlled remotely through the IoT Gateway.
+- **Securely perform IoT device provisioning**. Demo uses the Virgil Device Initializer for IoT devices provisioning to make them identifiable, verifiable and trusted. Securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
+- **Register IoT devices on the security platform**. At this step the Virgil Device Registrar is used to register digital cards of IoT devices at Virgil Cloud for further device authentication and management.
+- **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Demo uses Virgil Firmware Signer to sign a firmware before its distributing.
+- **Manage IoT devices**. Demo allows to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
+
+<div id='run-demo'/>
 
 ## Requirements
 
@@ -47,31 +69,58 @@ The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macO
 - Install [Go](https://golang.org/) for utilities support
 - Install [git](https://git-scm.com/) for Virgil Crypto installation and update
 - Install [curl](https://curl.haxx.se/) for gateway target
-- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support. This dependency will
-be removed in future
+// TODO : TO REMOVE
+- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support
 
-<div id='installation'/>
+## IoTKit Modules
+As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
+- **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
+- **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and trustlist files from cloud storage. .
+- **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
+- Provision.
+- Secbox.
+- Protocols.
+- Cloud.
+- Logger.
+
+<div id='iotkit-installation'/>
 
 ## Installation
+Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
 
-- Install the required components.
+### Prerequisites
+To start working with Virgil IoTKit the following components are required:
+- CMake v3.11 or higher, for project building
+- GCC or another toolchain for C/C++ compile
+- [Go](https://golang.org/) library to work with Virgil IoT utilities
+- [git](https://git-scm.com/) for Virgil Crypto installation and update
+- [curl](https://curl.haxx.se/)
 
-For Ubuntu : 
+
+### Ubuntu, Debian OS
+To download and install the Virgil IoTKit on Ubuntu, use the following command:
+
 ```shell
-apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+$ apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
 
-For Fedora, CentOS :
+### Fedora, CentOS
+To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
+
 ```shell
-yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
+$ yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
 ```
 
-For Mac OS :
+### MacOS
+To download and install the Virgil IoTKit on MacOS, use the following command:
 ```shell
-brew install make cmake golang git gcc curl doxygen swig
+$ brew install make cmake golang git gcc curl doxygen swig
 ```
 
-- Check CMake version. It must be 3.11 or higher :
+### Windows OS
+Virgil IoTKit for Windows OS is currently in development. To be included to information update list please contact our support team: support@VirgilSecurity.com.
+
+- Check CMake version. It must be 3.11 or higher:
 
 ```shell
 $ cmake --version
@@ -103,11 +152,11 @@ thing service and downloading firmware images and trust list files from cloud st
 - [Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html) : Trust List keys reading and verifying.
 - Secbox.
 - Protocols.
-- Cloud.
 
 <div id='tests'/>
 
 ## Tests
+To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.
 
 <div id='usage'/>
 
@@ -127,6 +176,10 @@ For example, if you want to use PC configuration provided by library and library
 you have to set compiler option:
 
 `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
+
+Or you can initialize CMake variable :
+
+`set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/virgil-iotkit/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")`
 
 ### Mandatory implementations 
 Some modules use external implementations. It is necessary to implement HAL functions by user :
@@ -149,22 +202,22 @@ necessary to be implemented. See [Logger HAL Implementation](https://virgilsecur
 transport level for SNAP protocol has to be implemented. As UDP broadcast example user can use c-implementation tool.
 See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-structs_8h.html) for details.
 
-- [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only if used : **vs_fldt_got_file**
+- [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only : **vs_fldt_got_file**
 function has to be implemented by user. This is FLDT Client notification about new file retrieval and installation. In case of successful
 installation application must be restarted. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
 for details.
 
-- [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only if used : **vs_fldt_server_add_filetype_cb**
+- [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only : **vs_fldt_server_add_filetype_cb**
 function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to
 return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html)
 for details.
 
-- [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only if used : **vs_snap_prvs_client_impl_t**
+- [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only : **vs_snap_prvs_client_impl_t**
 structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation
 is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
 ### Mandatory implementations with default ones 
-There are other modules that need user implementation, but Virgil IoT KIT provides default implementations for them :
+There are other modules that need user implementation, but Virgil IoT SDK provides default implementations for them :
 
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t**
 are required by vs_cloud_init call. Function vs_curl_http_impl returns cURL HTTP implementation, vs_cloud_message_bin_impl_t

@@ -54,7 +54,6 @@ target_sources(tools-hal
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/ti_netif_udp_bcast.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/snap/ti_prvs_impl.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/hal/snap/ti_info_impl.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tools/helpers/ti_wait_functionality.h
 
         # Sources
@@ -62,7 +61,6 @@ target_sources(tools-hal
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/ti_hal.c
         ${CMAKE_CURRENT_LIST_DIR}/src/helpers/ti_wait_functionality.c
         ${CMAKE_CURRENT_LIST_DIR}/src/hal/snap/ti_prvs_impl.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/hal/snap/ti_info_impl.c
         )
 #
 #   Includes
