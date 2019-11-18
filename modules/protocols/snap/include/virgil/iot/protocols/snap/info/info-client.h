@@ -77,7 +77,9 @@
  * own_mac is initialized by current device MAC address. It can be provided by #vs_snap_mac_addr call.
  *
  * #vs_snap_info_client receives INFO service implementation for SNAP protocol. You can see an example in c-implementation tool.
- * Also it receives implementations list with notification implementations :
+ * Also it receives implementations list with notification implementations.
+ *
+ * \note All callbacks can be NULL.
  *
  * \code
  *
@@ -145,7 +147,6 @@ typedef vs_status_e (*vs_snap_info_wait_t)(uint32_t wait_ms, int *condition, int
  */
 typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
 
-// TODO : description???
 /** Start notification request
  *
  * This function is called by receiving startup notification from device.
@@ -182,7 +183,11 @@ typedef vs_status_e (*vs_snap_info_general_cb_t)(vs_info_general_t *general_info
  */
 typedef vs_status_e (*vs_snap_info_statistics_cb_t)(vs_info_statistics_t *statistics);
 
-/** INFO client implementations */
+/** INFO client implementations
+ *
+ * \note Any callback can be NULL. In this case standard flow will be used.
+ *
+ */
 typedef struct {
     vs_snap_info_start_notif_cb_t device_start_cb; /**< Startup notification */
     vs_snap_info_general_cb_t general_info_cb;     /**< General information */
@@ -211,7 +216,7 @@ vs_snap_info_client(vs_snap_info_impl_t impl, vs_snap_info_callbacks_t callbacks
  *
  * This call enumerates all devices present in the current network. It waits for \a wait_ms and returns collected information.
  *
- * \param[in] netif #vs_netif_t SNAP service descriptor. Must not be NULL.
+ * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
  * \param[out] devices #vs_snap_info_device_t Devices information list. Must not be NULL.
  * \param[in] devices_max Maximum devices amount. Must not be zero.
  * \param[out] devices_cnt Buffer to store devices amount. Must not be NULL.
@@ -230,7 +235,7 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
  *
  * This call enables or disables polling for elements masked in \a elements field that contains mask  with #vs_snap_info_element_mask_e
  * fields.
- * \param[in] netif #vs_netif_t SNAP service descriptor. Must not be NULL.
+ * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL.
  * \param[in] elements #vs_snap_info_element_mask_e mask.
  * \param[out] enable Enable or disable \a elements to be sent.

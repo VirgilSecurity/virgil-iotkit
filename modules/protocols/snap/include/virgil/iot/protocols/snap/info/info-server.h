@@ -81,8 +81,6 @@ extern "C" {
  *
  * Sends startup notification with device information.
  *
- * \note If this implementation is not 
- *
  * \param[in] device #vs_snap_info_device_t device information.
  *
  * \return #VS_CODE_OK in case of success or error code.
@@ -92,6 +90,8 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
 /** INFO Server SNAP Service implementation
  *
  * This call returns INFO server implementation. It must be called before any INFO call.
+ *
+ * \note \a startup_cb can be NULL. In this case standard notifications will be done.
  *
  * \param[in] tl_ctx Trust List storage context. Must not be NULL.
  * \param[in] fw_ctx Firmware storage context. Must not be NULL.
@@ -108,7 +108,7 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
  *
  * Sends startup notification.
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
