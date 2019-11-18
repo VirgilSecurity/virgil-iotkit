@@ -194,15 +194,14 @@ func (r *cardsRegistrar) registerCard(requestB64 string) error {
 	if err != nil {
 		return fmt.Errorf("failed to read response body: %v", err)
 	}
-	respBodyS := string(body)
 
 	// Verify response
     if resp.StatusCode != 200 {
-		return fmt.Errorf("publish card error, status code: %d, body: %s", resp.StatusCode, respBodyS)
+		return fmt.Errorf("publish card error, status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
 	// Print results
-	fmt.Printf("Card registered. Response: %s\n", respBodyS)
+	fmt.Println("Card registered. Response:", base64.StdEncoding.EncodeToString(body))
 
 	return nil
 }

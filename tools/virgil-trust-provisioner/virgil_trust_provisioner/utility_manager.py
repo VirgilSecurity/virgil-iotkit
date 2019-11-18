@@ -852,7 +852,7 @@ class UtilityManager(object):
         if not self._utility_list:
             self._utility_list = []
             self._utility_list.extend([
-                ["Initial Generation ({0} Recovery, {0} Auth, {0} TL Service, {0} Firmware, 1 Factory)"
+                ["Initial Generation ({0} Recovery, {0} Auth, {0} TrustList, {0} Firmware, 1 Factory)"
                     .format(self.__upper_level_keys_count), self.__generate_initial_keys],
                 ["---"],
                 ["Generate Recovery Key ({})".format(self.__upper_level_keys_count), self.__generate_recovery_by_count],
