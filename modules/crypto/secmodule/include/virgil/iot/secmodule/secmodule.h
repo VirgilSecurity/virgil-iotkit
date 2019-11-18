@@ -46,7 +46,7 @@
 vs_secmodule_impl_t *secmodule_impl;                 // Security Module callbacks
 vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
 
-// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+// Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :
 secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 // ... Library usage

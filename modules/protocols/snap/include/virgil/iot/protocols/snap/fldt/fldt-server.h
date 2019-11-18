@@ -35,7 +35,7 @@
 /*! \file fldt-server.h
  * \brief FLDT for server
  *
- * FLDT protocol is used to download new file version from gateway to client. This module is used to process server part
+ * FLDT service is used to download new file version from gateway to client. This module is used to process server part
  * of FLDT protocol.
  *
  * \section fldt_server_usage FLDT Server Usage

@@ -34,6 +34,18 @@
 
 /*! \file info-client.h
  * \brief INFO for client
+ *
+ * INFO service is used to provide information about current clients and servers state in the local network. Network
+ * in this case is limited by SNAP transport protocol.
+ *
+ * In INFO meaning "Server" is any functional device. It is both client and server. "Client" is the special device for
+ * statistic collection only. It can be 
+ *
+ *
+ *
+ * \section info_client_usage INFO Client usage
+ *
+ *
  */
 // TODO : examples!
 

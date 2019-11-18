@@ -47,9 +47,8 @@ The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macO
 - Install [Go](https://golang.org/) for utilities support
 - Install [git](https://git-scm.com/) for Virgil Crypto installation and update
 - Install [curl](https://curl.haxx.se/) for gateway target
-
-// TODO : TO REMOVE
-~~- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support~~
+- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support. This dependency will
+be removed in future
 
 <div id='iotkit-installation'/>
 
@@ -58,30 +57,30 @@ The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macO
 - Install the required components.
 
 For Ubuntu : 
-```
+```shell
 apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
 
 For Fedora, CentOS :
-```
+```shell
 yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
 ```
 
 For Mac OS :
-```
+```shell
 brew install make cmake golang git gcc curl doxygen swig
 ```
 
 - Check CMake version. It must be 3.11 or higher :
 
-```
+```shell
 $ cmake --version
 cmake version 3.11.0
 ```
 
 - Install Virgil Crypto library :
 
-```
+```shell
 $ scripts/install-virgil-crypto.sh
 ```
 
@@ -113,7 +112,7 @@ thing service and downloading firmware images and trust list files from cloud st
 <div id='SDK-usage'/>
 
 ## SDK usage
-After Virgil IoT SDK installation or building it is necessary to do some steps for its successful usage listed below :
+After Virgil IoT KIT installation or building it is necessary to do some steps for its successful usage listed below :
 
 - specify configuration headers path.
 - provide user implementations. You can select default implementations for some of them.
@@ -128,10 +127,6 @@ For example, if you want to use PC configuration provided by library and library
 you have to set compiler option:
 
 `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iot-sdk/config/pc`.
-
-Or you can initialize CMake variable :
-
-`set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/virgil-iot-sdk/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")`
 
 ### Obligatory user implementations 
 Some modules use external implementations. It is necessary to implement HAL functions by user :
@@ -169,7 +164,7 @@ structure has to be implemented by user. This is wait functions used for SNAP in
 is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iot-sdk/prvs-client_8h.html) for details.
 
 ### Obligatory user implementations with default ones 
-There are other modules that need user implementation, but Virgil IoT SDK provides default implementations for them :
+There are other modules that need user implementation, but Virgil IoT KIT provides default implementations for them :
 
 - [Cloud](https://virgilsecurity.github.io/virgil-iot-sdk/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t**
 are required by vs_cloud_init call. Function vs_curl_http_impl returns cURL HTTP implementation, vs_cloud_message_bin_impl_t
