@@ -34,14 +34,25 @@
 
 /**
  * @file curl-http.h
- * @brief Curl based transport implementation
- *
- *
+ * @brief Default implementation for curl based transport
  *
  * \section curl-http.h Virgil Security Software Security Module Usage
  *
- *  Default implementation  of transport for thing communication. Curl based http_request used under the hood
+ *  Curl based http_request used under the hood
  *
+You can use #vs_curl_http_impl function output with vs_aws_message_bin_impl() for #vs_cloud_init call
+ * \code
+vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), vs_soft_secmodule_impl(&slots_storage_impl));
+ * \endcode
+
+ *\code
+Third argument initialized like this. See more in gateway code
+
+ vs_storage_op_ctx_t slots_storage_impl;
+ vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
+ vs_soft_secmodule_impl(&slots_storage_impl)
+
+ * \endcode
  *
  */
 

@@ -34,13 +34,24 @@
 
 /**
  * @file aws-message-bin.h
- * @brief Default implementation of transport for gateway communication.
+ * @brief Default transport for gateway communication.
  *
- * .
+ *  You can use #vs_aws_message_bin_impl function output with #vs_curl_http_impl() for #vs_cloud_init call
+ *   * \code
+vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), vs_soft_secmodule_impl(&slots_storage_impl));
+ * \endcode
+  *\code
+Third argument initialized like this. See more in gateway code
+
+ vs_storage_op_ctx_t slots_storage_impl;
+ vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
+ vs_soft_secmodule_impl(&slots_storage_impl)
+
+ * \endcode
  *
  * \section aws-message-bin.h Virgil Security Software Security Module Usage
  *
- *  MQTT used
+ *  MQTT used as transport
  *
  */
 
