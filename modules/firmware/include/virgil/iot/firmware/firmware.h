@@ -56,7 +56,7 @@ static vs_device_type_t device_type;                // Device type
 
 // Initialize fw_storage_impl, manufacture_id, device_type
 
-// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+// Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :
 secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type), "Unable to initialize
@@ -178,7 +178,7 @@ _send_firmware(){
  *
  * \section firmware_usage_thing Firmware Usage by Thing
  *
- * All Firmware functionality for Thing is implemented by Virgil IoT SDK. User needs only to initialize Firmware library
+ * All Firmware functionality for Thing is implemented by Virgil IoT KIT. User needs only to initialize Firmware library
  * and to destroy it at the end. See code example below :
  *
  * \code

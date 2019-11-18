@@ -195,8 +195,8 @@ typedef struct __attribute__((__packed__)) {
 
 /** Public key type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t key_type;          /**< vs_key_type_e */
-    uint8_t ec_type;           /**< vs_secmodule_keypair_type_e */
+    uint8_t key_type;          /**< #vs_key_type_e */
+    uint8_t ec_type;           /**< #vs_secmodule_keypair_type_e */
     uint16_t meta_data_sz;     /**< Meta data size */
     uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;

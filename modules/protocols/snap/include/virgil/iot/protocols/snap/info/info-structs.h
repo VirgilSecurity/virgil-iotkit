@@ -34,6 +34,8 @@
 
 /*! \file info-structs.h
  * \brief INFO structures
+ *
+ * In this file you can see structures used for INFO Client and INFO Server.
  */
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H
@@ -47,19 +49,24 @@
 
 /** Device information
  *
- * Device information as parameter for #vs_snap_info_start_notif_cb_t call
+ * Device information as parameter for #vs_snap_info_start_notif_cb_t function
  */
 typedef struct {
     uint32_t device_roles;     /**< Mask based on #vs_snap_device_role_e elements */
     uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_snap_info_device_t;
 
+/** File version
+ *
+ * This structure contains unpacked software version. It is the same as #vs_file_version_t
+ */
+
 typedef struct {
-    uint8_t major;
-    uint8_t minor;
-    uint8_t patch;
-    uint32_t build;
-    uint32_t timestamp;
+    uint8_t major;      /**< Major version number */
+    uint8_t minor;      /**< Minor version number */
+    uint8_t patch;      /**< Patch number */
+    uint32_t build;     /**< Build number */
+    uint32_t timestamp; /**< The number of seconds since #VS_START_EPOCH */
 } vs_file_version_unpacked_t;
 
 /** Device general information
@@ -85,14 +92,14 @@ typedef struct {
     uint8_t default_netif_mac[ETH_ADDR_LEN];
 } vs_info_statistics_t;
 
-// TODO : description???
 /** Device statistics
  *
  * Element mask for #vs_snap_info_set_polling call
  */
 typedef enum {
-    VS_SNAP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001),
-    VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002),
+    VS_SNAP_INFO_GENERAL =
+            HTONL_IN_COMPILE_TIME(0x0001), /**< General device information #vs_info_general_t will be sent */
+    VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002), /**< Devist statistic #vs_info_statistics_t will be sent */
 } vs_snap_info_element_mask_e;
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H
