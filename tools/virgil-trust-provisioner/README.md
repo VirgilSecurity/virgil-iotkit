@@ -195,23 +195,24 @@ Application commands are used to perform operations such as key generating, data
 | ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
 | ```2```       | Generate 2 Recovery Keys                                                                                                     |
 | ```3```       | Generate 2 Auth Keys                                                                                                         |
-| ```5```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
-| ```6```       | Generate a Factory Key                                                                                                       |
-| ```7```       | Delete a Factory Key                                                                                                         |
-| ```8```       | Generate 2 Firmware Keys                                                                                                     |
+| ```4```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
+| ```5```       | Generate a Factory Key                                                                                                       |
+| ```6```       | Delete a Factory Key                                                                                                         |
+| ```7```       | Generate 2 Firmware Keys                                                                                                     |
 
 ### TrustList
 | Command | Result                                                           |
 |---------|------------------------------------------------------------------|
-| ```10```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
+| ```8```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
 
 ### Trust Provisioner Database
 | Command | Result                         |
 |---------|--------------------------------|
-| ```11```      | Print all public keys from db  |
-| ```12```      | Add public key to db           |
-| ```13```      | Export upper level public keys |
-| ```15```      | Export private keys            |
+| ```9```      | Print all public keys from db  |
+| ```10```      | Add public key to db           |
+| ```11```      |                                |
+| ```12```      | Export upper level public keys |
+| ```13```      | Export private keys            |
 
 
 ## Private Keys Commands
@@ -504,10 +505,10 @@ The TL Key is the primary signer of the Trust Lists. The TL Key is trusted becau
 
 | Command | Result                                       |
 |---------|----------------------------------------------|
-| ```5```       | Virgil Trust Provisioner generates 2 TL Keys |
+| ```4```       | Virgil Trust Provisioner generates 2 TL Keys |
 
 #### Generating TrustList Key
-The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust list and private key is stored in db.
+The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust List and private key is stored in db.
 
 **Example**
 ```bash
@@ -567,8 +568,8 @@ Factory Key signs devices and guarantees official device distribution from the f
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```6```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
-| ```7```       | Virgil Trust Provisioner deletes Factory Key from own db               |
+| ```5```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
+| ```6```       | Virgil Trust Provisioner deletes Factory Key from own db               |
 
 #### Generating Factory Key
 After Factory Key is generated, private key is stored in private keys db and public key is stored in Trust List. Also, Factory Key has a signature number limit that allows you to prevent uncountable device release at a factory  (```4294967295```) and is stored in ```FactoryPrivateKeys.db.```
@@ -623,7 +624,7 @@ The Firmware Key is trusted as the primary signer of firmware and has no other c
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```8```       | Virgil Trust Provisioner generates 2 Firmware Keys |
+| ```7```       | Virgil Trust Provisioner generates 2 Firmware Keys |
 
 #### Generating Firmware Key
 Firmware Keys are stored on selected devices. They are signed by a Recovery Key.
@@ -756,7 +757,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```10```   | Virgil Trust Provisioner generates Trust List file |
+| ```8```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generation
 Trust List that contains Public Keys and signatures (signatures of Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db. TL contains signatures of Recovery Keys and Auth Keys.
@@ -825,7 +826,7 @@ This function helps to print all public keys from db.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```11```   | Virgil Trust Provisioner provide all public keys from db to the user |
+| ```9```   | Virgil Trust Provisioner provide all public keys from db to the user |
 
 You have a posiibility to print all public keys from Virgil Trust Provisioner database  on the screen or on the paper.
 
