@@ -29,8 +29,6 @@ _test_keypair_generate(vs_secmodule_impl_t *secmodule_impl, _test_case_t *test_c
     BOOL_CHECK_RET(keypair == test_case->keypair_type, "Received key pair type error");
     BOOL_CHECK_RET(test_case->key_sz == test_case->expected_size, "Received buffer error");
 
-    // TODO : check sign/verify for keypair
-
     return true;
 }
 

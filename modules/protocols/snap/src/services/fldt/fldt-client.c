@@ -53,6 +53,8 @@ static vs_snap_service_t _fldt_client = {0};
 #define VS_FLDT_WAIT_MAX (10) // Seconds
 
 #define VS_FLDT_REQUEST_SZ_MAX (150)
+
+// TODO : This setting might be moved to some config
 #define CLIENT_FILE_TYPE_ARRAY_SIZE (10)
 
 typedef struct {
@@ -67,7 +69,6 @@ typedef struct {
     uint16_t data_sz;
 } vs_fldt_update_ctx_t;
 
-// TODO : make a set!
 typedef struct {
     vs_update_file_type_t type;
     vs_file_version_t prev_file_version;

@@ -597,11 +597,6 @@ json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_l
     jobj->js = js;
     jobj->num_tokens = parsed_tokens;
     jobj->cur = jobj->tokens;
-    /* TODO: Add some validation for JSON Object.
-     * With earlier JSMN, for a valid JSON Object, number of
-     * children would always be even numbered. But, this has changed
-     * in new JSMN.
-     */
     if (jobj->tokens->type == JSMN_OBJECT) {
         if (_json_is_object_valid(jobj))
             return VS_JSON_ERR_OK;

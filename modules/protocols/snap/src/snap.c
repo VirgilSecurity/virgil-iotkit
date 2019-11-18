@@ -266,7 +266,6 @@ _snap_rx_cb(vs_netif_t *netif,
                 return 0;
             }
 
-            // TODO: Check it
             packet = 0;
             netif->packet_buf_filled = 0;
         }
@@ -288,7 +287,7 @@ _snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
     t = current_timestamp();
 #endif
 
-    // TODO: Fix it
+    // TODO: To improve working with periodical timer
     if (!data && !data_sz) {
         _snap_periodical();
 #if VS_SNAP_PROFILE

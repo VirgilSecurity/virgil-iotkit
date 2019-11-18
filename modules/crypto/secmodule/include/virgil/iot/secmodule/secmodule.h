@@ -477,9 +477,8 @@ typedef struct {
     vs_secmodule_ecdh_t ecdh; /**< ECDH callback */
 
     // AES
-    vs_secmodule_aes_encrypt_t aes_encrypt; /**< AES encrypt callback */
-    vs_secmodule_aes_decrypt_t aes_decrypt; /**< AES decrypt callback */
-    // TODO: Remove it
+    vs_secmodule_aes_encrypt_t aes_encrypt;           /**< AES encrypt callback */
+    vs_secmodule_aes_decrypt_t aes_decrypt;           /**< AES decrypt callback */
     vs_secmodule_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentification callback */
 
     // Hash

@@ -32,7 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-// TODO : title for file ???
+/*! \file global-hal.h
+ * \brief Implementation for shared functions.
+ *
+ * This file provides signatures for platform specific functions.
+ *
+ */
 
 #ifndef VS_IOT_SDK_GLOBAL_HAL_H
 #define VS_IOT_SDK_GLOBAL_HAL_H

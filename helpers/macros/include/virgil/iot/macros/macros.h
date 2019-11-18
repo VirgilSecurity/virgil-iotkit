@@ -162,25 +162,4 @@
  */
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
 
-#define CHECK_BOOL(OPERATION, DESCRIPTION, ...)                                                                        \
-    do {                                                                                                               \
-        if (!(OPERATION)) {                                                                                            \
-            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
-
-// TODO : make real mem alloc or remove it !!!
-#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) CHECK_BOOL(OPERATION, DESCRIPTION, ##__VA_ARGS__)
-
-// TODO : remove it!
-#define CHECK_SNPRINTF(BUF, FORMAT, ...)                                                                               \
-    do {                                                                                                               \
-        int snprintf_res;                                                                                              \
-        if ((snprintf_res = VS_IOT_SNPRINTF((BUF), sizeof(BUF), (FORMAT), ##__VA_ARGS__)) <= 0) {                             \
-            VS_LOG_ERROR("snprintf error result %d. errno = %d (%s)", snprintf_res, errno, strerror(errno));           \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
-
 #endif // VS_MACROS_H

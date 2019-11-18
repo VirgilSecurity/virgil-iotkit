@@ -1,5 +1,7 @@
-
-// TODO : insert our copyright ???
+/*
+ *  Copyright (C) 2008-2015, Marvell International Ltd.
+ *  All Rights Reserved.
+ */
 
 /*! \file json_parser.h
  * \brief JSON Parser module
@@ -116,10 +118,6 @@
  * \endcode
  */
 
-/*
- *  Copyright (C) 2008-2015, Marvell International Ltd.
- *  All Rights Reserved.
- */
 #ifndef __JSON_PARSER_H__
 #define __JSON_PARSER_H__
 

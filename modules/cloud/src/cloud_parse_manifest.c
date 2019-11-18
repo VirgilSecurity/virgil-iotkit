@@ -230,7 +230,6 @@ static bool
 _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
                                         uint8_t device_type[VS_DEVICE_TYPE_SIZE],
                                         vs_file_version_t *cur_version) {
-    // TODO: Need to arrange models table with current version of devices
     vs_firmware_descriptor_t desc;
     int res = vs_firmware_load_firmware_descriptor(manufacture_id, device_type, &desc);
 

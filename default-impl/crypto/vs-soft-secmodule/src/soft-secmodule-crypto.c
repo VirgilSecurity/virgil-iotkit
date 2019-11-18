@@ -118,7 +118,6 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
     *hash_sz = vsc_buffer_len(&out_data);
 
     VS_LOG_DEBUG("Hash size %d, type %s", *hash_sz, vs_secmodule_hash_type_descr(hash_type));
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Hash : ", hash, *hash_sz);
 
     res = VS_CODE_OK;
 
@@ -290,12 +289,12 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
 
     vsc_buffer_init(&sign_data);
 
-    CHECK_BOOL(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
+    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
 
-    CHECK_BOOL(VS_CODE_OK == _load_prvkey(key_slot, &prvkey, &keypair_type),
-               "Unable to load private key from slot %d (%s)",
-               key_slot,
-               get_slot_name((key_slot)));
+    CHECK(VS_CODE_OK == _load_prvkey(key_slot, &prvkey, &keypair_type),
+          "Unable to load private key from slot %d (%s)",
+          key_slot,
+          get_slot_name((key_slot)));
 
     required_sign_sz = vscf_sign_hash_signature_len(prvkey);
 
@@ -306,18 +305,12 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
     *signature_sz = vsc_buffer_len(&sign_data);
 
     VS_LOG_DEBUG("Internal signature size : %d bytes", *signature_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Internal signature : ", vsc_buffer_begin(&sign_data), *signature_sz);
 
-    CHECK_BOOL(vs_converters_mbedtls_sign_to_raw(keypair_type,
-                                                 vsc_buffer_begin(&sign_data),
-                                                 *signature_sz,
-                                                 signature,
-                                                 signature_buf_sz,
-                                                 signature_sz),
-               "Unable to convert Virgil signature format to the raw one");
+    CHECK(vs_converters_mbedtls_sign_to_raw(
+                  keypair_type, vsc_buffer_begin(&sign_data), *signature_sz, signature, signature_buf_sz, signature_sz),
+          "Unable to convert Virgil signature format to the raw one");
 
     VS_LOG_DEBUG("Output signature size : %d bytes", *signature_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Output signature : ", signature, *signature_sz);
 
     res = VS_CODE_OK;
 
@@ -354,21 +347,19 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
     CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_BOOL(vs_converters_raw_sign_to_mbedtls(
-                       keypair_type, signature, signature_sz, int_sign, int_sign_sz, &int_sign_sz),
-               "Unable to convert Virgil signature format to the raw one");
+    CHECK(vs_converters_raw_sign_to_mbedtls(keypair_type, signature, signature_sz, int_sign, int_sign_sz, &int_sign_sz),
+          "Unable to convert Virgil signature format to the raw one");
 
     VS_LOG_DEBUG("Internal signature size : %d bytes", int_sign_sz);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "Internal signature : ", int_sign, int_sign_sz);
 
     STATUS_CHECK(_create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey), "Unable to create public key");
 
     res = VS_CODE_ERR_CRYPTO;
 
-    CHECK_BOOL(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
+    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
 
-    CHECK_BOOL(vscf_verify_hash(pubkey, vsc_data(hash, hash_sz), hash_id, vsc_data(int_sign, int_sign_sz)),
-               "Unable to verify signature");
+    CHECK(vscf_verify_hash(pubkey, vsc_data(hash, hash_sz), hash_id, vsc_data(int_sign, int_sign_sz)),
+          "Unable to verify signature");
 
     res = VS_CODE_OK;
 
@@ -521,8 +512,7 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
     vsc_buffer_use(&out_buf, output, output_sz);
 
     if (!random_impl) {
-        CHECK_MEM_ALLOC(random_impl = (vscf_impl_t *)vscf_ctr_drbg_new(),
-                        "Unable to allocate random implementation context");
+        CHECK(random_impl = (vscf_impl_t *)vscf_ctr_drbg_new(), "Unable to allocate random implementation context");
 
         atexit(destroy_random_impl);
 

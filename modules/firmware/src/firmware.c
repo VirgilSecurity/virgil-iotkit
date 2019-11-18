@@ -629,7 +629,6 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor) 
               VS_CODE_ERR_NOT_FOUND,
               "Unable to get own firmware descriptor");
 
-    // TODO: Use vs_update_equal_file_type !
     if (0 != VS_IOT_MEMCMP(own_desc.info.manufacture_id,
                            new_descriptor->info.manufacture_id,
                            VS_DEVICE_MANUFACTURE_ID_SIZE) &&
