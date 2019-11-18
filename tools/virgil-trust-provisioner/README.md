@@ -255,6 +255,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Recovery Key: My 1 recovery key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Recovery Key 2:
@@ -268,6 +269,7 @@ $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Recovery Key: My 2 recovery
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Auth Key 1:
@@ -286,6 +288,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Auth Key: My 1 Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Auth Key 2:
@@ -304,6 +307,7 @@ $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Auth Key: My 2 Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # TrustList Service Key 1:
@@ -322,6 +326,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for TrustList Service Key: My 1 TL key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # TrustList Service Key 2:
@@ -864,7 +869,7 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```12```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
+| ```10```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
 
 This command allows you to add additional public key of some participants like cloud to Virgil Trust Provisioner database
 User can also leave a comment about added key.
@@ -882,6 +887,42 @@ $ Enter Public Key (tiny base64): BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQ
 $ Enter comment for [factory] Key: My Added public key
 # Key added
 ```
+#### Export data as provision package for Factory
+This command allows you to put together private keys, public keys and trust list necessary for IoT device provisioning in the directory mentioned in ``config file``. Private and public keys are stored in their personal directories and Trust List is stored in the general directory.
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| ```11```   | Private and public keys and trust list are put together and are ready to be exported |
+
+**Example**
+```bash
+Please enter option number: 11
+Are you sure you want to choose [Export data as provision package for Factory] [y/n]: y
+Exporting Private Keys...
+Export finished
+Exporting upper level Public Keys...
+Export finished
+Provision package for Factory saved as '/Users/<User>/virgil-trust-provisioner/provision-package' folder
+```
+**Directory Structure Example**
+``` bash
+├── TrustList_22875.tl
+├── private
+│   └── factory_30152_factory.key
+└── pubkeys
+    ├── auth_3047_auth1.pub
+    ├── auth_32586_auth2.pub
+    ├── firmware_10264_fw1.pub
+    ├── firmware_27292_fw2.pub
+    ├── recovery_22976_recovery1.pub
+    ├── recovery_58398_recovery2.pub
+    ├── tl_43163_tl2.pub
+    └── tl_46577_tl1.pub
+
+```
+
+
+
 #### Export upper level public keys
 
 UpperLevelKeys Export – the process of uploading of all UpperLevelKeys from ```UpperLevelKeys.db```
@@ -890,7 +931,7 @@ Public keys are uploaded to the storage which is specified in the config file.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```13```   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
+| ```12```   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
 
 **Example**
 
@@ -911,6 +952,6 @@ This command allows exporting private keys from Virgil Trust Provisioner databas
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```15```   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
+| ```13```   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
 
 After executing the export private key command, private key bytes are stored in the file in DER format (SECP256R1). The file with private key can be found in the storage specified in the Virgil Trust Provisioner configuration file.
