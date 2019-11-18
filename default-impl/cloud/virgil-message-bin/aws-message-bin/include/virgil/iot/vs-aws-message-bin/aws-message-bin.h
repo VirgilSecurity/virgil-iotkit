@@ -32,11 +32,27 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file aws-message-bin.h
+ * @brief Default implementation of transport for gateway communication.
+ *
+ * .
+ *
+ * \section aws-message-bin.h Virgil Security Software Security Module Usage
+ *
+ *  MQTT used
+ *
+ */
+
 #ifndef VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
 #define VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
 
 #include <virgil/iot/cloud/cloud.h>
 
+/**  Creates MQTT based implementation of transport.
+ *
+ * \return #vs_cloud_message_bin_impl_t
+ */
 const vs_cloud_message_bin_impl_t *
 vs_aws_message_bin_impl(void);
 

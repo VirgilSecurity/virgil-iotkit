@@ -32,11 +32,28 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file curl-http.h
+ * @brief Curl based transport implementation
+ *
+ *
+ *
+ * \section curl-http.h Virgil Security Software Security Module Usage
+ *
+ *  Default implementation  of transport for thing communication. Curl based http_request used under the hood
+ *
+ *
+ */
+
 #ifndef VS_CURL_HTTP_DEFAULT_IMPL_H
 #define VS_CURL_HTTP_DEFAULT_IMPL_H
 
 #include <virgil/iot/cloud/cloud.h>
 
+/** Return Curl based implementation of transport.
+ *
+ * \return #vs_cloud_impl_t
+ */
 const vs_cloud_impl_t *
 vs_curl_http_impl(void);
 
