@@ -42,11 +42,11 @@
  *
  * \section trust_list_usage Trust List Usage
  *
- * Trust List is maintained by Virgil IoT KID modules and doesn't need to be processed by user. Notwithstanding, there are
- * some places where it is needed user's attention :
+ * Trust List is maintained by Virgil IoT KID modules and doesn't need to be processed by user. Notwithstanding, there
+ * are some places where it is needed user's attention :
  *
- * - Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide #vs_fldt_server_add_filetype_cb
- * for FLDT Server serviceц:
+ * - Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide
+ * #vs_fldt_server_add_filetype_cb for FLDT Server serviceц:
  *
  * \code
  *
