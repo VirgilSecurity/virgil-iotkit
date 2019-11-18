@@ -179,7 +179,7 @@ Firmware Usage by Gateway</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Initialize fw_storage_impl, manufacture_id, device_type</span></div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :</span></div>
+<div class="line"><span class="comment">// Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :</span></div>
 <div class="line">secmodule_impl = <a class="code" href="vs-soft-secmodule_8h.html#a8fca8d2dd7597bfab1b3fec482bc8854">vs_soft_secmodule_impl</a>(&amp;slots_storage_impl);</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="firmware_8h.html#ac6beeca24af16e0e782035fd916bcf0e">vs_firmware_init</a>(&amp;fw_storage_impl, secmodule_impl, manufacture_id, device_type), <span class="stringliteral">&quot;Unable to initialize</span></div>
@@ -266,7 +266,7 @@ Firmware Usage by Gateway</h1>
 <div class="line">}</div>
 </div><!-- fragment --><h1><a class="anchor" id="firmware_usage_thing"></a>
 Firmware Usage by Thing</h1>
-<p>All Firmware functionality for Thing is implemented by Virgil IoT SDK. User needs only to initialize Firmware library and to destroy it at the end. See code example below :</p>
+<p>All Firmware functionality for Thing is implemented by Virgil IoT KIT. User needs only to initialize Firmware library and to destroy it at the end. See code example below :</p>
 <div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> fw_storage_impl;    <span class="comment">// Firmware storage implementation</span></div>
 <div class="line"><a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl = NULL;         <span class="comment">// Security module implementation</span></div>
 <div class="line"><span class="keyword">static</span> <a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a> manufacture_id;   <span class="comment">// Manufacture ID</span></div>

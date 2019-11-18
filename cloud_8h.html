@@ -170,7 +170,7 @@ Functions</h2></td></tr>
 <li>processing messages received over message bin</li>
 <li>downloading firmware images and trust list files from cloud storage</li>
 </ul>
-<p>Virgil IoT SDK provides MQTT implementation based on AWS IoT library.</p>
+<p>Virgil IoT KIT provides MQTT implementation based on AWS IoT library.</p>
 <h1><a class="anchor" id="cloud_usage"></a>
 Cloud Usage</h1>
 <p>Function <a class="el" href="cloud_8h.html#a86ba9b4f68babdb392aa7374fc4ea88d" title="Process message bin.">vs_cloud_message_bin_process</a> tries to obtain credentials for connecting to message bin broker from thing service using #vs_cloud_http_get_func_t and connect to the broker using <a class="el" href="cloud_8h.html#afec5267e1321c587a1c13a100b0dbb5b" title="Message bin connection and subscription to topic implementation.">vs_cloud_mb_connect_subscribe_func_t</a>. Then it waits for new messages, periodically calling <a class="el" href="cloud_8h.html#a573e80c76f32bd60c36419b1d4b0523e" title="Message Bin processing.">vs_cloud_mb_process_func_t</a>. User can register own handlers for events of new firmware or trust list by calling <a class="el" href="cloud_8h.html#a41bb32cb7cabca47490643787c008907" title="Register processing handlers for default topics from vs_cloud_mb_topic_id_t enumeration.">vs_cloud_message_bin_register_default_handler</a> or custom handler for raw data processing from some topics by calling <a class="el" href="cloud_8h.html#a5987cdf399116a0b5066caae073b7f94" title="Register custom handler implementation.">vs_cloud_message_bin_register_custom_handler</a>. Cloud library uses provision and firmware modules, which must be initialized before.</p>
@@ -306,7 +306,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Message bin connection and subscription to topic implementation. </p>
-<p>This implementation connects to the message bin broker and subscribes to topics. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT SDK library. You can analyze function which <em>connect_subscribe</em> member points to for an example.</p>
+<p>This implementation connects to the message bin broker and subscribes to topics. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT KIT library. You can analyze function which <em>connect_subscribe</em> member points to for an example.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">client_id</td><td>Client identifier. Cannot be NULL. </td></tr>
@@ -334,7 +334,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Message bin initialization. </p>
-<p>This implementation initializes MQTT with specified URL and certificates. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT SDK library. You can analyze function which <em>init</em> member points to for an example.</p>
+<p>This implementation initializes MQTT with specified URL and certificates. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT KIT library. You can analyze function which <em>init</em> member points to for an example.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">host</td><td>Host URL. Must not be NULL. </td></tr>
@@ -388,7 +388,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Implementation for default topics processing. </p>
-<p>Virgil IoT SDK preprocesses topics from <a class="el" href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2" title="Default topics.">vs_cloud_mb_topic_id_t</a> enumeration. It calls this function when receives a notification about a new version of Trust List or Firmware to load data for this topic.</p>
+<p>Virgil IoT KIT preprocesses topics from <a class="el" href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2" title="Default topics.">vs_cloud_mb_topic_id_t</a> enumeration. It calls this function when receives a notification about a new version of Trust List or Firmware to load data for this topic.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">url</td><td>URL where user can fetch a new version of file. </td></tr>
@@ -412,7 +412,7 @@ Cloud Usage</h1>
 </div><div class="memdoc">
 
 <p>Message Bin processing. </p>
-<p>Implementation for message bin processing. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT SDK library. You can analyze function which <em>process</em> member points to for an example.</p>
+<p>Implementation for message bin processing. <a class="el" href="aws-message-bin_8h.html#a687a5d46d202651ebc807a6515a24fe1">vs_aws_message_bin_impl()</a> returns <a class="el" href="structvs__cloud__message__bin__impl__t.html" title="Message Bin implementation.">vs_cloud_message_bin_impl_t</a> structure with default implementation provided by Virgil IoT KIT library. You can analyze function which <em>process</em> member points to for an example.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>

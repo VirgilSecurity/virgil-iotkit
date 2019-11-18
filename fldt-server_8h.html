@@ -98,7 +98,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>FLDT for server. </p>
-<p>FLDT protocol is used to download new file version from gateway to client. This module is used to process server part of FLDT protocol.</p>
+<p>FLDT service is used to download new file version from gateway to client. This module is used to process server part of FLDT protocol.</p>
 <h1><a class="anchor" id="fldt_server_usage"></a>
 FLDT Server Usage</h1>
 <p>Server side sends new file versions provided by <a class="el" href="fldt-server_8h.html#af4a7f73f1af4c37c30ce9c98658523fc" title="Add file type.">vs_fldt_server_add_file_type</a> call. Also it sends information about present files by client requests. Files must be previously listed by <a class="el" href="fldt-server_8h.html#af4a7f73f1af4c37c30ce9c98658523fc" title="Add file type.">vs_fldt_server_add_file_type</a> call. If requested file has not been added, #vs_fldt_server_add_filetype callback is called to provide such information. In most case it used to output new file version information and gateway address. To successfully file broadcasting <a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a> must be provided for each file type. You can see function <a class="el" href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087" title="Return file type for Update library.">vs_firmware_update_file_type</a> for Firmware example and <a class="el" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19" title="Trust List file type.">vs_tl_update_file_type</a> for Trust List one.</p>
