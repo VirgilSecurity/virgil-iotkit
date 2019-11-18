@@ -76,8 +76,10 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
 - **[Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html)** is a tool is used to output logging messages to screen, file etc.
 - **[Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html)**. Trust List keys reading and verifying.
 - Secbox.
-- Protocols.
-
+- **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
+  - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
+  - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
+  - PRVS : service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
 <div id='installation'/>
 
 ## Installation
