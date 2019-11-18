@@ -40,7 +40,6 @@ package snap
 #include <virgil/iot/protocols/snap/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
-#include <virgil/iot/tools/hal/snap/ti_info_impl.h>
 extern int goDeviceStartNotifCb(vs_snap_info_device_t *device);
 extern int goGeneralInfoCb(vs_info_general_t *general_info);
 extern int goDeviceStatCb(vs_info_statistics_t *stat);
@@ -69,7 +68,7 @@ static int _register_info_client(void) {
     _cb.general_info_cb = goGeneralInfoCb;
     _cb.statistics_cb = goDeviceStatCb;
 
-    return vs_snap_register_service(vs_snap_info_client(vs_info_impl(), _cb));
+    return vs_snap_register_service(vs_snap_info_client(_cb));
 }
 */
 import "C"
