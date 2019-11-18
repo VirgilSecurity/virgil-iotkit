@@ -115,12 +115,6 @@ vs_snap_device_serial(void);
 uint32_t
 vs_snap_device_roles(void);
 
-// TODO : remove?..
-#if 0
-vs_status_e
-vs_snap_add_netif(const vs_netif_t *netif);
-#endif
-
 /** Return device network interface
  *
  * \return #vs_netif_t Device network interface. Cannot be NULL.

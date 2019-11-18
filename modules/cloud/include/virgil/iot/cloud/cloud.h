@@ -157,7 +157,6 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
 /** Length of the update URL string */
 #define VS_UPD_URL_STR_SIZE 200
 
-// TODO : contents must be const
 /** Implementation for data header download
  *
  * This function implementation stores loaded handler in internal buffers.
@@ -168,7 +167,7 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
  *
  * \return Loaded data size of #vs_status_e error code
  */
-typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
+typedef size_t (*vs_fetch_handler_cb_t)(const char *contents, size_t chunksize, void *userdata);
 
 typedef enum {
     VS_CLOUD_REQUEST_GET, /**< HTTP request by GET method */
@@ -246,19 +245,18 @@ typedef enum {
     VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
 } vs_cloud_mb_topic_id_t;
 
-// TODO : rename p_data to data
 /** Implementation for custom topics processing
  *
  * This implementation processes messages from topics as raw data.
  *
  * \param[in] topic Topic name. Cannot be NULL.
  * \param[in] topic_sz Topic name size. Cannot be zero.
- * \param[in] p_data Topic data. Cannot be NULL
+ * \param[in] data Topic data. Cannot be NULL
  * \param[in] length Topic data size. Cannot be zero.
  */
 typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
                                                       uint16_t topic_sz,
-                                                      const uint8_t *p_data,
+                                                      const uint8_t *data,
                                                       uint16_t length);
 
 /** Implementation for default topics processing

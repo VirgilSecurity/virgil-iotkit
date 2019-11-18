@@ -147,7 +147,6 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
     vs_iot_secmodule_slot_e slot;
     uint8_t i = 0;
     int ref_key_sz;
-    // TODO: Fix buffer constant size
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
     uint16_t _sz;
@@ -271,16 +270,18 @@ vs_provision_cloud_url(void) {
     uint16_t pubkey_sz = 0;
     uint8_t *meta = NULL;
     uint16_t meta_sz = 0;
+    vs_pubkey_dated_t *pubkey_dated = NULL;
 
     if (_base_url) {
         VS_IOT_FREE(_base_url);
         _base_url = NULL;
     }
 
-    if (VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
+    if (VS_CODE_OK == vs_provision_tl_find_first_key(
+                              &search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
         !meta_sz) {
         _base_url = VS_IOT_MALLOC(meta_sz + 1);
-        CHECK_MEM_ALLOC(NULL != _base_url, "");
+        CHECK(NULL != _base_url, "");
         VS_IOT_MEMCPY(_base_url, meta, meta_sz);
         _base_url[meta_sz] = 0x00;
     }
@@ -293,6 +294,7 @@ terminate:
 vs_status_e
 vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
                                vs_key_type_e key_type,
+                               vs_pubkey_dated_t **pubkey_dated,
                                uint8_t **pubkey,
                                uint16_t *pubkey_sz,
                                uint8_t **meta,
@@ -304,12 +306,13 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
     search_ctx->key_type = key_type;
     search_ctx->last_pos = -1;
 
-    return vs_provision_tl_find_next_key(search_ctx, pubkey, pubkey_sz, meta, meta_sz);
+    return vs_provision_tl_find_next_key(search_ctx, pubkey_dated, pubkey, pubkey_sz, meta, meta_sz);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              vs_pubkey_dated_t **pubkey_dated,
                               uint8_t **pubkey,
                               uint16_t *pubkey_sz,
                               uint8_t **meta,
@@ -317,13 +320,15 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
     vs_status_e res = VS_CODE_ERR_NOT_FOUND;
     vs_tl_element_info_t element;
     uint16_t data_sz = 0;
-    vs_pubkey_dated_t *pubkey_dated = (vs_pubkey_dated_t *)search_ctx->element_buf;
 
     CHECK_NOT_ZERO_RET(search_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(pubkey, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(pubkey_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(meta, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(meta_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(pubkey_dated, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    *pubkey_dated = (vs_pubkey_dated_t *)search_ctx->element_buf;
 
     // Prepare element info
     element.id = VS_TL_ELEMENT_TLC;
@@ -331,14 +336,14 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
 
     while (VS_CODE_OK == vs_tl_load_part(&element, search_ctx->element_buf, VS_TL_STORAGE_MAX_PART_SIZE, &data_sz)) {
         element.index++;
-        if (pubkey_dated->pubkey.key_type != search_ctx->key_type) {
+        if ((*pubkey_dated)->pubkey.key_type != search_ctx->key_type) {
             continue;
         }
         if (element.index >= search_ctx->last_pos) {
-            *meta_sz = VS_IOT_NTOHS(pubkey_dated->pubkey.meta_data_sz);
-            *meta = pubkey_dated->pubkey.meta_and_pubkey;
-            *pubkey_sz = vs_secmodule_get_pubkey_len(pubkey_dated->pubkey.ec_type);
-            *pubkey = &pubkey_dated->pubkey.meta_and_pubkey[*meta_sz];
+            *meta_sz = VS_IOT_NTOHS((*pubkey_dated)->pubkey.meta_data_sz);
+            *meta = (*pubkey_dated)->pubkey.meta_and_pubkey;
+            *pubkey_sz = vs_secmodule_get_pubkey_len((*pubkey_dated)->pubkey.ec_type);
+            *pubkey = &(*pubkey_dated)->pubkey.meta_and_pubkey[*meta_sz];
             res = VS_CODE_OK;
             search_ctx->last_pos = element.index;
             break;

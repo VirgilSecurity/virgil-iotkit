@@ -45,11 +45,11 @@
 
 #define DEBUG_CHUNKS (0)
 
+// TODO : This setting might be moved to some config
 #define SERVER_FILE_TYPE_ARRAY_SIZE (10)
 
 static vs_snap_service_t _fldt_server = {0};
 
-// TODO : make a set!
 typedef struct {
     vs_update_file_type_t type;
     vs_update_interface_t *update_context;

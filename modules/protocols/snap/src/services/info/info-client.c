@@ -182,7 +182,6 @@ _ginf_request_processor(const uint8_t *request,
     general_info.fw_ver.major = ginf_request->fw_version.major;
     general_info.fw_ver.minor = ginf_request->fw_version.minor;
     general_info.fw_ver.patch = ginf_request->fw_version.patch;
-    // TODO: Use VA_IOT_NTOHL
     general_info.fw_ver.build = ginf_request->fw_version.build;
     general_info.fw_ver.timestamp = ginf_request->fw_version.timestamp;
 
@@ -190,7 +189,6 @@ _ginf_request_processor(const uint8_t *request,
     general_info.tl_ver.major = ginf_request->tl_version.major;
     general_info.tl_ver.minor = ginf_request->tl_version.minor;
     general_info.tl_ver.patch = ginf_request->tl_version.patch;
-    // TODO: Use VA_IOT_NTOHL
     general_info.tl_ver.build = ginf_request->tl_version.build;
     general_info.tl_ver.timestamp = ginf_request->tl_version.timestamp;
     general_info.device_roles = ginf_request->device_roles;

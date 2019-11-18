@@ -42,9 +42,6 @@ import (
     "../common"
 )
 
-// TODO: use BigEndian instead of common.SystemEndian after correct serialization support from C side
-// Otherwise there could be problems if device/initializer are using different byte order
-
 type Go_vs_snap_prvs_devi_t struct {
     Manufacturer [16]uint8
     Model        [4]uint8

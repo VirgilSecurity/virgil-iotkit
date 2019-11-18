@@ -54,7 +54,8 @@ _tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer,
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
 
-    VS_IOT_SNPRINTF(buffer, buf_size, "Trust List");
+    int res = VS_IOT_SNPRINTF(buffer, buf_size, "Trust List");
+    CHECK(res > 0 && res <= buf_size, "Error create TL description string");
 
     return buffer;
 
@@ -81,7 +82,8 @@ _tl_describe_version(void *context,
     CHECK_NOT_ZERO(buf_size);
 
     if (add_filetype_description) {
-        type_descr_size = VS_IOT_STRLEN(_tl_describe_type(context, file_type, buffer, buf_size));
+        CHECK(NULL != _tl_describe_type(context, file_type, buffer, buf_size), "Error description");
+        type_descr_size = VS_IOT_STRLEN(buffer);
         string_space -= type_descr_size;
         output += type_descr_size;
         if (string_space > TYPE_DESCR_POSTFIX) {
