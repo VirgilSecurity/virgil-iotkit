@@ -526,7 +526,7 @@ The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure
 
 **Example**
 ```bash
-$ Please enter option number: 5
+$ Please enter option number: 4
 $ Are you sure you want to choose [Generate TrustList Service Key (2)] [y/n]: y
 
 # Generate TrustList Service Key 1:
@@ -596,7 +596,7 @@ After Factory Key is generated, private key is stored in private keys db and pub
 $ virgil-trust-provisioner
 
 # Specify the cli command
-$ Please enter option number: 6
+$ Please enter option number: 5
 
 $ Are you sure you want to choose [Generate Factory Key] [y/n]: y
 
@@ -628,7 +628,7 @@ This commmand allows to remove Factory Key from the Virgil Trust Provisioner Fac
 $ virgil-trust-provisioner
 
 # Specify the cli command
-$ Please enter option number: 7
+$ Please enter option number: 6
 $ Are you sure you want to choose [Delete Factory Key] [y/n]: y
 # Deleting Factory Key...
 # Factory Keys:
@@ -653,7 +653,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 8
+$ Please enter option number: 7
 $ Are you sure you want to choose [Generate Firmware Key (2)] [y/n]: y
 
 # Generate Firmware Key 1:
@@ -788,7 +788,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 10
+$ Please enter option number: 8
 $ Are you sure you want to choose [Generate TrustList] [y/n]: y
 # TrustList types:
 	1. Dev
@@ -852,7 +852,7 @@ You have a posiibility to print all public keys from Virgil Trust Provisioner da
 **Example**
 
 ```bash
-$ Please enter option number: 11
+$ Please enter option number: 9
 $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 # Printing Public Keys from db's...
 
@@ -891,7 +891,7 @@ User can also leave a comment about added key.
 **Example**
 
 ```#!/usr/bin/env bash
-$ Please enter option number: 12
+$ Please enter option number: 10
 $ Are you sure you want to choose [Add Public Key to db (Factory)] [y/n]: y
 # Manual adding Public Key to db...
 # Key types:
@@ -901,6 +901,7 @@ $ Enter Public Key (tiny base64): BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQ
 $ Enter comment for [factory] Key: My Added public key
 # Key added
 ```
+
 #### Export data as provision package for Factory
 This command allows you to put together private keys, public keys and trust list necessary for IoT device provisioning in the directory mentioned in ``config file``. Private and public keys are stored in their personal directories and Trust List is stored in the general directory.
 
@@ -955,7 +956,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 13
+$ Please enter option number: 12
 $ Are you sure you want to choose [Dump upper level Public Keys] [y/n]: y
 # Dumping upper level Public Keys
 # Keys dump finished
