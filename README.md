@@ -47,7 +47,6 @@ Virgil Security also provides set of tools for secure device lifecycle.
 - **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer).
 - **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
 
-
 ## Run IoTKit Demo
 To demonstrate our IoTKit in action we developed [Demo for UNIX-like OS based on IoTKit toolkits](https://github.com/VirgilSecurity/demo-iotkit-nix).
 
