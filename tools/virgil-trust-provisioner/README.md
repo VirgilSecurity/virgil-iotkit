@@ -103,7 +103,7 @@ $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
 $ cd virgil-iot-sdk
 $ mkdir build && cd build
 $ cmake ..
-$ make vs-tool-virgil-device-registrar
+$ make vs-tool-virgil-trust-provisioner
 ```
 
 #### Windows OS
