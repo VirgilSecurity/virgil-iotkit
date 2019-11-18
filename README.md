@@ -22,7 +22,7 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
 - [Tests](#tests)
-- [SDK usage](#usage)
+- [SDK usage](#SDK-usage)
 - [API Reference](#api-reference)
 - [License](#license)
 - [Support](#support)
@@ -46,6 +46,7 @@ Virgil Security also provides set of tools for secure device lifecycle.
 - **Virgil Device Registrar**. Virgil IoT Device Registrar is used to registrar IoT devices and their digital cards in the Virgil Security Cloud. To start working with the tool read more [here](/tools/virgil-device-registrar).
 - **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer).
 - **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
+
 
 ## Run IoTKit Demo
 To demonstrate our IoTKit in action we developed [Demo for UNIX-like OS based on IoTKit toolkits](https://github.com/VirgilSecurity/demo-iotkit-nix).
@@ -71,8 +72,6 @@ The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macO
 // TODO : TO REMOVE
 - Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support
 
-<div id='modules'/>
-
 ## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
@@ -80,10 +79,7 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
 - **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
 - Provision.
 - Secbox.
-- **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
-  - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
-  - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
-  - PRVS : service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
+- Protocols.
 - Cloud.
 - Logger.
 
@@ -133,11 +129,11 @@ cmake version 3.11.0
 
 - Install Virgil Crypto library :
 
-```shell
+```
 $ scripts/install-virgil-crypto.sh
 ```
 
-<div id='tools'/>
+<div id='iot-dev-tools'/>
 
 ## IoT Dev Tools
 - KeyManager
@@ -145,15 +141,27 @@ $ scripts/install-virgil-crypto.sh
 - IoT Device Registrar
 - Firmware Signer
 
+<div id='modules'/>
+
+## Modules
+- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : Cloud library for obtaining credentials from
+thing service and downloading firmware images and trust list files from cloud storage.
+- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
+- [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
+- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html) : tool to output logging messages to screen, file etc. See [HAL functions declarations](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for its implementation.
+- [Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html) : Trust List keys reading and verifying.
+- Secbox.
+- Protocols.
+
 <div id='tests'/>
 
 ## Tests
 To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.
 
-<div id='usage'/>
+<div id='SDK-usage'/>
 
 ## SDK usage
-After Virgil IoT KIT installation or building it is necessary to do some steps for its successful usage listed below :
+After Virgil IoT SDK installation or building it is necessary to do some steps for its successful usage listed below :
 
 - specify configuration headers path.
 - provide user implementations. You can select default implementations for some of them.
