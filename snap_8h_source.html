@@ -136,41 +136,35 @@ $(function() {
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;uint32_t</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<a class="code" href="snap_8h.html#ae9c577e6f5d3728dd354c22ca5db1a0a">vs_snap_device_roles</a>(<span class="keywordtype">void</span>);</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">// TODO : remove?..</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#if 0</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;vs_snap_add_netif(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<a class="code" href="snap_8h.html#ae232da1c086053f1d06a7674a3561b8d">vs_snap_default_netif</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<a class="code" href="snap_8h.html#a6c3b2837c70d1df4cb19cf1d8b29d6bd">vs_snap_send</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif, <span class="keyword">const</span> uint8_t *data, uint16_t data_sz);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(<span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *service);</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<a class="code" href="snap_8h.html#a0c6a2211018cb740d586917ac944139d">vs_snap_mac_addr</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif, <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<a class="code" href="snap_8h.html#a8013e8ceba4e171069ad55fc3e7ed9f3">vs_snap_broadcast_mac</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<a class="code" href="snap_8h.html#a034f503a7db10b8b348ddd25b143a05f">vs_snap_send_request</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif,</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;                     <span class="keyword">const</span> <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac,</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                     <a class="code" href="snap-structs_8h.html#aeaabc6ebb2ef2f2369239357479162df">vs_snap_service_id_t</a> service_id,</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                     <a class="code" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6">vs_snap_element_t</a> element_id,</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;                     <span class="keyword">const</span> uint8_t *data,</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                     uint16_t data_sz);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<a class="code" href="structvs__snap__stat__t.html">vs_snap_stat_t</a></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<a class="code" href="snap_8h.html#ab57505bc7aa3ee3082fc1725ed4ddf6d">vs_snap_get_statistics</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160; </div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;}</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<a class="code" href="snap_8h.html#ae232da1c086053f1d06a7674a3561b8d">vs_snap_default_netif</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<a class="code" href="snap_8h.html#a6c3b2837c70d1df4cb19cf1d8b29d6bd">vs_snap_send</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif, <span class="keyword">const</span> uint8_t *data, uint16_t data_sz);</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(<span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *service);</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<a class="code" href="snap_8h.html#a0c6a2211018cb740d586917ac944139d">vs_snap_mac_addr</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif, <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<a class="code" href="snap_8h.html#a8013e8ceba4e171069ad55fc3e7ed9f3">vs_snap_broadcast_mac</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<a class="code" href="snap_8h.html#a034f503a7db10b8b348ddd25b143a05f">vs_snap_send_request</a>(<span class="keyword">const</span> <a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif,</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                     <span class="keyword">const</span> <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac,</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                     <a class="code" href="snap-structs_8h.html#aeaabc6ebb2ef2f2369239357479162df">vs_snap_service_id_t</a> service_id,</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                     <a class="code" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6">vs_snap_element_t</a> element_id,</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                     <span class="keyword">const</span> uint8_t *data,</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                     uint16_t data_sz);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<a class="code" href="structvs__snap__stat__t.html">vs_snap_stat_t</a></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<a class="code" href="snap_8h.html#ab57505bc7aa3ee3082fc1725ed4ddf6d">vs_snap_get_statistics</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;}</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:115</div></div>
 <div class="ttc" id="asnap_8h_html_ae232da1c086053f1d06a7674a3561b8d"><div class="ttname"><a href="snap_8h.html#ae232da1c086053f1d06a7674a3561b8d">vs_snap_default_netif</a></div><div class="ttdeci">const vs_netif_t * vs_snap_default_netif(void)</div><div class="ttdoc">Return device network interface.</div></div>
@@ -187,11 +181,11 @@ $(function() {
 <div class="ttc" id="asnap_8h_html_ae9c577e6f5d3728dd354c22ca5db1a0a"><div class="ttname"><a href="snap_8h.html#ae9c577e6f5d3728dd354c22ca5db1a0a">vs_snap_device_roles</a></div><div class="ttdeci">uint32_t vs_snap_device_roles(void)</div><div class="ttdoc">Return device role.</div></div>
 <div class="ttc" id="astatus__code_8h_html"><div class="ttname"><a href="status__code_8h.html">status_code.h</a></div><div class="ttdoc">Status codes and macroses.</div></div>
 <div class="ttc" id="asnap-structs_8h_html"><div class="ttname"><a href="snap-structs_8h.html">snap-structs.h</a></div><div class="ttdoc">SNAP structures.</div></div>
-<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:306</div></div>
-<div class="ttc" id="astructvs__netif__t_html"><div class="ttname"><a href="structvs__netif__t.html">vs_netif_t</a></div><div class="ttdoc">Network interface.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:286</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:307</div></div>
+<div class="ttc" id="astructvs__netif__t_html"><div class="ttname"><a href="structvs__netif__t.html">vs_netif_t</a></div><div class="ttdoc">Network interface.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:288</div></div>
 <div class="ttc" id="asnap_8h_html_a819a7ac4f5d3c20fcb18f2f714a9d181"><div class="ttname"><a href="snap_8h.html#a819a7ac4f5d3c20fcb18f2f714a9d181">vs_snap_device_type</a></div><div class="ttdeci">const vs_device_type_t * vs_snap_device_type(void)</div><div class="ttdoc">Return current device type.</div></div>
 <div class="ttc" id="asnap_8h_html_a8013e8ceba4e171069ad55fc3e7ed9f3"><div class="ttname"><a href="snap_8h.html#a8013e8ceba4e171069ad55fc3e7ed9f3">vs_snap_broadcast_mac</a></div><div class="ttdeci">const vs_mac_addr_t * vs_snap_broadcast_mac(void)</div><div class="ttdoc">Return MAC address.</div></div>
-<div class="ttc" id="astructvs__snap__stat__t_html"><div class="ttname"><a href="structvs__snap__stat__t.html">vs_snap_stat_t</a></div><div class="ttdoc">SNAP statistics.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:318</div></div>
+<div class="ttc" id="astructvs__snap__stat__t_html"><div class="ttname"><a href="structvs__snap__stat__t.html">vs_snap_stat_t</a></div><div class="ttdoc">SNAP statistics.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:319</div></div>
 <div class="ttc" id="asnap_8h_html_a87bd3294eb685e92c4d98001f8185050"><div class="ttname"><a href="snap_8h.html#a87bd3294eb685e92c4d98001f8185050">vs_snap_init</a></div><div class="ttdeci">vs_status_e vs_snap_init(vs_netif_t *default_netif, const vs_device_manufacture_id_t manufacturer_id, const vs_device_type_t device_type, const vs_device_serial_t device_serial, uint32_t device_roles)</div><div class="ttdoc">Init SNAP.</div></div>
 <div class="ttc" id="asnap_8h_html_a034f503a7db10b8b348ddd25b143a05f"><div class="ttname"><a href="snap_8h.html#a034f503a7db10b8b348ddd25b143a05f">vs_snap_send_request</a></div><div class="ttdeci">vs_status_e vs_snap_send_request(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_snap_service_id_t service_id, vs_snap_element_t element_id, const uint8_t *data, uint16_t data_sz)</div><div class="ttdoc">Prepare and send SNAP message.</div></div>
 <div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>

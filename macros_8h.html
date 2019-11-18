@@ -104,12 +104,6 @@ Macros</h2></td></tr>
 <tr class="memitem:ac1208e1c61101d1e3f100fc9e650f022"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#ac1208e1c61101d1e3f100fc9e650f022">CHECK_NOT_ZERO_RET</a>(ARG,  RETCODE)&#160;&#160;&#160;<a class="el" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a>((ARG), (RETCODE), &quot;Argument &quot; #ARG &quot; must not be zero&quot;)                                                                           \</td></tr>
 <tr class="memdesc:ac1208e1c61101d1e3f100fc9e650f022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks that <em>ARG</em> is non-zero and returns in case of zero one.  <a href="macros_8h.html#ac1208e1c61101d1e3f100fc9e650f022">More...</a><br /></td></tr>
 <tr class="separator:ac1208e1c61101d1e3f100fc9e650f022"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa665dfbc362922cab135057cd043231a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#aa665dfbc362922cab135057cd043231a">CHECK_BOOL</a>(OPERATION,  DESCRIPTION, ...)</td></tr>
-<tr class="separator:aa665dfbc362922cab135057cd043231a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4bdc0a98189ead78cb541fc356d42c9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#ad4bdc0a98189ead78cb541fc356d42c9">CHECK_MEM_ALLOC</a>(OPERATION,  DESCRIPTION, ...)&#160;&#160;&#160;<a class="el" href="macros_8h.html#aa665dfbc362922cab135057cd043231a">CHECK_BOOL</a>(OPERATION, DESCRIPTION, ##__VA_ARGS__)</td></tr>
-<tr class="separator:ad4bdc0a98189ead78cb541fc356d42c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a848ec3512d1216179c233de3b7fad2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#a1a848ec3512d1216179c233de3b7fad2">CHECK_SNPRINTF</a>(BUF,  FORMAT, ...)</td></tr>
-<tr class="separator:a1a848ec3512d1216179c233de3b7fad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Macroses to simplify code. </p>
@@ -264,80 +258,6 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a id="aa665dfbc362922cab135057cd043231a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa665dfbc362922cab135057cd043231a">&#9670;&nbsp;</a></span>CHECK_BOOL</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CHECK_BOOL</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OPERATION, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DESCRIPTION, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                                               \</div>
-<div class="line">        if (!(OPERATION)) {                                                                                            \</div>
-<div class="line">            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \</div>
-<div class="line">            goto terminate;                                                                                            \</div>
-<div class="line">        }                                                                                                              \</div>
-<div class="line">    } <span class="keywordflow">while</span> (0)</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="ad4bdc0a98189ead78cb541fc356d42c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4bdc0a98189ead78cb541fc356d42c9">&#9670;&nbsp;</a></span>CHECK_MEM_ALLOC</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CHECK_MEM_ALLOC</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OPERATION, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DESCRIPTION, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td>&#160;&#160;&#160;<a class="el" href="macros_8h.html#aa665dfbc362922cab135057cd043231a">CHECK_BOOL</a>(OPERATION, DESCRIPTION, ##__VA_ARGS__)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ad74601193d99495b9fe66d1287d9e337"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad74601193d99495b9fe66d1287d9e337">&#9670;&nbsp;</a></span>CHECK_NOT_ZERO</h2>
 
@@ -473,47 +393,6 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a id="a1a848ec3512d1216179c233de3b7fad2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a848ec3512d1216179c233de3b7fad2">&#9670;&nbsp;</a></span>CHECK_SNPRINTF</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CHECK_SNPRINTF</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">BUF, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">FORMAT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                                                                               \</div>
-<div class="line">        int snprintf_res;                                                                                              \</div>
-<div class="line">        if ((snprintf_res = <a class="code" href="stdlib-config_8h.html#a10d66870bb7c49f818683a171e3cbd74">VS_IOT_SNPRINTF</a>((BUF), <span class="keyword">sizeof</span>(BUF), (FORMAT), ##__VA_ARGS__)) &lt;= 0) {                             \</div>
-<div class="line">            VS_LOG_ERROR(<span class="stringliteral">&quot;snprintf error result %d. errno = %d (%s)&quot;</span>, snprintf_res, errno, strerror(errno));           \</div>
-<div class="line">            goto terminate;                                                                                            \</div>
-<div class="line">        }                                                                                                              \</div>
-<div class="line">    } <span class="keywordflow">while</span> (0)</div>
-</div><!-- fragment -->
-</div>
-</div>
 <a id="a3d330862ac1ad03110e6d64a699d10dd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3d330862ac1ad03110e6d64a699d10dd">&#9670;&nbsp;</a></span>MEMCMP_CHECK</h2>
 
@@ -631,7 +510,6 @@ Macros</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astdlib-config_8h_html_a10d66870bb7c49f818683a171e3cbd74"><div class="ttname"><a href="stdlib-config_8h.html#a10d66870bb7c49f818683a171e3cbd74">VS_IOT_SNPRINTF</a></div><div class="ttdeci">#define VS_IOT_SNPRINTF</div><div class="ttdoc">snprintf call</div><div class="ttdef"><b>Definition:</b> stdlib-config.h:74</div></div>
 <div class="ttc" id="amacros_8h_html_a84c7d845ef01ed2d68a597cc1b904cf6"><div class="ttname"><a href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a></div><div class="ttdeci">#define CHECK_RET(CONDITION, RETCODE, MESSAGE,...)</div><div class="ttdoc">Check condition and return non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:72</div></div>
 <div class="ttc" id="amacros_8h_html_add6be4b0ddc855d3c6649871b7486f93"><div class="ttname"><a href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a></div><div class="ttdeci">#define CHECK(CONDITION, MESSAGE,...)</div><div class="ttdoc">Check condition and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:54</div></div>
 <div class="ttc" id="astdlib-config_8h_html_a3f8b70bd029faecf3d1ece93a432d905"><div class="ttname"><a href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a></div><div class="ttdeci">#define VS_IOT_MEMCMP</div><div class="ttdoc">memcmp call</div><div class="ttdef"><b>Definition:</b> stdlib-config.h:62</div></div>

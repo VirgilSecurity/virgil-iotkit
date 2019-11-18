@@ -108,13 +108,70 @@ Functions</h2></td></tr>
 <tr class="memdesc:a1a47cfbda2d69b16538509d127b3f88a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert Trust List header to host.  <a href="trust__list_8h.html#a1a47cfbda2d69b16538509d127b3f88a">More...</a><br /></td></tr>
 <tr class="separator:a1a47cfbda2d69b16538509d127b3f88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77171f9b7a78473488260a2d49473012"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trust__list_8h.html#a77171f9b7a78473488260a2d49473012">vs_tl_header_to_net</a> (const <a class="el" href="structvs__tl__header__t.html">vs_tl_header_t</a> *src_data, <a class="el" href="structvs__tl__header__t.html">vs_tl_header_t</a> *dst_data)</td></tr>
+<tr class="memdesc:a77171f9b7a78473488260a2d49473012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert Trust List header to network.  <a href="trust__list_8h.html#a77171f9b7a78473488260a2d49473012">More...</a><br /></td></tr>
 <tr class="separator:a77171f9b7a78473488260a2d49473012"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Trust List. </p>
+<p>This file provides interface for Trust Lists processing.</p>
+<p>Trust List contains the list of trusted public keys and signatures. Initial Trust List is obtained by device during provision. After it can be upgraded by Update library using FLDT service.</p>
 <h1><a class="anchor" id="trust_list_usage"></a>
 Trust List Usage</h1>
-</div><h2 class="groupheader">Function Documentation</h2>
+<p>Trust List is maintained by Virgil IoT KID modules and doesn't need to be processed by user. Notwithstanding, there are some places where it is needed user's attention :</p>
+<ul>
+<li>Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide <a class="el" href="fldt-server_8h.html#a0e9c60ad35766f11a2adb9757799c9d2" title="Add new file type callback.">vs_fldt_server_add_filetype_cb</a> for FLDT Server serviceц:</li>
+</ul>
+<div class="fragment"><div class="line"><a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line">_add_filetype(<span class="keyword">const</span> <a class="code" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, <a class="code" href="structvs__update__interface__t.html">vs_update_interface_t</a> **update_ctx) {</div>
+<div class="line">    <span class="keywordflow">switch</span> (file_type-&gt;<a class="code" href="structvs__update__file__type__t.html#a7517c1f608ae4cdb9ea1ecd39b0736a3">type</a>) {</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// ...</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Trust List file type</span></div>
+<div class="line">        <span class="keywordflow">case</span> <a class="code" href="update_8h.html#a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65">VS_UPDATE_TRUST_LIST</a>:</div>
+<div class="line">            *update_ctx = <a class="code" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a>();</div>
+<div class="line">            <span class="keywordflow">break</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">return</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a>;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// ...</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *snap_fldt_server;      <span class="comment">// FLDT Server service</span></div>
+<div class="line">    <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> mac_addr;                         <span class="comment">// Own MAC address</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Initialize mac_addr</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">//  FLDT server service</span></div>
+<div class="line">    snap_fldt_server = <a class="code" href="fldt-server_8h.html#a9581bcb230153af967963dd25246be45">vs_snap_fldt_server</a>(&amp;mac_addr, _add_filetype);</div>
+<div class="line">    <a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(snap_fldt_server), <span class="stringliteral">&quot;Cannot register FLDT server service&quot;</span>);</div>
+<div class="line">    <a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="fldt-server_8h.html#af4a7f73f1af4c37c30ce9c98658523fc">vs_fldt_server_add_file_type</a>(<a class="code" href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19">vs_tl_update_file_type</a>(), <a class="code" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a>(), <span class="keyword">false</span>),</div>
+<div class="line">                 <span class="stringliteral">&quot;Unable to add Trust List file type&quot;</span>);</div>
+<div class="line">    <span class="comment">// Other file types</span></div>
+</div><!-- fragment --><ul>
+<li>After receiving by Gateway new Trust List by Cloud library it is necessary to send its version to Things. For this goal <a class="el" href="trust__list_8h.html#a7abc0f3a88c4c9d509953e46f7a74dbb" title="Trust List element loading.">vs_tl_load_part</a> is used. It reads Trust List header :</li>
+</ul>
+<div class="fragment"><div class="line"><a class="code" href="structvs__tl__element__info__t.html">vs_tl_element_info_t</a> elem = {.<a class="code" href="structvs__tl__element__info__t.html#ae832aac4f3d0b31540916797295ddec5">id</a> = <a class="code" href="tl__structs_8h.html#ab384d907a71a3e5d261663d90e4e62b4a3ca4ee89a756bd112d344bc49c894127">VS_TL_ELEMENT_TLH</a>};      <span class="comment">// Trust List header to be read</span></div>
+<div class="line"><a class="code" href="structvs__tl__header__t.html">vs_tl_header_t</a> tl_header;                                   <span class="comment">// Header</span></div>
+<div class="line">uint16_t tl_header_sz = <span class="keyword">sizeof</span>(tl_header);                  <span class="comment">// Header size</span></div>
+<div class="line"><a class="code" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> tl_info;                              <span class="comment">// Trust List file update information</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Load latest local Trust List</span></div>
+<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="trust__list_8h.html#a7abc0f3a88c4c9d509953e46f7a74dbb">vs_tl_load_part</a>(&amp;elem, (uint8_t *)&amp;tl_header, tl_header_sz, &amp;tl_header_sz) &amp;&amp;</div>
+<div class="line">     tl_header_sz == <span class="keyword">sizeof</span>(tl_header), <span class="stringliteral">&quot;Unable to load Trust List header&quot;</span>);</div>
+<div class="line">tl_header.version.build = ntohl(tl_header.version.build);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Prepare Update information</span></div>
+<div class="line">memset(tl_info, 0, <span class="keyword">sizeof</span>(<a class="code" href="structvs__update__file__type__t.html">vs_update_file_type_t</a>));</div>
+<div class="line">memcpy(&amp;tl_info.<a class="code" href="structvs__update__file__type__t.html#aea98e39acc6e9965c0e26ac2694e02b2">info</a>.<a class="code" href="structvs__file__info__t.html#a89d29ae16496bb22975b66c1b14a40b5">version</a>, &amp;tl_header.version, <span class="keyword">sizeof</span>(<a class="code" href="structvs__file__version__t.html">vs_file_version_t</a>));</div>
+<div class="line"> </div>
+<div class="line">tl_info.<a class="code" href="structvs__update__file__type__t.html#a7517c1f608ae4cdb9ea1ecd39b0736a3">type</a> = <a class="code" href="update_8h.html#a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65">VS_UPDATE_TRUST_LIST</a>;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Broadcast new Trust List information</span></div>
+<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="fldt-server_8h.html#af4a7f73f1af4c37c30ce9c98658523fc">vs_fldt_server_add_file_type</a>(&amp;tl_info, <a class="code" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a>(), <span class="keyword">true</span>),</div>
+<div class="line">        <span class="stringliteral">&quot;Unable to add new Trust List&quot;</span>);</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a31a3355d1cbec3d424133b7d4d716c10"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a31a3355d1cbec3d424133b7d4d716c10">&#9670;&nbsp;</a></span>vs_tl_deinit()</h2>
 
@@ -131,6 +188,8 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Trust List destruction. </p>
+<p>Destroys Trust List.</p>
+<dl class="section note"><dt>Note</dt><dd>It is called by <a class="el" href="provision_8h.html#adafd70511f5ea213adcbf44c180f88a9" title="Provision destruction.">vs_provision_deinit</a>.</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>
@@ -162,6 +221,7 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Convert Trust List header to host. </p>
+<p>Convert Trust List header to the host format.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">src_data</td><td>Data source. Must not be NULL. </td></tr>
@@ -198,6 +258,16 @@ Trust List Usage</h1>
       </table>
 </div><div class="memdoc">
 
+<p>Convert Trust List header to network. </p>
+<p>Convert Trust List header to the network format.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">src_data</td><td>Data source. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dst_data</td><td>Data destination. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a1e08d30dc1af7f09179dedd48350e744"></a>
@@ -227,6 +297,8 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Trust List initialization. </p>
+<p>Initializes Trust List.</p>
+<dl class="section note"><dt>Note</dt><dd>It is called by <a class="el" href="provision_8h.html#ab94cddcf677e576f48a81e6965421d8b" title="Provision initialization.">vs_provision_init</a>.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">op_ctx</td><td>Storage context. Must not be NULL. </td></tr>
@@ -277,6 +349,7 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Trust List element loading. </p>
+<p>Loads Trust List header, footer or data chunk. Element selection it is done by <em>element_info</em> selector.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">element_info</td><td>Element selection. Must not be NULL. </td></tr>
@@ -323,6 +396,7 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Trust List element saving. </p>
+<p>Saves Trust List header, footer or data chunk. Element selection it is done by <em>element_info</em> selector.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">element_info</td><td>Element selection. Must not be NULL. </td></tr>
@@ -352,6 +426,7 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Update interface for Trust List. </p>
+<p>Returns Update context for Trust List.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a> </dd></dl>
 
 </div>
@@ -373,11 +448,34 @@ Trust List Usage</h1>
 </div><div class="memdoc">
 
 <p>Trust List file type. </p>
+<p>Returns Trust List file type for Update module.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structvs__update__file__type__t.html" title="File type information.">vs_update_file_type_t</a> </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
+<div class="ttc" id="afldt-server_8h_html_a9581bcb230153af967963dd25246be45"><div class="ttname"><a href="fldt-server_8h.html#a9581bcb230153af967963dd25246be45">vs_snap_fldt_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype)</div><div class="ttdoc">FLDT Server SNAP Service implementation.</div></div>
+<div class="ttc" id="astructvs__update__file__type__t_html"><div class="ttname"><a href="structvs__update__file__type__t.html">vs_update_file_type_t</a></div><div class="ttdoc">File type information.</div><div class="ttdef"><b>Definition:</b> update.h:60</div></div>
+<div class="ttc" id="atl__structs_8h_html_ab384d907a71a3e5d261663d90e4e62b4a3ca4ee89a756bd112d344bc49c894127"><div class="ttname"><a href="tl__structs_8h.html#ab384d907a71a3e5d261663d90e4e62b4a3ca4ee89a756bd112d344bc49c894127">VS_TL_ELEMENT_TLH</a></div><div class="ttdef"><b>Definition:</b> tl_structs.h:72</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code Status code to be returned from function.</div><div class="ttdef"><b>Definition:</b> status_code.h:49</div></div>
+<div class="ttc" id="astructvs__tl__element__info__t_html"><div class="ttname"><a href="structvs__tl__element__info__t.html">vs_tl_element_info_t</a></div><div class="ttdef"><b>Definition:</b> tl_structs.h:78</div></div>
+<div class="ttc" id="astructvs__mac__addr__t_html"><div class="ttname"><a href="structvs__mac__addr__t.html">vs_mac_addr_t</a></div><div class="ttdoc">MAC address.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:245</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
+<div class="ttc" id="atrust__list_8h_html_a015bb0da15c42d6ab85e13b54dd4cc57"><div class="ttname"><a href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a></div><div class="ttdeci">vs_update_interface_t * vs_tl_update_ctx(void)</div><div class="ttdoc">Update interface for Trust List.</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a></div><div class="ttdoc">Successful operation.</div><div class="ttdef"><b>Definition:</b> status_code.h:52</div></div>
+<div class="ttc" id="astructvs__file__version__t_html"><div class="ttname"><a href="structvs__file__version__t.html">vs_file_version_t</a></div><div class="ttdoc">File version information.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:212</div></div>
+<div class="ttc" id="afldt-server_8h_html_af4a7f73f1af4c37c30ce9c98658523fc"><div class="ttname"><a href="fldt-server_8h.html#af4a7f73f1af4c37c30ce9c98658523fc">vs_fldt_server_add_file_type</a></div><div class="ttdeci">vs_status_e vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_context, bool broadcast_file_info)</div><div class="ttdoc">Add file type.</div></div>
+<div class="ttc" id="astructvs__tl__element__info__t_html_ae832aac4f3d0b31540916797295ddec5"><div class="ttname"><a href="structvs__tl__element__info__t.html#ae832aac4f3d0b31540916797295ddec5">vs_tl_element_info_t::id</a></div><div class="ttdeci">vs_tl_element_e id</div><div class="ttdef"><b>Definition:</b> tl_structs.h:79</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:307</div></div>
+<div class="ttc" id="astructvs__file__info__t_html_a89d29ae16496bb22975b66c1b14a40b5"><div class="ttname"><a href="structvs__file__info__t.html#a89d29ae16496bb22975b66c1b14a40b5">vs_file_info_t::version</a></div><div class="ttdeci">vs_file_version_t version</div><div class="ttdoc">File version.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:224</div></div>
+<div class="ttc" id="atrust__list_8h_html_a16aae7bc7017d3e66e98bddc456e2a19"><div class="ttname"><a href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19">vs_tl_update_file_type</a></div><div class="ttdeci">const vs_update_file_type_t * vs_tl_update_file_type(void)</div><div class="ttdoc">Trust List file type.</div></div>
+<div class="ttc" id="astructvs__tl__header__t_html"><div class="ttname"><a href="structvs__tl__header__t.html">vs_tl_header_t</a></div><div class="ttdoc">Trust List header.</div><div class="ttdef"><b>Definition:</b> tl_structs.h:57</div></div>
+<div class="ttc" id="aupdate_8h_html_a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65"><div class="ttname"><a href="update_8h.html#a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65">VS_UPDATE_TRUST_LIST</a></div><div class="ttdoc">Trust List files.</div><div class="ttdef"><b>Definition:</b> update.h:55</div></div>
+<div class="ttc" id="astructvs__update__file__type__t_html_aea98e39acc6e9965c0e26ac2694e02b2"><div class="ttname"><a href="structvs__update__file__type__t.html#aea98e39acc6e9965c0e26ac2694e02b2">vs_update_file_type_t::info</a></div><div class="ttdeci">vs_file_info_t info</div><div class="ttdoc">Additional file information.</div><div class="ttdef"><b>Definition:</b> update.h:62</div></div>
+<div class="ttc" id="astructvs__update__interface__t_html"><div class="ttname"><a href="structvs__update__interface__t.html">vs_update_interface_t</a></div><div class="ttdoc">Update interface context.</div><div class="ttdef"><b>Definition:</b> update.h:265</div></div>
+<div class="ttc" id="astructvs__update__file__type__t_html_a7517c1f608ae4cdb9ea1ecd39b0736a3"><div class="ttname"><a href="structvs__update__file__type__t.html#a7517c1f608ae4cdb9ea1ecd39b0736a3">vs_update_file_type_t::type</a></div><div class="ttdeci">uint16_t type</div><div class="ttdoc">vs_update_file_type_id_t</div><div class="ttdef"><b>Definition:</b> update.h:61</div></div>
+<div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>
+<div class="ttc" id="atrust__list_8h_html_a7abc0f3a88c4c9d509953e46f7a74dbb"><div class="ttname"><a href="trust__list_8h.html#a7abc0f3a88c4c9d509953e46f7a74dbb">vs_tl_load_part</a></div><div class="ttdeci">vs_status_e vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz)</div><div class="ttdoc">Trust List element loading.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
