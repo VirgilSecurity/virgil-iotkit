@@ -10,7 +10,7 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
   - [Install](#install-snapd)
     - [Linux OS](#linux-os)
     - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-    - [Cent OS, Fedora OS](#cent-os-fedora-os)
+    - [CentOS, Fedora OS](#cent-os-fedora-os)
     - [Mac OS](#mac-os)
     - [Windows OS](#windows-os)
   - [Configure and run](#configure-and-run-snapd)
@@ -42,7 +42,7 @@ In order to download and install the Virgil SnapD on Ubuntu, Debian, use the YUM
 $ sudo apt-get install virgil-iot-sdk-snapd
 ```
 
-#### Cent OS, Fedora OS
+#### CentOS, Fedora OS
 Virgil SnapD is distributed as a package.
 
 In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM package manager and the following command:
@@ -62,7 +62,7 @@ $ make vs-tool-virgil-snapd
 ```
 
 #### Windows OS
-Virgil SnapD package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
+Virgil SnapD package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
 
 ### Configure and run SnapD
 By default SnapD works under http://localhost:8080/, if other is not specified for the `SNAPD_SERVICE_PORT` variable.

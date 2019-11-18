@@ -64,7 +64,7 @@ In order to download and install the Virgil Device Initializer on Ubuntu, Debian
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
 
-#### Cent OS, Fedora OS
+#### CentOS, Fedora OS
 Virgil Device Initializer is distributed as a package.
 
 In order to download and install the Virgil Device Initializer on CentOS, Fedora, use the YUM package manager and the following command:
@@ -85,7 +85,7 @@ $ make vs-tool-virgil-device-initializer
 ```
 
 #### Windows OS
-Virgil Device Initializer package for Windows OS is currently in development. To be included to information update list please contact our support email support@VirgilSecurity.com.
+Virgil Device Initializer package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
 
 ## Command Reference
 Here is the list of possible commands for Virgil Device Initializer.
