@@ -139,18 +139,21 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     uint8_t *pubkey = NULL;
     uint16_t pubkey_sz = 0;
     uint8_t *meta = NULL;
+    vs_pubkey_dated_t *pubkey_dated = NULL;
     uint16_t meta_sz = 0;
-    vs_secmodule_keypair_type_e ec_type;
 
     uint8_t hash[VS_HASH_SHA256_LEN];
     uint16_t hash_sz;
 
-    CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz),
+    CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(
+                                &search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz),
           "Can't find cloud key in TL");
-    ec_type = ((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type;
 
     {
-        uint8_t sign[vs_secmodule_get_signature_len(ec_type)];
+        int sign_sz = vs_secmodule_get_signature_len(pubkey_dated->pubkey.ec_type);
+        CHECK(sign_sz > 0, "Incorrect ec type of cloud key");
+
+        uint8_t sign[sign_sz];
 
         CHECK(VS_CODE_OK == vs_secmodule_virgil_secp256_signature_to_tiny(
                                     (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
@@ -164,8 +167,13 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                                              &hash_sz),
               "Error during hash calculate");
 
-        CHECK(VS_CODE_OK ==
-                      _secmodule->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
+        CHECK(VS_CODE_OK == _secmodule->ecdsa_verify(pubkey_dated->pubkey.ec_type,
+                                                     pubkey,
+                                                     pubkey_sz,
+                                                     VS_HASH_SHA_256,
+                                                     hash,
+                                                     sign,
+                                                     sizeof(sign)),
               "Wrong signature of cloud answer");
     }
 
