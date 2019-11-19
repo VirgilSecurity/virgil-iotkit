@@ -111,7 +111,7 @@ INFO Server usage</h1>
 <div class="line"> </div>
 <div class="line"> <span class="comment">// Register INFO Server service</span></div>
 <div class="line">snap_info_server = <a class="code" href="info-server_8h.html#a462ed38c75ba3c3ebf7eac326d6679da">vs_snap_info_server</a>(&amp;tl_storage_impl, &amp;fw_storage_impl, NULL);</div>
-<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(snap_info_server), <span class="stringliteral">&quot;Cannot register INFO Server client service&quot;</span>);</div>
+<div class="line"><a class="code" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(<a class="code" href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a>(snap_info_server), <span class="stringliteral">&quot;Cannot register INFO Server service&quot;</span>);</div>
 </div><!-- fragment --><p><em>tl_storage_impl</em> and <em>fw_storage_impl</em> are storage implementations. See <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> for details. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="a3dedc2fc7975813dd65b82addd5c4671"></a>
@@ -215,10 +215,10 @@ INFO Server usage</h1>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:133</div></div>
 <div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:307</div></div>
 <div class="ttc" id="ainfo-server_8h_html_a462ed38c75ba3c3ebf7eac326d6679da"><div class="ttname"><a href="info-server_8h.html#a462ed38c75ba3c3ebf7eac326d6679da">vs_snap_info_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, vs_snap_info_start_notif_srv_cb_t startup_cb)</div><div class="ttdoc">INFO Server SNAP Service implementation.</div></div>
-<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:200</div></div>
+<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:216</div></div>
 <div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

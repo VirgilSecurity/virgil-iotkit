@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Macroses to simplify code.  
+<p>Macros to simplify code.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;<a class="el" href="logger_8h_source.html">virgil/iot/logger/logger.h</a>&gt;</code><br />
 </div>
@@ -95,9 +95,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a3d330862ac1ad03110e6d64a699d10dd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#a3d330862ac1ad03110e6d64a699d10dd">MEMCMP_CHECK</a>(BUF1,  BUF2,  SIZE)</td></tr>
 <tr class="memdesc:a3d330862ac1ad03110e6d64a699d10dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two buffer and goto if non-successful.  <a href="macros_8h.html#a3d330862ac1ad03110e6d64a699d10dd">More...</a><br /></td></tr>
 <tr class="separator:a3d330862ac1ad03110e6d64a699d10dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2a4abd80677349282d88aa48eef82a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#acc2a4abd80677349282d88aa48eef82a">MEMCMP_CHECK_RET</a>(BUF1,  BUF2,  SIZE,  RET)</td></tr>
-<tr class="memdesc:acc2a4abd80677349282d88aa48eef82a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two buffer and returns if non-successful.  <a href="macros_8h.html#acc2a4abd80677349282d88aa48eef82a">More...</a><br /></td></tr>
-<tr class="separator:acc2a4abd80677349282d88aa48eef82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62831c3051dabf6bfe98dff179136f71"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71">MEMCMP_CHECK_RET</a>(BUF1,  BUF2,  SIZE,  RETCODE)</td></tr>
+<tr class="memdesc:a62831c3051dabf6bfe98dff179136f71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two buffer and returns if non-successful.  <a href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71">More...</a><br /></td></tr>
+<tr class="separator:a62831c3051dabf6bfe98dff179136f71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad74601193d99495b9fe66d1287d9e337"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="macros_8h.html#ad74601193d99495b9fe66d1287d9e337">CHECK_NOT_ZERO</a>(ARG)&#160;&#160;&#160;<a class="el" href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a>((ARG), &quot;Argument &quot; #ARG &quot; must not be zero&quot;)</td></tr>
 <tr class="memdesc:ad74601193d99495b9fe66d1287d9e337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks that <em>ARG</em> is non-zero and goto in case of zero one.  <a href="macros_8h.html#ad74601193d99495b9fe66d1287d9e337">More...</a><br /></td></tr>
 <tr class="separator:ad74601193d99495b9fe66d1287d9e337"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,8 +106,34 @@ Macros</h2></td></tr>
 <tr class="separator:ac1208e1c61101d1e3f100fc9e650f022"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Macroses to simplify code. </p>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<div class="textblock"><p>Macros to simplify code. </p>
+<p>You can find here different macros to simplify code usage.</p>
+<p>Each macros does specified operation and checks its result. If it is successful, there is no other action. In another case it outputs messages and terminates its execution. There are two possibilities how to terminate normal flow :</p>
+<ul>
+<li>return from function with return code. They have _RET postfix : <a class="el" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6" title="Check condition and return non-successful.">CHECK_RET</a>, <a class="el" href="macros_8h.html#ad53703e6ade1bfe8221933bd280c3a96" title="Check condition and return non-successful.">BOOL_CHECK_RET</a>, <a class="el" href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71" title="Compares two buffer and returns if non-successful.">MEMCMP_CHECK_RET</a> etc. There is return code <em>RETCODE</em> parameter or it is implicitly supposed like in <a class="el" href="macros_8h.html#ad53703e6ade1bfe8221933bd280c3a96" title="Check condition and return non-successful.">BOOL_CHECK_RET</a>.</li>
+<li>goto <em>terminate</em> label.</li>
+</ul>
+<p>Message uses Logger module for output. You can use printf-like syntax with variables.</p>
+<p>Here you can see some examples : </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> a;</div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span> *buf1;</div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span> *buf2;</div>
+<div class="line"><span class="keywordtype">size_t</span> buf_size;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Goto terminate in case of error</span></div>
+<div class="line"><a class="code" href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a>(a == 3, <span class="stringliteral">&quot;a = %d while it must be equal to 3&quot;</span>, a);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Return in case of error</span></div>
+<div class="line"><a class="code" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a>(a == 3, <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf">VS_CODE_ERR_INCORRECT_PARAMETER</a>, <span class="stringliteral">&quot;a = %d while it must be equal to 3&quot;</span>, a);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Compare two buffers</span></div>
+<div class="line"><a class="code" href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71">MEMCMP_CHECK_RET</a>(buf1, buf2, buf_size, <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90">VS_CODE_OLD_VERSION</a>);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Checks variable to be not-NULL</span></div>
+<div class="line"><a class="code" href="macros_8h.html#ac1208e1c61101d1e3f100fc9e650f022">CHECK_NOT_ZERO_RET</a>(buf1, <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6">VS_CODE_ERR_NULLPTR_ARGUMENT</a>);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Process error</span></div>
+<div class="line">terminate:</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a6ea61faaed367f082078ec1e62a3a939"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ea61faaed367f082078ec1e62a3a939">&#9670;&nbsp;</a></span>BOOL_CHECK</h2>
 
@@ -447,8 +473,8 @@ Macros</h2></td></tr>
 
 </div>
 </div>
-<a id="acc2a4abd80677349282d88aa48eef82a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc2a4abd80677349282d88aa48eef82a">&#9670;&nbsp;</a></span>MEMCMP_CHECK_RET</h2>
+<a id="a62831c3051dabf6bfe98dff179136f71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62831c3051dabf6bfe98dff179136f71">&#9670;&nbsp;</a></span>MEMCMP_CHECK_RET</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -475,7 +501,7 @@ Macros</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">RET&#160;</td>
+          <td class="paramname">RETCODE&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -484,7 +510,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a>(<a class="code" href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a>((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \</div>
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a>(<a class="code" href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a>((BUF1), (BUF2), (SIZE)) == 0, (RETCODE),                                                              \</div>
 <div class="line">                   #BUF1 <span class="stringliteral">&quot; is not equal to &quot;</span> #BUF2 <span class="stringliteral">&quot; while comparing %d bytes&quot;</span>,                                        \</div>
 <div class="line">                   (<span class="keywordtype">int</span>)(SIZE))</div>
 </div><!-- fragment -->
@@ -510,9 +536,14 @@ Macros</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="amacros_8h_html_a84c7d845ef01ed2d68a597cc1b904cf6"><div class="ttname"><a href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a></div><div class="ttdeci">#define CHECK_RET(CONDITION, RETCODE, MESSAGE,...)</div><div class="ttdoc">Check condition and return non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:72</div></div>
-<div class="ttc" id="amacros_8h_html_add6be4b0ddc855d3c6649871b7486f93"><div class="ttname"><a href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a></div><div class="ttdeci">#define CHECK(CONDITION, MESSAGE,...)</div><div class="ttdoc">Check condition and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:54</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6">VS_CODE_ERR_NULLPTR_ARGUMENT</a></div><div class="ttdoc">Argument is NULL pointer while it must be non NULL.</div><div class="ttdef"><b>Definition:</b> status_code.h:75</div></div>
+<div class="ttc" id="amacros_8h_html_a84c7d845ef01ed2d68a597cc1b904cf6"><div class="ttname"><a href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a></div><div class="ttdeci">#define CHECK_RET(CONDITION, RETCODE, MESSAGE,...)</div><div class="ttdoc">Check condition and return non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:108</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90">VS_CODE_OLD_VERSION</a></div><div class="ttdef"><b>Definition:</b> status_code.h:73</div></div>
+<div class="ttc" id="amacros_8h_html_ac1208e1c61101d1e3f100fc9e650f022"><div class="ttname"><a href="macros_8h.html#ac1208e1c61101d1e3f100fc9e650f022">CHECK_NOT_ZERO_RET</a></div><div class="ttdeci">#define CHECK_NOT_ZERO_RET(ARG, RETCODE)</div><div class="ttdoc">Checks that ARG is non-zero and returns in case of zero one.</div><div class="ttdef"><b>Definition:</b> macros.h:199</div></div>
+<div class="ttc" id="amacros_8h_html_a62831c3051dabf6bfe98dff179136f71"><div class="ttname"><a href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71">MEMCMP_CHECK_RET</a></div><div class="ttdeci">#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RETCODE)</div><div class="ttdoc">Compares two buffer and returns if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:171</div></div>
+<div class="ttc" id="amacros_8h_html_add6be4b0ddc855d3c6649871b7486f93"><div class="ttname"><a href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a></div><div class="ttdeci">#define CHECK(CONDITION, MESSAGE,...)</div><div class="ttdoc">Check condition and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:90</div></div>
 <div class="ttc" id="astdlib-config_8h_html_a3f8b70bd029faecf3d1ece93a432d905"><div class="ttname"><a href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a></div><div class="ttdeci">#define VS_IOT_MEMCMP</div><div class="ttdoc">memcmp call</div><div class="ttdef"><b>Definition:</b> stdlib-config.h:62</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf">VS_CODE_ERR_INCORRECT_PARAMETER</a></div><div class="ttdoc">Incorrect parameter.</div><div class="ttdef"><b>Definition:</b> status_code.h:78</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

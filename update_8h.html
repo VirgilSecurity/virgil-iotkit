@@ -97,7 +97,7 @@ Data Structures</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:afecea0527723c29c34bc156d1555a61c"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#afecea0527723c29c34bc156d1555a61c">vs_update_get_header_size_cb_t</a>) (void *context, <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, uint32_t *header_size)</td></tr>
-<tr class="memdesc:afecea0527723c29c34bc156d1555a61c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get file type header size callback.  <a href="update_8h.html#afecea0527723c29c34bc156d1555a61c">More...</a><br /></td></tr>
+<tr class="memdesc:afecea0527723c29c34bc156d1555a61c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get file type header size.  <a href="update_8h.html#afecea0527723c29c34bc156d1555a61c">More...</a><br /></td></tr>
 <tr class="separator:afecea0527723c29c34bc156d1555a61c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a802aea780c6b4f19100b07fd9632cb3b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#a802aea780c6b4f19100b07fd9632cb3b">vs_update_get_file_size_cb_t</a>) (void *context, <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, const void *file_header, uint32_t *file_size)</td></tr>
 <tr class="memdesc:a802aea780c6b4f19100b07fd9632cb3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get file size.  <a href="update_8h.html#a802aea780c6b4f19100b07fd9632cb3b">More...</a><br /></td></tr>
@@ -154,15 +154,18 @@ Functions</h2></td></tr>
 <tr class="memdesc:a75829275783a8ddd4ed513fcc68d3e24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe file type.  <a href="update_8h.html#a75829275783a8ddd4ed513fcc68d3e24">More...</a><br /></td></tr>
 <tr class="separator:a75829275783a8ddd4ed513fcc68d3e24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64a0fdfaaff5040c1e4ca7411b5e20c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#a64a0fdfaaff5040c1e4ca7411b5e20c0">vs_update_equal_file_type</a> (<a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, const <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *unknown_file_type)</td></tr>
-<tr class="memdesc:a64a0fdfaaff5040c1e4ca7411b5e20c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two file types.  <a href="update_8h.html#a64a0fdfaaff5040c1e4ca7411b5e20c0">More...</a><br /></td></tr>
+<tr class="memdesc:a64a0fdfaaff5040c1e4ca7411b5e20c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two files types.  <a href="update_8h.html#a64a0fdfaaff5040c1e4ca7411b5e20c0">More...</a><br /></td></tr>
 <tr class="separator:a64a0fdfaaff5040c1e4ca7411b5e20c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb546d83d0b7171906965b19fbfe47a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#acb546d83d0b7171906965b19fbfe47a1">vs_update_compare_version</a> (const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *update_ver, const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *current_ver)</td></tr>
-<tr class="memdesc:acb546d83d0b7171906965b19fbfe47a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two files version.  <a href="update_8h.html#acb546d83d0b7171906965b19fbfe47a1">More...</a><br /></td></tr>
+<tr class="memdesc:acb546d83d0b7171906965b19fbfe47a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two files versions.  <a href="update_8h.html#acb546d83d0b7171906965b19fbfe47a1">More...</a><br /></td></tr>
 <tr class="separator:acb546d83d0b7171906965b19fbfe47a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Update interface for files downloading. </p>
-<p>This file declares <em><a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a></em> interface that is used for files downloading by client and sending by server. If you want to download/upload your own file type, you have to implement function callbacks for this interface. Also there are some utilities for Update library </p>
+<p>This file declares <em><a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a></em> interface that is used for files downloading by client and sending by server. If you want to download/upload your own file type, you have to implement function callbacks for this interface. Also there are some utilities for Update library</p>
+<h1><a class="anchor" id="update_usage"></a>
+Update Module usage</h1>
+<p>See <a class="el" href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff" title="Return Update interface.">vs_firmware_update_ctx</a> source code and <a class="el" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57" title="Update interface for Trust List.">vs_tl_update_ctx</a> one for update context implementation examples. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="a48f74ba864f92659c48fba1b572ad757"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a48f74ba864f92659c48fba1b572ad757">&#9670;&nbsp;</a></span>vs_update_describe_type_cb_t</h2>
@@ -389,7 +392,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get file type header size callback. </p>
+<p>Get file type header size. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">context</td><td>File context. </td></tr>
@@ -440,7 +443,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Increment data offset. </p>
-<p>This callback return next file offset in subsequent load calls.</p>
+<p>This implementation returns next file offset in subsequent load calls.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">context</td><td>File context. </td></tr>
@@ -589,7 +592,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Compare two files version. </p>
+<p>Compare two files versions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">update_ver</td><td>File to be update. Cannot be NULL. </td></tr>
@@ -631,7 +634,7 @@ Other <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432
       </table>
 </div><div class="memdoc">
 
-<p>Compare two file types. </p>
+<p>Compare two files types. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">file_type</td><td>Known file type. Cannot be NULL. </td></tr>

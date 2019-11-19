@@ -85,7 +85,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__storage__impl__func__t.html">vs_storage_impl_func_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage implementation callbacks.  <a href="structvs__storage__impl__func__t.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage implementation.  <a href="structvs__storage__impl__func__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage element context.  <a href="structvs__storage__op__ctx__t.html#details">More...</a><br /></td></tr>
@@ -139,9 +139,22 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Storage HAL interface. </p>
+<p>Storage is the base helper for communication with file system. Cache mechanism can be used.</p>
 <h1><a class="anchor" id="storage_hal"></a>
 Storage HAL Usage</h1>
-<dl class="section warning"><dt>Warning</dt><dd><a class="el" href="structvs__storage__op__ctx__t.html" title="Storage element context.">vs_storage_op_ctx_t</a> has to be implemented by user. </dd></dl>
+<p>Storage context <a class="el" href="structvs__storage__op__ctx__t.html" title="Storage element context.">vs_storage_op_ctx_t</a> has storage specific data and calls implementation.</p>
+<dl class="section warning"><dt>Warning</dt><dd><a class="el" href="structvs__storage__op__ctx__t.html" title="Storage element context.">vs_storage_op_ctx_t</a> has to be implemented by user. You can see an example of Storage context implementation for *NIX systems in <a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/sdk-impl/storage/storage-nix-impl.c#L297">vs_nix_storage_impl_func() in storage-nix-impl.c</a></dd></dl>
+<p>Implementation has members listed below :</p>
+<ul>
+<li><em>open</em> : opens data file and returns <a class="el" href="storage__hal_8h.html#a3122e7ac77a0f85b0a20cc4ae2f0ab7b" title="File descriptor.">vs_storage_file_t</a> file descriptor.</li>
+<li><em>sync</em> : synchronizes ache if present with file storage.</li>
+<li><em>close</em> : closes file.</li>
+<li><em>del</em> : securely deletes data on the storage and in the memory if cache is used.</li>
+<li><em>size</em> : returns file size or negative value. It could be any error from <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> list.</li>
+<li><em>load</em> : loads data from storage to the memory.</li>
+<li><em>save</em> : saves data from memory to the storage.</li>
+<li><em>deinit</em> : destroys storage context. </li>
+</ul>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ab3db31a617b24780f7651f7b308e6cd2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab3db31a617b24780f7651f7b308e6cd2">&#9670;&nbsp;</a></span>VS_STORAGE_ELEMENT_ID_MAX</h2>
@@ -196,7 +209,7 @@ Storage HAL Usage</h1>
 </div><div class="memdoc">
 
 <p>Close storage element. </p>
-<p>After this call file is incorrect and must be reopened.</p>
+<dl class="section warning"><dt>Warning</dt><dd>After this call file is incorrect and must be reopened.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">storage_ctx</td><td>Storage context. Cannot be NULL. </td></tr>
@@ -307,7 +320,7 @@ Storage HAL Usage</h1>
 </div><div class="memdoc">
 
 <p>File descriptor. </p>
-<p>File descriptor depends on implementation of storage </p>
+<p>File descriptor depends on storage implementation </p>
 
 </div>
 </div>
@@ -375,7 +388,7 @@ Storage HAL Usage</h1>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Storage specific file descriptor </dd></dl>
 
 </div>
 </div>

@@ -103,7 +103,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac47e531e85f60257d157b15a19da8503"><td class="mdescLeft">&#160;</td><td class="mdescRight">PRVS Client SNAP Service implementation.  <a href="prvs-client_8h.html#ac47e531e85f60257d157b15a19da8503">More...</a><br /></td></tr>
 <tr class="separator:ac47e531e85f60257d157b15a19da8503"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ced057480a18238abde26c755cc65a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">vs_snap_prvs_enum_devices</a> (const <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, <a class="el" href="structvs__snap__prvs__dnid__list__t.html">vs_snap_prvs_dnid_list_t</a> *list, uint32_t wait_ms)</td></tr>
-<tr class="memdesc:a9ced057480a18238abde26c755cc65a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate devices without provision.  <a href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">More...</a><br /></td></tr>
+<tr class="memdesc:a9ced057480a18238abde26c755cc65a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate devices, which don't have initialization provision yet.  <a href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">More...</a><br /></td></tr>
 <tr class="separator:a9ced057480a18238abde26c755cc65a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0074ccf64d31d5bbe43f77593fdc176"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="prvs-client_8h.html#ae0074ccf64d31d5bbe43f77593fdc176">vs_snap_prvs_save_provision</a> (const <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac, uint8_t *asav_res, uint16_t buf_sz, uint32_t wait_ms)</td></tr>
 <tr class="memdesc:ae0074ccf64d31d5bbe43f77593fdc176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save provision.  <a href="prvs-client_8h.html#ae0074ccf64d31d5bbe43f77593fdc176">More...</a><br /></td></tr>
@@ -322,8 +322,8 @@ PRVS Client usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Enumerate devices without provision. </p>
-<p>Enumerate devices that have not been initialized yet.</p>
+<p>Enumerate devices, which don't have initialization provision yet. </p>
+<p>Enumerate devices, which don't have initialization provision yet.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> SNAP service descriptor. Must not be NULL. </td></tr>
@@ -456,7 +456,7 @@ PRVS Client usage</h1>
 </div><div class="memdoc">
 
 <p>Save provision. </p>
-<p>Sends request to initialize security module, generate key pairs and save it in the OTP memory.</p>
+<p>Sends request to initialize security module and to generate device key pair. After it necessarily saves the own key pair and received Recovery keys to OTP memory.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>SNAP service descriptor. Must not be NULL. </td></tr>
@@ -722,7 +722,7 @@ PRVS Client usage</h1>
 </div><div class="memdoc">
 
 <p>Sign data. </p>
-<p>Sends generated device information for the device. It signs it it returns signature back.</p>
+<p>Sends generated device information for the device. Device signs it and returns signature back.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>SNAP service descriptor. If NULL, default one will be used. </td></tr>
@@ -741,8 +741,8 @@ PRVS Client usage</h1>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:109</div></div>
-<div class="ttc" id="aprvs-client_8h_html_a9ced057480a18238abde26c755cc65a4"><div class="ttname"><a href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">vs_snap_prvs_enum_devices</a></div><div class="ttdeci">vs_status_e vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms)</div><div class="ttdoc">Enumerate devices without provision.</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:133</div></div>
+<div class="ttc" id="aprvs-client_8h_html_a9ced057480a18238abde26c755cc65a4"><div class="ttname"><a href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">vs_snap_prvs_enum_devices</a></div><div class="ttdeci">vs_status_e vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms)</div><div class="ttdoc">Enumerate devices, which don't have initialization provision yet.</div></div>
 <div class="ttc" id="astructvs__snap__prvs__dnid__list__t_html"><div class="ttname"><a href="structvs__snap__prvs__dnid__list__t.html">vs_snap_prvs_dnid_list_t</a></div><div class="ttdoc">Devices enumeration.</div><div class="ttdef"><b>Definition:</b> prvs-structs.h:71</div></div>
 <div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:307</div></div>
 <div class="ttc" id="aprvs-client_8h_html_ac47e531e85f60257d157b15a19da8503"><div class="ttname"><a href="prvs-client_8h.html#ac47e531e85f60257d157b15a19da8503">vs_snap_prvs_client</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl)</div><div class="ttdoc">PRVS Client SNAP Service implementation.</div></div>
