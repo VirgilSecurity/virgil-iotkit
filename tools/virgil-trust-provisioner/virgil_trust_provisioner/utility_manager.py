@@ -14,21 +14,17 @@ from virgil_trust_provisioner.core_utils.virgil_time import date_to_timestamp
 from virgil_trust_provisioner.core_utils.helpers import b64_to_bytes, to_b64
 
 from virgil_trust_provisioner.consts.modes import ProgramModes
-from virgil_trust_provisioner.core_utils import DonglesCache, DongleChooser, cloud_key, helpers
+from virgil_trust_provisioner.core_utils import cloud_key, helpers
 from virgil_trust_provisioner.core_utils.card_requests import CardRequestsHandler
-from virgil_trust_provisioner.external_utils.printer_controller import PrinterController
 from virgil_trust_provisioner.generators.trustlist import TrustListGenerator
-from virgil_trust_provisioner.generators.keys.atmel import AtmelKeyGenerator
 from virgil_trust_provisioner.generators.keys.virgil import VirgilKeyGenerator
 from virgil_trust_provisioner.data_types.trustlist_type import Signature, PubKeyStructure
 from virgil_trust_provisioner.storage import FileKeyStorage
 from virgil_trust_provisioner.storage.db_storage import DBStorage
-from virgil_trust_provisioner.storage.keys_tinydb_storage import KeysTinyDBStorage
-from virgil_trust_provisioner.storage.tinydb_storage_extensions import SignedByteStorage, CryptoByteStorage
 from virgil_trust_provisioner.storage.tl_version_tinydb_storage import TLVersionTinyDBStorage
 
 
-class UtilityManager(object):
+class UtilityManager:
 
     def __init__(
             self,
@@ -40,41 +36,21 @@ class UtilityManager(object):
         self.__key_storage_path = os.path.join(self._context.storage_path, "key_storage")
         self.__key_storage_private_keys = os.path.join(self.__key_storage_path, "private")
         self.__key_storage_public_keys = os.path.join(self.__key_storage_path, "pubkeys")
-        self.__atmel = self._context.atmel
-        self.__printer_controller = PrinterController(self.__ui)
         self.__upper_level_keys_count = 2
-        self.__dongles_cache = DonglesCache(self._context.disable_cache)
         self._utility_list = dict()
         self.__check_db_path()
-        self.__logger.info("app started in main mode")
 
         # Main db's plugs
-        self.__upper_level_pub_keys = self.__init_storage(
-            "UpperLevelKeys", storage_class=KeysTinyDBStorage, storage_type=SignedByteStorage, no_upper_level_db=True
-        )
-        self.__trust_list_pub_keys = self.__init_storage(
-            "TrustListPubKeys", storage_class=KeysTinyDBStorage, storage_type=SignedByteStorage
-        )
-        self.__factory_priv_keys = self.__init_storage(
-            "FactoryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
-        self.__trust_list_version_db = self.__init_storage(
-            "TrustListVersions", storage_class=TLVersionTinyDBStorage, storage_type=SignedByteStorage
-        )
+        self.__upper_level_pub_keys = self.__init_storage("UpperLevelKeys")
+        self.__trust_list_pub_keys = self.__init_storage("TrustListPubKeys")
+        self.__factory_priv_keys = self.__init_storage("FactoryPrivateKeys")
+        self.__trust_list_version_db = self.__init_storage("TrustListVersions")
 
-        # private keys db's for DevMode or no-dongles mode
-        self.__firmware_priv_keys = self.__init_storage(
-            "FirmwarePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
-        self.__auth_private_keys = self.__init_storage(
-            "AuthPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
-        self.__recovery_private_keys = self.__init_storage(
-            "RecoveryPrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
-        self.__trust_list_private_keys = self.__init_storage(
-            "TLServicePrivateKeys", storage_class=KeysTinyDBStorage, storage_type=CryptoByteStorage
-        )
+        # private keys db's
+        self.__firmware_priv_keys = self.__init_storage("FirmwarePrivateKeys")
+        self.__auth_private_keys = self.__init_storage("AuthPrivateKeys")
+        self.__recovery_private_keys = self.__init_storage("RecoveryPrivateKeys")
+        self.__trust_list_private_keys = self.__init_storage("TLServicePrivateKeys")
 
         self.__keys_type_to_storage_map = {
             consts.VSKeyTypeS.AUTH:              (self.__auth_private_keys, self.__upper_level_pub_keys),
@@ -84,14 +60,6 @@ class UtilityManager(object):
             consts.VSKeyTypeS.FACTORY:           (self.__factory_priv_keys, self.__trust_list_pub_keys),
             consts.VSKeyTypeS.CLOUD:             (None, self.__trust_list_pub_keys),  # private key is stored on cloud
         }
-        self.__dongle_chooser = DongleChooser(
-            self.__ui,
-            self.__atmel,
-            self.__dongles_cache,
-            self.__upper_level_pub_keys,
-            self.__trust_list_pub_keys,
-            self.__logger
-        )
         self.__logger.info("initialization successful")
 
         # generator plugs
@@ -102,8 +70,6 @@ class UtilityManager(object):
         # chooser
         if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
             self.key_chooser = self.__db_key_chooser
-        else:
-            self.key_chooser = self.__dongle_key_chooser
 
         # card requests handler
         self.__card_requests_handler = CardRequestsHandler(
@@ -147,7 +113,7 @@ class UtilityManager(object):
 
         return start_date, expiration_date
 
-    def __init_storage(self, name, storage_class, storage_type, no_upper_level_db=False):
+    def __init_storage(self, name):
 
         @contextmanager
         def db_init_logs():
@@ -162,27 +128,6 @@ class UtilityManager(object):
                 if name == "TrustListVersions":  # TODO: find better way for storage selection
                     return TLVersionTinyDBStorage(storage_path)
                 return DBStorage(storage_path)
-            upper_level_keys = None if no_upper_level_db else self.__upper_level_pub_keys
-            return storage_class(
-                storage_path,
-                storage_type=storage_type,
-                storage_kwargs={
-                    "atmel": self.__atmel,
-                    "ui": self.__ui,
-                    "upper_level_keys_db": upper_level_keys
-                }
-            )
-
-    def __dongle_key_chooser(self, key_type, stage, is_new_key=False, **kwargs):
-        if is_new_key:
-            dongle_serial = self.__dongle_chooser.choose_atmel_device("empty", **kwargs)
-        else:
-            dongle_serial = self.__dongle_chooser.choose_atmel_device(key_type.value, **kwargs)
-        if not dongle_serial:
-            self.__ui.print_warning("Operation stopped by user")
-            self.__logger.info("Dongle has not been chosen ({})".format(stage))
-            return
-        return AtmelKeyGenerator(key_type, dongle_serial, self._context)
 
     def __db_key_chooser(self, key_type, stage, is_new_key=False, **kwargs):
         if is_new_key:
@@ -260,15 +205,6 @@ class UtilityManager(object):
                 for path in (self.__key_storage_public_keys, self.__key_storage_private_keys):
                     if os.path.exists(path):
                         shutil.rmtree(path)
-                dongle_directory = os.path.join(
-                    os.getenv("HOME"), "DONGLES_{}".format("main")
-                )
-                self.__logger.debug("Use DONGLES directory: {}".format(dongle_directory))
-                if os.path.exists(dongle_directory):
-                    self.__logger.info("dongles emulator folder cleaning")
-                    shutil.rmtree(dongle_directory)
-                    self.__logger.info("dongles emulator folder cleaned")
-                self.__dongles_cache.drop()
                 self.__ui.print_message("Data cleaned")
                 self.__logger.info("key storage cleaned")
             else:
@@ -478,8 +414,6 @@ class UtilityManager(object):
             sign_by_recovery_key: bool,
             add_signature_limit: bool,
             start_date_required: bool,
-            print_to_paper: bool,
-            stored_on_dongle: bool,
             extra_card_content: Union[dict, None],
             allowed_count: Optional[int] = None,
             meta_data: Optional[str] = ""
@@ -564,7 +498,7 @@ class UtilityManager(object):
             card_content.update(extra_card_content)
         self.__card_requests_handler.create_and_register_card(key, key_info=card_content)
 
-        # Save to db / dongle
+        # Save to db
         # - prepare key info to be saved
         key_info = {
             "type": key_type.value,
@@ -588,14 +522,6 @@ class UtilityManager(object):
         if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
             private_keys_db.save(key.key_id, key_info, suppress_db_warning=False)
 
-        if stored_on_dongle and self._context.program_mode in (ProgramModes.ATMEL_DONGLES, ProgramModes.ATMEL_DONGLES_EMULATOR):
-            self.__dongle_unplug_and_mark(key.device_serial, key_type)
-
-        # Print to paper
-        if print_to_paper:
-            if self._context.printer_enable:
-                self.__printer_controller.send_to_printer(key_info)
-
         # Finish
         self.__ui.print_message("Generation finished")
         self.__logger.info("{key_name} Key id: [{id}] comment: [{comment}] generation completed".format(
@@ -611,8 +537,6 @@ class UtilityManager(object):
             sign_by_recovery_key=True,
             add_signature_limit=False,
             start_date_required=False,
-            print_to_paper=True,
-            stored_on_dongle=True,
             extra_card_content=None
         )
 
@@ -623,8 +547,6 @@ class UtilityManager(object):
             sign_by_recovery_key=True,
             add_signature_limit=False,
             start_date_required=False,
-            print_to_paper=True,
-            stored_on_dongle=True,
             extra_card_content=None
         )
 
@@ -635,8 +557,6 @@ class UtilityManager(object):
             sign_by_recovery_key=True,
             add_signature_limit=False,
             start_date_required=False,
-            print_to_paper=True,
-            stored_on_dongle=True,
             extra_card_content=None
         )
 
@@ -648,8 +568,6 @@ class UtilityManager(object):
             sign_by_recovery_key=False,
             add_signature_limit=True,
             start_date_required=True,
-            print_to_paper=False,
-            stored_on_dongle=True,
             extra_card_content=extra_card_content
         )
 
@@ -660,8 +578,6 @@ class UtilityManager(object):
             sign_by_recovery_key=False,
             add_signature_limit=False,
             start_date_required=False,
-            print_to_paper=True,
-            stored_on_dongle=True,
             extra_card_content=None,
             allowed_count=2
         )
@@ -754,9 +670,6 @@ class UtilityManager(object):
                 if key in self.__auth_private_keys.get_keys():
                     self.__auth_private_keys.delete_key(key)
 
-        # clean cache
-        self.__dongles_cache.drop()
-
         if key_type == consts.VSKeyTypeS.RECOVERY:
             for key_number in range(1, int(self.__upper_level_keys_count) + 1):
                 self.__ui.print_message("\nGenerate Recovery Key {}:".format(key_number))
@@ -802,50 +715,6 @@ class UtilityManager(object):
         all_keys = self.__upper_level_pub_keys.get_all_data(suppress_db_warning=suppress_db_warning).values()
         recovery_pub_keys = list(filter(lambda x: x["type"] == consts.VSKeyTypeS.RECOVERY, all_keys))
         return recovery_pub_keys
-
-    def __dongle_unplug_and_mark(self, device_serial, key_type: consts.VSKeyTypeS):
-
-        if self._context.program_mode == ProgramModes.VIRGIL_CRYPTO_ONLY:
-            return
-
-        def dongle_unplugged(dongle_serial):
-            user_choice_unplugged = self.__ui.get_user_input(
-                "Device unplugged? [y/n]: ",
-                input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
-                input_checker_msg="Allowed answers [y/n]. Please try again: ",
-                empty_allow=False
-            ).upper()
-            if user_choice_unplugged == "Y":
-                ops_status = self.__atmel.list_devices()
-                if not ops_status[0]:
-                    self.__logger.error("operation failed: {}".format(ops_status[1]))
-                    sys.exit(ops_status[1])
-                device_list = self.__dongle_chooser.list_devices_info_db(ops_status[1])
-                del ops_status
-
-                if any(filter(lambda x: True if x["device_serial"] == dongle_serial else False, device_list)):
-                    self.__ui.print_warning("Device was not unplugged! Please unplug and label it!")
-                    dongle_unplugged(dongle_serial)
-                return
-            else:
-                self.__ui.print_warning("You must unplug and label the dongle!!!")
-                dongle_unplugged(dongle_serial)
-
-        self.__ui.print_message(
-            "Please unplug the dongle with [{key_type}] Key and label it"
-            "After the dongle was labeled, you may continue".format(key_type=key_type.value)
-        )
-        dongle_unplugged(device_serial)
-        user_choice_continue = self.__ui.get_user_input(
-            "Continue? [y/n]: ",
-            input_checker_callback=self.__ui.InputCheckers.yes_no_checker,
-            input_checker_msg="Allowed answers [y/n]. Please try again: ",
-            empty_allow=False
-        ).upper()
-        if user_choice_continue == "Y":
-            return
-        else:
-            self.run_utility()
 
     @property
     def __utility_list(self):
