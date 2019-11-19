@@ -149,7 +149,7 @@ func (b *Builder) GetDeviceInfo() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal DeviceInfoJson: %v", err)
 	}
-	fmt.Println("GetDeviceInfo = ", string(marshaled))
+
 	return marshaled, nil
 }
 
