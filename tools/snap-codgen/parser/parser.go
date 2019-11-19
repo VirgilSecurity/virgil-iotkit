@@ -78,12 +78,12 @@ func GetStructrures(InputFiles []string, SkipMarker string) (AllStructs map[stri
 
 					FieldsStructLine := strings.SplitN(strings.TrimLeft(strings.TrimRight(BodyReader.Text(), ";"), " "), " ", 3)
 					if len(FieldsStructLine) > 1 {
-					    FieldsStructLine[1] = strings.TrimRight(FieldsStructLine[1], ";")
+						FieldsStructLine[1] = strings.TrimRight(FieldsStructLine[1], ";")
 						fmt.Printf("###===------TYPE: [%s] NAME:[%s]\n", FieldsStructLine[0], FieldsStructLine[1])
 						if len(FieldsStructLine) > 2 && strings.Contains(FieldsStructLine[2], SkipMarker) {
-						    fmt.Printf("^^^ SKIP\n")
-                            continue
-                        }
+							fmt.Printf("^^^ SKIP\n")
+							continue
+						}
 						StructData[FieldsStructLine[1]] = FieldsStructLine[0]
 					}
 				}

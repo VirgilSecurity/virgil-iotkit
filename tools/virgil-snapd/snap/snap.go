@@ -74,159 +74,159 @@ static int _register_info_client(void) {
 import "C"
 
 import (
-    "fmt"
-    "time"
-    "unsafe"
+	"fmt"
+	"time"
+	"unsafe"
 
-    "../devices"
-    "../utils"
+	"../devices"
+	"../utils"
 )
 
 const (
-    DEFAULT_TIMEOUT_MS = 7000
+	DEFAULT_TIMEOUT_MS = 7000
 )
 
 var (
-    generalInfoCb func(generalInfo devices.DeviceInfo) error
-    statisticsCb func(statistics devices.DeviceInfo) error
+	generalInfoCb func(generalInfo devices.DeviceInfo) error
+	statisticsCb  func(statistics devices.DeviceInfo) error
 )
 
 func ConnectToDeviceNetwork() error {
-    // Prepare C logger
-    C.vs_logger_init(C.VS_LOGLEV_DEBUG)
+	// Prepare C logger
+	C.vs_logger_init(C.VS_LOGLEV_DEBUG)
 
-    // Use UDP Broadcast as transport
-    if 0 != C.go_snap_init() {
-        return fmt.Errorf("can't start SNAP communication")
-    }
+	// Use UDP Broadcast as transport
+	if 0 != C.go_snap_init() {
+		return fmt.Errorf("can't start SNAP communication")
+	}
 
-    if 0 != C._register_info_client() {
-        return fmt.Errorf("can't register SNAP:INFO client service")
-    }
+	if 0 != C._register_info_client() {
+		return fmt.Errorf("can't register SNAP:INFO client service")
+	}
 
-    return nil
+	return nil
 }
 
 func DisconnectDeviceNetwork() {
-    utils.Log.Println("DisconnectDeviceNetwork")
-    C.vs_snap_deinit()
+	utils.Log.Println("DisconnectDeviceNetwork")
+	C.vs_snap_deinit()
 }
 
 func carray2string(array *C.uint8_t, sz C.int) string {
-        b := C.GoBytes(unsafe.Pointer(array), sz)
-        var i int
-        for i = 0; i < len(b); i++ {
-            if b[i] == 0 {
-                break
-            }
-        }
+	b := C.GoBytes(unsafe.Pointer(array), sz)
+	var i int
+	for i = 0; i < len(b); i++ {
+		if b[i] == 0 {
+			break
+		}
+	}
 
-        return string(b[:i])
+	return string(b[:i])
 }
 
 func mac2string(mac *C.uint8_t) string {
-        b := C.GoBytes(unsafe.Pointer(mac), 6)
-        return fmt.Sprintf("%02x:%02x:%02x:%02x:%02x:%02x", b[0], b[1], b[2], b[3], b[4], b[5])
+	b := C.GoBytes(unsafe.Pointer(mac), 6)
+	return fmt.Sprintf("%02x:%02x:%02x:%02x:%02x:%02x", b[0], b[1], b[2], b[3], b[4], b[5])
 }
 
 func fileVer2string(major C.uint8_t, minor C.uint8_t,
-                    patch C.uint8_t, build C.uint32_t,
-                    timestamp C.uint32_t) string {
-        // Create time string
-        unixTime := int64(timestamp)
-        unixTime += 1420070400
-        tm := time.Unix(unixTime, 0)
+	patch C.uint8_t, build C.uint32_t,
+	timestamp C.uint32_t) string {
+	// Create time string
+	unixTime := int64(timestamp)
+	unixTime += 1420070400
+	tm := time.Unix(unixTime, 0)
 
-        return fmt.Sprintf("ver %d.%d.%d.%d, %s", major, minor, patch, build, tm.String())
+	return fmt.Sprintf("ver %d.%d.%d.%d, %s", major, minor, patch, build, tm.String())
 }
 
 func roles2strings(roles C.uint32_t) []string {
-        res := []string{}
+	res := []string{}
 
-        if (roles & C.VS_SNAP_DEV_GATEWAY) == C.VS_SNAP_DEV_GATEWAY {
-            res = append(res, "GATEWAY")
-        }
+	if (roles & C.VS_SNAP_DEV_GATEWAY) == C.VS_SNAP_DEV_GATEWAY {
+		res = append(res, "GATEWAY")
+	}
 
-        if (roles & C.VS_SNAP_DEV_THING) == C.VS_SNAP_DEV_THING {
-            res = append(res, "THING")
-        }
+	if (roles & C.VS_SNAP_DEV_THING) == C.VS_SNAP_DEV_THING {
+		res = append(res, "THING")
+	}
 
-        if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
-            res = append(res, "CONTROL")
-        }
+	if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
+		res = append(res, "CONTROL")
+	}
 
-        if (roles & C.VS_SNAP_DEV_LOGGER) == C.VS_SNAP_DEV_LOGGER {
-            res = append(res, "LOGGER")
-        }
+	if (roles & C.VS_SNAP_DEV_LOGGER) == C.VS_SNAP_DEV_LOGGER {
+		res = append(res, "LOGGER")
+	}
 
-        if (roles & C.VS_SNAP_DEV_SNIFFER) == C.VS_SNAP_DEV_SNIFFER {
-            res = append(res, "SNIFFER")
-        }
+	if (roles & C.VS_SNAP_DEV_SNIFFER) == C.VS_SNAP_DEV_SNIFFER {
+		res = append(res, "SNIFFER")
+	}
 
-        if (roles & C.VS_SNAP_DEV_DEBUGGER) == C.VS_SNAP_DEV_DEBUGGER {
-            res = append(res, "DEBUGGER")
-        }
+	if (roles & C.VS_SNAP_DEV_DEBUGGER) == C.VS_SNAP_DEV_DEBUGGER {
+		res = append(res, "DEBUGGER")
+	}
 
-        return res
+	return res
 }
 
 //export goDeviceStartNotifCb
 func goDeviceStartNotifCb(device *C.vs_snap_info_device_t) C.int {
-     if 0 != C._set_polling() {
-        utils.Log.Println("can't set devices polling. SNAP:INFO:POLL error")
-        return -1
-     }
+	if 0 != C._set_polling() {
+		utils.Log.Println("can't set devices polling. SNAP:INFO:POLL error")
+		return -1
+	}
 
-     return C.VS_CODE_OK
+	return C.VS_CODE_OK
 }
 
 //export goGeneralInfoCb
 func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
-    if nil != generalInfoCb {
-        var goInfo devices.DeviceInfo
-        goInfo.ID = ""
-        goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.VS_DEVICE_MANUFACTURE_ID_SIZE)
-        goInfo.DeviceType = carray2string(&general_info.device_type[0], C.VS_DEVICE_TYPE_SIZE)
-        goInfo.FWVersion = fileVer2string(general_info.fw_ver.major,
-                                        general_info.fw_ver.minor,
-                                        general_info.fw_ver.patch,
-                                        general_info.fw_ver.build,
-                                        general_info.fw_ver.timestamp)
-        goInfo.TLVersion = fileVer2string(general_info.tl_ver.major,
-                                          general_info.tl_ver.minor,
-                                          general_info.tl_ver.patch,
-                                          general_info.tl_ver.build,
-                                          general_info.tl_ver.timestamp)
-        goInfo.MAC = mac2string(&general_info.default_netif_mac[0])
-        goInfo.Roles = roles2strings(general_info.device_roles);
+	if nil != generalInfoCb {
+		var goInfo devices.DeviceInfo
+		goInfo.ID = ""
+		goInfo.ManufactureID = carray2string(&general_info.manufacture_id[0], C.VS_DEVICE_MANUFACTURE_ID_SIZE)
+		goInfo.DeviceType = carray2string(&general_info.device_type[0], C.VS_DEVICE_TYPE_SIZE)
+		goInfo.FWVersion = fileVer2string(general_info.fw_ver.major,
+			general_info.fw_ver.minor,
+			general_info.fw_ver.patch,
+			general_info.fw_ver.build,
+			general_info.fw_ver.timestamp)
+		goInfo.TLVersion = fileVer2string(general_info.tl_ver.major,
+			general_info.tl_ver.minor,
+			general_info.tl_ver.patch,
+			general_info.tl_ver.build,
+			general_info.tl_ver.timestamp)
+		goInfo.MAC = mac2string(&general_info.default_netif_mac[0])
+		goInfo.Roles = roles2strings(general_info.device_roles)
 
-        generalInfoCb(goInfo)
-    }
-    return 0;
+		generalInfoCb(goInfo)
+	}
+	return 0
 }
 
 //export goDeviceStatCb
 func goDeviceStatCb(stat *C.vs_info_statistics_t) C.int {
-    if nil != statisticsCb {
-        var goStat devices.DeviceInfo
-        goStat.MAC = mac2string(&stat.default_netif_mac[0])
-        goStat.Sent = uint32(stat.sent)
-        goStat.Received = uint32(stat.received)
-        statisticsCb(goStat)
-    }
+	if nil != statisticsCb {
+		var goStat devices.DeviceInfo
+		goStat.MAC = mac2string(&stat.default_netif_mac[0])
+		goStat.Sent = uint32(stat.sent)
+		goStat.Received = uint32(stat.received)
+		statisticsCb(goStat)
+	}
 
-    return C.VS_CODE_OK
+	return C.VS_CODE_OK
 }
 
 func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
-                  _statisticsCb func(statistics devices.DeviceInfo) error) error {
+	_statisticsCb func(statistics devices.DeviceInfo) error) error {
 
-    if 0 != C._set_polling() {
-        return fmt.Errorf("can't set devices polling. SNAP:INFO:POLL error")
-    }
+	if 0 != C._set_polling() {
+		return fmt.Errorf("can't set devices polling. SNAP:INFO:POLL error")
+	}
 
-    generalInfoCb = _generalInfoCb
-    statisticsCb = _statisticsCb
+	generalInfoCb = _generalInfoCb
+	statisticsCb = _statisticsCb
 
-    return nil
+	return nil
 }

@@ -32,7 +32,6 @@
 //
 //   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 package utils
 
 import (
@@ -45,5 +44,5 @@ var (
 )
 
 func NewLog() {
-	Log = log.New(os.Stdout, "", log.LstdFlags | log.Lshortfile)
+	Log = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 }

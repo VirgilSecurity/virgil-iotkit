@@ -51,25 +51,25 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
-const registrationEP  = "/things/card/iot"
+const registrationEP = "/things/card/iot"
 
 type cardsRegistrar struct {
-	dataFile             string             // file with card requests
-	cardService          *cardsServiceInfo
-	failedRequestsFile   string
+	dataFile           string // file with card requests
+	cardService        *cardsServiceInfo
+	failedRequestsFile string
 
-	httpClient           *http.Client
+	httpClient *http.Client
 
-	processingErrors     []string
-	failedRequests       []string
+	processingErrors []string
+	failedRequests   []string
 }
 
 type cardsServiceInfo struct {
-	ApiUrl               string
-	AppToken             string  // application token used for authorization on service
+	ApiUrl   string
+	AppToken string // application token used for authorization on service
 }
 
-func NewRegistrar(context *cli.Context) (*cardsRegistrar, error){
+func NewRegistrar(context *cli.Context) (*cardsRegistrar, error) {
 	var param string
 
 	registrar := new(cardsRegistrar)
@@ -181,7 +181,7 @@ func (r *cardsRegistrar) registerCard(requestB64 string) error {
 
 	// Prepare request
 	sendBytes := bytes.NewBuffer(cardRequest)
-	req, err := http.NewRequest("POST", r.cardService.ApiUrl + registrationEP, sendBytes)
+	req, err := http.NewRequest("POST", r.cardService.ApiUrl+registrationEP, sendBytes)
 	req.Header.Set("AppToken", r.cardService.AppToken)
 
 	// Send
@@ -196,7 +196,7 @@ func (r *cardsRegistrar) registerCard(requestB64 string) error {
 	}
 
 	// Verify response
-    if resp.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return fmt.Errorf("publish card error, status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 

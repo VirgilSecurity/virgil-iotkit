@@ -35,10 +35,10 @@
 package signers
 
 import (
-    "../firmware"
+	"../firmware"
 )
 
 type SignerInterface interface {
-    Sign(data []byte) ([]firmware.Signature, error)
-    SignerKeyEcTypes()[]uint8
+	Sign(data []byte) ([]firmware.Signature, error)
+	SignerKeyEcTypes() []uint8
 }

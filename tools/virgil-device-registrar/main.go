@@ -45,9 +45,7 @@ import (
 
 var version = "0.1.0"
 
-
-
-func main()  {
+func main() {
 	flags := []cli.Flag{
 		&cli.StringFlag{
 			Name:    "data",
@@ -71,7 +69,7 @@ func main()  {
 		Usage:   "Virgil Security utility for registration of Cards at Virgil IoT Cloud.",
 		Version: version,
 		Flags:   flags,
-		Action:  func(context *cli.Context) error {
+		Action: func(context *cli.Context) error {
 			r, err := registrar.NewRegistrar(context)
 			if err != nil {
 				return err

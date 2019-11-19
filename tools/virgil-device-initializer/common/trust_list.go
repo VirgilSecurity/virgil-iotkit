@@ -41,32 +41,32 @@ import (
 )
 
 type Go_file_version_t struct {
-    Major           uint8
-    Minor           uint8
-    Patch           uint8
-    Build           uint32
-    Timestamp       uint32
+	Major     uint8
+	Minor     uint8
+	Patch     uint8
+	Build     uint32
+	Timestamp uint32
 }
 
 type Go_trust_list_header_t struct {
-	WholeTLSize         uint32
-	Version				Go_file_version_t
-	PubKeysCount        uint16
-	SignaturesCount     uint8
+	WholeTLSize     uint32
+	Version         Go_file_version_t
+	PubKeysCount    uint16
+	SignaturesCount uint8
 }
 
 type Go_trust_list_footer_t struct {
-	TLType        uint8
-	Signatures    []*Go_vs_sign_t
+	TLType     uint8
+	Signatures []*Go_vs_sign_t
 }
 
 type trustList struct {
-	Header        Go_trust_list_header_t
-	TlChunks      []*Go_vs_pubkey_dated_t
-	Footer        Go_trust_list_footer_t
+	Header   Go_trust_list_header_t
+	TlChunks []*Go_vs_pubkey_dated_t
+	Footer   Go_trust_list_footer_t
 }
 
-func NewTrustList(tlData []byte) (*trustList, error){
+func NewTrustList(tlData []byte) (*trustList, error) {
 	var err error
 	var processedDataOffset int
 

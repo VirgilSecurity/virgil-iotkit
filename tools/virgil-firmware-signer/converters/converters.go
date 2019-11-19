@@ -40,54 +40,54 @@ package converters
 */
 import "C"
 import (
-    "fmt"
-    "unsafe"
+	"fmt"
+	"unsafe"
 )
 
 // Convert Virgil signature to raw format
 func VirgilSignToRaw(virgilSign []byte, ecType uint8) ([]byte, error) {
-    const signatureBufSize = 512
-    var rawSignBuf [signatureBufSize]uint8
+	const signatureBufSize = 512
+	var rawSignBuf [signatureBufSize]uint8
 
-    virgilSignPointer := (*C.uchar)(unsafe.Pointer(&virgilSign[0]))
-    rawSignSize := C.uint16_t(0)
-    rawSignPointer := (*C.uchar)(unsafe.Pointer(&rawSignBuf[0]))
-    keyType := C.vs_secmodule_keypair_type_e(ecType)
-    signSize := C.uint16_t(len(virgilSign))
-    bufSize := C.uint16_t(signatureBufSize)
+	virgilSignPointer := (*C.uchar)(unsafe.Pointer(&virgilSign[0]))
+	rawSignSize := C.uint16_t(0)
+	rawSignPointer := (*C.uchar)(unsafe.Pointer(&rawSignBuf[0]))
+	keyType := C.vs_secmodule_keypair_type_e(ecType)
+	signSize := C.uint16_t(len(virgilSign))
+	bufSize := C.uint16_t(signatureBufSize)
 
-    convertRes := C.vs_converters_virgil_sign_to_raw(keyType,
-                                                     virgilSignPointer,
-                                                     signSize,
-                                                     rawSignPointer,
-                                                     bufSize,
-                                                     &rawSignSize)
-    if !convertRes {
-        return nil, fmt.Errorf("failed to convert virgil signature to raw format")
-    }
-    return rawSignBuf[:rawSignSize], nil
+	convertRes := C.vs_converters_virgil_sign_to_raw(keyType,
+		virgilSignPointer,
+		signSize,
+		rawSignPointer,
+		bufSize,
+		&rawSignSize)
+	if !convertRes {
+		return nil, fmt.Errorf("failed to convert virgil signature to raw format")
+	}
+	return rawSignBuf[:rawSignSize], nil
 }
 
 // Convert Virgil pub key to Raw format
 func VirgilPubKeyToRaw(virgilPubKey []byte, ecType uint8) ([]byte, error) {
-    const pubKeyBufSize = 512
-    var pubKeyBuf [pubKeyBufSize]uint8
+	const pubKeyBufSize = 512
+	var pubKeyBuf [pubKeyBufSize]uint8
 
-    keyType := C.vs_secmodule_keypair_type_e(ecType)
-    virgilPubKeyPtr := (*C.uchar)(unsafe.Pointer(&virgilPubKey[0]))
-    virgilPubKeySize := C.uint16_t(len(virgilPubKey))
-    rawPubKeyPointer := (*C.uchar)(unsafe.Pointer(&pubKeyBuf[0]))
-    rawKeySize := C.uint16_t(0)
-    bufSize := C.uint16_t(pubKeyBufSize)
+	keyType := C.vs_secmodule_keypair_type_e(ecType)
+	virgilPubKeyPtr := (*C.uchar)(unsafe.Pointer(&virgilPubKey[0]))
+	virgilPubKeySize := C.uint16_t(len(virgilPubKey))
+	rawPubKeyPointer := (*C.uchar)(unsafe.Pointer(&pubKeyBuf[0]))
+	rawKeySize := C.uint16_t(0)
+	bufSize := C.uint16_t(pubKeyBufSize)
 
-    convertRes := C.vs_converters_pubkey_to_raw(keyType,
-                                                virgilPubKeyPtr,
-                                                virgilPubKeySize,
-                                                rawPubKeyPointer,
-                                                bufSize,
-                                                &rawKeySize)
-    if !convertRes {
-        return nil, fmt.Errorf("failed to convert public key in Virgil format to raw")
-    }
-    return pubKeyBuf[:rawKeySize], nil
+	convertRes := C.vs_converters_pubkey_to_raw(keyType,
+		virgilPubKeyPtr,
+		virgilPubKeySize,
+		rawPubKeyPointer,
+		bufSize,
+		&rawKeySize)
+	if !convertRes {
+		return nil, fmt.Errorf("failed to convert public key in Virgil format to raw")
+	}
+	return pubKeyBuf[:rawKeySize], nil
 }

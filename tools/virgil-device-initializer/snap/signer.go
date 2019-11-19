@@ -35,40 +35,40 @@
 package snap
 
 import (
-    "fmt"
+	"fmt"
 
-    "../converters"
+	"../converters"
 
-    "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
+	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 )
 
 type Signer struct {
-    Processor *DeviceProcessor
+	Processor *DeviceProcessor
 }
 
 func (s *Signer) Sign(data []byte) ([]byte, error) {
-    rawSignature, err := s.Processor.SignDataInDevice(data)
-    if err != nil {
-        return nil, err
-    }
+	rawSignature, err := s.Processor.SignDataInDevice(data)
+	if err != nil {
+		return nil, err
+	}
 
-    // Convert signature to Virgil format
-    var virgilSignature []byte
-    virgilSignature, err = converters.RawSignToVirgil(rawSignature, s.Processor.DevicePublicKey.ECType, DEVICE_HASH_ALGO)
-    if err != nil {
-        return nil, err
-    }
+	// Convert signature to Virgil format
+	var virgilSignature []byte
+	virgilSignature, err = converters.RawSignToVirgil(rawSignature, s.Processor.DevicePublicKey.ECType, DEVICE_HASH_ALGO)
+	if err != nil {
+		return nil, err
+	}
 
-    return virgilSignature, nil
+	return virgilSignature, nil
 }
 
 func (s *Signer) Verify(data []byte,
-                        signature []byte,
-                        pubKeyBytes []byte,
-                        hash virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) error {
-    return fmt.Errorf("not implemented for snap signer")
+	signature []byte,
+	pubKeyBytes []byte,
+	hash virgil_crypto_go.VirgilCryptoFoundationVirgilHashAlgorithm) error {
+	return fmt.Errorf("not implemented for snap signer")
 }
 
 func (s *Signer) PublicKeyFull() ([]byte, error) {
-    return nil, fmt.Errorf("not implemented for snap signer")
+	return nil, fmt.Errorf("not implemented for snap signer")
 }

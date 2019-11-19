@@ -35,22 +35,21 @@
 package devices
 
 import (
-    "sync"
-    "time"
+	"sync"
+	"time"
 )
 
 type DeviceInfo struct {
-	ID            string `json:"id"`
-	ManufactureID string `json:"manufacture_id"`
-	DeviceType    string `json:"device_type"`
-	Roles       []string `json:"roles"`
-	FWVersion     string `json:"fw_version"`
-	TLVersion     string `json:"tl_version"`
-	MAC           string `json:"mac"`
-	Sent          uint32 `json:"sent"`
-	Received      uint32 `json:"received"`
+	ID            string   `json:"id"`
+	ManufactureID string   `json:"manufacture_id"`
+	DeviceType    string   `json:"device_type"`
+	Roles         []string `json:"roles"`
+	FWVersion     string   `json:"fw_version"`
+	TLVersion     string   `json:"tl_version"`
+	MAC           string   `json:"mac"`
+	Sent          uint32   `json:"sent"`
+	Received      uint32   `json:"received"`
 	lastTime      int32
-
 }
 
 type ConcurrentDevices struct {
@@ -59,73 +58,73 @@ type ConcurrentDevices struct {
 }
 
 func (d *ConcurrentDevices) UpdateDeviceGeneralInfo(info DeviceInfo) error {
-    d.Lock()
-    defer d.Unlock()
+	d.Lock()
+	defer d.Unlock()
 
-    cd := d.items[info.MAC]
-    cd.ManufactureID = info.ManufactureID
-    cd.DeviceType = info.DeviceType
-    cd.FWVersion = info.FWVersion
-    cd.TLVersion = info.TLVersion
-    cd.MAC = info.MAC
-    cd.Roles = info.Roles
-    cd.lastTime = int32(time.Now().Unix())
-    d.items[info.MAC] = cd
-    return nil
+	cd := d.items[info.MAC]
+	cd.ManufactureID = info.ManufactureID
+	cd.DeviceType = info.DeviceType
+	cd.FWVersion = info.FWVersion
+	cd.TLVersion = info.TLVersion
+	cd.MAC = info.MAC
+	cd.Roles = info.Roles
+	cd.lastTime = int32(time.Now().Unix())
+	d.items[info.MAC] = cd
+	return nil
 }
 
 func (d *ConcurrentDevices) UpdateDeviceStatistics(info DeviceInfo) error {
-    d.Lock()
-    defer d.Unlock()
+	d.Lock()
+	defer d.Unlock()
 
-    info.lastTime = int32(time.Now().Unix())
-    cd := d.items[info.MAC]
-    cd.MAC = info.MAC
-    cd.Sent = info.Sent
-    cd.Received = info.Received
-    cd.lastTime = int32(time.Now().Unix())
-    d.items[info.MAC] = cd
-    return nil
+	info.lastTime = int32(time.Now().Unix())
+	cd := d.items[info.MAC]
+	cd.MAC = info.MAC
+	cd.Sent = info.Sent
+	cd.Received = info.Received
+	cd.lastTime = int32(time.Now().Unix())
+	d.items[info.MAC] = cd
+	return nil
 }
 
 func (d *ConcurrentDevices) CleanList(cleanTimeout int32) error {
-    d.Lock()
-    defer d.Unlock()
+	d.Lock()
+	defer d.Unlock()
 
-    utime := int32(time.Now().Unix())
+	utime := int32(time.Now().Unix())
 
-    // Collect keys to delete
-    keyToDelete := []string{};
-    for _, d := range d.items {
-        if utime - d.lastTime > cleanTimeout {
-            keyToDelete = append(keyToDelete, d.MAC)
-        }
-    }
+	// Collect keys to delete
+	keyToDelete := []string{}
+	for _, d := range d.items {
+		if utime-d.lastTime > cleanTimeout {
+			keyToDelete = append(keyToDelete, d.MAC)
+		}
+	}
 
-    // Remove old devices from map
-    for _, k := range keyToDelete {
-        delete(d.items, k)
-    }
+	// Remove old devices from map
+	for _, k := range keyToDelete {
+		delete(d.items, k)
+	}
 
-    return nil
+	return nil
 }
 
 func (d *ConcurrentDevices) GetItems() map[string]DeviceInfo {
-    d.RLock()
-    defer d.RUnlock()
+	d.RLock()
+	defer d.RUnlock()
 
-    // Copy map
-    copy := make(map[string]DeviceInfo)
+	// Copy map
+	copy := make(map[string]DeviceInfo)
 
-    for key, value := range d.items {
-      copy[key] = value
-    }
+	for key, value := range d.items {
+		copy[key] = value
+	}
 
-    return copy
+	return copy
 }
 
 func NewDevices() *ConcurrentDevices {
-    var d ConcurrentDevices
-    d.items = make(map[string]DeviceInfo)
-    return &d
+	var d ConcurrentDevices
+	d.items = make(map[string]DeviceInfo)
+	return &d
 }

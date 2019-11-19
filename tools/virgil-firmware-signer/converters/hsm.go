@@ -32,84 +32,83 @@
 //
 //   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 package converters
 
 import (
-    "log"
+	"log"
 )
 
 // vs_secmodule_hash_type_e
 const (
-    VS_HASH_SHA_256 = iota
-    VS_HASH_SHA_384
-    VS_HASH_SHA_512
+	VS_HASH_SHA_256 = iota
+	VS_HASH_SHA_384
+	VS_HASH_SHA_512
 )
 
 // vs_secmodule_keypair_type_e
 const (
-    VS_KEYPAIR_EC_SECP192R1 = iota + 1
-    VS_KEYPAIR_EC_SECP224R1
-    VS_KEYPAIR_EC_SECP256R1
-    VS_KEYPAIR_EC_SECP384R1
-    VS_KEYPAIR_EC_SECP521R1
-    VS_KEYPAIR_EC_SECP192K1
-    VS_KEYPAIR_EC_SECP224K1
-    VS_KEYPAIR_EC_SECP256K1
-    VS_KEYPAIR_EC_CURVE25519
-    VS_KEYPAIR_EC_ED25519
-    VS_KEYPAIR_RSA_2048
+	VS_KEYPAIR_EC_SECP192R1 = iota + 1
+	VS_KEYPAIR_EC_SECP224R1
+	VS_KEYPAIR_EC_SECP256R1
+	VS_KEYPAIR_EC_SECP384R1
+	VS_KEYPAIR_EC_SECP521R1
+	VS_KEYPAIR_EC_SECP192K1
+	VS_KEYPAIR_EC_SECP224K1
+	VS_KEYPAIR_EC_SECP256K1
+	VS_KEYPAIR_EC_CURVE25519
+	VS_KEYPAIR_EC_ED25519
+	VS_KEYPAIR_RSA_2048
 )
 
 func GetPublicKeySizeByECType(ECType uint8) int {
-    size := 0
+	size := 0
 
-    switch ECType {
-    case VS_KEYPAIR_EC_SECP192R1:
-    case VS_KEYPAIR_EC_SECP192K1:
-        size = 49
-    case VS_KEYPAIR_EC_SECP224R1:
-    case VS_KEYPAIR_EC_SECP224K1:
-        size = 57
-    case VS_KEYPAIR_EC_SECP256K1:
-    case VS_KEYPAIR_EC_SECP256R1:
-        size = 65
-    case VS_KEYPAIR_EC_SECP384R1:
-        size = 97
-    case VS_KEYPAIR_EC_SECP521R1:
-        size = 133
-    case VS_KEYPAIR_EC_CURVE25519:
-    case VS_KEYPAIR_EC_ED25519:
-        size = 32
-    default:
-        log.Fatalf("GetPublicKeySizeByECType: Unknown ECType: %d", ECType)
-    }
-    return size
+	switch ECType {
+	case VS_KEYPAIR_EC_SECP192R1:
+	case VS_KEYPAIR_EC_SECP192K1:
+		size = 49
+	case VS_KEYPAIR_EC_SECP224R1:
+	case VS_KEYPAIR_EC_SECP224K1:
+		size = 57
+	case VS_KEYPAIR_EC_SECP256K1:
+	case VS_KEYPAIR_EC_SECP256R1:
+		size = 65
+	case VS_KEYPAIR_EC_SECP384R1:
+		size = 97
+	case VS_KEYPAIR_EC_SECP521R1:
+		size = 133
+	case VS_KEYPAIR_EC_CURVE25519:
+	case VS_KEYPAIR_EC_ED25519:
+		size = 32
+	default:
+		log.Fatalf("GetPublicKeySizeByECType: Unknown ECType: %d", ECType)
+	}
+	return size
 }
 
 func GetSignatureSizeByECType(ECType uint8) int {
-    size := 0
+	size := 0
 
-    switch ECType {
-    case VS_KEYPAIR_RSA_2048:
-        size = 256
-    case VS_KEYPAIR_EC_SECP192R1:
-    case VS_KEYPAIR_EC_SECP192K1:
-        size = 48
-    case VS_KEYPAIR_EC_SECP224R1:
-    case VS_KEYPAIR_EC_SECP224K1:
-        size = 56
-    case VS_KEYPAIR_EC_SECP256K1:
-    case VS_KEYPAIR_EC_SECP256R1:
-        size = 64
-    case VS_KEYPAIR_EC_SECP384R1:
-        size = 96
-    case VS_KEYPAIR_EC_SECP521R1:
-        size = 132
-    case VS_KEYPAIR_EC_ED25519:
-        size = 64
-    default:
-        log.Fatalf("GetSignatureSizeByECType: Unknown ECType: %d", ECType)
-    }
-    return size
+	switch ECType {
+	case VS_KEYPAIR_RSA_2048:
+		size = 256
+	case VS_KEYPAIR_EC_SECP192R1:
+	case VS_KEYPAIR_EC_SECP192K1:
+		size = 48
+	case VS_KEYPAIR_EC_SECP224R1:
+	case VS_KEYPAIR_EC_SECP224K1:
+		size = 56
+	case VS_KEYPAIR_EC_SECP256K1:
+	case VS_KEYPAIR_EC_SECP256R1:
+		size = 64
+	case VS_KEYPAIR_EC_SECP384R1:
+		size = 96
+	case VS_KEYPAIR_EC_SECP521R1:
+		size = 132
+	case VS_KEYPAIR_EC_ED25519:
+		size = 64
+	default:
+		log.Fatalf("GetSignatureSizeByECType: Unknown ECType: %d", ECType)
+	}
+	return size
 }

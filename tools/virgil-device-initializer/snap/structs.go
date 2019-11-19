@@ -35,78 +35,78 @@
 package snap
 
 import (
-    "bytes"
-    "encoding/binary"
-    "fmt"
+	"bytes"
+	"encoding/binary"
+	"fmt"
 
-    "../common"
+	"../common"
 )
 
 type Go_vs_snap_prvs_devi_t struct {
-    Manufacturer [16]uint8
-    Model        [4]uint8
-    MacAddress   [6]byte
-    Serial       [32]uint8
-    DataSz       uint16
+	Manufacturer [16]uint8
+	Model        [4]uint8
+	MacAddress   [6]byte
+	Serial       [32]uint8
+	DataSz       uint16
 
-    PubKey       common.Go_vs_pubkey_t
-    Signature    common.Go_vs_sign_t
+	PubKey    common.Go_vs_pubkey_t
+	Signature common.Go_vs_sign_t
 }
 
 func (g *Go_vs_snap_prvs_devi_t) FromBytes(b []byte) error {
-    buf := bytes.NewBuffer(b)
-    if err := binary.Read(buf, common.SystemEndian, &g.Manufacturer); err != nil {
-        return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Manufacturer: %v", err)
-    }
-    if err := binary.Read(buf, common.SystemEndian, &g.Model); err != nil {
-        return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Model: %v", err)
-    }
-    if err := binary.Read(buf, common.SystemEndian, &g.Serial); err != nil {
-            return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Serial: %v", err)
-        }
-    if err := binary.Read(buf, common.SystemEndian, &g.MacAddress); err != nil {
-        return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t MacAddress: %v", err)
-    }
-    if err := binary.Read(buf, common.SystemEndian, &g.DataSz); err != nil {
-        return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t DataSz: %v", err)
-    }
+	buf := bytes.NewBuffer(b)
+	if err := binary.Read(buf, common.SystemEndian, &g.Manufacturer); err != nil {
+		return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Manufacturer: %v", err)
+	}
+	if err := binary.Read(buf, common.SystemEndian, &g.Model); err != nil {
+		return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Model: %v", err)
+	}
+	if err := binary.Read(buf, common.SystemEndian, &g.Serial); err != nil {
+		return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t Serial: %v", err)
+	}
+	if err := binary.Read(buf, common.SystemEndian, &g.MacAddress); err != nil {
+		return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t MacAddress: %v", err)
+	}
+	if err := binary.Read(buf, common.SystemEndian, &g.DataSz); err != nil {
+		return fmt.Errorf("failed to deserialize vs_snap_prvs_devi_t DataSz: %v", err)
+	}
 
-    // Rest of buffer holds vs_pubkey_t + vs_sign_t
-    data := buf.Bytes()
+	// Rest of buffer holds vs_pubkey_t + vs_sign_t
+	data := buf.Bytes()
 
-    // Public key
-    publicKey := common.Go_vs_pubkey_t{}
-    signatureOffset, err := publicKey.FromBytes(data)
-    if err != nil {
-        return err
-    }
-    g.PubKey = publicKey
+	// Public key
+	publicKey := common.Go_vs_pubkey_t{}
+	signatureOffset, err := publicKey.FromBytes(data)
+	if err != nil {
+		return err
+	}
+	g.PubKey = publicKey
 
-    // Signature
-    signature := common.Go_vs_sign_t{}
-    if _, err := signature.FromBytes(data[signatureOffset:]); err != nil {
-        return err
-    }
-    g.Signature = signature
+	// Signature
+	signature := common.Go_vs_sign_t{}
+	if _, err := signature.FromBytes(data[signatureOffset:]); err != nil {
+		return err
+	}
+	g.Signature = signature
 
-    return nil
+	return nil
 }
 
 type Go_vs_snap_prvs_sgnp_req_t struct {
-    HashType uint8
-    Data     []byte
+	HashType uint8
+	Data     []byte
 }
 
 func (g *Go_vs_snap_prvs_sgnp_req_t) ToBytes() ([]byte, error) {
-    buf := new(bytes.Buffer)
+	buf := new(bytes.Buffer)
 
-    if err := binary.Write(buf, common.SystemEndian, g.HashType); err != nil {
-        return nil, fmt.Errorf("failed to serialize vs_snap_prvs_sgnp_req_t HashType: %v", err)
-    }
+	if err := binary.Write(buf, common.SystemEndian, g.HashType); err != nil {
+		return nil, fmt.Errorf("failed to serialize vs_snap_prvs_sgnp_req_t HashType: %v", err)
+	}
 
-    if _, err := buf.Write(g.Data); err != nil {
-        return nil, fmt.Errorf("failed to serialize vs_snap_prvs_sgnp_req_t Data: %v", err)
-    }
+	if _, err := buf.Write(g.Data); err != nil {
+		return nil, fmt.Errorf("failed to serialize vs_snap_prvs_sgnp_req_t Data: %v", err)
+	}
 
-    return buf.Bytes(), nil
+	return buf.Bytes(), nil
 }

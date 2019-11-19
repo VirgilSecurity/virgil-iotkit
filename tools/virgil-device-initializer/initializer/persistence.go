@@ -44,7 +44,7 @@ import (
 const BACKUP_FILE_SUFFIX = ".bak"
 
 type PersistenceManager struct {
-	FileName             string
+	FileName string
 }
 
 func (p PersistenceManager) Persist(data string) error {
@@ -81,7 +81,7 @@ func (p PersistenceManager) createBackupFile() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(destinationFile, input, os.ModeAppend | 0644)
+	err = ioutil.WriteFile(destinationFile, input, os.ModeAppend|0644)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,6 @@ func (p PersistenceManager) createFileIfNotExists() error {
 	}
 	return nil
 }
-
 
 func (p PersistenceManager) appendLine(line string) error {
 	fileHandle, _ := os.OpenFile(p.FileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
