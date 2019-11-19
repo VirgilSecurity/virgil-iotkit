@@ -126,7 +126,7 @@ vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
 /** Enumerate devices, which don't have initialization provision yet
  *
- * Enumerate devices that have not been initialized yet.
+ * Enumerate devices, which don't have initialization provision yet.
  *
  * \param[in] netif #vs_netif_t SNAP service descriptor. Must not be NULL.
  * \param[out] list #vs_snap_prvs_dnid_list_t Buffer with devices list. Must not be NULL.

@@ -61,8 +61,8 @@
  *     // Initialize own_mac
  *
  *     // Register INFO Client service
- *     snap_info_client = vs_snap_info_client(_snap_info_impl(), _info_client_impl());
- *     STATUS_CHECK(vs_snap_register_service(snap_info_client), "Cannot register INFO Client service");
+ *     snap_info_client = vs_snap_info_client(_info_client_impl());
+ *     STATUS_CHECK(vs_snap_register_service(snap_info_client), "Cannot register INFO Сlient service");
  *
  *     // Enumerate devices
  *     STATUS_CHECK(vs_snap_info_enum_devices(NULL, devices, devices_max, &devices_amount, wait_ms),
@@ -76,8 +76,7 @@
  *
  * own_mac is initialized by current device MAC address. It can be provided by #vs_snap_mac_addr call.
  *
- * #vs_snap_info_client receives INFO service implementation for SNAP protocol. You can see an example in
- * c-implementation tool. Also it receives implementations list with notification implementations.
+ * #vs_snap_info_client receives structure with notification implementations :
  *
  * \note All callbacks can be NULL.
  *
