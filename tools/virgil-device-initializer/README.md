@@ -12,38 +12,38 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 - [Command Reference](#command-reference)
 
 ## Overview
-In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud.
+In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution, you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud.
 
-Virgil Device Initializer allows you to make IoT device provoisioning and prepare your IoT device (create digital cards) for its further registration in Virgil Cloud.
+Virgil Device Initializer allows you to make IoT device provisioning and prepare your IoT device (create digital cards) for its further registration at Virgil Cloud.
 
 ## How It Works
 The IoT device provisioning process consists of 2 steps: Preparation and Initialization.
 
-The **preparation** step requires to grab all necessary information (e.g. provisioning files) and prepare your IoT device for further initialization.
+The **preparation** step requires to grab all necessary information (e.g., provisioning files) and prepare your IoT device for further initialization.
 
-The **initialization** step includes uploading provisioning files, generating device key pair and creating device digital card request.
+The **initialization** step includes uploading provisioning files, generating device key pair, and creating device digital card request.
 
 ### Prerequisites
-In order to perform provisioning of IoT device you have to prepare the following:
+In order to perform provisioning of IoT device, you have to prepare the following:
 - Trust List
 - Factory Private Key
 - Upper Level public keys (Auth, Recovery, Trust List Service, Firmware)
 
 ### Initialization
-In order to perform device initialization you have to go through the following steps:
-- After IoT device MAC is selected you need to cpecify Upper Level public keys.
+In order to perform device initialization, you have to go through the following steps:
+- After IoT device MAC is selected, you need to specify Upper Level public keys.
 - Device Initializer generates IoT device key pair.
 - The IoT device is signed with a Factory Key.
 - Then Device Initializer returns the IoT device's public key and signature.
 - Signature is uploaded to the IoT device.
 - Then Device Initializer uploads a Trust List to IoT device.
 - Thereafter Device Initializer obtains device info: manufacturer, model, MAC, serial number, factory signature and public key.
-- And finally, Device Initializer creates device's digital card request and stores it in the Transfer File.
+- And finally, Device Initializer creates the device's digital card request and stores it in the Transfer File.
 
 Initialization of each device is performed one by one.
 
 ## Setting up Device Initializer
-This section demonstrates on how to install and configure Virgil Device Initializer for preferred platform.
+This section demonstrates how to install and configure Virgil Device Initializer for the preferred platform.
 
 ### Install Device Initializer
 This section provides instructions for installing Virgil Device Initializer.
@@ -74,7 +74,7 @@ $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
+At this moment we don't provide builded package for Mac OS, that's why you have to build and run it by yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
@@ -85,7 +85,7 @@ $ make vs-tool-virgil-device-initializer
 ```
 
 #### Windows OS
-Virgil Device Initializer package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
+Virgil Device Initializer package for Windows OS is currently in development. To be included in the information update list, please contact our support team support@VirgilSecurity.com.
 
 ## Command Reference
 Here is the list of possible commands for Virgil Device Initializer.

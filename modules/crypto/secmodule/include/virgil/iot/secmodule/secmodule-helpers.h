@@ -36,13 +36,13 @@
  * @file secmodule-helpers.h
  * @brief Security module helper functions
  *
- * This header contains different helper functions for cryptography
+ * This header contains different helper functions for performing cryptographic operations
  */
 
 #ifndef VS_SECMODULE_HELPERS_H_
 #define VS_SECMODULE_HELPERS_H_
 
-#include <virgil/iot/secmodule/secmodule.h>
+#include <Virgil/iot/secmodule/secmodule.h>
 
 #define VS_PUBKEY_SECP192_LEN (49)
 #define VS_PUBKEY_SECP224_LEN (57)
@@ -126,10 +126,10 @@ vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type);
 const char *
 vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type);
 
-/** Convert a NIST256 signature from a virgil format to raw
+/** Convert a NIST256 signature from a Virgil format to raw
  *
- * \param[in] virgil_sign Pointer to the signature in virgil format. Cannot be NULL.
- * \param[in] virgil_sign_sz Size of the signature in virgil format.
+ * \param[in] virgil_sign Pointer to the signature in Virgil format. Cannot be NULL.
+ * \param[in] virgil_sign_sz Size of the signature in Virgil format.
  * \param[out] raw_signature Pointer to the signature in raw format. Cannot be NULL.
  * \param[in] buf_sz Size of buffer for raw signature
  *
@@ -141,12 +141,12 @@ vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
                                               uint8_t *raw_signature,
                                               uint16_t buf_sz);
 
-/** Convert a nist256 signature from a raw format to virgil format
+/** Convert a NIST-256 signature from raw format to Virgil format
  *
  * \param[in] raw_signature Pointer to the signature in raw format. Cannot be NULL.
- * \param[in] virgil_sign Pointer to the signature in virgil format. Cannot be NULL.
+ * \param[in] virgil_sign Pointer to the signature in Virgil format. Cannot be NULL.
  * \param[in] buf_sz Size of buffer for raw signature
- * \param[out] virgil_sign_sz Pointer to size of the signature in virgil format. Cannot be NULL.
+ * \param[out] virgil_sign_sz Pointer to size of the signature in Virgil format. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

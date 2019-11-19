@@ -145,62 +145,20 @@ _get_message_bin_credentials() {
         CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, answer, answer_size),
               "[MB] Unable to parse message bin credentials");
 
-        // TODO: Need to remove when changes to a service will be applied
-        /*----mqtt broker url and port----*/
-        if (VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_URL_FIELD, &len) && len > 0) {
-            int32_t port;
-            char tmp_buf[len];
-            char *ptr = &tmp_buf[len - 1];
-            uint16_t i;
+        /*----mqtt broker host----*/
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_HOST_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt_host]");
+        ++len;
+        _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
+        CHECK(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
 
-            len++;
-            // Temporary dirty hack with the offset by 6 because this code will be removed as soon as possible
-            uint16_t prefix_offset = 6;
+        json_get_val_str(&jobj, VS_MB_MQTT_HOST_FIELD, _mb_ctx.host, len);
 
-            json_get_val_str(&jobj, VS_MB_MQTT_URL_FIELD, tmp_buf, len);
-
-            for (i = len - 1; i > 0; --i) {
-                if (*ptr == ':') {
-                    break;
-                }
-                --ptr;
-            }
-
-            port = _str_to_int(ptr + 1);
-
-            if (0 == i || port < 0) {
-                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong format of [mqtt_url]");
-                goto terminate;
-            }
-
-            _mb_ctx.port = (uint16_t)port;
-
-
-            len = ptr - tmp_buf + 1 - prefix_offset;
-
-            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
-            CHECK_MEM_ALLOC(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
-
-            VS_IOT_MEMSET(_mb_ctx.host, 0, len);
-            VS_IOT_MEMCPY(_mb_ctx.host, tmp_buf + prefix_offset, len - 1);
-
-        } else {
-            // TODO: Only this code will be used
-            /*----mqtt broker host----*/
-            CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_HOST_FIELD, &len) && len > 0,
-                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt host]");
-            ++len;
-            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
-            CHECK_MEM_ALLOC(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
-
-            json_get_val_str(&jobj, VS_MB_LOGIN_FIELD, _mb_ctx.host, len);
-
-            /*----mqtt broker host----*/
-            CHECK(VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_MB_MQTT_PORT_FIELD, &val),
-                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt port]");
-            CHECK(val > 0 && val < UINT16_MAX, "[MB] cloud_get_message_bin_credentials(...) wrong format [mqtt port]");
-            _mb_ctx.port = (uint16_t)val;
-        }
+        /*----mqtt broker host----*/
+        CHECK(VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_MB_MQTT_PORT_FIELD, &val),
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt_port]");
+        CHECK(val > 0 && val < UINT16_MAX, "[MB] cloud_get_message_bin_credentials(...) wrong format [mqtt port]");
+        _mb_ctx.port = (uint16_t)val;
 
         /*----login----*/
         CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_LOGIN_FIELD, &len) && len > 0,
@@ -208,7 +166,7 @@ _get_message_bin_credentials() {
 
         ++len;
         _mb_ctx.login = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != _mb_ctx.login, "[MB] Can't allocate memory");
+        CHECK(NULL != _mb_ctx.login, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_LOGIN_FIELD, _mb_ctx.login, len);
 
@@ -218,7 +176,7 @@ _get_message_bin_credentials() {
 
         ++len;
         _mb_ctx.password = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != _mb_ctx.password, "[MB] Can't allocate memory");
+        CHECK(NULL != _mb_ctx.password, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_PASSWORD_FIELD, _mb_ctx.password, len);
 
@@ -228,7 +186,7 @@ _get_message_bin_credentials() {
 
         ++len;
         _mb_ctx.client_id = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != _mb_ctx.client_id, "[MB] Can't allocate memory");
+        CHECK(NULL != _mb_ctx.client_id, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_CLIENT_ID_FIELD, _mb_ctx.client_id, len);
 
@@ -238,7 +196,7 @@ _get_message_bin_credentials() {
 
         ++len;
         tmp = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+        CHECK(NULL != tmp, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_ROOT_CA_CERTIFICATE_FIELD, tmp, len);
 
@@ -266,7 +224,7 @@ _get_message_bin_credentials() {
 
         ++len;
         tmp = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+        CHECK(NULL != tmp, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_CERTIFICATE_FIELD, tmp, len);
 
@@ -294,7 +252,7 @@ _get_message_bin_credentials() {
 
         ++len;
         tmp = (char *)VS_IOT_MALLOC((size_t)len);
-        CHECK_MEM_ALLOC(NULL != tmp, "[MB] Can't allocate memory");
+        CHECK(NULL != tmp, "[MB] Can't allocate memory");
 
         json_get_val_str(&jobj, VS_MB_PRIVATE_KEY_FIELD, tmp, len);
 
@@ -332,7 +290,7 @@ _get_message_bin_credentials() {
 
             _mb_ctx.topic_list.topic_len_list =
                     (uint16_t *)VS_IOT_MALLOC(_mb_ctx.topic_list.topic_count * sizeof(uint16_t));
-            CHECK_MEM_ALLOC(NULL != _mb_ctx.topic_list.topic_len_list, "[MB] Can't allocate memory");
+            CHECK(NULL != _mb_ctx.topic_list.topic_len_list, "[MB] Can't allocate memory");
 
             for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
                 json_array_get_str_len(&jobj, i, &len);
@@ -345,7 +303,7 @@ _get_message_bin_credentials() {
             }
 
             _mb_ctx.topic_list.topic_list = (char *)VS_IOT_MALLOC(total_topic_names_len);
-            CHECK_MEM_ALLOC(NULL != _mb_ctx.topic_list.topic_list, "[MB] Can't allocate memory");
+            CHECK(NULL != _mb_ctx.topic_list.topic_list, "[MB] Can't allocate memory");
 
             for (i = 0; i < _mb_ctx.topic_list.topic_count; i++) {
                 json_array_get_str(&jobj, i, _mb_ctx.topic_list.topic_list + offset, total_topic_names_len - offset);

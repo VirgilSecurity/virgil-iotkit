@@ -38,6 +38,11 @@
  * This file declares \a vs_update_interface_t interface that is used for files downloading by client and sending by
  * server. If you want to download/upload your own file type, you have to implement function callbacks for this interface.
  * Also there are some utilities for Update library
+ *
+ * \section update_usage Update Module usage
+ *
+ * See #vs_firmware_update_ctx source code and #vs_tl_update_ctx one for update context implementation examples.
+ *
  */
 
 #ifndef VS_UPDATE_H
@@ -76,7 +81,7 @@ struct vs_update_interface_t;
 char *
 vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, uint32_t buf_size);
 
-/** Compare two file types
+/** Compare two files types
  *
  * \param file_type Known file type. Cannot be NULL.
  * \param unknown_file_type Unknown file type. Cannot be NULL.
@@ -86,7 +91,7 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
 bool
 vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
-/** Compare two files version
+/** Compare two files versions
  *
  * \param update_ver File to be update. Cannot be NULL.
  * \param current_ver Current file version. Cannot be NULL.
@@ -98,7 +103,7 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
 
-/** Get file type header size callback
+/** Get file type header size
  *
  * \param[in] context File context.
  * \param[in] file_type Current file type. Cannot be NULL.
@@ -131,7 +136,7 @@ typedef vs_status_e (*vs_update_has_footer_cb_t)(void *context, vs_update_file_t
 
 /** Increment data offset
  *
- * This callback return next file offset in subsequent load calls.
+ * This implementation returns next file offset in subsequent load calls.
  *
  * \param[in] context File context.
  * \param[in] file_type Current file type. Cannot be NULL.
@@ -263,24 +268,24 @@ typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_t
 
 /** Update interface context */
 typedef struct __attribute__((__packed__)) vs_update_interface_t {
-    vs_update_get_header_size_cb_t    get_header_size; /**< Get header callback */
-    vs_update_get_file_size_cb_t      get_file_size; /**< Get file size callback */
-    vs_update_has_footer_cb_t         has_footer; /**< Has footer callback */
-    vs_update_inc_data_offset_cb_t    inc_data_offset; /**< Increment data offste callback */
+    vs_update_get_header_size_cb_t    get_header_size; /**< Get header */
+    vs_update_get_file_size_cb_t      get_file_size; /**< Get file size */
+    vs_update_has_footer_cb_t         has_footer; /**< Has footer */
+    vs_update_inc_data_offset_cb_t    inc_data_offset; /**< Increment data offstet */
 
-    vs_update_get_header_cb_t         get_header; /**< Get header callback */
-    vs_update_get_data_cb_t           get_data; /**< Get data callback */
-    vs_update_get_footer_cb_t         get_footer; /**< Get footer callback */
+    vs_update_get_header_cb_t         get_header; /**< Get header */
+    vs_update_get_data_cb_t           get_data; /**< Get data */
+    vs_update_get_footer_cb_t         get_footer; /**< Get footer */
 
-    vs_update_set_header_cb_t         set_header; /**< Set header callback */
-    vs_update_set_data_cb_t           set_data; /**< Set data callback */
-    vs_update_set_footer_cb_t         set_footer; /**< Set footer callback */
+    vs_update_set_header_cb_t         set_header; /**< Set header */
+    vs_update_set_data_cb_t           set_data; /**< Set data */
+    vs_update_set_footer_cb_t         set_footer; /**< Set footer */
 
-    vs_update_free_item_cb_t          free_item; /**< Free item callback */
+    vs_update_free_item_cb_t          free_item; /**< Free item */
 
-    vs_update_file_is_newer_cb_t      file_is_newer; /**< File is newer callback */
-    vs_update_describe_type_cb_t      describe_type; /**< Describe file type callback */
-    vs_update_describe_version_cb_t   describe_version; /**< Describe file version callback */
+    vs_update_file_is_newer_cb_t      file_is_newer; /**< File is newer */
+    vs_update_describe_type_cb_t      describe_type; /**< Describe file type */
+    vs_update_describe_version_cb_t   describe_version; /**< Describe file version */
 
     vs_storage_op_ctx_t *storage_context; /**< Storage context */
 

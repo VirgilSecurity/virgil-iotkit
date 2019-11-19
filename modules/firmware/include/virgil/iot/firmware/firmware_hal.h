@@ -50,8 +50,8 @@
  * Signature for function that is called by #vs_firmware_install_firmware Firmware library function to prepare space for
  * newly loaded and verified firmware.
  *
- * If filesystem is present, it can be preparing new file name, for example "<app-name>.new" where <app-name> is the
- * application filename. This function should remove filename with this name if it exists.
+ * If filesystem is present, it can prepare new file name, for example "<app-name>.new" where <app-name> is the
+ * application filename. This function should remove a filename with this name if it exists.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -61,9 +61,9 @@ vs_firmware_install_prepare_space_hal(void);
 /** Append data
  *
  * Signature for function that is called by #vs_firmware_install_firmware Firmware library function to append data for
- * firmware new installation file.
+ * new firmware installation file.
  *
- * If filesystem is present, it can be opening file and appending \a data to the end.
+ * If filesystem is present, it can open the installation file and append \a data to its end.
  *
  * \param[in] data Data to be append
  * \param[in] data_sz Data size

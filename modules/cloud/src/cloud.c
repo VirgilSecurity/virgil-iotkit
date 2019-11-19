@@ -104,13 +104,13 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     ++b64_encrypted_sz;
     ++b64_signature_sz;
     crypto_answer_b64 = (char *)VS_IOT_MALLOC(b64_encrypted_sz);
-    CHECK_MEM_ALLOC(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
+    CHECK(crypto_answer_b64, "No memory to allocate %lu bytes for an answer", b64_encrypted_sz);
     CHECK(VS_JSON_ERR_OK ==
                   json_get_val_str(&jobj, VS_JSON_ENCRYPTED_FIELD, crypto_answer_b64, (int)(b64_encrypted_sz)),
           "Wrong JSON format");
 
     signature_b64 = (char *)VS_IOT_MALLOC(b64_signature_sz);
-    CHECK_MEM_ALLOC(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
+    CHECK(signature_b64, "No memory to allocate %lu bytes for an signature", b64_signature_sz);
     CHECK(VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_JSON_SIGNATURE_FIELD, signature_b64, (int)(b64_signature_sz)),
           "Wrong JSON format");
 
@@ -139,18 +139,21 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
     uint8_t *pubkey = NULL;
     uint16_t pubkey_sz = 0;
     uint8_t *meta = NULL;
+    vs_pubkey_dated_t *pubkey_dated = NULL;
     uint16_t meta_sz = 0;
-    vs_secmodule_keypair_type_e ec_type;
 
     uint8_t hash[VS_HASH_SHA256_LEN];
     uint16_t hash_sz;
 
-    CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey, &pubkey_sz, &meta, &meta_sz),
+    CHECK(VS_CODE_OK == vs_provision_tl_find_first_key(
+                                &search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz),
           "Can't find cloud key in TL");
-    ec_type = ((vs_pubkey_dated_t *)search_ctx.element_buf)->pubkey.ec_type;
 
     {
-        uint8_t sign[vs_secmodule_get_signature_len(ec_type)];
+        int sign_sz = vs_secmodule_get_signature_len(pubkey_dated->pubkey.ec_type);
+        CHECK(sign_sz > 0, "Incorrect ec type of cloud key");
+
+        uint8_t sign[sign_sz];
 
         CHECK(VS_CODE_OK == vs_secmodule_virgil_secp256_signature_to_tiny(
                                     (uint8_t *)signature_b64, signature_b64_decoded_len, sign, sizeof(sign)),
@@ -164,8 +167,13 @@ _decrypt_answer(char *out_answer, size_t *in_out_answer_len) {
                                              &hash_sz),
               "Error during hash calculate");
 
-        CHECK(VS_CODE_OK ==
-                      _secmodule->ecdsa_verify(ec_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sizeof(sign)),
+        CHECK(VS_CODE_OK == _secmodule->ecdsa_verify(pubkey_dated->pubkey.ec_type,
+                                                     pubkey,
+                                                     pubkey_sz,
+                                                     VS_HASH_SHA_256,
+                                                     hash,
+                                                     sign,
+                                                     sizeof(sign)),
               "Wrong signature of cloud answer");
     }
 
@@ -228,11 +236,10 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     CHECK_NOT_ZERO_RET(_hal_impl->http_request, VS_CODE_ERR_NOINIT);
 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
-    CHECK_MEM_ALLOC(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
+    CHECK(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
 
     uint8_t *request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
-    CHECK_MEM_ALLOC(
-            NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
+    CHECK(NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
 
     vs_impl_device_serial(serial_number);
 
@@ -333,7 +340,7 @@ _check_firmware_header(vs_firmware_header_t *header) {
 
 /*************************************************************************/
 static size_t
-_store_fw_handler(char *contents, size_t chunksize, void *userdata) {
+_store_fw_handler(const char *contents, size_t chunksize, void *userdata) {
     fw_resp_buff_t *resp = (fw_resp_buff_t *)userdata;
     size_t rest_data_sz = chunksize;
     vs_firmware_descriptor_t old_desc;
@@ -528,7 +535,7 @@ typedef struct {
 
 /*************************************************************************/
 static size_t
-_store_tl_handler(char *contents, size_t chunksize, void *userdata) {
+_store_tl_handler(const char *contents, size_t chunksize, void *userdata) {
     tl_resp_buff_t *resp = (tl_resp_buff_t *)userdata;
     size_t rest_data_sz = chunksize;
     if (NULL == resp->buff) {

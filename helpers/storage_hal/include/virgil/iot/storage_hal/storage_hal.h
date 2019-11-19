@@ -35,9 +35,25 @@
 /*! \file storage_hal.h
  * \brief Storage HAL interface
  *
+ * Storage is the base helper for communication with file system. Cache mechanism can be used.
+ *
  * \section storage_hal Storage HAL Usage
  *
- * \warning #vs_storage_op_ctx_t has to be implemented by user.
+ * Storage context #vs_storage_op_ctx_t has storage specific data and calls implementation.
+ *
+ * \warning #vs_storage_op_ctx_t has to be implemented by user. You can see an example of Storage context implementation for *NIX systems in <a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/sdk-impl/storage/storage-nix-impl.c#L297">vs_nix_storage_impl_func() in storage-nix-impl.c</a>
+ *
+ * Implementation has members listed below :
+ *
+ * - \a open : opens data file and returns #vs_storage_file_t file descriptor.
+ * - \a sync : synchronizes cache if present with file storage.
+ * - \a close : closes file.
+ * - \a del : securely deletes data on the storage and in the memory if cache is used.
+ * - \a size : returns file size or negative value. It could be any error from #vs_status_e list.
+ * - \a load : loads data from storage to the memory.
+ * - \a save : saves data from memory to the storage.
+ * - \a deinit : destroys storage context.
+ *
  */
 
 #ifndef VS_STORAGE_HAL_H
@@ -58,7 +74,7 @@ typedef void *vs_storage_impl_data_ctx_t;
 
 /** File descriptor
  *
- * File descriptor depends on implementation of storage
+ * File descriptor depends on storage implementation
  */
 typedef void *vs_storage_file_t;
 
@@ -71,14 +87,14 @@ typedef void *vs_storage_file_t;
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_storage_deinit_hal_t)(
-        vs_storage_impl_data_ctx_t storage_ctx); // After this call storage_ctx is incorrect and must be zeroed.
+        vs_storage_impl_data_ctx_t storage_ctx);
 
 /** Open storage element
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] id
  *
- * \return #VS_CODE_OK in case of success or error code.
+ * \return Storage specific file descriptor
  */
 typedef vs_storage_file_t (*vs_storage_open_hal_t)(
         const vs_storage_impl_data_ctx_t storage_ctx,
@@ -99,7 +115,7 @@ typedef vs_status_e (*vs_rpi_storage_sync_t)(
 
 /** Close storage element
  *
- * After this call file is incorrect and must be reopened.
+ * \warning After this call file is incorrect and must be reopened.
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] file Storage file context.
@@ -175,30 +191,30 @@ typedef vs_status_e (*vs_storage_del_hal_t)(
 vs_status_e
 vs_impl_own_firmware_descriptor(void *descriptor);
 
-/** Storage implementation callbacks
+/** Storage implementation
  *
- * This structure contains callbacks for all storage calls : open, load/save, size, synchronisation etc.
+ * This structure contains implementations for all storage calls : open, load/save, size, synchronisation etc.
  */
 typedef struct {
-    vs_storage_deinit_hal_t deinit; /**< Destroy storage context callback */
+    vs_storage_deinit_hal_t deinit; /**< Destroy storage context */
 
-    vs_storage_open_hal_t open; /**< Open storage element callback */
-    vs_rpi_storage_sync_t sync; /**< Synchronize storage element cache with storage callback */
-    vs_storage_close_hal_t close; /**< Close storage element callback */
+    vs_storage_open_hal_t open; /**< Open storage element */
+    vs_rpi_storage_sync_t sync; /**< Synchronize storage element cache with storage */
+    vs_storage_close_hal_t close; /**< Close storage element */
 
-    vs_storage_save_hal_t save; /**< Save storage element callback */
-    vs_storage_load_hal_t load; /**< Load storage element callback */
-    vs_storage_file_size_hal_t size; /**< Get storage element size callback */
+    vs_storage_save_hal_t save; /**< Save storage element */
+    vs_storage_load_hal_t load; /**< Load storage element */
+    vs_storage_file_size_hal_t size; /**< Get storage element size */
 
-    vs_storage_del_hal_t del; /**< Delete storage element callback */
+    vs_storage_del_hal_t del; /**< Delete storage element */
 } vs_storage_impl_func_t;
 
 /** Storage element context
  *
- * This structure contains callbacks and storage specific data
+ * This structure contains storage implementation and storage specific data
  */
 typedef struct {
-    vs_storage_impl_func_t impl_func; /**< Callbacks */
+    vs_storage_impl_func_t impl_func; /**< Implementations */
     vs_storage_impl_data_ctx_t impl_data; /**< Storage element specific data */
     size_t file_sz_limit; /**< Maximum size of storage element */
 

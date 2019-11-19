@@ -41,7 +41,7 @@
  * - processing messages received over message bin
  * - downloading firmware images and trust list files from cloud storage
  *
- * Virgil IoT SDK provides MQTT implementation based on AWS IoT library.
+ * Virgil IoT KIT provides MQTT implementation based on AWS IoT library.
  *
  * \section cloud_usage Cloud Usage
  *
@@ -157,7 +157,6 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
 /** Length of the update URL string */
 #define VS_UPD_URL_STR_SIZE 200
 
-// TODO : contents must be const
 /** Implementation for data header download
  *
  * This function implementation stores loaded handler in internal buffers.
@@ -168,7 +167,7 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
  *
  * \return Loaded data size of #vs_status_e error code
  */
-typedef size_t (*vs_fetch_handler_cb_t)(char *contents, size_t chunksize, void *userdata);
+typedef size_t (*vs_fetch_handler_cb_t)(const char *contents, size_t chunksize, void *userdata);
 
 typedef enum {
     VS_CLOUD_REQUEST_GET, /**< HTTP request by GET method */
@@ -246,24 +245,23 @@ typedef enum {
     VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
 } vs_cloud_mb_topic_id_t;
 
-// TODO : rename p_data to data
 /** Implementation for custom topics processing
  *
  * This implementation processes messages from topics as raw data.
  *
  * \param[in] topic Topic name. Cannot be NULL.
  * \param[in] topic_sz Topic name size. Cannot be zero.
- * \param[in] p_data Topic data. Cannot be NULL
+ * \param[in] data Topic data. Cannot be NULL
  * \param[in] length Topic data size. Cannot be zero.
  */
 typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
                                                       uint16_t topic_sz,
-                                                      const uint8_t *p_data,
+                                                      const uint8_t *data,
                                                       uint16_t length);
 
 /** Implementation for default topics processing
  *
- * Virgil IoT SDK preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this function when receives
+ * Virgil IoT KIT preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this function when receives
  * a notification about a new version of Trust List or Firmware
  * to load data for this topic.
  *
@@ -301,7 +299,7 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
  *
  * This implementation initializes MQTT with specified URL and certificates.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function which \a init member points to for an example.
+ * Virgil IoT KIT library. You can analyze function which \a init member points to for an example.
  *
  * \param[in] host Host URL. Must not be NULL.
  * \param[in] port Port for host access.
@@ -321,7 +319,7 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
  *
  * This implementation connects to the message bin broker and subscribes to topics.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function which \a connect_subscribe member points to for an example.
+ * Virgil IoT KIT library. You can analyze function which \a connect_subscribe member points to for an example.
  *
  * \param[in] client_id Client identifier. Cannot be NULL.
  * \param[in] login Login. Cannot be NULL.
@@ -341,7 +339,7 @@ typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_i
  *
  * Implementation for message bin processing.
  * #vs_aws_message_bin_impl() returns #vs_cloud_message_bin_impl_t structure with default implementation provided by
- * Virgil IoT SDK library. You can analyze function which \a process member points to for an example.
+ * Virgil IoT KIT library. You can analyze function which \a process member points to for an example.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

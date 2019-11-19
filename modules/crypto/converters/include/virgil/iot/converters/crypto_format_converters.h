@@ -36,20 +36,20 @@
 
 /**
  * @file crypto_format_converters.h
- * @brief Cryptographic convertors
+ * @brief Cryptographic converters
  *
- * You can find here different conversion cases :
+ * This file covers the following conversion cases :
  *
  * - Public key conversions :
- *  - #vs_converters_pubkey_to_raw() : from Virgil format to raw one
- *  - #vs_converters_pubkey_to_virgil() : from raw format to Virgil one
+ *  - #vs_converters_pubkey_to_raw() : from Virgil format to raw format
+ *  - #vs_converters_pubkey_to_virgil() : from raw format to Virgil format
  * - Signatures :
- *  - #vs_converters_virgil_sign_to_raw() : from Virgil format to raw one
- *  - #vs_converters_raw_sign_to_virgil() : from raw format to Virgil one
- *  - #vs_converters_mbedtls_sign_to_raw() : from MbedTLS format to raw one
- *  - #vs_converters_raw_sign_to_mbedtls() : from raw format to MbedTLS one
+ *  - #vs_converters_virgil_sign_to_raw() : from Virgil format to raw format
+ *  - #vs_converters_raw_sign_to_virgil() : from raw format to Virgil format
+ *  - #vs_converters_mbedtls_sign_to_raw() : from MbedTLS format to raw format
+ *  - #vs_converters_raw_sign_to_mbedtls() : from raw format to MbedTLS format
  *
- *  Each function returns boolean value true if conversion has been successful or false in other case.
+ *  Each function returns boolean value true if conversion has been successful and false in another case.
  */
 
 #ifndef VS_CRYPTO_CONVERTERS_H
@@ -64,7 +64,7 @@
 extern "C" {
 #endif
 
-/** Convert public key from Virgil format to raw one
+/** Convert public key from Virgil format to raw format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] public_key Source public key in Virgil format. Must not be NULL.
@@ -83,7 +83,7 @@ vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
                             uint16_t buf_sz,
                             uint16_t *pubkey_raw_sz);
 
-/** Convert public key from raw format to Virgil one
+/** Convert public key from raw format to Virgil format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] public_key_in Source public key in raw format. Must not be NULL.
@@ -102,16 +102,16 @@ vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                uint16_t buf_sz,
                                uint16_t *public_key_out_sz);
 
-/** Convert signature from Virgil format to raw one
+/** Convert signature from Virgil format to raw format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] virgil_sign Source signature in Virgil format. Must not be NULL.
  * \param[in] virgil_sign_sz Source signature size. Must not be zero.
  * \param[out] sign Destination buffer for signature in raw format. Must not be NULL.
  * \param[in] buf_sz Output buffer size. Must not be zero.
- * \param[in] sign_sz Pointer for saved signature size. Must not be NULL.
+ * \param[in] sign_sz Pointer to saved signature size. Must not be NULL.
  *
- * \return true in case of success or false otherwise
+ * \return true in case of success and false otherwise
  */
 bool
 vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
@@ -121,7 +121,7 @@ vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                  uint16_t buf_sz,
                                  uint16_t *sign_sz);
 
-/** Convert signature from raw format to Virgil one
+/** Convert signature from raw format to Virgil format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] hash_type Hash type.
@@ -129,9 +129,9 @@ vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
  * \param[in] raw_sign_sz Source signature size. Must not be zero.
  * \param[out] virgil_sign Destination buffer for signature in Virgil format. Must not be NULL.
  * \param[in] buf_sz Output buffer size. Must not be zero.
- * \param[in] virgil_sign_sz Pointer for saved signature size. Must not be NULL.
+ * \param[in] virgil_sign_sz Pointer to saved signature size. Must not be NULL.
  *
- * \return true in case of success or false otherwise
+ * \return true in case of success and false otherwise
  */
 bool
 vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
@@ -142,16 +142,16 @@ vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                  uint16_t buf_sz,
                                  uint16_t *virgil_sign_sz);
 
-/** Convert signature from MbedTLS format to raw one
+/** Convert signature from MbedTLS format to raw format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] mbedtls_sign Source signature in MbedTLS format. Must not be NULL.
  * \param[in] mbedtls_sign_sz Source signature size. Must not be zero.
  * \param[out] raw_sign Destination buffer for signature in raw format. Must not be NULL.
  * \param[in] buf_sz Output buffer size. Must not be zero.
- * \param[in] raw_sz Pointer for saved signature size. Must not be NULL.
+ * \param[in] raw_sz Pointer to saved signature size. Must not be NULL.
  *
- * \return true in case of success or false otherwise
+ * \return true in case of success and false otherwise
  */
 bool
 vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
@@ -161,16 +161,16 @@ vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                   uint16_t buf_sz,
                                   uint16_t *raw_sz);
 
-/** Convert signature from raw format to MbedTLS one
+/** Convert signature from raw format to MbedTLS format
  *
  * \param[in] keypair_type Keypair type.
  * \param[in] raw Source signature in raw format. Must not be NULL.
  * \param[in] raw_sz Source signature size. Must not be zero.
  * \param[out] signature Destination buffer for signature in MbedTLS format. Must not be NULL.
  * \param[in] buf_sz Output buffer size. Must not be zero.
- * \param[in] signature_sz Pointer for saved signature size. Must not be NULL.
+ * \param[in] signature_sz Pointer to saved signature size. Must not be NULL.
  *
- * \return true in case of success or false otherwise
+ * \return true in case of success and false otherwise
  */
 bool
 vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,

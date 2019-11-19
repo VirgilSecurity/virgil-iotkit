@@ -40,7 +40,7 @@
  *
  * \section logger_usage Logger Usage
  *
- * Logger usage examples you can see below :
+ * See the following snippet for the logger usage examples :
  *
  * \code
 
@@ -59,7 +59,7 @@ vs_logger_set_loglev(prev_log_level);       // Restore previous logger level
 
  * \endcode
  *
- * \warning If #VS_IOT_LOGGER_USE_LIBRARY == 1, #vs_logger_output_hal implementation is needed. See \ref
+ * \warning If #VS_IOT_LOGGER_USE_LIBRARY == 1, #vs_logger_output_hal implementation is required. See \ref
 logger_hal_implementation
  * for details.
  *
@@ -75,7 +75,7 @@ logger_hal_implementation
 /** Logging level
  */
 typedef enum {
-    VS_LOGLEV_UNKNOWN = 0xFF,   /**< Errorneous logging level */
+    VS_LOGLEV_UNKNOWN = 0xFF,   /**< Invalid logging level */
     VS_LOGLEV_NO_LOGGER = 0xFE, /**< Logging is disabled */
 
     VS_LOGLEV_INFO = 0x00,     /**< Information messages */
@@ -83,7 +83,7 @@ typedef enum {
     VS_LOGLEV_ALERT = 0x20,    /**< Alert messages */
     VS_LOGLEV_CRITICAL = 0x30, /**< Critical messages */
     VS_LOGLEV_ERROR = 0x40,    /**< Error messages */
-    VS_LOGLEV_WARNING = 0x50,  /**< Warning message */
+    VS_LOGLEV_WARNING = 0x50,  /**< Warning messages */
     VS_LOGLEV_NOTICE = 0x60,   /**< Notifications */
     VS_LOGLEV_TRACE = 0x70,    /**< Trace messages */
 
@@ -115,7 +115,7 @@ typedef enum {
  * \param[in] LGLVL Logging level
  * \param[in] PREFIX Prefix for output. Must not be NULL.
  * \param[in] BUF Buffer to be output as HEX. Must not be NULL.
- * \param[in] SIZE Array size to be output as HEX. Must not be zero.
+ * \param[in] SIZE Size of the array to be output as HEX. Must not be zero.
  */
 #define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
     vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
@@ -152,7 +152,7 @@ typedef enum {
  *
  * Return true if there were no errors during last call and log level was appropriate.
  *
- * \return true if last output was successful or false otherwise
+ * \return true if last output was successful and false otherwise
  */
 
 bool
@@ -164,9 +164,9 @@ vs_logger_last_result(void);
  * and user message. Buffer size is limited by #VS_IOT_LOGGER_MAX_BUFFER_SIZE define.
  *
  * \param[in] level Message log level
- * \param[in] cur_filename Source code file name. If NULL, not output.
- * \param[in] line_num Source code line number. If zero, not output.
- * \param[in] log_format Printf like string
+ * \param[in] cur_filename Source code file name. If NULL, there will be no filename information.
+ * \param[in] line_num Source code line number. If zero, there will be no line number.
+ * \param[in] log_format printf like string
  *
  * \return true if there were no errors and string has not been cut
  */
@@ -192,7 +192,7 @@ vs_logger_set_loglev(vs_log_level_t new_level);
 
 /** Get current logging level
  *
- * \return #VS_LOGLEV_UNKNOWN if any error
+ * \return #VS_LOGLEV_UNKNOWN in cse of error
  */
 
 vs_log_level_t
@@ -213,11 +213,11 @@ vs_logger_is_loglev(vs_log_level_t level);
  * Sends \a BUF as hex string by calling #vs_logger_message function.
  *
  * \param[in] level Logging level
- * \param[in] cur_filename Source code file name. If NULL, not output.
- * \param[in] line_num Source code line number. If zero, not output.
+ * \param[in] cur_filename Source code file name. If NULL, there will be no filename information.
+ * \param[in] line_num Source code line number. If zero, there will be no line number.
  * \param[in] prefix Prefix for output. Must not be NULL.
  * \param[in] data_buf Buffer to be output as HEX. Must not be NULL.
- * \param[in] SIZE Array size to be output as HEX. Must not be zero.
+ * \param[in] SIZE Size of the array to be output as HEX. Must not be zero.
  */
 
 void

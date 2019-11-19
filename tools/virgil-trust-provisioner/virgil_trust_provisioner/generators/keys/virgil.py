@@ -13,7 +13,7 @@ from virgil_trust_provisioner.core_utils.helpers import to_b64, b64_to_bytes
 
 class VirgilKeyGenerator(KeyGeneratorInterface):
     """
-    Represents key pair entity for virgil_crypto lib usage only (without dongles/emulator)
+    Represents key pair entity for virgil_crypto lib usage only
     """
 
     def __init__(self,
@@ -57,7 +57,6 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
             bytes_to_sign = byte_buffer.getvalue()
             return signer_key.sign(to_b64(bytes_to_sign), long_sign=False)
 
-        # method signature is compatible with AtmelKeyGenerator
         if private_key_base64:
             self.__private_key = b64_to_bytes(private_key_base64)
             virgil_priv_key = self._crypto.import_private_key(self.__private_key)
@@ -107,7 +106,7 @@ class VirgilKeyGenerator(KeyGeneratorInterface):
     def key_type(self):
         return self.__key_type
 
-    def sign(self, data, long_sign=False):  # long_sign is for compatibility with dongle signer
+    def sign(self, data, long_sign=False):
         data = b64_to_bytes(data)
         private_key = b64_to_bytes(self.private_key)
         signature = self._crypto.sign(data, self._crypto.import_private_key(private_key))

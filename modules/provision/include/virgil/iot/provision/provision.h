@@ -35,7 +35,7 @@
 /*! \file provision.h
  * \brief Provision interface
  *
- * Provision interface gives user features listed below :
+ * Provision interface allows user to :
  * - Enumerate Trust List keys (#vs_provision_tl_find_first_key, #vs_provision_tl_find_next_key).
  * - Search for specified high level key in internal storage (#vs_provision_verify_hl_key).
  * - Verify high level public key (#vs_provision_verify_hl_key).
@@ -44,7 +44,7 @@
  *
  * \section provision_usage Provision Usage
  *
- * Provision library must be initialized before first call and destroyed after last one :
+ * Provision library must be initialized before the first call and destroyed after the last one :
  *
  * \code
 vs_status_e ret_code;                   // Result code
@@ -79,13 +79,14 @@ uint16_t public_key_size;                   // Public key size
 uint8_t *meta_info;                         // Meta information pointer
 uint16_t meta_info_size;                    // Meta information size
 size_t keys_amount = 0;                     // Keys amount
+vs_pubkey_dated_t *pubkey_dated;            // Pointer to #vs_pubkey_dated_t structure
 
-if( vs_provision_tl_find_first_key(&search_ctx, VS_KEY_IOT_DEVICE, &public_key, &public_key_size, &meta_info,
-&meta_info_size) == VS_CODE_OK ) {
+if( vs_provision_tl_find_first_key(&search_ctx, VS_KEY_IOT_DEVICE, &pubkey_dated, &public_key, &public_key_size,
+&meta_info, &meta_info_size) == VS_CODE_OK ) {
     ++keys_amount;  // First key
 
-    while( vs_provision_tl_find_next_key(&search_ctx, &public_key, &public_key_size, &meta_info, &meta_info_size) ==
-VS_CODE_OK ) {
+    while( vs_provision_tl_find_next_key(&search_ctx, &pubkey_dated, &public_key, &public_key_size, &meta_info,
+&meta_info_size) == VS_CODE_OK ) {
         ++keys_amount;  // Next key
     }
 }
@@ -115,7 +116,7 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secm
 
 /** Provision destruction
  *
- * This function must be called after any other Provision call.
+ * This function must be called after all other Provision calls.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -171,10 +172,9 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 const char *
 vs_provision_cloud_url(void);
 
-// TODO : return pointer to the vs_pubkey_dated_t current key data
 /** Find first key
  *
- * This function finds first \a key_type key and returns it with meta information if present.
+ * This function finds the first \a key_type key and returns it with meta information if present.
  * You can find next key by #vs_provision_tl_find_next_key call.
  *
  * \param[out] search_ctx Search context initialized by this function. Must not be NULL.
@@ -190,15 +190,15 @@ vs_provision_cloud_url(void);
 vs_status_e
 vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
                                vs_key_type_e key_type,
+                               vs_pubkey_dated_t **pubkey_dated,
                                uint8_t **pubkey,
                                uint16_t *pubkey_sz,
                                uint8_t **meta,
                                uint16_t *meta_sz);
 
-// TODO : return pointer to the vs_pubkey_dated_t current key data
 /** Find Next key
  *
- * This function finds next \a key_type key and returns it with meta information if present.
+ * This function finds the next \a key_type key and returns it with meta information if present.
  * First key must be found before by #vs_provision_tl_find_first_key call.
  *
  * \param[out] search_ctx Search context initialized by this function. Must not be NULL.
@@ -213,6 +213,7 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
  */
 vs_status_e
 vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              vs_pubkey_dated_t **pubkey_dated,
                               uint8_t **pubkey,
                               uint16_t *pubkey_sz,
                               uint8_t **meta,

@@ -52,7 +52,6 @@
 #include <virgil/iot/cloud/cloud.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
-// TODO : remove from header <private/...>
 #include <private/cloud_parse_manifest.h>
 #include <private/cloud_operations.h>
 #include <virgil/iot/cloud/base64.h>

@@ -35,7 +35,7 @@
 /*! \file fldt-server.h
  * \brief FLDT for server
  *
- * FLDT protocol is used to download new file version from gateway to client. This module is used to process server part
+ * FLDT service is used to download new file version from gateway to client. This module is used to process server part
  * of FLDT protocol.
  *
  * \section fldt_server_usage FLDT Server Usage
@@ -52,10 +52,15 @@
  *  const vs_snap_service_t *snap_fldt_server;
  *  const vs_mac_addr_t mac_addr;
  *  snap_fldt_server = vs_snap_fldt_server( &mac_addr, _add_filetype );
- *  STATUS_CHECK( vs_snap_register_service(snap_fldt_server), "Cannot register FLDT server service" );
+ *
+ *  STATUS_CHECK( vs_snap_register_service(snap_fldt_server),
+ *      "Cannot register FLDT server service" );
  *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ),
- * "Unable to add Firmware file type" ); STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(),
- * vs_tl_update_ctx(), false ), "Unable to add Trust List file type" ); * \endcode
+ *      "Unable to add Firmware file type" );
+ *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx(), false ),
+ *      "Unable to add Trust List file type" );
+ *
+ * * \endcode
  *
  * You can see #vs_fldt_server_add_filetype function example below :
  * \code

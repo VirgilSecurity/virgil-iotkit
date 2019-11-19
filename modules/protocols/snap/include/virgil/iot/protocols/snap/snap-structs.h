@@ -278,6 +278,8 @@ typedef struct __attribute__((__packed__)) {
     uint8_t content[];               /**< Packet data with \a header . \a content_size bytes size */
 } vs_snap_packet_t;
 
+// TODO : This setting might be moved to some config
+#define VS_NETIF_PACKET_BUF_SIZE (1024)
 /******************************************************************************/
 /** Network interface
  *
@@ -293,9 +295,8 @@ typedef struct vs_netif_t {
     vs_netif_mac_t mac_addr;  /**< MAC address callback */
 
     // Incoming packet
-    // TODO : magic number!
-    uint8_t packet_buf[1024];   /**< Packet buffer */
-    uint16_t packet_buf_filled; /**< Packet size */
+    uint8_t packet_buf[VS_NETIF_PACKET_BUF_SIZE]; /**< Packet buffer */
+    uint16_t packet_buf_filled;                   /**< Packet size */
 } vs_netif_t;
 
 /******************************************************************************/

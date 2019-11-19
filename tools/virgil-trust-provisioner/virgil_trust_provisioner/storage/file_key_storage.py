@@ -2,7 +2,7 @@ import os
 
 from PyCRC.CRCCCITT import CRCCCITT
 
-from virgil_trust_provisioner.data_types import KeyPair, TrustList
+from virgil_trust_provisioner.data_types import TrustList
 
 
 class FileKeyStorage:
@@ -39,9 +39,6 @@ class FileKeyStorage:
             data: Data for storing.
             place: File name for storing data.
         """
-        if isinstance(data, KeyPair):
-            self.__save_key_pair(place, data)
-
         if isinstance(data, TrustList):
             self.__save_trust_list(place, data)
 

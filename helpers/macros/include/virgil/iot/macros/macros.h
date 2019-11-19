@@ -33,7 +33,43 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file macros.h
- * \brief Macroses to simplify code.
+ * \brief Macros to simplify code.
+ *
+ * You can find here different macros to simplify code usage.
+ *
+ * Each macros does specified operation and checks its result. If it is successful, there is no other action. In another
+ * case it outputs messages and terminates its execution. There are two possibilities how to terminate normal flow :
+ *
+ * - return from function with return code. They have _RET postfix : #CHECK_RET, #BOOL_CHECK_RET, #MEMCMP_CHECK_RET etc.
+ * There is return code \a RETCODE parameter or it is implicitly supposed like in #BOOL_CHECK_RET.
+ * - goto \a terminate label.
+ *
+ * Message uses Logger module for output. You can use printf-like syntax with variables.
+ *
+ * Here you can see some examples :
+ * \code
+
+    int a;
+    const char *buf1;
+    const char *buf2;
+    size_t buf_size;
+
+    // Goto terminate in case of error
+    CHECK(a == 3, "a = %d while it must be equal to 3", a);
+
+    // Return in case of error
+    CHECK_RET(a == 3, VS_CODE_ERR_INCORRECT_PARAMETER, "a = %d while it must be equal to 3", a);
+
+    // Compare two buffers
+    MEMCMP_CHECK_RET(buf1, buf2, buf_size, VS_CODE_OLD_VERSION);
+
+    // Checks variable to be not-NULL
+    CHECK_NOT_ZERO_RET(buf1, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    // Process error
+    terminate:
+
+ * \endcode
  */
 
 #ifndef VS_MACROS_H
@@ -132,8 +168,8 @@
  *
  *  \return \a RET in case of error
  */
-#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RET)                                                                             \
-    CHECK_RET(VS_IOT_MEMCMP((BUF1), (BUF2), (SIZE)) == 0, (RET),                                                              \
+#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RETCODE)                                                                             \
+    CHECK_RET(VS_IOT_MEMCMP((BUF1), (BUF2), (SIZE)) == 0, (RETCODE),                                                              \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
@@ -161,26 +197,5 @@
  *  \return \a RETCODE in case of error
  */
 #define CHECK_NOT_ZERO_RET(ARG, RETCODE)        CHECK_RET((ARG), (RETCODE), "Argument " #ARG " must not be zero")                                                                           \
-
-#define CHECK_BOOL(OPERATION, DESCRIPTION, ...)                                                                        \
-    do {                                                                                                               \
-        if (!(OPERATION)) {                                                                                            \
-            VS_LOG_ERROR((DESCRIPTION), ##__VA_ARGS__);                                                                \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
-
-// TODO : make real mem alloc or remove it !!!
-#define CHECK_MEM_ALLOC(OPERATION, DESCRIPTION, ...) CHECK_BOOL(OPERATION, DESCRIPTION, ##__VA_ARGS__)
-
-// TODO : remove it!
-#define CHECK_SNPRINTF(BUF, FORMAT, ...)                                                                               \
-    do {                                                                                                               \
-        int snprintf_res;                                                                                              \
-        if ((snprintf_res = VS_IOT_SNPRINTF((BUF), sizeof(BUF), (FORMAT), ##__VA_ARGS__)) <= 0) {                             \
-            VS_LOG_ERROR("snprintf error result %d. errno = %d (%s)", snprintf_res, errno, strerror(errno));           \
-            goto terminate;                                                                                            \
-        }                                                                                                              \
-    } while (0)
 
 #endif // VS_MACROS_H

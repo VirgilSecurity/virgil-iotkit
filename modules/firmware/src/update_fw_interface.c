@@ -55,15 +55,16 @@ _fw_update_describe_type(void *context, vs_update_file_type_t *file_type, char *
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
 
-    // TODO: Fix print of manufacture_id
-    VS_IOT_SNPRINTF(buffer,
-                    buf_size,
-                    "Firmware (manufacturer = \"%s\", device = \"%c%c%c%c\")",
-                    file_type->info.manufacture_id,
-                    (char)file_type->info.device_type[0],
-                    (char)file_type->info.device_type[1],
-                    (char)file_type->info.device_type[2],
-                    (char)file_type->info.device_type[3]);
+    int res = VS_IOT_SNPRINTF(buffer,
+                              buf_size,
+                              "Firmware (manufacturer = \"%s\", device = \"%c%c%c%c\")",
+                              file_type->info.manufacture_id,
+                              (char)file_type->info.device_type[0],
+                              (char)file_type->info.device_type[1],
+                              (char)file_type->info.device_type[2],
+                              (char)file_type->info.device_type[3]);
+
+    CHECK(res > 0 && res <= buf_size, "Error create firmware description string");
 
     return buffer;
 
@@ -93,7 +94,8 @@ _fw_update_describe_version(void *context,
     CHECK_NOT_ZERO(buf_size);
 
     if (add_filetype_description) {
-        type_descr_size = VS_IOT_STRLEN(_fw_update_describe_type(context, file_type, buffer, buf_size));
+        CHECK(NULL != _fw_update_describe_type(context, file_type, buffer, buf_size), "Error description");
+        type_descr_size = VS_IOT_STRLEN(buffer);
         string_space -= type_descr_size;
         output += type_descr_size;
         if (string_space > TYPE_DESCR_POSTFIX) {
@@ -328,17 +330,7 @@ _fw_update_file_is_newer(void *context,
     VS_IOT_ASSERT(available_file);
     VS_IOT_ASSERT(new_file);
 
-    // TODO: Fix it ! Use version comparision
-
-    if (!fw_ver_available->timestamp || !fw_ver_available->build) {
-        return true;
-    }
-
-    if (fw_ver_new->build > fw_ver_available->build) {
-        return true;
-    }
-
-    return fw_ver_new->major > fw_ver_available->major || fw_ver_new->minor > fw_ver_available->minor;
+    return (VS_CODE_OK == vs_update_compare_version(fw_ver_new, fw_ver_available));
 }
 
 /*************************************************************************/
