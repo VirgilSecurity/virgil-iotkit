@@ -22,7 +22,7 @@ class Signature(univ.Sequence):
                                      )
 
 
-class VirgilSignExtractor(object):
+class VirgilSignExtractor:
 
     @classmethod
     def extract_sign(cls, signature_data):

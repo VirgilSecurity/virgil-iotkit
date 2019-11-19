@@ -2,7 +2,7 @@ from virgil_trust_provisioner import consts
 from virgil_trust_provisioner.data_types.trustlist_type import TrustList
 
 
-class TrustListGenerator(object):
+class TrustListGenerator:
 
     def __init__(self, ui, storage):
         self.__tl = None  # type: TrustList
