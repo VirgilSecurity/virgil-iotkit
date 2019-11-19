@@ -157,11 +157,11 @@ thing service and downloading firmware images and trust list files from cloud st
 
 ## Tests
 To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.
-- Crypto : Crypto algorithms and primitives tests (aes, hash ecdh, hmac, kdf, etc.)
-- Firmware : Firmware related functionality. Create device/firmware. Save firmware
-- Helpers : Create and save trust list
-- Secbox : Test storage module. Read write signed or/and encrypted data
-- SNAP : Secure Network Adjustable Protocol tests
+- Crypto : Crypto algorithms and primitives tests. (AES, Hash, ECDH, ECDSA, HMAC, KDF, ChaCha20-Poly1305, etc.)
+- Firmware : Firmware related functionality. Create device/firmware. Save firmware.
+- Helpers : Create and save trust list.
+- Secbox : Test storage module. Read write signed or/and encrypted data.
+- SNAP : Secure Network Adjustable Protocol tests.
 
 <div id='SDK-usage'/>
 
