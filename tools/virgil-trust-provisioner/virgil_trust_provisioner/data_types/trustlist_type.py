@@ -264,7 +264,7 @@ class TrustList:
     def body(self) -> Body:
         if self._body is None:
             keys = []
-            for pub_key_id, key_data in self._pub_keys_dict.items():
+            for _, key_data in self._pub_keys_dict.items():
                 key_type_str = consts.VSKeyTypeS(key_data["type"])
                 start_date = int(key_data["start_date"])
                 expiration_date = int(key_data["expiration_date"])

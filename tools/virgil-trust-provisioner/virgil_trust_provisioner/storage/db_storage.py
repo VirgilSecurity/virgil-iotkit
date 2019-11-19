@@ -6,7 +6,7 @@ import _dbm
 import sys
 
 
-class DBStorage(object):
+class DBStorage:
 
     def __init__(self, storage_path):
         self.storage_path = storage_path

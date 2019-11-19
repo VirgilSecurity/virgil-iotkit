@@ -1,11 +1,10 @@
 import base64
-import string
 import binascii
 
 
-class UI(object):
+class UI:
 
-    class InputCheckers(object):
+    class InputCheckers:
 
         @classmethod
         def check_base64(cls, user_input):
@@ -26,25 +25,7 @@ class UI(object):
 
         @classmethod
         def yes_no_checker(cls, user_input):
-            if user_input.upper() in ["Y", "N"]:
-                return True
-            else:
-                return False
-
-        @classmethod
-        def check_recovery_key_comment(cls, user_input):
-            if str(user_input) in ["1", "2"]:
-                return True
-            else:
-                return False
-
-        @classmethod
-        def number_check(cls, user_input):
-            try:
-                u_i = int(user_input)
-            except ValueError:
-                return False
-            return True
+            return user_input.upper() in ["Y", "N"]
 
         @staticmethod
         def tl_version_check(user_input):
@@ -129,9 +110,6 @@ class UI(object):
         if self.__logger:
             self.__logger.warning(msg)
 
-    def get_password_pair(self):
-        pass
-
     def get_user_input(self, input_prompt, input_checker_callback=None, input_checker_msg=None, empty_allow=False):
         user_input = input(input_prompt)
         if not empty_allow:
@@ -154,9 +132,6 @@ class UI(object):
                         self.__logger.warning(input_checker_msg)
                 return self.get_user_input(input_prompt, input_checker_callback, input_checker_msg, empty_allow)
         return user_input
-
-    def get_password(self):
-        pass
 
     def get_date(self):
         while True:

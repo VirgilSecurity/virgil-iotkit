@@ -10,22 +10,14 @@ setup(
         'virgil-crypto>=3,<4',
         'prettytable',
         'pyasn1',
-        'pycups',
         'PyCRC',
         'psutil',
         'tinydb'
     ],
-    package_data={
-        "virgil_trust_provisioner": [
-            "external_utils/util/origin/dongles-cli",
-            "external_utils/util/emulator/dongles-cli"
-        ],
-    },
     entry_points={
         'console_scripts':
             [
-                'virgil-trust-provisioner = virgil_trust_provisioner.__main__:main',
-                'virgil-dbconverter = virgil_trust_provisioner.__main__:converter_main'
+                'virgil-trust-provisioner = virgil_trust_provisioner.__main__:main'
             ]
     },
     author=__author__,

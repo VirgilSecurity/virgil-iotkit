@@ -4,7 +4,7 @@ from tinydb import TinyDB, where
 from .tinydb_storage_extensions import ByteStorage
 
 
-class TLVersionTinyDBStorage(object):
+class TLVersionTinyDBStorage:
 
     def __init__(self, storage_path, storage_type=ByteStorage, storage_kwargs=None):
         self.storage_path = storage_path + ".db"

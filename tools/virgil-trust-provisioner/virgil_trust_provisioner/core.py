@@ -1,19 +1,18 @@
 import collections
-import functools
 import json
 import logging
 import os
-import psutil
 import sys
 from pathlib import Path
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+import psutil
+
 from virgil_trust_provisioner import __version__
 from virgil_trust_provisioner.core_utils.config import Config
-from virgil_trust_provisioner.external_utils.atmel_dongles_controller import AtmelDonglesController
 from virgil_trust_provisioner.consts.modes import ProgramModes
-from .ui import UI
-from .utility_manager import UtilityManager
+from virgil_trust_provisioner.ui import UI
+from virgil_trust_provisioner.utility_manager import UtilityManager
 
 
 class UtilContext:
@@ -22,16 +21,13 @@ class UtilContext:
         # Currently only VIRGIL_CRYPTO_ONLY (keys are stored on disk) mode is available for user
         #
 
-        self.__cli_args = None
+        self._cli_args = self.__get_cli_args()
         self.program_mode = ProgramModes.VIRGIL_CRYPTO_ONLY
         self._config = self.__load_config()
         self.logger = self.__prepare_logger()
         self.ui = UI(self.logger)
-        self.atmel = self.__prepare_atmel_util()
 
         self.skip_confirm = self._cli_args["skip_confirm"]
-        self.disable_cache = None
-        self.printer_enable = False
 
         self.storage_path = self.__prepare_storage_folder()
         self.provision_pack_path = os.path.expanduser(self._config["MAIN"]["provision_pack_path"])
@@ -42,10 +38,8 @@ class UtilContext:
         # Load factory info from specified json file
         self.factory_info = self.__load_factory_info()
 
-    @property
-    def _cli_args(self):
-        if self.__cli_args is not None:
-            return self.__cli_args
+    @staticmethod
+    def __get_cli_args():
         arguments = ArgumentParser(
             description='Key infrastructure management tool',
             formatter_class=RawTextHelpFormatter
@@ -57,8 +51,7 @@ class UtilContext:
                                help="path to json with factory info (will be added to Factory key Virgil card)")
         arguments.add_argument('-v', "--version", action="version", version=__version__,
                                help="print application version and exit")
-        self.__cli_args = vars(arguments.parse_args())
-        return self.__cli_args
+        return vars(arguments.parse_args())
 
     def __load_factory_info(self):
         factory_info_json_path = os.path.expanduser(self._cli_args["factory_info"])
@@ -119,66 +112,31 @@ class UtilContext:
             ]
         }
 
-        if self.program_mode == ProgramModes.ATMEL_DONGLES:
-            required_content["MAIN"].append("dongles_cli_path")
-        elif self.program_mode == ProgramModes.ATMEL_DONGLES_EMULATOR:
-            required_content["MAIN"].append("dongles_cli_emulator_path")
-
         config.check_content(required_content)
         return config
-
-    def __prepare_atmel_util(self):
-        if self.program_mode not in (ProgramModes.ATMEL_DONGLES, ProgramModes.ATMEL_DONGLES_EMULATOR):
-            return None
-
-        if self.program_mode == ProgramModes.ATMEL_DONGLES_EMULATOR:
-            atmel_util_path = self._config["MAIN"]["dongles_cli_emulator_path"]
-        else:
-            atmel_util_path = self._config["MAIN"]["dongles_cli_path"]
-
-        if not atmel_util_path:
-            atmel_util_path = os.path.join(
-                os.path.dirname(sys.modules["virgil_trust_provisioner"].__file__),
-                "external_utils",
-                "util",
-                "emulator" if self.program_mode == ProgramModes.ATMEL_DONGLES_EMULATOR else "origin",
-                "dongles-cli"
-            )
-            self.logger.debug("atmel util path set to {}".format(atmel_util_path))
-
-        mode = "dev" if self.program_mode == ProgramModes.ATMEL_DONGLES_EMULATOR else "main"
-        atmel = AtmelDonglesController(atmel_util_path, mode, logger=self.logger)
-        return atmel
 
 
 class Core:
     def __init__(self):
-        self.__util_context = UtilContext()
+        self._util_context = UtilContext()
         self.pid_file_path = os.path.join(str(Path.home()), '.virgil_trust_provisioner', 'virgil_trust_provisioner.pid')
         self._ui = None
         self._util_manager = None
 
-    def __catch_exceptions(job_func):
-        @functools.wraps(job_func)
-        def wrapper(inst, *args, **kwargs):
-            try:
-                return job_func(inst, *args, **kwargs)
-            except SystemExit:
-                raise
-            except KeyboardInterrupt:
-                raise
-            except:
-                import traceback
-                inst.__util_context.logger.critical(traceback.format_exc())
-                sys.exit("[FATAL]: Application crashed. See log file for more info.")
-        return wrapper
-
-    @__catch_exceptions
     def run(self):
-        if self.__is_have_run_instance():
-            sys.exit("[FATAL]: Running multiple instances is forbidden")
-        while True:
-            self.__util_manager.run_utility()
+        try:
+            if self.__is_have_run_instance():
+                sys.exit("[FATAL]: Running multiple instances is forbidden")
+            while True:
+                self.__util_manager.run_utility()
+        except SystemExit:
+            raise
+        except KeyboardInterrupt:
+            raise
+        except:
+            import traceback
+            self._util_context.logger.critical(traceback.format_exc())
+            sys.exit("[FATAL]: Application crashed. See log file for more info.")
 
     def __is_have_run_instance(self):
         if os.path.exists(self.pid_file_path) and os.stat(self.pid_file_path).st_size != 0:
@@ -209,11 +167,11 @@ class Core:
             pid_file = open(self.pid_file_path, "w")
             pid_file.write(str(psutil.Process().pid))
             pid_file.close()
-            self.__util_context.logger.debug("Run with pid {}".format(str(psutil.Process().pid)))
+            self._util_context.logger.debug("Run with pid {}".format(str(psutil.Process().pid)))
             return False
 
     @property
     def __util_manager(self):
         if not self._util_manager:
-            self._util_manager = UtilityManager(self.__util_context)
+            self._util_manager = UtilityManager(self._util_context)
         return self._util_manager

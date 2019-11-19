@@ -39,7 +39,7 @@ def clean_folder_content(path):
 
 def find_files(path, pattern, regex=False):
     result = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for f_name in files:
             full_path = os.path.join(root, f_name)
             search_in = full_path.split(path)[-1]
