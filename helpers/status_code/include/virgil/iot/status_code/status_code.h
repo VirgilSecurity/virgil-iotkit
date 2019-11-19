@@ -56,6 +56,8 @@
     terminate:
 
  * \endcode
+ *
+ * You can introduce your own error codes. They must start from #VS_CODE_ERR_USER code.
  */
 
 #ifndef VS_IOT_SDK_STATUS_CODE
@@ -113,6 +115,8 @@ typedef enum {
     VS_CODE_ERR_SOCKET = -82, /**< Error during socket operations */
     VS_CODE_ERR_PLC = -83, /**< PLC error */
     VS_CODE_ERR_NOINIT = -84, /**< Not initialized */
+
+    VS_CODE_ERR_USER = -128 /**< User specific error codes start from this value */
 
 } vs_status_e;
 
