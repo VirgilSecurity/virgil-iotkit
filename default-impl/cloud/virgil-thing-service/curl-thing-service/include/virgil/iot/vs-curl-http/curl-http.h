@@ -34,26 +34,27 @@
 
 /**
  * @file curl-http.h
- * @brief Default implementation for curl based transport
+ * @brief Default implementation for thing communication.
  *
- * \section curl-http.h Virgil Security Software Security Module Usage
- *
- *  Curl based http_request used under the hood
- *
-You can use #vs_curl_http_impl function output with vs_aws_message_bin_impl() for #vs_cloud_init call
- * \code
-vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), vs_soft_secmodule_impl(&slots_storage_impl));
- * \endcode
+ * Curl based http_request used under the hood.
+ * Example of usage inside #vs_cloud_init:
+ *  \code
 
- *\code
-Third argument initialized like this. See more in gateway code
+vs_storage_op_ctx_t slots_storage_impl;     // Storage implementation for slot
+vs_secmodule_impl_t *secmodule_impl;        // Security implementation
 
- vs_storage_op_ctx_t slots_storage_impl;
- vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
- vs_soft_secmodule_impl(&slots_storage_impl)
+// Init storage implementation
+vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
 
- * \endcode
- *
+// You can initialize security module by software implementation :
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+
+// Cloud initialization
+vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), secmodule_impl);
+\endcode
+
+You need to implement custom storage implementation. As an example you can see default implementation in
+<a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/helpers/app-storage.c#L73"> vs_app_storage_init_impl()</a> function in app-storage.c file.
  */
 
 #ifndef VS_CURL_HTTP_DEFAULT_IMPL_H
@@ -61,7 +62,7 @@ Third argument initialized like this. See more in gateway code
 
 #include <virgil/iot/cloud/cloud.h>
 
-/** Return Curl based implementation of transport.
+/** Returns curl based implementation of transport.
  *
  * \return #vs_cloud_impl_t
  */

@@ -37,13 +37,26 @@
  * @brief Software Security Module implementation
  *
  * This library can be used when no Hardware Security Module support provided.
+
  *
- * \section vs-soft-secmodule-usage Virgil Security Software Security Module Usage
- *
- * You need initialize vs-soft-secmodule module before its usage and free it after. See code below for example :
- *
- *
- *
+ * You need initialize vs-soft-secmodule module before its usage and free it after. See code below for example:
+ *  \code
+
+vs_storage_op_ctx_t slots_storage_impl;     // Storage implementation for slot
+vs_secmodule_impl_t *secmodule_impl;        // Security implementation
+
+// Init storage implementation
+vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
+
+// You can initialize security module by software implementation :
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+
+// Deinit soft security module
+vs_soft_secmodule_deinit();
+\endcode
+
+You need to implement custom storage. As an example you can see default implementation in
+<a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/helpers/app-storage.c#L73">vs_app_storage_init_impl()</a> function in app-storage.c file.
  */
 
 #ifndef VS_SOFT_SECMODULE_H
