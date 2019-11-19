@@ -122,7 +122,7 @@ vs_secbox_deinit(void);
 ssize_t
 vs_secbox_file_size(vs_storage_element_id_t id);
 
-/** Security Box element save
+/** Save Security Box element
  *
  * Saves data with specified crypto mode.
  *
@@ -136,7 +136,7 @@ vs_secbox_file_size(vs_storage_element_id_t id);
 vs_status_e
 vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t *data, size_t data_sz);
 
-/** Security Box element load
+/** Load Security Box element
  *
  * Loads data.
  *
@@ -150,7 +150,7 @@ vs_status_e
 vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
 
 
-/** Security Box element delete
+/** Delete Security Box element
  *
  * Deletes file on the disk.
  *
