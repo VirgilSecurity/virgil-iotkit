@@ -33,17 +33,17 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file trust_list.h
- * \brief Trust List
+ * \brief Trust List module
  *
  * This file provides interface for Trust Lists processing.
  *
  * Trust List contains the list of trusted public keys and signatures. Initial Trust List is obtained by device during
- * provision. After it can be upgraded by Update library using FLDT service.
+ * provision. After that, it can be upgraded by Update library using FLDT service.
  *
  * \section trust_list_usage Trust List Usage
  *
- * Trust List is maintained by Virgil IoT KID modules and doesn't need to be processed by user. Notwithstanding, there
- * are some places where it is needed user's attention :
+ * Trust List is maintained by Virgil IoT KIT modules and doesn't need to be processed by user. Nonetheless, there
+ * are some places where it needs user's attention :
  *
  * - Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide
  * #vs_fldt_server_add_filetype_cb for FLDT Server service :
@@ -81,8 +81,8 @@
  *
  * \endcode
  *
- * - After receiving by Gateway new Trust List by Cloud library it is necessary to send its version to Things. For this
- * goal #vs_tl_load_part is used. It reads Trust List header :
+ * - After the Gateway receives the new Trust List using Cloud library, it is necessary to send the Trust List version
+ * to Things. Use #vs_tl_load_part fir this purpose. This method reads Trust List header :
  *
  * \code
  *
@@ -147,7 +147,7 @@ vs_tl_deinit();
 
 /** Trust List element saving
  *
- * Saves Trust List header, footer or data chunk. Element selection it is done by \a element_info selector.
+ * Saves Trust List header, footer or data chunk. Element selection is performed by \a element_info selector.
  *
  * \param[in] element_info Element selection. Must not be NULL.
  * \param[in] in_data Data to be saved. Must not be NULL.
@@ -160,7 +160,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 
 /** Trust List element loading
  *
- * Loads Trust List header, footer or data chunk. Element selection it is done by \a element_info selector.
+ * Loads Trust List header, footer or data chunk. Element selection is performed by \a element_info selector.
  *
  * \param[in] element_info Element selection. Must not be NULL.
  * \param[out] out_data Output buffer to store data. Must not be NULL.

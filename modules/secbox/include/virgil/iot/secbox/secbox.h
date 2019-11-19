@@ -104,7 +104,7 @@ vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule);
 
 /** Destroy Security Box
  *
- * Destroys Security Box. This function must be called after any operations with Security Box.
+ * Destroys Security Box. This function must be called after all operations with Security Box.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

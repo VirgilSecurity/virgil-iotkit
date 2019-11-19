@@ -46,7 +46,7 @@
  * Implementation has members listed below :
  *
  * - \a open : opens data file and returns #vs_storage_file_t file descriptor.
- * - \a sync : synchronizes ache if present with file storage.
+ * - \a sync : synchronizes cache if present with file storage.
  * - \a close : closes file.
  * - \a del : securely deletes data on the storage and in the memory if cache is used.
  * - \a size : returns file size or negative value. It could be any error from #vs_status_e list.

@@ -45,8 +45,8 @@
 
 /** Trust List storage types */
 typedef enum {
-    TL_STORAGE_TYPE_STATIC = 0, /**< Default Trust List back up for restore it in case of provision error */
-    TL_STORAGE_TYPE_DYNAMIC,    /**< Trust List during provision process */
+    TL_STORAGE_TYPE_STATIC = 0, /**< Default Trust List backup for restoring it in case of provision error */
+    TL_STORAGE_TYPE_DYNAMIC,    /**< Trust List during the provision process */
     TL_STORAGE_TYPE_TMP,        /**< Trust list that is loading. After successful verification it is saved to \a
                                    TL_STORAGE_TYPE_STATIC */
 } vs_tl_storage_t;

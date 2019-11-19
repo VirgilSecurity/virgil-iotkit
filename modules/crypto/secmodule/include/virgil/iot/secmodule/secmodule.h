@@ -34,16 +34,16 @@
 
 /**
  * @file secmodule.h
- * @brief Security Module callbacks signatures
+ * @brief Security Module implementations signatures
  *
  * This header contains #vs_secmodule_impl_t structure that is used for crypto operations.
- * User needs to return this function for library with crypto callbacks.
  *
- * \note Library provides standard software implementation. See \ref vs-secmodule-usage for example.
+ * \warning User needs to provide Security Module implementation. Library provides standard software implementation.
+ * See \ref vs-secmodule-usage for example.
  *
  * \code
 
-vs_secmodule_impl_t *secmodule_impl;                 // Security Module callbacks
+vs_secmodule_impl_t *secmodule_impl;                 // Security Module implementations
 vs_storage_op_ctx_t slots_storage_impl;  // Slots storage implementation
 
 // Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :
@@ -113,7 +113,7 @@ typedef struct {
     unsigned char buffer[64]; /**< The data block being processed */
 } vs_secmodule_sw_sha256_ctx;
 
-/** Callback for save information to the slot
+/** Save information to the slot
  *
  * \param[in] slot Slot ID.
  * \param[in] data Data to be saved. Cannot be NULL.
@@ -123,7 +123,7 @@ typedef struct {
  */
 typedef vs_status_e (*vs_secmodule_slot_save_t)(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz);
 
-/** Callback for load information to the slot
+/** Load information to the slot
  *
  * \param[in] slot Slot ID.
  * \param[out] data Data buffer for loaded information. Cannot be NULL.
@@ -137,7 +137,7 @@ typedef vs_status_e (*vs_secmodule_slot_load_t)(vs_iot_secmodule_slot_e slot,
                                                 uint16_t buf_sz,
                                                 uint16_t *out_sz);
 
-/** Callback for delete information from the slot
+/** Delete information from the slot
  *
  * \param[in] slot Slot ID.
  *
@@ -145,7 +145,7 @@ typedef vs_status_e (*vs_secmodule_slot_load_t)(vs_iot_secmodule_slot_e slot,
  */
 typedef vs_status_e (*vs_secmodule_slot_delete_t)(vs_iot_secmodule_slot_e slot);
 
-/** Callback for hash generation
+/** Hash generation
  *
  * \param[in] hash_type Hash type. Cannot by #VS_HASH_SHA_INVALID.
  * \param[in] data Data source for hash calculation. Cannot be NULL.
@@ -163,7 +163,7 @@ typedef vs_status_e (*vs_secmodule_hash_create_t)(vs_secmodule_hash_type_e hash_
                                                   uint16_t hash_buf_sz,
                                                   uint16_t *hash_sz);
 
-/** Callback for key pair generate
+/** Key pair generate
  *
  * \param[in] slot Slot ID to save key pair.
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
@@ -173,9 +173,9 @@ typedef vs_status_e (*vs_secmodule_hash_create_t)(vs_secmodule_hash_type_e hash_
 typedef vs_status_e (*vs_secmodule_keypair_create_t)(vs_iot_secmodule_slot_e slot,
                                                      vs_secmodule_keypair_type_e keypair_type);
 
-/** Callback for public key retrieval
+/** Public key retrieval
  *
- * Before this call /ref vs_secmodule_keypair_create_t callback is called and public key is stored to \a slot.
+ * \note Before calling this function, you should call #vs_secmodule_keypair_create_t implementation first and store public key in \a slot.
  *
  * \param[in] slot Slot number.
  * \param[out] buf Output buffer to store public key. Cannot be NULL.
@@ -191,7 +191,7 @@ typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(vs_iot_secmodule_slot_e
                                                          uint16_t *key_sz,
                                                          vs_secmodule_keypair_type_e *keypair_type);
 
-/** Callback for signature calculation based on ECDSA
+/** Signature calculation based on ECDSA
  *
  * \param[in] key_slot Slot number.
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
@@ -209,7 +209,7 @@ typedef vs_status_e (*vs_secmodule_ecdsa_sign_t)(vs_iot_secmodule_slot_e key_slo
                                                  uint16_t signature_buf_sz,
                                                  uint16_t *signature_sz);
 
-/** Callback for signature verify based on ECDSA
+/** Signature verification based on ECDSA
  *
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
  * \param[in] public_key Public key buffer. Cannot be NULL.
@@ -229,7 +229,7 @@ typedef vs_status_e (*vs_secmodule_ecdsa_verify_t)(vs_secmodule_keypair_type_e k
                                                    const uint8_t *signature,
                                                    uint16_t signature_sz);
 
-/** Callback for HMAC calculation
+/** HMAC calculation
  *
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key buffer. Cannot be NULL.
@@ -251,7 +251,7 @@ typedef vs_status_e (*vs_secmodule_hmac_t)(vs_secmodule_hash_type_e hash_type,
                                            uint16_t output_buf_sz,
                                            uint16_t *output_sz);
 
-/** Callback for KDF calculation
+/** KDF calculation
  *
  * \param[in] kdf_type KDF algorithm. Cannot be #VS_KDF_INVALID.
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
@@ -269,7 +269,7 @@ typedef vs_status_e (*vs_secmodule_kdf_t)(vs_secmodule_kdf_type_e kdf_type,
                                           uint8_t *output,
                                           uint16_t output_sz);
 
-/** Callback for HKDF calculation
+/** HKDF calculation
  *
  * \param[in] hash_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] input Input data. Cannot be NULL.
@@ -293,7 +293,7 @@ typedef vs_status_e (*vs_secmodule_hkdf_t)(vs_secmodule_hash_type_e hash_type,
                                            uint8_t *output,
                                            uint16_t output_sz);
 
-/** Callback for random data generation
+/** Random data generation
  *
  * \param[out] output Output buffer. Cannot be NULL.
  * \param[in] output_sz Output buffer size. Cannot be zero.
@@ -302,7 +302,7 @@ typedef vs_status_e (*vs_secmodule_hkdf_t)(vs_secmodule_hash_type_e hash_type,
  */
 typedef vs_status_e (*vs_secmodule_random_t)(uint8_t *output, uint16_t output_sz);
 
-/** Callback for data encryption by AES algorithm
+/** Data encryption by AES algorithm
  *
  * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
@@ -332,7 +332,7 @@ typedef vs_status_e (*vs_secmodule_aes_encrypt_t)(vs_iot_aes_type_e aes_type,
                                                   uint8_t *tag,
                                                   uint16_t tag_len);
 
-/** Callback for data decryption by AES algorithm
+/** Data decryption by AES algorithm
  *
  * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
@@ -362,8 +362,7 @@ typedef vs_status_e (*vs_secmodule_aes_decrypt_t)(vs_iot_aes_type_e aes_type,
                                                   uint8_t *tag,
                                                   uint16_t tag_len);
 
-// TODO : correct title?
-/** Callback for data decryption by AES algorithm with authentification check
+/** Data decryption by AES algorithm with authentication check
  *
  * \param[in] aes_type Hash type. Cannot be #VS_HASH_SHA_INVALID.
  * \param[in] key Key. Cannot be NULL.
@@ -393,8 +392,7 @@ typedef vs_status_e (*vs_secmodule_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_typ
                                                        const uint8_t *tag,
                                                        uint16_t tag_len);
 
-// TODO : shared_secret - is in,out?
-/** Callback for ECDH algorithm
+/** ECDH algorithm
  *
  * \param[in] key_slot Slot number.
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
@@ -414,7 +412,7 @@ typedef vs_status_e (*vs_secmodule_ecdh_t)(vs_iot_secmodule_slot_e slot,
                                            uint16_t buf_sz,
                                            uint16_t *shared_secret_sz);
 
-/** Callback for SHA-256 context initialization
+/** SHA-256 context initialization
  *
  * \param[out] ctx Context. Cannot be NULL.
  *
@@ -422,7 +420,7 @@ typedef vs_status_e (*vs_secmodule_ecdh_t)(vs_iot_secmodule_slot_e slot,
  */
 typedef void (*vs_secmodule_sw_sha256_init_t)(vs_secmodule_sw_sha256_ctx *ctx);
 
-/** Callback for SHA-256 context update
+/** SHA-256 context update
  *
  * \param[in,out] ctx Context.
  * \param[in] message Message update SHA-256 context. Cannot be NULL.
@@ -434,8 +432,7 @@ typedef vs_status_e (*vs_secmodule_sw_sha256_update_t)(vs_secmodule_sw_sha256_ct
                                                        const uint8_t *message,
                                                        uint32_t len);
 
-// TODO : digest - correct description?
-/** Callback for SHA-256 context finalize
+/** SHA-256 context finalization
  *
  * \param[in,out] ctx Context.
  * \param[out] digest Produced digest. Cannot be NULL.
@@ -444,61 +441,61 @@ typedef vs_status_e (*vs_secmodule_sw_sha256_update_t)(vs_secmodule_sw_sha256_ct
  */
 typedef vs_status_e (*vs_secmodule_sw_sha256_final_t)(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest);
 
-/** Callback for Security Module destruction */
+/** Security Module destruction */
 typedef void (*vs_secmodule_deinit_t)(void);
 
 /** Security Module implementation
  *
- * This structure contains all callbacks needed for cryptographic operations.
+ * This structure contains all implementations needed for cryptographic operations.
  * There are slot operations (load, save, clean) and cryptographic ones (RNG,  key pair, ECDSA, ECDH, AES, hash, HMAC,
  * HKDF, ECIES).
  */
 typedef struct {
 
-    vs_secmodule_deinit_t deinit; /**< Security module destruction callback */
+    vs_secmodule_deinit_t deinit; /**< Security module destruction */
 
     // Slot operations
-    vs_secmodule_slot_save_t slot_save;    /**< Slot save information callback */
-    vs_secmodule_slot_load_t slot_load;    /**< Slot load information callback */
-    vs_secmodule_slot_delete_t slot_clean; /**< Slot delete callback */
+    vs_secmodule_slot_save_t slot_save;    /**< Slot save information */
+    vs_secmodule_slot_load_t slot_load;    /**< Slot load information */
+    vs_secmodule_slot_delete_t slot_clean; /**< Slot delete */
 
     // RNG
-    vs_secmodule_random_t random; /**< Get random data callback */
+    vs_secmodule_random_t random; /**< Get random data */
 
     // Key-pair in slot
-    vs_secmodule_keypair_create_t create_keypair; /**< Key pair generate callback */
-    vs_secmodule_keypair_get_pubkey_t get_pubkey; /**< Get public key callback */
+    vs_secmodule_keypair_create_t create_keypair; /**< Key pair generation */
+    vs_secmodule_keypair_get_pubkey_t get_pubkey; /**< Get public key */
 
     // ECDSA
-    vs_secmodule_ecdsa_sign_t ecdsa_sign;     /**< ECDSA sign callback */
-    vs_secmodule_ecdsa_verify_t ecdsa_verify; /**< ECDSA verify callback */
+    vs_secmodule_ecdsa_sign_t ecdsa_sign;     /**< ECDSA sign */
+    vs_secmodule_ecdsa_verify_t ecdsa_verify; /**< ECDSA verify */
 
     // ECDH
-    vs_secmodule_ecdh_t ecdh; /**< ECDH callback */
+    vs_secmodule_ecdh_t ecdh; /**< ECDH */
 
     // AES
-    vs_secmodule_aes_encrypt_t aes_encrypt;           /**< AES encrypt callback */
-    vs_secmodule_aes_decrypt_t aes_decrypt;           /**< AES decrypt callback */
-    vs_secmodule_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentification callback */
+    vs_secmodule_aes_encrypt_t aes_encrypt;           /**< AES encrypt */
+    vs_secmodule_aes_decrypt_t aes_decrypt;           /**< AES decrypt */
+    vs_secmodule_aes_auth_decrypt_t aes_auth_decrypt; /**< AES decrypt with authentication */
 
     // Hash
-    vs_secmodule_sw_sha256_init_t hash_init;     /**< SHA-256 hash initialize callback */
-    vs_secmodule_sw_sha256_update_t hash_update; /**< SHA-256 update callback */
-    vs_secmodule_sw_sha256_final_t hash_finish;  /**< SHA-256 finalize callback */
-    vs_secmodule_hash_create_t hash;             /**< Create hash callback */
+    vs_secmodule_sw_sha256_init_t hash_init;     /**< SHA-256 hash initialize */
+    vs_secmodule_sw_sha256_update_t hash_update; /**< SHA-256 update */
+    vs_secmodule_sw_sha256_final_t hash_finish;  /**< SHA-256 finalization */
+    vs_secmodule_hash_create_t hash;             /**< Create hash */
 
     // HMAC
-    vs_secmodule_hmac_t hmac; /**< HMAC calculate callback */
+    vs_secmodule_hmac_t hmac; /**< HMAC calculate */
 
     // KDF
-    vs_secmodule_kdf_t kdf; /**< KDF calculate callback */
+    vs_secmodule_kdf_t kdf; /**< KDF calculate */
 
     // HKDF
-    vs_secmodule_hkdf_t hkdf; /**< HKDF calculate callback */
+    vs_secmodule_hkdf_t hkdf; /**< HKDF calculate */
 
 } vs_secmodule_impl_t;
 
-/** Ecies decryption for AES-256 based on SHA-384
+/** ECIES decryption for AES-256 based on SHA-384
  *
  * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
  * \param[in] recipient_id Recipient ID. Cannot be NULL.
@@ -521,7 +518,7 @@ vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
                            size_t buf_sz,
                            size_t *decrypted_data_sz);
 
-/** Ecies encryption for AES-256 based on SHA-384
+/** ECIES encryption for AES-256 based on SHA-384
  *
  * \param[in] secmodule_impl Secmodule implementation. Cannot be NULL.
  * \param[in] recipient_id Recipient ID. Cannot be NULL.

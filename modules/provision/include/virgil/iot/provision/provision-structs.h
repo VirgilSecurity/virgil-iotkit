@@ -44,7 +44,7 @@ number,
  * #vs_device_manufacture_id_t, #vs_device_type_t and #vs_device_serial_t respectively. They must be initialized before
  * any Virgil IoT calls.
  *
- * There is manufacture ID initialization example provided below :
+ * Manufacture ID initialization example provided below :
  *
  * \code
 
@@ -110,20 +110,20 @@ init_manufacture_id(manufacture_id, MANUFACTURE_ID);
 
 /** Manufacture ID type
  *
- * This is manufacture identifier containing ASCII symbols and trailing zeroes.
+ * Manufacture identifier containing ASCII symbols and trailing zeroes.
  */
 typedef uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE];
 
-/** Device type type
+/** Device type
  *
- * This is device type identifier contains ASCII symbols and trailing zeroes.
+ * Device type identifier contains ASCII symbols and trailing zeroes.
  *
  */
 typedef uint8_t vs_device_type_t[VS_DEVICE_TYPE_SIZE];
 
 /** Device serial number type
  *
- * This is device serial number identifier contains ASCII symbols and trailing zeroes.
+ * Device serial number identifier contains ASCII symbols and trailing zeroes.
  *
  */
 typedef uint8_t vs_device_serial_t[VS_DEVICE_SERIAL_SIZE];
@@ -168,18 +168,17 @@ typedef enum {
     VS_PROVISION_PBF2 = VS_PRVS_PBF2
 } vs_provision_element_id_e;
 
-// TODO : are key description correct???
 /** Key type */
 typedef enum {
     VS_KEY_RECOVERY = 0,      /**< Recovery key */
-    VS_KEY_AUTH,              /**< Authentification key */
+    VS_KEY_AUTH,              /**< Authentication key */
     VS_KEY_TRUSTLIST,         /**< Trust List key*/
     VS_KEY_FIRMWARE,          /**< Firmware key */
     VS_KEY_FACTORY,           /**< Factory key */
     VS_KEY_IOT_DEVICE,        /**< Key of IoT device */
     VS_KEY_USER_DEVICE,       /**< Key ofr user device*/
     VS_KEY_FIRMWARE_INTERNAL, /**< Firmware internal key */
-    VS_KEY_AUTH_INTERNAL,     /**< Authentification internal key */
+    VS_KEY_AUTH_INTERNAL,     /**< Authentication internal key */
     VS_KEY_CLOUD,             /**< Cloud key */
     VS_KEY_UNSUPPORTED        /**< Unsupported key */
 } vs_key_type_e;
