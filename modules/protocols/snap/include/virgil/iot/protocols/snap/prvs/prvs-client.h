@@ -124,7 +124,7 @@ typedef struct {
 const vs_snap_service_t *
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
-/** Enumerate devices without provision
+/** Enumerate devices, which don't have initialization provision yet
  *
  * Enumerate devices that have not been initialized yet.
  *
@@ -139,7 +139,8 @@ vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *lis
 
 /** Save provision
  *
- * Sends request to initialize security module, generate key pairs and save it in the OTP memory.
+ * Sends request to initialize security module and to generate device key pair. After it necessarily saves the own key
+ * pair and received Recovery keys to OTP memory.
  *
  * \param[in] netif SNAP service descriptor. Must not be NULL.
  * \param[in] mac Device MAC address.
@@ -177,7 +178,7 @@ vs_snap_prvs_device_info(const vs_netif_t *netif,
 
 /** Sign data
  *
- * Sends generated device information for the device. It signs it it returns signature back.
+ * Sends generated device information for the device. Device signs it and returns signature back.
  *
  * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.

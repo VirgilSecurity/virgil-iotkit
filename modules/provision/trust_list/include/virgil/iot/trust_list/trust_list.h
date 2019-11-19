@@ -46,7 +46,7 @@
  * are some places where it is needed user's attention :
  *
  * - Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide
- * #vs_fldt_server_add_filetype_cb for FLDT Server serviceц:
+ * #vs_fldt_server_add_filetype_cb for FLDT Server service :
  *
  * \code
  *
@@ -94,7 +94,7 @@
  *  // Load latest local Trust List
  *  STATUS_CHECK(vs_tl_load_part(&elem, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz) &&
  *       tl_header_sz == sizeof(tl_header), "Unable to load Trust List header");
- *  tl_header.version.build = ntohl(tl_header.version.build);
+ *  vs_tl_header_to_host(&tl_header, &tl_header);
  *
  *  // Prepare Update information
  *  memset(tl_info, 0, sizeof(vs_update_file_type_t));

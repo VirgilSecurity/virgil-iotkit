@@ -62,7 +62,7 @@
  *
  *     // Register INFO Client service
  *     snap_info_client = vs_snap_info_client(_snap_info_impl(), _info_client_impl());
- *     STATUS_CHECK(vs_snap_register_service(snap_info_client), "Cannot register INFO client service");
+ *     STATUS_CHECK(vs_snap_register_service(snap_info_client), "Cannot register INFO Client service");
  *
  *     // Enumerate devices
  *     STATUS_CHECK(vs_snap_info_enum_devices(NULL, devices, devices_max, &devices_amount, wait_ms),
