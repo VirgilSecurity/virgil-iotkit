@@ -56,7 +56,7 @@
  *
  *     // Register INFO Server service
  *    snap_info_server = vs_snap_info_server(&tl_storage_impl, &fw_storage_impl, NULL);
- *    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO Server client service");
+ *    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO Server service");
  *
  * \endcode
  *
