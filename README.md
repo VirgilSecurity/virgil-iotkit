@@ -1,5 +1,4 @@
 # Virgil IoTKit C
-
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iotkit)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
@@ -135,11 +134,30 @@ $ scripts/install-virgil-crypto.sh
 
 ## Tests
 To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.        
- - Crypto: Crypto algorithms and primitives tests (aes, hash ecdh, hmac, kdf, etc.)
- - Firmware: Firmware related functionality - create device/firmware, save firmware, and etc.
- - Helpers: Create and save trustlist
- - Secbox: Test storage module. Read/write signed or/and encrypted data
- - SNAP: Secure Network Adjustable Protocol tests
+- Crypto: Crypto algorithms and primitives tests (aes, hash ecdh, hmac, kdf, etc.)
+- Firmware: Firmware related functionality - create device/firmware, save firmware, and etc.
+- Helpers: Create and save trustlist
+- Secbox: Test storage module. Read/write signed or/and encrypted data
+- SNAP: Secure Network Adjustable Protocol tests
+ 
+To run the preffered test go thtough the following steps:
+- Clone IoTKit repository 
+```shell
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iotkit
+```
+- Install virgil crypto from scripts folder by running the script:
+```shell
+$ scripts/install-virgil-crypto.sh
+```
+- Build project
+```shel
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+```
+- Run preffered tests 
+
 
 <div id='SDK-usage'/>
 
