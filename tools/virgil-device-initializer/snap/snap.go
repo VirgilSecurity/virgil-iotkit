@@ -411,12 +411,10 @@ func (p *DeviceProcessor) SignDevice() error {
 	fmt.Println("Signature (raw):", base64.StdEncoding.EncodeToString(rawSignature))
 
 	// Verify prepared signature
-	// - get device public key in Virgil format
 	pubKeyFull, err := p.DeviceSigner.PublicKeyFull()
 	if err != nil {
 		return err
 	}
-	fmt.Println("Device public key (virgil):", base64.StdEncoding.EncodeToString(pubKeyFull))
 
 	// - verify
 	if p.DeviceSigner.Verify(dataToSign, virgilSignature, pubKeyFull, virgilHashType) != nil {
