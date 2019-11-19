@@ -27,18 +27,15 @@ The **initialization** step includes uploading provisioning files, generating de
 In order to perform provisioning of IoT device, you have to prepare the following:
 - Trust List
 - Factory Private Key
-- Upper Level public keys (Auth, Recovery, Trust List Service, Firmware)
+- Upper Level public keys (Auth, Recovery, Trust List, Firmware)
 
 ### Initialization
 In order to perform device initialization, you have to go through the following steps:
-- After IoT device MAC is selected, you need to specify Upper Level public keys.
-- Device Initializer generates IoT device key pair.
-- The IoT device is signed with a Factory Key.
-- Then Device Initializer returns the IoT device's public key and signature.
-- Signature is uploaded to the IoT device.
-- Then Device Initializer uploads a Trust List to IoT device.
-- Thereafter Device Initializer obtains device info: manufacturer, model, MAC, serial number, factory signature and public key.
-- And finally, Device Initializer creates the device's digital card request and stores it in the Transfer File.
+- Device generates its own key pair. Device Initializer gets Device public key.
+- Device Initializer uploads public keys to Device.
+- Device Initializer signs Device public key with Factory key and uploads signature to Device.
+- Device Initializer uploads TrustList to Device.
+- And finally, Device Initializer creates device's digital card request and stores it in the file with card requests.
 
 Initialization of each device is performed one by one.
 
@@ -101,13 +98,12 @@ virgil-device-initializer
 --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub"
 --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub"
 --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub"
---tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_service_23138_tl2.pub"
---tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_service_41287_tl1.pub"
+--tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_23138_tl2.pub"
+--tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_41287_tl1.pub"
 --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub"
 --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub"
 --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl"
 --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key"
---factory_key_ec_type 3
 ```
 Use  ```virgil-device-initializer -h```   to see the list of available arguments.
 
@@ -128,7 +124,7 @@ The result of the command executing is the following:
 Here is an example of initializing of one device.
 
 ```bash
-Run:virgil-device-initializer --output "/root/current-credentials/card_requests_gateways.txt" --device_info_output "/root/current-credentials/device_info.txt" --file_transfer_key "/root/current-credentials/factory-file-transfer/factory-sender-key/private.key" --file_transfer_key_pass "qweASD123" --file_recipient_key "/root/current-credentials/factory-file-transfer/registrar-key/public.key" --auth_pub_key_1 "/root/current-credentials/key_storage/pubkeys/auth_15918_auth2.pub" --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub" --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub" --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub" --tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_service_23138_tl2.pub" --tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_service_41287_tl1.pub" --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub" --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub" --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl" --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key" --factory_key_ec_type 3
+Run:virgil-device-initializer --output "/root/current-credentials/card_requests_gateways.txt" --device_info_output "/root/current-credentials/device_info.txt" --auth_pub_key_1 "/root/current-credentials/key_storage/pubkeys/auth_15918_auth2.pub" --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub" --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub" --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub" --tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_23138_tl2.pub" --tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_41287_tl1.pub" --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub" --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub" --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl" --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key" 
 Got 1 device
 Device roles: [GATEWAY]
 Device MAC: 25:f4:69:0c:99:5a

@@ -70,12 +70,12 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
   {
     "path": "./keys/auth_54192_1auth.key",
     "key_type": 1,
-    "ec_type": 3
+
   },
   {
     "path": "./keys/firmware_16364_1fw.key",
     "key_type": 3,
-    "ec_type": 3
+
   }
 ]
 ```
@@ -85,7 +85,7 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
 |----------|--------------------------------------------------|
 | path     | The path to Auth or Firmware keys                |
 | key_type | Type of the private key                          |
-| ec_type  | Type of key generation algorithm (elyptic curve) |
+
 
 **Key Type**
 
@@ -99,22 +99,6 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
 | IoT device        | 5     |
 | User device       | 6     |
 | Cloud Service Key | 9     |
-
-**Elliptic Curve Type**
-
-| Key type      | Value |
-|---------------|-------|
-| EC_SECP192R1  | 1     |
-| EC_SECP224R1  | 2     |
-| EC_SECP256R1  | 3     |
-| EC_SECP384R1  | 4     |
-| EC_SECP521R1  | 5     |
-| EC_SECP192K1  | 6     |
-| EC_SECP224K1  | 7     |
-| EC_SECP256K1  | 8     |
-| EC_CURVE25519 | 9     |
-| EC_ED25519    | 10    |
-| RSA_2048      | 11    |
 
 ## Command Reference
 Here is the list of possible commands for Virgil Firmware Signer.
@@ -145,7 +129,7 @@ The difference between these files is that ```_Update.bin``` file has a ```heade
 **Example**
 
 ```bash
-virgil-firmware-signer --input “./keys/fw-VRGL-Cf01" --config “./conf.json” --file-size 1000000 --fw-version 0.1.2.3456 --manufacturer VRGL --model Cf01 --chunk-size 64000
+virgil-firmware-signer --input “fw-VRGL-Cf01" --config “./conf.json” --file-size 1000000 --fw-version 0.1.2.3456 --manufacturer VRGL --model Cf01 --chunk-size 64000
 ```
 | Command                        | Description                                      |
 |--------------------------------|--------------------------------------------------|

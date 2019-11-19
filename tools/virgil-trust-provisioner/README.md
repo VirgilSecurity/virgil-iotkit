@@ -101,11 +101,9 @@ $ sudo yum install virgil-iot-sdk-tools
 At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
 
 ```bash
-$ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
-$ cd virgil-iot-sdk
-$ mkdir build && cd build
-$ cmake ..
-$ make vs-tool-virgil-trust-provisioner
+$ git clone https://github.com/VirgilSecurity/virgil-iotkit.git
+$ cd virgil-iotkit/tools/virgil-trust-provisioner
+$ pip3 install .
 ```
 
 #### Windows OS
@@ -113,7 +111,7 @@ Virgil Trust Provisioner package for Windows OS is currently in development. To 
 
 
 ### Configure Trust Provisioner
-After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **./test_fs/** folder of the Trust Provisioner repository. While it is here, every time you launch the Trust Provisioner you have to specify the path to the config file:
+After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **/etc/virgil-trust-provisioner/provisioner.conf**. While it is here, every time you launch the Trust Provisioner you have to specify the path to the config file:
 
 ```bash
 virgil-trust-provisioner -c ./test_fs/provisioner.conf
@@ -129,18 +127,17 @@ By default, the Virgil Trust Provisioner configuration file has the following fo
 ```bash
 [MAIN]
 # path to main storage folder
-storage_path = ./test_fs
+storage_path = ~/virgil-trust-provisioner
 
 # path to folder for logs
-log_path = ./test_fs/logs
+log_path = ~/virgil-trust-provisioner/logs
 
-[CARDS]
-# URL of Virgil API. Used for cloud key retrieving and cards registration.
-virgil_api_url = https://api.virgilsecurity.com
-card_registration_endpoint = /things/card/key
+# path to provision package folder
+provision_pack_path = ~/virgil-trust-provisioner/provision-package
 
-# json with factory info (will be add to Factory key card)
-factory_info_json = ./test_fs/factory_info_sample.json
+[VIRGIL]
+# URL of Virgil IoT API. Used for Cloud key retrieving and cards registration.
+iot_api_url = https://api-iot.virgilsecurity.com
 ```
 #### Configurable Variables
 The configuration file (default name: **provisioner.conf**) contains the following variables:
@@ -156,28 +153,29 @@ The configuration file (default name: **provisioner.conf**) contains the followi
 **Factory JSON example**
 ```bash
 {
-  "factory_info": {
     "name": "Sample Factory Name",
     "address": "sample address",
     "contacts": "sample_factory@some_mail.com"
-  }
 }
 ```
 ## Launch Trust Provisioner
 To launch the Virgil Trust Provisioner use the following syntax:
 
 ```bash
-virgil-trust-provisioner --app-token <token>
+virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 ```
 In case you need to specify path to the custom config file, you use following syntax:
 
 ```bash
-virgil-trust-provisioner --app-token <token> -c ./test_fs/provisioner.conf
+virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO> -c ./provisioner.conf
 ```
 | Option                              | Description                                                                                                                                                                  |
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | --app-token , -t                    | Application token (App Token) is used for authentication at Virgil Cloud to register Virgil Cards for Upper Level Keys. To generate an application token use the Virgil CLI. |
 | -c CONFIG_PATH,--config CONFIG_PATH | The path to custom configuration file of the Virgil Trust Provisioner                                                                                                        |
+| -i FACTORY_INFO, --factory-info FACTORY_INFO | Path to JSON with factory info (Information about factory will be added to factory's digital Virgil card)                                                                                                        |
+| -y, --skip-confirm | Skip all confirmation requests                                                                                                 |
+
 
 ## Command Reference
 Here is the list of possible commands for Virgil Trust Provisioner.
@@ -194,7 +192,7 @@ Application commands are used to perform operations such as key generating, data
 ### Private Keys
 | Command | Result                                                                                                                       |
 |---------|------------------------------------------------------------------------------------------------------------------------------|
-| ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
+| ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Keys, 2 Firmware Keys, 1 Factory Key |
 | ```2```       | Generate 2 Recovery Keys                                                                                                     |
 | ```3```       | Generate 2 Auth Keys                                                                                                         |
 | ```4```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
@@ -312,9 +310,9 @@ $ Enter comment for Auth Key: My 2 Auth key
 # Virgil Card for key successfully registered
 # Generation finished
 
-# TrustList Service Key 1:
+# TrustList Key 1:
 
-# Generating TrustList Service Key...
+# Generating TrustList Key...
 # Please choose Recovery Key for signing:
 # Keys list:
 	1. db: RecoveryPrivateKeys, type: recovery, comment: My 2 recovery, key_id: 12842
@@ -327,13 +325,13 @@ $ Enter month (1-12): 10
 $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
-$ Enter comment for TrustList Service Key: My 1 TL key
+$ Enter comment for TrustList Key: My 1 TL key
 # Virgil Card for key successfully registered
 # Generation finished
 
-# TrustList Service Key 2:
+# TrustList Key 2:
 
-#Generating TrustList Service Key...
+#Generating TrustList Key...
 # Please choose Recovery Key for signing:
 # Keys list:
 	1. db: RecoveryPrivateKeys, type: recovery, comment: My 2 recovery, key_id: 12842
@@ -346,7 +344,7 @@ $ Enter month (1-12): 10
 $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
-$ Enter comment for TrustList Service Key: My 2 TL key
+$ Enter comment for TrustList Key: My 2 TL key
 # Virgil Card for key successfully registered
 # Generation finished
 
@@ -405,7 +403,7 @@ $ Enter comment for Factory Key: My Factory key
 ```
 
 ### Recovery Key
-The upper level key for recovery operations and for some keys creation. Recovery Key allows devices to identify Keys authorised by User. Recovery Key signs Auth Keys, TL Service Keys, Firmware Keys.
+The upper level key for recovery operations and for some keys creation. Recovery Key allows devices to identify Keys authorised by User. Recovery Key signs Auth Keys, TL Keys, Firmware Keys.
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
@@ -527,11 +525,11 @@ The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure
 **Example**
 ```bash
 $ Please enter option number: 4
-$ Are you sure you want to choose [Generate TrustList Service Key (2)] [y/n]: y
+$ Are you sure you want to choose [Generate TrustList Key (2)] [y/n]: y
 
-# Generate TrustList Service Key 1:
+# Generate TrustList Key 1:
 
-# Generating TrustList Service Key...
+# Generating TrustList Key...
 
 # Please choose Recovery Key for signing:
 # Keys list:
@@ -550,13 +548,13 @@ $ Enter year (yyyy): 2019
 $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
-$ Enter comment for TrustList Service Key: My TL    Service key    
+$ Enter comment for TrustList Key: My TL key    
 # Virgil Card for key successfully registered   
 # Generation finished
 
-# Generate TrustList Service Key 2:
+# Generate TrustList Key 2:
 
-# Generating TrustList Service Key...
+# Generating TrustList Key...
 
 # Please choose Recovery Key for signing:
 # Keys list:
@@ -575,7 +573,7 @@ $ Enter year (yyyy): 2019
 $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
-$ Enter comment for TrustList Service Key: My second TL Service key
+$ Enter comment for TrustList Key: My second TL key
 # Virgil Card for key successfully registered
 # Generation finished
 ```
@@ -779,7 +777,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 | ```8```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generation
-Trust List that contains Public Keys and signatures (signatures of Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db. TL contains signatures of Recovery Keys and Auth Keys.
+Trust List that contains Public Keys (Factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db.
 
 **Example**
 ```bash
@@ -790,12 +788,8 @@ $ virgil-trust-provisioner
 
 $ Please enter option number: 8
 $ Are you sure you want to choose [Generate TrustList] [y/n]: y
-# TrustList types:
-	1. Dev
-	2. Release
-$ Please choose TrustList type: 1
 
-# Generating Dev TrustList...
+# Generating TrustList...
 
 # Current TrustList version is 0
 $ Enter the TrustList version [1]: 1
@@ -804,10 +798,10 @@ $ Enter the TrustList version [1]: 1
 	1. db: AuthPrivateKeys, type: auth, comment: My Auth key, key_id: 17326
 	2. db: AuthPrivateKeys, type: auth, comment: My second Auth key, key_id: 56318
 $ Please enter option number: 1
-$ Please choose TrustList Service Key for TrustList signing:
+$ Please choose TrustList Key for TrustList signing:
 # Keys list:
-	1. db: TLServicePrivateKeys, type: tl_service, comment: My second TL Service key, key_id: 3847
-	2. db: TLServicePrivateKeys, type: tl_service, comment: My TL Service key, key_id: 64076
+	1. db: TLServicePrivateKeys, type: tl_service, comment: My second TL key, key_id: 3847
+	2. db: TLServicePrivateKeys, type: tl_service, comment: My TL key, key_id: 64076
 $ Please enter option number: 1
 # Generation finished
 # Storing to file...
@@ -826,14 +820,14 @@ Virgil Trust Provisioner contains following types of databases.
 
 | Database type            | Description                                                                                                                           |
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| ```UpperLevelKeys.db```       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList Service public keys, Firmware public keys) |
-| ```TrustListPubKeys.db```     | contains public keys of Factory, Auth Internal, Firmware Internal and,cloud                                                           |
+| ```UpperLevelKeys.db```       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList public keys, Firmware public keys) |
+| ```TrustListPubKeys.db```     | contains public keys of Factory,  and cloud                                                           |
 | ```TrustListVerions.db```    | contains versions of created Trust Lists                                                                                              |
 | ```FactoryPrivateKeys.db```   | contains private key of Factory key                                                                                                   |
 | ```FirmwarePrivateKeys.db```  | contains private key of Firmware key                                                                                                  |
 | ```AuthPrivateKeys.db```      | contains private key of Auth key                                                                                                      |
 | ```RecoveryPrivateKeys.db```  | contains private key of Recovery key                                                                                                  |
-| ```TLServicePrivateKeys.db``` | contains private key of TrustListService key                                                                                          |
+| ```TLServicePrivateKeys.db``` | contains private key of TrustList key                                                                                          |
 ### Database Security
 Virgil Trust Provisioner doesn't provide any security mechanism for protecting databases, therefore it is very important to restrict access to Virgil Trust Provisioner for non authorized users.
 
@@ -861,16 +855,16 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 | Key Id |    Type    |         Comment          | Signed by |   Start   |   Expire  |                                           Key                                            |
 +--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
 | 59802  |  recovery  |  My second recovery key  |           |     0     |     0     | BDHLav5qUoU2I0vkR5hxcKlGv8MFF8CqzmkCCr7UOroVaqNK0mRncZ0dSebW4xM9GmWpUPEaGdqfewaLPeszL8E= |
-|  3847  | tl_service | My second TL Service key |    2591   | 152236800 | 157680000 | BLVkY5A6k4hgAw/auNgJUOR07eDoVn+4aeAdqgn3XlapJr1E6R6+1ALw9my9EjaILFYq/2oMAPeNdwqSOfLvx2o= |
+|  3847  | tl_service | My second TL key |    2591   | 152236800 | 157680000 | BLVkY5A6k4hgAw/auNgJUOR07eDoVn+4aeAdqgn3XlapJr1E6R6+1ALw9my9EjaILFYq/2oMAPeNdwqSOfLvx2o= |
 |  8079  |  firmware  |     My Firmware key      |    2591   | 152236800 | 157680000 | BOBzJhYo9H4Zt8jpYBXOHU90UdDyRJ4EC0Jeaqn7tgXzzMa6PkvUSrS5Rpc9PR4Ljeot/a+6BE+A0rEVJ1LcUjY= |
 |  2591  |  recovery  |     My recovery key      |           | 152236800 | 157680000 | BCDE6GWvuQdRw8oXPqLBKG18VW8y4neenhpEcjKu51PxgnYW6fKd9OLdGWp7HmXz9/RVuk45f7/lFm5do8VIZSk= |
 | 17326  |    auth    |       My Auth key        |    2591   | 152236800 | 157680000 | BIutaAbco7P6ycw3p8mUXzlybkWPMG/pppvpkCOVpf0HbducgwYbOWrkaKtoTJrQNDNHLjPDgDqYUphtdPYpq1U= |
 | 56318  |    auth    |    My second Auth key    |    2591   | 152236800 | 157680000 | BO8dALo4qJWqACTgiPg+iT/H+5lWaoBzI43vygUUC4D+g1YNThjOjsqtBcx44p9QRFuQnAgNafOVaMmFCj2EsAM= |
-| 64076  | tl_service |    My TL Service key     |    2591   | 152236800 | 157680000 | BDzVCcbLFzyzEG5HjSPxdwDKY5jnTkwluQFTGQmmtFZPKHmbnLkMVXorSXhvYFV+25uyG+RRM0QZAtpoBSF5lOo= |
+| 64076  | tl_service |    My TL key     |    2591   | 152236800 | 157680000 | BDzVCcbLFzyzEG5HjSPxdwDKY5jnTkwluQFTGQmmtFZPKHmbnLkMVXorSXhvYFV+25uyG+RRM0QZAtpoBSF5lOo= |
 | 32842  |  firmware  |  My second Firmware key  |    2591   | 152236800 | 157680000 | BNI+ES2Gyps499Ur1oOTVwUkW5prCU8hylgxaYbL3o6/6htXM5iAkGc1OClyjq3T9Sd6ZkFTVy39TmUasdUtic0= |
 +--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
 
-# TrustList Service Keys:
+# TrustList Keys:
 +--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
 | Key Id |        Type       | EC type |       Comment       |   Start   |   Expire  |                                           Key                                            |
 +--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+

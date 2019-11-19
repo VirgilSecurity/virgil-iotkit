@@ -17,9 +17,8 @@ In order to make your IoT device identifiable, verifiable and manageable, you ha
 
 ### How it works
 - After IoT device goes through the provisioning process at manufacturing stage at Factory, it gets signed digital card request (SCR).
-- All SCRs are collected in a file and encrypted with public key of the Virgil Device Registrar.
-- The encrypted file is transferred to the Virgil Device Registrar.
-- Virgil IoT Device Registrar uses own private key which is called File Transfer Key and decrypts the encrypted file.
+- All SCRs are collected in a file.
+- The file is transferred to the Virgil Device Registrar.
 - Virgil IoT Device Registrar gets the SCR of the IoT device with its identification information and registries it in the Virgil Cloud.
 - All requests to Virgil Cloud have to be authenticated, therefore Virgil IoT Device Registrar uses Application Token during the device registration. An Application Token is generated in Virgil Cloud and provided by you.
 - If the request is successful, the IoT identification information is registered at the Virgil Thing Service and the SCR is registered at Virgil Cards Service.
@@ -93,7 +92,7 @@ In order to registrar IoT device, Virgil Device Registrar uses the following com
 | ```virgil-device-registrar [global options] command [command options] [arguments...]``` | IoT device is registrated |
 
 ``` bash
-virgil-device-registrar --data "/root/current-credentials/card_requests_gateways.txt" --file_key "/root/current-credentials/factory-file-transfer/registrar-key/private.key" --file_key_pass qweASD123 --file_sender_key "/root/current-credentials/factory-file-transfer/factory-sender-key/public.key" --app_token "AT.K6E4PEeOdLfacsq0I9C1I34CSgitDKRB" --registration_url https://api-iot.virgilsecurity.com/things/card
+virgil-device-registrar --data "/root/current-credentials/card_requests_gateways.txt" --app_token "AT.K6E8PEeOdLfacsq0I9C1I14CSgiоDKМB" --api_url https://api-iot-dev.virgilsecurity.com
 ```
 | Option                             | Description                                                                                                                                                                                                                                               |
 |------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
