@@ -92,7 +92,7 @@ Functions</h2></td></tr>
 <p>These functions have to be implemented to use logger module. See #logger_usage for details.</p>
 <h1><a class="anchor" id="logger_hal_implementation"></a>
 Logger HAL Implementation</h1>
-<dl class="section warning"><dt>Warning</dt><dd>If <a class="el" href="logger-config_8h.html#ad48fdd0cde20a1c079f35ac27e55fa9c" title="Use logger library.">VS_IOT_LOGGER_USE_LIBRARY</a> is set to 1, user has to provide logger output function <a class="el" href="logger-hal_8h.html#ae24001779e98e808826579857ea04877" title="Function signature for unterminated string output.">vs_logger_output_hal</a> The goal of this function is to output part of string to the output. Its implementation can be as listed below :</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>If <a class="el" href="logger-config_8h.html#ad48fdd0cde20a1c079f35ac27e55fa9c" title="Use logger library.">VS_IOT_LOGGER_USE_LIBRARY</a> is set to 1, user has to provide logger output function <a class="el" href="logger-hal_8h.html#ae24001779e98e808826579857ea04877" title="Function signature for unterminated string output.">vs_logger_output_hal</a>. The goal of this function is to add a part of string to the output. It can be implemented as shown :</dd></dl>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="keywordtype">bool</span></div>
 <div class="line"><a class="code" href="logger-hal_8h.html#ae24001779e98e808826579857ea04877">vs_logger_output_hal</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *buffer) {</div>
@@ -102,7 +102,7 @@ Logger HAL Implementation</h1>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> printf(<span class="stringliteral">&quot;%s&quot;</span>, buffer) != 0;</div>
 <div class="line">}</div>
-</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>If <a class="el" href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0" title="Output current time.">VS_IOT_LOGGER_OUTPUT_TIME</a> is set to 1, user has to implement <a class="el" href="logger-hal_8h.html#a1c174546591c82de718fa5b27b2d63c5" title="Output current date/time function signature.">vs_logger_current_time_hal</a> function that outputs current time. Its implementation can be as listed below :</dd></dl>
+</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>If <a class="el" href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0" title="Output current time.">VS_IOT_LOGGER_OUTPUT_TIME</a> is set to 1, user has to implement <a class="el" href="logger-hal_8h.html#a1c174546591c82de718fa5b27b2d63c5" title="Output current date/time function signature.">vs_logger_current_time_hal</a> function that outputs current time. It can be implemented as shown below :</dd></dl>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;time.h&gt;</span></div>
 <div class="line"> </div>
@@ -135,8 +135,8 @@ Logger HAL Implementation</h1>
 </div><div class="memdoc">
 
 <p>Output current date/time function signature. </p>
-<p>This is HAL function that has to be implemented by user if <a class="el" href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0" title="Output current time.">VS_IOT_LOGGER_OUTPUT_TIME</a> == 1. It outputs current date and/or time to the output, i. e. by using vs_logger_output_hal.</p>
-<dl class="section return"><dt>Returns</dt><dd>true in case of success or false in any error occur </dd></dl>
+<p>This is the HAL function that has to be implemented by user if <a class="el" href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0" title="Output current time.">VS_IOT_LOGGER_OUTPUT_TIME</a> == 1. It adds current date and/or time to the output, e.g. by using vs_logger_output_hal.</p>
+<dl class="section return"><dt>Returns</dt><dd>true in case of success or false if any error occurs </dd></dl>
 
 </div>
 </div>
@@ -157,14 +157,14 @@ Logger HAL Implementation</h1>
 </div><div class="memdoc">
 
 <p>Function signature for unterminated string output. </p>
-<p>This is HAL function that has to be implemented by user if <a class="el" href="logger-config_8h.html#ad48fdd0cde20a1c079f35ac27e55fa9c" title="Use logger library.">VS_IOT_LOGGER_USE_LIBRARY</a> == 1. It sends string to the output.</p>
+<p>This is the HAL function that has to be implemented by user if <a class="el" href="logger-config_8h.html#ad48fdd0cde20a1c079f35ac27e55fa9c" title="Use logger library.">VS_IOT_LOGGER_USE_LIBRARY</a> == 1. It sends string to the output.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">buffer</td><td>Buffer with part of the string. Cannot be NULL</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true in case of success or false in any error occur </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true in case of success or false if any error occurs </dd></dl>
 
 </div>
 </div>

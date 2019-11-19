@@ -75,7 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Security Module callbacks signatures.  
+<p>Security Module implementations signatures.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
@@ -96,64 +96,64 @@ Data Structures</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a116a6c90ca4601e62b30783b587058b0"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a116a6c90ca4601e62b30783b587058b0">vs_secmodule_slot_save_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot, const uint8_t *data, uint16_t data_sz)</td></tr>
-<tr class="memdesc:a116a6c90ca4601e62b30783b587058b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for save information to the slot.  <a href="secmodule_8h.html#a116a6c90ca4601e62b30783b587058b0">More...</a><br /></td></tr>
+<tr class="memdesc:a116a6c90ca4601e62b30783b587058b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save information to the slot.  <a href="secmodule_8h.html#a116a6c90ca4601e62b30783b587058b0">More...</a><br /></td></tr>
 <tr class="separator:a116a6c90ca4601e62b30783b587058b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc7fe5953c7f0fe96e2b83a3adc936e"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a7fc7fe5953c7f0fe96e2b83a3adc936e">vs_secmodule_slot_load_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz)</td></tr>
-<tr class="memdesc:a7fc7fe5953c7f0fe96e2b83a3adc936e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for load information to the slot.  <a href="secmodule_8h.html#a7fc7fe5953c7f0fe96e2b83a3adc936e">More...</a><br /></td></tr>
+<tr class="memdesc:a7fc7fe5953c7f0fe96e2b83a3adc936e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load information to the slot.  <a href="secmodule_8h.html#a7fc7fe5953c7f0fe96e2b83a3adc936e">More...</a><br /></td></tr>
 <tr class="separator:a7fc7fe5953c7f0fe96e2b83a3adc936e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82a1e398e0ad4463188f5b39011f7b0f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a82a1e398e0ad4463188f5b39011f7b0f">vs_secmodule_slot_delete_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot)</td></tr>
-<tr class="memdesc:a82a1e398e0ad4463188f5b39011f7b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for delete information from the slot.  <a href="secmodule_8h.html#a82a1e398e0ad4463188f5b39011f7b0f">More...</a><br /></td></tr>
+<tr class="memdesc:a82a1e398e0ad4463188f5b39011f7b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete information from the slot.  <a href="secmodule_8h.html#a82a1e398e0ad4463188f5b39011f7b0f">More...</a><br /></td></tr>
 <tr class="separator:a82a1e398e0ad4463188f5b39011f7b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad22aa9811a3466d5138752c1141d9309"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#ad22aa9811a3466d5138752c1141d9309">vs_secmodule_hash_create_t</a>) (<a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *data, uint16_t data_sz, uint8_t *hash, uint16_t hash_buf_sz, uint16_t *hash_sz)</td></tr>
-<tr class="memdesc:ad22aa9811a3466d5138752c1141d9309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for hash generation.  <a href="secmodule_8h.html#ad22aa9811a3466d5138752c1141d9309">More...</a><br /></td></tr>
+<tr class="memdesc:ad22aa9811a3466d5138752c1141d9309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash generation.  <a href="secmodule_8h.html#ad22aa9811a3466d5138752c1141d9309">More...</a><br /></td></tr>
 <tr class="separator:ad22aa9811a3466d5138752c1141d9309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac100d64b55dcb0cdda04c721fedb632d"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#ac100d64b55dcb0cdda04c721fedb632d">vs_secmodule_keypair_create_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot, <a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type)</td></tr>
-<tr class="memdesc:ac100d64b55dcb0cdda04c721fedb632d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for key pair generate.  <a href="secmodule_8h.html#ac100d64b55dcb0cdda04c721fedb632d">More...</a><br /></td></tr>
+<tr class="memdesc:ac100d64b55dcb0cdda04c721fedb632d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key pair generate.  <a href="secmodule_8h.html#ac100d64b55dcb0cdda04c721fedb632d">More...</a><br /></td></tr>
 <tr class="separator:ac100d64b55dcb0cdda04c721fedb632d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62e6da18277ecdf282c40dec53af7087"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a62e6da18277ecdf282c40dec53af7087">vs_secmodule_keypair_get_pubkey_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot, uint8_t *buf, uint16_t buf_sz, uint16_t *key_sz, <a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> *keypair_type)</td></tr>
-<tr class="memdesc:a62e6da18277ecdf282c40dec53af7087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for public key retrieval.  <a href="secmodule_8h.html#a62e6da18277ecdf282c40dec53af7087">More...</a><br /></td></tr>
+<tr class="memdesc:a62e6da18277ecdf282c40dec53af7087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Public key retrieval.  <a href="secmodule_8h.html#a62e6da18277ecdf282c40dec53af7087">More...</a><br /></td></tr>
 <tr class="separator:a62e6da18277ecdf282c40dec53af7087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c377c5b1d8c9215891a017698787425"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a3c377c5b1d8c9215891a017698787425">vs_secmodule_ecdsa_sign_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> key_slot, <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *hash, uint8_t *signature, uint16_t signature_buf_sz, uint16_t *signature_sz)</td></tr>
-<tr class="memdesc:a3c377c5b1d8c9215891a017698787425"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for signature calculation based on ECDSA.  <a href="secmodule_8h.html#a3c377c5b1d8c9215891a017698787425">More...</a><br /></td></tr>
+<tr class="memdesc:a3c377c5b1d8c9215891a017698787425"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signature calculation based on ECDSA.  <a href="secmodule_8h.html#a3c377c5b1d8c9215891a017698787425">More...</a><br /></td></tr>
 <tr class="separator:a3c377c5b1d8c9215891a017698787425"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5dd538ef047416ebd3c46409f1bb369"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#ae5dd538ef047416ebd3c46409f1bb369">vs_secmodule_ecdsa_verify_t</a>) (<a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const uint8_t *public_key, uint16_t public_key_sz, <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *hash, const uint8_t *signature, uint16_t signature_sz)</td></tr>
-<tr class="memdesc:ae5dd538ef047416ebd3c46409f1bb369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for signature verify based on ECDSA.  <a href="secmodule_8h.html#ae5dd538ef047416ebd3c46409f1bb369">More...</a><br /></td></tr>
+<tr class="memdesc:ae5dd538ef047416ebd3c46409f1bb369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signature verification based on ECDSA.  <a href="secmodule_8h.html#ae5dd538ef047416ebd3c46409f1bb369">More...</a><br /></td></tr>
 <tr class="separator:ae5dd538ef047416ebd3c46409f1bb369"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a292ef96eb257ccee3da36026a1427432"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a292ef96eb257ccee3da36026a1427432">vs_secmodule_hmac_t</a>) (<a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *key, uint16_t key_sz, const uint8_t *input, uint16_t input_sz, uint8_t *output, uint16_t output_buf_sz, uint16_t *output_sz)</td></tr>
-<tr class="memdesc:a292ef96eb257ccee3da36026a1427432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for HMAC calculation.  <a href="secmodule_8h.html#a292ef96eb257ccee3da36026a1427432">More...</a><br /></td></tr>
+<tr class="memdesc:a292ef96eb257ccee3da36026a1427432"><td class="mdescLeft">&#160;</td><td class="mdescRight">HMAC calculation.  <a href="secmodule_8h.html#a292ef96eb257ccee3da36026a1427432">More...</a><br /></td></tr>
 <tr class="separator:a292ef96eb257ccee3da36026a1427432"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3853b521e06826aa7ea630a95694cb0b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a3853b521e06826aa7ea630a95694cb0b">vs_secmodule_kdf_t</a>) (<a class="el" href="secmodule_8h.html#ae37c0a2bba9bed9498986ee3d6eeb1df">vs_secmodule_kdf_type_e</a> kdf_type, <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *input, uint16_t input_sz, uint8_t *output, uint16_t output_sz)</td></tr>
-<tr class="memdesc:a3853b521e06826aa7ea630a95694cb0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for KDF calculation.  <a href="secmodule_8h.html#a3853b521e06826aa7ea630a95694cb0b">More...</a><br /></td></tr>
+<tr class="memdesc:a3853b521e06826aa7ea630a95694cb0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">KDF calculation.  <a href="secmodule_8h.html#a3853b521e06826aa7ea630a95694cb0b">More...</a><br /></td></tr>
 <tr class="separator:a3853b521e06826aa7ea630a95694cb0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a542ffcb7f41dfa040d920531e5fda25f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a542ffcb7f41dfa040d920531e5fda25f">vs_secmodule_hkdf_t</a>) (<a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5">vs_secmodule_hash_type_e</a> hash_type, const uint8_t *input, uint16_t input_sz, const uint8_t *salt, uint16_t salt_sz, const uint8_t *info, uint16_t info_sz, uint8_t *output, uint16_t output_sz)</td></tr>
-<tr class="memdesc:a542ffcb7f41dfa040d920531e5fda25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for HKDF calculation.  <a href="secmodule_8h.html#a542ffcb7f41dfa040d920531e5fda25f">More...</a><br /></td></tr>
+<tr class="memdesc:a542ffcb7f41dfa040d920531e5fda25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">HKDF calculation.  <a href="secmodule_8h.html#a542ffcb7f41dfa040d920531e5fda25f">More...</a><br /></td></tr>
 <tr class="separator:a542ffcb7f41dfa040d920531e5fda25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add535c1977ca69c538d144a5f161569e"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#add535c1977ca69c538d144a5f161569e">vs_secmodule_random_t</a>) (uint8_t *output, uint16_t output_sz)</td></tr>
-<tr class="memdesc:add535c1977ca69c538d144a5f161569e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for random data generation.  <a href="secmodule_8h.html#add535c1977ca69c538d144a5f161569e">More...</a><br /></td></tr>
+<tr class="memdesc:add535c1977ca69c538d144a5f161569e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random data generation.  <a href="secmodule_8h.html#add535c1977ca69c538d144a5f161569e">More...</a><br /></td></tr>
 <tr class="separator:add535c1977ca69c538d144a5f161569e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ec8e54834219b579b41970938361273"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a9ec8e54834219b579b41970938361273">vs_secmodule_aes_encrypt_t</a>) (<a class="el" href="secmodule_8h.html#a546035f9a1385c8d1bc671f0a0a87462">vs_iot_aes_type_e</a> aes_type, const uint8_t *key, uint16_t key_bitlen, const uint8_t *iv, uint16_t iv_len, const uint8_t *add, uint16_t add_len, uint16_t buf_len, const uint8_t *input, uint8_t *output, uint8_t *tag, uint16_t tag_len)</td></tr>
-<tr class="memdesc:a9ec8e54834219b579b41970938361273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data encryption by AES algorithm.  <a href="secmodule_8h.html#a9ec8e54834219b579b41970938361273">More...</a><br /></td></tr>
+<tr class="memdesc:a9ec8e54834219b579b41970938361273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data encryption by AES algorithm.  <a href="secmodule_8h.html#a9ec8e54834219b579b41970938361273">More...</a><br /></td></tr>
 <tr class="separator:a9ec8e54834219b579b41970938361273"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fffd2176437731282bd5564a1cf3e0f"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a6fffd2176437731282bd5564a1cf3e0f">vs_secmodule_aes_decrypt_t</a>) (<a class="el" href="secmodule_8h.html#a546035f9a1385c8d1bc671f0a0a87462">vs_iot_aes_type_e</a> aes_type, const uint8_t *key, uint16_t key_bitlen, const uint8_t *iv, uint16_t iv_len, const uint8_t *add, uint16_t add_len, uint16_t buf_len, const uint8_t *input, uint8_t *output, uint8_t *tag, uint16_t tag_len)</td></tr>
-<tr class="memdesc:a6fffd2176437731282bd5564a1cf3e0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data decryption by AES algorithm.  <a href="secmodule_8h.html#a6fffd2176437731282bd5564a1cf3e0f">More...</a><br /></td></tr>
+<tr class="memdesc:a6fffd2176437731282bd5564a1cf3e0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data decryption by AES algorithm.  <a href="secmodule_8h.html#a6fffd2176437731282bd5564a1cf3e0f">More...</a><br /></td></tr>
 <tr class="separator:a6fffd2176437731282bd5564a1cf3e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d5a194daba16350eb3063f0568d4d0b"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a8d5a194daba16350eb3063f0568d4d0b">vs_secmodule_aes_auth_decrypt_t</a>) (<a class="el" href="secmodule_8h.html#a546035f9a1385c8d1bc671f0a0a87462">vs_iot_aes_type_e</a> aes_type, const uint8_t *key, uint16_t key_bitlen, const uint8_t *iv, uint16_t iv_len, const uint8_t *add, uint16_t add_len, uint16_t buf_len, const uint8_t *input, uint8_t *output, const uint8_t *tag, uint16_t tag_len)</td></tr>
-<tr class="memdesc:a8d5a194daba16350eb3063f0568d4d0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for data decryption by AES algorithm with authentification check.  <a href="secmodule_8h.html#a8d5a194daba16350eb3063f0568d4d0b">More...</a><br /></td></tr>
+<tr class="memdesc:a8d5a194daba16350eb3063f0568d4d0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data decryption by AES algorithm with authentication check.  <a href="secmodule_8h.html#a8d5a194daba16350eb3063f0568d4d0b">More...</a><br /></td></tr>
 <tr class="separator:a8d5a194daba16350eb3063f0568d4d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a841ac91bfb95c6f84657a7dff2b5442d"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a841ac91bfb95c6f84657a7dff2b5442d">vs_secmodule_ecdh_t</a>) (<a class="el" href="secmodule-soft_8h.html#aac694d1e010994dd1638aaa1d745fd02">vs_iot_secmodule_slot_e</a> slot, <a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2a">vs_secmodule_keypair_type_e</a> keypair_type, const uint8_t *public_key, uint16_t public_key_sz, uint8_t *shared_secret, uint16_t buf_sz, uint16_t *shared_secret_sz)</td></tr>
-<tr class="memdesc:a841ac91bfb95c6f84657a7dff2b5442d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for ECDH algorithm.  <a href="secmodule_8h.html#a841ac91bfb95c6f84657a7dff2b5442d">More...</a><br /></td></tr>
+<tr class="memdesc:a841ac91bfb95c6f84657a7dff2b5442d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECDH algorithm.  <a href="secmodule_8h.html#a841ac91bfb95c6f84657a7dff2b5442d">More...</a><br /></td></tr>
 <tr class="separator:a841ac91bfb95c6f84657a7dff2b5442d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a520995459837cf6870b601581855e6fa"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a520995459837cf6870b601581855e6fa">vs_secmodule_sw_sha256_init_t</a>) (<a class="el" href="structvs__secmodule__sw__sha256__ctx.html">vs_secmodule_sw_sha256_ctx</a> *ctx)</td></tr>
-<tr class="memdesc:a520995459837cf6870b601581855e6fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for SHA-256 context initialization.  <a href="secmodule_8h.html#a520995459837cf6870b601581855e6fa">More...</a><br /></td></tr>
+<tr class="memdesc:a520995459837cf6870b601581855e6fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">SHA-256 context initialization.  <a href="secmodule_8h.html#a520995459837cf6870b601581855e6fa">More...</a><br /></td></tr>
 <tr class="separator:a520995459837cf6870b601581855e6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ab8cf8cf348d13d3d97313c8d51b257"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a2ab8cf8cf348d13d3d97313c8d51b257">vs_secmodule_sw_sha256_update_t</a>) (<a class="el" href="structvs__secmodule__sw__sha256__ctx.html">vs_secmodule_sw_sha256_ctx</a> *ctx, const uint8_t *message, uint32_t len)</td></tr>
-<tr class="memdesc:a2ab8cf8cf348d13d3d97313c8d51b257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for SHA-256 context update.  <a href="secmodule_8h.html#a2ab8cf8cf348d13d3d97313c8d51b257">More...</a><br /></td></tr>
+<tr class="memdesc:a2ab8cf8cf348d13d3d97313c8d51b257"><td class="mdescLeft">&#160;</td><td class="mdescRight">SHA-256 context update.  <a href="secmodule_8h.html#a2ab8cf8cf348d13d3d97313c8d51b257">More...</a><br /></td></tr>
 <tr class="separator:a2ab8cf8cf348d13d3d97313c8d51b257"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec4726477fe462c1a8747c637bff5749"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#aec4726477fe462c1a8747c637bff5749">vs_secmodule_sw_sha256_final_t</a>) (<a class="el" href="structvs__secmodule__sw__sha256__ctx.html">vs_secmodule_sw_sha256_ctx</a> *ctx, uint8_t *digest)</td></tr>
-<tr class="memdesc:aec4726477fe462c1a8747c637bff5749"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for SHA-256 context finalize.  <a href="secmodule_8h.html#aec4726477fe462c1a8747c637bff5749">More...</a><br /></td></tr>
+<tr class="memdesc:aec4726477fe462c1a8747c637bff5749"><td class="mdescLeft">&#160;</td><td class="mdescRight">SHA-256 context finalization.  <a href="secmodule_8h.html#aec4726477fe462c1a8747c637bff5749">More...</a><br /></td></tr>
 <tr class="separator:aec4726477fe462c1a8747c637bff5749"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa93f113fe55cde1d171b1c8246a5181f"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#aa93f113fe55cde1d171b1c8246a5181f">vs_secmodule_deinit_t</a>) (void)</td></tr>
-<tr class="memdesc:aa93f113fe55cde1d171b1c8246a5181f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for Security Module destruction.  <a href="secmodule_8h.html#aa93f113fe55cde1d171b1c8246a5181f">More...</a><br /></td></tr>
+<tr class="memdesc:aa93f113fe55cde1d171b1c8246a5181f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Security Module destruction.  <a href="secmodule_8h.html#aa93f113fe55cde1d171b1c8246a5181f">More...</a><br /></td></tr>
 <tr class="separator:aa93f113fe55cde1d171b1c8246a5181f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -202,17 +202,17 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a280aa609930f446aab7b65452a30222b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a280aa609930f446aab7b65452a30222b">vs_secmodule_ecies_decrypt</a> (const <a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl, const uint8_t *recipient_id, size_t recipient_id_sz, const uint8_t *cryptogram, size_t cryptogram_sz, uint8_t *decrypted_data, size_t buf_sz, size_t *decrypted_data_sz)</td></tr>
-<tr class="memdesc:a280aa609930f446aab7b65452a30222b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ecies decryption for AES-256 based on SHA-384.  <a href="secmodule_8h.html#a280aa609930f446aab7b65452a30222b">More...</a><br /></td></tr>
+<tr class="memdesc:a280aa609930f446aab7b65452a30222b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECIES decryption for AES-256 based on SHA-384.  <a href="secmodule_8h.html#a280aa609930f446aab7b65452a30222b">More...</a><br /></td></tr>
 <tr class="separator:a280aa609930f446aab7b65452a30222b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33cb7054a445d6db888ec1e730b4e1e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule_8h.html#a33cb7054a445d6db888ec1e730b4e1e7">vs_secmodule_ecies_encrypt</a> (const <a class="el" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl, const uint8_t *recipient_id, size_t recipient_id_sz, const uint8_t *data, size_t data_sz, uint8_t *cryptogram, size_t buf_sz, size_t *cryptogram_sz)</td></tr>
-<tr class="memdesc:a33cb7054a445d6db888ec1e730b4e1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ecies encryption for AES-256 based on SHA-384.  <a href="secmodule_8h.html#a33cb7054a445d6db888ec1e730b4e1e7">More...</a><br /></td></tr>
+<tr class="memdesc:a33cb7054a445d6db888ec1e730b4e1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECIES encryption for AES-256 based on SHA-384.  <a href="secmodule_8h.html#a33cb7054a445d6db888ec1e730b4e1e7">More...</a><br /></td></tr>
 <tr class="separator:a33cb7054a445d6db888ec1e730b4e1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Security Module callbacks signatures. </p>
-<p>This header contains <a class="el" href="structvs__secmodule__impl__t.html" title="Security Module implementation.">vs_secmodule_impl_t</a> structure that is used for crypto operations. User needs to return this function for library with crypto callbacks.</p>
-<dl class="section note"><dt>Note</dt><dd>Library provides standard software implementation. See vs-secmodule-usage for example.</dd></dl>
-<div class="fragment"><div class="line"><a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl;                 <span class="comment">// Security Module callbacks</span></div>
+<div class="textblock"><p>Security Module implementations signatures. </p>
+<p>This header contains <a class="el" href="structvs__secmodule__impl__t.html" title="Security Module implementation.">vs_secmodule_impl_t</a> structure that is used for crypto operations.</p>
+<dl class="section warning"><dt>Warning</dt><dd>User needs to provide Security Module implementation. Library provides standard software implementation. See vs-secmodule-usage for example.</dd></dl>
+<div class="fragment"><div class="line"><a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl;                 <span class="comment">// Security Module implementations</span></div>
 <div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> slots_storage_impl;  <span class="comment">// Slots storage implementation</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :</span></div>
@@ -235,7 +235,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for data decryption by AES algorithm with authentification check. </p>
+<p>Data decryption by AES algorithm with authentication check. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">aes_type</td><td>Hash type. Cannot be <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -269,7 +269,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for data decryption by AES algorithm. </p>
+<p>Data decryption by AES algorithm. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">aes_type</td><td>Hash type. Cannot be <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -303,7 +303,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for data encryption by AES algorithm. </p>
+<p>Data encryption by AES algorithm. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">aes_type</td><td>Hash type. Cannot be <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -337,7 +337,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for Security Module destruction. </p>
+<p>Security Module destruction. </p>
 
 </div>
 </div>
@@ -353,7 +353,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for ECDH algorithm. </p>
+<p>ECDH algorithm. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">key_slot</td><td>Slot number. </td></tr>
@@ -382,7 +382,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for signature calculation based on ECDSA. </p>
+<p>Signature calculation based on ECDSA. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">key_slot</td><td>Slot number. </td></tr>
@@ -410,7 +410,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for signature verify based on ECDSA. </p>
+<p>Signature verification based on ECDSA. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">keypair_type</td><td>Key pair type. Cannot be <a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2aafe6e01c203db170245619a22990ee7d4" title="Invalid keypair.">VS_KEYPAIR_INVALID</a> or <a class="el" href="secmodule_8h.html#a639a007cfd7e1e59931153a7e931cd2aa91fc067406fd017b5a6fed08f7e7a93e">VS_KEYPAIR_MAX</a>. </td></tr>
@@ -439,7 +439,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for hash generation. </p>
+<p>Hash generation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">hash_type</td><td>Hash type. Cannot by <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -467,7 +467,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for HKDF calculation. </p>
+<p>HKDF calculation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">hash_type</td><td>Hash type. Cannot be <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -498,7 +498,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for HMAC calculation. </p>
+<p>HMAC calculation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">hash_type</td><td>Hash type. Cannot be <a class="el" href="secmodule_8h.html#a16492339d72ec750e97a987e207f95e5a802874d7fe0b2d7109621be90006c663" title="Invalid hash type.">VS_HASH_SHA_INVALID</a>. </td></tr>
@@ -528,7 +528,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for KDF calculation. </p>
+<p>KDF calculation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">kdf_type</td><td>KDF algorithm. Cannot be <a class="el" href="secmodule_8h.html#ae37c0a2bba9bed9498986ee3d6eeb1dfa9b851d67a55e230b1f5ff473477e83d8">VS_KDF_INVALID</a>. </td></tr>
@@ -556,7 +556,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for key pair generate. </p>
+<p>Key pair generate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">slot</td><td>Slot ID to save key pair. </td></tr>
@@ -580,8 +580,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for public key retrieval. </p>
-<p>Before this call /ref vs_secmodule_keypair_create_t callback is called and public key is stored to <em>slot</em>.</p>
+<p>Public key retrieval. </p>
+<dl class="section note"><dt>Note</dt><dd>Before calling this function, you should call <a class="el" href="secmodule_8h.html#ac100d64b55dcb0cdda04c721fedb632d" title="Key pair generate.">vs_secmodule_keypair_create_t</a> implementation first and store public key in <em>slot</em>.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">slot</td><td>Slot number. </td></tr>
@@ -608,7 +608,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for random data generation. </p>
+<p>Random data generation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Output buffer. Cannot be NULL. </td></tr>
@@ -632,7 +632,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for delete information from the slot. </p>
+<p>Delete information from the slot. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">slot</td><td>Slot ID.</td></tr>
@@ -655,7 +655,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for load information to the slot. </p>
+<p>Load information to the slot. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">slot</td><td>Slot ID. </td></tr>
@@ -681,7 +681,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for save information to the slot. </p>
+<p>Save information to the slot. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">slot</td><td>Slot ID. </td></tr>
@@ -706,7 +706,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for SHA-256 context finalize. </p>
+<p>SHA-256 context finalization. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Context. </td></tr>
@@ -730,7 +730,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for SHA-256 context initialization. </p>
+<p>SHA-256 context initialization. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">ctx</td><td>Context. Cannot be NULL.</td></tr>
@@ -753,7 +753,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Callback for SHA-256 context update. </p>
+<p>SHA-256 context update. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ctx</td><td>Context. </td></tr>
@@ -943,7 +943,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Ecies decryption for AES-256 based on SHA-384. </p>
+<p>ECIES decryption for AES-256 based on SHA-384. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">secmodule_impl</td><td>Secmodule implementation. Cannot be NULL. </td></tr>
@@ -1023,7 +1023,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Ecies encryption for AES-256 based on SHA-384. </p>
+<p>ECIES encryption for AES-256 based on SHA-384. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">secmodule_impl</td><td>Secmodule implementation. Cannot be NULL. </td></tr>
@@ -1042,7 +1042,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:456</div></div>
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:453</div></div>
 <div class="ttc" id="avs-soft-secmodule_8h_html_a7308a11c27796b4aedfaa2a87a842224"><div class="ttname"><a href="vs-soft-secmodule_8h.html#a7308a11c27796b4aedfaa2a87a842224">vs_soft_secmodule_deinit</a></div><div class="ttdeci">vs_status_e vs_soft_secmodule_deinit(void)</div><div class="ttdoc">Destroy software crypto implementation.</div></div>
 <div class="ttc" id="avs-soft-secmodule_8h_html_a8fca8d2dd7597bfab1b3fec482bc8854"><div class="ttname"><a href="vs-soft-secmodule_8h.html#a8fca8d2dd7597bfab1b3fec482bc8854">vs_soft_secmodule_impl</a></div><div class="ttdeci">vs_secmodule_impl_t * vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl)</div><div class="ttdoc">Initialize software crypto implementation.</div></div>
 <div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:216</div></div>

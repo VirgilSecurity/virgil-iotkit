@@ -162,8 +162,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Append data. </p>
-<p>Signature for function that is called by <a class="el" href="firmware_8h.html#a287fe128f67c521981c2e24e58459220" title="Install firmware.">vs_firmware_install_firmware</a> Firmware library function to append data for firmware new installation file.</p>
-<p>If filesystem is present, it can be opening file and appending <em>data</em> to the end.</p>
+<p>Signature for function that is called by <a class="el" href="firmware_8h.html#a287fe128f67c521981c2e24e58459220" title="Install firmware.">vs_firmware_install_firmware</a> Firmware library function to append data for new firmware installation file.</p>
+<p>If filesystem is present, it can open the installation file and append <em>data</em> to its end.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data to be append </td></tr>
@@ -193,7 +193,7 @@ Functions</h2></td></tr>
 
 <p>Prepare space. </p>
 <p>Signature for function that is called by <a class="el" href="firmware_8h.html#a287fe128f67c521981c2e24e58459220" title="Install firmware.">vs_firmware_install_firmware</a> Firmware library function to prepare space for newly loaded and verified firmware.</p>
-<p>If filesystem is present, it can be preparing new file name, for example "&lt;app-name&gt;.new" where &lt;app-name&gt; is the application filename. This function should remove filename with this name if it exists.</p>
+<p>If filesystem is present, it can prepare new file name, for example "&lt;app-name&gt;.new" where &lt;app-name&gt; is the application filename. This function should remove a filename with this name if it exists.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>

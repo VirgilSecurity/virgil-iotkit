@@ -128,7 +128,7 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:af50a14354959f598dabb99c25aecd685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manufacture ID type.  <a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">More...</a><br /></td></tr>
 <tr class="separator:af50a14354959f598dabb99c25aecd685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a608e891eb73f54baf5fc0e63b34d91d2"><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">vs_device_type_t</a>[<a class="el" href="provision-structs_8h.html#a56a6d2c2138d5af1f2d18634d00ba3e5">VS_DEVICE_TYPE_SIZE</a>]</td></tr>
-<tr class="memdesc:a608e891eb73f54baf5fc0e63b34d91d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device type type.  <a href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">More...</a><br /></td></tr>
+<tr class="memdesc:a608e891eb73f54baf5fc0e63b34d91d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device type.  <a href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2">More...</a><br /></td></tr>
 <tr class="separator:a608e891eb73f54baf5fc0e63b34d91d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1">vs_device_serial_t</a>[<a class="el" href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">VS_DEVICE_SERIAL_SIZE</a>]</td></tr>
 <tr class="memdesc:ab92acd5b0db23c4fd1b57598bafaa5f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device serial number type.  <a href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1">More...</a><br /></td></tr>
@@ -204,8 +204,8 @@ Enumerations</h2></td></tr>
 <h1><a class="anchor" id="provision_structures_usage"></a>
 Provision structures usage</h1>
 <p>See <a class="el" href="provision_8h.html#provision_usage">Provision Usage</a> for Provision module initialization and call.</p>
-<p>Device has 3 identifiers that are used by Cloud and Update interfaces : manufacture ID, device type and device serial number, <a class="el" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685" title="Manufacture ID type.">vs_device_manufacture_id_t</a>, <a class="el" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2" title="Device type type.">vs_device_type_t</a> and <a class="el" href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1" title="Device serial number type.">vs_device_serial_t</a> respectively. They must be initialized before any Virgil IoT calls.</p>
-<p>There is manufacture ID initialization example provided below :</p>
+<p>Device has 3 identifiers that are used by Cloud and Update interfaces : manufacture ID, device type and device serial number, <a class="el" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685" title="Manufacture ID type.">vs_device_manufacture_id_t</a>, <a class="el" href="provision-structs_8h.html#a608e891eb73f54baf5fc0e63b34d91d2" title="Device type.">vs_device_type_t</a> and <a class="el" href="provision-structs_8h.html#ab92acd5b0db23c4fd1b57598bafaa5f1" title="Device serial number type.">vs_device_serial_t</a> respectively. They must be initialized before any Virgil IoT calls.</p>
+<p>Manufacture ID initialization example provided below :</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span></div>
 <div class="line">init_manufacture_id(<a class="code" href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a> manufacture_id, <span class="keywordtype">void</span> *src_data) {</div>
 <div class="line">    <span class="keywordtype">size_t</span> pos;</div>
@@ -342,7 +342,7 @@ Provision structures usage</h1>
 </div><div class="memdoc">
 
 <p>Manufacture ID type. </p>
-<p>This is manufacture identifier containing ASCII symbols and trailing zeroes. </p>
+<p>Manufacture identifier containing ASCII symbols and trailing zeroes. </p>
 
 </div>
 </div>
@@ -359,7 +359,7 @@ Provision structures usage</h1>
 </div><div class="memdoc">
 
 <p>Device serial number type. </p>
-<p>This is device serial number identifier contains ASCII symbols and trailing zeroes. </p>
+<p>Device serial number identifier contains ASCII symbols and trailing zeroes. </p>
 
 </div>
 </div>
@@ -375,8 +375,8 @@ Provision structures usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Device type type. </p>
-<p>This is device type identifier contains ASCII symbols and trailing zeroes. </p>
+<p>Device type. </p>
+<p>Device type identifier contains ASCII symbols and trailing zeroes. </p>
 
 </div>
 </div>
@@ -397,7 +397,7 @@ Provision structures usage</h1>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a8bb1c24529f7674129f92a9b5ec9936c"></a>VS_KEY_RECOVERY&#160;</td><td class="fielddoc"><p>Recovery key. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a229d4a1ba75438434992059a2062cad9"></a>VS_KEY_AUTH&#160;</td><td class="fielddoc"><p>Authentification key. </p>
+<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a229d4a1ba75438434992059a2062cad9"></a>VS_KEY_AUTH&#160;</td><td class="fielddoc"><p>Authentication key. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9ab4264fd585abc1385bce310ae624b3e0"></a>VS_KEY_TRUSTLIST&#160;</td><td class="fielddoc"><p>Trust List key. </p>
 </td></tr>
@@ -411,7 +411,7 @@ Provision structures usage</h1>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a996dbf663d69784574c7b07ef03ebee8"></a>VS_KEY_FIRMWARE_INTERNAL&#160;</td><td class="fielddoc"><p>Firmware internal key. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a1e90420b31bb7db98a00ea5068d10904"></a>VS_KEY_AUTH_INTERNAL&#160;</td><td class="fielddoc"><p>Authentification internal key. </p>
+<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a1e90420b31bb7db98a00ea5068d10904"></a>VS_KEY_AUTH_INTERNAL&#160;</td><td class="fielddoc"><p>Authentication internal key. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a0dc6101e192b2a5b7e5ef8495bf11205"></a>VS_KEY_CLOUD&#160;</td><td class="fielddoc"><p>Cloud key. </p>
 </td></tr>

@@ -75,7 +75,7 @@ $(function() {
 
 <p>Security module helper functions.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="secmodule_8h_source.html">virgil/iot/secmodule/secmodule.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;Virgil/iot/secmodule/secmodule.h&gt;</code><br />
 </div>
 <p><a href="secmodule-helpers_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -130,15 +130,15 @@ Functions</h2></td></tr>
 <tr class="memdesc:a985eee6688401bc360a909e491693b8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get hash type description.  <a href="secmodule-helpers_8h.html#a985eee6688401bc360a909e491693b8b">More...</a><br /></td></tr>
 <tr class="separator:a985eee6688401bc360a909e491693b8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5ba14f7ffb535df70f1c9880f96539e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule-helpers_8h.html#ae5ba14f7ffb535df70f1c9880f96539e">vs_secmodule_virgil_secp256_signature_to_tiny</a> (const uint8_t *virgil_sign, uint16_t virgil_sign_sz, uint8_t *raw_signature, uint16_t buf_sz)</td></tr>
-<tr class="memdesc:ae5ba14f7ffb535df70f1c9880f96539e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a NIST256 signature from a virgil format to raw.  <a href="secmodule-helpers_8h.html#ae5ba14f7ffb535df70f1c9880f96539e">More...</a><br /></td></tr>
+<tr class="memdesc:ae5ba14f7ffb535df70f1c9880f96539e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a NIST256 signature from a Virgil format to raw.  <a href="secmodule-helpers_8h.html#ae5ba14f7ffb535df70f1c9880f96539e">More...</a><br /></td></tr>
 <tr class="separator:ae5ba14f7ffb535df70f1c9880f96539e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a827d8bc90dbde07efc6e156d0fd23665"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="secmodule-helpers_8h.html#a827d8bc90dbde07efc6e156d0fd23665">vs_secmodule_tiny_secp256_signature_to_virgil</a> (const uint8_t raw_signature[<a class="el" href="secmodule-helpers_8h.html#a00a8b44eeba592a897c8b9e4d99b3c3c">VS_SIGNATURE_SECP256_LEN</a>], uint8_t *virgil_sign, uint16_t buf_sz, uint16_t *virgil_sign_sz)</td></tr>
-<tr class="memdesc:a827d8bc90dbde07efc6e156d0fd23665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a nist256 signature from a raw format to virgil format.  <a href="secmodule-helpers_8h.html#a827d8bc90dbde07efc6e156d0fd23665">More...</a><br /></td></tr>
+<tr class="memdesc:a827d8bc90dbde07efc6e156d0fd23665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a NIST-256 signature from raw format to Virgil format.  <a href="secmodule-helpers_8h.html#a827d8bc90dbde07efc6e156d0fd23665">More...</a><br /></td></tr>
 <tr class="separator:a827d8bc90dbde07efc6e156d0fd23665"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Security module helper functions. </p>
-<p>This header contains different helper functions for cryptography </p>
+<p>This header contains different helper functions for performing cryptographic operations </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aadd38e1c21e41b6067fdc72aef893565"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aadd38e1c21e41b6067fdc72aef893565">&#9670;&nbsp;</a></span>VS_HASH_SHA256_LEN</h2>
@@ -529,13 +529,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Convert a nist256 signature from a raw format to virgil format. </p>
+<p>Convert a NIST-256 signature from raw format to Virgil format. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">raw_signature</td><td>Pointer to the signature in raw format. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in virgil format. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in Virgil format. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">buf_sz</td><td>Size of buffer for raw signature </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">virgil_sign_sz</td><td>Pointer to size of the signature in virgil format. Cannot be NULL.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">virgil_sign_sz</td><td>Pointer to size of the signature in Virgil format. Cannot be NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -581,11 +581,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Convert a NIST256 signature from a virgil format to raw. </p>
+<p>Convert a NIST256 signature from a Virgil format to raw. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in virgil format. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign_sz</td><td>Size of the signature in virgil format. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign</td><td>Pointer to the signature in Virgil format. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">virgil_sign_sz</td><td>Size of the signature in Virgil format. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">raw_signature</td><td>Pointer to the signature in raw format. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">buf_sz</td><td>Size of buffer for raw signature</td></tr>
   </table>
