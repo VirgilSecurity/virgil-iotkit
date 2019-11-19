@@ -3,9 +3,11 @@
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
 
-## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="1" vspace="3"></a>
+
+## Introduction
+[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
 
 Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.
 
@@ -61,7 +63,7 @@ The IoTKit Demo is conditionally divided into 3 actors (Vendor, Factory and End-
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Demo uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Demo allows to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png" align="left" hspace="0" vspace="6"> &nbsp;
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
 
 To start working with the Demo head over to [Demo IoTKit Nix GitHub](https://github.com/VirgilSecurity/demo-iotkit-nix) repository and follow the instructions in the README.
 
@@ -76,9 +78,10 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
 - **[Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html)**. Trust List keys reading and verifying.
 - **[Secbox](https://virgilsecurity.github.io/virgil-iotkit/secbox_8h.html)** is a secure data storage wth signing and authenticating abilities.
 - **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
-  - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
-  - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
-  - PRVS : service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
+  - INFO: service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
+  - FLDT: service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
+  - PRVS: service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
+
 <div id='installation'/>
 
 ## Installation
@@ -91,20 +94,66 @@ To start working with Virgil IoTKit the following components are required:
 - [Golang](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/)
+- Virgil Crypto library
 
+
+To install the Virgil Crypto library run the `install-virgil-crypto.sh` from the scripts folder of the Virgil IoTKit:
+```
+$ scripts/install-virgil-crypto.sh
+```
 
 ### Ubuntu, Debian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
 
 ```shell
-$ apt install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+$ sude apt-get install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
+
+To add repository to preferred OS use the following command:
+
+#### Ubuntu 19.10 Suite (eoan)
+```shell
+echo "deb http://virgilsecurity.bintray.com/iot-deb/ Ubuntu_19  iot" >> /etc/apt/sources.list
+```
+
+#### Ubuntu 18.04 (bionic)
+```shell
+echo "deb http://virgilsecurity.bintray.com/iot-deb/ Ubuntu_18 iot" >> /etc/apt/sources.list
+```
+
+#### Raspbian 9 (stretch)
+```shell
+echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_9 iot" >> /etc/apt/sources.list
+```
+
+#### Raspbian 10 (buster)
+```shell
+echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_10 iot" >> /etc/apt/sources.list
+```
+
+**Note!** All DEB repositories are not signed, therefore to update lists for them use the following command: `apt-get update --allow-insecure-repositories --allow-unauthenticated`
 
 ### Fedora, CentOS
 To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
 
 ```shell
-$ yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
+$ sudo yum install make cmake golang git gcc gcc-c++ libcurl-devel doxygen swig
+```
+To add repository to preferred OS use the following command:
+
+#### Fedora 29
+```shell
+yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/29/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+```
+
+#### Fedora 30
+```shell
+yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+```
+
+### Fedora 31
+```shell
+yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 ### MacOS
@@ -116,19 +165,6 @@ $ brew install make cmake golang git gcc curl doxygen swig
 ### Windows OS
 Virgil IoTKit for Windows OS is currently in development. To be included to information update list please contact our support team: support@VirgilSecurity.com.
 
-- Check CMake version. It must be 3.11 or higher:
-
-```shell
-$ cmake --version
-cmake version 3.11.0
-```
-
-- Install Virgil Crypto library :
-
-```
-$ scripts/install-virgil-crypto.sh
-```
-
 
 <div id='tests'/>
 
@@ -138,10 +174,10 @@ To make sure that everything goes in the right way, we also provide a set of rea
 - Firmware: Firmware related functionality. Create device/firmware. Save firmware.
 - Helpers: Create and save trust list.
 - Secbox: Test storage module. Read write signed or/and encrypted data.
-- SNAP: Secure Network Adjustable Protocol tests. 
+- SNAP: Secure Network Adjustable Protocol tests.
 
 To run the preffered test go thtough the following steps:
-- Clone IoTKit repository 
+- Clone IoTKit repository
 ```shell
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iotkit
 ```
@@ -156,7 +192,7 @@ $ cd build
 $ cmake ..
 $ make
 ```
-- Run preffered tests 
+- Run preffered tests
 
 
 <div id='SDK-usage'/>
