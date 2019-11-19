@@ -42,7 +42,7 @@
 #ifndef VS_SECMODULE_HELPERS_H_
 #define VS_SECMODULE_HELPERS_H_
 
-#include <Virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #define VS_PUBKEY_SECP192_LEN (49)
 #define VS_PUBKEY_SECP224_LEN (57)
