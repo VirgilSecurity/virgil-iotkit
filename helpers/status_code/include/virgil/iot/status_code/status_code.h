@@ -35,7 +35,27 @@
 /*! \file status_code.h
  * \brief Status codes and macroses
  *
- * This file declares #vs_status_e status codes and macroses to simplify return code checks.
+ * This file declares #vs_status_e status codes. Also there are macros to simplify return code checks :
+ *
+ * \code
+
+    vs_netif_t *netif;
+    const vs_mac_addr_t *mac;
+    vs_snap_prvs_devi_t *device_info;
+    uint16_t buf_sz;
+    uint32_t wait_ms;
+
+    // Goto terminate in case of error
+    STATUS_CHECK(vs_fldt_client_request_all_files(), "Unable to request all files");
+
+    // Return function in case of error
+    STATUS_CHECK_RET(vs_snap_prvs_device_info(netif, mac, device_info, buf_sz, wait_ms), VS_CODE_ERR_INCORRECT_ARGUMENT,
+        "Unable to receive device information during %d milliseconds", wait_ms);
+
+    // Error processing
+    terminate:
+
+ * \endcode
  */
 
 #ifndef VS_IOT_SDK_STATUS_CODE
@@ -44,7 +64,7 @@
 #include <virgil/iot/macros/macros.h>
 
 /** Status code
- * Status code to be returned from function. Zero value #VS_CODE_OK is used for non-error values. All others mean error
+ * Status code to be returned from function. Zero value #VS_CODE_OK is used for non-error values. Negative values mean error
  */
 typedef enum {
     VS_CODE_COMMAND_NO_RESPONSE = 100,
