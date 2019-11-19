@@ -75,7 +75,7 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
 - **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
 - **[Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html)** is a tool is used to output logging messages to screen, file etc.
 - **[Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html)**. Trust List keys reading and verifying.
-- Secbox.
+- **[Secbox](https://virgilsecurity.github.io/virgil-iotkit/secbox_8h.html)** is a secure data storage wth signing and authenticating abilities.
 - **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
   - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
   - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
@@ -89,7 +89,7 @@ Virgil IoTKit is distributed as a package. This section demonstrates on how to i
 To start working with Virgil IoTKit the following components are required:
 - CMake v3.11 or higher, for project building
 - GCC or another toolchain for C/C++ compile
-- [Go](https://golang.org/) to compile Virgil IoT dev tools
+- [Golang](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/)
 
@@ -154,10 +154,6 @@ For example, if you want to use PC configuration provided by library and library
 you have to set compiler option:
 
 `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
-
-Or you can initialize CMake variable :
-
-`set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/virgil-iotkit/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")`
 
 ### Mandatory implementations
 Some modules use external implementations. It is necessary to implement HAL functions by user :
