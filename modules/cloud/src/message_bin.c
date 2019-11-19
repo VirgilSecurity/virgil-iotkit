@@ -145,62 +145,20 @@ _get_message_bin_credentials() {
         CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, answer, answer_size),
               "[MB] Unable to parse message bin credentials");
 
-        // TODO: Need to remove when changes to a service will be applied
-        /*----mqtt broker url and port----*/
-        if (VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_URL_FIELD, &len) && len > 0) {
-            int32_t port;
-            char tmp_buf[len];
-            char *ptr = &tmp_buf[len - 1];
-            uint16_t i;
+        /*----mqtt broker host----*/
+        CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_HOST_FIELD, &len) && len > 0,
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt_host]");
+        ++len;
+        _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
+        CHECK(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
 
-            len++;
-            // Temporary dirty hack with the offset by 6 because this code will be removed as soon as possible
-            uint16_t prefix_offset = 6;
+        json_get_val_str(&jobj, VS_MB_MQTT_HOST_FIELD, _mb_ctx.host, len);
 
-            json_get_val_str(&jobj, VS_MB_MQTT_URL_FIELD, tmp_buf, len);
-
-            for (i = len - 1; i > 0; --i) {
-                if (*ptr == ':') {
-                    break;
-                }
-                --ptr;
-            }
-
-            port = _str_to_int(ptr + 1);
-
-            if (0 == i || port < 0) {
-                VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong format of [mqtt_url]");
-                goto terminate;
-            }
-
-            _mb_ctx.port = (uint16_t)port;
-
-
-            len = ptr - tmp_buf + 1 - prefix_offset;
-
-            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
-            CHECK(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
-
-            VS_IOT_MEMSET(_mb_ctx.host, 0, len);
-            VS_IOT_MEMCPY(_mb_ctx.host, tmp_buf + prefix_offset, len - 1);
-
-        } else {
-            // TODO: Only this code will be used
-            /*----mqtt broker host----*/
-            CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_MQTT_HOST_FIELD, &len) && len > 0,
-                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt host]");
-            ++len;
-            _mb_ctx.host = (char *)VS_IOT_MALLOC((size_t)len);
-            CHECK(NULL != _mb_ctx.host, "[MB] Can't allocate memory");
-
-            json_get_val_str(&jobj, VS_MB_LOGIN_FIELD, _mb_ctx.host, len);
-
-            /*----mqtt broker host----*/
-            CHECK(VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_MB_MQTT_PORT_FIELD, &val),
-                  "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt port]");
-            CHECK(val > 0 && val < UINT16_MAX, "[MB] cloud_get_message_bin_credentials(...) wrong format [mqtt port]");
-            _mb_ctx.port = (uint16_t)val;
-        }
+        /*----mqtt broker host----*/
+        CHECK(VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_MB_MQTT_PORT_FIELD, &val),
+              "[MB] cloud_get_message_bin_credentials(...) answer not contain [mqtt_port]");
+        CHECK(val > 0 && val < UINT16_MAX, "[MB] cloud_get_message_bin_credentials(...) wrong format [mqtt port]");
+        _mb_ctx.port = (uint16_t)val;
 
         /*----login----*/
         CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_MB_LOGIN_FIELD, &len) && len > 0,
