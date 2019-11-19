@@ -40,10 +40,10 @@
  *
  * \section firmware_usage_gateway Firmware Usage by Gateway
  *
- * Gateway uses Firmware library for different goals :
- * - Download, verify and save firmware from Cloud storage.
- * - Install firmware for this Gateway.
- * - Upload firmware for different devices inside its own network by using FLDT Server service.
+ * Gateway uses Firmware library for different purposes :
+ * - Download firmware from Cloud storage, verify and save it.
+ * - Install firmware for current Gateway.
+ * - Upload firmware for different devices inside the network by using FLDT Server service.
  *
  * First of all it is necessary to initialize Firmware library :
  *
@@ -56,7 +56,7 @@ static vs_device_type_t device_type;                // Device type
 
 // Initialize fw_storage_impl, manufacture_id, device_type
 
-// Virgil IoT SDK provides Software Security Module that can be used instead of Hardware one :
+// Virgil IoT KIT provides Software Security Module that can be used instead of Hardware one :
 secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
 STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type), "Unable to initialize
@@ -69,12 +69,12 @@ Firmware module");
  * Security module implementation \a secmodule_impl initialization is described in \ref storage_hal section. You can use
  * software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
- * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
+ * \a manufacture_id, \a device_type are device unique characteristics and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
  *
  * For FLDT Server service (see \ref fldt_server_usage for details) it is necessary to implement
  * #vs_fldt_server_add_filetype_cb. Also it is necessary to add Firmware file type to the supported file types
- * list by #vs_fldt_server_add_file_type() call  :
+ * list by calling #vs_fldt_server_add_file_type() :
  *
  * \code
  *
@@ -107,7 +107,7 @@ STATUS_CHECK(vs_fldt_server_add_file_type(vs_firmware_update_file_type(), vs_fir
  * In this example \a _add_filetype processes 2 standard file types. One of them is Firmware file type.
  *
  * Gateway receives firmwares for different targets from Cloud. It necessary to verify them and to broadcast information
- * about new firmware by using FLDT Server service :
+ * about the new firmware by using FLDT Server service :
  *
  * \code
 
@@ -139,10 +139,10 @@ firmware");
  * \endcode
  *
  * In this example Gateway receives firmware header by using Cloud module (see \ref cloud_usage for details ). It
- * verifies this firmware. In case of error it deletes it. In another case it analyzes this firmware type (\a
-_is_self_firmware_image
- * call). If this is firmware for this gateway, it installs it (\a _process_own_firmware call). In another case it sends
- * firmware by using FLDT Server service (#vs_fldt_server_add_file_type() call) :
+ * verifies the received firmware. In case of error it deletes the firmware. In another case it analyzes this firmware type
+ * (\a _is_self_firmware_image call). If this firmware is intended for this gateway, the gateway installs it
+ * (\a _process_own_firmware call). Otherwise it sends firmware to devices by using FLDT Server service
+ * (#vs_fldt_server_add_file_type() call) :
  *
  * \code
 
@@ -178,8 +178,8 @@ _send_firmware(){
  *
  * \section firmware_usage_thing Firmware Usage by Thing
  *
- * All Firmware functionality for Thing is implemented by Virgil IoT SDK. User needs only to initialize Firmware library
- * and to destroy it at the end. See code example below :
+ * All Firmware functionality for Thing is implemented by Virgil IoT KIT. User only needs to initialize Firmware library
+ * and destroy it at the end. See code example below :
  *
  * \code
 
@@ -200,9 +200,9 @@ Firmware module");
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
  * Security module implementation \a secmodule_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_soft_secmodule_impl() as it is done in this example.
+ * software security module #vs_soft_secmodule_impl() as shown in the example above.
  *
- * \a manufacture_id, \a device_type are device unique characteristic and can be initialized by compile time constants.
+ * \a manufacture_id, \a device_type are device unique characteristics and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
  */
 
@@ -258,9 +258,9 @@ vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type);
 
-/**  Destroy firmware
+/**  Destroy firmware module
  *
- * Destroys Firmware library. Has to be executed before application finish.
+ * It has to be executed before application finish.
  *
  */
 vs_status_e
@@ -268,7 +268,7 @@ vs_firmware_deinit(void);
 
 /** Save firmware data
  *
- * Gateway saves a chunk of data received from Cloud. Thing automatically saves a chunk of data received from Gateway.
+ * Gateway saves a chunk of data received from Cloud. Thing automatically saves the chunk of data received from Gateway.
  *
  * See \ref firmware_usage_gateway for data flow details.
  *
@@ -327,7 +327,7 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
  * See \ref firmware_usage_gateway for data flow details.
  *
  * \param[in] descriptor #vs_firmware_descriptor_t firmware descriptor. Must not be NULL.
- * \param[out] data Buffer to store firmware. Must not be NULL.
+ * \param[out] data Buffer to store firmware in. Must not be NULL.
  * \param[in] buff_sz Buffer size. Must not be zero.
  * \param[out] data_sz Saved footer size. Must not be NULL.
  *
@@ -376,7 +376,7 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
  *
  * Gets firmware descriptor for specified manufacture and device type.
  *
- * \param[in] manufacture_id Manufactured ID.
+ * \param[in] manufacture_id Manufacture ID.
  * \param[in] device_type Device type.
  * \param[out] descriptor #vs_firmware_descriptor_t Output firmware descriptor. Must not be NULL.
  *
@@ -389,7 +389,7 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
 
 /** Delete firmware
  *
- * Thing automatically deletes firmware in case of errorneous data.
+ * Thing automatically deletes firmware in case of invalid data.
  *
  * See \ref firmware_usage_gateway for data flow details.
  *
@@ -413,9 +413,9 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
 vs_status_e
 vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 
-/** Describe version
+/** Describe firmware version
  *
- * Makes ASCIIZ description of firmware.
+ * Makes ASCIIZ description of firmware version.
  *
  * \param[in] fw_ver #vs_file_version_t File version. Must not be NULL.
  * \param[out] buffer Output buffer. Must not be NULL.
@@ -426,9 +426,9 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 char *
 vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
 
-/** Compare own version with given one
+/** Compare own firmware version with the given one
  *
- * Things automatically compares its own version with \a new_descriptor one.
+ * Thing automatically compares its own version with the \a new_descriptor one.
  *
  * See \ref firmware_usage_gateway for data flow details.
  *
@@ -439,7 +439,7 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
 vs_status_e
 vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
 
-/** Get expected footer length
+/** Get expected firmware footer length
  *
  * This call returns firmware footer length.
  *
@@ -448,7 +448,7 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
 int
 vs_firmware_get_expected_footer_len(void);
 
-/** Return Update interface
+/** Return firmware Update interface
  *
  * This call returns Update implementation. It is used for Update calls.
  *
@@ -458,9 +458,9 @@ vs_firmware_get_expected_footer_len(void);
 vs_update_interface_t *
 vs_firmware_update_ctx(void);
 
-/** Return file type for Update library
+/** Return firmware file type for Update library
  *
- * This call returns file type information fro Update library. It is used for Update calls.
+ * This call returns file type information for Update library. It is used for Update calls.
  *
  * \return File type information for Update library
  *

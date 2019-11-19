@@ -35,7 +35,7 @@
 /*! \file provision.h
  * \brief Provision interface
  *
- * Provision interface gives user features listed below :
+ * Provision interface allows user to :
  * - Enumerate Trust List keys (#vs_provision_tl_find_first_key, #vs_provision_tl_find_next_key).
  * - Search for specified high level key in internal storage (#vs_provision_verify_hl_key).
  * - Verify high level public key (#vs_provision_verify_hl_key).
@@ -44,7 +44,7 @@
  *
  * \section provision_usage Provision Usage
  *
- * Provision library must be initialized before first call and destroyed after last one :
+ * Provision library must be initialized before the first call and destroyed after the last one :
  *
  * \code
 vs_status_e ret_code;                   // Result code
@@ -116,7 +116,7 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secm
 
 /** Provision destruction
  *
- * This function must be called after any other Provision call.
+ * This function must be called after all other Provision calls.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -174,7 +174,7 @@ vs_provision_cloud_url(void);
 
 /** Find first key
  *
- * This function finds first \a key_type key and returns it with meta information if present.
+ * This function finds the first \a key_type key and returns it with meta information if present.
  * You can find next key by #vs_provision_tl_find_next_key call.
  *
  * \param[out] search_ctx Search context initialized by this function. Must not be NULL.
@@ -198,7 +198,7 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
 
 /** Find Next key
  *
- * This function finds next \a key_type key and returns it with meta information if present.
+ * This function finds the next \a key_type key and returns it with meta information if present.
  * First key must be found before by #vs_provision_tl_find_first_key call.
  *
  * \param[out] search_ctx Search context initialized by this function. Must not be NULL.

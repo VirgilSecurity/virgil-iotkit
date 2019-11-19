@@ -39,9 +39,9 @@
  *
  * \section logger_hal_implementation Logger HAL Implementation
  *
- * \warning If #VS_IOT_LOGGER_USE_LIBRARY is set to 1, user has to provide logger output function #vs_logger_output_hal
-.
- * The goal of this function is to output part of string to the output. Its implementation can be as listed below :
+ * \warning If #VS_IOT_LOGGER_USE_LIBRARY is set to 1, user has to provide logger output function
+ * #vs_logger_output_hal. The goal of this function is to add a part of string to the output. It can be implemented as
+ * shown :
  *
  * \code
 
@@ -58,7 +58,7 @@ vs_logger_output_hal(const char *buffer) {
  * \endcode
  *
  * \warning If #VS_IOT_LOGGER_OUTPUT_TIME is set to 1, user has to implement #vs_logger_current_time_hal function that
- * outputs current time. Its implementation can be as listed below :
+ * outputs current time. It can be implemented as shown below :
  *
  * \code
 
@@ -87,12 +87,12 @@ vs_logger_current_time_hal(void) {
 
 /** Function signature for unterminated string output
  *
- * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the
+ * This is the HAL function that has to be implemented by user if #VS_IOT_LOGGER_USE_LIBRARY == 1. It sends string to the
  * output.
  *
  * \param[in] buffer Buffer with part of the string. Cannot be NULL
  *
- * \return true in case of success or false in any error occur
+ * \return true in case of success or false if any error occurs
  */
 bool
 vs_logger_output_hal(const char *buffer);
@@ -101,10 +101,10 @@ vs_logger_output_hal(const char *buffer);
 
 /** Output current date/time function signature
  *
- * This is HAL function that has to be implemented by user if #VS_IOT_LOGGER_OUTPUT_TIME == 1.
- * It outputs current date and/or time to the output, i. e. by using vs_logger_output_hal.
+ * This is the HAL function that has to be implemented by user if #VS_IOT_LOGGER_OUTPUT_TIME == 1.
+ * It adds current date and/or time to the output, e.g. by using vs_logger_output_hal.
  *
- * \return true in case of success or false in any error occur
+ * \return true in case of success or false if any error occurs
  */
 bool
 vs_logger_current_time_hal(void);

@@ -1,5 +1,4 @@
 # Virgil IoTKit C
-
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iotkit)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
@@ -39,6 +38,8 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interacts with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
 
+<div id='iot-dev-tools'/>
+
 ## IoT Dev Tools
 Virgil Security also provides set of tools for secure device lifecycle.
 - **Virgil Trust Provisioner**. The Virgil Trust Provisioner is a CLI used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions. The CLI is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution. To start working with the tool read more [here](/tools/virgil-trust-provisioner).
@@ -47,6 +48,7 @@ Virgil Security also provides set of tools for secure device lifecycle.
 - **Virgil Firmware Signer**. Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth and Firmware Private Keys to provide firmware integrity before distributing it. To start working with the tool read more [here](/tools/virgil-firmware-signer).
 - **Virgil SnapD**. Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices. In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default). In case you work with Virgil IoT Simulator, you can run SnapD under http://localhost:8081/. To start working with the tool read more [here](/tools/virgil-snapd).
 
+<div id='run-iotkit-demo'/>
 
 ## Run IoTKit Demo
 To demonstrate our IoTKit in action we developed [Demo for UNIX-like OS based on IoTKit toolkits](https://github.com/VirgilSecurity/demo-iotkit-nix).
@@ -59,31 +61,25 @@ The IoTKit Demo is conditionally divided into 3 actors (Vendor, Factory and End-
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Demo uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Demo allows to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<div id='run-demo'/>
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png" align="left" hspace="0" vspace="6"> &nbsp;
 
-## Requirements
+To start working with the Demo head over to [Demo IoTKit Nix GitHub](https://github.com/VirgilSecurity/demo-iotkit-nix) repository and follow the instructions in the README.
 
-The product has been tested on Linux platforms (Ubuntu, Fedora, CentOS) and macOS.
-- Install make, CMake version 3.11 or higher for project building 
-- Install gcc or another toolchain for C/C++ compile
-- Install [Go](https://golang.org/) for utilities support
-- Install [git](https://git-scm.com/) for Virgil Crypto installation and update
-- Install [curl](https://curl.haxx.se/) for gateway target
-// TODO : TO REMOVE
-- Install [doxygen](http://www.doxygen.nl/), [swig](http://www.swig.org/) for Virgil Crypto support
+<div id='iotkit-modules'/>
 
 ## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
-- **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and trustlist files from cloud storage. .
+- **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and trustlist files from cloud storage.
 - **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
-- Provision.
-- Secbox.
-- Protocols.
-- Cloud.
-- Logger.
-
-<div id='iotkit-installation'/>
+- **[Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html)** is a tool is used to output logging messages to screen, file etc.
+- **[Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html)**. Trust List keys reading and verifying.
+- **[Secbox](https://virgilsecurity.github.io/virgil-iotkit/secbox_8h.html)** is a secure data storage wth signing and authenticating abilities.
+- **Protocols Module** provides the set of services for [SNAP](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) protocol:
+  - INFO : service for collecting statistics from devices. See [INFO Server](https://virgilsecurity.github.io/virgil-iotkit/info-server_8h.html) and [INFO Client](https://virgilsecurity.github.io/virgil-iotkit/info-client_8h.html)
+  - FLDT : service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
+  - PRVS : service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
+<div id='installation'/>
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
@@ -92,7 +88,7 @@ Virgil IoTKit is distributed as a package. This section demonstrates on how to i
 To start working with Virgil IoTKit the following components are required:
 - CMake v3.11 or higher, for project building
 - GCC or another toolchain for C/C++ compile
-- [Go](https://golang.org/) library to work with Virgil IoT utilities
+- [Golang](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/)
 
@@ -133,98 +129,70 @@ cmake version 3.11.0
 $ scripts/install-virgil-crypto.sh
 ```
 
-<div id='iot-dev-tools'/>
-
-## IoT Dev Tools
-- KeyManager
-- Factory Initializer
-- IoT Device Registrar
-- Firmware Signer
-
-<div id='modules'/>
-
-## Modules
-- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : Cloud library for obtaining credentials from
-thing service and downloading firmware images and trust list files from cloud storage.
-- Crypto : cryptographic operations callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
-- [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html) : Firmware download/upload by Gateway and Firmware download/processing by Thing.
-- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html) : tool to output logging messages to screen, file etc. See [HAL functions declarations](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for its implementation.
-- [Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html) : Trust List keys reading and verifying.
-- Secbox.
-- Protocols.
 
 <div id='tests'/>
 
 ## Tests
-To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.
+To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.        
+- Crypto: Crypto algorithms and primitives tests. (AES, Hash, ECDH, ECDSA, HMAC, KDF, ChaCha20-Poly1305, etc.)
+- Firmware: Firmware related functionality. Create device/firmware. Save firmware.
+- Helpers: Create and save trust list.
+- Secbox: Test storage module. Read write signed or/and encrypted data.
+- SNAP: Secure Network Adjustable Protocol tests. 
+
+To run the preffered test go thtough the following steps:
+- Clone IoTKit repository 
+```shell
+$ git clone --recursive https://github.com/VirgilSecurity/virgil-iotkit
+```
+- Install virgil crypto from scripts folder by running the script:
+```shell
+$ scripts/install-virgil-crypto.sh
+```
+- Build project
+```shel
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+```
+- Run preffered tests 
+
 
 <div id='SDK-usage'/>
 
 ## SDK usage
 After Virgil IoT SDK installation or building it is necessary to do some steps for its successful usage listed below :
-
 - specify configuration headers path.
 - provide user implementations. You can select default implementations for some of them.
 
 ### Configuration headers
-There are configuration headers that customize Virigl IoT SDK. You can provide yours or use
+There are configuration headers that customize Virigl IoTKit. You can provide yours or use
 standard ones. They are stored in config directory.
 
-It is necessary to add VIRGIL_IOT_CONFIG_DIRECTORY variable that points to directory with configuration files.
+It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
 
-For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory,
-you have to set compiler option:
+> For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory,
+you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
 
-`-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
-
-Or you can initialize CMake variable :
-
-`set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/virgil-iotkit/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")`
-
-### Mandatory implementations 
-Some modules use external implementations. It is necessary to implement HAL functions by user :
-
-- [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) : structure **vs_storage_op_ctx_t**
-contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal)
-for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html)
-for details.
-
-- [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html) : **vs_firmware_install_prepare_space_hal**,
-**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions need to be implemented for firmware processing. If filesystem
-is present, those functions implement read/write operations with firmware file. See [Firmware HAL signatures](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html)
-for details.
-
-- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html) : depending on [logger-config.h](https://virgilsecurity.github.io/virgil-iotkit/logger-config_8h.html)
-configurations **vs_logger_output_hal** for string output and/or **vs_logger_current_time_hal** for current time output would be
-necessary to be implemented. See [Logger HAL Implementation](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for details.
-
-- [SNAP protocol](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html) : **vs_netif_t** network interface as
+### Mandatory implementations
+Some modules use external implementations. It's necessary to implement HAL functions by user :
+- [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
+contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal) for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) for details.
+- [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html): **vs_firmware_install_prepare_space_hal**,
+**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions need to be implemented for firmware processing. If filesystem is present, those functions implement read/write operations with firmware file. See [Firmware HAL signatures](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html) for details.
+- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html): depending on [logger-config.h](https://virgilsecurity.github.io/virgil-iotkit/logger-config_8h.html) configurations **vs_logger_output_hal** for string output and/or **vs_logger_current_time_hal** for current time output would be necessary to be implemented. See [Logger HAL Implementation](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for details.
+- [SNAP protocol](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html): **vs_netif_t** network interface as
 transport level for SNAP protocol has to be implemented. As UDP broadcast example user can use c-implementation tool.
 See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-structs_8h.html) for details.
+- [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only: **vs_fldt_got_file** function has to be implemented by user. This is the FLDT Client notification about new file retrieval and installation. In case of successful installation application must be restarted. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html) for details.
+- [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only: **vs_fldt_server_add_filetype_cb** function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) for details.
+- [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only: **vs_snap_prvs_client_impl_t** structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
-- [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only : **vs_fldt_got_file**
-function has to be implemented by user. This is FLDT Client notification about new file retrieval and installation. In case of successful
-installation application must be restarted. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
-for details.
-
-- [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only : **vs_fldt_server_add_filetype_cb**
-function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to
-return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html)
-for details.
-
-- [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only : **vs_snap_prvs_client_impl_t**
-structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation
-is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
-
-### Mandatory implementations with default ones 
-There are other modules that need user implementation, but Virgil IoT SDK provides default implementations for them :
-
-- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t**
-are required by vs_cloud_init call. Function vs_curl_http_impl returns cURL HTTP implementation, vs_cloud_message_bin_impl_t
-returns MQTT implementation.
-
-- [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure
-**vs_secmodule_impl_t** that is used by many functions. Function vs_soft_secmodule_impl returns software implementation.
+### Mandatory implementations with default ones
+There are other modules that require user implementation, but Virgil IoT SDK provides default implementations for them :
+- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t** are required `by vs_cloud_init` call. Function `vs_curl_http_impl` returns cURL HTTP implementation, `vs_cloud_message_bin_impl_t` returns MQTT implementation.
+- [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure **vs_secmodule_impl_t** that is used by many functions. Function `vs_soft_secmodule_impl` returns software implementation.
 
 <div id='api-reference'/>
 

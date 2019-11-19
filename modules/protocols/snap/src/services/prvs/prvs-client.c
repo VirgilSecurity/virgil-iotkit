@@ -123,8 +123,6 @@ vs_status_e
 vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms) {
     vs_status_e ret_code;
 
-    VS_IOT_ASSERT(_prvs_impl.wait_func);
-
     // Set storage for DNID request
     _prvs_dnid_list = list;
     VS_IOT_MEMSET(_prvs_dnid_list, 0, sizeof(*_prvs_dnid_list));

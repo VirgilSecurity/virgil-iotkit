@@ -34,8 +34,35 @@
 
 /*! \file info-server.h
  * \brief INFO for server
+ *
+ * INFO service is used to provide information about current device state in the local network. Network
+ * in this case is limited by SNAP transport protocol.
+ *
+ * In INFO meaning "Server" is any functional device. "Client" is the special device for statistic collection only.
+ * It can be any server PC or MCU device. Servers send their statistic information by startup. Also client can request
+ * periodical state sending by polling request.
+ *
+ * \section info_server_usage INFO Server usage
+ *
+ * Before first INFO calls usage it is necessary to register INFO Server service :
+ *
+ * \code
+ *
+ *    vs_storage_op_ctx_t tl_storage_impl;        // Trust List storage implementation
+ *    vs_storage_op_ctx_t fw_storage_impl;        // Firmware storage implementation
+ *    const vs_snap_service_t *snap_info_server;  // INFO Server SNAP service
+ *
+ *     // Initialize tl_storage_impl, fw_storage_impl
+ *
+ *     // Register INFO Server service
+ *    snap_info_server = vs_snap_info_server(&tl_storage_impl, &fw_storage_impl, NULL);
+ *    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO Server service");
+ *
+ * \endcode
+ *
+ * \a tl_storage_impl and \a fw_storage_impl are storage implementations. See \ref storage_hal for details.
+ *
  */
-// TODO : examples!
 
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_INFO_SERVER_H
 #define VS_SECURITY_SDK_SNAP_SERVICES_INFO_SERVER_H
@@ -50,10 +77,9 @@ extern "C" {
 #include <virgil/iot/firmware/firmware.h>
 #include "info-structs.h"
 
-// TODO : description???
-/** Start notification
+/** Startup notification
  *
- * Sends notification with device information.
+ * Sends startup notification with device information.
  *
  * \param[in] device #vs_snap_info_device_t device information.
  *
@@ -64,6 +90,8 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
 /** INFO Server SNAP Service implementation
  *
  * This call returns INFO server implementation. It must be called before any INFO call.
+ *
+ * \note \a startup_cb can be NULL. In this case standard notifications will be done.
  *
  * \param[in] tl_ctx Trust List storage context. Must not be NULL.
  * \param[in] fw_ctx Firmware storage context. Must not be NULL.
@@ -80,7 +108,7 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
  *
  * Sends startup notification.
  *
- * \param[in] netif SNAP service descriptor. Must not be NULL.
+ * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */

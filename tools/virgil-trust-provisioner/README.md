@@ -38,6 +38,8 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
   - [Database Security](#database-security)
   - [Database Commands](#database-commands)
     - [Print public keys from database](#print-public-keys-from-database)
+    - [Add Public Keys to Database](#add-public-keys-to-database)
+    - [Export data as provision package for Factory](#export-data-as-provision-package-for-factory)
     - [Export upper level public keys](#export-upper-level-public-keys)
     - [Export Private Keys](#export-private-keys)
 
@@ -195,23 +197,24 @@ Application commands are used to perform operations such as key generating, data
 | ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Service Keys, 2 Firmware Keys, 1 Factory Key |
 | ```2```       | Generate 2 Recovery Keys                                                                                                     |
 | ```3```       | Generate 2 Auth Keys                                                                                                         |
-| ```5```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
-| ```6```       | Generate a Factory Key                                                                                                       |
-| ```7```       | Delete a Factory Key                                                                                                         |
-| ```8```       | Generate 2 Firmware Keys                                                                                                     |
+| ```4```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
+| ```5```       | Generate a Factory Key                                                                                                       |
+| ```6```       | Delete a Factory Key                                                                                                         |
+| ```7```       | Generate 2 Firmware Keys                                                                                                     |
 
 ### TrustList
 | Command | Result                                                           |
 |---------|------------------------------------------------------------------|
-| ```10```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
+| ```8```      | Generate a TrustList and store it in Virgil Trust Provisioner db |
 
 ### Trust Provisioner Database
 | Command | Result                         |
 |---------|--------------------------------|
-| ```11```      | Print all public keys from db  |
-| ```12```      | Add public key to db           |
-| ```13```      | Export upper level public keys |
-| ```15```      | Export private keys            |
+| ```9```      | Print all public keys from db  |
+| ```10```      | Add public key to db           |
+| ```11```      | Export data as provision package for Factory |
+| ```12```      | Export upper level public keys |
+| ```13```      | Export private keys            |
 
 
 ## Private Keys Commands
@@ -254,6 +257,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Recovery Key: My 1 recovery key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Recovery Key 2:
@@ -267,6 +271,7 @@ $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Recovery Key: My 2 recovery
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Auth Key 1:
@@ -285,6 +290,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Auth Key: My 1 Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Auth Key 2:
@@ -303,6 +309,7 @@ $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Auth Key: My 2 Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # TrustList Service Key 1:
@@ -321,6 +328,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for TrustList Service Key: My 1 TL key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # TrustList Service Key 2:
@@ -339,6 +347,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for TrustList Service Key: My 2 TL key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Firmware Key 1:
@@ -357,6 +366,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Firmware Key: My 1 Firmware key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Firmware Key 2:
@@ -375,6 +385,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Firmware Key: My 2 Firmware key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Factory Key:
@@ -389,6 +400,7 @@ $ Enter day (1-31): 30
 $ Year: 2019, Month: 10, Day: 30. Confirm? [y/n] y
 $ Enter expiration date? [y/n]: n
 $ Enter comment for Factory Key: My Factory key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 
@@ -429,6 +441,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Recovery Key: My recovery key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 ### Auth Key
@@ -473,6 +486,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Auth Key: My Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Generate Auth Key 2:
@@ -496,6 +510,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Auth Key: My second Auth key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 
@@ -504,14 +519,14 @@ The TL Key is the primary signer of the Trust Lists. The TL Key is trusted becau
 
 | Command | Result                                       |
 |---------|----------------------------------------------|
-| ```5```       | Virgil Trust Provisioner generates 2 TL Keys |
+| ```4```       | Virgil Trust Provisioner generates 2 TL Keys |
 
 #### Generating TrustList Key
-The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust list and private key is stored in db.
+The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust List and private key is stored in db.
 
 **Example**
 ```bash
-$ Please enter option number: 5
+$ Please enter option number: 4
 $ Are you sure you want to choose [Generate TrustList Service Key (2)] [y/n]: y
 
 # Generate TrustList Service Key 1:
@@ -535,7 +550,8 @@ $ Enter year (yyyy): 2019
 $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
-$ Enter comment for TrustList Service Key: My TL Service key       
+$ Enter comment for TrustList Service Key: My TL    Service key    
+# Virgil Card for key successfully registered   
 # Generation finished
 
 # Generate TrustList Service Key 2:
@@ -560,6 +576,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for TrustList Service Key: My second TL Service key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 ### Factory Key
@@ -567,8 +584,8 @@ Factory Key signs devices and guarantees official device distribution from the f
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```6```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
-| ```7```       | Virgil Trust Provisioner deletes Factory Key from own db               |
+| ```5```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
+| ```6```       | Virgil Trust Provisioner deletes Factory Key from own db               |
 
 #### Generating Factory Key
 After Factory Key is generated, private key is stored in private keys db and public key is stored in Trust List. Also, Factory Key has a signature number limit that allows you to prevent uncountable device release at a factory  (```4294967295```) and is stored in ```FactoryPrivateKeys.db.```
@@ -579,7 +596,7 @@ After Factory Key is generated, private key is stored in private keys db and pub
 $ virgil-trust-provisioner
 
 # Specify the cli command
-$ Please enter option number: 6
+$ Please enter option number: 5
 
 $ Are you sure you want to choose [Generate Factory Key] [y/n]: y
 
@@ -598,6 +615,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Factory Key: My Factory key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 
@@ -610,7 +628,7 @@ This commmand allows to remove Factory Key from the Virgil Trust Provisioner Fac
 $ virgil-trust-provisioner
 
 # Specify the cli command
-$ Please enter option number: 7
+$ Please enter option number: 6
 $ Are you sure you want to choose [Delete Factory Key] [y/n]: y
 # Deleting Factory Key...
 # Factory Keys:
@@ -623,7 +641,7 @@ The Firmware Key is trusted as the primary signer of firmware and has no other c
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```8```       | Virgil Trust Provisioner generates 2 Firmware Keys |
+| ```7```       | Virgil Trust Provisioner generates 2 Firmware Keys |
 
 #### Generating Firmware Key
 Firmware Keys are stored on selected devices. They are signed by a Recovery Key.
@@ -635,7 +653,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 8
+$ Please enter option number: 7
 $ Are you sure you want to choose [Generate Firmware Key (2)] [y/n]: y
 
 # Generate Firmware Key 1:
@@ -660,6 +678,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Firmware Key: My Firmware key
+# Virgil Card for key successfully registered
 # Generation finished
 
 # Generate Firmware Key 2:
@@ -684,6 +703,7 @@ $ Enter month (1-12): 12
 $ Enter day (1-31): 31
 $ Year: 2019, Month: 12, Day: 31. Confirm? [y/n] y
 $ Enter comment for Firmware Key: My second Firmware key
+# Virgil Card for key successfully registered
 # Generation finished
 ```
 ## TrustList Commands
@@ -756,7 +776,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```10```   | Virgil Trust Provisioner generates Trust List file |
+| ```8```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generation
 Trust List that contains Public Keys and signatures (signatures of Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db. TL contains signatures of Recovery Keys and Auth Keys.
@@ -768,7 +788,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 10
+$ Please enter option number: 8
 $ Are you sure you want to choose [Generate TrustList] [y/n]: y
 # TrustList types:
 	1. Dev
@@ -825,14 +845,14 @@ This function helps to print all public keys from db.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```11```   | Virgil Trust Provisioner provide all public keys from db to the user |
+| ```9```   | Virgil Trust Provisioner provide all public keys from db to the user |
 
 You have a posiibility to print all public keys from Virgil Trust Provisioner database  on the screen or on the paper.
 
 **Example**
 
 ```bash
-$ Please enter option number: 11
+$ Please enter option number: 9
 $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 # Printing Public Keys from db's...
 
@@ -857,12 +877,13 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 | 11529  | firmware_internal |    3    |   My Firmware key   | 152236800 | 157680000 | BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4= |
 | 35430  |   auth_internal   |    3    | My AuthInternal key | 152236800 | 157680000 | BNbV+uCkGS9UOicMXgzXqiGWIYfD3CcI1+ssok7ZdGx5+9Wey7dr/kA+bON2L2//0e7zzmOIR1FFazeizzsP4tI= |
 +--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
+```
 
 #### Add Public Keys to Database
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```12```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
+| ```10```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
 
 This command allows you to add additional public key of some participants like cloud to Virgil Trust Provisioner database
 User can also leave a comment about added key.
@@ -870,7 +891,7 @@ User can also leave a comment about added key.
 **Example**
 
 ```#!/usr/bin/env bash
-$ Please enter option number: 12
+$ Please enter option number: 10
 $ Are you sure you want to choose [Add Public Key to db (Factory)] [y/n]: y
 # Manual adding Public Key to db...
 # Key types:
@@ -880,6 +901,43 @@ $ Enter Public Key (tiny base64): BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQ
 $ Enter comment for [factory] Key: My Added public key
 # Key added
 ```
+
+#### Export data as provision package for Factory
+This command allows you to put together private keys, public keys and trust list necessary for IoT device provisioning in the directory mentioned in ``config file``. Private and public keys are stored in their personal directories and Trust List is stored in the general directory.
+
+| Code | Result                                             |
+|------|----------------------------------------------------|
+| ```11```   | Private and public keys and trust list are put together and are ready to be exported |
+
+**Example**
+```bash
+$ Please enter option number: 11
+$ Are you sure you want to choose [Export data as provision package for Factory] [y/n]: y
+# Exporting Private Keys...
+# Export finished
+# Exporting upper level Public Keys...
+# Export finished
+# Provision package for Factory saved as '/Users/<User>/virgil-trust-provisioner/provision-package' folder
+```
+**Directory Structure Example**
+``` bash
+├── TrustList_22875.tl
+├── private
+│   └── factory_30152_factory.key
+└── pubkeys
+    ├── auth_3047_auth1.pub
+    ├── auth_32586_auth2.pub
+    ├── firmware_10264_fw1.pub
+    ├── firmware_27292_fw2.pub
+    ├── recovery_22976_recovery1.pub
+    ├── recovery_58398_recovery2.pub
+    ├── tl_43163_tl2.pub
+    └── tl_46577_tl1.pub
+
+```
+
+
+
 #### Export upper level public keys
 
 UpperLevelKeys Export – the process of uploading of all UpperLevelKeys from ```UpperLevelKeys.db```
@@ -888,7 +946,7 @@ Public keys are uploaded to the storage which is specified in the config file.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```13```   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
+| ```12```   | Upper Level Keys are dumped from ```UpperLevelKeys.db``` |
 
 **Example**
 
@@ -898,7 +956,7 @@ $ virgil-trust-provisioner
 
 # Specify the cli command
 
-$ Please enter option number: 13
+$ Please enter option number: 12
 $ Are you sure you want to choose [Dump upper level Public Keys] [y/n]: y
 # Dumping upper level Public Keys
 # Keys dump finished
@@ -909,6 +967,6 @@ This command allows exporting private keys from Virgil Trust Provisioner databas
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```15```   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
+| ```13```   | Private keys are exported from database to Virgil Trust Provisioner storage, specified in the config file |
 
 After executing the export private key command, private key bytes are stored in the file in DER format (SECP256R1). The file with private key can be found in the storage specified in the Virgil Trust Provisioner configuration file.
