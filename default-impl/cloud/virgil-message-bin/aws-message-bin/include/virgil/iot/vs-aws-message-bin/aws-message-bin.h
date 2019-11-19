@@ -32,11 +32,40 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file aws-message-bin.h
+ * @brief Default transport for gateway communication.
+ *
+ * MQTT used as transport.
+ * Example of usage inside #vs_cloud_init function:
+ *  \code
+
+vs_storage_op_ctx_t slots_storage_impl;     // Storage implementation for slot
+vs_secmodule_impl_t *secmodule_impl;        // Security implementation
+
+// Init storage implementation
+vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
+
+// You can initialize security module by software implementation :
+secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+
+// Cloud initialization
+vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), secmodule_impl);
+\endcode
+*
+* You need to implement custom storage. As an example you can see default implementation in
+* <a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/helpers/app-storage.c#L73">vs_app_storage_init_impl()</a> function in app-storage.c file.
+*/
+
 #ifndef VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
 #define VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H
 
 #include <virgil/iot/cloud/cloud.h>
 
+/**  Returns MQTT based implementation of transport.
+ *
+ * \return #vs_cloud_message_bin_impl_t
+ */
 const vs_cloud_message_bin_impl_t *
 vs_aws_message_bin_impl(void);
 
