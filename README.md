@@ -63,15 +63,40 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Sandbox uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Sandbox allows you to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<img width="80%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> 
+<img width="800" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> 
 
 &nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
 
 To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
 
 <div id='iotkit-modules'/>
 
-## IoTKit Modules
+## Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
 - **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and trustlist files from cloud storage.
@@ -135,7 +160,7 @@ echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_10 iot" >> /etc/ap
 
 **Note!** All DEB repositories are not signed, therefore to update lists for them use the following command: `apt-get update --allow-insecure-repositories --allow-unauthenticated`
 
-### Fedora, CentOS
+### CentOS, Fedora OS
 To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
 
 ```shell
