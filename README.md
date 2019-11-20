@@ -4,7 +4,7 @@
 
 
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="1" vspace="3"></a>
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/iotkit/IoTKit.png" align="left" hspace="1" vspace="3"></a>
 
 ## Introduction
 [Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
