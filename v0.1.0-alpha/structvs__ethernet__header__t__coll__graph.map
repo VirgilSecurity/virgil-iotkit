@@ -1,0 +1,4 @@
+<map id="vs_ethernet_header_t" name="vs_ethernet_header_t">
+<area shape="rect" id="node1" title="Ethernet header." alt="" coords="5,105,156,131"/>
+<area shape="rect" id="node2" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="25,5,137,31"/>
+</map>

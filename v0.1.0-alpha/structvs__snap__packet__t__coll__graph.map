@@ -1,0 +1,6 @@
+<map id="vs_snap_packet_t" name="vs_snap_packet_t">
+<area shape="rect" id="node1" title="SNAP packet." alt="" coords="44,192,173,217"/>
+<area shape="rect" id="node2" href="$structvs__snap__header__t.html" title="SNAP packet header." alt="" coords="5,105,136,131"/>
+<area shape="rect" id="node3" href="$structvs__ethernet__header__t.html" title="Ethernet header." alt="" coords="161,105,312,131"/>
+<area shape="rect" id="node4" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="180,5,292,31"/>
+</map>

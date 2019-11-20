@@ -1,0 +1,8 @@
+<map id="vs_update_interface_t" name="vs_update_interface_t">
+<area shape="rect" id="node1" title="Update interface context." alt="" coords="90,399,242,424"/>
+<area shape="rect" id="node2" href="$structvs__update__file__type__t.html" title="File type information." alt="" coords="5,179,156,204"/>
+<area shape="rect" id="node3" href="$structvs__file__info__t.html" title="File information." alt="" coords="31,92,130,117"/>
+<area shape="rect" id="node4" href="$structvs__file__version__t.html" title="File version information." alt="" coords="21,5,141,31"/>
+<area shape="rect" id="node5" href="$structvs__storage__op__ctx__t.html" title="Storage element context." alt="" coords="181,179,325,204"/>
+<area shape="rect" id="node6" href="$structvs__storage__impl__func__t.html" title="Storage implementation." alt="" coords="172,92,334,117"/>
+</map>

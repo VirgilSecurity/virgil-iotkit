@@ -1,0 +1,5 @@
+<map id="vs_snap_service_t" name="vs_snap_service_t">
+<area shape="rect" id="node1" title="SNAP service descriptor." alt="" coords="5,192,137,217"/>
+<area shape="rect" id="node2" href="$structvs__netif__t.html" title="Network interface." alt="" coords="32,92,110,117"/>
+<area shape="rect" id="node3" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="15,5,127,31"/>
+</map>
