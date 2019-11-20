@@ -63,7 +63,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Sandbox uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Sandbox allows you to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<img width="800" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> 
+<img width="800" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -94,7 +94,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
 
-<div id='iotkit-modules'/>
+<div id='modules'/>
 
 ## Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
@@ -204,7 +204,7 @@ To make sure that everything goes in the right way, we also provide a set of rea
 - SNAP: Secure Network Adjustable Protocol tests.
 
 
-<div id='SDK-usage'/>
+<div id='iotkit-usage'/>
 
 ## IoTKit Usage
 To start working with Virgil IoTKit you have to:
@@ -220,7 +220,7 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to dire
 you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
 
 ### Mandatory implementations
-Some modules use external implementations. It's necessary to implement HAL (hardware abstraction layer) functions by user :
+Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
 contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal) for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) for details.
 - [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html): **vs_firmware_install_prepare_space_hal**,
@@ -234,14 +234,14 @@ See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-struct
 - [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only: **vs_snap_prvs_client_impl_t** structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
 ### Default Mandatory implementations
-There are other modules that require user implementation, but Virgil IoT SDK provides default implementations for them :
+Virgil IoTKit also provides default mandatory implementations:
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t** are required `by vs_cloud_init` call. Function `vs_curl_http_impl` returns cURL HTTP implementation, `vs_cloud_message_bin_impl_t` returns MQTT implementation.
 - [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure **vs_secmodule_impl_t** that is used by many functions. Function `vs_soft_secmodule_impl` returns software implementation.
 
 <div id='api-reference'/>
 
 ## API Reference
-- [API Reference of IoTKit](http://VirgilSecurity.github.io/virgil-iotkit)
+- [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/v0.1.0-alpha/)
 
 <div id='license'/>
 
