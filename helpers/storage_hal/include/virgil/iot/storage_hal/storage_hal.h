@@ -46,10 +46,10 @@
  * Implementation has members listed below :
  *
  * - \a open : opens data file and returns #vs_storage_file_t file descriptor.
- * - \a sync : synchronizes cache if present with file storage.
+ * - \a sync : synchronizes cache (if present) with file storage.
  * - \a close : closes file.
  * - \a del : securely deletes data on the storage and in the memory if cache is used.
- * - \a size : returns file size or negative value. It could be any error from #vs_status_e list.
+ * - \a size : returns file size or negative value in case of any error from #vs_status_e list.
  * - \a load : loads data from storage to the memory.
  * - \a save : saves data from memory to the storage.
  * - \a deinit : destroys storage context.
@@ -80,7 +80,7 @@ typedef void *vs_storage_file_t;
 
 /** Destroy storage context
  *
- * This function is call during current storage context destroy. After this call \a storage_ctx is incorrect and must be zeroed.
+ * This function is called during current storage context destruction. After this call \a storage_ctx is rendered unavailable and must be zeroed.
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  *
@@ -102,7 +102,7 @@ typedef vs_storage_file_t (*vs_storage_open_hal_t)(
 
 /** Synchronise storage element
  *
- * Synchronize storage element cache with storage.
+ * Synchronizes storage element cache with storage.
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] file Storage file context.
@@ -115,7 +115,7 @@ typedef vs_status_e (*vs_rpi_storage_sync_t)(
 
 /** Close storage element
  *
- * \warning After this call file is incorrect and must be reopened.
+ * \warning After this call the file is rendered unavailable and must be reopened.
  *
  * \param[in] storage_ctx Storage context. Cannot be NULL.
  * \param[in] file Storage file context.

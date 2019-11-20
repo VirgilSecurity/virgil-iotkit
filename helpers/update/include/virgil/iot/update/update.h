@@ -35,9 +35,9 @@
 /*! \file update.h
  * \brief Update interface for files downloading
  *
- * This file declares \a vs_update_interface_t interface that is used for files downloading by client and sending by
- * server. If you want to download/upload your own file type, you have to implement function callbacks for this interface.
- * Also there are some utilities for Update library
+ * This file declares the \a vs_update_interface_t interface that is used for files downloading by client and sending
+ * by server. If you want to download/upload your own file type, you have to implement function callbacks for this
+ * interface. There are also some utilities for Update library.
  *
  * \section update_usage Update Module usage
  *
@@ -86,14 +86,14 @@ vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_in
  * \param file_type Known file type. Cannot be NULL.
  * \param unknown_file_type Unknown file type. Cannot be NULL.
  *
- * \return tru if file types are equal or false otherwise
+ * \return true if file types are equal and false otherwise
  */
 bool
 vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file_type_t *unknown_file_type);
 
 /** Compare two files versions
  *
- * \param update_ver File to be update. Cannot be NULL.
+ * \param update_ver File to update. Cannot be NULL.
  * \param current_ver Current file version. Cannot be NULL.
  *
  * \return #VS_CODE_OK if \a update_ver file is newer than \a current_ver file.
@@ -181,7 +181,7 @@ typedef vs_status_e (*vs_update_get_data_cb_t)(void *context, vs_update_file_typ
  * \param[in] file_header Current file header. Cannot be NULL.
  * \param[out] footer_buffer Output footer buffer. Cannot be NULL.
  * \param[in] buffer_size Buffer size. Cannot be zero.
- * \param[out] footer_size Footer size that has been read. Cannot be NULL.
+ * \param[out] footer_size Size of the footer to be read. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -224,7 +224,7 @@ typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_typ
  */
 typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, uint32_t footer_size);
 
-/** Is file newer that current one
+/** Check if a file is newer than the current one
  *
  * \param[in] context File context.
  * \param[in] file_type Current file type. Cannot be NULL.
@@ -235,7 +235,7 @@ typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_t
  */
 typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *available_file, const vs_file_version_t *new_file);
 
-/** Free item during update destroy
+/** Free item during update destruction
  *
  * \param[in] context File context.
  * \param[in] file_type Current file type.  Cannot be NULL.
