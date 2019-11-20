@@ -35,10 +35,10 @@
 /*! \file macros.h
  * \brief Macros to simplify code.
  *
- * You can find here different macros to simplify code usage.
+ * Here you can find different macros to simplify code usage.
  *
  * Each macros does specified operation and checks its result. If it is successful, there is no other action. In another
- * case it outputs messages and terminates its execution. There are two possibilities how to terminate normal flow :
+ * case it outputs messages and terminates its execution. There are two ways to terminate normal flow :
  *
  * - return from function with return code. They have _RET postfix : #CHECK_RET, #BOOL_CHECK_RET, #MEMCMP_CHECK_RET etc.
  * There is return code \a RETCODE parameter or it is implicitly supposed like in #BOOL_CHECK_RET.
@@ -77,7 +77,7 @@
 
 #include <virgil/iot/logger/logger.h>
 
-/** Check condition and goto if non-successful.
+/** Check condition and perform goto terminate if non-successful.
  *
  *  1. \a CONDITION is compared with zero code.
  *  2. If they are equal, \a MESSAGES is logged and function jumps to terminate label.
@@ -94,7 +94,7 @@
     } \
     } while(0)
 
-/** Check condition and return non-successful.
+/** Check condition and return \a RETCODE if non-successful.
  *
  *  1. \a CONDITION is compared with zero code.
  *  2. If they are equal, \a MESSAGES is logged and function returns \a RETCODE.
@@ -112,7 +112,7 @@
     } \
     } while(0)
 
-/** Check condition and goto if non-successful.
+/** Check condition and perform goto terminate if non-successful.
  *
  *  1. \a CONDITION is compared with boolean false.
  *  2. If they are equal, \a MESSAGES is logged and function jumps to terminate label.
@@ -124,7 +124,7 @@
  */
 #define BOOL_CHECK(CONDITION, MESSAGE, ...) CHECK((CONDITION), (MESSAGE), ##__VA_ARGS__)
 
-/** Check condition and return non-successful.
+/** Check condition and return false if non-successful.
  *
  *  1. \a CONDITION is compared with boolean false.
  *  2. If they are equal, \a MESSAGES is logged and function returns false.
@@ -136,13 +136,13 @@
  */
 #define BOOL_CHECK_RET(CONDITION, MESSAGE, ...) CHECK_RET((CONDITION), false, (MESSAGE), ##__VA_ARGS__)
 
-/** Compares two buffer and goto if non-successful.
+/** Compares two buffer and perform goto terminate if non-successful.
  *
  *  1. \a BUF1 is compared with \a BUF2. \a SIZE bytes are compared.
  *  2. If they are not equal, result message is logged and function jumps to terminate label.
  *
  * \warning terminate label must be present in current function.
- * \warning \a BUF1 and \a BUF2 sizes must be the same or bigger that \a SIZE.
+ * \warning \a BUF1 and \a BUF2 sizes must be the same or bigger than \a SIZE.
  *
  *  \param[in] BUF1 First data buffer to be checked.
  *  \param[in] BUF2 Second data buffer to be checked.
@@ -153,13 +153,13 @@
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
-/** Compares two buffer and returns if non-successful.
+/** Compares two buffers and return \a RETCODE if non-successful.
  *
  *  1. \a BUF1 is compared with \a BUF2. \a SIZE bytes are compared.
  *  2. If they are not equal, result mesage is logged and function returns \a RET.
  *
  * \warning terminate label must be present in current function.
- * \warning \a BUF1 and \a BUF2 sizes must be the same or bigger that \a SIZE.
+ * \warning \a BUF1 and \a BUF2 sizes must be the same or bigger than \a SIZE.
  *
  *  \param[in] BUF1 First data buffer to be checked.
  *  \param[in] BUF2 Second data buffer to be checked.
@@ -173,7 +173,7 @@
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 
-/** Checks that \a ARG is non-zero and goto in case of zero one.
+/** Checks that \a ARG is non-zero and perform goto terminate in case of zero one.
  *
  *  1. \a ARG is compared with zero.
  *  2. If \a ARG is zero, result message is logged and function jumps to terminate label.
@@ -184,7 +184,7 @@
  */
 #define CHECK_NOT_ZERO(ARG)        CHECK((ARG), "Argument " #ARG " must not be zero")
 
-/** Checks that \a ARG is non-zero and returns in case of zero one.
+/** Checks that \a ARG is non-zero and return \a RETCODE in case of zero one.
  *
  *  1. \a ARG is compared with zero.
  *  2. If \a ARG is zero, result message is logged and returns \a RETCODE.
