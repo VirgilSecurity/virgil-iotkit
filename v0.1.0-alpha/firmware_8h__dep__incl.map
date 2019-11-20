@@ -1,7 +1,0 @@
-<map id="firmware.h" name="firmware.h">
-<area shape="rect" id="node1" title="Firmware uploading/downloading and installation implementation." alt="" coords="151,5,234,31"/>
-<area shape="rect" id="node2" href="$cloud_8h.html" title="Cloud implementation." alt="" coords="108,79,173,104"/>
-<area shape="rect" id="node5" href="$info-server_8h.html" title="INFO for server." alt="" coords="197,79,292,104"/>
-<area shape="rect" id="node3" href="$aws-message-bin_8h.html" title="Default transport for gateway communication." alt="" coords="5,152,142,177"/>
-<area shape="rect" id="node4" href="$curl-http_8h.html" title="Default implementation for thing communication." alt="" coords="167,152,247,177"/>
-</map>
