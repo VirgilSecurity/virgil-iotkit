@@ -98,8 +98,8 @@ To start working with the Sandbox follow [Sandbox README](https://github.com/Vir
 
 ## Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
-- **Crypto Module** is used for cryptographic operations with callbacks for [Hardware Security Modules supports](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
 - **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and trustlist files from cloud storage.
+- **Crypto Module** is used for cryptographic operations with callbacks for [Software Security Module](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
 - **[Firmware Module](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html)** is used for firmware downloading, uploading and processing by IoT Gateway or by Thing (IoT Device).
 - **[Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html)** is a tool is used to output logging messages to screen, file etc.
 - **[Provision](https://virgilsecurity.github.io/virgil-iotkit/provision_8h.html)**. Trust List keys reading and verifying.
@@ -222,12 +222,12 @@ you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/co
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
-contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal) for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) for details.
+contains external data operations like open/read/write/close. See [Storage HAL](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) for details.
 - [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html): **vs_firmware_install_prepare_space_hal**,
-**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions need to be implemented for firmware processing. If filesystem is present, those functions implement read/write operations with firmware file. See [Firmware HAL signatures](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html) for details.
-- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html): depending on [logger-config.h](https://virgilsecurity.github.io/virgil-iotkit/logger-config_8h.html) configurations **vs_logger_output_hal** for string output and/or **vs_logger_current_time_hal** for current time output would be necessary to be implemented. See [Logger HAL Implementation](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for details.
+**vs_firmware_install_append_data_hal** and **vs_firmware_get_own_firmware_footer_hal** functions have to be implemented for firmware processing. See [Firmware HAL](https://virgilsecurity.github.io/virgil-iotkit/firmware__hal_8h.html#details) for details.
+- [Logger](https://virgilsecurity.github.io/virgil-iotkit/logger_8h.html): depends on [logger-config.h](https://virgilsecurity.github.io/virgil-iotkit/logger-config_8h.html) configurations **vs_logger_output_hal** for string output and/or **vs_logger_current_time_hal** for current time output. See [Logger HAL](https://virgilsecurity.github.io/virgil-iotkit/logger-hal_8h.html) for details.
 - [SNAP protocol](https://virgilsecurity.github.io/virgil-iotkit/snap_8h.html): **vs_netif_t** network interface as
-transport level for SNAP protocol has to be implemented. As UDP broadcast example user can use c-implementation tool.
+transport level for SNAP protocol. As [UDP broadcast example](https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/sdk-impl/netif/netif-udp-broadcast.c) user can use c-implementation tool.
 See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-structs_8h.html) for details.
 - [FLDT Client service](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html), for Client only: **vs_fldt_got_file** function has to be implemented by user. This is the FLDT Client notification about new file retrieval and installation. In case of successful installation application must be restarted. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html) for details.
 - [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only: **vs_fldt_server_add_filetype_cb** function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) for details.
@@ -235,8 +235,8 @@ See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-struct
 
 ### Default Mandatory implementations
 Virgil IoTKit also provides default mandatory implementations:
-- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t** are required `by vs_cloud_init` call. Function `vs_curl_http_impl` returns cURL HTTP implementation, `vs_cloud_message_bin_impl_t` returns MQTT implementation.
-- [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure **vs_secmodule_impl_t** that is used by many functions. Function `vs_soft_secmodule_impl` returns software implementation.
+- [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t** are required `by vs_cloud_init`. Function `vs_curl_http_impl` returns cURL HTTP implementation, `vs_cloud_message_bin_impl_t` returns MQTT implementation.
+- [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure **vs_secmodule_impl_t**. Function `vs_soft_secmodule_impl` returns software implementation.
 
 <div id='api-reference'/>
 
