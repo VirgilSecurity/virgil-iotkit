@@ -176,24 +176,6 @@ To make sure that everything goes in the right way, we also provide a set of rea
 - Secbox: Test storage module. Read write signed or/and encrypted data.
 - SNAP: Secure Network Adjustable Protocol tests.
 
-To run the preffered test go thtough the following steps:
-- Clone IoTKit repository
-```shell
-$ git clone --recursive https://github.com/VirgilSecurity/virgil-iotkit
-```
-- Install virgil crypto from scripts folder by running the script:
-```shell
-$ scripts/install-virgil-crypto.sh
-```
-- Build project
-```shel
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-```
-- Run preffered tests
-
 
 <div id='SDK-usage'/>
 
