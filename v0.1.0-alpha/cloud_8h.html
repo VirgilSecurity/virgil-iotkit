@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT SDK: modules/cloud/include/virgil/iot/cloud/cloud.h File Reference</title>
+<title>Virgil IoT SDK: cloud.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,6 +84,48 @@ $(function() {
 <code>#include &lt;<a class="el" href="firmware_8h_source.html">virgil/iot/firmware/firmware.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="global-hal_8h_source.html">global-hal.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="status__code_8h_source.html">virgil/iot/status_code/status_code.h</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for cloud.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="cloud_8h__incl.png" border="0" usemap="#cloud_8h" alt=""/></div>
+<map name="cloud_8h" id="cloud_8h">
+<area shape="rect" title="Cloud implementation." alt="" coords="223,5,287,31"/>
+<area shape="rect" title=" " alt="" coords="501,792,565,817"/>
+<area shape="rect" title=" " alt="" coords="107,792,176,817"/>
+<area shape="rect" title=" " alt="" coords="146,645,222,671"/>
+<area shape="rect" href="firmware_8h.html" title="Firmware uploading/downloading and installation implementation." alt="" coords="431,79,553,117"/>
+<area shape="rect" href="status__code_8h.html" title="Status codes and macroses." alt="" coords="693,412,835,451"/>
+<area shape="rect" href="global-hal_8h.html" title="Implementation for shared functions." alt="" coords="96,719,186,744"/>
+<area shape="rect" href="storage__hal_8h.html" title="Storage HAL interface." alt="" coords="681,325,812,364"/>
+<area shape="rect" href="provision_8h.html" title="Provision interface." alt="" coords="482,239,606,277"/>
+<area shape="rect" href="secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="263,325,398,364"/>
+<area shape="rect" href="update_8h.html" title="Update interface for files downloading." alt="" coords="349,165,515,191"/>
+<area shape="rect" title=" " alt="" coords="859,419,947,444"/>
+<area shape="rect" href="macros_8h.html" title="Macros to simplify code." alt="" coords="678,499,850,524"/>
+<area shape="rect" href="logger_8h.html" title="Logger implementation." alt="" coords="685,572,843,597"/>
+<area shape="rect" href="logger-config_8h.html" title="Logger settings." alt="" coords="596,645,705,671"/>
+<area shape="rect" title=" " alt="" coords="729,645,799,671"/>
+<area shape="rect" title=" " alt="" coords="677,719,742,744"/>
+<area shape="rect" href="stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="874,645,977,671"/>
+<area shape="rect" title=" " alt="" coords="847,719,916,744"/>
+<area shape="rect" title=" " alt="" coords="940,719,1001,744"/>
+<area shape="rect" title=" " alt="" coords="1026,719,1089,744"/>
+<area shape="rect" title=" " alt="" coords="766,719,823,744"/>
+<area shape="rect" href="provision-structs_8h.html" title="Provision interface structures." alt="" coords="473,325,607,364"/>
+<area shape="rect" href="secmodule-soft_8h.html" title=" " alt="" coords="296,412,472,451"/>
+<area shape="rect" href="trust__list-config_8h.html" title="Trust List settings." alt="" coords="547,419,669,444"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="cloud_8h__dep__incl.png" border="0" usemap="#cloud_8hdep" alt=""/></div>
+<map name="cloud_8hdep" id="cloud_8hdep">
+<area shape="rect" title="Cloud implementation." alt="" coords="108,5,173,31"/>
+<area shape="rect" href="aws-message-bin_8h.html" title="Default transport for gateway communication." alt="" coords="5,79,142,104"/>
+<area shape="rect" href="curl-http_8h.html" title="Default implementation for thing communication." alt="" coords="167,79,247,104"/>
+</map>
+</div>
 </div>
 <p><a href="cloud_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -693,12 +735,12 @@ Cloud Usage</h1>
 <div class="ttc" id="afirmware_8h_html_ac6beeca24af16e0e782035fd916bcf0e"><div class="ttname"><a href="firmware_8h.html#ac6beeca24af16e0e782035fd916bcf0e">vs_firmware_init</a></div><div class="ttdeci">vs_status_e vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type)</div><div class="ttdoc">Initialize firmware.</div></div>
 <div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:115</div></div>
 <div class="ttc" id="aprovision_8h_html_ab94cddcf677e576f48a81e6965421d8b"><div class="ttname"><a href="provision_8h.html#ab94cddcf677e576f48a81e6965421d8b">vs_provision_init</a></div><div class="ttdeci">vs_status_e vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">Provision initialization.</div></div>
-<div class="ttc" id="astructvs__firmware__header__t_html"><div class="ttname"><a href="structvs__firmware__header__t.html">vs_firmware_header_t</a></div><div class="ttdoc">Firmware header.</div><div class="ttdef"><b>Definition:</b> firmware.h:234</div></div>
+<div class="ttc" id="astructvs__firmware__header__t_html"><div class="ttname"><a href="structvs__firmware__header__t.html">vs_firmware_header_t</a></div><div class="ttdoc">Firmware header.</div><div class="ttdef"><b>Definition:</b> firmware.h:235</div></div>
 <div class="ttc" id="acloud_8h_html_ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644"><div class="ttname"><a href="cloud_8h.html#ad81282ea3af168d76e7f844ac1499dc2aba7b2d46ae8bc66199ce3068ba680644">VS_CLOUD_MB_TOPIC_FW</a></div><div class="ttdoc">Firmware.</div><div class="ttdef"><b>Definition:</b> cloud.h:245</div></div>
 <div class="ttc" id="afirmware_8h_html_ab39bcd474177b330b11426f080212fab"><div class="ttname"><a href="firmware_8h.html#ab39bcd474177b330b11426f080212fab">vs_firmware_verify_firmware</a></div><div class="ttdeci">vs_status_e vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor)</div><div class="ttdoc">Verify firmware.</div></div>
 <div class="ttc" id="astructvs__cloud__impl__t_html"><div class="ttname"><a href="structvs__cloud__impl__t.html">vs_cloud_impl_t</a></div><div class="ttdoc">Cloud implementation.</div><div class="ttdef"><b>Definition:</b> cloud.h:202</div></div>
-<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:453</div></div>
-<div class="ttc" id="astructvs__firmware__header__t_html_a20bab7eda57f53e331d3fd41debc6516"><div class="ttname"><a href="structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516">vs_firmware_header_t::descriptor</a></div><div class="ttdeci">vs_firmware_descriptor_t descriptor</div><div class="ttdoc">Firnware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:240</div></div>
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:454</div></div>
+<div class="ttc" id="astructvs__firmware__header__t_html_a20bab7eda57f53e331d3fd41debc6516"><div class="ttname"><a href="structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516">vs_firmware_header_t::descriptor</a></div><div class="ttdeci">vs_firmware_descriptor_t descriptor</div><div class="ttdoc">Firnware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:241</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code.</div><div class="ttdef"><b>Definition:</b> status_code.h:72</div></div>
 <div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
 <div class="ttc" id="acloud_8h_html_a604eecd337348402e48afcefd186d2b9"><div class="ttname"><a href="cloud_8h.html#a604eecd337348402e48afcefd186d2b9">vs_cloud_init</a></div><div class="ttdeci">vs_status_e vs_cloud_init(const vs_cloud_impl_t *cloud_impl, const vs_cloud_message_bin_impl_t *message_bin_impl, vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">Initialize message bin.</div></div>

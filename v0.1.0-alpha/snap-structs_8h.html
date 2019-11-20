@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT SDK: modules/protocols/snap/include/virgil/iot/protocols/snap/snap-structs.h File Reference</title>
+<title>Virgil IoT SDK: snap-structs.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -81,6 +81,48 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="provision-structs_8h_source.html">virgil/iot/provision/provision-structs.h</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for snap-structs.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="snap-structs_8h__incl.png" border="0" usemap="#snap-structs_8h" alt=""/></div>
+<map name="snap-structs_8h" id="snap-structs_8h">
+<area shape="rect" title="SNAP structures." alt="" coords="457,5,562,31"/>
+<area shape="rect" title=" " alt="" coords="107,545,171,571"/>
+<area shape="rect" title=" " alt="" coords="638,472,701,497"/>
+<area shape="rect" title=" " alt="" coords="518,399,594,424"/>
+<area shape="rect" href="provision-structs_8h.html" title="Provision interface structures." alt="" coords="320,79,453,117"/>
+<area shape="rect" href="status__code_8h.html" title="Status codes and macroses." alt="" coords="316,165,458,204"/>
+<area shape="rect" href="trust__list-config_8h.html" title="Trust List settings." alt="" coords="170,172,292,197"/>
+<area shape="rect" href="macros_8h.html" title="Macros to simplify code." alt="" coords="239,252,412,277"/>
+<area shape="rect" href="logger_8h.html" title="Logger implementation." alt="" coords="230,325,389,351"/>
+<area shape="rect" href="logger-config_8h.html" title="Logger settings." alt="" coords="385,399,495,424"/>
+<area shape="rect" title=" " alt="" coords="43,399,112,424"/>
+<area shape="rect" title=" " alt="" coords="175,472,241,497"/>
+<area shape="rect" href="stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="258,399,361,424"/>
+<area shape="rect" title=" " alt="" coords="379,472,448,497"/>
+<area shape="rect" title=" " alt="" coords="472,472,533,497"/>
+<area shape="rect" title=" " alt="" coords="557,472,614,497"/>
+<area shape="rect" href="global-hal_8h.html" title="Implementation for shared functions." alt="" coords="264,472,354,497"/>
+<area shape="rect" title=" " alt="" coords="275,545,344,571"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="snap-structs_8h__dep__incl.png" border="0" usemap="#snap-structs_8hdep" alt=""/></div>
+<map name="snap-structs_8hdep" id="snap-structs_8hdep">
+<area shape="rect" title="SNAP structures." alt="" coords="309,5,414,31"/>
+<area shape="rect" href="fldt-client_8h.html" title="FLDT for client." alt="" coords="5,79,91,104"/>
+<area shape="rect" href="fldt-server_8h.html" title="FLDT for server." alt="" coords="115,79,206,104"/>
+<area shape="rect" href="info-client_8h.html" title="INFO for client." alt="" coords="233,225,322,251"/>
+<area shape="rect" href="info-server_8h.html" title="INFO for server." alt="" coords="364,225,458,251"/>
+<area shape="rect" href="info-structs_8h.html" title="INFO structures." alt="" coords="287,152,385,177"/>
+<area shape="rect" href="prvs-client_8h.html" title="PRVS for client." alt="" coords="478,152,571,177"/>
+<area shape="rect" href="prvs-server_8h.html" title="PRVS for server." alt="" coords="600,152,699,177"/>
+<area shape="rect" href="prvs-structs_8h.html" title="PRVS structures." alt="" coords="518,79,619,104"/>
+<area shape="rect" href="snap_8h.html" title="SNAP network interface calls." alt="" coords="331,79,392,104"/>
+</map>
+</div>
 </div>
 <p><a href="snap-structs_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -570,7 +612,7 @@ Enumerations</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> network interface. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element_id</td><td><a class="el" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6" title="SNAP element ID.">vs_snap_element_t</a> service element. Normally this is command ID. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_ack.</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is_ack</td><td>Boolean flag indicating successful packet receiving </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">response</td><td>Response buffer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">response_sz</td><td>Response size.</td></tr>
   </table>
@@ -644,8 +686,10 @@ Enumerations</h2></td></tr>
 
 <p>SNAP Flags. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af2614e6b92cdbc74d7597974769e6871ac5a1b0b9714b2925223a4c751ec11e41"></a>VS_SNAP_FLAG_ACK&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af2614e6b92cdbc74d7597974769e6871add74800e6126f7b051643c2eba9888c1"></a>VS_SNAP_FLAG_NACK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af2614e6b92cdbc74d7597974769e6871ac5a1b0b9714b2925223a4c751ec11e41"></a>VS_SNAP_FLAG_ACK&#160;</td><td class="fielddoc"><p>Confirmation about receiving a correct packet. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af2614e6b92cdbc74d7597974769e6871add74800e6126f7b051643c2eba9888c1"></a>VS_SNAP_FLAG_NACK&#160;</td><td class="fielddoc"><p>Notification about rejecting a packet. </p>
+</td></tr>
 </table>
 
 </div>

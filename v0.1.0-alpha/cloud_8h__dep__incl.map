@@ -1,0 +1,5 @@
+<map id="cloud.h" name="cloud.h">
+<area shape="rect" id="node1" title="Cloud implementation." alt="" coords="108,5,173,31"/>
+<area shape="rect" id="node2" href="$aws-message-bin_8h.html" title="Default transport for gateway communication." alt="" coords="5,79,142,104"/>
+<area shape="rect" id="node3" href="$curl-http_8h.html" title="Default implementation for thing communication." alt="" coords="167,79,247,104"/>
+</map>

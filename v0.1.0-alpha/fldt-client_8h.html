@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT SDK: modules/protocols/snap/include/virgil/iot/protocols/snap/fldt/fldt-client.h File Reference</title>
+<title>Virgil IoT SDK: fldt-client.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,6 +78,38 @@ $(function() {
 <div class="textblock"><code>#include &lt;<a class="el" href="snap-structs_8h_source.html">virgil/iot/protocols/snap/snap-structs.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="status__code_8h_source.html">virgil/iot/status_code/status_code.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="update_8h_source.html">virgil/iot/update/update.h</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for fldt-client.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="fldt-client_8h__incl.png" border="0" usemap="#fldt-client_8h" alt=""/></div>
+<map name="fldt-client_8h" id="fldt-client_8h">
+<area shape="rect" title="FLDT for client." alt="" coords="456,5,542,31"/>
+<area shape="rect" href="snap-structs_8h.html" title="SNAP structures." alt="" coords="5,152,147,191"/>
+<area shape="rect" href="status__code_8h.html" title="Status codes and macroses." alt="" coords="494,325,636,364"/>
+<area shape="rect" href="update_8h.html" title="Update interface for files downloading." alt="" coords="415,79,582,104"/>
+<area shape="rect" title=" " alt="" coords="487,705,551,731"/>
+<area shape="rect" title=" " alt="" coords="236,632,300,657"/>
+<area shape="rect" title=" " alt="" coords="65,559,140,584"/>
+<area shape="rect" href="provision-structs_8h.html" title="Provision interface structures." alt="" coords="221,239,355,277"/>
+<area shape="rect" href="trust__list-config_8h.html" title="Trust List settings." alt="" coords="227,332,349,357"/>
+<area shape="rect" href="macros_8h.html" title="Macros to simplify code." alt="" coords="415,412,588,437"/>
+<area shape="rect" href="logger_8h.html" title="Logger implementation." alt="" coords="369,485,527,511"/>
+<area shape="rect" href="logger-config_8h.html" title="Logger settings." alt="" coords="393,559,503,584"/>
+<area shape="rect" title=" " alt="" coords="527,559,596,584"/>
+<area shape="rect" title=" " alt="" coords="582,632,647,657"/>
+<area shape="rect" href="stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="266,559,369,584"/>
+<area shape="rect" title=" " alt="" coords="404,632,473,657"/>
+<area shape="rect" title=" " alt="" coords="498,632,558,657"/>
+<area shape="rect" title=" " alt="" coords="323,632,381,657"/>
+<area shape="rect" href="global-hal_8h.html" title="Implementation for shared functions." alt="" coords="726,632,816,657"/>
+<area shape="rect" title=" " alt="" coords="815,705,884,731"/>
+<area shape="rect" href="storage__hal_8h.html" title="Storage HAL interface." alt="" coords="379,239,510,277"/>
+<area shape="rect" href="provision_8h.html" title="Provision interface." alt="" coords="437,152,560,191"/>
+<area shape="rect" title=" " alt="" coords="383,332,471,357"/>
+<area shape="rect" href="secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="686,239,821,277"/>
+<area shape="rect" href="secmodule-soft_8h.html" title=" " alt="" coords="716,325,892,364"/>
+</map>
+</div>
 </div>
 <p><a href="fldt-client_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -258,14 +290,14 @@ FLDT Client Usage</h1>
 <div class="ttc" id="afirmware_8h_html_abb029f921e8e8008c76e44bcb28bc087"><div class="ttname"><a href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">vs_firmware_update_file_type</a></div><div class="ttdeci">const vs_update_file_type_t * vs_firmware_update_file_type(void)</div><div class="ttdoc">Return firmware file type for Update library.</div></div>
 <div class="ttc" id="astructvs__update__file__type__t_html"><div class="ttname"><a href="structvs__update__file__type__t.html">vs_update_file_type_t</a></div><div class="ttdoc">File type information.</div><div class="ttdef"><b>Definition:</b> update.h:65</div></div>
 <div class="ttc" id="alogger_8h_html_a976fd8da10c6cf542473a9efdb276b34"><div class="ttname"><a href="logger_8h.html#a976fd8da10c6cf542473a9efdb276b34">VS_LOG_INFO</a></div><div class="ttdeci">#define VS_LOG_INFO(FRMT,...)</div><div class="ttdoc">Log message with VS_LOGLEV_INFO level.</div><div class="ttdef"><b>Definition:</b> logger.h:124</div></div>
-<div class="ttc" id="astructvs__mac__addr__t_html"><div class="ttname"><a href="structvs__mac__addr__t.html">vs_mac_addr_t</a></div><div class="ttdoc">MAC address.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:245</div></div>
+<div class="ttc" id="astructvs__mac__addr__t_html"><div class="ttname"><a href="structvs__mac__addr__t.html">vs_mac_addr_t</a></div><div class="ttdoc">MAC address.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:240</div></div>
 <div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
 <div class="ttc" id="atrust__list_8h_html_a015bb0da15c42d6ab85e13b54dd4cc57"><div class="ttname"><a href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a></div><div class="ttdeci">vs_update_interface_t * vs_tl_update_ctx(void)</div><div class="ttdoc">Update interface for Trust List.</div></div>
 <div class="ttc" id="astructvs__file__version__t_html"><div class="ttname"><a href="structvs__file__version__t.html">vs_file_version_t</a></div><div class="ttdoc">File version information.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:211</div></div>
 <div class="ttc" id="aupdate_8h_html_a07dd661a77d1165a8fe316a298c33abfae448e35d2d57ff62f27ad8d7ada7909d"><div class="ttname"><a href="update_8h.html#a07dd661a77d1165a8fe316a298c33abfae448e35d2d57ff62f27ad8d7ada7909d">VS_UPDATE_FIRMWARE</a></div><div class="ttdoc">Firmware files for different manufactures and device types.</div><div class="ttdef"><b>Definition:</b> update.h:59</div></div>
 <div class="ttc" id="afirmware_8h_html_a39193f69c2067a1673ffdf85ea7a71ff"><div class="ttname"><a href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff">vs_firmware_update_ctx</a></div><div class="ttdeci">vs_update_interface_t * vs_firmware_update_ctx(void)</div><div class="ttdoc">Return firmware Update interface.</div></div>
 <div class="ttc" id="afldt-client_8h_html_a015bb40478f6a81b1a8657f4fd4539e2"><div class="ttname"><a href="fldt-client_8h.html#a015bb40478f6a81b1a8657f4fd4539e2">vs_fldt_client_add_file_type</a></div><div class="ttdeci">vs_status_e vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx)</div><div class="ttdoc">Add file type.</div></div>
-<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:307</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:300</div></div>
 <div class="ttc" id="atrust__list_8h_html_a16aae7bc7017d3e66e98bddc456e2a19"><div class="ttname"><a href="trust__list_8h.html#a16aae7bc7017d3e66e98bddc456e2a19">vs_tl_update_file_type</a></div><div class="ttdeci">const vs_update_file_type_t * vs_tl_update_file_type(void)</div><div class="ttdoc">Trust List file type.</div></div>
 <div class="ttc" id="aupdate_8h_html_a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65"><div class="ttname"><a href="update_8h.html#a07dd661a77d1165a8fe316a298c33abfaafbb884cd6f825bbbb1cd48d229eed65">VS_UPDATE_TRUST_LIST</a></div><div class="ttdoc">Trust List files.</div><div class="ttdef"><b>Definition:</b> update.h:60</div></div>
 <div class="ttc" id="afldt-client_8h_html_a1b7bcd3814c6e7d990975a736e5e1aee"><div class="ttname"><a href="fldt-client_8h.html#a1b7bcd3814c6e7d990975a736e5e1aee">vs_snap_fldt_client</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_fldt_client(vs_fldt_got_file got_file_callback)</div><div class="ttdoc">FLDT Client SNAP Service implementation.</div></div>

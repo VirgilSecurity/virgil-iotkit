@@ -1,0 +1,12 @@
+<map id="snap&#45;structs.h" name="snap&#45;structs.h">
+<area shape="rect" id="node1" title="SNAP structures." alt="" coords="309,5,414,31"/>
+<area shape="rect" id="node2" href="$fldt-client_8h.html" title="FLDT for client." alt="" coords="5,79,91,104"/>
+<area shape="rect" id="node3" href="$fldt-server_8h.html" title="FLDT for server." alt="" coords="115,79,206,104"/>
+<area shape="rect" id="node4" href="$info-client_8h.html" title="INFO for client." alt="" coords="233,225,322,251"/>
+<area shape="rect" id="node5" href="$info-server_8h.html" title="INFO for server." alt="" coords="364,225,458,251"/>
+<area shape="rect" id="node6" href="$info-structs_8h.html" title="INFO structures." alt="" coords="287,152,385,177"/>
+<area shape="rect" id="node7" href="$prvs-client_8h.html" title="PRVS for client." alt="" coords="478,152,571,177"/>
+<area shape="rect" id="node8" href="$prvs-server_8h.html" title="PRVS for server." alt="" coords="600,152,699,177"/>
+<area shape="rect" id="node9" href="$prvs-structs_8h.html" title="PRVS structures." alt="" coords="518,79,619,104"/>
+<area shape="rect" id="node10" href="$snap_8h.html" title="SNAP network interface calls." alt="" coords="331,79,392,104"/>
+</map>

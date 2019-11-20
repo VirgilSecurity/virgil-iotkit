@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT SDK: modules/firmware/include/virgil/iot/firmware/firmware.h File Reference</title>
+<title>Virgil IoT SDK: firmware.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,6 +80,49 @@ $(function() {
 <code>#include &lt;<a class="el" href="provision_8h_source.html">virgil/iot/provision/provision.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="update_8h_source.html">virgil/iot/update/update.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="secmodule_8h_source.html">virgil/iot/secmodule/secmodule.h</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for firmware.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="firmware_8h__incl.png" border="0" usemap="#firmware_8h" alt=""/></div>
+<map name="firmware_8h" id="firmware_8h">
+<area shape="rect" title="Firmware uploading/downloading and installation implementation." alt="" coords="414,5,498,31"/>
+<area shape="rect" href="storage__hal_8h.html" title="Storage HAL interface." alt="" coords="613,239,744,277"/>
+<area shape="rect" href="status__code_8h.html" title="Status codes and macroses." alt="" coords="490,325,632,364"/>
+<area shape="rect" href="provision_8h.html" title="Provision interface." alt="" coords="405,152,528,191"/>
+<area shape="rect" href="secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="130,239,265,277"/>
+<area shape="rect" href="update_8h.html" title="Update interface for files downloading." alt="" coords="493,79,659,104"/>
+<area shape="rect" title=" " alt="" coords="656,332,744,357"/>
+<area shape="rect" href="macros_8h.html" title="Macros to simplify code." alt="" coords="475,412,648,437"/>
+<area shape="rect" href="logger_8h.html" title="Logger implementation." alt="" coords="482,485,641,511"/>
+<area shape="rect" href="logger-config_8h.html" title="Logger settings." alt="" coords="405,559,515,584"/>
+<area shape="rect" title=" " alt="" coords="539,559,608,584"/>
+<area shape="rect" title=" " alt="" coords="543,632,609,657"/>
+<area shape="rect" title=" " alt="" coords="740,559,815,584"/>
+<area shape="rect" title=" " alt="" coords="613,705,677,731"/>
+<area shape="rect" href="stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="227,559,330,584"/>
+<area shape="rect" title=" " alt="" coords="196,632,265,657"/>
+<area shape="rect" title=" " alt="" coords="290,632,350,657"/>
+<area shape="rect" title=" " alt="" coords="375,632,438,657"/>
+<area shape="rect" title=" " alt="" coords="462,632,519,657"/>
+<area shape="rect" href="global-hal_8h.html" title="Implementation for shared functions." alt="" coords="82,632,172,657"/>
+<area shape="rect" title=" " alt="" coords="51,705,120,731"/>
+<area shape="rect" href="provision-structs_8h.html" title="Provision interface structures." alt="" coords="355,239,488,277"/>
+<area shape="rect" href="secmodule-soft_8h.html" title=" " alt="" coords="94,325,269,364"/>
+<area shape="rect" href="trust__list-config_8h.html" title="Trust List settings." alt="" coords="344,332,466,357"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="firmware_8h__dep__incl.png" border="0" usemap="#firmware_8hdep" alt=""/></div>
+<map name="firmware_8hdep" id="firmware_8hdep">
+<area shape="rect" title="Firmware uploading/downloading and installation implementation." alt="" coords="151,5,234,31"/>
+<area shape="rect" href="cloud_8h.html" title="Cloud implementation." alt="" coords="108,79,173,104"/>
+<area shape="rect" href="info-server_8h.html" title="INFO for server." alt="" coords="197,79,292,104"/>
+<area shape="rect" href="aws-message-bin_8h.html" title="Default transport for gateway communication." alt="" coords="5,152,142,177"/>
+<area shape="rect" href="curl-http_8h.html" title="Default implementation for thing communication." alt="" coords="167,152,247,177"/>
+</map>
+</div>
 </div>
 <p><a href="firmware_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -1010,18 +1053,18 @@ Firmware Usage by Thing</h1>
 <div class="ttc" id="afirmware_8h_html_ac6beeca24af16e0e782035fd916bcf0e"><div class="ttname"><a href="firmware_8h.html#ac6beeca24af16e0e782035fd916bcf0e">vs_firmware_init</a></div><div class="ttdeci">vs_status_e vs_firmware_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule, vs_device_manufacture_id_t manufacture, vs_device_type_t device_type)</div><div class="ttdoc">Initialize firmware.</div></div>
 <div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:115</div></div>
 <div class="ttc" id="afirmware_8h_html_abb029f921e8e8008c76e44bcb28bc087"><div class="ttname"><a href="firmware_8h.html#abb029f921e8e8008c76e44bcb28bc087">vs_firmware_update_file_type</a></div><div class="ttdeci">const vs_update_file_type_t * vs_firmware_update_file_type(void)</div><div class="ttdoc">Return firmware file type for Update library.</div></div>
-<div class="ttc" id="astructvs__firmware__header__t_html"><div class="ttname"><a href="structvs__firmware__header__t.html">vs_firmware_header_t</a></div><div class="ttdoc">Firmware header.</div><div class="ttdef"><b>Definition:</b> firmware.h:234</div></div>
+<div class="ttc" id="astructvs__firmware__header__t_html"><div class="ttname"><a href="structvs__firmware__header__t.html">vs_firmware_header_t</a></div><div class="ttdoc">Firmware header.</div><div class="ttdef"><b>Definition:</b> firmware.h:235</div></div>
 <div class="ttc" id="afldt-server_8h_html_a9581bcb230153af967963dd25246be45"><div class="ttname"><a href="fldt-server_8h.html#a9581bcb230153af967963dd25246be45">vs_snap_fldt_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype)</div><div class="ttdoc">FLDT Server SNAP Service implementation.</div></div>
-<div class="ttc" id="astructvs__firmware__descriptor__t_html"><div class="ttname"><a href="structvs__firmware__descriptor__t.html">vs_firmware_descriptor_t</a></div><div class="ttdoc">Firmware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:218</div></div>
+<div class="ttc" id="astructvs__firmware__descriptor__t_html"><div class="ttname"><a href="structvs__firmware__descriptor__t.html">vs_firmware_descriptor_t</a></div><div class="ttdoc">Firmware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:219</div></div>
 <div class="ttc" id="astructvs__update__file__type__t_html"><div class="ttname"><a href="structvs__update__file__type__t.html">vs_update_file_type_t</a></div><div class="ttdoc">File type information.</div><div class="ttdef"><b>Definition:</b> update.h:65</div></div>
 <div class="ttc" id="afirmware_8h_html_a6fb2bd8b91ec80255965cc8a32927eb2"><div class="ttname"><a href="firmware_8h.html#a6fb2bd8b91ec80255965cc8a32927eb2">vs_firmware_load_firmware_descriptor</a></div><div class="ttdeci">vs_status_e vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE], const uint8_t device_type[VS_DEVICE_TYPE_SIZE], vs_firmware_descriptor_t *descriptor)</div><div class="ttdoc">Load firmware descriptor.</div></div>
 <div class="ttc" id="afirmware_8h_html_ab39bcd474177b330b11426f080212fab"><div class="ttname"><a href="firmware_8h.html#ab39bcd474177b330b11426f080212fab">vs_firmware_verify_firmware</a></div><div class="ttdeci">vs_status_e vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor)</div><div class="ttdoc">Verify firmware.</div></div>
-<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:453</div></div>
-<div class="ttc" id="astructvs__firmware__header__t_html_a20bab7eda57f53e331d3fd41debc6516"><div class="ttname"><a href="structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516">vs_firmware_header_t::descriptor</a></div><div class="ttdeci">vs_firmware_descriptor_t descriptor</div><div class="ttdoc">Firnware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:240</div></div>
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:454</div></div>
+<div class="ttc" id="astructvs__firmware__header__t_html_a20bab7eda57f53e331d3fd41debc6516"><div class="ttname"><a href="structvs__firmware__header__t.html#a20bab7eda57f53e331d3fd41debc6516">vs_firmware_header_t::descriptor</a></div><div class="ttdeci">vs_firmware_descriptor_t descriptor</div><div class="ttdoc">Firnware descriptor.</div><div class="ttdef"><b>Definition:</b> firmware.h:241</div></div>
 <div class="ttc" id="astructvs__file__info__t_html"><div class="ttname"><a href="structvs__file__info__t.html">vs_file_info_t</a></div><div class="ttdoc">File information.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:220</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code.</div><div class="ttdef"><b>Definition:</b> status_code.h:72</div></div>
 <div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
-<div class="ttc" id="astructvs__firmware__descriptor__t_html_aa8e007685e5c384a765400e0de5f2b8e"><div class="ttname"><a href="structvs__firmware__descriptor__t.html#aa8e007685e5c384a765400e0de5f2b8e">vs_firmware_descriptor_t::info</a></div><div class="ttdeci">vs_file_info_t info</div><div class="ttdoc">File information.</div><div class="ttdef"><b>Definition:</b> firmware.h:219</div></div>
+<div class="ttc" id="astructvs__firmware__descriptor__t_html_aa8e007685e5c384a765400e0de5f2b8e"><div class="ttname"><a href="structvs__firmware__descriptor__t.html#aa8e007685e5c384a765400e0de5f2b8e">vs_firmware_descriptor_t::info</a></div><div class="ttdeci">vs_file_info_t info</div><div class="ttdoc">File information.</div><div class="ttdef"><b>Definition:</b> firmware.h:220</div></div>
 <div class="ttc" id="atrust__list_8h_html_a015bb0da15c42d6ab85e13b54dd4cc57"><div class="ttname"><a href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57">vs_tl_update_ctx</a></div><div class="ttdeci">vs_update_interface_t * vs_tl_update_ctx(void)</div><div class="ttdoc">Update interface for Trust List.</div></div>
 <div class="ttc" id="alogger_8h_html_a932c0df8999c8fc5430ff790207e4043"><div class="ttname"><a href="logger_8h.html#a932c0df8999c8fc5430ff790207e4043">VS_LOG_ERROR</a></div><div class="ttdeci">#define VS_LOG_ERROR(FRMT,...)</div><div class="ttdoc">Log message with VS_LOGLEV_ERROR level.</div><div class="ttdef"><b>Definition:</b> logger.h:132</div></div>
 <div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a></div><div class="ttdoc">Successful operation.</div><div class="ttdef"><b>Definition:</b> status_code.h:75</div></div>

@@ -1,0 +1,20 @@
+<map id="crypto_format_converters.h" name="crypto_format_converters.h">
+<area shape="rect" id="node1" title="Cryptographic converters." alt="" coords="14,5,197,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="144,399,219,424"/>
+<area shape="rect" id="node3" title=" " alt="" coords="59,545,123,571"/>
+<area shape="rect" id="node4" title=" " alt="" coords="162,472,225,497"/>
+<area shape="rect" id="node5" href="$secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="263,79,398,117"/>
+<area shape="rect" id="node6" title=" " alt="" coords="519,545,588,571"/>
+<area shape="rect" id="node7" href="$status__code_8h.html" title="Status codes and macroses." alt="" coords="260,165,402,204"/>
+<area shape="rect" id="node18" href="$secmodule-soft_8h.html" title=" " alt="" coords="762,165,937,204"/>
+<area shape="rect" id="node8" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="244,252,417,277"/>
+<area shape="rect" id="node9" href="$logger_8h.html" title="Logger implementation." alt="" coords="251,325,410,351"/>
+<area shape="rect" id="node10" href="$logger-config_8h.html" title="Logger settings." alt="" coords="472,399,581,424"/>
+<area shape="rect" id="node11" title=" " alt="" coords="605,399,675,424"/>
+<area shape="rect" id="node12" title=" " alt="" coords="249,472,314,497"/>
+<area shape="rect" id="node13" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="344,399,448,424"/>
+<area shape="rect" id="node14" title=" " alt="" coords="618,472,686,497"/>
+<area shape="rect" id="node15" title=" " alt="" coords="452,472,513,497"/>
+<area shape="rect" id="node16" title=" " alt="" coords="537,472,594,497"/>
+<area shape="rect" id="node17" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="338,472,428,497"/>
+</map>

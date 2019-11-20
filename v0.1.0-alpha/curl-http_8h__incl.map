@@ -1,0 +1,28 @@
+<map id="curl&#45;http.h" name="curl&#45;http.h">
+<area shape="rect" id="node1" title="Default implementation for thing communication." alt="" coords="214,5,295,31"/>
+<area shape="rect" id="node2" href="$cloud_8h.html" title="Cloud implementation." alt="" coords="180,79,329,104"/>
+<area shape="rect" id="node3" title=" " alt="" coords="501,865,565,891"/>
+<area shape="rect" id="node4" title=" " alt="" coords="107,865,176,891"/>
+<area shape="rect" id="node5" title=" " alt="" coords="146,719,222,744"/>
+<area shape="rect" id="node6" href="$firmware_8h.html" title="Firmware uploading/downloading and installation implementation." alt="" coords="431,152,553,191"/>
+<area shape="rect" id="node8" href="$status__code_8h.html" title="Status codes and macroses." alt="" coords="693,485,835,524"/>
+<area shape="rect" id="node19" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="96,792,186,817"/>
+<area shape="rect" id="node7" href="$storage__hal_8h.html" title="Storage HAL interface." alt="" coords="681,399,812,437"/>
+<area shape="rect" id="node21" href="$provision_8h.html" title="Provision interface." alt="" coords="482,312,606,351"/>
+<area shape="rect" id="node22" href="$secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="263,399,398,437"/>
+<area shape="rect" id="node26" href="$update_8h.html" title="Update interface for files downloading." alt="" coords="349,239,515,264"/>
+<area shape="rect" id="node20" title=" " alt="" coords="859,492,947,517"/>
+<area shape="rect" id="node9" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="678,572,850,597"/>
+<area shape="rect" id="node10" href="$logger_8h.html" title="Logger implementation." alt="" coords="685,645,843,671"/>
+<area shape="rect" id="node11" href="$logger-config_8h.html" title="Logger settings." alt="" coords="596,719,705,744"/>
+<area shape="rect" id="node12" title=" " alt="" coords="729,719,799,744"/>
+<area shape="rect" id="node13" title=" " alt="" coords="677,792,742,817"/>
+<area shape="rect" id="node14" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="874,719,977,744"/>
+<area shape="rect" id="node15" title=" " alt="" coords="847,792,916,817"/>
+<area shape="rect" id="node16" title=" " alt="" coords="940,792,1001,817"/>
+<area shape="rect" id="node17" title=" " alt="" coords="1026,792,1089,817"/>
+<area shape="rect" id="node18" title=" " alt="" coords="766,792,823,817"/>
+<area shape="rect" id="node24" href="$provision-structs_8h.html" title="Provision interface structures." alt="" coords="473,399,607,437"/>
+<area shape="rect" id="node23" href="$secmodule-soft_8h.html" title=" " alt="" coords="296,485,472,524"/>
+<area shape="rect" id="node25" href="$trust__list-config_8h.html" title="Trust List settings." alt="" coords="547,492,669,517"/>
+</map>

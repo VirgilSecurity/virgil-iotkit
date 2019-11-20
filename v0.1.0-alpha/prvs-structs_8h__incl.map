@@ -1,0 +1,21 @@
+<map id="prvs&#45;structs.h" name="prvs&#45;structs.h">
+<area shape="rect" id="node1" title="PRVS structures." alt="" coords="489,5,591,31"/>
+<area shape="rect" id="node2" href="$snap-structs_8h.html" title="SNAP structures." alt="" coords="524,79,665,117"/>
+<area shape="rect" id="node6" href="$provision-structs_8h.html" title="Provision interface structures." alt="" coords="420,165,553,204"/>
+<area shape="rect" id="node3" title=" " alt="" coords="205,632,270,657"/>
+<area shape="rect" id="node4" title=" " alt="" coords="611,559,675,584"/>
+<area shape="rect" id="node5" title=" " alt="" coords="530,485,606,511"/>
+<area shape="rect" id="node7" href="$status__code_8h.html" title="Status codes and macroses." alt="" coords="257,252,399,291"/>
+<area shape="rect" id="node19" href="$trust__list-config_8h.html" title="Trust List settings." alt="" coords="426,259,548,284"/>
+<area shape="rect" id="node8" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="241,339,413,364"/>
+<area shape="rect" id="node9" href="$logger_8h.html" title="Logger implementation." alt="" coords="242,412,401,437"/>
+<area shape="rect" id="node10" href="$logger-config_8h.html" title="Logger settings." alt="" coords="397,485,507,511"/>
+<area shape="rect" id="node11" title=" " alt="" coords="5,485,75,511"/>
+<area shape="rect" id="node12" title=" " alt="" coords="149,559,214,584"/>
+<area shape="rect" id="node13" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="270,485,373,511"/>
+<area shape="rect" id="node14" title=" " alt="" coords="432,559,501,584"/>
+<area shape="rect" id="node15" title=" " alt="" coords="526,559,586,584"/>
+<area shape="rect" id="node16" title=" " alt="" coords="351,559,409,584"/>
+<area shape="rect" id="node17" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="238,559,328,584"/>
+<area shape="rect" id="node18" title=" " alt="" coords="294,632,362,657"/>
+</map>

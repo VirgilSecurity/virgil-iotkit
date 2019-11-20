@@ -1,0 +1,18 @@
+<map id="firmware_hal.h" name="firmware_hal.h">
+<area shape="rect" id="node1" title="Firmware HAL signatures." alt="" coords="228,5,337,31"/>
+<area shape="rect" id="node2" href="$status__code_8h.html" title="Status codes and macroses." alt="" coords="212,79,354,117"/>
+<area shape="rect" id="node3" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="197,165,369,191"/>
+<area shape="rect" id="node4" href="$logger_8h.html" title="Logger implementation." alt="" coords="204,239,362,264"/>
+<area shape="rect" id="node5" href="$logger-config_8h.html" title="Logger settings." alt="" coords="5,312,115,337"/>
+<area shape="rect" id="node6" title=" " alt="" coords="139,312,208,337"/>
+<area shape="rect" id="node7" title=" " alt="" coords="282,385,347,411"/>
+<area shape="rect" id="node8" title=" " alt="" coords="282,312,358,337"/>
+<area shape="rect" id="node9" title=" " alt="" coords="337,459,402,484"/>
+<area shape="rect" id="node10" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="435,312,539,337"/>
+<area shape="rect" id="node11" title=" " alt="" coords="654,385,722,411"/>
+<area shape="rect" id="node12" title=" " alt="" coords="747,385,808,411"/>
+<area shape="rect" id="node13" title=" " alt="" coords="371,385,435,411"/>
+<area shape="rect" id="node14" title=" " alt="" coords="458,385,516,411"/>
+<area shape="rect" id="node15" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="539,385,629,411"/>
+<area shape="rect" id="node16" title=" " alt="" coords="550,459,618,484"/>
+</map>

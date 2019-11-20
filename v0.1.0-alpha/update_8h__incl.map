@@ -1,0 +1,25 @@
+<map id="update.h" name="update.h">
+<area shape="rect" id="node1" title="Update interface for files downloading." alt="" coords="441,5,514,31"/>
+<area shape="rect" id="node2" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="170,559,260,584"/>
+<area shape="rect" id="node5" title=" " alt="" coords="794,485,870,511"/>
+<area shape="rect" id="node6" href="$storage__hal_8h.html" title="Storage HAL interface." alt="" coords="357,165,488,204"/>
+<area shape="rect" id="node7" href="$status__code_8h.html" title="Status codes and macroses." alt="" coords="473,252,615,291"/>
+<area shape="rect" id="node19" href="$provision_8h.html" title="Provision interface." alt="" coords="416,79,539,117"/>
+<area shape="rect" id="node3" title=" " alt="" coords="269,632,333,657"/>
+<area shape="rect" id="node4" title=" " alt="" coords="115,632,184,657"/>
+<area shape="rect" id="node18" title=" " alt="" coords="361,259,449,284"/>
+<area shape="rect" id="node8" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="462,339,634,364"/>
+<area shape="rect" id="node9" href="$logger_8h.html" title="Logger implementation." alt="" coords="478,412,637,437"/>
+<area shape="rect" id="node10" href="$logger-config_8h.html" title="Logger settings." alt="" coords="389,485,499,511"/>
+<area shape="rect" id="node11" title=" " alt="" coords="523,485,592,511"/>
+<area shape="rect" id="node12" title=" " alt="" coords="555,559,621,584"/>
+<area shape="rect" id="node13" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="667,485,770,511"/>
+<area shape="rect" id="node14" title=" " alt="" coords="726,559,794,584"/>
+<area shape="rect" id="node15" title=" " alt="" coords="819,559,880,584"/>
+<area shape="rect" id="node16" title=" " alt="" coords="904,559,968,584"/>
+<area shape="rect" id="node17" title=" " alt="" coords="645,559,702,584"/>
+<area shape="rect" id="node20" href="$secmodule_8h.html" title="Security Module implementations signatures." alt="" coords="198,165,333,204"/>
+<area shape="rect" id="node22" href="$provision-structs_8h.html" title="Provision interface structures." alt="" coords="613,165,747,204"/>
+<area shape="rect" id="node21" href="$secmodule-soft_8h.html" title=" " alt="" coords="94,252,269,291"/>
+<area shape="rect" id="node23" href="$trust__list-config_8h.html" title="Trust List settings." alt="" coords="639,259,761,284"/>
+</map>

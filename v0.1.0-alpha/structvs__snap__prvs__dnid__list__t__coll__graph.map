@@ -1,0 +1,5 @@
+<map id="vs_snap_prvs_dnid_list_t" name="vs_snap_prvs_dnid_list_t">
+<area shape="rect" id="node1" title="Devices enumeration." alt="" coords="21,179,192,204"/>
+<area shape="rect" id="node2" href="$structvs__snap__prvs__dnid__element__t.html" title="Device description." alt="" coords="5,92,208,117"/>
+<area shape="rect" id="node3" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="50,5,163,31"/>
+</map>

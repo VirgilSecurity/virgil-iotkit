@@ -1,0 +1,13 @@
+<map id="update.h" name="update.h">
+<area shape="rect" id="node1" title="Update interface for files downloading." alt="" coords="323,5,396,31"/>
+<area shape="rect" id="node2" href="$firmware_8h.html" title="Firmware uploading/downloading and installation implementation." alt="" coords="152,79,236,104"/>
+<area shape="rect" id="node7" href="$fldt-client_8h.html" title="FLDT for client." alt="" coords="260,79,346,104"/>
+<area shape="rect" id="node8" href="$fldt-server_8h.html" title="FLDT for server." alt="" coords="370,79,461,104"/>
+<area shape="rect" id="node9" href="$trust__list_8h.html" title="Trust List module." alt="" coords="485,79,567,104"/>
+<area shape="rect" id="node3" href="$cloud_8h.html" title="Cloud implementation." alt="" coords="162,152,226,177"/>
+<area shape="rect" id="node6" href="$info-server_8h.html" title="INFO for server." alt="" coords="324,225,418,251"/>
+<area shape="rect" id="node4" href="$aws-message-bin_8h.html" title="Default transport for gateway communication." alt="" coords="5,225,142,251"/>
+<area shape="rect" id="node5" href="$curl-http_8h.html" title="Default implementation for thing communication." alt="" coords="167,225,247,251"/>
+<area shape="rect" id="node10" href="$info-structs_8h.html" title="INFO structures." alt="" coords="464,152,561,177"/>
+<area shape="rect" id="node11" href="$info-client_8h.html" title="INFO for client." alt="" coords="468,225,557,251"/>
+</map>

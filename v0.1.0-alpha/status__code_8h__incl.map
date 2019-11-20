@@ -1,0 +1,17 @@
+<map id="status_code.h" name="status_code.h">
+<area shape="rect" id="node1" title="Status codes and macroses." alt="" coords="231,5,335,31"/>
+<area shape="rect" id="node2" href="$macros_8h.html" title="Macros to simplify code." alt="" coords="197,79,369,104"/>
+<area shape="rect" id="node3" href="$logger_8h.html" title="Logger implementation." alt="" coords="204,152,362,177"/>
+<area shape="rect" id="node4" href="$logger-config_8h.html" title="Logger settings." alt="" coords="5,225,115,251"/>
+<area shape="rect" id="node5" title=" " alt="" coords="139,225,208,251"/>
+<area shape="rect" id="node6" title=" " alt="" coords="282,299,347,324"/>
+<area shape="rect" id="node7" title=" " alt="" coords="282,225,358,251"/>
+<area shape="rect" id="node8" title=" " alt="" coords="337,372,402,397"/>
+<area shape="rect" id="node9" href="$stdlib-config_8h.html" title="Standart Library calls configuration." alt="" coords="435,225,539,251"/>
+<area shape="rect" id="node10" title=" " alt="" coords="654,299,722,324"/>
+<area shape="rect" id="node11" title=" " alt="" coords="747,299,808,324"/>
+<area shape="rect" id="node12" title=" " alt="" coords="371,299,435,324"/>
+<area shape="rect" id="node13" title=" " alt="" coords="458,299,516,324"/>
+<area shape="rect" id="node14" href="$global-hal_8h.html" title="Implementation for shared functions." alt="" coords="539,299,629,324"/>
+<area shape="rect" id="node15" title=" " alt="" coords="550,372,618,397"/>
+</map>
