@@ -48,7 +48,7 @@ This section provides instructions for installing Virgil Device Initializer.
 #### Linux OS
 Virgil Device Initializer is distributed as a package.
 
-In order to download and install the Virgil Device Initializer on Linux, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Initializer on Linux, use the YUM package manager and run the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
@@ -56,7 +56,7 @@ $ sudo yum install virgil-iot-sdk-tools
 #### Ubuntu OS, Debian OS
 Virgil Device Initializer is distributed as a package.
 
-In order to download and install the Virgil Device Initializer on Ubuntu, Debian, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Initializer on Ubuntu, Debian, use the YUM package manager and run the following command:
 ```bash
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
@@ -64,7 +64,7 @@ $ sudo apt-get install virgil-iot-sdk-tools
 #### CentOS, Fedora OS
 Virgil Device Initializer is distributed as a package.
 
-In order to download and install the Virgil Device Initializer on CentOS, Fedora, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Initializer on CentOS, Fedora, use the YUM package manager and run the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
@@ -85,7 +85,7 @@ $ make vs-tool-virgil-device-initializer
 Virgil Device Initializer package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
 
 ## Command Reference
-Here is the list of commands for Virgil Device Initializer.
+Here is the list of the commands for Virgil Device Initializer.
 
 ### Syntax
 The CLI has the following syntax.
@@ -121,7 +121,7 @@ The result of the command execution is the following:
 
 **Example**
 
-Here is an example of initializing of one device.
+Here is an example of initialization of one device.
 
 ```bash
 Run:virgil-device-initializer --output "/root/current-credentials/card_requests_gateways.txt" --device_info_output "/root/current-credentials/device_info.txt" --auth_pub_key_1 "/root/current-credentials/key_storage/pubkeys/auth_15918_auth2.pub" --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub" --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub" --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub" --tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_23138_tl2.pub" --tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_41287_tl1.pub" --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub" --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub" --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl" --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key" 

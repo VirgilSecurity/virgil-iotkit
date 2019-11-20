@@ -29,11 +29,11 @@ In order to make your IoT device identifiable, verifiable and manageable, you ha
 - All requests to Virgil Cloud have to be authenticated, therefore Virgil IoT Device Registrar uses Application Token during the device registration. An Application Token is generated at Virgil Cloud and provided by you.
 - If the request is successful, the IoT identification information is registered at the Virgil Thing Service and the SCR is registered at Virgil Cards Service.
 
-Now, IoT device is ready for application development.
+Now, the IoT device is ready for application development.
 
 
 ## Setting Up Device Registrar
-This section demonstrates on how to install and configure Virgil IoT Device Registrar for preferred platform.
+This section demonstrates how to install and configure Virgil IoT Device Registrar for the preferred platform.
 
 ### Install Device Registrar
 This section provides instructions for installing Virgil IoT Device Registrar.
@@ -41,16 +41,16 @@ This section provides instructions for installing Virgil IoT Device Registrar.
 #### Linux OS
 Virgil Device Registrar is distributed as a package.
 
-In order to download and install the Virgil Device Registrar on Linux, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Registrar on Linux, use the YUM package manager and run the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Ubuntu OS, Debian OS
-Virgil Virgil Device Registrar is distributed as a package.
+Virgil Device Registrar is distributed as a package.
 
-In order to download and install the Virgil Device Registrar on Ubuntu, Debian, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Registrar on Ubuntu, Debian, use the YUM package manager and run the following command:
 ```bash
 $ sudo apt-get install virgil-iot-sdk-tools
 ```
@@ -58,14 +58,14 @@ $ sudo apt-get install virgil-iot-sdk-tools
 #### CentOS, Fedora OS
 Virgil Device Registrar is distributed as a package.
 
-In order to download and install the Virgil Device Registrar on CentOS, Fedora, use the YUM package manager and the following command:
+In order to download and install the Virgil Device Registrar on CentOS, Fedora, use the YUM package manager and run the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
+At this moment we don't provide builded package for Mac OS, that's why you have to build and run it by yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
@@ -76,10 +76,10 @@ $ make vs-tool-virgil-device-registrar
 ```
 
 #### Windows OS
-Virgil Device Registrar package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
+Virgil Device Registrar package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
 
 ## Command Reference
-Here is the list of possible commands for Virgil IoT Device Regis
+Here is the list of the commands for Virgil IoT Device Registrar.
 
 ### Syntax
 The CLI has the following syntax:
@@ -90,22 +90,19 @@ virgil-device-registrar [global options] command [command options] [arguments...
 Use ```virgil-device-registrar -h``` to see the list of available arguments.
 
 ### Registering Device
-In order to registrar IoT device, Virgil Device Registrar uses the following command:
+In order to register IoT device, Virgil Device Registrar uses the following command:
 
 | Command                                                                           | Description               |
 |-----------------------------------------------------------------------------------|---------------------------|
-| ```virgil-device-registrar [global options] command [command options] [arguments...]``` | IoT device is registrated |
+| ```virgil-device-registrar [global options] command [command options] [arguments...]``` | IoT device is registered |
 
 ``` bash
 virgil-device-registrar --data "/root/current-credentials/card_requests_gateways.txt" --app_token "AT.K6E8PEeOdLfacsq0I9C1I14CSgiоDKМB" --api_url https://api-iot-dev.virgilsecurity.com
 ```
 | Option                             | Description                                                                                                                                                                                                                                               |
 |------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| --data value, -d value             | Encrypted File with signed digital card requests (SCR)                                                                                                                                                                                                    |
-| --file_key value, -k value         | File with a private transfer key to decrypt the encrypted file. If this is your first time using Virgil Device Registrar, you need to generate a pair of transfer key using the Virgil CLI and share the Public Key for Virgil Device Initializer utility |
-| --file_key_pass value, -p value    | Transfer Private Key password                                                                                                                                                                                                                             |
-| --file_sender_key value, -s value  | Public Key of sender of the file. Public Key of the Virgil Device Initializer CLI                                                                                                                                                                         |
-| --app_token value, -t value        | Virgil application token. The Token is generated by you in Virgil Cloud                                                                                                                                                                                   |
-| --registration_url value, -b value | URL of Virgil IoT services                                                                                                                                                                                                                                |
-| --help, -h                         | Show help (default: false)                                                                                                                                                                                                                                |
-| --version, -v                      | Print the version (default: false)                                                                                                                                                                                                                        |
+| --data value, -d value             | File with signed digital card requests (SCR) |
+| --app_token value, -t value        | Virgil Application Token. The Token is generated by you at Virgil Cloud |
+| --registration_url value, -b value | URL of Virgil IoT services |
+| --help, -h                         | Show help (default: false) |
+| --version, -v                      | Print the version (default: false)  |
