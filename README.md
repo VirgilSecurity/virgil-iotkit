@@ -67,6 +67,30 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 &nbsp;
 
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
 To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
 
 <div id='iotkit-modules'/>
@@ -208,7 +232,7 @@ See [SNAP Structures](https://virgilsecurity.github.io/virgil-iotkit/snap-struct
 - [FLDT Server service](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html), for Server only: **vs_fldt_server_add_filetype_cb** function has to be implemented by user. This is FLDT Server notification about new file request by Client. It is necessary to return update context for new file. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) for details.
 - [PRVS Client service](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html), for Client only: **vs_snap_prvs_client_impl_t** structure has to be implemented by user. This is wait functions used for SNAP interface. You can see example of implementation is c-implementation tool. See [documentation](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html) for details.
 
-### Mandatory implementations with default ones
+### Default Mandatory implementations
 There are other modules that require user implementation, but Virgil IoT SDK provides default implementations for them :
 - [Cloud](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html) : **vs_cloud_impl_t** and **vs_cloud_message_bin_impl_t** are required `by vs_cloud_init` call. Function `vs_curl_http_impl` returns cURL HTTP implementation, `vs_cloud_message_bin_impl_t` returns MQTT implementation.
 - [Crypto](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) introduces security module implementation structure **vs_secmodule_impl_t** that is used by many functions. Function `vs_soft_secmodule_impl` returns software implementation.
