@@ -32,12 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/**
+ * @file secmodule-soft.h
+ * @brief Software Security Module constants
+ *
+ * This header contains defines and constants for Software Security Module implementation. They are used
+ * by Virgil IoT KIT functions
+ *
+ */
+
 #ifndef VS_SECMODULE_SOFT_DEVICE_H
 #define VS_SECMODULE_SOFT_DEVICE_H
 
-#define KEY_SLOT_STD_DATA_SIZE (380)  // Max data size of standard slot
-#define KEY_SLOT_EXT_DATA_SIZE (1532) // Max data size of extended slot
+/** Maximum data size of standard slot */
+#define KEY_SLOT_STD_DATA_SIZE (380)
 
+/** Maximum data size of extended slot */
+#define KEY_SLOT_EXT_DATA_SIZE (1532)
+
+/** Slots identifiers */
 typedef enum {
     VS_KEY_SLOT_STD_OTP_0,
     VS_KEY_SLOT_STD_OTP_1,
@@ -87,22 +100,33 @@ typedef enum {
     VS_KEY_SLOT_TMP_MAX
 } vs_iot_secmodule_slot_e;
 
+/** Provision keys amount */
 #define PROVISION_KEYS_QTY 2
 
+/** Private key slot */
 #define PRIVATE_KEY_SLOT VS_KEY_SLOT_STD_OTP_1
 
+/** Recovery key 1 slot */
 #define REC1_KEY_SLOT VS_KEY_SLOT_STD_OTP_2
+/** Recovery key 2 slot */
 #define REC2_KEY_SLOT VS_KEY_SLOT_STD_OTP_3
 
+/** Signature slot */
 #define SIGNATURE_SLOT VS_KEY_SLOT_STD_OTP_4
 
+/** Authentification key 1 slot */
 #define AUTH1_KEY_SLOT VS_KEY_SLOT_STD_MTP_2
+/** Authentification key 2 slot */
 #define AUTH2_KEY_SLOT VS_KEY_SLOT_STD_MTP_3
 
+/** Trust List key 1 slot */
 #define TL1_KEY_SLOT VS_KEY_SLOT_STD_MTP_4
+/** Trust List key 2 slot */
 #define TL2_KEY_SLOT VS_KEY_SLOT_STD_MTP_5
 
+/** Firmware key 1 slot */
 #define FW1_KEY_SLOT VS_KEY_SLOT_STD_MTP_6
+/** Firmware key 2 slot */
 #define FW2_KEY_SLOT VS_KEY_SLOT_STD_MTP_7
 
 #endif // VS_SECMODULE_SOFT_DEVICE_H
