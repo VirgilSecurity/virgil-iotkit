@@ -62,7 +62,7 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
 ## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
 
-Nowadays, each IoT device interacts with lots of services and application to provide the necessary features for end-users. At the same time, it's important to be sure that each IoT device is protected from unauthorized access at any its lifecycle stage, therefore each party and process have to be identifiable, verifiable and trusted.
+Nowadays, each IoT device interacts with lots of services and application to provide the necessary features for end-users. At the same time, it's important to be sure that each IoT device is protected from unauthorized access at any of its lifecycle stage, therefore each party and process have to be identifiable, verifiable and trusted.
 
 The diagram below demonstrates a standard IoT infrastructure and its parties that have to be identifiable and verifiable as a part of distributed trust.
 
@@ -72,9 +72,9 @@ The diagram below demonstrates a standard IoT infrastructure and its parties tha
 
 | Participant            | Role                                                                                                                                                                 |
 |------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Auth and Recovery Keys | Upper Level Keys that are responsible for secure Trust Lists and participants's key pairs management                                                                 |
+| Auth and Recovery Keys | Upper Level Keys that are responsible for secure Trust Lists and participants' key pairs management                                                                 |
 | Firmware service       | Service is responsible for creating, storing and distributing Firmware                                                                                               |
-| Trust List             | Trust List is a distributed list of trust that introduced in way of a file that consists of public keys and signatures of all trusted parties in the your IoT system |
+| Trust List             | Trust List is a distributed list of trust that is introduced in way of a file that consists of public keys and signatures of all trusted parties in the your IoT system |
 | Trust List service     | Service is responsible for creating, storing and distributing Trust Lists                                                                                            |
 | Factory                | Place where all IoT devices are manufactured and go through the provisioning step                                                                                    |
 | Cloud                  | Cloud service that is responsible for users and applications authorization and authentication.                                                                       |
@@ -784,14 +784,14 @@ type FileVersion struct {
 ```
 
 ### TrustList Management
-Distributed list of trust which contains keys information and is used by IoT devices and applications to check trust Information about IoT parties.
+Distributed list of trust which contains keys information and is used by IoT devices and applications to check trust information about IoT parties.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
 | ```8```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generation
-Trust List that contains Public Keys (Factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db.
+Trust List that contains public keys (Factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db.
 
 **Example**
 ```bash
@@ -853,9 +853,9 @@ This function helps to print all public keys from db.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```9```   | Virgil Trust Provisioner provide all public keys from db to the user |
+| ```9```   | Virgil Trust Provisioner provides all public keys from db to the user |
 
-You have a posiibility to print all public keys from Virgil Trust Provisioner database  on the screen or on the paper.
+You can print all public keys from Virgil Trust Provisioner database on the screen or on the paper.
 
 **Example**
 
@@ -877,14 +877,6 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 | 64076  | tl_service |    My TL key     |    2591   | 152236800 | 157680000 | BDzVCcbLFzyzEG5HjSPxdwDKY5jnTkwluQFTGQmmtFZPKHmbnLkMVXorSXhvYFV+25uyG+RRM0QZAtpoBSF5lOo= |
 | 32842  |  firmware  |  My second Firmware key  |    2591   | 152236800 | 157680000 | BNI+ES2Gyps499Ur1oOTVwUkW5prCU8hylgxaYbL3o6/6htXM5iAkGc1OClyjq3T9Sd6ZkFTVy39TmUasdUtic0= |
 +--------+------------+--------------------------+-----------+-----------+-----------+------------------------------------------------------------------------------------------+
-
-# TrustList Keys:
-+--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
-| Key Id |        Type       | EC type |       Comment       |   Start   |   Expire  |                                           Key                                            |
-+--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
-| 11529  | firmware_internal |    3    |   My Firmware key   | 152236800 | 157680000 | BNNhOY9ia3npXWdtGrkRv++FKYIfkf+RoysKzPP+fHnymQWY7I7+1/K7O3lVSstNESGEVN7MHx87zwpHJzRoQw4= |
-| 35430  |   auth_internal   |    3    | My AuthInternal key | 152236800 | 157680000 | BNbV+uCkGS9UOicMXgzXqiGWIYfD3CcI1+ssok7ZdGx5+9Wey7dr/kA+bON2L2//0e7zzmOIR1FFazeizzsP4tI= |
-+--------+-------------------+---------+---------------------+-----------+-----------+------------------------------------------------------------------------------------------+
 ```
 
 #### Add Public Keys to Database
