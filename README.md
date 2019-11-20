@@ -9,7 +9,7 @@
 ## Introduction
 [Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application and devices.
 
-Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trust chain, and for secure exchanging messages using any transport protocols.
+Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security PaaS. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for secure provisioning and authenticating devices, secure updating firmware and trustlists, and for secure exchanging messages using any transport protocols.
 
 ## Content
 - [Features](#features)
@@ -33,8 +33,8 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 ## Features
 Virgil IoTKit provides a set of features for IoT device security and management:
 - **Crypto Module. Connect any crypto library and Security Module**. Virgil IoTKit provides flexible and simple API for any types of crypto library and SECMODULE. At the same time, the framework provides default Software Security Module implementation based on Virgil Crypto. (Support for ATECC608A and ATECC508A in the next version).
-- **Provision Module. Secure IoT device provision**. In order to securely update firmware, securely register, authenticate or exchange messages between IoT devices, each IoT device must have its own tools, which allow the device to perform cryptographic operations. These tools must contain the necessary information to identify the device or other participants (e.g., trust list provider). These tools are the device keys, trust chain, device card, etc. The process of providing your IoT devices with these tools is called device provision, and Virgil IoTKit gives you all the necessary functionality to make your IoT devices identifiable and verifiable, as a result, protect them from counterfeit and fabrication.
-- **Firmware Module. Secure firmware and trust chain verification and distribution**. IoTKit provides a set of API for secure verification of firmware in a bootloader. Also, IoTKit provides an example of bootloader implementation in the form of emulator.
+- **Provision Module. Secure IoT device provision**. In order to securely update firmware, securely register, authenticate or exchange messages between IoT devices, each IoT device must have its own tools, which allow the device to perform cryptographic operations. These tools must contain the necessary information to identify the device or other participants (e.g., trust list provider). These tools are the device keys, trustlists, device card, etc. The process of providing your IoT devices with these tools is called device provision, and Virgil IoTKit gives you all the necessary functionality to make your IoT devices identifiable and verifiable, as a result, protect them from counterfeit and fabrication.
+- **Firmware Module. Secure firmware and trustlist verification and distribution**. IoTKit provides a set of API for secure verification of firmware in a bootloader. Also, IoTKit provides an example of bootloader implementation in the form of emulator.
 - **Secbox Module. Secure software storage for any sensitive data**. IoTKit provides secure software storage that is called **Secbox** for storing any sensitive data, like private keys. The Secbox works in two modes; the first mode - when data is only signed, and the second one - when data is encrypted and then signed.
 - **Protocols Module**. IoTKit provides a flexible, programmable and security network adaptive protocol (SNAP) for device-to-device, device-to-cloud, and cloud-to-device communication. SNAP can be used for secure firmware distribution, secure notification about device state, secure device provision. Also, SNAP contains a set of functions and interfaces that allows you to work with any transport protocol (BLE, Wi-Fi, PLC, NoiseSocket, etc.).  
 - **Cloud Module. API for working with Virgil IoT Security PaaS**. IoTKit interacts with the Virgil IoT Security Platform as a Service (PaaS) to provide you with the services for security, management, and monitoring IoT devices.
@@ -63,33 +63,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Sandbox uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Sandbox allows you to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<img width="800" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
 
 
 To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
