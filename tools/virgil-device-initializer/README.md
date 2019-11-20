@@ -1,5 +1,5 @@
 # Virgil Device Initializer
-The Virgil Device Initializer is a CLI utility used to make IoT devices provisioning and create their digital cards
+The Virgil Device Initializer is a CLI utility used to make IoT devices provisioning and create their digital cards.
 
 ## Content
 - [Overview](#Overview)
@@ -12,14 +12,14 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 - [Command Reference](#command-reference)
 
 ## Overview
-In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution, you have to provide it with specific provision files, generate private keys and create the digital cards for further device registration in Cloud.
+In order to make each IoT device identifiable, verifiable and trusted by each party of IoT solution, you have to provide them with specific provision files, generate private keys and create the digital cards for further device registration at Cloud.
 
 Virgil Device Initializer allows you to make IoT device provisioning and prepare your IoT device (create digital cards) for its further registration at Virgil Cloud.
 
 ## How It Works
 The IoT device provisioning process consists of 2 steps: Preparation and Initialization.
 
-The **preparation** step requires to grab all necessary information (e.g., provisioning files) and prepare your IoT device for further initialization.
+The **preparation** step requires to collect all necessary information (e.g., provisioning files) and prepare your IoT device for further initialization.
 
 The **initialization** step includes uploading provisioning files, generating device key pair, and creating device digital card request.
 
@@ -82,10 +82,10 @@ $ make vs-tool-virgil-device-initializer
 ```
 
 #### Windows OS
-Virgil Device Initializer package for Windows OS is currently in development. To be included in the information update list, please contact our support team support@VirgilSecurity.com.
+Virgil Device Initializer package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
 
 ## Command Reference
-Here is the list of possible commands for Virgil Device Initializer.
+Here is the list of commands for Virgil Device Initializer.
 
 ### Syntax
 The CLI has the following syntax.
@@ -114,7 +114,7 @@ In order to Initialize IoT device, Virgil Device Initializer uses the following 
 |-------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
 | ```virgil-device-initializer [global options] command [command options] [arguments...]``` | CLI forms a Device card request and store it in ```transfer file``` |
 
-The result of the command executing is the following:
+The result of the command execution is the following:
 
 - Generated IoT device card request for further registration via Device registrar.
 - Generated IoT device key pair. Private key is stored in IoT device memory, public key is stored in device digital card.
