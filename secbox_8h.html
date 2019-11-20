@@ -243,7 +243,7 @@ Security Box Usage</h1>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Element size or <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> negative value in case of error </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Element size or <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> negative value in case of error </dd></dl>
 
 </div>
 </div>
@@ -387,7 +387,7 @@ Security Box Usage</h1>
 </div>
 </div><!-- contents -->
 <div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:453</div></div>
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:133</div></div>
 <div class="ttc" id="asecbox_8h_html_a9fda3030a2608ee0c1cc847384367d3a"><div class="ttname"><a href="secbox_8h.html#a9fda3030a2608ee0c1cc847384367d3a">vs_secbox_init</a></div><div class="ttdeci">vs_status_e vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">Initialize Security Box.</div></div>
 <div class="ttc" id="astorage__hal_8h_html_a8f480985f78ad14f43d2469b007ad469"><div class="ttname"><a href="storage__hal_8h.html#a8f480985f78ad14f43d2469b007ad469">vs_storage_element_id_t</a></div><div class="ttdeci">uint8_t vs_storage_element_id_t[VS_STORAGE_ELEMENT_ID_MAX]</div><div class="ttdef"><b>Definition:</b> storage_hal.h:67</div></div>
 <div class="ttc" id="asecbox_8h_html_a7ce9c77b8a30078c9ba2198ae949d39f"><div class="ttname"><a href="secbox_8h.html#a7ce9c77b8a30078c9ba2198ae949d39f">vs_secbox_load</a></div><div class="ttdeci">vs_status_e vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz)</div><div class="ttdoc">Load Security Box element.</div></div>
