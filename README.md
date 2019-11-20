@@ -23,7 +23,7 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
 - [Tests](#tests)
-- [SDK usage](#SDK-usage)
+- [IoTKit Usage](#iotkit-usage)
 - [API Reference](#api-reference)
 - [License](#license)
 - [Support](#support)
@@ -179,14 +179,14 @@ To make sure that everything goes in the right way, we also provide a set of rea
 
 <div id='SDK-usage'/>
 
-## SDK usage
+## IoTKit Usage
 After Virgil IoT SDK installation or building it is necessary to do some steps for its successful usage listed below :
 - specify configuration headers path.
 - provide user implementations. You can select default implementations for some of them.
 
 ### Configuration headers
 There are configuration headers that customize Virigl IoTKit. You can provide yours or use
-standard ones. They are stored in config directory.
+standard ones. They are stored in **config directory**.
 
 It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
 
@@ -194,7 +194,7 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to dire
 you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
 
 ### Mandatory implementations
-Some modules use external implementations. It's necessary to implement HAL functions by user :
+Some modules use external implementations. It's necessary to implement HAL (hardware abstraction layer) functions by user :
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
 contains external data operations like open/read/write/close (see [Storage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html#storage_hal) for details). In case of OS with files standard file I/O calls like fopen/fread/fwrite/fclose can be used. See [Storeage HAL Usage](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html) for details.
 - [Firmware](https://virgilsecurity.github.io/virgil-iotkit/firmware_8h.html): **vs_firmware_install_prepare_space_hal**,
