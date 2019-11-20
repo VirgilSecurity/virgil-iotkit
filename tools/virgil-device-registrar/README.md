@@ -1,5 +1,5 @@
 # Virgil Device Registrar
-Virgil Device Registrar is a CLI utility used to register IoT devices and their digital cards at Virgil Security Cloud.
+Virgil Device Registrar is a CLI utility used to register IoT devices (their digital cards) at Virgil Security Cloud.
 
 ## Content
 - [Virgil Device Registrar](#virgil-device-registrar)
