@@ -39,17 +39,17 @@
  * - obtaining credentials from thing service
  * - connecting to message bin broker over MQTT and subscribing to the list of topics
  * - processing messages received over message bin
- * - downloading firmware images and trust list files from cloud storage
+ * - downloading firmware binaries and trust list files from cloud storage
  *
  * Virgil IoT KIT provides MQTT implementation based on AWS IoT library.
  *
  * \section cloud_usage Cloud Usage
  *
  * Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
- * service using #vs_cloud_http_get_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t. Then
+ * service using #vs_cloud_http_request_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t. Then
  * it waits for new messages, periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for
  * events of new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for
- * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud library uses
+ * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud module uses
  * provision and firmware modules, which must be initialized before.
  *
  * \note #vs_cloud_init requires #vs_cloud_impl_t, #vs_cloud_message_bin_impl_t and #vs_secmodule_impl_t
@@ -58,7 +58,7 @@ implementations.
 that
  * implements MQTT, #vs_soft_secmodule_impl() that returns software security module implementation.
  *
- *  Here you can see an example of Cloud library initialization :
+ *  Here you can see an example of Cloud module initialization :
  *
  *  \code
 
@@ -72,8 +72,8 @@ vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage 
 static vs_device_manufacture_id_t manufacture_id;           // Manufacture ID
 static vs_device_type_t device_type;                        // Device type
 
-// Initialize secmodule_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl, manufacture_id,
-device_type
+// Initialize secmodule_impl, cloud_impl, message_bin_impl, tl_storage_impl, fw_storage_impl,
+// manufacture_id, device_type
 
 // Provision module
 STATUS_CHECK(vs_provision_init(&tl_storage_impl, secmodule_impl), "Cannot initialize Provision module");

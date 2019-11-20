@@ -49,8 +49,8 @@
  *
  * \code
 
-vs_storage_op_ctx_t fw_storage_impl;         // Firmware storage implementation
-vs_secmodule_impl_t *secmodule_impl = NULL;              // Security module implementation
+vs_storage_op_ctx_t fw_storage_impl;                // Firmware storage implementation
+vs_secmodule_impl_t *secmodule_impl = NULL;         // Security module implementation
 static vs_device_manufacture_id_t manufacture_id;   // Manufacture ID
 static vs_device_type_t device_type;                // Device type
 
@@ -66,8 +66,7 @@ Firmware module");
  *
  * Firmware storage implementation \a fw_storage_impl initialization is described in \ref storage_hal section.
  *
- * Security module implementation \a secmodule_impl initialization is described in \ref storage_hal section. You can use
- * software security module #vs_soft_secmodule_impl() as it is done in this example.
+ * You can use software security module #vs_soft_secmodule_impl() as it is done in this example.
  *
  * \a manufacture_id, \a device_type are device unique characteristics and can be initialized by compile time constants.
  * See \ref provision_structures_usage for details
