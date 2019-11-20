@@ -79,8 +79,6 @@ _mb_mqtt_ctx_free() {
 
     _mb_ctx.port = 0;
 }
-// TODO: It will be removed
-#define VS_MB_MQTT_URL_FIELD "mqtt_url"
 
 #define VS_MB_MQTT_HOST_FIELD "mqtt_host"
 #define VS_MB_MQTT_PORT_FIELD "mqtt_port"

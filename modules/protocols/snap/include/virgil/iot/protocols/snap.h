@@ -35,8 +35,8 @@
 /*! \file snap.h
  * \brief SNAP network interface calls
  *
- * Secure Network Adjustable Protocol is used as transport layer for network communication. There are several layers provided by Virgil IoT
- * SDK that use this interface :
+ * Secure Network Adjustable Protocol is used as transport layer for network communication. There are several layers
+ * provided by Virgil IoT SDK that use this interface :
  * - PRVS : provision interface.
  * - FLDT : file data broadcast sent by server for clients to upgrade software. See #fldt_client_usage and
  * #fldt_server_usage for details
@@ -48,7 +48,6 @@
  * User can add his own protocols base on SNAP. It is necessary to provide service callbacks by filling
  * #vs_snap_service_t structure and register service by #vs_snap_register_service call.
  */
-// TODO : add an example of SNAP service registration
 
 #include <stdint.h>
 

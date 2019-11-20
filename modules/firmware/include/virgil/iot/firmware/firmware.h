@@ -138,7 +138,8 @@ firmware");
  * \endcode
  *
  * In this example Gateway receives firmware header by using Cloud module (see \ref cloud_usage for details ). It
- * verifies the received firmware. In case of error it deletes the firmware. In another case it analyzes this firmware type
+ * verifies the received firmware. In case of error it deletes the firmware. In another case it analyzes this firmware
+type
  * (\a _is_self_firmware_image call). If this firmware is intended for this gateway, the gateway installs it
  * (\a _process_own_firmware call). Otherwise it sends firmware to devices by using FLDT Server service
  * (#vs_fldt_server_add_file_type() call) :
