@@ -167,7 +167,6 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
                                                            const uint16_t response_buf_sz,
                                                            uint16_t *response_sz);
 
-// TODO : what is ACK ???
 /** SNAP Service Response Processor
  *
  * Callback for \a response_process member of #vs_snap_service_t structure.
@@ -175,7 +174,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  *
  * \param[in] netif #vs_netif_t network interface. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
- * \param[in] is_ack.
+ * \param[in] is_ack Boolean flag indicating successful packet receiveming
  * \param[in] response Response buffer.
  * \param[in] response_sz Response size.
  *
@@ -187,7 +186,6 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_neti
                                                             const uint8_t *response,
                                                             const uint16_t response_sz);
 
-// TODO : check description
 /** SNAP Periodical data
  *
  * Callback for \a periodical_process member of #vs_snap_service_t structure.
@@ -207,7 +205,6 @@ typedef vs_status_e (*vs_snap_service_periodical_processor_t)(void);
  */
 typedef vs_status_e (*vs_snap_service_deinit_t)(void);
 
-// TODO : check elements description
 /** Device roles
  *
  * Enumeration with mask bits to describe device roles.
@@ -231,12 +228,10 @@ typedef enum {
 
 #define VS_ETHERTYPE_VIRGIL (HTONS_IN_COMPILE_TIME(0xABCD))
 
-// TODO : check description!
-/** SNAP Flags
- */
+/** SNAP Flags */
 typedef enum {
-    VS_SNAP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001),
-    VS_SNAP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002)
+    VS_SNAP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001), /**< Correct packet */
+    VS_SNAP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002) /**< Incorrect packet */
 } vs_snap_flags_e;
 
 /******************************************************************************/
@@ -252,9 +247,8 @@ typedef struct __attribute__((__packed__)) vs_mac_addr_t {
 typedef struct __attribute__((__packed__)) ethernet_header {
     vs_mac_addr_t dest; /**< Destination MAC address */
     vs_mac_addr_t src;  /**< Source MAC address */
-    uint16_t type;      /**< Packet type */
+    uint16_t type;      /**< Ethernet packet type */
 } vs_ethernet_header_t;
-// TODO : what is type ??? Which packet types?
 
 /******************************************************************************/
 /** SNAP packet header
@@ -267,7 +261,6 @@ typedef struct __attribute__((__packed__)) {
     uint16_t padding;                                       /**< Packet padding */
     uint16_t content_size;                                  /**< Packet #vs_snap_packet_t \a content data size */
 } vs_snap_header_t;
-// TODO : what is it padding?
 
 /******************************************************************************/
 /** SNAP packet
@@ -278,8 +271,8 @@ typedef struct __attribute__((__packed__)) {
     uint8_t content[];               /**< Packet data with \a header . \a content_size bytes size */
 } vs_snap_packet_t;
 
-// TODO : This setting might be moved to some config
 #define VS_NETIF_PACKET_BUF_SIZE (1024)
+
 /******************************************************************************/
 /** Network interface
  *

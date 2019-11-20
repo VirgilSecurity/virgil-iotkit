@@ -99,7 +99,7 @@ typedef struct {
 typedef enum {
     VS_SNAP_INFO_GENERAL =
             HTONL_IN_COMPILE_TIME(0x0001), /**< General device information #vs_info_general_t will be sent */
-    VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002), /**< Devist statistic #vs_info_statistics_t will be sent */
+    VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002), /**< Device statistic #vs_info_statistics_t will be sent */
 } vs_snap_info_element_mask_e;
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H

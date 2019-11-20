@@ -125,7 +125,6 @@ extern "C" {
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
-// TODO : description???
 /** Wait implementation
  *
  * \param[in] wait_ms
@@ -136,7 +135,6 @@ extern "C" {
  */
 typedef vs_status_e (*vs_snap_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
-// TODO : description???
 /** Wait and stop callback
  *
  * \param[in] condition

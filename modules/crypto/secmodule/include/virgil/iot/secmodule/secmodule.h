@@ -175,7 +175,8 @@ typedef vs_status_e (*vs_secmodule_keypair_create_t)(vs_iot_secmodule_slot_e slo
 
 /** Public key retrieval
  *
- * \note Before calling this function, you should call #vs_secmodule_keypair_create_t implementation first and store public key in \a slot.
+ * \note Before calling this function, you should call #vs_secmodule_keypair_create_t implementation first and store
+ * public key in \a slot.
  *
  * \param[in] slot Slot number.
  * \param[out] buf Output buffer to store public key. Cannot be NULL.
