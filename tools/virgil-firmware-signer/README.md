@@ -122,7 +122,7 @@ After executing firmware signing command, Virgil Firmware Signer generates 2 fil
 
 ```_Prog.bin``` file is delivered directly to IoT devices (e.g. for testing purpose).
 
-The difference between these files is that ```_Update.bin``` file has a ```header``` with additional information about firmware and 0xFF zone. The header helps to notify which will get the Firmware.
+The difference between these files is that ```_Update.bin``` file has a ```header``` with additional information about firmware. The header helps to notify which will get the Firmware.
 
 **Example**
 
@@ -134,7 +134,7 @@ virgil-firmware-signer --input “fw-VRGL-Cf01" --config “./conf.json” --fil
 | --config value, -c value       | Path to config file                              |
 | --input value, -i value        | Input file                                       |
 | --file-size value, -s value    | Output _Prog.bin file size in bytes (default: 0) |
-| --fw-version value             | Firmware version                                 |
+| --fw-version value             | Firmware version ([0-255].[0-255].[0-255].[0-4294967295]) |
 | --manufacturer value, -a value | Manufacturer name                                |
 | --model value, -d value        | Model name                                       |
 | --chunk-size value, -k value   | Chunk size (default: 0)                          |
