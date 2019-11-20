@@ -2,46 +2,62 @@
 The Virgil Trust Provisioner is a command-line interface (CLI) used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
 
 ## Features
-- Generating and managing Key Pairs for upper level IoT parties
+- Generating and managing upper level key pairs for IoT parties
 - Generating and managing Trust Lists
 - Provides databases for storing keys and Trust Lists
-- Creating and registering Virgil Cards of upper level IoT parties on Virgil Security Platform
+- Creating and registering upper level Virgil Cards of IoT parties at Virgil Security Platform
 
 ## Content
-- [Trust Provisioner Overview](#trust-provisioner-overview)
-- [Setting up Trust Provisioner](#setting-up-trust-provisioner)
-  - [Install Trust Provisioner](#install-trust-provisioner)
-  - [Configure Trust Provisioner](#configure-trust-provisioner)
-- [Launch Trust Provisioner](#launch-trust-provisioner)
-- [Command Reference](#command-reference)
-  - [Syntax](#syntax)
-  - [Application Commands](#application-commands)
-  - [Private Keys](#private-keys)
-  - [TrustList](#trustlist)
-  - [Trust Provisioner Database](#trust-provisioner-database)
-- [Private Keys Commands](#private-keys-commands)
-  - [Initial Generation](#initial-generation-get-everything-at-once)
-  - [Recovery Key](#recovery-key)
-  - [Auth Key](#auth-key)
-  - [TrustList Key](#trustlist-key)
-  - [Factory Key](#factory-key)
-  - [Firmware Key](#firmware-key)
-- [TrustList Commands](#trustlist-commands)
-  - [TrustList Overview](#trustlist-overview)
-  - [TrustList Content](#trustlist-content)
-  - [TrustList Structure](#trustlist-structure)
-  - [TrustList Management](#trustlist-management)
-    - [TrustList Generation](#trustlist-generation)
-    - [TrustList Uploading](#trustlist-uploading)
-- [Trust Provisioner Database](#trust-provisioner-database)
-  - [Database Types](#database-types)
-  - [Database Security](#database-security)
-  - [Database Commands](#database-commands)
-    - [Print public keys from database](#print-public-keys-from-database)
-    - [Add Public Keys to Database](#add-public-keys-to-database)
-    - [Export data as provision package for Factory](#export-data-as-provision-package-for-factory)
-    - [Export upper level public keys](#export-upper-level-public-keys)
-    - [Export Private Keys](#export-private-keys)
+- [Virgil Trust Provisioner](#virgil-trust-provisioner)
+    - [Features](#features)
+    - [Content](#content)
+    - [Trust Provisioner Overview](#trust-provisioner-overview)
+    - [Setting up Trust Provisioner](#setting-up-trust-provisioner)
+        - [Install Trust Provisioner](#install-trust-provisioner)
+            - [Linux OS](#linux-os)
+            - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
+            - [CentOS, Fedora OS](#centos-fedora-os)
+            - [Mac OS](#mac-os)
+            - [Windows OS](#windows-os)
+        - [Configure Trust Provisioner](#configure-trust-provisioner)
+            - [Config File Structure](#config-file-structure)
+            - [Configurable Variables](#configurable-variables)
+    - [Launch Trust Provisioner](#launch-trust-provisioner)
+    - [Command Reference](#command-reference)
+        - [Syntax](#syntax)
+        - [Application Commands](#application-commands)
+        - [Private Keys](#private-keys)
+        - [TrustList](#trustlist)
+        - [Trust Provisioner Database](#trust-provisioner-database)
+    - [Private Keys Commands](#private-keys-commands)
+        - [Initial Generation (get everything at once)](#initial-generation-get-everything-at-once)
+        - [Recovery Key](#recovery-key)
+            - [Generating Recovery Key](#generating-recovery-key)
+        - [Auth Key](#auth-key)
+            - [Generating Auth Key](#generating-auth-key)
+        - [TrustList Key](#trustlist-key)
+            - [Generating TrustList Key](#generating-trustlist-key)
+        - [Factory Key](#factory-key)
+            - [Generating Factory Key](#generating-factory-key)
+            - [Deleting Factory Key](#deleting-factory-key)
+        - [Firmware Key](#firmware-key)
+            - [Generating Firmware Key](#generating-firmware-key)
+    - [TrustList Commands](#trustlist-commands)
+        - [TrustList Overview](#trustlist-overview)
+        - [TrustList Content](#trustlist-content)
+        - [TrustList structure](#trustlist-structure)
+        - [TrustList Management](#trustlist-management)
+        - [TrustList Generation](#trustlist-generation)
+        - [TrustList Uploading](#trustlist-uploading)
+    - [Trust Provisioner Database](#trust-provisioner-database-1)
+        - [Database Types](#database-types)
+        - [Database Security](#database-security)
+        - [Database Commands](#database-commands)
+            - [Print public keys from database](#print-public-keys-from-database)
+            - [Add Public Keys to Database](#add-public-keys-to-database)
+            - [Export data as provision package for Factory](#export-data-as-provision-package-for-factory)
+            - [Export upper level public keys](#export-upper-level-public-keys)
+            - [Export Private Keys](#export-private-keys)
 
 ## Trust Provisioner Overview
 Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
@@ -98,7 +114,7 @@ In order to download and install the Virgil Trust Provisioner on CentOS, Fedora,
 $ sudo yum install virgil-iot-sdk-tools
 ```
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
+In order to download and install the Virgil Trust Provisioner on Mac OS, use [pip](https://pip.pypa.io/en/stable/) and run the following commands:
 
 ```bash
 $ git clone https://github.com/VirgilSecurity/virgil-iotkit.git
@@ -107,19 +123,18 @@ $ pip3 install .
 ```
 
 #### Windows OS
-Virgil Trust Provisioner package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
+Virgil Trust Provisioner package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
 
 
 ### Configure Trust Provisioner
-After the Trust Provisioner installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **/etc/virgil-trust-provisioner/provisioner.conf**. While it is here, every time you launch the Trust Provisioner you have to specify the path to the config file:
+After the Trust Provisioner is installed, you need to set up the **provisioner.conf** file. By default, **provisioner.conf** file is placed in **/etc/virgil-trust-provisioner/provisioner.conf**. While it is there, you don't have to specify the path to the config file every time you launch the Trust Provisioner:
 
 ```bash
-virgil-trust-provisioner -c ./test_fs/provisioner.conf
+virgil-trust-provisioner -c samples/provisioner.conf
 ```
-In order to not specify every time Virgil Trust Provisioner's configuration file when you launch it, place the **provisioner.conf** file into one of the next repositories on your device:
+In order to not specify every time Virgil Trust Provisioner's configuration file when you launch it, place the **provisioner.conf** file into the following repository on your device:
 
-- /etc/VirgilTrustProvisioner/provisioner.conf
-- ~/.VirgilTrustProvisioner/provisioner.conf
+- /etc/virgil-trust-provisioner/provisioner.conf
 
 #### Config File Structure
 By default, the Virgil Trust Provisioner configuration file has the following format:
@@ -145,10 +160,9 @@ The configuration file (default name: **provisioner.conf**) contains the followi
 | Name                       | Description                                                                                                                  |
 |----------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | storage_path               | The path to the main Virgil Trust Provisioner directory. Storage for Virgil Trust Provisioner databases and TrustList files. |
-| log_path                   | The path to the folder for logs                                                                                              |
-| virgil_api_url             | URL of Virgil Security Platform API. URL https://api.virgilsecurity.com is by default.                                       |
-| card_registration_endpoint | URL of Virgil Cards Service endpoint for Cards registration. The /things/card/key is used by default.                        |
-| factory_ingo_json          | The path to the JSON file with factory information. The example can be found below.                                          |
+| log_path                   | The path to the folder for logs  |
+| provision_pack_path | Path to provision package folder.          |
+| iot_api_url             | URL of Virgil IoT API. URL https://api-iot.virgilsecurity.com is by default.                                       |
 
 **Factory JSON example**
 ```bash
@@ -712,7 +726,7 @@ TrustList is a distributed list of trust that introduced in way of a file that c
 
 TrustList has basic content structure that was created based on general best security practices, but the final number of trusted participants in the TrustList is determined by you.
 
-After the TrustList created and signed it's distributed to all participants (e.g. IoT devices, User Application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
+After the TrustList is created and signed, it's distributed to all participants (e.g. IoT devices, User Application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
 
 ### TrustList Content
 Each Trust List contains the following information:
@@ -791,8 +805,8 @@ $ Are you sure you want to choose [Generate TrustList] [y/n]: y
 
 # Generating TrustList...
 
-# Current TrustList version is 0
-$ Enter the TrustList version [1]: 1
+# Current TrustList version is 0.0.0.0
+$ Enter the TrustList version [1]: 1.0.0.0
 # Please choose Auth Key for TrustList signing:
 # Keys list:
 	1. db: AuthPrivateKeys, type: auth, comment: My Auth key, key_id: 17326
