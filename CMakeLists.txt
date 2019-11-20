@@ -33,3 +33,158 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+include(GNUInstallDirs)
+
+# ---------------------------------------------------------------------------
+#   Enable Golang
+# ---------------------------------------------------------------------------
+if(NOT GO_DISABLE)
+    include(cmake/golang.cmake)
+    include(cmake/flags.cmake)
+    set(VIRGIL_IOT_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Path to the Virgil IoT SDK binary")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+endif()
+
+# ---------------------------------------------------------------------------
+#   Project
+# ---------------------------------------------------------------------------
+if (GO_DISABLE)
+    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
+else()
+    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C Go)
+endif()
+set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Virgil IoT SDK")
+
+# ---------------------------------------------------------------------------
+#   Helper modules
+# ---------------------------------------------------------------------------
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/clangformat.cmake)
+
+
+# ---------------------------------------------------------------------------
+#   Version options
+# ---------------------------------------------------------------------------
+set(VIRGIL_IOT_SDK_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
+
+file(WRITE "${CMAKE_CURRENT_LIST_DIR}/VERSION" "${virgil-iot-sdk-VERSION}")
+
+if(VIRGIL_IOT_SDK_VERSION_LABEL)
+    file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
+endif()
+
+file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "\n")
+
+# ---------------------------------------------------------------------------
+#   Build options
+# ---------------------------------------------------------------------------
+
+#
+#   Config path
+#
+
+if(NOT VIRGIL_IOT_CONFIG_DIRECTORY)
+    message(FATAL_ERROR "[virgil-iot-sdk] VIRGIL_IOT_CONFIG_DIRECTORY variable containing path to the Virgil IOT SDK config is not specified")
+else()
+    message(STATUS "[virgil-iot-sdk] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
+endif()
+
+#
+#   Target platform
+#
+option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)
+
+#
+#   Additional HAL include paths
+#
+message(STATUS "[VIRGIL_IOT_SDK_HAL_INC_PATH] Additional paths to HAL : ${VIRGIL_IOT_SDK_HAL_INC_PATH}")
+
+#
+# Test
+#
+option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
+
+#
+# Features
+#
+option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
+option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
+option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
+option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
+option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
+option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+
+#
+# Default crypto implementations
+#
+option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" ON)
+
+#
+# Default cloud implementations
+#
+option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
+option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws implementation" ON)
+
+#
+#   aws-sdk
+#
+if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Dependencies / thirdparty libraries
+# ---------------------------------------------------------------------------
+
+#
+#   Virgil crypto
+#
+set(ENABLE_TESTING OFF CACHE BOOL "On/Off integration tests." FORCE)
+set(VIRGIL_C_TESTING OFF CACHE BOOL "On/Off C library integration tests." FORCE)
+set(VIRGIL_LIB_PYTHIA OFF CACHE BOOL "Build 'pythia' library" FORCE)
+set(VIRGIL_LIB_ED25519 OFF CACHE BOOL "Build 'ed25519' library" FORCE)
+set(VIRGIL_LIB_RATCHET OFF CACHE BOOL "Build 'ratchet' library" FORCE)
+set(VIRGIL_LIB_PHE OFF CACHE BOOL "Build 'phe' library" FORCE)
+set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
+set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
+set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
+
+#
+#   Tools
+#
+if (NOT GO_DISABLE)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tools)
+endif()
+
+#
+#   Helpers
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/helpers)
+
+#
+#   Modules
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
+
+#
+#   Default implementations
+#
+if (VIRGIL_IOT_DEFAULT_IMPL)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
+endif()
+
+#
+#   Tests
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+
+#
+#   Documentation
+#
+add_custom_target(vs-iotkit-documentation
+        COMMAND rm -fR docs/doxygen
+        COMMAND mkdir -p docs/doxygen
+        COMMAND doxygen
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})

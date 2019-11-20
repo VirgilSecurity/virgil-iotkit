@@ -4,6 +4,8 @@ install*/
 .depends_cache/
 codegen/generated/
 codegen/test/gsl/
+ext/deps/*
+docs/doxygen
 
 #####
 # OS X temporary files that should never be committed
@@ -17,6 +19,7 @@ profile
 # CLion
 .idea
 cmake-build-*/
+VERSION
 
 ####
 # Sublime Text 3
@@ -31,3 +34,6 @@ bin/
 .vs/
 
 Carthage
+
+####
+format_list.txt

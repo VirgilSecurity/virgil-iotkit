@@ -33,3 +33,34 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+
+include(installVirgilCryptoGo.cmake)
+#
+#   C library for HAL implementation
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/c-implementation)
+
+#
+#   Factory initalizer
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-initializer)
+
+#
+#   Registrar
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-device-registrar)
+
+#
+#   Signer
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-firmware-signer)
+
+#
+#   SNAPD
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/virgil-snapd)
+
+#
+#   SNAP convert function generator
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/snap-codgen)

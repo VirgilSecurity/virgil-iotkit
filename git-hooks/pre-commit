@@ -1,0 +1,28 @@
+#!/bin/bash
+
+exec 1>&2
+
+STYLE=file
+STYLEARG="-style=${STYLE}"
+
+format_file() {
+  if grep -Fxq "${1}" "$(pwd)/format_list.txt"; then
+    echo "Format: ${1}"
+    clang-format -i ${STYLEARG} ${1}
+    git add ${1}
+  else
+    echo "Skip: ${1}"
+  fi
+}
+
+case "${1}" in
+  --about )
+    echo "Runs clang-format on source files"
+    ;;
+  * )
+    export PATH=/usr/local/bin:${PATH}
+    for file in `git diff-index --cached --name-only HEAD` ; do
+      format_file "$(pwd)/${file}"
+    done
+    ;;
+esac
