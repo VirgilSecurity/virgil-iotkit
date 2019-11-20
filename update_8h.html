@@ -127,10 +127,10 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:a1a6fddce8673c233b162cea64aa84625"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set footer.  <a href="update_8h.html#a1a6fddce8673c233b162cea64aa84625">More...</a><br /></td></tr>
 <tr class="separator:a1a6fddce8673c233b162cea64aa84625"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7657f3afe9dd36c0c1525228318e0755"><td class="memItemLeft" align="right" valign="top">typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#a7657f3afe9dd36c0c1525228318e0755">vs_update_file_is_newer_cb_t</a>) (void *context, <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *available_file, const <a class="el" href="structvs__file__version__t.html">vs_file_version_t</a> *new_file)</td></tr>
-<tr class="memdesc:a7657f3afe9dd36c0c1525228318e0755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is file newer that current one.  <a href="update_8h.html#a7657f3afe9dd36c0c1525228318e0755">More...</a><br /></td></tr>
+<tr class="memdesc:a7657f3afe9dd36c0c1525228318e0755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a file is newer than the current one.  <a href="update_8h.html#a7657f3afe9dd36c0c1525228318e0755">More...</a><br /></td></tr>
 <tr class="separator:a7657f3afe9dd36c0c1525228318e0755"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac851935d014dde1e0bb605a359afa8e3"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#ac851935d014dde1e0bb605a359afa8e3">vs_update_free_item_cb_t</a>) (void *context, <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type)</td></tr>
-<tr class="memdesc:ac851935d014dde1e0bb605a359afa8e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free item during update destroy.  <a href="update_8h.html#ac851935d014dde1e0bb605a359afa8e3">More...</a><br /></td></tr>
+<tr class="memdesc:ac851935d014dde1e0bb605a359afa8e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free item during update destruction.  <a href="update_8h.html#ac851935d014dde1e0bb605a359afa8e3">More...</a><br /></td></tr>
 <tr class="separator:ac851935d014dde1e0bb605a359afa8e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48f74ba864f92659c48fba1b572ad757"><td class="memItemLeft" align="right" valign="top">typedef char *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="update_8h.html#a48f74ba864f92659c48fba1b572ad757">vs_update_describe_type_cb_t</a>) (void *context, <a class="el" href="structvs__update__file__type__t.html">vs_update_file_type_t</a> *file_type, char *buffer, uint32_t buf_size)</td></tr>
 <tr class="memdesc:a48f74ba864f92659c48fba1b572ad757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe file type.  <a href="update_8h.html#a48f74ba864f92659c48fba1b572ad757">More...</a><br /></td></tr>
@@ -162,7 +162,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Update interface for files downloading. </p>
-<p>This file declares <em><a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a></em> interface that is used for files downloading by client and sending by server. If you want to download/upload your own file type, you have to implement function callbacks for this interface. Also there are some utilities for Update library</p>
+<p>This file declares the <em><a class="el" href="structvs__update__interface__t.html" title="Update interface context.">vs_update_interface_t</a></em> interface that is used for files downloading by client and sending by server. If you want to download/upload your own file type, you have to implement function callbacks for this interface. There are also some utilities for Update library.</p>
 <h1><a class="anchor" id="update_usage"></a>
 Update Module usage</h1>
 <p>See <a class="el" href="firmware_8h.html#a39193f69c2067a1673ffdf85ea7a71ff" title="Return firmware Update interface.">vs_firmware_update_ctx</a> source code and <a class="el" href="trust__list_8h.html#a015bb0da15c42d6ab85e13b54dd4cc57" title="Update interface for Trust List.">vs_tl_update_ctx</a> one for update context implementation examples. </p>
@@ -233,7 +233,7 @@ Update Module usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Is file newer that current one. </p>
+<p>Check if a file is newer than the current one. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">context</td><td>File context. </td></tr>
@@ -259,7 +259,7 @@ Update Module usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Free item during update destroy. </p>
+<p>Free item during update destruction. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">context</td><td>File context. </td></tr>
@@ -345,7 +345,7 @@ Update Module usage</h1>
     <tr><td class="paramdir">[in]</td><td class="paramname">file_header</td><td>Current file header. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">footer_buffer</td><td>Output footer buffer. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">buffer_size</td><td>Buffer size. Cannot be zero. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">footer_size</td><td>Footer size that has been read. Cannot be NULL.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">footer_size</td><td>Size of the footer to be read. Cannot be NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -595,7 +595,7 @@ Update Module usage</h1>
 <p>Compare two files versions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">update_ver</td><td>File to be update. Cannot be NULL. </td></tr>
+    <tr><td class="paramname">update_ver</td><td>File to update. Cannot be NULL. </td></tr>
     <tr><td class="paramname">current_ver</td><td>Current file version. Cannot be NULL.</td></tr>
   </table>
   </dd>
@@ -642,7 +642,7 @@ Other <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>tru if file types are equal or false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if file types are equal and false otherwise </dd></dl>
 
 </div>
 </div>
