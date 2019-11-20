@@ -63,7 +63,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate process of creating and publishing new Firmware or TrustList to Virgil Cloud. Sandbox uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Sandbox allows you to manage IoT devices and get information about their state. Demo uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trust lists before updating them.
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
+<img width="720" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
 
 To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
 
@@ -169,8 +169,8 @@ Virgil IoTKit for Windows OS is currently in development. To be included to info
 <div id='tests'/>
 
 ## Tests
-To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Pursue the [tests folder](/tests) of this repository to find preferred tests.        
-- Crypto: Crypto algorithms and primitives tests. (AES, Hash, ECDH, ECDSA, HMAC, KDF, ChaCha20-Poly1305, etc.)
+To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix/tree/release/v0.1.0-alpha/tests) of our IoTKit Demo repository to find preferred tests.        
+- Crypto: Crypto algorithms and primitives tests.
 - Firmware: Firmware related functionality. Create device/firmware. Save firmware.
 - Helpers: Create and save trust list.
 - Secbox: Test storage module. Read write signed or/and encrypted data.
@@ -180,13 +180,12 @@ To make sure that everything goes in the right way, we also provide a set of rea
 <div id='SDK-usage'/>
 
 ## IoTKit Usage
-After Virgil IoT SDK installation or building it is necessary to do some steps for its successful usage listed below :
+To start working with Virgil IoTKit you have to:
 - specify configuration headers path.
-- provide user implementations. You can select default implementations for some of them.
+- provide implementations (you can also use default implementations).
 
 ### Configuration headers
-There are configuration headers that customize Virigl IoTKit. You can provide yours or use
-standard ones. They are stored in **config directory**.
+There are configuration headers that customize Virigl IoTKit, they are stored in **config directory**. You can provide your headers or use standard ones.
 
 It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
 
