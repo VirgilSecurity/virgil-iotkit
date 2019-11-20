@@ -174,7 +174,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  *
  * \param[in] netif #vs_netif_t network interface. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
- * \param[in] is_ack Boolean flag indicating successful packet receiveming
+ * \param[in] is_ack Boolean flag indicating successful packet receiving
  * \param[in] response Response buffer.
  * \param[in] response_sz Response size.
  *
@@ -230,8 +230,8 @@ typedef enum {
 
 /** SNAP Flags */
 typedef enum {
-    VS_SNAP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001), /**< Correct packet */
-    VS_SNAP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002) /**< Incorrect packet */
+    VS_SNAP_FLAG_ACK = HTONL_IN_COMPILE_TIME(0x0001), /**< Confirmation about receiving a correct packet */
+    VS_SNAP_FLAG_NACK = HTONL_IN_COMPILE_TIME(0x0002) /**< Notification about rejecting a packet */
 } vs_snap_flags_e;
 
 /******************************************************************************/
