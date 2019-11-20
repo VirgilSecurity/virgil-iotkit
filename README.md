@@ -1,5 +1,5 @@
 # Virgil IoTKit C
-[![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://VirgilSecurity.github.io/virgil-iotkit)
+[![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://virgilsecurity.github.io/virgil-iotkit/v0.1.0-alpha/)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
 
@@ -18,8 +18,8 @@ Virgil IoTKit is a C library for connecting IoT devices to Virgil IoT Security P
 - [IoTKit Modules](#modules)
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
-  - [Ubuntu, Debian OS](#ubuntu-debian-os)
-  - [CentOS, Fedora OS](#centos-fedora-os)
+  - [Ubuntu, Debian, Raspbian OS](#ubuntu-debian-raspbian-os)
+  - [Fedora OS](#fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
 - [Tests](#tests)
@@ -129,7 +129,7 @@ To install the Virgil Crypto library run the `install-virgil-crypto.sh` from the
 $ scripts/install-virgil-crypto.sh
 ```
 
-### Ubuntu, Debian OS
+### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
 
 ```shell
@@ -160,7 +160,7 @@ echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_10 iot" >> /etc/ap
 
 **Note!** All DEB repositories are not signed, therefore to update lists for them use the following command: `apt-get update --allow-insecure-repositories --allow-unauthenticated`
 
-### CentOS, Fedora OS
+### Fedora OS
 To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
 
 ```shell
