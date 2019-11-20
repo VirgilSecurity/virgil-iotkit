@@ -70,8 +70,8 @@
  * Zero value #VS_CODE_OK is used for non-error values. Negative values mean error
  */
 typedef enum {
-    VS_CODE_COMMAND_NO_RESPONSE = 100,
-    VS_CODE_OLD_VERSION = 1,
+    VS_CODE_COMMAND_NO_RESPONSE = 100,  /**< No need in response */
+    VS_CODE_OLD_VERSION = 1,    /**< Provided file is not newer than the current file */
     VS_CODE_OK = 0, /**< Successful operation */
     VS_CODE_ERR_NULLPTR_ARGUMENT = -1, /**< Argument is NULL pointer while it must be not NULL */
     VS_CODE_ERR_ZERO_ARGUMENT = -2, /**< Argument is zero while it must be not zero */
