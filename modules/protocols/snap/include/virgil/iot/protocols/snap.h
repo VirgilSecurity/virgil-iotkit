@@ -35,7 +35,7 @@
 /*! \file snap.h
  * \brief SNAP network interface calls
  *
- * SNAP protocol is used as transport layer for network communication. There are several layers provided by Virgil IoT
+ * Secure Network Adjustable Protocol is used as transport layer for network communication. There are several layers provided by Virgil IoT
  * SDK that use this interface :
  * - PRVS : provision interface.
  * - FLDT : file data broadcast sent by server for clients to upgrade software. See #fldt_client_usage and

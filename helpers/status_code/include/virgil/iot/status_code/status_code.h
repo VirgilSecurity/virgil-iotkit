@@ -35,7 +35,7 @@
 /*! \file status_code.h
  * \brief Status codes and macroses
  *
- * This file declares #vs_status_e status codes. Also there are macros to simplify return code checks :
+ * This file declares #vs_status_e status codes. There are also macros to simplify return code checks :
  *
  * \code
 
@@ -66,14 +66,15 @@
 #include <virgil/iot/macros/macros.h>
 
 /** Status code
- * Status code to be returned from function. Zero value #VS_CODE_OK is used for non-error values. Negative values mean error
+ *
+ * Zero value #VS_CODE_OK is used for non-error values. Negative values mean error
  */
 typedef enum {
-    VS_CODE_COMMAND_NO_RESPONSE = 100,
-    VS_CODE_OLD_VERSION = 1,
+    VS_CODE_COMMAND_NO_RESPONSE = 100,  /**< No need in response */
+    VS_CODE_OLD_VERSION = 1,    /**< Provided file is not newer than the current file */
     VS_CODE_OK = 0, /**< Successful operation */
-    VS_CODE_ERR_NULLPTR_ARGUMENT = -1, /**< Argument is NULL pointer while it must be non NULL */
-    VS_CODE_ERR_ZERO_ARGUMENT = -2, /**< Argument is zero while it must be non zero */
+    VS_CODE_ERR_NULLPTR_ARGUMENT = -1, /**< Argument is NULL pointer while it must be not NULL */
+    VS_CODE_ERR_ZERO_ARGUMENT = -2, /**< Argument is zero while it must be not zero */
     VS_CODE_ERR_INCORRECT_ARGUMENT = -3, /**< Incorrect argument */
     VS_CODE_ERR_INCORRECT_PARAMETER = -4, /**< Incorrect parameter */
     VS_CODE_ERR_UNSUPPORTED_PARAMETER = -5, /**< Unsupported parameter */
@@ -83,14 +84,14 @@ typedef enum {
     VS_CODE_ERR_NOT_FOUND = -9, /**< Entity has not been found */
 
     VS_CODE_ERR_NO_CALLBACK = -10, /**< There is no callback */
-    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE = -11, /**< Unsupporter mapping type */
-    VS_CODE_ERR_INCORRECT_SEND_REQUEST = -12, /**< Incorrect sed request */
+    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE = -11, /**< Unsupported mapping type */
+    VS_CODE_ERR_INCORRECT_SEND_REQUEST = -12, /**< Incorrect send request */
 
     VS_CODE_ERR_NO_MEMORY = -20, /**< No memory */
     VS_CODE_ERR_TOO_SMALL_BUFFER = -21, /**< Buffer is too small */
     VS_CODE_ERR_FORMAT_OVERFLOW = -22, /**< Incorrect data format */
 
-    VS_CODE_ERR_VERIFY = -30, /**< Incorrect result of verifying */
+    VS_CODE_ERR_VERIFY = -30, /**< Incorrect result of verification */
     VS_CODE_ERR_UNSUPPORTED = -31, /**< Unsupported crypto data */
     VS_CODE_ERR_CRYPTO = -32, /**< Error during crypto operation processing */
 
@@ -108,19 +109,19 @@ typedef enum {
 
     VS_CODE_ERR_SNAP_UNKNOWN = -70, /**< SNAP error */
     VS_CODE_ERR_SNAP_NOT_MY_PACKET = -71, /**< SNAP error "not my packet" */
-    VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES = -72, /**< Too much services to be registred by SNAP */
+    VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES = -72, /**< Too much services to be registered by SNAP */
 
     VS_CODE_ERR_THREAD = -80, /**< Error during thread processing */
-    VS_CODE_ERR_NO_SIMULATOR = -81, /**< No sumilator has been found */
+    VS_CODE_ERR_NO_SIMULATOR = -81, /**< No simulator has been found */
     VS_CODE_ERR_SOCKET = -82, /**< Error during socket operations */
     VS_CODE_ERR_PLC = -83, /**< PLC error */
     VS_CODE_ERR_NOINIT = -84, /**< Not initialized */
 
-    VS_CODE_ERR_USER = -128 /**< User specific error codes start from this value */
+    VS_CODE_ERR_USER = -128 /**< User specific error codes start with this value */
 
 } vs_status_e;
 
-/** Status code check and goto if non-successful.
+/** Status code check and perform goto terminate if non-successful.
  *
  *  1. \a OPERATION is compared with #VS_CODE_OK.
  *  2. If they are not equal, \a MESSAGES is logged and function jumps to terminate label.
