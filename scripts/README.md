@@ -198,9 +198,6 @@ The information about generated TrustList can be also found in Logs Viewer (http
 
 Sandbox also allows you to manage IoT devices and get information about their state in the in Virgil SnapD (http://localhost:8081/).
 
-## Reference
-- [Virgil IoTKit](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha)
-- [Virgil Dev Docs](https://developer.virgilsecurity.com/)
 
 ## Support
 Our developer support team is here to help you. Find more information on our [Help Center](https://help.virgilsecurity.com/).
