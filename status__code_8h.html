@@ -82,10 +82,10 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:aa0d986d170e834631b902001dae653a2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a>(OPERATION,  MESSAGE, ...)&#160;&#160;&#160;<a class="el" href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a>(<a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a> == (OPERATION), (MESSAGE), ##__VA_ARGS__)</td></tr>
-<tr class="memdesc:aa0d986d170e834631b902001dae653a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code check and goto if non-successful.  <a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">More...</a><br /></td></tr>
+<tr class="memdesc:aa0d986d170e834631b902001dae653a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code check and perform goto terminate if non-successful.  <a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">More...</a><br /></td></tr>
 <tr class="separator:aa0d986d170e834631b902001dae653a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a041811e89702b1ecd4932c0168eb17cd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="status__code_8h.html#a041811e89702b1ecd4932c0168eb17cd">STATUS_CHECK_RET</a>(OPERATION,  MESSAGE, ...)&#160;&#160;&#160;<a class="el" href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a>(<a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a> == (ret_code = (OPERATION)), ret_code, (MESSAGE), ##__VA_ARGS__)</td></tr>
-<tr class="memdesc:a041811e89702b1ecd4932c0168eb17cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code check and return <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> if non-successful.  <a href="status__code_8h.html#a041811e89702b1ecd4932c0168eb17cd">More...</a><br /></td></tr>
+<tr class="memdesc:a041811e89702b1ecd4932c0168eb17cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code check and return <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> if non-successful.  <a href="status__code_8h.html#a041811e89702b1ecd4932c0168eb17cd">More...</a><br /></td></tr>
 <tr class="separator:a041811e89702b1ecd4932c0168eb17cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a163136f17960c55a3c6652b52c93fff6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="status__code_8h.html#a163136f17960c55a3c6652b52c93fff6">STATUS_CHECK_RET_BOOL</a>(OPERATION,  MESSAGE, ...)&#160;&#160;&#160;<a class="el" href="macros_8h.html#ad53703e6ade1bfe8221933bd280c3a96">BOOL_CHECK_RET</a>(<a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6">VS_CODE_OK</a> == (OPERATION), (MESSAGE), ##__VA_ARGS__)</td></tr>
 <tr class="memdesc:a163136f17960c55a3c6652b52c93fff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code check and return bool if non-successful.  <a href="status__code_8h.html#a163136f17960c55a3c6652b52c93fff6">More...</a><br /></td></tr>
@@ -144,12 +144,12 @@ Enumerations</h2></td></tr>
 <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432accb3cc795c22614041bca0775a05cda7">VS_CODE_ERR_USER</a> = -128
 <br />
  }</td></tr>
-<tr class="memdesc:af385b5c6ab5f3183ce75d4d1e676e432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code Status code to be returned from function.  <a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">More...</a><br /></td></tr>
+<tr class="memdesc:af385b5c6ab5f3183ce75d4d1e676e432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status code.  <a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">More...</a><br /></td></tr>
 <tr class="separator:af385b5c6ab5f3183ce75d4d1e676e432"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Status codes and macroses. </p>
-<p>This file declares <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> status codes. Also there are macros to simplify return code checks :</p>
+<p>This file declares <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> status codes. There are also macros to simplify return code checks :</p>
 <div class="fragment"><div class="line"><a class="code" href="structvs__netif__t.html">vs_netif_t</a> *netif;</div>
 <div class="line"><span class="keyword">const</span> <a class="code" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac;</div>
 <div class="line"><a class="code" href="structvs__snap__prvs__devi__t.html">vs_snap_prvs_devi_t</a> *device_info;</div>
@@ -165,7 +165,7 @@ Enumerations</h2></td></tr>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Error processing</span></div>
 <div class="line">terminate:</div>
-</div><!-- fragment --><p>You can introduce your own error codes. They must start from <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432accb3cc795c22614041bca0775a05cda7" title="User specific error codes start from this value.">VS_CODE_ERR_USER</a> code. </p>
+</div><!-- fragment --><p>You can introduce your own error codes. They must start from <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432accb3cc795c22614041bca0775a05cda7" title="User specific error codes start with this value.">VS_CODE_ERR_USER</a> code. </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aa0d986d170e834631b902001dae653a2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0d986d170e834631b902001dae653a2">&#9670;&nbsp;</a></span>STATUS_CHECK</h2>
@@ -199,7 +199,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Status code check and goto if non-successful. </p>
+<p>Status code check and perform goto terminate if non-successful. </p>
 <ol type="1">
 <li><em>OPERATION</em> is compared with <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a>.</li>
 <li>If they are not equal, <em>MESSAGES</em> is logged and function jumps to terminate label.</li>
@@ -247,12 +247,12 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Status code check and return <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> if non-successful. </p>
+<p>Status code check and return <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> if non-successful. </p>
 <ol type="1">
-<li><em>OPERATION</em> result code is saved to the <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> ret_code variable.</li>
+<li><em>OPERATION</em> result code is saved to the <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> ret_code variable.</li>
 <li>if ret_code is not equal to <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a>, <em>MESSAGES</em> is logged and function returns ret_code.</li>
 </ol>
-<dl class="section warning"><dt>Warning</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> ret_code must be initialized.</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> ret_code must be initialized.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">OPERATION</td><td>Operation to be checked. </td></tr>
@@ -260,7 +260,7 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>OPERATION's <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code Status code to be returned from function.">vs_status_e</a> ret_code in case of non-successful result. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>OPERATION's <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432" title="Status code.">vs_status_e</a> ret_code in case of non-successful result. </dd></dl>
 
 </div>
 </div>
@@ -325,16 +325,18 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Status code Status code to be returned from function. </p>
+<p>Status code. </p>
 <p>Zero value <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> is used for non-error values. Negative values mean error </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a5a98c2df36430be8bb22e91140c566b2"></a>VS_CODE_COMMAND_NO_RESPONSE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90"></a>VS_CODE_OLD_VERSION&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a5a98c2df36430be8bb22e91140c566b2"></a>VS_CODE_COMMAND_NO_RESPONSE&#160;</td><td class="fielddoc"><p>No need in response. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90"></a>VS_CODE_OLD_VERSION&#160;</td><td class="fielddoc"><p>Provided file is not newer than the current file. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6"></a>VS_CODE_OK&#160;</td><td class="fielddoc"><p>Successful operation. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6"></a>VS_CODE_ERR_NULLPTR_ARGUMENT&#160;</td><td class="fielddoc"><p>Argument is NULL pointer while it must be non NULL. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6"></a>VS_CODE_ERR_NULLPTR_ARGUMENT&#160;</td><td class="fielddoc"><p>Argument is NULL pointer while it must be not NULL. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ac77087f9afa99aad4404c4b07aa39f00"></a>VS_CODE_ERR_ZERO_ARGUMENT&#160;</td><td class="fielddoc"><p>Argument is zero while it must be non zero. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ac77087f9afa99aad4404c4b07aa39f00"></a>VS_CODE_ERR_ZERO_ARGUMENT&#160;</td><td class="fielddoc"><p>Argument is zero while it must be not zero. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ac6bdad50b04edfeae7dbd676415504e4"></a>VS_CODE_ERR_INCORRECT_ARGUMENT&#160;</td><td class="fielddoc"><p>Incorrect argument. </p>
 </td></tr>
@@ -352,9 +354,9 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a777ec76aa4cfaf4b13f4c04852ded923"></a>VS_CODE_ERR_NO_CALLBACK&#160;</td><td class="fielddoc"><p>There is no callback. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aefda19f03bf2bad7541cc3630e9f49d2"></a>VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE&#160;</td><td class="fielddoc"><p>Unsupporter mapping type. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aefda19f03bf2bad7541cc3630e9f49d2"></a>VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE&#160;</td><td class="fielddoc"><p>Unsupported mapping type. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ac2c6bb0a29e485f85e3092385a1df4b8"></a>VS_CODE_ERR_INCORRECT_SEND_REQUEST&#160;</td><td class="fielddoc"><p>Incorrect sed request. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432ac2c6bb0a29e485f85e3092385a1df4b8"></a>VS_CODE_ERR_INCORRECT_SEND_REQUEST&#160;</td><td class="fielddoc"><p>Incorrect send request. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a0516c14617525de49fc73dc3cb2ac540"></a>VS_CODE_ERR_NO_MEMORY&#160;</td><td class="fielddoc"><p>No memory. </p>
 </td></tr>
@@ -362,7 +364,7 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aeb0a82db5b508f47f013c1d96a0cc7b9"></a>VS_CODE_ERR_FORMAT_OVERFLOW&#160;</td><td class="fielddoc"><p>Incorrect data format. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aa6e267bde4a669fc6a5fb13ca089ccd5"></a>VS_CODE_ERR_VERIFY&#160;</td><td class="fielddoc"><p>Incorrect result of verifying. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aa6e267bde4a669fc6a5fb13ca089ccd5"></a>VS_CODE_ERR_VERIFY&#160;</td><td class="fielddoc"><p>Incorrect result of verification. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432afb54971e406ad7ee53b3aadab94d71cb"></a>VS_CODE_ERR_UNSUPPORTED&#160;</td><td class="fielddoc"><p>Unsupported crypto data. </p>
 </td></tr>
@@ -390,11 +392,11 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432aa6f674b846590446b9e69b2fca44b5ef"></a>VS_CODE_ERR_SNAP_NOT_MY_PACKET&#160;</td><td class="fielddoc"><p>SNAP error "not my packet". </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a32d441a8897c1ebf21e2ec9ff41ba3c6"></a>VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES&#160;</td><td class="fielddoc"><p>Too much services to be registred by SNAP. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a32d441a8897c1ebf21e2ec9ff41ba3c6"></a>VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES&#160;</td><td class="fielddoc"><p>Too much services to be registered by SNAP. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a20b5692eab34abee5d5e894ca9cea990"></a>VS_CODE_ERR_THREAD&#160;</td><td class="fielddoc"><p>Error during thread processing. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a6128fca4bcfe8edf7de7cbeef79bb780"></a>VS_CODE_ERR_NO_SIMULATOR&#160;</td><td class="fielddoc"><p>No sumilator has been found. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a6128fca4bcfe8edf7de7cbeef79bb780"></a>VS_CODE_ERR_NO_SIMULATOR&#160;</td><td class="fielddoc"><p>No simulator has been found. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a615b975b466be3fdf6052cc0af140af3"></a>VS_CODE_ERR_SOCKET&#160;</td><td class="fielddoc"><p>Error during socket operations. </p>
 </td></tr>
@@ -402,7 +404,7 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432a2599c157b5ff22240d4ffb0978e11563"></a>VS_CODE_ERR_NOINIT&#160;</td><td class="fielddoc"><p>Not initialized. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432accb3cc795c22614041bca0775a05cda7"></a>VS_CODE_ERR_USER&#160;</td><td class="fielddoc"><p>User specific error codes start from this value. </p>
+<tr><td class="fieldname"><a id="af385b5c6ab5f3183ce75d4d1e676e432accb3cc795c22614041bca0775a05cda7"></a>VS_CODE_ERR_USER&#160;</td><td class="fielddoc"><p>User specific error codes start with this value. </p>
 </td></tr>
 </table>
 
@@ -410,12 +412,12 @@ Enumerations</h2></td></tr>
 </div>
 </div><!-- contents -->
 <div class="ttc" id="astructvs__mac__addr__t_html"><div class="ttname"><a href="structvs__mac__addr__t.html">vs_mac_addr_t</a></div><div class="ttdoc">MAC address.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:245</div></div>
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and goto if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:133</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
 <div class="ttc" id="aprvs-client_8h_html_acac2518da72e3835c3bdcb030b5a62cb"><div class="ttname"><a href="prvs-client_8h.html#acac2518da72e3835c3bdcb030b5a62cb">vs_snap_prvs_device_info</a></div><div class="ttdeci">vs_status_e vs_snap_prvs_device_info(const vs_netif_t *netif, const vs_mac_addr_t *mac, vs_snap_prvs_devi_t *device_info, uint16_t buf_sz, uint32_t wait_ms)</div><div class="ttdoc">Request device information.</div></div>
 <div class="ttc" id="astructvs__snap__prvs__devi__t_html"><div class="ttname"><a href="structvs__snap__prvs__devi__t.html">vs_snap_prvs_devi_t</a></div><div class="ttdoc">Device information.</div><div class="ttdef"><b>Definition:</b> prvs-structs.h:82</div></div>
-<div class="ttc" id="astatus__code_8h_html_a041811e89702b1ecd4932c0168eb17cd"><div class="ttname"><a href="status__code_8h.html#a041811e89702b1ecd4932c0168eb17cd">STATUS_CHECK_RET</a></div><div class="ttdeci">#define STATUS_CHECK_RET(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and return vs_status_e if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:147</div></div>
+<div class="ttc" id="astatus__code_8h_html_a041811e89702b1ecd4932c0168eb17cd"><div class="ttname"><a href="status__code_8h.html#a041811e89702b1ecd4932c0168eb17cd">STATUS_CHECK_RET</a></div><div class="ttdeci">#define STATUS_CHECK_RET(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and return vs_status_e if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:148</div></div>
 <div class="ttc" id="astructvs__netif__t_html"><div class="ttname"><a href="structvs__netif__t.html">vs_netif_t</a></div><div class="ttdoc">Network interface.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:288</div></div>
-<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432ac6bdad50b04edfeae7dbd676415504e4"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ac6bdad50b04edfeae7dbd676415504e4">VS_CODE_ERR_INCORRECT_ARGUMENT</a></div><div class="ttdoc">Incorrect argument.</div><div class="ttdef"><b>Definition:</b> status_code.h:77</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432ac6bdad50b04edfeae7dbd676415504e4"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ac6bdad50b04edfeae7dbd676415504e4">VS_CODE_ERR_INCORRECT_ARGUMENT</a></div><div class="ttdoc">Incorrect argument.</div><div class="ttdef"><b>Definition:</b> status_code.h:78</div></div>
 <div class="ttc" id="afldt-client_8h_html_adc4dd323fe4323c5f27e07390b724d67"><div class="ttname"><a href="fldt-client_8h.html#adc4dd323fe4323c5f27e07390b724d67">vs_fldt_client_request_all_files</a></div><div class="ttdeci">vs_status_e vs_fldt_client_request_all_files(void)</div><div class="ttdoc">Request all files data.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
