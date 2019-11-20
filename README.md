@@ -196,13 +196,13 @@ Virgil IoTKit for Windows OS is currently in development. To be included to info
 <div id='tests'/>
 
 ## Tests
-To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features. Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix/tree/release/v0.1.0-alpha/tests) of our IoTKit Demo repository to find preferred tests.        
-- Crypto: Crypto algorithms and primitives tests.
-- Firmware: Firmware related functionality. Create device/firmware. Save firmware.
-- Helpers: Create and save trust list.
-- Secbox: Test storage module. Read write signed or/and encrypted data.
-- SNAP: Secure Network Adjustable Protocol tests.
+To make sure that everything goes in the right way, we also provide a set of ready code-snippets for testing the necessary features:
+- Crypto: crypto algorithms (e. g. hash, RNG, AES) and crypto operations (key pair, sign/verify etc.).
+- Firmware related functionality: create firmware, save/load/install.
+- Security Box (test storage module): read write for signed or/and encrypted data.
+- SNAP (Secure Network Adjustable Protocol tests): send, receive etc.
 
+Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix/tree/release/v0.1.0-alpha/tests) of our IoTKit Demo repository to find preferred tests and start working with them.
 
 <div id='iotkit-usage'/>
 
