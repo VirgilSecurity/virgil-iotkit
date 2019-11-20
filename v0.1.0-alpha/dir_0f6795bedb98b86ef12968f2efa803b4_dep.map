@@ -1,0 +1,13 @@
+<map id="virgil" name="virgil">
+<area shape="rect" id="node2" href="dir_fda2655504b22c1723d40a6b36928f6b.html" title="iot" alt="" coords="79,61,151,109"/>
+<area shape="rect" id="node3" href="dir_0d1d4944cba7f334923ee9c099e4674f.html" title="firmware" alt="" coords="5,157,78,205"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000012_000028.html" title="1" alt="" coords="74,141,81,155"/>
+<area shape="rect" id="node4" href="dir_9f351d46ce3cc29445a41dc3a31e6919.html" title="config" alt="" coords="92,349,164,397"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000012_000026.html" title="1" alt="" coords="141,326,148,340"/>
+<area shape="rect" id="node5" href="dir_861f50189fda057e6c57d1c1130602b3.html" title="helpers" alt="" coords="56,253,128,301"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000012_000042.html" title="1" alt="" coords="102,229,109,243"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000028_000042.html" title="4" alt="" coords="75,227,82,240"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000042_000026.html" title="1" alt="" coords="117,323,124,336"/>
+<area shape="rect" id="clust2" href="dir_0f6795bedb98b86ef12968f2efa803b4.html" alt="" coords="68,51,258,120"/>
+<area shape="rect" id="clust1" href="dir_f089a379f055159b0874978b1aafff14.html" title="include" alt="" coords="58,16,268,131"/>
+</map>
