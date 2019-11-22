@@ -193,7 +193,7 @@ There are configuration headers that customize Virigl IoTKit, they are stored in
 It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
 
 > For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory,
-> you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
+> you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`
 
 #### MCU Build disable
 
