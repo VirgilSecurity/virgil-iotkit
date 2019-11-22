@@ -1,4 +1,4 @@
-# Virgil IoTKit C
+# Virgil IoTKit
 [![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://virgilsecurity.github.io/virgil-iotkit/v0.1.0-alpha/)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
@@ -182,26 +182,20 @@ Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix
 
 ## IoTKit Usage
 To start working with Virgil IoTKit you have to:
-- specify configuration headers path.
+- specify configuration parameters.
 - provide implementations (you can also use default implementations).
 
-### Configuration headers
+### Configuration parameters
 
-#### Configuration directory
+#### Configuration headers directory
+There are configuration headers that customize Virgil IoTKit, they are stored in **config directory**. You can provide your headers or use standard ones.
+It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the directory with configuration files.
 
-There are configuration headers that customize Virigl IoTKit, they are stored in **config directory**. You can provide your headers or use standard ones.
-It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
+> For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory, you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
 
-> For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory,
-> you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`
+#### MCU Build
+The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some of microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
-#### MCU Build disable
-
-`VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. Some of them are not compatible with PC configuration. So,
-if you don't plan to use MCU features, disable it during compilation : `-DVIRGIL_IOT_MCU_BUILD=OFF`
-
-> You can do it by using `set` CMake's command :
-> `set(VIRGIL_IOT_MCU_BUILD OFF CACHE BOOL "Don't use MCU features" FORCE)`
 
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
