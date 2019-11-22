@@ -186,12 +186,22 @@ To start working with Virgil IoTKit you have to:
 - provide implementations (you can also use default implementations).
 
 ### Configuration headers
-There are configuration headers that customize Virigl IoTKit, they are stored in **config directory**. You can provide your headers or use standard ones.
 
+#### Configuration directory
+
+There are configuration headers that customize Virigl IoTKit, they are stored in **config directory**. You can provide your headers or use standard ones.
 It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to directory with configuration files.
 
 > For example, if you want to use PC configuration provided by library and library is stored in `virgil-iotkit` directory,
-you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
+> you have to set compiler option: `-DVIRGIL_IOT_CONFIG_DIRECTORY virgil-iotkit/config/pc`.
+
+#### MCU Build disable
+
+`VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. Some of them are not compatible with PC configuration. So,
+if you don't plan to use MCU features, disable it during compilation : `-DVIRGIL_IOT_MCU_BUILD=OFF`
+
+> You can do it by using `set` CMake's command :
+> `set(VIRGIL_IOT_MCU_BUILD OFF CACHE BOOL "Don't use MCU features" FORCE)`
 
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
