@@ -5,7 +5,7 @@ Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth pr
 - [Setting up Firmware Signer](#setting-up-firmware-signer)
   - [Linux OS](#linux-os)
   - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-  - [Cent OS, Fedora OS](#cent-os-fedora-os)
+  - [CentOS, Fedora OS](#centos-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)

@@ -6,7 +6,7 @@ The Virgil Device Initializer is a CLI utility used to make IoT devices provisio
 - [Setting up Device Initializer](#setting-up-device-initializer)
   - [Linux OS](#linux-os)
   - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-  - [Cent OS, Fedora OS](#cent-os-fedora-os)
+  - [CentOS, Fedora OS](#centos-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
@@ -124,7 +124,7 @@ The result of the command execution is the following:
 Here is an example of initialization of one device.
 
 ```bash
-Run:virgil-device-initializer --output "/root/current-credentials/card_requests_gateways.txt" --device_info_output "/root/current-credentials/device_info.txt" --auth_pub_key_1 "/root/current-credentials/key_storage/pubkeys/auth_15918_auth2.pub" --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub" --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub" --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub" --tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_23138_tl2.pub" --tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_41287_tl1.pub" --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub" --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub" --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl" --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key" 
+Run:virgil-device-initializer --output "/root/current-credentials/card_requests_gateways.txt" --device_info_output "/root/current-credentials/device_info.txt" --auth_pub_key_1 "/root/current-credentials/key_storage/pubkeys/auth_15918_auth2.pub" --auth_pub_key_2 "/root/current-credentials/key_storage/pubkeys/auth_54929_auth1.pub" --rec_pub_key_1 "/root/current-credentials/key_storage/pubkeys/recovery_10514_recovery1.pub" --rec_pub_key_2 "/root/current-credentials/key_storage/pubkeys/recovery_8644_recovery2.pub" --tl_pub_key_1 "/root/current-credentials/key_storage/pubkeys/tl_23138_tl2.pub" --tl_pub_key_2 "/root/current-credentials/key_storage/pubkeys/tl_41287_tl1.pub" --fw_pub_key_1 "/root/current-credentials/key_storage/pubkeys/firmware_57637_firmware1.pub" --fw_pub_key_2 "/root/current-credentials/key_storage/pubkeys/firmware_62881_firmware2.pub" --trust_list "/root/current-credentials/key_storage/trust_lists/release/TrustList_16568.tl" --factory_key "/root/current-credentials/key_storage/private/factory_24251_factory.key"
 Got 1 device
 Device roles: [GATEWAY]
 Device MAC: 25:f4:69:0c:99:5a
@@ -146,7 +146,6 @@ Upload TrustList key 2
 Success: upload TrustList key 2
 Sign device by Factory key
 Device key type 5
-Device key EC type 3
 Device public key (raw): BCMBfTZGL1wlVUv3EvN3dq25rjFAou/1q428ycEUswE3Rd8YM7JUfrXJd8g9bBKALMWxzGbmQOf5+d4kmftVi8w=
 Signature (raw): Nbzx4vmyH8CAkZ4PRB9+4y/uhuUm/O891UvR0ttpexMn65jvb86Ce7+i2u5GvZQR8NjyOGTQ0Qv94wYetFHW+A==
 Device public key (virgil): MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELj0gdSdRZWzwnVYwMUmC6s693yYaZ6Ahw2bc6MK9riy+vQGYt3rKBicEIyyPUZZAR0OR+ROfYaQIZBClyVPBDQ==
@@ -160,6 +159,6 @@ Success: upload TrustList chunk 1
 Upload TrustList Footer
 OK: Trust List set successfully.
 OK: Device initialization done successfully.
-Device info: {"manufacturer":"0x5652474c000000000000000000000000","model":"0x43663031","roles":["GATEWAY"],"mac":"25:f4:69:0c:99:5a","serial":"JfRpDJlaAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=","publicKeyTiny":"BCMBfTZGL1wlVUv3EvN3dq25rjFAou/1q428ycEUswE3Rd8YM7JUfrXJd8g9bBKALMWxzGbmQOf5+d4kmftVi8w=","signature":"Nbzx4vmyH8CAkZ4PRB9+4y/uhuUm/O891UvR0ttpexMn65jvb86Ce7+i2u5GvZQR8NjyOGTQ0Qv94wYetFHW+A==","key_type":5,"ec_type":3}
+Device info: {"manufacturer":"0x5652474c000000000000000000000000","model":"0x43663031","roles":["GATEWAY"],"mac":"25:f4:69:0c:99:5a","serial":"JfRpDJlaAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=","publicKeyTiny":"BCMBfTZGL1wlVUv3EvN3dq25rjFAou/1q428ycEUswE3Rd8YM7JUfrXJd8g9bBKALMWxzGbmQOf5+d4kmftVi8w=","signature":"Nbzx4vmyH8CAkZ4PRB9+4y/uhuUm/O891UvR0ttpexMn65jvb86Ce7+i2u5GvZQR8NjyOGTQ0Qv94wYetFHW+A==","key_type":5}
 Card request: eyJjb250ZW50X3NuYXBzaG90IjoiZXlKcFpHVnVkR2wwZVNJNklqSTFaalEyT1RCak9UazFZVEF6TURNd016QXpNRE13TXpBek1E
 ```

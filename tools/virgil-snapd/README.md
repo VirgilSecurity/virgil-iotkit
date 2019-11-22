@@ -10,7 +10,7 @@ In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/i
   - [Install](#install-snapd)
     - [Linux OS](#linux-os)
     - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-    - [CentOS, Fedora OS](#cent-os-fedora-os)
+    - [CentOS, Fedora OS](#centos-fedora-os)
     - [Mac OS](#mac-os)
     - [Windows OS](#windows-os)
   - [Configure and run](#configure-and-run-snapd)
