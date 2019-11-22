@@ -164,7 +164,7 @@ The configuration file (default name: **provisioner.conf**) contains the followi
 | provision_pack_path | Path to provision package folder.          |
 | iot_api_url             | URL of Virgil IoT API. URL https://api-iot.virgilsecurity.com is by default.                                       |
 
-**Factory JSON example**
+**Factory JSON file example**
 ```bash
 {
     "name": "Sample Factory Name",
@@ -246,7 +246,7 @@ User is able to make decisions and leave comments about all CLI actions within I
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
@@ -429,7 +429,7 @@ Recovery Keys are used to sign other types of keys, and is known by every device
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
@@ -470,7 +470,7 @@ After Auth Keys are generated they have to be signed with one of the Recovery ke
 
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
@@ -605,7 +605,7 @@ After Factory Key is generated, private key is stored in private keys db and pub
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 $ Please enter option number: 5
@@ -637,7 +637,7 @@ This commmand allows to remove Factory Key from the Virgil Trust Provisioner Fac
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 $ Please enter option number: 6
@@ -661,7 +661,7 @@ Firmware Keys are stored on selected devices. They are signed by a Recovery Key.
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
@@ -796,7 +796,7 @@ Trust List that contains public keys (Factory and Cloud) and signatures (Auth Ke
 **Example**
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
@@ -952,7 +952,7 @@ Public keys are uploaded to the storage which is specified in the config file.
 
 ```bash
 # Launch virgil-trust-provisioner
-$ virgil-trust-provisioner
+$ virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 
 # Specify the cli command
 
