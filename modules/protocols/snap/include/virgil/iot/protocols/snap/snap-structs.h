@@ -45,6 +45,11 @@
 #include <stdbool.h>
 #include <virgil/iot/provision/provision-structs.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 struct vs_netif_t;
 struct vs_mac_addr_t;
 
@@ -313,5 +318,10 @@ typedef struct {
     uint32_t sent;     /**< Sents amount */
     uint32_t received; /**< Receives amount */
 } vs_snap_stat_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // VS_SNAP_STRUCTS_H
