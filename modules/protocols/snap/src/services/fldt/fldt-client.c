@@ -697,9 +697,10 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 
 /******************************************************************/
 static vs_status_e
-_fldt_destroy_client(void) {
+_fldt_destroy_client(struct vs_netif_t *netif) {
     uint32_t id;
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
+    (void)netif;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
         file_type_mapping->update_interface->free_item(file_type_mapping->update_interface->storage_context,
@@ -782,10 +783,11 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static int
-_fldt_client_periodical_processor(void) {
+_fldt_client_periodical_processor(struct vs_netif_t *netif) {
     vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
     vs_fldt_update_ctx_t *_update_ctx;
     uint32_t id;
+    (void)netif;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         _update_ctx = &file_type_info->update_ctx;

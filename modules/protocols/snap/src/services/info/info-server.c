@@ -76,7 +76,9 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
-    CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -143,15 +145,17 @@ terminate:
 /******************************************************************/
 static vs_status_e
 _fill_stat_data(vs_info_stat_response_t *stat_data) {
-    const vs_netif_t *defautl_netif;
+    const vs_netif_t *default_netif;
     vs_snap_stat_t stat = vs_snap_get_statistics();
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(stat_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     // Set MAC address for default network interface
-    defautl_netif = vs_snap_default_netif();
-    CHECK_RET(!defautl_netif->mac_addr(&stat_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    default_netif = vs_snap_default_netif();
+    CHECK_RET(!default_netif->mac_addr(default_netif, &stat_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set statistics data
     stat_data->received = stat.received;
@@ -196,7 +200,7 @@ terminate:
 static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     vs_firmware_descriptor_t fw_descr;
-    const vs_netif_t *defautl_netif;
+    const vs_netif_t *default_netif;
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
@@ -205,9 +209,9 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
-    defautl_netif = vs_snap_default_netif();
+    default_netif = vs_snap_default_netif();
 
-    CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
+    CHECK_RET(!default_netif->mac_addr(default_netif, &general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
@@ -350,10 +354,10 @@ _info_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_info_server_periodical_processor(void) {
+_info_server_periodical_processor(struct vs_netif_t *netif) {
     vs_status_e ret_code;
-
     static bool started = false;
+    (void)netif;
 
     // Send broadcast notification about self start
     if (!started) {

@@ -46,8 +46,8 @@
  * \section cloud_usage Cloud Usage
  *
  * Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
- * service using #vs_cloud_http_request_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t. Then
- * it waits for new messages, periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for
+ * service using #vs_cloud_http_request_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t.
+ * Then it waits for new messages, periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for
  * events of new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for
  * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud module uses
  * provision and firmware modules, which must be initialized before.

@@ -64,7 +64,7 @@ static vs_fldt_server_add_filetype_cb _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
 static vs_status_e
-_fldt_destroy_server(void);
+_fldt_destroy_server(struct vs_netif_t *netif);
 
 /******************************************************************/
 static vs_fldt_server_file_type_mapping_t *
@@ -575,7 +575,7 @@ _init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb ad
 
     CHECK_NOT_ZERO(add_filetype);
 
-    _fldt_destroy_server();
+    _fldt_destroy_server(NULL);
 
     _gateway_mac = *gateway_mac;
     _add_filetype_callback = add_filetype;
@@ -585,7 +585,7 @@ terminate:;
 
 /******************************************************************/
 static vs_status_e
-_fldt_destroy_server(void) {
+_fldt_destroy_server(struct vs_netif_t *netif) {
     uint32_t id;
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
