@@ -144,7 +144,7 @@ _snot_request_processor(const uint8_t *request,
     device_info.device_roles = enum_request->device_roles;
 
     // Invoke callback
-    _callbacks.device_start_cb(&device_info);
+    _callbacks.device_start_cb(&_callbacks, &device_info);
 
     return VS_CODE_COMMAND_NO_RESPONSE;
 }
@@ -194,7 +194,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.device_roles = ginf_request->device_roles;
 
     // Invoke callback function
-    _callbacks.general_info_cb(&general_info);
+    _callbacks.general_info_cb(&_callbacks, &general_info);
 
     *response_sz = 0;
 
@@ -231,7 +231,7 @@ _stat_request_processor(const uint8_t *request,
     stat_info.sent = stat_request->sent;
 
     // Invoke callback function
-    _callbacks.statistics_cb(&stat_info);
+    _callbacks.statistics_cb(&_callbacks, &stat_info);
 
     *response_sz = 0;
 
@@ -275,8 +275,8 @@ _info_client_request_processor(const struct vs_netif_t *netif,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void) netif;
-    (void) service;
+    (void)netif;
+    (void)service;
 
     *response_sz = 0;
 
@@ -311,7 +311,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
     (void)netif;
-    (void) service;
+    (void)service;
 
     switch (element_id) {
 

@@ -154,6 +154,11 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 /** Length of the update URL string */
 #define VS_UPD_URL_STR_SIZE 200
 
@@ -377,5 +382,10 @@ vs_status_e
 vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
               const vs_cloud_message_bin_impl_t *message_bin_impl,
               vs_secmodule_impl_t *secmodule);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // VS_CLOUD_H

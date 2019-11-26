@@ -44,6 +44,11 @@
 #ifndef VS_SECMODULE_SOFT_DEVICE_H
 #define VS_SECMODULE_SOFT_DEVICE_H
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 /** Maximum data size of standard slot */
 #define KEY_SLOT_STD_DATA_SIZE (380)
 
@@ -128,5 +133,10 @@ typedef enum {
 #define FW1_KEY_SLOT VS_KEY_SLOT_STD_MTP_6
 /** Firmware key 2 slot */
 #define FW2_KEY_SLOT VS_KEY_SLOT_STD_MTP_7
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // VS_SECMODULE_SOFT_DEVICE_H

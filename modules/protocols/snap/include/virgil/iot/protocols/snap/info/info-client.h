@@ -117,13 +117,16 @@
 
 #if INFO_CLIENT
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/info/info-structs.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
+
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
+struct vs_snap_info_callbacks_t;
 
 /** Wait implementation
  *
@@ -148,11 +151,13 @@ typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
  *
  * This function is called by receiving startup notification from device.
  *
- * \param[in] device #vs_snap_info_device_t device information.
+ * \param[in] snap_info Service context.
+ * \param[in] device Device statical information.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(vs_snap_info_device_t *device);
+typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_info_callbacks_t *snap_info,
+                                                     vs_snap_info_device_t *device);
 
 /** General device information request
  *
@@ -161,11 +166,12 @@ typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(vs_snap_info_device_t *devi
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_GENERAL bit.
  *
- * \param[in] general_info #vs_info_general_t device information.
+ * \param[in] ctx Service context.
+ * \param[in] general_info Device general information.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_general_cb_t)(vs_info_general_t *general_info);
+typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_info_callbacks_t *ctx, vs_info_general_t *general_info);
 
 /** Device statistics request
  *
@@ -174,18 +180,21 @@ typedef vs_status_e (*vs_snap_info_general_cb_t)(vs_info_general_t *general_info
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_STATISTICS bit.
  *
- * \param[in] statistics #vs_info_statistics_t device information.
+ * \param[in] ctx Service context.
+ * \param[in] statistics Device statistics.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_statistics_cb_t)(vs_info_statistics_t *statistics);
+typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_info_callbacks_t *ctx,
+                                                    vs_info_statistics_t *statistics);
 
 /** INFO client implementations
  *
  * \note Any callback can be NULL. In this case standard flow will be used.
  *
  */
-typedef struct {
+typedef struct vs_snap_info_callbacks_t {
+    void *user_data;                               /**< User data */
     vs_snap_info_start_notif_cb_t device_start_cb; /**< Startup notification */
     vs_snap_info_general_cb_t general_info_cb;     /**< General information */
     vs_snap_info_statistics_cb_t statistics_cb;    /**< Device statistics */
@@ -240,7 +249,8 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
                          uint16_t period_seconds);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIotKit
 #endif
 
 #endif // INFO_CLIENT

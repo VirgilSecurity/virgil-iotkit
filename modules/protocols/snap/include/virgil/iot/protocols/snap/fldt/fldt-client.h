@@ -92,13 +92,14 @@
 
 #if FLDT_CLIENT
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
+
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
 
 /** Got new file callback
  *
@@ -155,7 +156,8 @@ vs_status_e
 vs_fldt_client_request_all_files(void);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIotKit
 #endif
 
 #endif // FLDT_CLIENT

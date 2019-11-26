@@ -62,6 +62,11 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <sys/types.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 #define VS_STORAGE_ELEMENT_ID_MAX  (32)
 
 typedef uint8_t vs_storage_element_id_t[VS_STORAGE_ELEMENT_ID_MAX];
@@ -219,5 +224,10 @@ typedef struct {
     size_t file_sz_limit; /**< Maximum size of storage element */
 
 } vs_storage_op_ctx_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif //VS_STORAGE_HAL_H

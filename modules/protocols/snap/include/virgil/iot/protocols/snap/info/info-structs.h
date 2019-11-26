@@ -47,6 +47,11 @@
 #include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 /** Device information
  *
  * Device information as parameter for #vs_snap_info_start_notif_cb_t function
@@ -101,5 +106,10 @@ typedef enum {
             HTONL_IN_COMPILE_TIME(0x0001), /**< General device information #vs_info_general_t will be sent */
     VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002), /**< Device statistic #vs_info_statistics_t will be sent */
 } vs_snap_info_element_mask_e;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H

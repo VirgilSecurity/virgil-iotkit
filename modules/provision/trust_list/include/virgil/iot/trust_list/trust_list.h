@@ -120,6 +120,11 @@
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 /** Trust List initialization
  *
  * Initializes Trust List.
@@ -209,5 +214,10 @@ vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
  */
 void
 vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // TRUST_LIST_H

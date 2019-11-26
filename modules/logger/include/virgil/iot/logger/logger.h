@@ -68,14 +68,14 @@ logger_hal_implementation
 #ifndef AP_SECURITY_SDK_LOGGER_H
 #define AP_SECURITY_SDK_LOGGER_H
 
+#include <logger-config.h>
+#include <stdarg.h>
+#include <string.h>
+
 #ifdef __cplusplus
 namespace VirgilIotKit {
 extern "C" {
 #endif
-
-#include <logger-config.h>
-#include <stdarg.h>
-#include <string.h>
 
 /** Logging level
  */

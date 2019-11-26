@@ -72,14 +72,16 @@
 
 #if PRVS_CLIENT
 
+#include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
+#include <virgil/iot/provision/provision-structs.h>
+
 #ifdef __cplusplus
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
-#include <virgil/iot/protocols/snap/snap-structs.h>
-
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/provision/provision-structs.h>
+struct vs_snap_prvs_client_impl_t;
 
 /** Stop waiting implementation
  *
@@ -88,27 +90,33 @@ extern "C" {
  * \a stop_wait_func member or #vs_snap_prvs_client_impl_t structure.
  * \a wait_func member or #vs_snap_prvs_client_impl_t structure.
  *
+ * \param[in] ctx Service context.
  * \param[in] condition Condition buffer. Must not be NULL.
  * \param[in] expect Expected value to be set.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(struct vs_snap_prvs_client_impl_t *ctx, int *condition, int expect);
 
 /** Wait implementation
  *
  * This function checks \a condition variable during \a wait_ms when it will be equal to the \a idle condition
  *
+ * \param[in] ctx Service context.
  * \param[in] wait_ms Wait in milliseconds.
  * \param[in] condition Condition buffer. Must not be NULL.
  * \param[in] idle Idle condition.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_snap_prvs_wait_t)(struct vs_snap_prvs_client_impl_t *ctx,
+                                           uint32_t wait_ms,
+                                           int *condition,
+                                           int idle);
 
 /** PRVS client implementation */
-typedef struct {
+typedef struct vs_snap_prvs_client_impl_t {
+    void *user_data;                         /**< User data */
     vs_snap_prvs_stop_wait_t stop_wait_func; /**< Stop waiting implementation */
     vs_snap_prvs_wait_t wait_func;           /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;
@@ -289,7 +297,8 @@ vs_snap_prvs_set_tl_footer(const vs_netif_t *netif,
                            uint32_t wait_ms);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIotKit
 #endif
 
 #endif // PRVS_CLIENT

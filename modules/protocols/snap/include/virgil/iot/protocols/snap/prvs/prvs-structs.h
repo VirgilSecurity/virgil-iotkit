@@ -41,12 +41,13 @@
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H
 #define VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/provision/provision-structs.h>
+
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
 
 #define DNID_LIST_SZ_MAX (50)
 #define PUBKEY_MAX_SZ (100)
@@ -98,7 +99,8 @@ typedef struct __attribute__((__packed__)) {
 } vs_snap_prvs_sgnp_req_t;
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H
