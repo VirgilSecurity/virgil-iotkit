@@ -40,9 +40,9 @@ package snap
 #include <virgil/iot/protocols/snap/info/info-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
-extern int goDeviceStartNotifCb(vs_snap_info_device_t *device);
-extern int goGeneralInfoCb(vs_info_general_t *general_info);
-extern int goDeviceStatCb(vs_info_statistics_t *stat);
+extern int goDeviceStartNotifCb(struct vs_snap_info_callbacks_t *ctx, vs_snap_info_device_t *device);
+extern int goGeneralInfoCb(struct vs_snap_info_callbacks_t *ctx, vs_info_general_t *general_info);
+extern int goDeviceStatCb(struct vs_snap_info_callbacks_t *ctx, vs_info_statistics_t *stat);
 
 static int go_snap_init(void) {
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -171,7 +171,7 @@ func roles2strings(roles C.uint32_t) []string {
 }
 
 //export goDeviceStartNotifCb
-func goDeviceStartNotifCb(device *C.vs_snap_info_device_t) C.int {
+func goDeviceStartNotifCb(ctx *C.vs_snap_info_callbacks_t, device *C.vs_snap_info_device_t) C.int {
      if 0 != C._set_polling() {
         utils.Log.Println("can't set devices polling. SNAP:INFO:POLL error")
         return -1
@@ -181,7 +181,7 @@ func goDeviceStartNotifCb(device *C.vs_snap_info_device_t) C.int {
 }
 
 //export goGeneralInfoCb
-func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
+func goGeneralInfoCb(ctx *C.vs_snap_info_callbacks_t, general_info *C.vs_info_general_t) C.int {
     if nil != generalInfoCb {
         var goInfo devices.DeviceInfo
         goInfo.ID = ""
@@ -206,7 +206,7 @@ func goGeneralInfoCb(general_info *C.vs_info_general_t) C.int {
 }
 
 //export goDeviceStatCb
-func goDeviceStatCb(stat *C.vs_info_statistics_t) C.int {
+func goDeviceStatCb(ctx *C.vs_snap_info_callbacks_t, stat *C.vs_info_statistics_t) C.int {
     if nil != statisticsCb {
         var goStat devices.DeviceInfo
         goStat.MAC = mac2string(&stat.default_netif_mac[0])

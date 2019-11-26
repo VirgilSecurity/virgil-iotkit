@@ -151,12 +151,12 @@ typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
  *
  * This function is called by receiving startup notification from device.
  *
- * \param[in] snap_info Service context.
+ * \param[in] ctx Service context.
  * \param[in] device Device statical information.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_info_callbacks_t *snap_info,
+typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_info_callbacks_t *ctx,
                                                      vs_snap_info_device_t *device);
 
 /** General device information request
