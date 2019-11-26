@@ -67,6 +67,11 @@ vs_soft_secmodule_deinit();
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/secmodule/devices/secmodule-soft.h>
 
+#ifdef __cplusplus
+namespace VirgilIotKit {
+extern "C" {
+#endif
+
 /** Keypair types */
 typedef enum {
     VS_KEYPAIR_INVALID = -1, /**< Invalid keypair */
@@ -541,5 +546,10 @@ vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
                            uint8_t *cryptogram,
                            size_t buf_sz,
                            size_t *cryptogram_sz);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIotKit
+#endif
 
 #endif // VS_SECMODULE_INTERFACE_API_H
