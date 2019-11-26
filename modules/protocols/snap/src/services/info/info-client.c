@@ -268,13 +268,15 @@ _poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 /******************************************************************************/
 static vs_status_e
 _info_client_request_processor(const struct vs_netif_t *netif,
+                               struct vs_snap_service_t *service,
                                vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void)netif;
+    (void) netif;
+    (void) service;
 
     *response_sz = 0;
 
@@ -303,11 +305,13 @@ _info_client_request_processor(const struct vs_netif_t *netif,
 /******************************************************************************/
 static vs_status_e
 _info_client_response_processor(const struct vs_netif_t *netif,
+                                struct vs_snap_service_t *service,
                                 vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
     (void)netif;
+    (void) service;
 
     switch (element_id) {
 
