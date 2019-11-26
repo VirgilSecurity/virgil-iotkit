@@ -55,7 +55,7 @@ static vs_status_e
 _udp_bcast_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 static vs_status_e
-_udp_bcast_mac(struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
+_udp_bcast_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
                                       .init = _udp_bcast_init,
@@ -173,7 +173,7 @@ _udp_bcast_connect() {
 
 terminate:
 
-    _udp_bcast_deinit();
+    _udp_bcast_deinit(&_netif_udp_bcast);
 
     return VS_CODE_ERR_SOCKET;
 }
@@ -183,7 +183,7 @@ static vs_status_e
 _udp_bcast_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     struct sockaddr_in broadcast_addr;
 
-    (void) netif;
+    (void)netif;
 
     memset((void *)&broadcast_addr, 0, sizeof(struct sockaddr_in));
     broadcast_addr.sin_family = AF_INET;
@@ -199,7 +199,7 @@ _udp_bcast_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data
 static vs_status_e
 _udp_bcast_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
-    (void) netif;
+    (void)netif;
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
     _netif_udp_bcast.packet_buf_filled = 0;
@@ -211,7 +211,7 @@ _udp_bcast_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs
 /******************************************************************************/
 static vs_status_e
 _udp_bcast_deinit(struct vs_netif_t *netif) {
-    (void) netif;
+    (void)netif;
     printf("Stop UDP broadcast\n");
     if (_udp_bcast_sock >= 0) {
 #if !defined(__APPLE__)
@@ -226,8 +226,8 @@ _udp_bcast_deinit(struct vs_netif_t *netif) {
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_mac(struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
-    (void) netif;
+_udp_bcast_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
+    (void)netif;
 
     if (mac_addr) {
         memset(mac_addr->bytes, 0x01, sizeof(vs_mac_addr_t));
