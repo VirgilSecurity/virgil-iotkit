@@ -50,7 +50,7 @@
  *
  *    vs_storage_op_ctx_t tl_storage_impl;        // Trust List storage implementation
  *    vs_storage_op_ctx_t fw_storage_impl;        // Firmware storage implementation
- *    const vs_snap_service_t *snap_info_server;  // INFO Server SNAP service
+ *    vs_snap_service_t *snap_info_server;        // INFO Server SNAP service
  *
  *     // Initialize tl_storage_impl, fw_storage_impl
  *

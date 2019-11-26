@@ -67,8 +67,8 @@
  *
  * // ...
  *
- *     const vs_snap_service_t *snap_fldt_server;      // FLDT Server service
- *     vs_mac_addr_t mac_addr;                         // Own MAC address
+ *     vs_snap_service_t *snap_fldt_server;      // FLDT Server service
+ *     vs_mac_addr_t mac_addr;                   // Own MAC address
  *
  *     // Initialize mac_addr
  *

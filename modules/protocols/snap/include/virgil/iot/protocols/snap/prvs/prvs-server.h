@@ -47,7 +47,7 @@
  *
  *     vs_secmodule_impl_t *secmodule_impl;         // Security module implementation
  *     vs_storage_op_ctx_t slots_storage_impl;      // Slots storage implementation
- *     const vs_snap_service_t *snap_prvs_server;   // PRVS Server
+ *     vs_snap_service_t *snap_prvs_server;         // PRVS Server
 
  *     // Initialize slots_storage_impl, secmodule_impl.
  *

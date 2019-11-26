@@ -49,7 +49,7 @@
  *
  * Here you can see an example of FLDT server initialization :
  * \code
- *  const vs_snap_service_t *snap_fldt_server;
+ *  vs_snap_service_t *snap_fldt_server;
  *  const vs_mac_addr_t mac_addr;
  *  snap_fldt_server = vs_snap_fldt_server( &mac_addr, _add_filetype );
  *

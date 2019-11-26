@@ -43,9 +43,9 @@
  * Before first call it is necessary to register PRVS service :
  *
  * \code
- *    const vs_snap_service_t *snap_prvs_client;      // INFO service
- *    vs_snap_prvs_dnid_list_t dnid_list;             // Array of "Do Not Initialized Devices"
- *    uint32_t wait_ms = 3000;                        // Waiting 3 seconds for all devices enumerating
+ *    vs_snap_service_t *snap_prvs_client;      // INFO service
+ *    vs_snap_prvs_dnid_list_t dnid_list;       // Array of "Do Not Initialized Devices"
+ *    uint32_t wait_ms = 3000;                  // Waiting 3 seconds for all devices enumerating
  *
  *    // Initialize snap_prvs_client
  *
@@ -129,7 +129,7 @@ typedef struct vs_snap_prvs_client_impl_t {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
 /** Enumerate devices, which don't have initialization provision yet

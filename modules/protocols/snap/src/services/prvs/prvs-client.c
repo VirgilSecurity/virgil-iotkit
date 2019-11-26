@@ -106,7 +106,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl) {
     _prvs_client.user_data = 0;
     _prvs_client.id = VS_PRVS_SERVICE_ID;

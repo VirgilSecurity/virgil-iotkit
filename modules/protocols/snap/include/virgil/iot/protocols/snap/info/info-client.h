@@ -50,7 +50,7 @@
  *
  * \code
  *
- *     const vs_snap_service_t *snap_info_client;     // INFO service
+ *     vs_snap_service_t *snap_info_client;           // INFO service
  *     vs_snap_info_device_t devices[100];            // Devices list. Assuming 100 devices in the list is enough
  *     const size_t devices_max = sizeof(devices) / sizeof(devices[0]);   // Maximum devices in the list
  *     size_t devices_amount = 0;                     // Enumerates devices amount
@@ -208,7 +208,7 @@ typedef struct vs_snap_info_callbacks_t {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_info_client(vs_snap_info_callbacks_t callbacks);
 
 /** Enumerate devices

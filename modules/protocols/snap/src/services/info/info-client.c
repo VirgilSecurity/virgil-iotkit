@@ -334,7 +334,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_info_client(vs_snap_info_callbacks_t callbacks) {
 
     _info_client.user_data = 0;
