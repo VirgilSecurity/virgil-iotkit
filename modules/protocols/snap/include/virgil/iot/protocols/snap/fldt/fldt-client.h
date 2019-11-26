@@ -128,7 +128,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback);
 
 /** Add file type

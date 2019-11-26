@@ -48,7 +48,7 @@ static vs_netif_t *_snap_default_netif = 0;
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
 #define SERVICES_CNT_MAX (10)
-static const vs_snap_service_t *_snap_services[SERVICES_CNT_MAX];
+static vs_snap_service_t *_snap_services[SERVICES_CNT_MAX];
 static uint32_t _snap_services_num = 0;
 static vs_mac_addr_t _snap_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
@@ -124,6 +124,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             if (packet->header.flags & VS_SNAP_FLAG_ACK || packet->header.flags & VS_SNAP_FLAG_NACK) {
                 if (_snap_services[i]->response_process) {
                     _snap_services[i]->response_process(netif,
+                                                        _snap_services[i],
                                                         packet->header.element_id,
                                                         !!(packet->header.flags & VS_SNAP_FLAG_ACK),
                                                         packet->content,
@@ -135,6 +136,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
                 need_response = true;
                 _statistics.received++;
                 res = _snap_services[i]->request_process(netif,
+                                                         _snap_services[i],
                                                          packet->header.element_id,
                                                          packet->content,
                                                          packet->header.content_size,
@@ -180,7 +182,7 @@ _snap_periodical(void) {
     // Detect required command
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->periodical_process) {
-            _snap_services[i]->periodical_process(_snap_default_netif);
+            _snap_services[i]->periodical_process(_snap_default_netif, _snap_services[i]);
         }
     }
 
@@ -357,7 +359,7 @@ vs_snap_deinit() {
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->deinit) {
-            _snap_services[i]->deinit(_snap_default_netif);
+            _snap_services[i]->deinit(_snap_default_netif, _snap_services[i]);
         }
     }
 
@@ -399,7 +401,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 
 /******************************************************************************/
 vs_status_e
-vs_snap_register_service(const vs_snap_service_t *service) {
+vs_snap_register_service(vs_snap_service_t *service) {
 
     VS_IOT_ASSERT(service);
 

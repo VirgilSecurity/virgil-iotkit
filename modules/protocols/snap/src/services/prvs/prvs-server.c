@@ -357,12 +357,16 @@ _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t 
 /******************************************************************************/
 static vs_status_e
 _prvs_service_request_processor(const struct vs_netif_t *netif,
+                                struct vs_snap_service_t *service,
                                 vs_snap_element_t element_id,
                                 const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
+    (void)netif;
+    (void)service;
+
     *response_sz = 0;
 
     switch (element_id) {
@@ -415,7 +419,7 @@ _prepare_prvs_service() {
 }
 
 /******************************************************************************/
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_prvs_server(vs_secmodule_impl_t *secmodule) {
 
     CHECK_NOT_ZERO_RET(secmodule, NULL);

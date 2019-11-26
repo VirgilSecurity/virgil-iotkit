@@ -318,6 +318,7 @@ _snot_request_processor(const uint8_t *request,
 /******************************************************************************/
 static vs_status_e
 _info_request_processor(const struct vs_netif_t *netif,
+                        struct vs_snap_service_t *service,
                         vs_snap_element_t element_id,
                         const uint8_t *request,
                         const uint16_t request_sz,
@@ -325,6 +326,7 @@ _info_request_processor(const struct vs_netif_t *netif,
                         const uint16_t response_buf_sz,
                         uint16_t *response_sz) {
     (void)netif;
+    (void)service;
 
     *response_sz = 0;
 
@@ -354,10 +356,11 @@ _info_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_info_server_periodical_processor(struct vs_netif_t *netif) {
+_info_server_periodical_processor(const struct vs_netif_t *netif, struct vs_snap_service_t *service) {
     vs_status_e ret_code;
     static bool started = false;
     (void)netif;
+    (void)service;
 
     // Send broadcast notification about self start
     if (!started) {
@@ -395,7 +398,7 @@ _info_server_periodical_processor(struct vs_netif_t *netif) {
 }
 
 /******************************************************************************/
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
                     vs_snap_info_start_notif_srv_cb_t startup_cb) {

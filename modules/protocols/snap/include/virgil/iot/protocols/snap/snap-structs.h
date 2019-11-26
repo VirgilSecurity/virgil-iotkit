@@ -196,7 +196,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_netif_t *netif,
+typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_netif_t *netif,
                                                             struct vs_snap_service_t *service,
                                                             vs_snap_element_t element_id,
                                                             bool is_ack,
@@ -214,7 +214,8 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_netif_t *n
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_netif_t *netif, struct vs_snap_service_t *service);
+typedef vs_status_e (*vs_snap_service_periodical_processor_t)(const struct vs_netif_t *netif,
+                                                              struct vs_snap_service_t *service);
 
 /** SNAP Service Destructor
  *
@@ -226,7 +227,7 @@ typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_netif_t 
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_netif_t *netif);
+typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_netif_t *netif, struct vs_snap_service_t *service);
 
 /** Device roles
  *
@@ -320,7 +321,7 @@ typedef struct vs_netif_t {
  *
  * This structure contains SNAP service callbacks and service specific information
  */
-typedef struct {
+typedef struct vs_snap_service_t {
     void *user_data;                                           /**< User data */
     vs_snap_service_id_t id;                                   /**< Service ID */
     vs_snap_service_request_processor_t request_process;       /**< Reqeust processing */

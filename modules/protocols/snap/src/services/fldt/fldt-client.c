@@ -697,10 +697,12 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 
 /******************************************************************/
 static vs_status_e
-_fldt_destroy_client(struct vs_netif_t *netif) {
+_fldt_destroy_client(struct vs_netif_t *netif, struct vs_snap_service_t *service) {
     uint32_t id;
     vs_fldt_client_file_type_mapping_t *file_type_mapping = _client_file_type_mapping;
+
     (void)netif;
+    (void)service;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
         file_type_mapping->update_interface->free_item(file_type_mapping->update_interface->storage_context,
@@ -716,6 +718,7 @@ _fldt_destroy_client(struct vs_netif_t *netif) {
 /******************************************************************************/
 static int
 _fldt_client_request_processor(const struct vs_netif_t *netif,
+                               struct vs_snap_service_t *service,
                                vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
@@ -723,6 +726,7 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
     (void)netif;
+    (void)service;
 
     *response_sz = 0;
 
@@ -747,11 +751,13 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
 /******************************************************************************/
 static int
 _fldt_client_response_processor(const struct vs_netif_t *netif,
+                                struct vs_snap_service_t *service,
                                 vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
     (void)netif;
+    (void)service;
 
     switch (element_id) {
 
@@ -783,11 +789,13 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static int
-_fldt_client_periodical_processor(struct vs_netif_t *netif) {
+_fldt_client_periodical_processor(const struct vs_netif_t *netif, struct vs_snap_service_t *service) {
     vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
     vs_fldt_update_ctx_t *_update_ctx;
     uint32_t id;
+
     (void)netif;
+    (void)service;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         _update_ctx = &file_type_info->update_ctx;
@@ -803,7 +811,7 @@ _fldt_client_periodical_processor(struct vs_netif_t *netif) {
 }
 
 /******************************************************************************/
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback) {
 
     VS_IOT_ASSERT(got_file_callback);

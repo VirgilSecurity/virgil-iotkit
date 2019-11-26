@@ -123,7 +123,7 @@ typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype);
 
 /** Add file type
