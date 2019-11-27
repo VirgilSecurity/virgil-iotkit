@@ -41,8 +41,6 @@
 
 #define MAX_KEY_SZ (128)
 
-#define CHECK_VSCF(OPERATION, DESCRIPTION, ...) CHECK((vscf_status_SUCCESS == (OPERATION)), DESCRIPTION, ##__VA_ARGS__)
-
 const vs_secmodule_impl_t *
 _soft_secmodule_intern(void);
 

@@ -208,7 +208,7 @@ vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_t
 
     uint8_t buf[slot_sz];
     keypair_storage_data *keypair_storage = (keypair_storage_data *)buf;
-    //TODO: Need to optimize memory usage
+    // TODO: Need to optimize memory usage
     uint8_t private_key[KEY_SLOT_EXT_DATA_SIZE];
     uint8_t public_key[KEY_SLOT_EXT_DATA_SIZE];
     uint16_t public_key_sz;

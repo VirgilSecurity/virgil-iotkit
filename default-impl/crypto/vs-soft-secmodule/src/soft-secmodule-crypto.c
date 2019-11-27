@@ -36,38 +36,21 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
+#include "mbedtls/sha512.h"
+#include <mbedtls/kdf.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+
 #include "private/vs-soft-secmodule-internal.h"
 
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
-//#include <virgil/iot/converters/crypto_format_converters.h>
+#include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
-
-//#include <virgil/crypto/foundation/vscf_secp256r1_private_key.h>
-//#include <virgil/crypto/foundation/vscf_secp256r1_public_key.h>
-//#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
-//#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
-//#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
-//#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
-//#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-//#include <virgil/crypto/foundation/vscf_rsa_private_key.h>
-//#include <virgil/crypto/foundation/vscf_rsa_public_key.h>
-//#include <virgil/crypto/foundation/vscf_sha256.h>
-//#include <virgil/crypto/foundation/vscf_sha384.h>
-//#include <virgil/crypto/foundation/vscf_sha512.h>
-//#include <virgil/crypto/foundation/vscf_sign_hash.h>
-//#include <virgil/crypto/foundation/vscf_verify_hash.h>
-//#include <virgil/crypto/foundation/vscf_random.h>
-//#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
-//#include <virgil/crypto/foundation/vscf_aes256_gcm.h>
-//#include <virgil/crypto/foundation/vscf_aes256_cbc.h>
-//#include <virgil/crypto/foundation/vscf_kdf2.h>
-//#include <virgil/crypto/foundation/vscf_hmac.h>
-//#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-//#include <virgil/crypto/common/vsc_buffer.h>
-//#include <virgil/crypto/common/vsc_data.h>
 
 #define RNG_MAX_REQUEST (256)
 
@@ -79,58 +62,38 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
                          uint8_t *hash,
                          uint16_t hash_buf_sz,
                          uint16_t *hash_sz) {
-#if 0
-    vsc_data_t in_data;
-    vsc_buffer_t out_data;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
 
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash_buf_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    VS_LOG_DEBUG("Generate hash %s for data size %d", vs_secmodule_hash_type_descr(hash_type), data_sz);
-
-    in_data = vsc_data(data, data_sz);
-
-    vsc_buffer_init(&out_data);
-    vsc_buffer_use(&out_data, hash, hash_buf_sz);
+    vs_status_e res = VS_CODE_OK;
 
     switch (hash_type) {
     case VS_HASH_SHA_256:
-        vscf_sha256_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA256_LEN;
+        mbedtls_sha256(data, data_sz, hash, 0);
         break;
 
     case VS_HASH_SHA_384:
-        vscf_sha384_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA384_LEN;
+        mbedtls_sha512(data, data_sz, hash, 1);
         break;
 
     case VS_HASH_SHA_512:
-        vscf_sha512_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA512_LEN;
+        mbedtls_sha512(data, data_sz, hash, 0);
         break;
 
     default:
         assert(false && "Unsupported hash type");
         VS_LOG_ERROR("Unsupported hash type");
-        goto terminate;
-    }
-
-    *hash_sz = vsc_buffer_len(&out_data);
-
-    VS_LOG_DEBUG("Hash size %d, type %s", *hash_sz, vs_secmodule_hash_type_descr(hash_type));
-
-    res = VS_CODE_OK;
-
-terminate:
-
-    if (VS_CODE_OK != res) {
-        vsc_buffer_cleanup(&out_data);
+        res = VS_CODE_ERR_NOT_IMPLEMENTED;
+        break;
     }
 
     return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 #if 0
@@ -270,6 +233,22 @@ _set_hash_info(vs_secmodule_hash_type_e hash_type, vscf_alg_id_t *hash_id, uint1
     }
 }
 #endif
+
+/********************************************************************************/
+mbedtls_md_type_t
+_hash_to_mbedtls(vs_secmodule_hash_type_e hash_type) {
+    switch (hash_type) {
+    case VS_HASH_SHA_256:
+        return MBEDTLS_MD_SHA256;
+    case VS_HASH_SHA_384:
+        return MBEDTLS_MD_SHA384;
+    case VS_HASH_SHA_512:
+        return MBEDTLS_MD_SHA512;
+    default:
+        return MBEDTLS_MD_NONE;
+    }
+}
+
 /********************************************************************************/
 static vs_status_e
 vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
@@ -392,10 +371,6 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
                   uint8_t *output,
                   uint16_t output_buf_sz,
                   uint16_t *output_sz) {
-
-#if 0
-    vscf_impl_t *hash_impl;
-    vsc_buffer_t out_buf;
     int hash_sz;
 
     CHECK_NOT_ZERO_RET(key, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -407,40 +382,15 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
     CHECK_RET(hash_sz >= 0, VS_CODE_ERR_CRYPTO, "Unsupported hash type %d", hash_type);
     CHECK_RET(output_buf_sz >= hash_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Output buffer too small");
 
-    vscf_hmac_t *hmac = vscf_hmac_new();
-
-    switch (hash_type) {
-    case VS_HASH_SHA_256:
-        hash_impl = vscf_sha256_impl(vscf_sha256_new());
-        break;
-
-    case VS_HASH_SHA_384:
-        hash_impl = vscf_sha384_impl(vscf_sha384_new());
-        break;
-
-    case VS_HASH_SHA_512:
-        hash_impl = vscf_sha512_impl(vscf_sha512_new());
-        break;
-
-    default:
-        VS_LOG_ERROR("HASH key type %d is not implemented", hash_type);
-        VS_IOT_ASSERT(false);
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    vscf_hmac_take_hash(hmac, hash_impl);
-
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_buf_sz);
-
-    vscf_hmac_mac(hmac, vsc_data(key, key_sz), vsc_data(input, input_sz), &out_buf);
-
     *output_sz = (uint16_t)hash_sz;
-    vscf_hmac_delete(hmac);
-
-    return VS_CODE_OK;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    return (0 == mbedtls_md_hmac(mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type)),
+                                 (const unsigned char *)key,
+                                 key_sz,
+                                 (const unsigned char *)input,
+                                 input_sz,
+                                 (unsigned char *)output))
+                   ? VS_CODE_OK
+                   : VS_CODE_ERR_CRYPTO;
 }
 
 /********************************************************************************/
@@ -452,45 +402,16 @@ vs_secmodule_kdf(vs_secmodule_kdf_type_e kdf_type,
                  uint8_t *output,
                  uint16_t output_sz) {
 
-#if 0
-    vscf_kdf2_t *kdf2;
-    vscf_impl_t *hash_impl;
-    vsc_buffer_t out_buf;
-
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(kdf_type == VS_KDF_2, VS_CODE_ERR_NOT_IMPLEMENTED, "KDF type %d is not implemented", kdf_type);
 
-    kdf2 = vscf_kdf2_new();
+    const mbedtls_kdf_info_t *kdf_info = mbedtls_kdf_info_from_type(MBEDTLS_KDF_KDF2);
+    const mbedtls_md_info_t *md_info = mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type));
 
-    switch (hash_type) {
-    case VS_HASH_SHA_256:
-        hash_impl = vscf_sha256_impl(vscf_sha256_new());
-        break;
+    CHECK_RET(kdf_info && md_info, VS_CODE_ERR_CRYPTO, "Error create kdf info");
 
-    case VS_HASH_SHA_384:
-        hash_impl = vscf_sha384_impl(vscf_sha384_new());
-        break;
-
-    case VS_HASH_SHA_512:
-        hash_impl = vscf_sha512_impl(vscf_sha512_new());
-        break;
-
-    default:
-        VS_LOG_ERROR("HASH key type %d is not implemented", hash_type);
-        VS_IOT_ASSERT(false);
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_sz);
-    vscf_kdf2_take_hash(kdf2, hash_impl);
-    vscf_kdf2_derive(kdf2, vsc_data(input, input_sz), output_sz, &out_buf);
-
-    vscf_kdf2_delete(kdf2);
-    return VS_CODE_OK;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    return (0 == mbedtls_kdf(kdf_info, md_info, input, input_sz, output, output_sz)) ? VS_CODE_OK : VS_CODE_ERR_CRYPTO;
 }
 
 /********************************************************************************/
@@ -508,57 +429,41 @@ vs_secmodule_hkdf(vs_secmodule_hash_type_e hash_type,
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
-#if 0
-/********************************************************************************/
-static vscf_impl_t *random_impl = NULL;
-
-static void
-destroy_random_impl() {
-    vscf_ctr_drbg_delete((vscf_ctr_drbg_t *)random_impl);
-}
-#endif
 /********************************************************************************/
 static vs_status_e
 vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
-#if 0
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-    vsc_buffer_t out_buf;
+    static bool is_init = false;
+    static mbedtls_entropy_context entropy;
+    static mbedtls_ctr_drbg_context ctr_drbg;
+
     uint16_t cur_off = 0;
     uint16_t cur_size = 0;
 
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_sz);
+    CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_INCORRECT_PARAMETER);
 
-    if (!random_impl) {
-        CHECK(random_impl = (vscf_impl_t *)vscf_ctr_drbg_new(), "Unable to allocate random implementation context");
+    if (!is_init) {
+        const char *pers = "gen_random";
+        mbedtls_entropy_init(&entropy);
+        mbedtls_ctr_drbg_init(&ctr_drbg);
 
-        atexit(destroy_random_impl);
-
-        CHECK_VSCF(vscf_ctr_drbg_setup_defaults((vscf_ctr_drbg_t *)random_impl),
-                   "Unable to initialize random number generator");
+        CHECK_RET(0 == mbedtls_ctr_drbg_seed(
+                               &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers)),
+                  VS_CODE_ERR_CRYPTO,
+                  "Error drbg initialization");
+        is_init = true;
     }
 
-    for (cur_off = 0; cur_off < output_sz; cur_off += RNG_MAX_REQUEST) {
-        cur_size = output_sz - cur_off;
+    while (cur_off < output_sz) {
+        cur_size = (output_sz - cur_off) > RNG_MAX_REQUEST ? RNG_MAX_REQUEST : (output_sz - cur_off);
 
-        if (cur_size > RNG_MAX_REQUEST) {
-            cur_size = RNG_MAX_REQUEST;
-        }
+        CHECK_RET(0 == mbedtls_ctr_drbg_random(&ctr_drbg, output + cur_off, cur_size),
+                  VS_CODE_ERR_CRYPTO,
+                  "Unable to generate random sequence");
 
-        CHECK_VSCF(vscf_random(random_impl, cur_size, &out_buf), "Unable to generate random sequence");
+        cur_off += cur_size;
     }
-
-    res = VS_CODE_OK;
-
-terminate:
-
-    if (VS_CODE_OK != res) {
-        vsc_buffer_cleanup(&out_buf);
-    }
-
-    return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    return VS_CODE_OK;
 }
 
 /********************************************************************************/
