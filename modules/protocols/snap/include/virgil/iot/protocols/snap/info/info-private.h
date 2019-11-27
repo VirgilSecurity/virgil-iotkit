@@ -32,17 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 #ifndef VS_SECURITY_SDK_SNAP_SERVICES_INFO_PRIVATE_H
 #define VS_SECURITY_SDK_SNAP_SERVICES_INFO_PRIVATE_H
 
+#include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/protocols/snap/info/info-server.h>
 #include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap.h>
-#include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push

@@ -32,16 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <string.h>
 #include <stdbool.h>
 #include <stdlib-config.h>
-#include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <string.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /******************************************************************************/
-int
-vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type) {
+int vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type)
+{
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
@@ -70,8 +70,8 @@ vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type) {
 }
 
 /******************************************************************************/
-int
-vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type) {
+int vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type)
+{
     switch (keypair_type) {
 #if USE_RSA
     case VS_KEYPAIR_RSA_2048:
@@ -99,8 +99,8 @@ vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type) {
 }
 
 /******************************************************************************/
-int
-vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type) {
+int vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type)
+{
     switch (hash_type) {
     case VS_HASH_SHA_256:
         return VS_HASH_SHA256_LEN;
@@ -115,8 +115,9 @@ vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type) {
 }
 
 /******************************************************************************/
-const char *
-vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type) {
+const char*
+vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type)
+{
     switch (type) {
     case VS_KEYPAIR_EC_SECP192R1:
         return "192-bits NIST";
@@ -147,8 +148,9 @@ vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type) {
 }
 
 /******************************************************************************/
-const char *
-vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type) {
+const char*
+vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type)
+{
     switch (type) {
     case VS_HASH_SHA_256:
         return "SHA 256";

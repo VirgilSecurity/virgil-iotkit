@@ -38,21 +38,21 @@
 #include <virgil/iot/protocols/snap/fldt/fldt-client.h>
 #endif
 
-#include <virgil/iot/protocols/snap/info/info-server.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
-#include <virgil/iot/protocols/snap.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <endian-config.h>
+#include <stdlib-config.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
-#include <stdlib-config.h>
-#include <endian-config.h>
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
+#include <virgil/iot/protocols/snap/info/info-private.h>
+#include <virgil/iot/protocols/snap/info/info-server.h>
+#include <virgil/iot/protocols/snap/info/info-structs.h>
+#include <virgil/iot/status_code/status_code.h>
 
 // Commands
 
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
+static vs_storage_op_ctx_t* _tl_ctx;
+static vs_storage_op_ctx_t* _fw_ctx;
 #define FW_DESCR_BUF 128
 
 // Polling
@@ -64,12 +64,13 @@ typedef struct {
 } vs_poll_ctx_t;
 
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
-static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+static vs_poll_ctx_t _poll_ctx = { 0, 0, 0 };
 
 /******************************************************************/
 static vs_status_e
-_fill_enum_data(vs_info_enum_response_t *enum_data) {
-    const vs_netif_t *default_netif;
+_fill_enum_data(vs_info_enum_response_t* enum_data)
+{
+    const vs_netif_t* default_netif;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(enum_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -77,8 +78,8 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
     CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+        -1,
+        "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -88,12 +89,13 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
 /******************************************************************/
 static vs_status_e
-_enum_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+_enum_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_enum_response_t* enum_response = (vs_info_enum_response_t*)response;
     vs_status_e ret_code;
 
     // Check input parameters
@@ -111,14 +113,15 @@ _enum_request_processing(const uint8_t *request,
 
 /******************************************************************/
 static vs_status_e
-_poll_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
+_poll_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
     vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_poll_request_t *poll_request = (vs_info_poll_request_t *)request;
+    vs_info_poll_request_t* poll_request = (vs_info_poll_request_t*)request;
 
     CHECK_NOT_ZERO(request);
     CHECK_NOT_ZERO(response_sz);
@@ -144,8 +147,9 @@ terminate:
 
 /******************************************************************/
 static vs_status_e
-_fill_stat_data(vs_info_stat_response_t *stat_data) {
-    const vs_netif_t *default_netif;
+_fill_stat_data(vs_info_stat_response_t* stat_data)
+{
+    const vs_netif_t* default_netif;
     vs_snap_stat_t stat = vs_snap_get_statistics();
 
     // Check input parameters
@@ -154,16 +158,16 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
     CHECK_RET(!default_netif->mac_addr(default_netif, &stat_data->mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+        -1,
+        "Cannot get MAC for Default Network Interface");
 
     // Set statistics data
     stat_data->received = stat.received;
     stat_data->sent = stat.sent;
 
     VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
-                 (unsigned long)stat_data->sent,
-                 (unsigned long)stat_data->received);
+        (unsigned long)stat_data->sent,
+        (unsigned long)stat_data->received);
 
     // Normalize byte order
     vs_info_stat_response_t_encode(stat_data);
@@ -173,14 +177,15 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 
 /******************************************************************/
 static vs_status_e
-_stat_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
+_stat_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
     vs_status_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
+    vs_info_stat_response_t* stat = (vs_info_stat_response_t*)response;
 
     CHECK_NOT_ZERO(request);
     CHECK_NOT_ZERO(response_sz);
@@ -198,9 +203,10 @@ terminate:
 
 /******************************************************************/
 static vs_status_e
-_fill_ginf_data(vs_info_ginf_response_t *general_info) {
+_fill_ginf_data(vs_info_ginf_response_t* general_info)
+{
     vs_firmware_descriptor_t fw_descr;
-    const vs_netif_t *default_netif;
+    const vs_netif_t* default_netif;
     vs_tl_element_info_t tl_elem_info;
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
@@ -212,14 +218,14 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     default_netif = vs_snap_default_netif();
 
     CHECK_RET(!default_netif->mac_addr(default_netif, &general_info->default_netif_mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+        -1,
+        "Cannot get MAC for Default Network Interface");
 
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
-    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
+    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t*)&tl_header, tl_header_sz, &tl_header_sz),
+        "Unable to obtain Trust List version");
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
@@ -229,19 +235,19 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     general_info->device_roles = vs_snap_device_roles();
 
     VS_LOG_DEBUG(
-            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
-            "%s, trust list "
-            "version = %d.%d.%d.%d",
-            general_info->manufacture_id,
-            general_info->device_type[0],
-            general_info->device_type[1],
-            general_info->device_type[2],
-            general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version.major,
-            general_info->tl_version.minor,
-            general_info->tl_version.patch,
-            general_info->tl_version.build);
+        "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
+        "%s, trust list "
+        "version = %d.%d.%d.%d",
+        general_info->manufacture_id,
+        general_info->device_type[0],
+        general_info->device_type[1],
+        general_info->device_type[2],
+        general_info->device_type[3],
+        vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
+        general_info->tl_version.major,
+        general_info->tl_version.minor,
+        general_info->tl_version.patch,
+        general_info->tl_version.build);
 
     // Normalize byte order
     vs_info_ginf_response_t_encode(general_info);
@@ -251,12 +257,13 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
 /******************************************************************/
 static vs_status_e
-_ginf_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
+_ginf_request_processing(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_ginf_response_t* general_info = (vs_info_ginf_response_t*)response;
     vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -272,12 +279,13 @@ _ginf_request_processing(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_snot_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
-    const vs_info_enum_response_t *enum_data = (const vs_info_enum_response_t *)request;
+_snot_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    const vs_info_enum_response_t* enum_data = (const vs_info_enum_response_t*)request;
     vs_snap_info_device_t device_info;
     vs_status_e ret_code = VS_CODE_OK;
 #if FLDT_CLIENT
@@ -288,17 +296,17 @@ _snot_request_processor(const uint8_t *request,
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(request_sz == sizeof(*enum_data),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
-              sizeof(*enum_data),
-              response_sz);
+        VS_CODE_ERR_INCORRECT_ARGUMENT,
+        "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
+        sizeof(*enum_data),
+        response_sz);
 
 #if FLDT_CLIENT
     STATUS_CHECK_RET(vs_snap_mac_addr(vs_snap_default_netif(), &self_mac), "Unable to request self MAC address");
 
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
-        (vs_snap_device_roles() & VS_SNAP_DEV_THING) &&                                // current device is Thing
-        (enum_data->device_roles & VS_SNAP_DEV_GATEWAY)) {                             // sender is Gateway
+        (vs_snap_device_roles() & VS_SNAP_DEV_THING) && // current device is Thing
+        (enum_data->device_roles & VS_SNAP_DEV_GATEWAY)) { // sender is Gateway
         ret_code = vs_fldt_client_request_all_files();
         if (ret_code != VS_CODE_OK) {
             VS_LOG_ERROR("[INFO] Unable to request all files update");
@@ -317,13 +325,14 @@ _snot_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_info_request_processor(struct vs_snap_service_t *service,
-                        vs_snap_element_t element_id,
-                        const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_info_request_processor(struct vs_snap_service_t* service,
+    vs_snap_element_t element_id,
+    const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
     (void)service;
 
     *response_sz = 0;
@@ -354,7 +363,8 @@ _info_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static vs_status_e
-_info_server_periodical_processor(struct vs_snap_service_t *service) {
+_info_server_periodical_processor(struct vs_snap_service_t* service)
+{
     vs_status_e ret_code;
     static bool started = false;
     (void)service;
@@ -372,22 +382,22 @@ _info_server_periodical_processor(struct vs_snap_service_t *service) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
-                                 VS_INFO_SERVICE_ID,
-                                 VS_INFO_GINF,
-                                 (uint8_t *)&general_info,
-                                 sizeof(general_info));
+                &_poll_ctx.dest_mac,
+                VS_INFO_SERVICE_ID,
+                VS_INFO_GINF,
+                (uint8_t*)&general_info,
+                sizeof(general_info));
         }
 
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_STATISTICS) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SNAP statistics");
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
-                                 VS_INFO_SERVICE_ID,
-                                 VS_INFO_STAT,
-                                 (uint8_t *)&stat_data,
-                                 sizeof(stat_data));
+                &_poll_ctx.dest_mac,
+                VS_INFO_SERVICE_ID,
+                VS_INFO_STAT,
+                (uint8_t*)&stat_data,
+                sizeof(stat_data));
         }
     }
 
@@ -395,12 +405,13 @@ _info_server_periodical_processor(struct vs_snap_service_t *service) {
 }
 
 /******************************************************************************/
-vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb) {
+vs_snap_service_t*
+vs_snap_info_server(vs_storage_op_ctx_t* tl_ctx,
+    vs_storage_op_ctx_t* fw_ctx,
+    vs_snap_info_start_notif_srv_cb_t startup_cb)
+{
 
-    static vs_snap_service_t _info = {0};
+    static vs_snap_service_t _info = { 0 };
 
     CHECK_NOT_ZERO_RET(tl_ctx, NULL);
     CHECK_NOT_ZERO_RET(fw_ctx, NULL);
@@ -421,7 +432,8 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_info_start_notification(const vs_netif_t *netif) {
+vs_snap_info_start_notification(const vs_netif_t* netif)
+{
     vs_info_enum_response_t enum_data;
     vs_status_e ret_code;
 
@@ -429,12 +441,12 @@ vs_snap_info_start_notification(const vs_netif_t *netif) {
 
     // Send request
     STATUS_CHECK_RET(vs_snap_send_request(netif,
-                                          vs_snap_broadcast_mac(),
-                                          VS_INFO_SERVICE_ID,
-                                          VS_INFO_SNOT,
-                                          (uint8_t *)&enum_data,
-                                          sizeof(enum_data)),
-                     "Cannot send data");
+                         vs_snap_broadcast_mac(),
+                         VS_INFO_SERVICE_ID,
+                         VS_INFO_SNOT,
+                         (uint8_t*)&enum_data,
+                         sizeof(enum_data)),
+        "Cannot send data");
 
     return VS_CODE_OK;
 }

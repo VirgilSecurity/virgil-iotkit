@@ -34,24 +34,24 @@
 
 #if PRVS_CLIENT
 
-#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
+#include <global-hal.h>
 #include <private/snap-private.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-client.h>
+#include <stdbool.h>
+#include <stdlib-config.h>
+#include <string.h>
+#include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/snap.h>
-#include <virgil/iot/logger/logger.h>
-#include <stdlib-config.h>
-#include <global-hal.h>
-#include <stdbool.h>
-#include <string.h>
+#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
+#include <virgil/iot/protocols/snap/prvs/prvs-client.h>
 
 #include <virgil/iot/secmodule/secmodule.h>
 
-static vs_snap_service_t _prvs_client = {0, 0, 0, 0, 0};
-static vs_snap_prvs_dnid_list_t *_prvs_dnid_list = 0;
+static vs_snap_service_t _prvs_client = { 0, 0, 0, 0, 0 };
+static vs_snap_prvs_dnid_list_t* _prvs_dnid_list = 0;
 
 // External functions for access to upper level implementations
-static vs_snap_prvs_client_impl_t _prvs_impl = {0, 0};
+static vs_snap_prvs_client_impl_t _prvs_impl = { 0, 0 };
 
 // Last result
 #define PRVS_BUF_SZ (1024)
@@ -61,13 +61,14 @@ static uint8_t _last_data[PRVS_BUF_SZ];
 
 /******************************************************************************/
 static vs_status_e
-_prvs_dnid_process_response(const uint8_t *response, const uint16_t response_sz) {
+_prvs_dnid_process_response(const uint8_t* response, const uint16_t response_sz)
+{
 
-    vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
+    vs_snap_prvs_dnid_element_t* dnid_response = (vs_snap_prvs_dnid_element_t*)response;
 
     if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
         VS_IOT_MEMCPY(
-                &_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_snap_prvs_dnid_element_t));
+            &_prvs_dnid_list->elements[_prvs_dnid_list->count], dnid_response, sizeof(vs_snap_prvs_dnid_element_t));
         _prvs_dnid_list->count++;
 
         return VS_CODE_OK;
@@ -78,11 +79,12 @@ _prvs_dnid_process_response(const uint8_t *response, const uint16_t response_sz)
 
 /******************************************************************************/
 static vs_status_e
-_prvs_service_response_processor(struct vs_snap_service_t *service,
-                                 vs_snap_element_t element_id,
-                                 bool is_ack,
-                                 const uint8_t *response,
-                                 const uint16_t response_sz) {
+_prvs_service_response_processor(struct vs_snap_service_t* service,
+    vs_snap_element_t element_id,
+    bool is_ack,
+    const uint8_t* response,
+    const uint16_t response_sz)
+{
     (void)service;
 
     VS_IOT_ASSERT(_prvs_impl.stop_wait_func);
@@ -105,8 +107,9 @@ _prvs_service_response_processor(struct vs_snap_service_t *service,
 }
 
 /******************************************************************************/
-vs_snap_service_t *
-vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl) {
+vs_snap_service_t*
+vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl)
+{
     _prvs_client.user_data = 0;
     _prvs_client.id = VS_PRVS_SERVICE_ID;
     _prvs_client.request_process = NULL;
@@ -121,7 +124,8 @@ vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl) {
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms) {
+vs_snap_prvs_enum_devices(const vs_netif_t* netif, vs_snap_prvs_dnid_list_t* list, uint32_t wait_ms)
+{
     vs_status_e ret_code;
 
     // Set storage for DNID request
@@ -139,14 +143,15 @@ vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *lis
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_device_info(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         vs_snap_prvs_devi_t *device_info,
-                         uint16_t buf_sz,
-                         uint32_t wait_ms) {
+vs_snap_prvs_device_info(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_devi_t* device_info,
+    uint16_t buf_sz,
+    uint32_t wait_ms)
+{
     uint16_t sz;
 
-    if (VS_CODE_OK == vs_snap_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t *)device_info, buf_sz, &sz, wait_ms)) {
+    if (VS_CODE_OK == vs_snap_prvs_get(netif, mac, VS_PRVS_DEVI, (uint8_t*)device_info, buf_sz, &sz, wait_ms)) {
         vs_snap_prvs_devi_t_decode(device_info);
         return VS_CODE_OK;
     }
@@ -155,19 +160,21 @@ vs_snap_prvs_device_info(const vs_netif_t *netif,
 
 /******************************************************************************/
 static void
-_reset_last_result() {
+_reset_last_result()
+{
     _last_res = VS_CODE_ERR_PRVS_UNKNOWN;
     _last_data_sz = 0;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_set(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_snap_prvs_element_e element,
-                 const uint8_t *data,
-                 uint16_t data_sz,
-                 uint32_t wait_ms) {
+vs_snap_prvs_set(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_element_e element,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms)
+{
 
     vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
@@ -176,7 +183,7 @@ vs_snap_prvs_set(const vs_netif_t *netif,
 
     // Send request
     STATUS_CHECK_RET(vs_snap_send_request(netif, mac, VS_PRVS_SERVICE_ID, element, data, data_sz),
-                     "Send request error");
+        "Send request error");
 
     // Wait request
     _prvs_impl.wait_func(&_prvs_impl, wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
@@ -186,13 +193,14 @@ vs_snap_prvs_set(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_get(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_snap_prvs_element_e element,
-                 uint8_t *data,
-                 uint16_t buf_sz,
-                 uint16_t *data_sz,
-                 uint32_t wait_ms) {
+vs_snap_prvs_get(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_element_e element,
+    uint8_t* data,
+    uint16_t buf_sz,
+    uint16_t* data_sz,
+    uint32_t wait_ms)
+{
 
     vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
@@ -217,27 +225,29 @@ vs_snap_prvs_get(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_save_provision(const vs_netif_t *netif,
-                            const vs_mac_addr_t *mac,
-                            uint8_t *asav_res,
-                            uint16_t buf_sz,
-                            uint32_t wait_ms) {
+vs_snap_prvs_save_provision(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint8_t* asav_res,
+    uint16_t buf_sz,
+    uint32_t wait_ms)
+{
     VS_IOT_ASSERT(asav_res);
 
     uint16_t sz;
-    return vs_snap_prvs_get(netif, mac, VS_PRVS_ASAV, (uint8_t *)asav_res, buf_sz, &sz, wait_ms);
+    return vs_snap_prvs_get(netif, mac, VS_PRVS_ASAV, (uint8_t*)asav_res, buf_sz, &sz, wait_ms);
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_sign_data(const vs_netif_t *netif,
-                       const vs_mac_addr_t *mac,
-                       const uint8_t *data,
-                       uint16_t data_sz,
-                       uint8_t *signature,
-                       uint16_t buf_sz,
-                       uint16_t *signature_sz,
-                       uint32_t wait_ms) {
+vs_snap_prvs_sign_data(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint8_t* signature,
+    uint16_t buf_sz,
+    uint16_t* signature_sz,
+    uint32_t wait_ms)
+{
 
     vs_status_e ret_code;
     VS_IOT_ASSERT(_prvs_impl.wait_func);
@@ -246,7 +256,7 @@ vs_snap_prvs_sign_data(const vs_netif_t *netif,
 
     // Send request
     STATUS_CHECK_RET(vs_snap_send_request(netif, mac, VS_PRVS_SERVICE_ID, VS_PRVS_ASGN, data, data_sz),
-                     "Send request error");
+        "Send request error");
 
     // Wait request
     _prvs_impl.wait_func(&_prvs_impl, wait_ms, &_last_res, VS_CODE_ERR_PRVS_UNKNOWN);
@@ -263,21 +273,23 @@ vs_snap_prvs_sign_data(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_set_tl_header(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms) {
+vs_snap_prvs_set_tl_header(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms)
+{
     return vs_snap_prvs_set(netif, mac, VS_PRVS_TLH, data, data_sz, wait_ms);
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_prvs_set_tl_footer(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms) {
+vs_snap_prvs_set_tl_footer(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms)
+{
     return vs_snap_prvs_set(netif, mac, VS_PRVS_TLF, data, data_sz, wait_ms);
 }
 

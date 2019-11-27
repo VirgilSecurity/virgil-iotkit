@@ -33,33 +33,34 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #include <stdbool.h>
 
-#include <stdlib-config.h>
 #include <endian-config.h>
+#include <stdlib-config.h>
 
-#include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule-helpers.h>
-#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
-static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
+static const size_t rec_key_slot[PROVISION_KEYS_QTY] = { REC1_KEY_SLOT, REC2_KEY_SLOT };
 
-static const size_t auth_key_slot[PROVISION_KEYS_QTY] = {AUTH1_KEY_SLOT, AUTH2_KEY_SLOT};
+static const size_t auth_key_slot[PROVISION_KEYS_QTY] = { AUTH1_KEY_SLOT, AUTH2_KEY_SLOT };
 
-static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLOT};
+static const size_t tl_key_slot[PROVISION_KEYS_QTY] = { TL1_KEY_SLOT, TL2_KEY_SLOT };
 
-static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
+static const size_t fw_key_slot[PROVISION_KEYS_QTY] = { FW1_KEY_SLOT, FW2_KEY_SLOT };
 
-static vs_secmodule_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t* _secmodule = NULL;
 
-static char *_base_url = NULL;
+static char* _base_url = NULL;
 
 /******************************************************************************/
 static vs_status_e
-_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_secmodule_slot_e *slot) {
-    const size_t *ptr;
+_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_secmodule_slot_e* slot)
+{
+    const size_t* ptr;
 
     switch (key_type) {
     case VS_KEY_RECOVERY:
@@ -86,9 +87,10 @@ _get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_secmodule_slo
 
 /******************************************************************************/
 vs_status_e
-vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
+vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t* slot)
+{
     size_t index;
-    const size_t *ptr;
+    const size_t* ptr;
 
     BOOL_CHECK_RET(NULL != slot, "Invalid args");
 
@@ -141,17 +143,18 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
 /******************************************************************************/
 vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type,
-                              vs_secmodule_keypair_type_e ec_type,
-                              const uint8_t *key,
-                              uint16_t key_sz) {
+    vs_secmodule_keypair_type_e ec_type,
+    const uint8_t* key,
+    uint16_t key_sz)
+{
     vs_iot_secmodule_slot_e slot;
     uint8_t i = 0;
     int ref_key_sz;
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
-    vs_pubkey_dated_t *ref_key = (vs_pubkey_dated_t *)buf;
+    vs_pubkey_dated_t* ref_key = (vs_pubkey_dated_t*)buf;
     uint16_t _sz;
     vs_status_e ret_code;
-    uint8_t *pubkey;
+    uint8_t* pubkey;
 
     VS_IOT_ASSERT(_secmodule);
 
@@ -167,8 +170,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
         }
 
         pubkey = &ref_key->pubkey.meta_and_pubkey[ref_key->pubkey.meta_data_sz];
-        if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz &&
-            0 == VS_IOT_MEMCMP(key, pubkey, key_sz)) {
+        if (ref_key->pubkey.key_type == key_type && ref_key->pubkey.ec_type == ec_type && ref_key_sz == key_sz && 0 == VS_IOT_MEMCMP(key, pubkey, key_sz)) {
             return vs_provision_verify_hl_key(buf, _sz);
         }
     }
@@ -178,15 +180,16 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
 
 /******************************************************************************/
 vs_status_e
-vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
+vs_provision_verify_hl_key(const uint8_t* key_to_check, uint16_t key_size)
+{
 
     int key_len;
     int sign_len;
     int hash_size;
     uint16_t signed_data_sz;
     uint16_t res_sz;
-    uint8_t *pubkey;
-    vs_sign_t *sign;
+    uint8_t* pubkey;
+    vs_sign_t* sign;
     vs_status_e ret_code;
 
     VS_IOT_ASSERT(_secmodule);
@@ -194,7 +197,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
     BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
 
-    vs_pubkey_dated_t *key = (vs_pubkey_dated_t *)key_to_check;
+    vs_pubkey_dated_t* key = (vs_pubkey_dated_t*)key_to_check;
 
     // Recovery key doesn't have signature
     if (VS_KEY_RECOVERY == key->pubkey.key_type) {
@@ -211,7 +214,7 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     CHECK_RET(key_size > signed_data_sz + sizeof(vs_sign_t), VS_CODE_ERR_CRYPTO, "key stuff is too small");
 
     // Signature pointer
-    sign = (vs_sign_t *)(key_to_check + signed_data_sz);
+    sign = (vs_sign_t*)(key_to_check + signed_data_sz);
 
     CHECK_RET(VS_KEY_RECOVERY == sign->signer_type, VS_CODE_ERR_CRYPTO, "Signer type must be RECOVERY");
 
@@ -220,8 +223,8 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
     CHECK_RET(sign_len > 0 && key_len > 0, VS_CODE_ERR_CRYPTO, "Unsupported signature ec_type");
     CHECK_RET(key_size == signed_data_sz + sizeof(vs_sign_t) + sign_len + key_len,
-              VS_CODE_ERR_CRYPTO,
-              "key stuff is wrong");
+        VS_CODE_ERR_CRYPTO,
+        "key stuff is wrong");
 
     // Calculate hash of stuff under signature
     hash_size = vs_secmodule_get_hash_len(sign->hash_type);
@@ -230,24 +233,25 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     uint8_t hash[hash_size];
 
     STATUS_CHECK_RET(_secmodule->hash(sign->hash_type, key_to_check, signed_data_sz, hash, hash_size, &res_sz),
-                     "Error hash create");
+        "Error hash create");
 
     // Signer raw key pointer
     pubkey = sign->raw_sign_pubkey + sign_len;
 
     STATUS_CHECK_RET(vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, key_len),
-                     "Signer key is not present");
+        "Signer key is not present");
 
     STATUS_CHECK_RET(_secmodule->ecdsa_verify(
-                             sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
-                     "Signature is wrong");
+                         sign->ec_type, pubkey, key_len, sign->hash_type, hash, sign->raw_sign_pubkey, sign_len),
+        "Signature is wrong");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule) {
+vs_provision_init(vs_storage_op_ctx_t* tl_storage_ctx, vs_secmodule_impl_t* secmodule)
+{
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _secmodule = secmodule;
 
@@ -257,29 +261,29 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secm
 
 /******************************************************************************/
 vs_status_e
-vs_provision_deinit(void) {
+vs_provision_deinit(void)
+{
     VS_IOT_FREE(_base_url);
     return vs_tl_deinit();
 }
 
 /******************************************************************************/
-const char *
-vs_provision_cloud_url(void) {
+const char*
+vs_provision_cloud_url(void)
+{
     vs_provision_tl_find_ctx_t search_ctx;
-    uint8_t *pubkey = NULL;
+    uint8_t* pubkey = NULL;
     uint16_t pubkey_sz = 0;
-    uint8_t *meta = NULL;
+    uint8_t* meta = NULL;
     uint16_t meta_sz = 0;
-    vs_pubkey_dated_t *pubkey_dated = NULL;
+    vs_pubkey_dated_t* pubkey_dated = NULL;
 
     if (_base_url) {
         VS_IOT_FREE(_base_url);
         _base_url = NULL;
     }
 
-    if (VS_CODE_OK == vs_provision_tl_find_first_key(
-                              &search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz) ||
-        !meta_sz) {
+    if (VS_CODE_OK == vs_provision_tl_find_first_key(&search_ctx, VS_KEY_CLOUD, &pubkey_dated, &pubkey, &pubkey_sz, &meta, &meta_sz) || !meta_sz) {
         _base_url = VS_IOT_MALLOC(meta_sz + 1);
         CHECK(NULL != _base_url, "");
         VS_IOT_MEMCPY(_base_url, meta, meta_sz);
@@ -292,13 +296,14 @@ terminate:
 
 /******************************************************************************/
 vs_status_e
-vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
-                               vs_key_type_e key_type,
-                               vs_pubkey_dated_t **pubkey_dated,
-                               uint8_t **pubkey,
-                               uint16_t *pubkey_sz,
-                               uint8_t **meta,
-                               uint16_t *meta_sz) {
+vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t* search_ctx,
+    vs_key_type_e key_type,
+    vs_pubkey_dated_t** pubkey_dated,
+    uint8_t** pubkey,
+    uint16_t* pubkey_sz,
+    uint8_t** meta,
+    uint16_t* meta_sz)
+{
 
     CHECK_NOT_ZERO_RET(search_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     // Setup search context
@@ -311,12 +316,13 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
 
 /******************************************************************************/
 vs_status_e
-vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
-                              vs_pubkey_dated_t **pubkey_dated,
-                              uint8_t **pubkey,
-                              uint16_t *pubkey_sz,
-                              uint8_t **meta,
-                              uint16_t *meta_sz) {
+vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t* search_ctx,
+    vs_pubkey_dated_t** pubkey_dated,
+    uint8_t** pubkey,
+    uint16_t* pubkey_sz,
+    uint8_t** meta,
+    uint16_t* meta_sz)
+{
     vs_status_e res = VS_CODE_ERR_NOT_FOUND;
     vs_tl_element_info_t element;
     uint16_t data_sz = 0;
@@ -328,7 +334,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
     CHECK_NOT_ZERO_RET(meta_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(pubkey_dated, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    *pubkey_dated = (vs_pubkey_dated_t *)search_ctx->element_buf;
+    *pubkey_dated = (vs_pubkey_dated_t*)search_ctx->element_buf;
 
     // Prepare element info
     element.id = VS_TL_ELEMENT_TLC;
