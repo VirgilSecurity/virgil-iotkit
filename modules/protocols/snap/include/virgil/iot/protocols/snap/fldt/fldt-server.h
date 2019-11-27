@@ -94,7 +94,7 @@
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -145,7 +145,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // FLDT_SERVER

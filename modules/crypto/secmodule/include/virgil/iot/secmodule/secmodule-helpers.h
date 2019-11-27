@@ -43,7 +43,7 @@
 #define VS_SECMODULE_HELPERS_H_
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -163,7 +163,7 @@ vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIG
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SECMODULE_HELPERS_H_

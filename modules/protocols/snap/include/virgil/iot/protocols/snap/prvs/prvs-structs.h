@@ -45,7 +45,7 @@
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -100,7 +100,7 @@ typedef struct __attribute__((__packed__)) {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H

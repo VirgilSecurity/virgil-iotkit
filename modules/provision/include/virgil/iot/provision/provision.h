@@ -103,7 +103,7 @@ if( vs_provision_tl_find_first_key(&search_ctx, VS_KEY_IOT_DEVICE, &pubkey_dated
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -226,7 +226,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_IOT_PROVISION_H

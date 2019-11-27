@@ -48,7 +48,7 @@
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -109,7 +109,7 @@ typedef enum {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H

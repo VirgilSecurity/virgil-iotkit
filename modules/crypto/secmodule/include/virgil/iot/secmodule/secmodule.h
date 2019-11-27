@@ -68,7 +68,7 @@ vs_soft_secmodule_deinit();
 #include <virgil/iot/secmodule/devices/secmodule-soft.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -549,7 +549,7 @@ vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SECMODULE_INTERFACE_API_H

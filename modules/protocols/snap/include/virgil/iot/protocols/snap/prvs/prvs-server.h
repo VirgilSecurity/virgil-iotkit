@@ -73,7 +73,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -90,7 +90,7 @@ vs_snap_prvs_server(vs_secmodule_impl_t *secmodule);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // PRVS_SERVER

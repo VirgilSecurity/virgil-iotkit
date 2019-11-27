@@ -122,7 +122,7 @@
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -249,7 +249,7 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // INFO_CLIENT

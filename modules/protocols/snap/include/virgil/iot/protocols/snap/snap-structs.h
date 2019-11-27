@@ -46,7 +46,7 @@
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -333,7 +333,7 @@ typedef struct {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SNAP_STRUCTS_H

@@ -44,7 +44,7 @@
 #include <virgil/iot/provision/provision.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -87,7 +87,7 @@ typedef struct vs_tl_element_info_s {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // TL_STRUCTS_H

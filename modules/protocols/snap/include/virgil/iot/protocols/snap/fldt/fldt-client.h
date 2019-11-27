@@ -97,7 +97,7 @@
 #include <virgil/iot/update/update.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -157,7 +157,7 @@ vs_fldt_client_request_all_files(void);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // FLDT_CLIENT

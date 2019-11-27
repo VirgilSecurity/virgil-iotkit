@@ -55,7 +55,7 @@
 #include <virgil/iot/provision/provision.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -298,7 +298,7 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_UPDATE_H

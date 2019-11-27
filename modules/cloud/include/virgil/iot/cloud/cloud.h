@@ -155,7 +155,7 @@ tl_topic_process(const uint8_t *url, uint16_t length) {
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -385,7 +385,7 @@ vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_CLOUD_H

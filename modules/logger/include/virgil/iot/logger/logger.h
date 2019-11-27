@@ -73,7 +73,7 @@ logger_hal_implementation
 #include <string.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -300,7 +300,7 @@ vs_logger_message_hex(vs_log_level_t level,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // AP_SECURITY_SDK_LOGGER_H

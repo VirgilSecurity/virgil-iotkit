@@ -45,7 +45,7 @@
 #define VS_SECMODULE_SOFT_DEVICE_H
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -136,7 +136,7 @@ typedef enum {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_SECMODULE_SOFT_DEVICE_H
