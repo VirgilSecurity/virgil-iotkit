@@ -38,14 +38,14 @@
 
 #if VS_IOT_LOGGER_USE_LIBRARY == 1
 
-#include <stdlib-config.h>
+#include <private/utoa_fast_div.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib-config.h>
 #include <stdlib.h>
-#include <virgil/iot/logger/logger.h>
 #include <virgil/iot/logger/logger-hal.h>
-#include <private/utoa_fast_div.h>
+#include <virgil/iot/logger/logger.h>
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static bool _last_res = true;
@@ -54,20 +54,21 @@ static bool _last_res = true;
 #define VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL 1
 
 /******************************************************************************/
-bool
-vs_logger_last_result(void) {
+bool vs_logger_last_result(void)
+{
     return _last_res;
 }
 
 /******************************************************************************/
-void
-vs_logger_init(vs_log_level_t log_level) {
+void vs_logger_init(vs_log_level_t log_level)
+{
     vs_logger_set_loglev(log_level);
 }
 
 /******************************************************************************/
 vs_log_level_t
-vs_logger_set_loglev(vs_log_level_t new_level) {
+vs_logger_set_loglev(vs_log_level_t new_level)
+{
     vs_log_level_t prev_level = _log_level;
 
     _log_level = new_level;
@@ -77,14 +78,15 @@ vs_logger_set_loglev(vs_log_level_t new_level) {
 
 /******************************************************************************/
 vs_log_level_t
-vs_logger_get_loglev(void) {
+vs_logger_get_loglev(void)
+{
 
     return _log_level;
 }
 
 /******************************************************************************/
-bool
-vs_logger_is_loglev(vs_log_level_t level) {
+bool vs_logger_is_loglev(vs_log_level_t level)
+{
 
     VS_IOT_ASSERT(_log_level != VS_LOGLEV_UNKNOWN);
 
@@ -92,8 +94,9 @@ vs_logger_is_loglev(vs_log_level_t level) {
 }
 
 /******************************************************************************/
-static const char *
-vs_logger_get_level_str(vs_log_level_t log_level) {
+static const char*
+vs_logger_get_level_str(vs_log_level_t log_level)
+{
 
     switch (log_level) {
     case VS_LOGLEV_INFO:
@@ -122,10 +125,10 @@ vs_logger_get_level_str(vs_log_level_t log_level) {
 }
 
 /******************************************************************************/
-#define VS_LOGGER_OUTPUT(STR)                                                                                          \
-    do {                                                                                                               \
-        if (!vs_logger_output_hal(STR))                                                                                \
-            goto terminate;                                                                                            \
+#define VS_LOGGER_OUTPUT(STR)           \
+    do {                                \
+        if (!vs_logger_output_hal(STR)) \
+            goto terminate;             \
     } while (0)
 
 #if defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
@@ -135,8 +138,9 @@ vs_logger_get_level_str(vs_log_level_t log_level) {
 
 /******************************************************************************/
 static bool
-vs_logger_output_preface(vs_log_level_t level, const char *cur_filename, uint32_t line_num) {
-    const char *level_str = NULL;
+vs_logger_output_preface(vs_log_level_t level, const char* cur_filename, uint32_t line_num)
+{
+    const char* level_str = NULL;
     bool res = true;
     char buf[11]; // for line number less than 9'000'000'000
 
@@ -174,8 +178,9 @@ terminate:
 
 /******************************************************************************/
 static bool
-vs_logger_no_format(const char *format) {
-    const char *cur_pos;
+vs_logger_no_format(const char* format)
+{
+    const char* cur_pos;
 
     for (cur_pos = format; *cur_pos != '\0'; ++cur_pos) {
         if (*cur_pos != '%') {
@@ -200,9 +205,9 @@ vs_logger_no_format(const char *format) {
 #endif // VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL == 1
 
 /******************************************************************************/
-void
-vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *format, ...) {
-    static const char *CUTTED_STR = "...";
+void vs_logger_message(vs_log_level_t level, const char* cur_filename, uint32_t line_num, const char* format, ...)
+{
+    static const char* CUTTED_STR = "...";
     static const size_t CUTTED_STR_SIZE = 3;
     va_list args1;
     int snprintf_res;
@@ -210,7 +215,7 @@ vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_
 #if VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
     static
 #endif // VS_IOT_LOGGER_USE_STATIC_BUFFER == 1
-            char stack_buf[VS_IOT_LOGGER_MAX_BUFFER_SIZE];
+        char stack_buf[VS_IOT_LOGGER_MAX_BUFFER_SIZE];
 
     _last_res = true;
 
@@ -269,16 +274,16 @@ terminate:
 #endif // defined(__GNUC__) && VIRGIL_IOT_MCU_BUILD
 
 /******************************************************************************/
-void
-vs_logger_message_hex(vs_log_level_t level,
-                      const char *cur_filename,
-                      uint32_t line_num,
-                      const char *prefix,
-                      const void *data_buf,
-                      const uint16_t data_size) {
-    static const char *HEX_FORMAT = "%02X";
+void vs_logger_message_hex(vs_log_level_t level,
+    const char* cur_filename,
+    uint32_t line_num,
+    const char* prefix,
+    const void* data_buf,
+    const uint16_t data_size)
+{
+    static const char* HEX_FORMAT = "%02X";
     char buf[3]; // HEX_FORMAT output
-    unsigned char *cur_byte;
+    unsigned char* cur_byte;
     uint16_t pos;
     bool res = false;
 
@@ -299,7 +304,7 @@ vs_logger_message_hex(vs_log_level_t level,
 
     VS_LOGGER_OUTPUT(prefix);
 
-    cur_byte = (unsigned char *)data_buf;
+    cur_byte = (unsigned char*)data_buf;
     for (pos = 0; pos < data_size; ++pos, ++cur_byte) {
         if (VS_IOT_SPRINTF(buf, HEX_FORMAT, *cur_byte) > 0)
 

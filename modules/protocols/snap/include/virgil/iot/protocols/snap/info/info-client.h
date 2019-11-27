@@ -134,7 +134,7 @@ extern "C" {
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_snap_info_wait_t)(uint32_t wait_ms, int* condition, int idle);
 
 /** Wait and stop callback
  *
@@ -143,7 +143,7 @@ typedef vs_status_e (*vs_snap_info_wait_t)(uint32_t wait_ms, int *condition, int
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_snap_info_stop_wait_t)(int* condition, int expect);
 
 /** Start notification request
  *
@@ -154,7 +154,7 @@ typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_service_t *service, vs_snap_info_device_t *device);
+typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(vs_snap_service_t* service, vs_snap_info_device_t* device);
 
 /** General device information request
  *
@@ -168,7 +168,7 @@ typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_service_t *s
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_service_t *service, vs_info_general_t *general_info);
+typedef vs_status_e (*vs_snap_info_general_cb_t)(vs_snap_service_t* service, vs_info_general_t* general_info);
 
 /** Device statistics request
  *
@@ -182,8 +182,8 @@ typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_service_t *servi
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_service_t *service,
-                                                    vs_info_statistics_t *statistics);
+typedef vs_status_e (*vs_snap_info_statistics_cb_t)(vs_snap_service_t* service,
+    vs_info_statistics_t* statistics);
 
 /** INFO client implementations
  *
@@ -191,9 +191,9 @@ typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_service_t *se
  *
  */
 typedef struct {
-    vs_snap_info_start_notif_cb_t device_start; /**< Startup notification */
-    vs_snap_info_general_cb_t general_info;     /**< General information */
-    vs_snap_info_statistics_cb_t statistics;    /**< Device statistics */
+    vs_snap_info_start_notif_t device_start; /**< Startup notification */
+    vs_snap_info_general_t general_info; /**< General information */
+    vs_snap_info_statistics_t statistics; /**< Device statistics */
 } vs_snap_info_client_service_t;
 
 /** INFO Client SNAP Service implementation
@@ -204,7 +204,7 @@ typedef struct {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+vs_snap_service_t*
 vs_snap_info_client(vs_snap_info_client_service_t impl);
 
 /** Enumerate devices
@@ -221,11 +221,11 @@ vs_snap_info_client(vs_snap_info_client_service_t impl);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_info_enum_devices(const vs_netif_t *netif,
-                          vs_snap_info_device_t *devices,
-                          size_t devices_max,
-                          size_t *devices_cnt,
-                          uint32_t wait_ms);
+vs_snap_info_enum_devices(const vs_netif_t* netif,
+    vs_snap_info_device_t* devices,
+    size_t devices_max,
+    size_t* devices_cnt,
+    uint32_t wait_ms);
 
 /** Set pooling
  *
@@ -241,11 +241,11 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_info_set_polling(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         uint32_t elements,
-                         bool enable,
-                         uint16_t period_seconds);
+vs_snap_info_set_polling(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint32_t elements,
+    bool enable,
+    uint16_t period_seconds);
 
 #ifdef __cplusplus
 } // extern "C"

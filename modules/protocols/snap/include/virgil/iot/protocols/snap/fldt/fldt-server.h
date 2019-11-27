@@ -89,9 +89,9 @@
 
 #if FLDT_SERVER
 
-#include <virgil/iot/update/update.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/update/update.h>
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
@@ -112,8 +112,8 @@ extern "C" {
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_t *file_type,
-                                                      vs_update_interface_t **update_ctx);
+typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_t* file_type,
+    vs_update_interface_t** update_ctx);
 
 /** FLDT Server SNAP Service implementation
  *
@@ -124,8 +124,8 @@ typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
-vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype);
+vs_snap_service_t*
+vs_snap_fldt_server(const vs_mac_addr_t* gateway_mac, vs_fldt_server_add_filetype_cb add_filetype);
 
 /** Add file type
  *
@@ -139,9 +139,9 @@ vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetyp
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
-                             vs_update_interface_t *update_context,
-                             bool broadcast_file_info);
+vs_fldt_server_add_file_type(const vs_update_file_type_t* file_type,
+    vs_update_interface_t* update_context,
+    bool broadcast_file_info);
 
 #ifdef __cplusplus
 } // extern "C"

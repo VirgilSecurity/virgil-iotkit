@@ -69,9 +69,9 @@
 
 #if INFO_SERVER
 
-#include <virgil/iot/protocols/snap/snap-structs.h>
-#include <virgil/iot/firmware/firmware.h>
 #include "info-structs.h"
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
@@ -86,7 +86,7 @@ extern "C" {
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *device);
+typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t* device);
 
 /** INFO Server SNAP Service implementation
  *
@@ -100,10 +100,10 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb);
+vs_snap_service_t*
+vs_snap_info_server(vs_storage_op_ctx_t* tl_ctx,
+    vs_storage_op_ctx_t* fw_ctx,
+    vs_snap_info_start_notif_srv_cb_t startup_cb);
 
 /** INFO Server startup notification
  *
@@ -114,7 +114,7 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_info_start_notification(const vs_netif_t *netif);
+vs_snap_info_start_notification(const vs_netif_t* netif);
 
 #ifdef __cplusplus
 } // extern "C"

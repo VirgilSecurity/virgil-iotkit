@@ -34,33 +34,34 @@
 
 #if INFO_CLIENT
 
+#include <global-hal.h>
+#include <stdlib-config.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
 #include <virgil/iot/protocols/snap/info/info-client.h>
 #include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/generated/snap_cvt.h>
-#include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/macros/macros.h>
-#include <virgil/iot/logger/logger.h>
-#include <stdlib-config.h>
-#include <global-hal.h>
 
 // External functions for access to upper level implementations
-static vs_snap_service_t _info_client = {0};
+static vs_snap_service_t _info_client = { 0 };
 
-static vs_snap_info_device_t *_devices_list = 0;
+static vs_snap_info_device_t* _devices_list = 0;
 static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
 
 // Callbacks for devices polling
-static vs_snap_info_client_service_t _impl = {NULL, NULL, NULL};
+static vs_snap_info_client_service_t _impl = { NULL, NULL, NULL };
 
 /******************************************************************************/
 vs_status_e
-vs_snap_info_enum_devices(const vs_netif_t *netif,
-                          vs_snap_info_device_t *devices,
-                          size_t devices_max,
-                          size_t *devices_cnt,
-                          uint32_t wait_ms) {
+vs_snap_info_enum_devices(const vs_netif_t* netif,
+    vs_snap_info_device_t* devices,
+    size_t devices_max,
+    size_t* devices_cnt,
+    uint32_t wait_ms)
+{
     vs_status_e ret_code;
 
     // Set storage for ENUM request
@@ -85,14 +86,15 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_info_set_polling(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         uint32_t elements, // Multiple vs_snap_info_element_mask_e
-                         bool enable,
-                         uint16_t period_seconds) {
+vs_snap_info_set_polling(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint32_t elements, // Multiple vs_snap_info_element_mask_e
+    bool enable,
+    uint16_t period_seconds)
+{
     vs_info_poll_request_t request;
-    const vs_netif_t *default_netif = vs_snap_default_netif();
-    const vs_mac_addr_t *dst_mac;
+    const vs_netif_t* default_netif = vs_snap_default_netif();
+    const vs_mac_addr_t* dst_mac;
     vs_status_e ret_code;
 
     // Set destination mac
@@ -113,20 +115,21 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
 
     // Send request
     STATUS_CHECK_RET(vs_snap_send_request(
-                             netif, dst_mac, VS_INFO_SERVICE_ID, VS_INFO_POLL, (uint8_t *)&request, sizeof(request)),
-                     "Cannot send request");
+                         netif, dst_mac, VS_INFO_SERVICE_ID, VS_INFO_POLL, (uint8_t*)&request, sizeof(request)),
+        "Cannot send request");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_snot_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
-    vs_info_enum_response_t *enum_request = (vs_info_enum_response_t *)request;
+_snot_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
+    vs_info_enum_response_t* enum_request = (vs_info_enum_response_t*)request;
     vs_snap_info_device_t device_info;
 
     // Check is callback present
@@ -151,13 +154,14 @@ _snot_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_ginf_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_ginf_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
-    vs_info_ginf_response_t *ginf_request = (vs_info_ginf_response_t *)request;
+    vs_info_ginf_response_t* ginf_request = (vs_info_ginf_response_t*)request;
     vs_info_general_t general_info;
 
     // Check is callback present
@@ -203,13 +207,14 @@ _ginf_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_stat_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
+_stat_request_processor(const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
 
-    vs_info_stat_response_t *stat_request = (vs_info_stat_response_t *)request;
+    vs_info_stat_response_t* stat_request = (vs_info_stat_response_t*)request;
     vs_info_statistics_t stat_info;
 
     // Check is callback present
@@ -240,9 +245,10 @@ _stat_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+_enum_response_processor(bool is_ack, const uint8_t* response, const uint16_t response_sz)
+{
 
-    vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
+    vs_info_enum_response_t* enum_response = (vs_info_enum_response_t*)response;
 
     CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_PARAMETER, "ENUM error on a remote device");
     CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
@@ -261,19 +267,21 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 
 /******************************************************************************/
 static vs_status_e
-_poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+_poll_response_processor(bool is_ack, const uint8_t* response, const uint16_t response_sz)
+{
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_info_client_request_processor(struct vs_snap_service_t *service,
-                               vs_snap_element_t element_id,
-                               const uint8_t *request,
-                               const uint16_t request_sz,
-                               uint8_t *response,
-                               const uint16_t response_buf_sz,
-                               uint16_t *response_sz) {
+_info_client_request_processor(struct vs_snap_service_t* service,
+    vs_snap_element_t element_id,
+    const uint8_t* request,
+    const uint16_t request_sz,
+    uint8_t* response,
+    const uint16_t response_buf_sz,
+    uint16_t* response_sz)
+{
     (void)service;
 
     *response_sz = 0;
@@ -302,11 +310,12 @@ _info_client_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static vs_status_e
-_info_client_response_processor(struct vs_snap_service_t *service,
-                                vs_snap_element_t element_id,
-                                bool is_ack,
-                                const uint8_t *response,
-                                const uint16_t response_sz) {
+_info_client_response_processor(struct vs_snap_service_t* service,
+    vs_snap_element_t element_id,
+    bool is_ack,
+    const uint8_t* response,
+    const uint16_t response_sz)
+{
     (void)service;
 
     switch (element_id) {
@@ -330,8 +339,9 @@ _info_client_response_processor(struct vs_snap_service_t *service,
 }
 
 /******************************************************************************/
-vs_snap_service_t *
-vs_snap_info_client(vs_snap_info_client_service_t impl) {
+vs_snap_service_t*
+vs_snap_info_client(vs_snap_info_client_service_t impl)
+{
 
     _info_client.user_data = 0;
     _info_client.id = VS_INFO_SERVICE_ID;
