@@ -123,8 +123,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             // Process response
             if (packet->header.flags & VS_SNAP_FLAG_ACK || packet->header.flags & VS_SNAP_FLAG_NACK) {
                 if (_snap_services[i]->response_process) {
-                    _snap_services[i]->response_process(netif,
-                                                        _snap_services[i],
+                    _snap_services[i]->response_process(_snap_services[i],
                                                         packet->header.element_id,
                                                         !!(packet->header.flags & VS_SNAP_FLAG_ACK),
                                                         packet->content,
@@ -135,8 +134,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             } else if (_snap_services[i]->request_process) {
                 need_response = true;
                 _statistics.received++;
-                res = _snap_services[i]->request_process(netif,
-                                                         _snap_services[i],
+                res = _snap_services[i]->request_process(_snap_services[i],
                                                          packet->header.element_id,
                                                          packet->content,
                                                          packet->header.content_size,
@@ -182,7 +180,7 @@ _snap_periodical(void) {
     // Detect required command
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->periodical_process) {
-            _snap_services[i]->periodical_process(_snap_default_netif, _snap_services[i]);
+            _snap_services[i]->periodical_process(_snap_services[i]);
         }
     }
 
@@ -359,7 +357,7 @@ vs_snap_deinit() {
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->deinit) {
-            _snap_services[i]->deinit(_snap_default_netif, _snap_services[i]);
+            _snap_services[i]->deinit(_snap_services[i]);
         }
     }
 

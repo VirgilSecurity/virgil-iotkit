@@ -83,17 +83,17 @@
  * \code
  *
  * vs_status_e
- * _device_start_impl(vs_snap_info_device_t *device) {
+ * _device_start_impl(struct vs_snap_info_callbacks_t *ctx, vs_snap_info_device_t *device) {
  *      // Process startup notification
  *  }
  *
  * vs_status_e
- * _general_info_impl(vs_info_general_t *general_info) {
+ * _general_info_impl(struct vs_snap_info_callbacks_t *ctx, vs_info_general_t *general_info) {
  *      // Process general device information
  *  }
  *
  * vs_status_e
- * _statistics_impl(vs_info_statistics_t *statistics) {
+ * _statistics_impl(struct vs_snap_info_callbacks_t *ctx, vs_info_statistics_t *statistics) {
  *      // Process device statistics
  *  }
 
@@ -126,8 +126,6 @@ namespace VirgilIotKit {
 extern "C" {
 #endif
 
-struct vs_snap_info_callbacks_t;
-
 /** Wait implementation
  *
  * \param[in] wait_ms
@@ -151,13 +149,12 @@ typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
  *
  * This function is called by receiving startup notification from device.
  *
- * \param[in] ctx Service context.
- * \param[in] device Device statical information.
+ * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] device Device statical information. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_info_callbacks_t *ctx,
-                                                     vs_snap_info_device_t *device);
+typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_service_t *service, vs_snap_info_device_t *device);
 
 /** General device information request
  *
@@ -166,12 +163,12 @@ typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_info_callbac
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_GENERAL bit.
  *
- * \param[in] ctx Service context.
- * \param[in] general_info Device general information.
+ * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] general_info Device general information. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_info_callbacks_t *ctx, vs_info_general_t *general_info);
+typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_service_t *service, vs_info_general_t *general_info);
 
 /** Device statistics request
  *
@@ -180,12 +177,12 @@ typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_info_callbacks_t
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_STATISTICS bit.
  *
- * \param[in] ctx Service context.
- * \param[in] statistics Device statistics.
+ * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] statistics Device statistics. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_info_callbacks_t *ctx,
+typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_service_t *service,
                                                     vs_info_statistics_t *statistics);
 
 /** INFO client implementations
@@ -193,23 +190,22 @@ typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_info_callback
  * \note Any callback can be NULL. In this case standard flow will be used.
  *
  */
-typedef struct vs_snap_info_callbacks_t {
-    void *user_data;                               /**< User data */
-    vs_snap_info_start_notif_cb_t device_start_cb; /**< Startup notification */
-    vs_snap_info_general_cb_t general_info_cb;     /**< General information */
-    vs_snap_info_statistics_cb_t statistics_cb;    /**< Device statistics */
-} vs_snap_info_callbacks_t;
+typedef struct {
+    vs_snap_info_start_notif_cb_t device_start; /**< Startup notification */
+    vs_snap_info_general_cb_t general_info;     /**< General information */
+    vs_snap_info_statistics_cb_t statistics;    /**< Device statistics */
+} vs_snap_info_client_service_t;
 
 /** INFO Client SNAP Service implementation
  *
  * This call returns INFO client implementation. It must be called before any INFO call.
  *
- * \param[in] callbacks #vs_snap_info_callbacks_t callbacks. Must not be NULL.
+ * \param[in] impl Snap Info Client functions implementation.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_snap_service_t *
-vs_snap_info_client(vs_snap_info_callbacks_t callbacks);
+vs_snap_info_client(vs_snap_info_client_service_t impl);
 
 /** Enumerate devices
  *
@@ -234,10 +230,13 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
 /** Set pooling
  *
  * This call enables or disables polling for elements masked in \a elements field that contains mask  with
- * #vs_snap_info_element_mask_e fields. \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will
- * be used. \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL. \param[in] elements
- * #vs_snap_info_element_mask_e mask. \param[out] enable Enable or disable \a elements to be sent. \param[in]
- * period_seconds Period in seconds for statistics sending
+ * #vs_snap_info_element_mask_e fields.
+ *
+ * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
+ * \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL.
+ * \param[in] elements #vs_snap_info_element_mask_e mask.
+ * \param[out] enable Enable or disable \a elements to be sent.
+ * \param[in] period_seconds Period in seconds for statistics sending
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

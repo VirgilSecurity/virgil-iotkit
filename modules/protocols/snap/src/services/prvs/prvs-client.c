@@ -61,7 +61,7 @@ static uint8_t _last_data[PRVS_BUF_SZ];
 
 /******************************************************************************/
 static vs_status_e
-_prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *response, const uint16_t response_sz) {
+_prvs_dnid_process_response(const uint8_t *response, const uint16_t response_sz) {
 
     vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
 
@@ -78,8 +78,7 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 
 /******************************************************************************/
 static vs_status_e
-_prvs_service_response_processor(const struct vs_netif_t *netif,
-                                 struct vs_snap_service_t *service,
+_prvs_service_response_processor(struct vs_snap_service_t *service,
                                  vs_snap_element_t element_id,
                                  bool is_ack,
                                  const uint8_t *response,
@@ -90,7 +89,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
 
     switch (element_id) {
     case VS_PRVS_DNID:
-        return _prvs_dnid_process_response(netif, response, response_sz);
+        return _prvs_dnid_process_response(response, response_sz);
 
     default: {
         if (response_sz && response_sz < PRVS_BUF_SZ) {

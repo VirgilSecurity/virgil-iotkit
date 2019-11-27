@@ -241,8 +241,7 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
 
 /******************************************************************************/
 static vs_status_e
-_prvs_dnid_process_request(const struct vs_netif_t *netif,
-                           const uint8_t *request,
+_prvs_dnid_process_request(const uint8_t *request,
                            const uint16_t request_sz,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
@@ -259,7 +258,7 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
     }
 
     // Fill MAC address
-    vs_snap_mac_addr(netif, &dnid_response->mac_addr);
+    vs_snap_mac_addr(vs_snap_default_netif(), &dnid_response->mac_addr);
     dnid_response->device_roles = vs_snap_device_roles();
     *response_sz = sizeof(vs_snap_prvs_dnid_element_t);
 
@@ -268,17 +267,13 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_prvs_key_save_process_request(const struct vs_netif_t *netif,
-                               vs_snap_element_t element_id,
-                               const uint8_t *key,
-                               const uint16_t key_sz) {
+_prvs_key_save_process_request(vs_snap_element_t element_id, const uint8_t *key, const uint16_t key_sz) {
     return vs_prvs_save_data(element_id, key, key_sz);
 }
 
 /******************************************************************************/
 static vs_status_e
-_prvs_devi_process_request(const struct vs_netif_t *netif,
-                           const uint8_t *request,
+_prvs_devi_process_request(const uint8_t *request,
                            const uint16_t request_sz,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
@@ -299,8 +294,7 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_prvs_asav_process_request(const struct vs_netif_t *netif,
-                           const uint8_t *request,
+_prvs_asav_process_request(const uint8_t *request,
                            const uint16_t request_sz,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
@@ -312,8 +306,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_prvs_asgn_process_request(const struct vs_netif_t *netif,
-                           const uint8_t *request,
+_prvs_asgn_process_request(const uint8_t *request,
                            const uint16_t request_sz,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
@@ -332,7 +325,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
+_prvs_start_tl_process_request(const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
     STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save Trust List");
     return VS_CODE_OK;
@@ -340,7 +333,7 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 
 /******************************************************************************/
 static vs_status_e
-_prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
+_prvs_tl_part_process_request(const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
     STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save Trust List part");
     return VS_CODE_OK;
@@ -348,7 +341,7 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 
 /******************************************************************************/
 static vs_status_e
-_prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
+_prvs_finalize_tl_process_request(const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
     STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize Trust List");
     return VS_CODE_OK;
@@ -356,40 +349,38 @@ _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t 
 
 /******************************************************************************/
 static vs_status_e
-_prvs_service_request_processor(const struct vs_netif_t *netif,
-                                struct vs_snap_service_t *service,
+_prvs_service_request_processor(struct vs_snap_service_t *service,
                                 vs_snap_element_t element_id,
                                 const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
-    (void)netif;
     (void)service;
 
     *response_sz = 0;
 
     switch (element_id) {
     case VS_PRVS_DNID:
-        return _prvs_dnid_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+        return _prvs_dnid_process_request(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_DEVI:
-        return _prvs_devi_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+        return _prvs_devi_process_request(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_ASAV:
-        return _prvs_asav_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+        return _prvs_asav_process_request(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_ASGN:
-        return _prvs_asgn_process_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+        return _prvs_asgn_process_request(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_PRVS_TLH:
-        return _prvs_start_tl_process_request(netif, request, request_sz);
+        return _prvs_start_tl_process_request(request, request_sz);
 
     case VS_PRVS_TLC:
-        return _prvs_tl_part_process_request(netif, request, request_sz);
+        return _prvs_tl_part_process_request(request, request_sz);
 
     case VS_PRVS_TLF:
-        return _prvs_finalize_tl_process_request(netif, request, request_sz);
+        return _prvs_finalize_tl_process_request(request, request_sz);
 
     case VS_PRVS_PBR1:
     case VS_PRVS_PBR2:
@@ -400,7 +391,7 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_PBF1:
     case VS_PRVS_PBF2:
     case VS_PRVS_SGNP:
-        return _prvs_key_save_process_request(netif, element_id, request, request_sz);
+        return _prvs_key_save_process_request(element_id, request, request_sz);
 
     default:
         VS_LOG_ERROR("Unsupported PRVS request %d", element_id);

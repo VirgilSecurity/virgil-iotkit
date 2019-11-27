@@ -162,7 +162,6 @@ typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
  * Implementation for \a request_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service \a request and to prepare \a response if needed.
  *
- * \param[in] netif Network interface with user data. Cannot be NULL.
  * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] request Request data buffer.
@@ -173,8 +172,7 @@ typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif_t *netif,
-                                                           struct vs_snap_service_t *service,
+typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_service_t *service,
                                                            vs_snap_element_t element_id,
                                                            const uint8_t *request,
                                                            const uint16_t request_sz,
@@ -187,7 +185,6 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  * Implementation for \a response_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service response.
  *
- * \param[in] netif Network interface with user data. Cannot be NULL.
  * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] is_ack Boolean flag indicating successful packet receiving
@@ -196,8 +193,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_netif_t *netif,
-                                                            struct vs_snap_service_t *service,
+typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_service_t *service,
                                                             vs_snap_element_t element_id,
                                                             bool is_ack,
                                                             const uint8_t *response,
@@ -209,25 +205,22 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_neti
  * This function is called when there is no input data.
  * It can be used to send some statistical data as it is done for INFO service.
  *
- * \param[in] netif Network interface with user data. Cannot be NULL.
  * \param[in] service Service interface with user data. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_periodical_processor_t)(const struct vs_netif_t *netif,
-                                                              struct vs_snap_service_t *service);
+typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_service_t *service);
 
 /** SNAP Service Destructor
  *
  * Implementation for \a deinit member of #vs_snap_service_t structure.
  * This function is called to destroy SNAP service.
  *
- * \param[in] netif Network interface with user data. Cannot be NULL.
  * \param[in] service Service interface with user data. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_netif_t *netif, struct vs_snap_service_t *service);
+typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_snap_service_t *service);
 
 /** Device roles
  *
@@ -334,7 +327,7 @@ typedef struct vs_snap_service_t {
 /** SNAP statistics
  */
 typedef struct {
-    uint32_t sent;     /**< Sents amount */
+    uint32_t sent;     /**< Sends amount */
     uint32_t received; /**< Receives amount */
 } vs_snap_stat_t;
 
