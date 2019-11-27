@@ -47,7 +47,18 @@ const vs_secmodule_impl_t *
 _soft_secmodule_intern(void);
 
 const char *
-get_slot_name(vs_iot_secmodule_slot_e slot);
+_get_slot_name(vs_iot_secmodule_slot_e slot);
+
+int32_t
+_get_slot_size(vs_iot_secmodule_slot_e slot);
+
+vs_status_e
+_public_key_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
+                       const uint8_t *public_key_in,
+                       uint16_t public_key_in_sz,
+                       uint8_t *public_key_out,
+                       uint16_t buf_sz,
+                       uint16_t *public_key_out_sz);
 
 int
 vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,

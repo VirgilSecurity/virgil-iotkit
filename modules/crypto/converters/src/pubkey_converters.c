@@ -44,24 +44,6 @@
 #include <stdlib-config.h>
 
 /******************************************************************************/
-static bool
-_keypair_is_25519(vs_secmodule_keypair_type_e keypair_type) {
-    return VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type;
-}
-
-/******************************************************************************/
-static bool
-_keypair_is_rsa(vs_secmodule_keypair_type_e keypair_type) {
-    switch (keypair_type) {
-    case VS_KEYPAIR_RSA_2048:
-        return true;
-    default:
-        break;
-    }
-    return false;
-}
-
-/******************************************************************************/
 static uint16_t
 _keypair_rsa_key_size(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
@@ -279,7 +261,7 @@ vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
     VS_IOT_MEMSET(&bs, 0, sizeof(mbedtls_asn1_bitstring));
     mbedtls_asn1_get_bitstring(&p, end, &bs);
 
-    if (_keypair_is_rsa(keypair_type)) {
+    if (VS_KEYPAIR_RSA_2048 == keypair_type) {
         // Get RSA key
         p = bs.p;
         if (0 != mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE))
@@ -314,10 +296,10 @@ vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                uint8_t *public_key_out,
                                uint16_t buf_sz,
                                uint16_t *public_key_out_sz) {
-    if (_keypair_is_rsa(keypair_type)) {
+    if (VS_KEYPAIR_RSA_2048 == keypair_type) {
         return _keypair_rsa_key_to_internal(
                 keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
-    } else if (_keypair_is_25519(keypair_type)) {
+    } else if (VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type) {
         return _keypair_25519_key_to_internal(
                 keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
     } else {

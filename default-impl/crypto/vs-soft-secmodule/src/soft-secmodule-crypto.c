@@ -41,33 +41,33 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/converters/crypto_format_converters.h>
+//#include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
 
-#include <virgil/crypto/foundation/vscf_secp256r1_private_key.h>
-#include <virgil/crypto/foundation/vscf_secp256r1_public_key.h>
-#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
-#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/foundation/vscf_rsa_private_key.h>
-#include <virgil/crypto/foundation/vscf_rsa_public_key.h>
-#include <virgil/crypto/foundation/vscf_sha256.h>
-#include <virgil/crypto/foundation/vscf_sha384.h>
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/foundation/vscf_sign_hash.h>
-#include <virgil/crypto/foundation/vscf_verify_hash.h>
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
-#include <virgil/crypto/foundation/vscf_aes256_gcm.h>
-#include <virgil/crypto/foundation/vscf_aes256_cbc.h>
-#include <virgil/crypto/foundation/vscf_kdf2.h>
-#include <virgil/crypto/foundation/vscf_hmac.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/vsc_data.h>
+//#include <virgil/crypto/foundation/vscf_secp256r1_private_key.h>
+//#include <virgil/crypto/foundation/vscf_secp256r1_public_key.h>
+//#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
+//#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
+//#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
+//#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
+//#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+//#include <virgil/crypto/foundation/vscf_rsa_private_key.h>
+//#include <virgil/crypto/foundation/vscf_rsa_public_key.h>
+//#include <virgil/crypto/foundation/vscf_sha256.h>
+//#include <virgil/crypto/foundation/vscf_sha384.h>
+//#include <virgil/crypto/foundation/vscf_sha512.h>
+//#include <virgil/crypto/foundation/vscf_sign_hash.h>
+//#include <virgil/crypto/foundation/vscf_verify_hash.h>
+//#include <virgil/crypto/foundation/vscf_random.h>
+//#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
+//#include <virgil/crypto/foundation/vscf_aes256_gcm.h>
+//#include <virgil/crypto/foundation/vscf_aes256_cbc.h>
+//#include <virgil/crypto/foundation/vscf_kdf2.h>
+//#include <virgil/crypto/foundation/vscf_hmac.h>
+//#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+//#include <virgil/crypto/common/vsc_buffer.h>
+//#include <virgil/crypto/common/vsc_data.h>
 
 #define RNG_MAX_REQUEST (256)
 
@@ -79,6 +79,7 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
                          uint8_t *hash,
                          uint16_t hash_buf_sz,
                          uint16_t *hash_sz) {
+#if 0
     vsc_data_t in_data;
     vsc_buffer_t out_data;
     vs_status_e res = VS_CODE_ERR_CRYPTO;
@@ -128,8 +129,11 @@ terminate:
     }
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
+#if 0
 /********************************************************************************/
 static vs_status_e
 _load_prvkey(vs_iot_secmodule_slot_e key_slot, vscf_impl_t **prvkey, vs_secmodule_keypair_type_e *keypair_type) {
@@ -265,7 +269,7 @@ _set_hash_info(vs_secmodule_hash_type_e hash_type, vscf_alg_id_t *hash_id, uint1
         return false;
     }
 }
-
+#endif
 /********************************************************************************/
 static vs_status_e
 vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
@@ -274,6 +278,7 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
                         uint8_t *signature,
                         uint16_t signature_buf_sz,
                         uint16_t *signature_sz) {
+#if 0
     vscf_impl_t *prvkey = NULL;
     vscf_alg_id_t hash_id = vscf_alg_id_NONE;
     uint16_t hash_sz = 0;
@@ -322,6 +327,8 @@ terminate:
     }
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -333,6 +340,7 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
                           const uint8_t *hash,
                           const uint8_t *signature,
                           uint16_t signature_sz) {
+#if 0
 #define MAX_INT_SIGN_SIZE 256
     uint8_t int_sign[MAX_INT_SIGN_SIZE];
     uint16_t int_sign_sz = sizeof(int_sign);
@@ -370,6 +378,8 @@ terminate:
     return res;
 
 #undef MAX_INT_SIGN_SIZE
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -383,6 +393,7 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
                   uint16_t output_buf_sz,
                   uint16_t *output_sz) {
 
+#if 0
     vscf_impl_t *hash_impl;
     vsc_buffer_t out_buf;
     int hash_sz;
@@ -428,6 +439,8 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
     vscf_hmac_delete(hmac);
 
     return VS_CODE_OK;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -439,6 +452,7 @@ vs_secmodule_kdf(vs_secmodule_kdf_type_e kdf_type,
                  uint8_t *output,
                  uint16_t output_sz) {
 
+#if 0
     vscf_kdf2_t *kdf2;
     vscf_impl_t *hash_impl;
     vsc_buffer_t out_buf;
@@ -475,6 +489,8 @@ vs_secmodule_kdf(vs_secmodule_kdf_type_e kdf_type,
 
     vscf_kdf2_delete(kdf2);
     return VS_CODE_OK;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -492,6 +508,7 @@ vs_secmodule_hkdf(vs_secmodule_hash_type_e hash_type,
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
+#if 0
 /********************************************************************************/
 static vscf_impl_t *random_impl = NULL;
 
@@ -499,10 +516,11 @@ static void
 destroy_random_impl() {
     vscf_ctr_drbg_delete((vscf_ctr_drbg_t *)random_impl);
 }
-
+#endif
 /********************************************************************************/
 static vs_status_e
 vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
+#if 0
     vs_status_e res = VS_CODE_ERR_CRYPTO;
     vsc_buffer_t out_buf;
     uint16_t cur_off = 0;
@@ -539,6 +557,8 @@ terminate:
     }
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -554,6 +574,7 @@ _aes_gcm_encrypt(const uint8_t *key,
                  uint8_t *output,
                  uint8_t *tag,
                  uint16_t tag_len) {
+#if 0
     uint16_t key_len;
     vsc_buffer_t *out_buf = NULL;
     vsc_buffer_t tag_buf;
@@ -588,6 +609,8 @@ _aes_gcm_encrypt(const uint8_t *key,
     vsc_buffer_delete(out_buf);
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -600,6 +623,7 @@ _aes_cbc_encrypt(const uint8_t *key,
                  const uint8_t *input,
                  uint8_t *output) {
 
+#if 0
     uint16_t key_len;
     vsc_buffer_t *out_buf = NULL;
     vscf_aes256_cbc_t *aes256_cbc = NULL;
@@ -626,6 +650,8 @@ _aes_cbc_encrypt(const uint8_t *key,
     vscf_aes256_cbc_delete(aes256_cbc);
     vsc_buffer_delete(out_buf);
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -668,6 +694,7 @@ _aes_cbc_decrypt(const uint8_t *key,
                  uint16_t buf_len,
                  const uint8_t *input,
                  uint8_t *output) {
+#if 0
     uint16_t key_len;
     vsc_buffer_t *out_buf = NULL;
     vscf_aes256_cbc_t *aes256_cbc = NULL;
@@ -695,6 +722,8 @@ _aes_cbc_decrypt(const uint8_t *key,
     vsc_buffer_delete(out_buf);
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 
@@ -742,6 +771,7 @@ vs_secmodule_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                               const uint8_t *tag,
                               uint16_t tag_len) {
 
+#if 0
     uint16_t key_len;
     uint8_t add_data = 0;
     vsc_buffer_t *out_buf = NULL;
@@ -786,6 +816,8 @@ vs_secmodule_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
     vsc_buffer_delete(out_buf);
 
     return res;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
@@ -797,6 +829,7 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
                   uint8_t *shared_secret,
                   uint16_t buf_sz,
                   uint16_t *shared_secret_sz) {
+#if 0
     vscf_impl_t *prvkey = NULL;
     vscf_impl_t *pubkey = NULL;
     vsc_buffer_t out_buf;
@@ -833,6 +866,8 @@ terminate:
     vscf_impl_delete(prvkey);
     vscf_impl_delete(pubkey);
     return ret_code;
+#endif
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /********************************************************************************/
