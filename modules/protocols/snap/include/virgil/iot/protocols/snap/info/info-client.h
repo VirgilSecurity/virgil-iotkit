@@ -83,26 +83,26 @@
  * \code
  *
  * vs_status_e
- * _device_start_impl(struct vs_snap_info_callbacks_t *ctx, vs_snap_info_device_t *device) {
+ * _device_start_impl(struct vs_snap_service_t *service, vs_snap_info_device_t *device) {
  *      // Process startup notification
  *  }
  *
  * vs_status_e
- * _general_info_impl(struct vs_snap_info_callbacks_t *ctx, vs_info_general_t *general_info) {
+ * _general_info_impl(struct vs_snap_service_t *service, vs_info_general_t *general_info) {
  *      // Process general device information
  *  }
  *
  * vs_status_e
- * _statistics_impl(struct vs_snap_info_callbacks_t *ctx, vs_info_statistics_t *statistics) {
+ * _statistics_impl(struct vs_snap_service_t *service, vs_info_statistics_t *statistics) {
  *      // Process device statistics
  *  }
 
- * vs_snap_info_callbacks_t
+ * vs_snap_info_client_service_t
  * _info_client_impl() {
- *      vs_snap_info_callbacks_t impl;
- *      impl.device_start_cb = _device_start_impl;
- *      impl.general_info_cb = _general_info_impl;
- *      impl.statistics_cb = _statistics_impl;
+ *      vs_snap_info_client_service_t impl;
+ *      impl.device_start = _device_start_impl;
+ *      impl.general_info = _general_info_impl;
+ *      impl.statistics = _statistics_impl;
  * }
  *
  * \endcode
