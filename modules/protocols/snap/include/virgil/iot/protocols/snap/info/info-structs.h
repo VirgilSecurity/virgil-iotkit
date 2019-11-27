@@ -42,13 +42,13 @@
 #define VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H
 
 #include <virgil/iot/protocols/snap.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/trust_list/tl_structs.h>
 #include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -57,7 +57,7 @@ extern "C" {
  * Device information as parameter for #vs_snap_info_start_notif_cb_t function
  */
 typedef struct {
-    uint32_t device_roles; /**< Mask based on #vs_snap_device_role_e elements */
+    uint32_t device_roles;     /**< Mask based on #vs_snap_device_role_e elements */
     uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_snap_info_device_t;
 
@@ -67,10 +67,10 @@ typedef struct {
  */
 
 typedef struct {
-    uint8_t major; /**< Major version number */
-    uint8_t minor; /**< Minor version number */
-    uint8_t patch; /**< Patch number */
-    uint32_t build; /**< Build number */
+    uint8_t major;      /**< Major version number */
+    uint8_t minor;      /**< Minor version number */
+    uint8_t patch;      /**< Patch number */
+    uint32_t build;     /**< Build number */
     uint32_t timestamp; /**< The number of seconds since #VS_START_EPOCH */
 } vs_file_version_unpacked_t;
 
@@ -80,11 +80,11 @@ typedef struct {
  */
 typedef struct {
     uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< Manufacture ID*/
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< Device type */
-    uint8_t default_netif_mac[ETH_ADDR_LEN]; /**< Default network interface MAC address*/
-    uint32_t device_roles; /**< Mask based on #vs_snap_device_role_e elements */
-    vs_file_version_unpacked_t fw_ver; /**< Firmware version */
-    vs_file_version_unpacked_t tl_ver; /**< Trust List version */
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];              /**< Device type */
+    uint8_t default_netif_mac[ETH_ADDR_LEN];               /**< Default network interface MAC address*/
+    uint32_t device_roles;                                 /**< Mask based on #vs_snap_device_role_e elements */
+    vs_file_version_unpacked_t fw_ver;                     /**< Firmware version */
+    vs_file_version_unpacked_t tl_ver;                     /**< Trust List version */
 } vs_info_general_t;
 
 /** Device statistics
@@ -102,13 +102,14 @@ typedef struct {
  * Element mask for #vs_snap_info_set_polling call
  */
 typedef enum {
-    VS_SNAP_INFO_GENERAL = HTONL_IN_COMPILE_TIME(0x0001), /**< General device information #vs_info_general_t will be sent */
+    VS_SNAP_INFO_GENERAL =
+            HTONL_IN_COMPILE_TIME(0x0001), /**< General device information #vs_info_general_t will be sent */
     VS_SNAP_INFO_STATISTICS = HTONL_IN_COMPILE_TIME(0x0002), /**< Device statistic #vs_info_statistics_t will be sent */
 } vs_snap_info_element_mask_e;
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_INFO_STRUCTS_H

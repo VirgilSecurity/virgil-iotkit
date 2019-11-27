@@ -128,7 +128,7 @@
 #include "jsmn.h"
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -731,7 +731,7 @@ json_array_release_array_object(jobj_t *jobj);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif /* __JSON_PARSER_H__ */

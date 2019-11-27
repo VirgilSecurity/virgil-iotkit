@@ -35,29 +35,27 @@
 #include <stdlib-config.h>
 
 #include "virgil/iot/trust_list/tl_structs.h"
+#include <private/tl-private.h>
 #include "virgil/iot/trust_list/trust_list.h"
 #include <endian-config.h>
-#include <private/tl-private.h>
 
 /******************************************************************************/
 vs_status_e
-vs_tl_init(vs_storage_op_ctx_t* op_ctx, vs_secmodule_impl_t* secmodule)
-{
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
     return vs_tl_storage_init_internal(op_ctx, secmodule);
 }
 
 /******************************************************************************/
 vs_status_e
-vs_tl_deinit()
-{
+vs_tl_deinit() {
     return vs_tl_storage_deinit_internal();
 }
 
 /******************************************************************************/
 vs_status_e
-vs_tl_save_part(vs_tl_element_info_t* element_info, const uint8_t* in_data, uint16_t data_sz)
-{
-    if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN || element_info->id >= VS_TL_ELEMENT_MAX) {
+vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
+    if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
+        element_info->id >= VS_TL_ELEMENT_MAX) {
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
@@ -66,7 +64,7 @@ vs_tl_save_part(vs_tl_element_info_t* element_info, const uint8_t* in_data, uint
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
         if (sizeof(vs_tl_header_t) == data_sz) {
-            res = vs_tl_header_save(TL_STORAGE_TYPE_TMP, (vs_tl_header_t*)in_data);
+            res = vs_tl_header_save(TL_STORAGE_TYPE_TMP, (vs_tl_header_t *)in_data);
         }
         break;
     case VS_TL_ELEMENT_TLF:
@@ -94,9 +92,9 @@ vs_tl_save_part(vs_tl_element_info_t* element_info, const uint8_t* in_data, uint
 
 /******************************************************************************/
 vs_status_e
-vs_tl_load_part(vs_tl_element_info_t* element_info, uint8_t* out_data, uint16_t buf_sz, uint16_t* out_sz)
-{
-    if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN || element_info->id >= VS_TL_ELEMENT_MAX) {
+vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz) {
+    if (NULL == element_info || NULL == out_data || NULL == out_sz || element_info->id <= VS_TL_ELEMENT_MIN ||
+        element_info->id >= VS_TL_ELEMENT_MAX) {
         return VS_CODE_ERR_FILE_READ;
     }
 
@@ -107,7 +105,7 @@ vs_tl_load_part(vs_tl_element_info_t* element_info, uint8_t* out_data, uint16_t 
 
         if (buf_sz >= sizeof(vs_tl_header_t)) {
             *out_sz = sizeof(vs_tl_header_t);
-            res = vs_tl_header_load(TL_STORAGE_TYPE_DYNAMIC, (vs_tl_header_t*)out_data);
+            res = vs_tl_header_load(TL_STORAGE_TYPE_DYNAMIC, (vs_tl_header_t *)out_data);
         }
         break;
     case VS_TL_ELEMENT_TLF:
@@ -128,8 +126,8 @@ vs_tl_load_part(vs_tl_element_info_t* element_info, uint8_t* out_data, uint16_t 
 }
 
 /******************************************************************************/
-void vs_tl_header_to_host(const vs_tl_header_t* src_data, vs_tl_header_t* dst_data)
-{
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
     *dst_data = *src_data;
     dst_data->pub_keys_count = VS_IOT_NTOHS(src_data->pub_keys_count);
     dst_data->tl_size = VS_IOT_NTOHL(src_data->tl_size);
@@ -138,8 +136,8 @@ void vs_tl_header_to_host(const vs_tl_header_t* src_data, vs_tl_header_t* dst_da
 }
 
 /******************************************************************************/
-void vs_tl_header_to_net(const vs_tl_header_t* src_data, vs_tl_header_t* dst_data)
-{
+void
+vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
     *dst_data = *src_data;
     dst_data->pub_keys_count = VS_IOT_HTONS(src_data->pub_keys_count);
     dst_data->tl_size = VS_IOT_HTONL(src_data->tl_size);

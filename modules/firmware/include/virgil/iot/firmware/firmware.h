@@ -209,35 +209,35 @@ Firmware module");
 #ifndef VS_FIRMWARE_H
 #define VS_FIRMWARE_H
 
-#include <virgil/iot/provision/provision.h>
-#include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/provision/provision.h>
 #include <virgil/iot/update/update.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 /** Firmware descriptor */
 typedef struct __attribute__((__packed__)) {
-    vs_file_info_t info; /**< File information */
-    uint8_t padding; /**< Padding */
-    uint16_t chunk_size; /**< Chunk size */
+    vs_file_info_t info;      /**< File information */
+    uint8_t padding;          /**< Padding */
+    uint16_t chunk_size;      /**< Chunk size */
     uint32_t firmware_length; /**< Firmware length */
-    uint32_t app_size; /**< Application size = firmware_length + fill_size + footer */
+    uint32_t app_size;        /**< Application size = firmware_length + fill_size + footer */
 } vs_firmware_descriptor_t;
 
 /** Firmware footer */
 typedef struct __attribute__((__packed__)) {
-    uint8_t signatures_count; /**< Signatures amount */
+    uint8_t signatures_count;            /**< Signatures amount */
     vs_firmware_descriptor_t descriptor; /**< Firmware descriptor */
-    uint8_t signatures[]; /**< Array of signatures */
+    uint8_t signatures[];                /**< Array of signatures */
 } vs_firmware_footer_t;
 
 /** Firmware header */
 typedef struct __attribute__((__packed__)) {
-    uint32_t code_offset; /**< Code offset = sizeof(vs_firmware_header_t) */
-    uint32_t code_length; /**< Code length = #vs_firmware_descriptor_t . firmware_length */
-    uint32_t footer_offset; /**< Footer offset = \a code_offset + \a code_length */
-    uint32_t footer_length; /**< Footer length */
-    uint8_t signatures_count; /**< Signatures amount */
+    uint32_t code_offset;                /**< Code offset = sizeof(vs_firmware_header_t) */
+    uint32_t code_length;                /**< Code length = #vs_firmware_descriptor_t . firmware_length */
+    uint32_t footer_offset;              /**< Footer offset = \a code_offset + \a code_length */
+    uint32_t footer_length;              /**< Footer length */
+    uint8_t signatures_count;            /**< Signatures amount */
     vs_firmware_descriptor_t descriptor; /**< Firnware descriptor */
 } vs_firmware_header_t;
 
@@ -253,10 +253,10 @@ typedef struct __attribute__((__packed__)) {
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t* ctx,
-    vs_secmodule_impl_t* secmodule,
-    vs_device_manufacture_id_t manufacture,
-    vs_device_type_t device_type);
+vs_firmware_init(vs_storage_op_ctx_t *ctx,
+                 vs_secmodule_impl_t *secmodule,
+                 vs_device_manufacture_id_t manufacture,
+                 vs_device_type_t device_type);
 
 /**  Destroy firmware module
  *
@@ -280,10 +280,10 @@ vs_firmware_deinit(void);
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t* descriptor,
-    const uint8_t* chunk,
-    size_t chunk_sz,
-    size_t offset);
+vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
+                                const uint8_t *chunk,
+                                size_t chunk_sz,
+                                size_t offset);
 
 /** Save firmware footer
  *
@@ -297,7 +297,7 @@ vs_firmware_save_firmware_chunk(const vs_firmware_descriptor_t* descriptor,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t* descriptor, const uint8_t* footer);
+vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t *descriptor, const uint8_t *footer);
 
 /** Load firmware data
  *
@@ -314,11 +314,11 @@ vs_firmware_save_firmware_footer(const vs_firmware_descriptor_t* descriptor, con
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t* descriptor,
-    uint32_t offset,
-    uint8_t* data,
-    size_t buf_sz,
-    size_t* data_sz);
+vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t *descriptor,
+                                uint32_t offset,
+                                uint8_t *data,
+                                size_t buf_sz,
+                                size_t *data_sz);
 
 /** Load firmware footer
  *
@@ -334,10 +334,10 @@ vs_firmware_load_firmware_chunk(const vs_firmware_descriptor_t* descriptor,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t* descriptor,
-    uint8_t* data,
-    size_t buff_sz,
-    size_t* data_sz);
+vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t *descriptor,
+                                 uint8_t *data,
+                                 size_t buff_sz,
+                                 size_t *data_sz);
 
 /** Verify firmware
  *
@@ -350,7 +350,7 @@ vs_firmware_load_firmware_footer(const vs_firmware_descriptor_t* descriptor,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_verify_firmware(const vs_firmware_descriptor_t* descriptor);
+vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor);
 
 /** Save firmware descriptor
  *
@@ -359,7 +359,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t* descriptor);
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t* descriptor);
+vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t *descriptor);
 
 /** Get own firmware descriptor
  *
@@ -370,7 +370,7 @@ vs_firmware_save_firmware_descriptor(const vs_firmware_descriptor_t* descriptor)
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t* descriptor);
+vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t *descriptor);
 
 /** Load firmware descriptor
  *
@@ -384,8 +384,8 @@ vs_firmware_get_own_firmware_descriptor(vs_firmware_descriptor_t* descriptor);
  */
 vs_status_e
 vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
-    const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-    vs_firmware_descriptor_t* descriptor);
+                                     const uint8_t device_type[VS_DEVICE_TYPE_SIZE],
+                                     vs_firmware_descriptor_t *descriptor);
 
 /** Delete firmware
  *
@@ -398,7 +398,7 @@ vs_firmware_load_firmware_descriptor(const uint8_t manufacture_id[VS_DEVICE_MANU
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_delete_firmware(const vs_firmware_descriptor_t* descriptor);
+vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
 
 /** Install firmware
  *
@@ -411,7 +411,7 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t* descriptor);
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_install_firmware(const vs_firmware_descriptor_t* descriptor);
+vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
 
 /** Describe firmware version
  *
@@ -423,7 +423,8 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t* descriptor);
  *
  * \return Buffer with description stored in \buffer
  */
-char* vs_firmware_describe_version(const vs_file_version_t* fw_ver, char* buffer, size_t buf_size);
+char *
+vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
 
 /** Compare own firmware version with the given one
  *
@@ -436,7 +437,7 @@ char* vs_firmware_describe_version(const vs_file_version_t* fw_ver, char* buffer
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_compare_own_version(const vs_firmware_descriptor_t* new_descriptor);
+vs_firmware_compare_own_version(const vs_firmware_descriptor_t *new_descriptor);
 
 /** Get expected firmware footer length
  *
@@ -444,7 +445,8 @@ vs_firmware_compare_own_version(const vs_firmware_descriptor_t* new_descriptor);
  *
  * \return Firmware length in bytes
  */
-int vs_firmware_get_expected_footer_len(void);
+int
+vs_firmware_get_expected_footer_len(void);
 
 /** Return firmware Update interface
  *
@@ -453,7 +455,7 @@ int vs_firmware_get_expected_footer_len(void);
  * \return Update interface implementation
  *
  */
-vs_update_interface_t*
+vs_update_interface_t *
 vs_firmware_update_ctx(void);
 
 /** Return firmware file type for Update library
@@ -463,7 +465,7 @@ vs_firmware_update_ctx(void);
  * \return File type information for Update library
  *
  */
-const vs_update_file_type_t*
+const vs_update_file_type_t *
 vs_firmware_update_file_type(void);
 
 /** ntoh conversion for descriptor
@@ -474,7 +476,8 @@ vs_firmware_update_file_type(void);
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
-void vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t* desc);
+void
+vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc);
 
 /** ntoh conversion for header
  *
@@ -484,7 +487,8 @@ void vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t* desc);
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
-void vs_firmware_ntoh_header(vs_firmware_header_t* header);
+void
+vs_firmware_ntoh_header(vs_firmware_header_t *header);
 
 /** hton conversion for descriptor
  *
@@ -494,7 +498,8 @@ void vs_firmware_ntoh_header(vs_firmware_header_t* header);
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
-void vs_firmware_hton_descriptor(vs_firmware_descriptor_t* desc);
+void
+vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc);
 
 /** hton conversion for header
  *
@@ -504,6 +509,7 @@ void vs_firmware_hton_descriptor(vs_firmware_descriptor_t* desc);
  *
  * \param[in,out] desc firmware descriptor. Must not be NULL.
  */
-void vs_firmware_hton_header(vs_firmware_header_t* header);
+void
+vs_firmware_hton_header(vs_firmware_header_t *header);
 
 #endif // VS_FIRMWARE_H

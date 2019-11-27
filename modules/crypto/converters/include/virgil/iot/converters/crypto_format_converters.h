@@ -61,7 +61,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -183,7 +183,7 @@ vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_CRYPTO_CONVERTERS_H

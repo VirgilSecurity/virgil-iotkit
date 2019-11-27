@@ -66,7 +66,7 @@
 #include <virgil/iot/macros/macros.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -166,7 +166,7 @@ typedef enum {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_IOT_SDK_STATUS_CODE

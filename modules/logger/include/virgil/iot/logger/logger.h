@@ -73,24 +73,24 @@ logger_hal_implementation
 #include <string.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
 /** Logging level
  */
 typedef enum {
-    VS_LOGLEV_UNKNOWN = 0xFF, /**< Invalid logging level */
+    VS_LOGLEV_UNKNOWN = 0xFF,   /**< Invalid logging level */
     VS_LOGLEV_NO_LOGGER = 0xFE, /**< Logging is disabled */
 
-    VS_LOGLEV_INFO = 0x00, /**< Information messages */
-    VS_LOGLEV_FATAL = 0x10, /**< Fatal messages */
-    VS_LOGLEV_ALERT = 0x20, /**< Alert messages */
+    VS_LOGLEV_INFO = 0x00,     /**< Information messages */
+    VS_LOGLEV_FATAL = 0x10,    /**< Fatal messages */
+    VS_LOGLEV_ALERT = 0x20,    /**< Alert messages */
     VS_LOGLEV_CRITICAL = 0x30, /**< Critical messages */
-    VS_LOGLEV_ERROR = 0x40, /**< Error messages */
-    VS_LOGLEV_WARNING = 0x50, /**< Warning messages */
-    VS_LOGLEV_NOTICE = 0x60, /**< Notifications */
-    VS_LOGLEV_TRACE = 0x70, /**< Trace messages */
+    VS_LOGLEV_ERROR = 0x40,    /**< Error messages */
+    VS_LOGLEV_WARNING = 0x50,  /**< Warning messages */
+    VS_LOGLEV_NOTICE = 0x60,   /**< Notifications */
+    VS_LOGLEV_TRACE = 0x70,    /**< Trace messages */
 
     VS_LOGLEV_DEBUG = 0xFD, /**< Debug messages */
 } vs_log_level_t;
@@ -122,7 +122,7 @@ typedef enum {
  * \param[in] BUF Buffer to be output as HEX. Must not be NULL.
  * \param[in] SIZE Size of the array to be output as HEX. Must not be zero.
  */
-#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE) \
+#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
     vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
 
 /** Log message with #VS_LOGLEV_INFO level */
@@ -150,6 +150,7 @@ typedef enum {
 #include <stdint.h>
 #include <stdlib-config.h>
 
+
 // Functions
 
 /** Last result
@@ -159,7 +160,8 @@ typedef enum {
  * \return true if last output was successful and false otherwise
  */
 
-bool vs_logger_last_result(void);
+bool
+vs_logger_last_result(void);
 
 /** Log text message
  *
@@ -173,13 +175,15 @@ bool vs_logger_last_result(void);
  *
  * \return true if there were no errors and string has not been cut
  */
-void vs_logger_message(vs_log_level_t level, const char* cur_filename, uint32_t line_num, const char* log_format, ...);
+void
+vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *log_format, ...);
 
 /** Initialize logging level
  *
  * \param[int] log_level Message log level
  */
-void vs_logger_init(vs_log_level_t log_level);
+void
+vs_logger_init(vs_log_level_t log_level);
 
 /** Set current logging level
  *
@@ -206,7 +210,8 @@ vs_logger_get_loglev(void);
  * \return true if specified logging level is enabled and there are now any error
  */
 
-bool vs_logger_is_loglev(vs_log_level_t level);
+bool
+vs_logger_is_loglev(vs_log_level_t level);
 
 /** Log HEX buffer
  *
@@ -220,12 +225,13 @@ bool vs_logger_is_loglev(vs_log_level_t level);
  * \param[in] SIZE Size of the array to be output as HEX. Must not be zero.
  */
 
-void vs_logger_message_hex(vs_log_level_t level,
-    const char* cur_filename,
-    uint32_t line_num,
-    const char* prefix,
-    const void* data_buf,
-    const uint16_t data_size);
+void
+vs_logger_message_hex(vs_log_level_t level,
+                      const char *cur_filename,
+                      uint32_t line_num,
+                      const char *prefix,
+                      const void *data_buf,
+                      const uint16_t data_size);
 
 #elif VS_IOT_LOGGER_USE_LIBRARY != 1 && defined(VS_IOT_LOGGER_FUNCTION)
 
@@ -235,23 +241,23 @@ void vs_logger_message_hex(vs_log_level_t level,
 #define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER
 #define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)
 
-#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size) \
-    do {                                                                                  \
-        (void)level;                                                                      \
-        (void)cur_filename;                                                               \
-        (void)line_num;                                                                   \
-        (void)prefix;                                                                     \
-        (void)data_buf;                                                                   \
-        (void)data_size;                                                                  \
+#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)                              \
+    do {                                                                                                               \
+        (void)level;                                                                                                   \
+        (void)cur_filename;                                                                                            \
+        (void)line_num;                                                                                                \
+        (void)prefix;                                                                                                  \
+        (void)data_buf;                                                                                                \
+        (void)data_size;                                                                                               \
     } while (0)
 
-#define vs_logger_message(level, cur_filename, line_num, log_format, ...) \
-    do {                                                                  \
-        (void)level;                                                      \
-        (void)cur_filename;                                               \
-        (void)line_num;                                                   \
-        VS_IOT_LOGGER_FUNCTION((log_format), ##__VA_ARGS__);              \
-        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                        \
+#define vs_logger_message(level, cur_filename, line_num, log_format, ...)                                              \
+    do {                                                                                                               \
+        (void)level;                                                                                                   \
+        (void)cur_filename;                                                                                            \
+        (void)line_num;                                                                                                \
+        VS_IOT_LOGGER_FUNCTION((log_format), ##__VA_ARGS__);                                                           \
+        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                                                                     \
     } while (0)
 
 #else // VS_IOT_LOGGER_USE_LIBRARY != 1 && !defined(VS_IOT_LOGGER_FUNCTION)
@@ -294,7 +300,7 @@ void vs_logger_message_hex(vs_log_level_t level,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // AP_SECURITY_SDK_LOGGER_H

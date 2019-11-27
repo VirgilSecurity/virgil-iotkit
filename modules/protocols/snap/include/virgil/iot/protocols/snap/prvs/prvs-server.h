@@ -67,13 +67,13 @@
 
 #if PRVS_SERVER
 
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -85,12 +85,12 @@ extern "C" {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t*
-vs_snap_prvs_server(vs_secmodule_impl_t* secmodule);
+vs_snap_service_t *
+vs_snap_prvs_server(vs_secmodule_impl_t *secmodule);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // PRVS_SERVER

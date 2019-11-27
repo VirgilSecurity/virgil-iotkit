@@ -71,7 +71,7 @@ vs_firmware_install_prepare_space_hal(void);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_firmware_install_append_data_hal(const void* data, uint16_t data_sz);
+vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
 
 /** Get own firmware footer
  *
@@ -87,6 +87,6 @@ vs_firmware_install_append_data_hal(const void* data, uint16_t data_sz);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_firmware_get_own_firmware_footer_hal(void* footer, size_t footer_sz);
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz);
 
 #endif // VS_FIRMWARE_INTERFACE_H

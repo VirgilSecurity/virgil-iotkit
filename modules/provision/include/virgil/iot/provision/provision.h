@@ -97,13 +97,13 @@ if( vs_provision_tl_find_first_key(&search_ctx, VS_KEY_IOT_DEVICE, &pubkey_dated
 #ifndef VS_IOT_PROVISION_H
 #define VS_IOT_PROVISION_H
 
-#include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -117,7 +117,7 @@ extern "C" {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t* tl_storage_ctx, vs_secmodule_impl_t* secmodule);
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule);
 
 /** Provision destruction
  *
@@ -137,7 +137,7 @@ vs_provision_deinit(void);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t* slot);
+vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
 
 /** Search high level public key
  *
@@ -152,9 +152,9 @@ vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t* slot);
  */
 vs_status_e
 vs_provision_search_hl_pubkey(vs_key_type_e key_type,
-    vs_secmodule_keypair_type_e ec_type,
-    const uint8_t* key,
-    uint16_t key_sz);
+                              vs_secmodule_keypair_type_e ec_type,
+                              const uint8_t *key,
+                              uint16_t key_sz);
 
 /** Verify high level public key
  *
@@ -166,7 +166,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_verify_hl_key(const uint8_t* key_to_check, uint16_t key_size);
+vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size);
 
 /** Get Thing service URL
  *
@@ -174,7 +174,7 @@ vs_provision_verify_hl_key(const uint8_t* key_to_check, uint16_t key_size);
  *
  * \return ASCIIZ URL or NULL in case of error
  */
-const char*
+const char *
 vs_provision_cloud_url(void);
 
 /** Find first key
@@ -193,13 +193,13 @@ vs_provision_cloud_url(void);
  *
  */
 vs_status_e
-vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t* search_ctx,
-    vs_key_type_e key_type,
-    vs_pubkey_dated_t** pubkey_dated,
-    uint8_t** pubkey,
-    uint16_t* pubkey_sz,
-    uint8_t** meta,
-    uint16_t* meta_sz);
+vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t *search_ctx,
+                               vs_key_type_e key_type,
+                               vs_pubkey_dated_t **pubkey_dated,
+                               uint8_t **pubkey,
+                               uint16_t *pubkey_sz,
+                               uint8_t **meta,
+                               uint16_t *meta_sz);
 
 /** Find Next key
  *
@@ -217,16 +217,16 @@ vs_provision_tl_find_first_key(vs_provision_tl_find_ctx_t* search_ctx,
  *
  */
 vs_status_e
-vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t* search_ctx,
-    vs_pubkey_dated_t** pubkey_dated,
-    uint8_t** pubkey,
-    uint16_t* pubkey_sz,
-    uint8_t** meta,
-    uint16_t* meta_sz);
+vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
+                              vs_pubkey_dated_t **pubkey_dated,
+                              uint8_t **pubkey,
+                              uint16_t *pubkey_sz,
+                              uint8_t **meta,
+                              uint16_t *meta_sz);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_IOT_PROVISION_H

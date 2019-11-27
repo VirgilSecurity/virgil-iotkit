@@ -40,13 +40,13 @@
 #ifndef VS_SNAP_STRUCTS_H
 #define VS_SNAP_STRUCTS_H
 
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -83,11 +83,11 @@ typedef uint32_t vs_snap_element_t;
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t* netif,
-    const uint8_t* data,
-    const uint16_t data_sz,
-    const uint8_t** packet_data,
-    uint16_t* packet_data_sz);
+typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
+                                        const uint8_t *data,
+                                        const uint16_t data_sz,
+                                        const uint8_t **packet_data,
+                                        uint16_t *packet_data_sz);
 
 /** Preprocessed data
  *
@@ -100,7 +100,7 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t* netif,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t* netif, const uint8_t* data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Send data
  *
@@ -114,7 +114,7 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t* netif, const uin
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t* netif, const uint8_t* data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Get MAC address
  *
@@ -127,7 +127,7 @@ typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t* netif, const uint8_t* da
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t* netif, struct vs_mac_addr_t* mac_addr);
+typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 /** Initializer
  *
@@ -141,9 +141,9 @@ typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t* netif, struct vs_
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t* netif,
-    const vs_netif_rx_cb_t rx_cb,
-    const vs_netif_process_cb_t process_cb);
+typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
+                                       const vs_netif_rx_cb_t rx_cb,
+                                       const vs_netif_process_cb_t process_cb);
 
 /** Destructor
  *
@@ -155,7 +155,7 @@ typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t* netif,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t* netif);
+typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
 
 /** SNAP Service Request Processor
  *
@@ -172,13 +172,13 @@ typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t* netif);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_service_t* service,
-    vs_snap_element_t element_id,
-    const uint8_t* request,
-    const uint16_t request_sz,
-    uint8_t* response,
-    const uint16_t response_buf_sz,
-    uint16_t* response_sz);
+typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_service_t *service,
+                                                           vs_snap_element_t element_id,
+                                                           const uint8_t *request,
+                                                           const uint16_t request_sz,
+                                                           uint8_t *response,
+                                                           const uint16_t response_buf_sz,
+                                                           uint16_t *response_sz);
 
 /** SNAP Service Response Processor
  *
@@ -193,11 +193,11 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_servic
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_service_t* service,
-    vs_snap_element_t element_id,
-    bool is_ack,
-    const uint8_t* response,
-    const uint16_t response_sz);
+typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_service_t *service,
+                                                            vs_snap_element_t element_id,
+                                                            bool is_ack,
+                                                            const uint8_t *response,
+                                                            const uint16_t response_sz);
 
 /** SNAP Periodical data
  *
@@ -209,7 +209,7 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_servi
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_service_t* service);
+typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_service_t *service);
 
 /** SNAP Service Destructor
  *
@@ -220,19 +220,19 @@ typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_ser
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_snap_service_t* service);
+typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_snap_service_t *service);
 
 /** Device roles
  *
  * Enumeration with mask bits to describe device roles.
  */
 typedef enum {
-    VS_SNAP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001), /**< Gateway role */
-    VS_SNAP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002), /**< Thing role */
-    VS_SNAP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004), /**< Control role */
-    VS_SNAP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008), /**< Logger role */
-    VS_SNAP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010), /**< Sniffer role */
-    VS_SNAP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020), /**< Debugger role */
+    VS_SNAP_DEV_GATEWAY = HTONL_IN_COMPILE_TIME(0x0001),    /**< Gateway role */
+    VS_SNAP_DEV_THING = HTONL_IN_COMPILE_TIME(0x0002),      /**< Thing role */
+    VS_SNAP_DEV_CONTROL = HTONL_IN_COMPILE_TIME(0x0004),    /**< Control role */
+    VS_SNAP_DEV_LOGGER = HTONL_IN_COMPILE_TIME(0x0008),     /**< Logger role */
+    VS_SNAP_DEV_SNIFFER = HTONL_IN_COMPILE_TIME(0x0010),    /**< Sniffer role */
+    VS_SNAP_DEV_DEBUGGER = HTONL_IN_COMPILE_TIME(0x0020),   /**< Debugger role */
     VS_SNAP_DEV_INITIALIZER = HTONL_IN_COMPILE_TIME(0x0040) /**< Initializer role */
 } vs_snap_device_role_e;
 
@@ -263,20 +263,20 @@ typedef struct __attribute__((__packed__)) vs_mac_addr_t {
  */
 typedef struct __attribute__((__packed__)) ethernet_header {
     vs_mac_addr_t dest; /**< Destination MAC address */
-    vs_mac_addr_t src; /**< Source MAC address */
-    uint16_t type; /**< Ethernet packet type */
+    vs_mac_addr_t src;  /**< Source MAC address */
+    uint16_t type;      /**< Ethernet packet type */
 } vs_ethernet_header_t;
 
 /******************************************************************************/
 /** SNAP packet header
  */
 typedef struct __attribute__((__packed__)) {
-    vs_snap_transaction_id_t transaction_id; /**< Transaction ID */
-    vs_snap_service_id_t service_id; /**< SNAP service */ // CODEGEN: SKIP
+    vs_snap_transaction_id_t transaction_id;                /**< Transaction ID */
+    vs_snap_service_id_t service_id; /**< SNAP service */   // CODEGEN: SKIP
     vs_snap_element_t element_id; /**< Service's command */ // CODEGEN: SKIP
-    uint32_t flags; /**< Packet flags */ // CODEGEN: SKIP
-    uint16_t padding; /**< Packet padding */
-    uint16_t content_size; /**< Packet #vs_snap_packet_t \a content data size */
+    uint32_t flags; /**< Packet flags */                    // CODEGEN: SKIP
+    uint16_t padding;                                       /**< Packet padding */
+    uint16_t content_size;                                  /**< Packet #vs_snap_packet_t \a content data size */
 } vs_snap_header_t;
 
 /******************************************************************************/
@@ -284,8 +284,8 @@ typedef struct __attribute__((__packed__)) {
  */
 typedef struct __attribute__((__packed__)) {
     vs_ethernet_header_t eth_header; /**< Ethernet header */
-    vs_snap_header_t header; /**< Packet header */
-    uint8_t content[]; /**< Packet data with \a header . \a content_size bytes size */
+    vs_snap_header_t header;         /**< Packet header */
+    uint8_t content[];               /**< Packet data with \a header . \a content_size bytes size */
 } vs_snap_packet_t;
 
 #define VS_NETIF_PACKET_BUF_SIZE (1024)
@@ -296,17 +296,17 @@ typedef struct __attribute__((__packed__)) {
  * This structure contains network interface callbacks and packet data
  */
 typedef struct vs_netif_t {
-    void* user_data; /**< User data */
+    void *user_data; /**< User data */
 
     // Functions
-    vs_netif_init_t init; /**< Initialization */
+    vs_netif_init_t init;     /**< Initialization */
     vs_netif_deinit_t deinit; /**< Destroy */
-    vs_netif_tx_t tx; /**< Transmit data */
-    vs_netif_mac_t mac_addr; /**< MAC address */
+    vs_netif_tx_t tx;         /**< Transmit data */
+    vs_netif_mac_t mac_addr;  /**< MAC address */
 
     // Incoming packet
     uint8_t packet_buf[VS_NETIF_PACKET_BUF_SIZE]; /**< Packet buffer */
-    uint16_t packet_buf_filled; /**< Packet size */
+    uint16_t packet_buf_filled;                   /**< Packet size */
 } vs_netif_t;
 
 /******************************************************************************/
@@ -315,25 +315,25 @@ typedef struct vs_netif_t {
  * This structure contains SNAP service callbacks and service specific information
  */
 typedef struct vs_snap_service_t {
-    void* user_data; /**< User data */
-    vs_snap_service_id_t id; /**< Service ID */
-    vs_snap_service_request_processor_t request_process; /**< Reqeust processing */
-    vs_snap_service_response_processor_t response_process; /**< Response processing */
+    void *user_data;                                           /**< User data */
+    vs_snap_service_id_t id;                                   /**< Service ID */
+    vs_snap_service_request_processor_t request_process;       /**< Reqeust processing */
+    vs_snap_service_response_processor_t response_process;     /**< Response processing */
     vs_snap_service_periodical_processor_t periodical_process; /**< Periodical task */
-    vs_snap_service_deinit_t deinit; /**< Destructor call */
+    vs_snap_service_deinit_t deinit;                           /**< Destructor call */
 } vs_snap_service_t;
 
 /******************************************************************************/
 /** SNAP statistics
  */
 typedef struct {
-    uint32_t sent; /**< Sends amount */
+    uint32_t sent;     /**< Sends amount */
     uint32_t received; /**< Receives amount */
 } vs_snap_stat_t;
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_SNAP_STRUCTS_H

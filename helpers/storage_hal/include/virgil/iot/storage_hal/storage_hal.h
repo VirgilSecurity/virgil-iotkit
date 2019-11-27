@@ -63,7 +63,7 @@
 #include <sys/types.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -227,7 +227,7 @@ typedef struct {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif //VS_STORAGE_HAL_H

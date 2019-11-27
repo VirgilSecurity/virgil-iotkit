@@ -45,7 +45,7 @@
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
+namespace VirgilIotKit {
 extern "C" {
 #endif
 
@@ -60,7 +60,7 @@ extern "C" {
  */
 typedef struct {
     vs_mac_addr_t mac_addr; /**< Device MAC address */
-    uint32_t device_roles; /**< Mask based on #vs_snap_device_role_e */
+    uint32_t device_roles;  /**< Mask based on #vs_snap_device_role_e */
 } vs_snap_prvs_dnid_element_t;
 
 /** Devices enumeration
@@ -71,7 +71,7 @@ typedef struct {
  */
 typedef struct {
     vs_snap_prvs_dnid_element_t elements[DNID_LIST_SZ_MAX]; /**< elements array */
-    uint16_t count; /**< elements amount */
+    uint16_t count;                                         /**< elements amount */
 } vs_snap_prvs_dnid_list_t;
 
 /** Device information
@@ -82,11 +82,11 @@ typedef struct {
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t manufacturer[VS_DEVICE_MANUFACTURE_ID_SIZE]; /**< manufacture ID */
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE]; /**< device type */
-    uint8_t serial[VS_DEVICE_SERIAL_SIZE]; /**< device serial number */
-    vs_mac_addr_t mac; /**< device MAC address */
-    uint16_t data_sz; /**< \a data size */
-    uint8_t data[]; /**< data : #vs_pubkey_t own key + #vs_sign_t signature */
+    uint8_t device_type[VS_DEVICE_TYPE_SIZE];            /**< device type */
+    uint8_t serial[VS_DEVICE_SERIAL_SIZE];               /**< device serial number */
+    vs_mac_addr_t mac;                                   /**< device MAC address */
+    uint16_t data_sz;                                    /**< \a data size */
+    uint8_t data[];                                      /**< data : #vs_pubkey_t own key + #vs_sign_t signature */
 } vs_snap_prvs_devi_t;
 
 /** Signed data
@@ -95,12 +95,12 @@ typedef struct __attribute__((__packed__)) {
  */
 typedef struct __attribute__((__packed__)) {
     uint8_t hash_type; /**< #vs_secmodule_hash_type_e */
-    uint8_t data[]; /**< signed data */
+    uint8_t data[];    /**< signed data */
 } vs_snap_prvs_sgnp_req_t;
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
+} // namespace VirgilIotKit
 #endif
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_STRUCTS_H

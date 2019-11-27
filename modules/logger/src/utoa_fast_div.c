@@ -45,8 +45,7 @@ typedef struct {
 
 /******************************************************************************/
 static divmod10_t
-divmodu10(uint32_t n)
-{
+divmodu10(uint32_t n) {
     divmod10_t res;
     uint32_t qq;
 
@@ -70,8 +69,8 @@ divmodu10(uint32_t n)
 }
 
 /******************************************************************************/
-char* utoa_fast_div(uint32_t value, char* buffer)
-{
+char *
+utoa_fast_div(uint32_t value, char *buffer) {
     VS_IOT_ASSERT(buffer);
 
     buffer += 11;
