@@ -77,7 +77,7 @@
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -298,7 +298,7 @@ vs_snap_prvs_set_tl_footer(const vs_netif_t *netif,
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // PRVS_CLIENT

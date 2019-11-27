@@ -79,7 +79,7 @@ init_manufacture_id(manufacture_id, MANUFACTURE_ID);
 #include <trust_list-config.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -241,7 +241,7 @@ typedef struct {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_IOT_PROVISION_STRUCTS_H

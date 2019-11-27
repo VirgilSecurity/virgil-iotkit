@@ -76,7 +76,7 @@
 #define _JSON_GENERATOR_H_
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -406,7 +406,7 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif /* _JSON_GENERATOR_H_ */

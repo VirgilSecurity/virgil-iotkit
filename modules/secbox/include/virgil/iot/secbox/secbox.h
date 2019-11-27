@@ -85,7 +85,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
-namespace VirgilIotKit {
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -168,7 +168,7 @@ vs_secbox_del(vs_storage_element_id_t id);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIotKit
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_IOT_SECBOX_H
