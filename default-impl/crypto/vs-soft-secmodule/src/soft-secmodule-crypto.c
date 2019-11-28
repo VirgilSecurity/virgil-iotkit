@@ -210,56 +210,6 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
         ret_code = VS_CODE_ERR_CRYPTO;
     }
 
-#if 0
-    vscf_impl_t *prvkey = NULL;
-    vscf_alg_id_t hash_id = vscf_alg_id_NONE;
-    uint16_t hash_sz = 0;
-    vsc_buffer_t sign_data;
-    vs_secmodule_keypair_type_e keypair_type = VS_KEYPAIR_INVALID;
-    uint16_t required_sign_sz = 0;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
-    CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature_buf_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    vsc_buffer_init(&sign_data);
-
-    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
-
-    CHECK(VS_CODE_OK == _load_prvkey(key_slot, &prvkey, &keypair_type),
-          "Unable to load private key from slot %d (%s)",
-          key_slot,
-          get_slot_name((key_slot)));
-
-    required_sign_sz = vscf_sign_hash_signature_len(prvkey);
-
-    vsc_buffer_alloc(&sign_data, required_sign_sz);
-
-    CHECK_VSCF(vscf_sign_hash(prvkey, vsc_data(hash, hash_sz), hash_id, &sign_data), "Unable to sign data");
-
-    *signature_sz = vsc_buffer_len(&sign_data);
-
-    VS_LOG_DEBUG("Internal signature size : %d bytes", *signature_sz);
-
-    CHECK(vs_converters_mbedtls_sign_to_raw(
-                  keypair_type, vsc_buffer_begin(&sign_data), *signature_sz, signature, signature_buf_sz, signature_sz),
-          "Unable to convert Virgil signature format to the raw one");
-
-    VS_LOG_DEBUG("Output signature size : %d bytes", *signature_sz);
-
-    res = VS_CODE_OK;
-
-terminate:
-    vsc_buffer_release(&sign_data);
-
-    if (prvkey) {
-        vscf_impl_destroy(&prvkey);
-    }
-
-    return res;
-#endif
     mbedtls_entropy_free(&entropy);
     mbedtls_ctr_drbg_free(&ctr_drbg);
     mbedtls_pk_free(&private_key_ctx);
@@ -296,45 +246,6 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
     }
 
     mbedtls_pk_free(&public_key_ctx);
-#if 0
-#define MAX_INT_SIGN_SIZE 256
-    uint8_t int_sign[MAX_INT_SIGN_SIZE];
-    uint16_t int_sign_sz = sizeof(int_sign);
-    vscf_impl_t *pubkey = NULL;
-    vscf_alg_id_t hash_id = vscf_alg_id_NONE;
-    uint16_t hash_sz = 0;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
-    CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(public_key_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    CHECK(vs_converters_raw_sign_to_mbedtls(keypair_type, signature, signature_sz, int_sign, int_sign_sz, &int_sign_sz),
-          "Unable to convert Virgil signature format to the raw one");
-
-    VS_LOG_DEBUG("Internal signature size : %d bytes", int_sign_sz);
-
-    STATUS_CHECK(_create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey), "Unable to create public key");
-
-    res = VS_CODE_ERR_CRYPTO;
-
-    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
-
-    CHECK(vscf_verify_hash(pubkey, vsc_data(hash, hash_sz), hash_id, vsc_data(int_sign, int_sign_sz)),
-          "Unable to verify signature");
-
-    res = VS_CODE_OK;
-
-terminate:
-
-    vscf_impl_delete(pubkey);
-
-    return res;
-
-#undef MAX_INT_SIGN_SIZE
-#endif
     return ret_code;
 }
 
@@ -788,45 +699,6 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
         }
     }
 
-
-#if 0
-    vscf_impl_t *prvkey = NULL;
-    vscf_impl_t *pubkey = NULL;
-    vsc_buffer_t out_buf;
-    size_t required_sz;
-    vs_status_e ret_code;
-
-    CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(shared_secret, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(shared_secret_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    STATUS_CHECK_RET(_load_prvkey(slot, &prvkey, &keypair_type),
-                     "Unable to load private key from slot %d (%s)",
-                     slot,
-                     get_slot_name((slot)));
-
-    if ((required_sz = vscf_compute_shared_key_shared_key_len(prvkey)) > buf_sz) {
-        VS_LOG_ERROR("Output buffer too small");
-        ret_code = VS_CODE_ERR_TOO_SMALL_BUFFER;
-        goto terminate;
-    }
-    *shared_secret_sz = (uint16_t)required_sz;
-
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, shared_secret, buf_sz);
-
-    ret_code = _create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey);
-
-    if (VS_CODE_OK == ret_code) {
-        ret_code = (vscf_status_SUCCESS == vscf_compute_shared_key(prvkey, pubkey, &out_buf)) ? VS_CODE_OK
-                                                                                              : VS_CODE_ERR_CRYPTO;
-    }
-
-terminate:
-    vscf_impl_delete(prvkey);
-    vscf_impl_delete(pubkey);
-    return ret_code;
-#endif
     mbedtls_ecdh_free(&ecdh_ctx);
     mbedtls_entropy_free(&entropy);
     mbedtls_ctr_drbg_free(&ctr_drbg);
