@@ -1,9 +1,9 @@
 # Virgil SnapD
-Virgil SnapD is a local web utility which allows you to obtain information and statistics of your IoT devices.
+Virgil SnapD is a local web utility which allows you to obtain information and statistics from your IoT devices.
 
-In order to get such device information SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. As far as Virgil SnapD is a local service, the obtained information can be displayed in browser under http://localhost:8080/ (by default).
+In order to get this device information, SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. Since Virgil SnapD is a local service, the device information can be displayed in a browser window at http://localhost:8080/ (by default).
 
-In case you work with [Virgil IoT Simulator](https://github.com/VirgilSecurity/iot-rpi-gateway), you can run SnapD under http://localhost:8081/.
+If you're using the [Virgil IoT Simulator](https://github.com/VirgilSecurity/iot-rpi-gateway), you can run SnapD under http://localhost:8081/.
 
 ## Content
 - [Setting Up SnapD](#setting-up-snapd)
@@ -28,7 +28,7 @@ This section provides instructions for installing Virgil SnapD.
 #### Linux OS
 Virgil SnapD is distributed as a package.
 
-In order to download and install the Virgil SnapD on Linux, use the YUM package manager and the following command:
+To download and install Virgil SnapD on Linux, use the YUM package manager and the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-snapd
@@ -37,7 +37,7 @@ $ sudo yum install virgil-iot-sdk-snapd
 #### Ubuntu OS, Debian OS
 Virgil SnapD is distributed as a package.
 
-In order to download and install the Virgil SnapD on Ubuntu, Debian, use the YUM package manager and the following command:
+To download and install the Virgil SnapD on Ubuntu, Debian, use the YUM package manager and the following command:
 ```bash
 $ sudo apt-get install virgil-iot-sdk-snapd
 ```
@@ -45,13 +45,13 @@ $ sudo apt-get install virgil-iot-sdk-snapd
 #### CentOS, Fedora OS
 Virgil SnapD is distributed as a package.
 
-In order to download and install the Virgil SnapD on CentOS, Fedora, use the YUM package manager and the following command:
+To download and install the Virgil SnapD on CentOS, Fedora, use the YUM package manager and the following command:
 
 ```bash
 $ sudo yum install virgil-iot-sdk-snapd
 ```
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
+At this moment, we don't provide a built package for Mac OS, so you'll need to build and run it yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
@@ -62,23 +62,23 @@ $ make vs-tool-virgil-snapd
 ```
 
 #### Windows OS
-Virgil SnapD package for Windows OS is currently in development. To be included to information update list please contact our support team support@VirgilSecurity.com.
+Virgil SnapD package for Windows OS is currently in development. To receive product updates, please contact our support team at support@VirgilSecurity.com.
 
 ### Configure and run SnapD
-By default SnapD works under http://localhost:8080/, if other is not specified for the `SNAPD_SERVICE_PORT` variable.
+By default SnapD works under http://localhost:8080/ if nothing else is specified for the `SNAPD_SERVICE_PORT` variable.
 
-In order to run Virgil SnapD under default port use the following command:
+In order to run Virgil SnapD under the default port, use the following command:
 ```shell
 virgil-snapd
 ```
 
-To run Virgil SnapD under specific port use the following command:
+To run Virgil SnapD under a customized port, use the following command:
 ```shell
 virgil-snapd 8081
 ```
 
 ## API Reference
-Virgil SnapD also provides api for obtaining IoT device information
+Virgil SnapD also provides an API for obtaining the IoT device information.
 
 ### Display all devices
 In order to display information about all available IoT devices use the following API:
@@ -137,7 +137,7 @@ Content-Type: text/plain; charset=utf-8
 
 
 ### Display device by MAC
-In order to display information about specific IoT device by its MAC use the following API:
+In order to display information about a specific IoT device by its MAC, use the following API:
 
 **Request info**
 
