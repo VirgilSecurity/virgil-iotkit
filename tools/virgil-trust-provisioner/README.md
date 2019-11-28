@@ -1,11 +1,11 @@
 # Virgil Trust Provisioner
-The Virgil Trust Provisioner is a command-line interface (CLI) used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
+The Virgil Trust Provisioner is a command-line interface (CLI) utility used to manage your distributed trust between all parties, including IoT devices, in your IoT solutions.
 
 ## Features
 - Generating and managing upper level key pairs for IoT parties
-- Generating and managing Trust Lists
-- Provides databases for storing keys and Trust Lists
-- Creating and registering upper level Virgil Cards of IoT parties at Virgil Security Platform
+- Generating and managing TrustLists
+- Provides databases for storing keys and TrustLists
+- Creating and registering upper level Virgil Cards for IoT parties with the Virgil Security Platform
 
 ## Content
 - [Virgil Trust Provisioner](#virgil-trust-provisioner)
@@ -60,11 +60,11 @@ The Virgil Trust Provisioner is a command-line interface (CLI) used to manage yo
             - [Export Private Keys](#export-private-keys)
 
 ## Trust Provisioner Overview
-Virgil Trust Provisioner is aimed at key pairs and TrustLists generation and management, which together make each IoT device identifiable, verifiable and trusted by each party of IoT solution.
+Virgil Trust Provisioner deals with key pair and TrustList generation and management, which together make each IoT device identifiable, verifiable and trusted by each party within the IoT solution.
 
-Nowadays, each IoT device interacts with lots of services and application to provide the necessary features for end-users. At the same time, it's important to be sure that each IoT device is protected from unauthorized access at any of its lifecycle stage, therefore each party and process have to be identifiable, verifiable and trusted.
+In this connected world, IoT devices interact with many services and applications in order to provide valuable features for end-users. At the same time, it's important that each IoT device is protected from unauthorized access at any given lifecycle stage. In order to achieve this, each party and process within the IoT system needs to be identifiable, verifiable and trusted.
 
-The diagram below demonstrates a standard IoT infrastructure and its parties that have to be identifiable and verifiable as a part of distributed trust.
+The diagram below demonstrates a standard IoT infrastructure and all its participants, or parties, that need to be identifiable and verifiable as a part of distributed trust system.
 
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/provisioner.jpg" align="left" hspace="3" vspace="6"> &nbsp;
 
@@ -72,20 +72,20 @@ The diagram below demonstrates a standard IoT infrastructure and its parties tha
 
 | Participant            | Role                                                                                                                                                                 |
 |------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Auth and Recovery Keys | Upper Level Keys that are responsible for secure Trust Lists and participants' key pairs management                                                                 |
-| Firmware service       | Service is responsible for creating, storing and distributing Firmware                                                                                               |
-| Trust List             | Trust List is a distributed list of trust that is introduced in way of a file that consists of public keys and signatures of all trusted parties in the your IoT system |
-| Trust List service     | Service is responsible for creating, storing and distributing Trust Lists                                                                                            |
+| Auth and Recovery Keys | Upper Level keys that are responsible for managing secure TrustLists and the participants' key pairs                                                                 |
+| Firmware service       | Service is responsible for creating, storing and distributing firmware                                                                                               |
+| TrustList             | TrustList is a distributed list of trust contained in a file that consists of public keys and signatures of all trusted parties in the IoT system |
+| TrustList service     | Service is responsible for creating, storing and distributing TrustList                                                                                            |
 | Factory                | Place where all IoT devices are manufactured and go through the provisioning step                                                                                    |
-| Cloud                  | Cloud service that is responsible for users and applications authorization and authentication.                                                                       |
+| Cloud                  | Cloud service that is responsible for authorizing and authenticating users and applications.                                                                       |
 
-Virgil Trust Provisioner helps you to build up a trusted IoT solution ecosystem by creating and managing necessary key pairs and distributed trust list for all participants. Then the keys and Trust Lists are distributed to all participants (e.g. IoT devices, user application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
+Virgil Trust Provisioner helps you to build up a trusted IoT solution ecosystem by creating and managing the key pairs and a distributed TrustList for all participants. Then the keys and TrustList are distributed to all participants (e.g. IoT devices, user application, etc.). As a result, each participant uses the TrustList while interacting with each other to verify whether the participant is authorized to perform a given operation.
 
 ## Setting up Trust Provisioner
-This section demonstrates on how to install and configure Virgil Trust Provisioner for preferred platform.
+This section demonstrates how to install and configure the Virgil Trust Provisioner for your platform of choice.
 
 ### Install Trust Provisioner
-This section provides instructions for installing Virgil Trust Provisioner.
+This section provides instructions for installing the Virgil Trust Provisioner.
 
 #### Linux OS
 Virgil Trust Provisioner is distributed as a package.
@@ -123,7 +123,7 @@ $ pip3 install .
 ```
 
 #### Windows OS
-Virgil Trust Provisioner package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
+Virgil Trust Provisioner package for Windows OS is currently in development. To join our mailing list to receive updates, please contact our support team at support@VirgilSecurity.com.
 
 
 ### Configure Trust Provisioner
@@ -132,7 +132,7 @@ After the Trust Provisioner is installed, you need to set up the **provisioner.c
 ```bash
 virgil-trust-provisioner -c samples/provisioner.conf
 ```
-In order to not specify every time Virgil Trust Provisioner's configuration file when you launch it, place the **provisioner.conf** file into the following repository on your device:
+To avoid having to specify the Virgil Trust Provisioner's configuration file every time you launch it, place the **provisioner.conf** file into the following repository on your device:
 
 - /etc/virgil-trust-provisioner/provisioner.conf
 
@@ -178,27 +178,27 @@ To launch the Virgil Trust Provisioner use the following syntax:
 ```bash
 virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO>
 ```
-In case you need to specify path to the custom config file, you use following syntax:
+If you need to specify a path to the custom config file, use following syntax:
 
 ```bash
 virgil-trust-provisioner --app-token <token> --factory-info <FACTORY_INFO> -c ./provisioner.conf
 ```
 | Option                              | Description                                                                                                                                                                  |
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| --app-token , -t                    | Application token (App Token) is used for authentication at Virgil Cloud to register Virgil Cards for Upper Level Keys. To generate an application token use the Virgil CLI. |
-| -c CONFIG_PATH,--config CONFIG_PATH | The path to custom configuration file of the Virgil Trust Provisioner                                                                                                        |
-| -i FACTORY_INFO, --factory-info FACTORY_INFO | Path to JSON with factory info (Information about factory will be added to factory's digital Virgil card)                                                                                                        |
+| --app-token , -t                    | Application token (App token) is used for authentication on the Virgil Cloud to register Virgil Cards for Upper Level keys. To generate an application token use the Virgil CLI. |
+| -c CONFIG_PATH,--config CONFIG_PATH | The path to the custom configuration file of the Virgil Trust Provisioner                                                                                                        |
+| -i FACTORY_INFO, --factory-info FACTORY_INFO | Path to JSON with factory info (Information about factory will be added to factory's digital Virgil Card)                                                                                                        |
 | -y, --skip-confirm | Skip all confirmation requests                                                                                                 |
 
 
 ## Command Reference
-Here is the list of possible commands for Virgil Trust Provisioner.
+Here is the list of possible commands for Virgil Trust Provisioner:
 
 ### Syntax
 ```bash
 virgil-trust-provisioner
 ```
-Use  virgil-trust-provisioner --help to get information on a specific command.
+Use  virgil-trust-provisioner --help to get information about a specific command.
 
 ### Application Commands
 Application commands are used to perform operations such as key generating, database (db) operations and printing options.
@@ -224,18 +224,18 @@ Application commands are used to perform operations such as key generating, data
 |---------|--------------------------------|
 | ```9```      | Print all public keys from db  |
 | ```10```      | Add public key to db           |
-| ```11```      | Export data as provision package for Factory |
+| ```11```      | Export data as provision package for factory |
 | ```12```      | Export upper level public keys |
 | ```13```      | Export private keys            |
 
 
 ## Private Keys Commands
-This includes dealing with the generation, exchange, storage, use and replacement of keys
+This deals with the generation, exchange, storage, use and replacement of keys.
 
 Each private key has its own card that contains a public part of the key. The card is registered in the Virgil Card Service.
 
 ### Initial Generation (get everything at once)
-This command allows generating all keys for the entire key management infrastructure.
+This command allows you to generate all keys for the entire key management infrastructure.
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
@@ -424,7 +424,7 @@ The upper level key for recovery operations and for some keys creation. Recovery
 | ```2```      | Virgil Trust Provisioner generates 2 Recovery keys |
 
 #### Generating Recovery Key
-Recovery Keys are used to sign other types of keys, and is known by every device. Public key is stored in Tust list and private key is stored in db.
+Recovery Keys are used to sign other types of keys, and are known by every device. The public key is stored in TrustList and the private key is stored in db.
 
 **Example**
 ```bash
@@ -457,14 +457,14 @@ $ Enter comment for Recovery Key: My recovery key
 # Generation finished
 ```
 ### Auth Key
-The Auth Key is trusted as the second signer of the Firmware and Trust Lists.
+The Auth Key is trusted as the second signer of the firmware and TrustLists.
 
 | Command | Result                                                                                                                |
 |---------|-----------------------------------------------------------------------------------------------------------------------|
 | ```3```      | Virgil Trust Provisioner generates 2 Auth Keys  |
 
 #### Generating Auth Key
-After Auth Keys are generated they have to be signed with one of the Recovery keys. You also can add a coment about the Key purpose. Auth Key guards against the unauthorized use of Firmware and Trust List. Auth Keys sign Firmwares and the Trust Lists. Public key is stored in Tust list and private key is stored in db.
+After Auth Keys are generated they have to be signed with one of the Recovery keys. You also can add a comment about the Key purpose. Auth Key guards against the unauthorized use of firmware and TrustList. Auth Keys sign firmwares and the TrustLists. Public key is stored in the TrustList and the private key is stored in db.
 
 **Example**
 
@@ -527,14 +527,14 @@ $ Enter comment for Auth Key: My second Auth key
 ```
 
 ### TrustList Key
-The TL Key is the primary signer of the Trust Lists. The TL Key is trusted because it is signed by a Recovery Key.
+The TL key is the primary signer of the TrustLists. The TL Key is trusted because it is signed by a Recovery key.
 
 | Command | Result                                       |
 |---------|----------------------------------------------|
-| ```4```       | Virgil Trust Provisioner generates 2 TL Keys |
+| ```4```       | Virgil Trust Provisioner generates 2 TL keys |
 
 #### Generating TrustList Key
-The TL Key is trusted because it is signed by a Recovery Key. Key Infrastructure needs two Key Pairs of the TL Key.  Public key is stored in Tust List and private key is stored in db.
+The TL key is trusted because it is signed by a Recovery key. Key Infrastructure needs two key pairs of the TL key.  Public key is stored in TrustList and private key is stored in db.
 
 **Example**
 ```bash
@@ -592,15 +592,15 @@ $ Enter comment for TrustList Key: My second TL key
 # Generation finished
 ```
 ### Factory Key
-Factory Key signs devices and guarantees official device distribution from the factory. Signature indicates that the manufacture of a device was authorized.
+Factory key signs devices and guarantees official device distribution from the factory. Signature indicates that the manufacture of a device was authorized.
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```5```       | Virgil Trust Provisioner generates Factory Key and stores it in own db |
-| ```6```       | Virgil Trust Provisioner deletes Factory Key from own db               |
+| ```5```       | Virgil Trust Provisioner generates factory key and stores it in own db |
+| ```6```       | Virgil Trust Provisioner deletes factory key from own db               |
 
 #### Generating Factory Key
-After Factory Key is generated, private key is stored in private keys db and public key is stored in Trust List. Also, Factory Key has a signature number limit that allows you to prevent uncountable device release at a factory  (```4294967295```) and is stored in ```FactoryPrivateKeys.db.```
+After factory key is generated, private key is stored in private keys db and public key is stored in TrustList. Also, factory key has a signature number limit that allows you to prevent uncountable device release at the factory  (```4294967295```) and is stored in ```FactoryPrivateKeys.db.```
 
 **Example**
 ```bash
@@ -632,7 +632,7 @@ $ Enter comment for Factory Key: My Factory key
 ```
 
 #### Deleting Factory Key
-This commmand allows to remove Factory Key from the Virgil Trust Provisioner Factory Keys db FactoryPrivateKeys.db. Remember to release the new Trust List after deleting Factory Key and update it on IoT devices.
+This command allows you to remove the factory key from the Virgil Trust Provisioner factory keys db FactoryPrivateKeys.db. Remember to release the new TrustList after deleting factory key and update it on IoT devices.
 
 **Example**
 ```bash
@@ -649,14 +649,14 @@ $ Please choose Factory Key to delete: 1
 # Factory Key deleted
 ```
 ### Firmware Key
-The Firmware Key is trusted as the primary signer of firmware and has no other capabilities.
+The firmware key is trusted as the primary signer of firmware and has no other capabilities.
 
 | Command | Result                                                                 |
 |---------|------------------------------------------------------------------------|
-| ```7```       | Virgil Trust Provisioner generates 2 Firmware Keys |
+| ```7```       | Virgil Trust Provisioner generates 2 firmware keys |
 
 #### Generating Firmware Key
-Firmware Keys are stored on selected devices. They are signed by a Recovery Key.
+Firmware keys are stored on selected devices. They are signed by a recovery key.
 
 **Example**
 ```bash
@@ -791,7 +791,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 | ```8```   | Virgil Trust Provisioner generates Trust List file |
 
 ### TrustList Generation
-Trust List that contains public keys (Factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in trust list are stored in TrustListPubKeys.db.
+TrustList that contains public keys (factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in TrustList are stored in TrustListPubKeys.db.
 
 **Example**
 ```bash
@@ -824,7 +824,7 @@ $ Please enter option number: 1
 ```
 
 ### TrustList Uploading
-Trust List updating is a release of the new Trust List. This function is used in case if you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new Trust List to your IoT device.
+TrustList updating is a release of the new TrustList. This function is used in case you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new TrustList to your IoT device.
 
 ## Trust Provisioner Database
 This page contains information about Virgil Trust Provisioner database.
@@ -885,8 +885,8 @@ $ Are you sure you want to choose [Print all Public Keys from db's] [y/n]: y
 |------|----------------------------------------------------|
 | ```10```   | Virgil Trust Provisioner allows user to input Public Key to db in base64 format |
 
-This command allows you to add additional public key of some participants like cloud to Virgil Trust Provisioner database
-User can also leave a comment about added key.
+This command allows you to add additional public key of some participants like the cloud to Virgil Trust Provisioner database
+You can also leave a comment about added key.
 
 **Example**
 
