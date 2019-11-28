@@ -142,12 +142,13 @@ _keypair_ec_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
         0 == mbedtls_mpi_read_binary(&ec_key.Q.Y, public_key_in + 1 + mpi_size, mpi_size) &&
         0 == mbedtls_mpi_copy(&ec_key.Q.Z, &ec_key.Q.Y)) {
 
-        *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
+        mbedtls_res = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
-        if (buf_sz > *public_key_out_sz) {
+        if (mbedtls_res > 0 && buf_sz > mbedtls_res) {
+            *public_key_out_sz = mbedtls_res;
             VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+            res = true;
         }
-        res = true;
     }
 
 terminate:
@@ -165,6 +166,7 @@ _keypair_rsa_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
                              uint16_t buf_sz,
                              uint16_t *public_key_out_sz) {
     bool res = false;
+    int mbedtls_res;
     mbedtls_rsa_context rsa_key;
     mbedtls_pk_info_t pk_info;
     mbedtls_pk_context pk_ctx;
@@ -181,12 +183,13 @@ _keypair_rsa_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
 
     if (0 == mbedtls_mpi_read_binary(&rsa_key.N, public_key_in, public_key_in_sz) &&
         0 == mbedtls_mpi_read_binary(&rsa_key.E, buf, sizeof(buf))) {
-        *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
+        mbedtls_res = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
-        if (buf_sz > *public_key_out_sz) {
+        if (mbedtls_res > 0 && buf_sz > mbedtls_res) {
+            *public_key_out_sz = mbedtls_res;
             VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+            res = true;
         }
-        res = true;
     }
 
     mbedtls_rsa_free(&rsa_key);
@@ -234,7 +237,7 @@ _keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
     *public_key_out_sz = (uint16_t)res;
 
     if (buf_sz > *public_key_out_sz) {
-        memmove(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+        VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
     }
 
     return true;

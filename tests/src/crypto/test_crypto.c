@@ -74,8 +74,8 @@ vs_crypto_test(vs_secmodule_impl_t *secmodule_impl) {
     failed_test_result += test_random(secmodule_impl);
     //    failed_test_result += test_aes(secmodule_impl);
     failed_test_result += test_keypair(secmodule_impl);
-//    failed_test_result += test_keystorage_and_tl(secmodule_impl);
-//    failed_test_result += test_ecdsa(secmodule_impl);
+    //    failed_test_result += test_keystorage_and_tl(secmodule_impl);
+    failed_test_result += test_ecdsa(secmodule_impl);
 //    failed_test_result += test_ecdh(secmodule_impl);
 //    failed_test_result += vs_virgil_ecies_test(secmodule_impl);
 #if !VIRGIL_IOT_MCU_BUILD

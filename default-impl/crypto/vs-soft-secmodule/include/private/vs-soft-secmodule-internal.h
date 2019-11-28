@@ -58,7 +58,7 @@ _public_key_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                        uint16_t buf_sz,
                        uint16_t *public_key_out_sz);
 
-int
+vs_status_e
 vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
                                 uint8_t *buf,
                                 uint16_t buf_sz,
