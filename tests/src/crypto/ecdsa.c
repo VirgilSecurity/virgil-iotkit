@@ -125,15 +125,6 @@ test_ecdsa(vs_secmodule_impl_t *secmodule_impl) {
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_SECP521R1)
     TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_STD_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_EC_ED25519)
 
-#if USE_RSA
-    if (VS_CODE_OK != vs_secmodule_keypair_create(secmodule_impl, VS_KEY_SLOT_EXT_MTP_0, VS_KEYPAIR_RSA_2048)) {
-        return failed_test_result + 1;
-    }
-
-    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_256, VS_KEYPAIR_RSA_2048)
-    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_384, VS_KEYPAIR_RSA_2048)
-    TEST_SIGN_VERIFY_PASS(VS_KEY_SLOT_EXT_MTP_0, VS_HASH_SHA_512, VS_KEYPAIR_RSA_2048)
-#endif
 terminate:
     return failed_test_result;
 

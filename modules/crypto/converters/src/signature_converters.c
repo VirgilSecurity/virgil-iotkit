@@ -66,9 +66,6 @@ _coord_sz(vs_secmodule_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_CURVE25519:
     case VS_KEYPAIR_EC_ED25519:
         return 32;
-    case VS_KEYPAIR_RSA_2048:
-        return 256;
-
     default:
         return 0;
     }

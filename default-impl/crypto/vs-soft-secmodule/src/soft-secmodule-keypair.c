@@ -182,12 +182,6 @@ _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
         fast_ec_type = MBEDTLS_FAST_EC_ED25519;
         key_type_mbedtls = MBEDTLS_ECP_DP_NONE;
         break;
-#if USE_RSA
-    case VS_KEYPAIR_RSA_2048:
-        key_type_mbedtls = MBEDTLS_ECP_DP_NONE;
-        rsa_sz = VS_PUBKEY_RSA2048_LEN * 8;
-        break;
-#endif
     default:
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
