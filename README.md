@@ -16,6 +16,7 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
 - [IoT Dev Tools](#iot-dev-tools)
 - [Run IoTKit Sandbox](#run-iotkit-sandbox)
 - [IoTKit Modules](#modules)
+- [Scripts](#scripts)
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Ubuntu, Debian, Raspbian OS](#ubuntu-debian-raspbian-os)
@@ -84,6 +85,13 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
   - PRVS: service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
 
 <div id='installation'/>
+
+## Scripts
+Virgil IoTKit also contains a set of scripts that can be run from the [scripts folder](/scripts).
+- `install-virgil-crypto.sh` is used to install the Virgil Crypto library.
+- `run-sandbox` is used to run IoTKit sandbox.
+- `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices.
+- `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices.
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
