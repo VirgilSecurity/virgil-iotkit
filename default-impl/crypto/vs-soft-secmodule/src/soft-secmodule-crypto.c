@@ -44,6 +44,8 @@
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/pk_internal.h>
 #include <mbedtls/ecdh.h>
+#include <mbedtls/gcm.h>
+#include <mbedtls/cipher.h>
 
 #include "private/vs-soft-secmodule-internal.h"
 
@@ -358,97 +360,136 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
     return VS_CODE_OK;
 }
 
-/********************************************************************************/
-static vs_status_e
-_aes_gcm_encrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 const uint8_t *add,
-                 uint16_t add_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output,
-                 uint8_t *tag,
-                 uint16_t tag_len) {
-#if 0
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vsc_buffer_t tag_buf;
-    vscf_aes256_gcm_t *aes256_gcm = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
+/****************************************************************/
+static void
+_aes_cbc_add_pkcs_padding(unsigned char *output, size_t output_len, size_t data_len) {
+    size_t padding_len = output_len - data_len;
+    unsigned char i;
 
-    CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    key_len = key_bitlen / 8;
-
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
+    for (i = 0; i < padding_len; i++) {
+        output[data_len + i] = (unsigned char)padding_len;
     }
+}
 
-    aes256_gcm = vscf_aes256_gcm_new();
+/****************************************************************/
+static int
+_aes_cbc_get_pkcs_padding(unsigned char *input, size_t input_len, size_t *data_len) {
+    size_t i, pad_idx;
+    unsigned char padding_len, bad = 0;
 
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_gcm_encrypted_len(aes256_gcm, buf_len));
-    vsc_buffer_init(&tag_buf);
-    vsc_buffer_use(&tag_buf, tag, tag_len);
+    if (NULL == input || NULL == data_len)
+        return (MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA);
 
+    padding_len = input[input_len - 1];
+    *data_len = input_len - padding_len;
 
-    vscf_aes256_gcm_set_key(aes256_gcm, vsc_data(key, key_len));
-    vscf_aes256_gcm_set_nonce(aes256_gcm, vsc_data(iv, iv_len));
+    /* Avoid logical || since it results in a branch */
+    bad |= padding_len > input_len;
+    bad |= padding_len == 0;
 
-    if (vscf_status_SUCCESS ==
-        vscf_aes256_gcm_auth_encrypt(aes256_gcm, vsc_data(input, buf_len), vsc_data(add, add_len), out_buf, &tag_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), buf_len);
-    }
+    /* The number of bytes checked must be independent of padding_len,
+     * so pick input_len, which is usually 8 or 16 (one block) */
+    pad_idx = input_len - padding_len;
+    for (i = 0; i < input_len; i++)
+        bad |= (input[i] ^ padding_len) * (i >= pad_idx);
 
-    vscf_aes256_gcm_delete(aes256_gcm);
-    vsc_buffer_delete(out_buf);
-
-    return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    return (MBEDTLS_ERR_CIPHER_INVALID_PADDING * (bad != 0));
 }
 
 /********************************************************************************/
 static vs_status_e
-_aes_cbc_encrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output) {
+_aes_cbc_crypt(bool is_encrypt,
+               const uint8_t *key,
+               uint16_t key_bitlen,
+               const uint8_t *iv,
+               uint16_t iv_len,
+               uint16_t buf_len,
+               const uint8_t *input,
+               uint8_t *output) {
 
-#if 0
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_cbc_t *aes256_cbc = NULL;
+    mbedtls_cipher_context_t ctx;
     vs_status_e res = VS_CODE_ERR_CRYPTO;
+    size_t sz;
+    uint8_t *padding_ptr;
+    uint8_t tmp_padding[16];
 
-    key_len = key_bitlen / 8;
+    CHECK_RET(256 == key_bitlen, VS_CODE_ERR_NOT_IMPLEMENTED, "Unsupported key len");
+    CHECK_RET(0 == mbedtls_cipher_setup(&ctx, mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_CBC)),
+              VS_CODE_ERR_CRYPTO,
+              "Error cipher setup");
+    ctx.add_padding = _aes_cbc_add_pkcs_padding;
+    ctx.get_padding = _aes_cbc_get_pkcs_padding;
 
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
+    CHECK(0 == mbedtls_cipher_setkey(&ctx, key, key_bitlen, is_encrypt ? MBEDTLS_ENCRYPT : MBEDTLS_DECRYPT) &&
+                  0 == mbedtls_cipher_set_iv(&ctx, iv, iv_len) && 0 == mbedtls_cipher_reset(&ctx),
+          "AES GCM CRYPTO error during initialization");
 
-    aes256_cbc = vscf_aes256_cbc_new();
+    CHECK(0 == mbedtls_cipher_update(&ctx, input, buf_len, output, &sz), "AES CBC CRYPTO error encryption/decryption");
 
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_cbc_encrypted_len(aes256_cbc, buf_len));
+    padding_ptr = is_encrypt ? (uint8_t *)(output + sz) : tmp_padding;
 
-    vscf_aes256_cbc_set_key(aes256_cbc, vsc_data(key, key_len));
-    vscf_aes256_cbc_set_nonce(aes256_cbc, vsc_data(iv, iv_len));
+    CHECK(0 == mbedtls_cipher_finish(&ctx, padding_ptr, &sz), "AES CBC CRYPTO error encryption/decryption");
 
-    if (vscf_status_SUCCESS == vscf_aes256_cbc_encrypt(aes256_cbc, vsc_data(input, buf_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), vsc_buffer_len(out_buf));
-    }
+    res = VS_CODE_OK;
 
-    vscf_aes256_cbc_delete(aes256_cbc);
-    vsc_buffer_delete(out_buf);
+terminate:
+    mbedtls_cipher_free(&ctx);
     return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
+
+/********************************************************************************/
+static vs_status_e
+_aes_gcm_crypt(bool is_encrypt,
+               const uint8_t *key,
+               uint16_t key_bitlen,
+               const uint8_t *iv,
+               uint16_t iv_len,
+               const uint8_t *add,
+               uint16_t add_len,
+               uint16_t buf_len,
+               const uint8_t *input,
+               uint8_t *output,
+               uint8_t *tag,
+               uint16_t tag_len) {
+
+    mbedtls_gcm_context ctx;
+    vs_status_e res = VS_CODE_ERR_CRYPTO;
+    uint8_t add_data = 0;
+    uint8_t *add_ptr = &add_data;
+
+    CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(0 == add_len || add, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    if (NULL != add) {
+        add_ptr = (uint8_t *)add;
+    }
+    mbedtls_gcm_init(&ctx);
+
+    CHECK(0 == mbedtls_gcm_setkey(&ctx, MBEDTLS_CIPHER_ID_AES, key, key_bitlen) &&
+                  0 == mbedtls_gcm_starts(&ctx,
+                                          is_encrypt ? MBEDTLS_GCM_ENCRYPT : MBEDTLS_GCM_DECRYPT,
+                                          iv,
+                                          iv_len,
+                                          add_ptr,
+                                          add_len),
+          "AES GCM CRYPTO error during initialization");
+
+    CHECK(0 == mbedtls_gcm_update(&ctx, buf_len, input, output), "mbedtls_gcm_update failed");
+
+    // Auth tag check if decrypt
+    if (!is_encrypt) {
+        uint8_t check_tag[16];
+        CHECK(0 == mbedtls_gcm_finish(&ctx, check_tag, 16), "AES GCM CRYPTO authenticated decryption failed");
+        MEMCMP_CHECK(tag, check_tag, 16);
+    } else {
+        CHECK(0 == mbedtls_gcm_finish(&ctx, tag, tag_len), "AES GCM CRYPTO error encryption/decryption");
+    }
+    res = VS_CODE_OK;
+terminate:
+
+    mbedtls_gcm_free(&ctx);
+
+    return res;
 }
 
 /********************************************************************************/
@@ -473,56 +514,14 @@ vs_secmodule_aes_encrypt(vs_iot_aes_type_e aes_type,
 
     switch (aes_type) {
     case VS_AES_GCM:
-        return _aes_gcm_encrypt(key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, tag, tag_len);
+        return _aes_gcm_crypt(true, key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, tag, tag_len);
     case VS_AES_CBC:
-        return _aes_cbc_encrypt(key, key_bitlen, iv, iv_len, buf_len, input, output);
+        return _aes_cbc_crypt(true, key, key_bitlen, iv, iv_len, buf_len, input, output);
     default:
         VS_IOT_ASSERT(false);
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 }
-
-/********************************************************************************/
-static vs_status_e
-_aes_cbc_decrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output) {
-#if 0
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_cbc_t *aes256_cbc = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
-    key_len = key_bitlen / 8;
-
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    aes256_cbc = vscf_aes256_cbc_new();
-
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_cbc_decrypted_len(aes256_cbc, buf_len));
-
-    vscf_aes256_cbc_set_key(aes256_cbc, vsc_data(key, key_len));
-    vscf_aes256_cbc_set_nonce(aes256_cbc, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS == vscf_aes256_cbc_decrypt(aes256_cbc, vsc_data(input, buf_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), vsc_buffer_len(out_buf));
-    }
-
-    vscf_aes256_cbc_delete(aes256_cbc);
-    vsc_buffer_delete(out_buf);
-
-    return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
-}
-
 
 /********************************************************************************/
 static vs_status_e
@@ -546,7 +545,7 @@ vs_secmodule_aes_decrypt(vs_iot_aes_type_e aes_type,
 
     switch (aes_type) {
     case VS_AES_CBC:
-        return _aes_cbc_decrypt(key, key_bitlen, iv, iv_len, buf_len, input, output);
+        return _aes_cbc_crypt(false, key, key_bitlen, iv, iv_len, buf_len, input, output);
     default:
         VS_IOT_ASSERT(false);
         return VS_CODE_ERR_NOT_IMPLEMENTED;
@@ -568,53 +567,16 @@ vs_secmodule_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                               const uint8_t *tag,
                               uint16_t tag_len) {
 
-#if 0
-    uint16_t key_len;
-    uint8_t add_data = 0;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_gcm_t *aes256_gcm = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
     CHECK_NOT_ZERO_RET(key, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(iv, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    if (add_len) {
-        CHECK_NOT_ZERO_RET(add, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    }
+    CHECK_RET(VS_AES_GCM == aes_type, VS_CODE_ERR_NOT_IMPLEMENTED, "AES GCM auth decrypt is only supported");
 
-    if (NULL == add) {
-        add = &add_data;
-    }
-
-    key_len = key_bitlen / 8;
-
-    if (VS_AES_GCM != aes_type || key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    aes256_gcm = vscf_aes256_gcm_new();
-
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_gcm_auth_decrypted_len(aes256_gcm, buf_len));
-
-    vscf_aes256_gcm_set_key(aes256_gcm, vsc_data(key, key_len));
-    vscf_aes256_gcm_set_nonce(aes256_gcm, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS ==
-        vscf_aes256_gcm_auth_decrypt(
-                aes256_gcm, vsc_data(input, buf_len), vsc_data(add, add_len), vsc_data(tag, tag_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), buf_len);
-    }
-
-    vscf_aes256_gcm_delete(aes256_gcm);
-    vsc_buffer_delete(out_buf);
-
-    return res;
-#endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    return _aes_gcm_crypt(
+            false, key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, (uint8_t *)tag, tag_len);
 }
 
 /********************************************************************************/

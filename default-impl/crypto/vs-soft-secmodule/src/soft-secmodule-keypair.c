@@ -263,6 +263,8 @@ vs_secmodule_keypair_get_pubkey(vs_iot_secmodule_slot_e slot,
                      _get_slot_name(slot));
     *keypair_type = keypair_storage->keypair_type;
 
+    ret_code = VS_CODE_ERR_CRYPTO;
+
     CHECK(keypair_storage->public_key_sz != 0, "Zero size public key");
     CHECK(keypair_storage->public_key_sz <= buf_sz,
           "Too big public key size %d bytes for buffer %d bytes",
@@ -311,6 +313,8 @@ vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
                      "Unable to load data from slot %d (%s)",
                      slot,
                      _get_slot_name(slot));
+
+    ret_code = VS_CODE_ERR_CRYPTO;
 
     CHECK(keypair_storage->private_key_sz != 0, "Zero size private key");
     CHECK(keypair_storage->private_key_sz <= buf_sz,
