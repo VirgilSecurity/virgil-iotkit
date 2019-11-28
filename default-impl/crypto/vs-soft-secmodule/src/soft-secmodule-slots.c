@@ -54,6 +54,9 @@ vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16
               "Slot name too big");
     VS_IOT_STRCPY((char *)id, slot_name);
 
+    // Remove the old file
+    STATUS_CHECK(res = _storage->impl_func.del(_storage->impl_data, id), "Can't delete file");
+
     CHECK(f = _storage->impl_func.open(_storage->impl_data, id), "Cannot open file");
 
     // Save data type to file
@@ -122,7 +125,7 @@ vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot) {
               "Slot name too big");
     VS_IOT_STRCPY((char *)id, slot_name);
 
-    return _storage->impl_func.del(_storage, id);
+    return _storage->impl_func.del(_storage->impl_data, id);
 }
 
 /******************************************************************************/
