@@ -43,6 +43,7 @@
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/pk_internal.h>
+#include <mbedtls/ecdh.h>
 
 #include "private/vs-soft-secmodule-internal.h"
 
@@ -714,6 +715,80 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
                   uint8_t *shared_secret,
                   uint16_t buf_sz,
                   uint16_t *shared_secret_sz) {
+    vs_status_e ret_code;
+    vs_secmodule_keypair_type_e prvkey_type;
+    int32_t slot_sz = _get_slot_size(slot);
+    uint16_t private_key_sz;
+    bool is_fast = false;
+    const char *pers = "virgil_compute_shared";
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    mbedtls_pk_context private_key_ctx;
+    mbedtls_pk_context public_key_ctx;
+    mbedtls_ecdh_context ecdh_ctx;
+    size_t required_sz;
+
+    CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(public_key_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(shared_secret, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(shared_secret_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    uint8_t private_key[slot_sz];
+
+    STATUS_CHECK_RET(vs_secmodule_keypair_get_prvkey(slot, private_key, slot_sz, &private_key_sz, &prvkey_type),
+                     "Unable to load private key data from slot %s",
+                     _get_slot_name(slot));
+    ret_code = VS_CODE_ERR_CRYPTO;
+
+    CHECK_RET(prvkey_type == keypair_type, VS_CODE_ERR_CRYPTO, "EC type of private and public key is not equal");
+
+    if ((VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type)) {
+        is_fast = true;
+    } else if (keypair_type > VS_KEYPAIR_EC_SECP_MAX) {
+        return VS_CODE_ERR_NOT_IMPLEMENTED;
+    }
+
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    mbedtls_pk_init(&private_key_ctx);
+    mbedtls_pk_init(&public_key_ctx);
+    VS_IOT_MEMSET(&ecdh_ctx, 0, sizeof(ecdh_ctx));
+
+    if (_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
+        _create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
+        0 == mbedtls_ctr_drbg_seed(
+                     &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) {
+
+        if (!is_fast) {
+            mbedtls_ecp_keypair *public_keypair = mbedtls_pk_ec(public_key_ctx);
+            mbedtls_ecp_keypair *private_keypair = mbedtls_pk_ec(private_key_ctx);
+            if (public_keypair && private_keypair && 0 == mbedtls_ecp_group_copy(&ecdh_ctx.grp, &public_keypair->grp) &&
+                0 == mbedtls_ecp_copy(&ecdh_ctx.Qp, &public_keypair->Q) &&
+                0 == mbedtls_ecp_copy(&ecdh_ctx.Q, &private_keypair->Q) &&
+                0 == mbedtls_mpi_copy(&ecdh_ctx.d, &private_keypair->d) &&
+                0 == mbedtls_ecdh_calc_secret(
+                             &ecdh_ctx, &required_sz, shared_secret, buf_sz, mbedtls_ctr_drbg_random, &ctr_drbg)) {
+                *shared_secret_sz = required_sz;
+                ret_code = VS_CODE_OK;
+            }
+
+        } else {
+
+            mbedtls_fast_ec_keypair_t *public_keypair_fast = mbedtls_pk_fast_ec(public_key_ctx);
+            mbedtls_fast_ec_keypair_t *private_keypair_fast = mbedtls_pk_fast_ec(private_key_ctx);
+            required_sz = mbedtls_fast_ec_get_shared_len(private_keypair_fast->info);
+
+            if (required_sz <= buf_sz && public_keypair_fast &&
+                0 == mbedtls_fast_ec_compute_shared(
+                             public_keypair_fast, private_keypair_fast, shared_secret, required_sz)) {
+                *shared_secret_sz = required_sz;
+                ret_code = VS_CODE_OK;
+            }
+        }
+    }
+
+
 #if 0
     vscf_impl_t *prvkey = NULL;
     vscf_impl_t *pubkey = NULL;
@@ -752,7 +827,13 @@ terminate:
     vscf_impl_delete(pubkey);
     return ret_code;
 #endif
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    mbedtls_ecdh_free(&ecdh_ctx);
+    mbedtls_entropy_free(&entropy);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_pk_free(&private_key_ctx);
+    mbedtls_pk_free(&public_key_ctx);
+
+    return ret_code;
 }
 
 /********************************************************************************/
