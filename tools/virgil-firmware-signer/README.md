@@ -1,21 +1,22 @@
 # Virgil Firmware Signer
-Virgil Firmware Signer is a CLI that allows you to sign a firmware using Auth private key and Firmware private key generated with the Virgil Trust Provisioner in order to provide firmware integrity before distributing it.
+Virgil Firmware Signer is a CLI utility that allows you to sign firmware using an Auth private key and a Firmware private key that have been generated with the Virgil Trust Provisioner in order to provide a mechanism for verifying firmware integrity before distributing it.
 
 ## Content
 - [Setting up Firmware Signer](#setting-up-firmware-signer)
   - [Linux OS](#linux-os)
   - [Ubuntu OS, Debian OS](#ubuntu-os-debian-os)
-  - [Cent OS, Fedora OS](#cent-os-fedora-os)
+  - [CentOS, Fedora OS](#centos-fedora-os)
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
+- [Firmware Distribution](#firmware-distribution)
 - [Firmware Structure](#firmware-structure)
 
 ## Setting up Firmware Signer
-This section demonstrates how to install and configure Virgil Firmware Signer for the preferred platform.
+This section demonstrates how to install and configure the Virgil Firmware Signer for your platform of choice.
 
 ### Install Firmware Signer
-This section provides instructions for installing Virgil Firmware Signer.
+This section provides instructions for installing the Virgil Firmware Signer.
 
 #### Linux OS
 Virgil Firmware Signer is distributed as a package.
@@ -44,7 +45,7 @@ $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Mac OS
-At this moment we don't provide builded package for Mac OS, thats why you have to build and run it by yourself using [cmake](https://cmake.org).
+We don't currently don't provide a built package for Mac OS, so you'll need to build and run it yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
@@ -55,13 +56,13 @@ $ make vs-tool-virgil-firmware-signer
 ```
 
 #### Windows OS
-Virgil Firmware Signer package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team support@VirgilSecurity.com.
+Virgil Firmware Signer package for Windows OS is currently in development. To join our mailing list to receive information on updates, please contact our support team at support@VirgilSecurity.com.
 
 ### Configure Virgil Firmware Signer
 After the Virgil Firmware Signer is installed, you need to set up the configuration file (```conf.json```).
 
 #### Config File Structure
-By default, ```conf.json``` file is placed in root folder of Virgil Firmware Signer repository. The Virgil Firmware Signer configuration file has the following format:
+By default, ```conf.json``` file is placed in root folder of the Virgil Firmware Signer repository. The Virgil Firmware Signer configuration file has the following format:
 
 ```bash
 [
@@ -82,7 +83,7 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
 | Variable | Description                                      |
 |----------|--------------------------------------------------|
 | path     | The path to Auth or Firmware keys                |
-| key_type | Type of the private key                          |
+| key_type | The type of private key                          |
 
 
 **Key Type**
@@ -99,18 +100,18 @@ By default, ```conf.json``` file is placed in root folder of Virgil Firmware Sig
 | Cloud Service Key | 9     |
 
 ## Command Reference
-Here is the list of the commands for Virgil Firmware Signer.
+Here is the list of commands for the Virgil Firmware Signer:
 
 ### Syntax
-The CLI has the following syntax.
+The CLI has the following syntax:
 
 ```bash
 virgil-firmware-signer [global options] command [command options] [arguments...]
 ```
-Use ```virgil-firmware-signer --help``` to view list of available arguments.
+Use ```virgil-firmware-signer --help``` to view a list of the available arguments.
 
 ### Signing Firmware
-The command below allows you to sign firmware using Auth and Firmware private key.
+The command below allows you to sign firmware using the Auth and Firmware private keys.
 
 | Command                                                                          | Result                                            |
 |----------------------------------------------------------------------------------|---------------------------------------------------|
@@ -118,11 +119,11 @@ The command below allows you to sign firmware using Auth and Firmware private ke
 
 After executing firmware signing command, Virgil Firmware Signer generates 2 files: ```_Update.bin``` and ```_Prog.bin```.
 
-```_Update.bin``` file is uploaded to a Firmware Service for further distribution to IoT devices.
+```_Update.bin``` file is uploaded to the firmware Service for further distribution to IoT devices.
 
 ```_Prog.bin``` file is delivered directly to IoT devices (e.g. for testing purpose).
 
-The difference between these files is that ```_Update.bin``` file has a ```header``` with additional information about firmware. The header helps to notify which will get the Firmware.
+The difference between these files is that ```_Update.bin``` file has a ```header``` with additional information about firmware. The header helps to inform which device will get the firmware.
 
 **Example**
 
@@ -141,10 +142,30 @@ virgil-firmware-signer --input “fw-VRGL-Cf01" --config “./conf.json” --fil
 | --help, -h                     | Show help (default: false)                       |
 | --version, -v                  | Print the version (default: false)               |
 
-## Firmware Structure
-This section contains information about the structure of signed firmware.
+## Firmware Distribution
+This section describes how to distribute a signed firmware to IoT devices.
 
-The structure below contains information about signed firmware structure of the ```_Update.bin file```.
+Once you signed your firmware using the Virgil Firmware Signer, you are able to distribute it to IoT gateway or IoT devices via the Virgil Cloud. IoT devices get notification about the new firmware at the moment they get online. In order to upload firmware to the Virgil Cloud you have to run the `publish-firmware.sh` script from the scripts folder of Virgil IoTKit.
+
+Here is how it works:
+- First of all you have to install [jq](https://stedolan.github.io/jq/download/) library.
+- Then navigate to your terminal (CLI) and run the `publish-firmware.sh` from [scripts folder](https://github.com/VirgilSecurity/virgil-iotkit/tree/master/scripts).
+
+```bash
+$ ./scripts/publish-firmware.sh --update-file [path to firmware *_update file] --app-token [Virgil AppToken]
+```
+
+- Once the firmware uploaded to the Virgil Cloud, an IoT gateway gets notification about available update.
+- The IoT gateway downloads a new firmware and verifies its signatures (signatures of Firmware and Auth Keys).
+- After firmware signatures are validated:
+  - IoT gateway accepts a new firmware in case it is intended for it,
+  - Or sends the firmware to IoT devices. IoT device also verifies received firmware and update it.
+
+
+## Firmware Structure
+This section contains information about the structure of the signed firmware.
+
+The structure below contains information about signed firmware structure of the `_Update.bin file`.
 
 ```bash
 type FirmwareContainer struct {

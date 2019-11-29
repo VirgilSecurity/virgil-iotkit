@@ -115,7 +115,7 @@ To start working with emulated IoT infrastructure you have to generate a trusted
 
 &nbsp;
 
-Sandbox uses [Virgil Trust Provisioner](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/tools/virgil-trust-provisioner) utility under the hood for this purpose.
+Sandbox uses [Virgil Trust Provisioner](/tools/virgil-trust-provisioner) utility under the hood for this purpose.
 
 - **Step #2. Emulate IoT devices**.
 
@@ -132,7 +132,7 @@ Generate both of them. The information about generated devices can be found in t
 
 To make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to make device provisioning.
 
-Sandbox uses the [Virgil Device Initializer](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/tools/virgil-device-initializer) for IoT devices provisioning to securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
+Sandbox uses the [Virgil Device Initializer](/tools/virgil-device-initializer) for IoT devices provisioning to securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
 
 The information about initialized (provisioned) devices can be found in the Sandbox window:
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/initialized_device.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
@@ -141,7 +141,7 @@ or in browser under http://localhost:8080 in the Device Initializer section.
 
 - **Step #4. Register IoT devices on the security platform**.
 
-At this step the [Virgil Device Registrar](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/tools/virgil-device-registrar) is used to register digital cards of IoT devices at Virgil Cloud for further device authentication and management.
+At this step the [Virgil Device Registrar](/tools/virgil-device-registrar) is used to register digital cards of IoT devices at Virgil Cloud for further device authentication and management.
 
 After the IoT devices were registered at Virgil they are conditionally shipped to end-user for further operations:
 
@@ -155,7 +155,7 @@ The information about registered IoT devices can be also found in Logs Viewer (h
 
 - **Step 5. Sign and publish new Firmware**.
 
-Now, you can emulate the process of creating and publishing new Firmware to Virgil Cloud. Sandbox uses [Virgil Firmware Signer](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/tools/virgil-firmware-signer) to sign a firmware before its distributing. Sandbox uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trustlists before updating them.
+Now, you can emulate the process of creating and publishing new Firmware to Virgil Cloud. Sandbox uses [Virgil Firmware Signer](/tools/virgil-firmware-signer) to sign a firmware before its distributing. Sandbox uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trustlists before updating them.
 
 <img width="320" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/update_firmware.png?demo" align="left" hspace="0" vspace="6">
 
@@ -179,7 +179,7 @@ The information about signed Firmware can be also found in Logs Viewer (http://l
 
 - **Step 6. Sign and publish new TrustList**.
 
-Now, you can emulate the process of creating and publishing new TrustList to Virgil Cloud. Sandbox uses [Virgil Trust Provisioner](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/tools/virgil-trust-provisioner) utility under the hood for this purpose.
+Now, you can emulate the process of creating and publishing new TrustList to Virgil Cloud. Sandbox uses [Virgil Trust Provisioner](/tools/virgil-trust-provisioner) utility under the hood for this purpose.
 After you generate a new TrustList it will be distributed to all IoT devices.
 
 After the new TrustList is successfully uploaded to the Virgil Cloud, IoT device gets information about new TrustList. Then TrustList is downloaded, verified using integrated crypto library and updated on all devices.
