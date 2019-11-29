@@ -9,6 +9,7 @@ Virgil Firmware Signer is a CLI utility that allows you to sign firmware using a
   - [Mac OS](#mac-os)
   - [Windows OS](#windows-os)
 - [Command Reference](#command-reference)
+- [Firmware Distribution](#firmware-distribution)
 - [Firmware Structure](#firmware-structure)
 
 ## Setting up Firmware Signer
@@ -141,10 +142,30 @@ virgil-firmware-signer --input “fw-VRGL-Cf01" --config “./conf.json” --fil
 | --help, -h                     | Show help (default: false)                       |
 | --version, -v                  | Print the version (default: false)               |
 
+## Firmware Distribution
+This section describes how to distribute a signed firmware to IoT devices.
+
+Once you signed your firmware using the Virgil Firmware Signer, you are able to distribute it to IoT gateway or IoT devices via the Virgil Cloud. IoT devices get notification about the new firmware at the moment they get online. In order to upload firmware to the Virgil Cloud you have to run the `publish-firmware.sh` script from the scripts folder of Virgil IoTKit.
+
+Here is how it works:
+- First of all you have to install [jq](https://stedolan.github.io/jq/download/) library.
+- Then navigate to your terminal (CLI) and run the `publish-firmware.sh` from scripts folder.
+
+```bash
+$ ./scripts/publish-firmware.sh --update-file [path to firmware *_update file] --app-token [Virgil AppToken]
+```
+
+- Once the firmware uploaded to the Virgil Cloud, an IoT gateway gets notification about available update.
+- The IoT gateway downloads a new firmware and verifies its signature.
+- After firmware signature is validated:
+  - IoT gateway accepts a new firmware in case it is intended for it,
+  - Or sends the firmware to IoT devices. IoT device also verifies received firmware and update it.
+
+
 ## Firmware Structure
 This section contains information about the structure of the signed firmware.
 
-The structure below contains information about signed firmware structure of the ```_Update.bin file```.
+The structure below contains information about signed firmware structure of the `_Update.bin file`.
 
 ```bash
 type FirmwareContainer struct {

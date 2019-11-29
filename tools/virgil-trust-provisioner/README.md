@@ -49,6 +49,7 @@ The Virgil Trust Provisioner is a command-line interface (CLI) utility used to m
         - [TrustList Management](#trustlist-management)
         - [TrustList Generation](#trustlist-generation)
         - [TrustList Uploading](#trustlist-uploading)
+        - [TrustList Distribution](#trustlist-distribution)
     - [Trust Provisioner Database](#trust-provisioner-database-1)
         - [Database Types](#database-types)
         - [Database Security](#database-security)
@@ -825,6 +826,25 @@ $ Please enter option number: 1
 
 ### TrustList Uploading
 TrustList updating is a release of the new TrustList. This function is used in case you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new TrustList to your IoT device.
+
+### TrustList Distribution
+This section describes how to distribute a TrustList to IoT devices.
+
+Once you generated your TrustList, you are able to distribute it to all your IoT devices via the Virgil Cloud. IoT devices will get notification as soon as they get online. In order to upload TrustList to the Virgil Cloud you have to run the `publish-trustlist.sh` script from the scripts folder of Virgil IoTKit.
+
+Here is how it works:
+- First of all you have to install [jq](https://stedolan.github.io/jq/download/) library.
+- Then navigate to your terminal (cli) and run the `publish-trustlist.sh` from scripts folder.
+
+```bash
+$ ./scripts/publish-firmware.sh --tl-file  [path to TrustList file] --app-token [Virgil AppToken]
+```
+
+- Once the TrustList uploaded to Virgil Cloud, an IoT gateway gets notification about new TrustList.
+- Then IoT gateway gets new TrustList, verifies its signatures and installs it.
+- At the same time, IoT gateway distributes TrustList to all IoT devices.
+- Every IoT device also verifies TrustList signatures and installs it.  
+
 
 ## Trust Provisioner Database
 This page contains information about Virgil Trust Provisioner database.
