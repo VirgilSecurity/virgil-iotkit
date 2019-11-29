@@ -220,7 +220,7 @@ vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
         return false;
     }
 
-    VS_IOT_MEMCPY(pubkey_raw, bs.p, bs.len);
+    VS_IOT_MEMMOVE(pubkey_raw, bs.p, bs.len);
     *pubkey_raw_sz = bs.len;
 
     return true;

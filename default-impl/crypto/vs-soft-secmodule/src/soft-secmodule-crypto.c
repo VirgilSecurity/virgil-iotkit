@@ -57,8 +57,7 @@
 #include <virgil/iot/status_code/status_code.h>
 
 #define RNG_MAX_REQUEST (256)
-#define MAX_INTERNAL_SIGN_SIZE (180)
-#define MAX_INTERNAL_PUBKEY_SIZE (180)
+
 /********************************************************************************/
 static vs_status_e
 vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
@@ -203,13 +202,10 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
                              &sign_len,
                              mbedtls_ctr_drbg_random,
                              &ctr_drbg) &&
-        sign_len <= UINT16_MAX) {
-        ret_code = VS_CODE_OK;
-    }
-
-    if (!vs_converters_mbedtls_sign_to_raw(
+        sign_len <= UINT16_MAX &&
+        vs_converters_mbedtls_sign_to_raw(
                 keypair_type, internal_sign, sign_len, signature, signature_buf_sz, signature_sz)) {
-        ret_code = VS_CODE_ERR_CRYPTO;
+        ret_code = VS_CODE_OK;
     }
 
     mbedtls_entropy_free(&entropy);

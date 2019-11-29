@@ -60,10 +60,11 @@ typedef struct __attribute__((__packed__)) {
 static vs_status_e
 _keypair_create_mbedtls(mbedtls_fast_ec_type_t fast_ec_type,
                         mbedtls_ecp_group_id key_type_mbedtls,
-                        unsigned int rsa_size,
                         uint8_t *public_key,
+                        uint16_t pubkey_buf_sz,
                         uint16_t *public_key_sz,
                         uint8_t *private_key,
+                        uint16_t prvkey_buf_sz,
                         uint16_t *private_key_sz) {
     vs_status_e res = VS_CODE_ERR_CRYPTO;
     const char *pers = "gen_keypair";
@@ -85,34 +86,29 @@ _keypair_create_mbedtls(mbedtls_fast_ec_type_t fast_ec_type,
             // EC except 25519 curves
             mbedtls_pk_setup(&pk_ctx, mbedtls_pk_info_from_type(MBEDTLS_PK_ECKEY));
             fl_keypair_ready =
-                    0 ==
-                    mbedtls_ecp_gen_key(key_type_mbedtls, mbedtls_pk_ec(pk_ctx), mbedtls_ctr_drbg_random, &ctr_drbg);
+                    (0 ==
+                     mbedtls_ecp_gen_key(key_type_mbedtls, mbedtls_pk_ec(pk_ctx), mbedtls_ctr_drbg_random, &ctr_drbg));
         } else if (MBEDTLS_FAST_EC_NONE != fast_ec_type) {
             mbedtls_pk_setup(&pk_ctx, mbedtls_pk_info_from_type(mbedtls_pk_from_fast_ec_type(fast_ec_type)));
             if (0 == mbedtls_fast_ec_setup(mbedtls_pk_fast_ec(pk_ctx), mbedtls_fast_ec_info_from_type(fast_ec_type)) &&
                 0 == mbedtls_fast_ec_gen_key(mbedtls_pk_fast_ec(pk_ctx), mbedtls_ctr_drbg_random, &ctr_drbg)) {
                 fl_keypair_ready = true;
             }
-        } else if (rsa_size) {
-            mbedtls_pk_setup(&pk_ctx, mbedtls_pk_info_from_type(MBEDTLS_PK_RSA));
-            if (0 == mbedtls_rsa_gen_key(mbedtls_pk_rsa(pk_ctx), mbedtls_ctr_drbg_random, &ctr_drbg, rsa_size, 65537)) {
-                fl_keypair_ready = true;
-            }
         }
 
         if (fl_keypair_ready) {
-            res_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key, KEY_SLOT_EXT_DATA_SIZE);
+            res_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key, pubkey_buf_sz);
             if (res_sz > 0) {
-                if (KEY_SLOT_EXT_DATA_SIZE > res_sz) {
-                    memmove(public_key, &public_key[KEY_SLOT_EXT_DATA_SIZE - res_sz], res_sz);
+                if (pubkey_buf_sz > res_sz) {
+                    memmove(public_key, &public_key[pubkey_buf_sz - res_sz], res_sz);
                 }
                 *public_key_sz = res_sz;
 
-                res_sz = mbedtls_pk_write_key_der(&pk_ctx, private_key, KEY_SLOT_EXT_DATA_SIZE);
+                res_sz = mbedtls_pk_write_key_der(&pk_ctx, private_key, prvkey_buf_sz);
 
                 if (res_sz > 0) {
-                    if (KEY_SLOT_EXT_DATA_SIZE > res_sz) {
-                        memmove(private_key, &private_key[KEY_SLOT_EXT_DATA_SIZE - res_sz], res_sz);
+                    if (prvkey_buf_sz > res_sz) {
+                        memmove(private_key, &private_key[prvkey_buf_sz - res_sz], res_sz);
                     }
                     *private_key_sz = res_sz;
 
@@ -131,13 +127,14 @@ _keypair_create_mbedtls(mbedtls_fast_ec_type_t fast_ec_type,
 static int
 _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
                          uint8_t *public_key,
+                         uint16_t pubkey_buf_sz,
                          uint16_t *public_key_sz,
                          uint8_t *private_key,
+                         uint16_t prvkey_buf_sz,
                          uint16_t *private_key_sz) {
 
     mbedtls_fast_ec_type_t fast_ec_type = MBEDTLS_FAST_EC_NONE;
     mbedtls_ecp_group_id key_type_mbedtls;
-    uint16_t rsa_sz = 0;
 
     switch (keypair_type) {
 
@@ -186,8 +183,14 @@ _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 
-    return _keypair_create_mbedtls(
-            fast_ec_type, key_type_mbedtls, rsa_sz, public_key, public_key_sz, private_key, private_key_sz);
+    return _keypair_create_mbedtls(fast_ec_type,
+                                   key_type_mbedtls,
+                                   public_key,
+                                   pubkey_buf_sz,
+                                   public_key_sz,
+                                   private_key,
+                                   prvkey_buf_sz,
+                                   private_key_sz);
 }
 
 /********************************************************************************/
@@ -202,19 +205,22 @@ vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_t
 
     uint8_t buf[slot_sz];
     keypair_storage_data *keypair_storage = (keypair_storage_data *)buf;
-    // TODO: Need to optimize memory usage
-    uint8_t private_key[KEY_SLOT_EXT_DATA_SIZE];
-    uint8_t public_key[KEY_SLOT_EXT_DATA_SIZE];
+    uint8_t public_key[MAX_INTERNAL_PUBKEY_SIZE];
     uint16_t public_key_sz;
     uint16_t private_key_sz;
     uint16_t storage_data_sz;
 
-    STATUS_CHECK_RET(_keypair_create_internal(keypair_type, public_key, &public_key_sz, private_key, &private_key_sz),
+    STATUS_CHECK_RET(_keypair_create_internal(keypair_type,
+                                              public_key,
+                                              sizeof(public_key),
+                                              &public_key_sz,
+                                              keypair_storage->data,
+                                              slot_sz - sizeof(keypair_storage_data),
+                                              &private_key_sz),
                      "Unable to create keypair");
 
     keypair_storage->keypair_type = keypair_type;
     keypair_storage->private_key_sz = (uint16_t)private_key_sz;
-    memcpy(keypair_storage->data, private_key, private_key_sz);
 
     CHECK_RET(vs_converters_pubkey_to_raw(keypair_type,
                                           public_key,
