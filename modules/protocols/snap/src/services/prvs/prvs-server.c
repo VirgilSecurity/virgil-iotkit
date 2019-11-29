@@ -53,6 +53,42 @@ static bool _prvs_service_ready = false;
 
 static vs_secmodule_impl_t *_secmodule = NULL;
 
+#define VS_PRVS_SERVER_PROFILE 1
+
+#if VS_PRVS_SERVER_PROFILE
+#include <sys/time.h>
+static long long _processing_time = 0;
+static long _calls_counter = 0;
+
+/******************************************************************************/
+static long long
+current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);                               // get current time
+    long long us = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate ms
+    return us;
+}
+
+#define VS_PRVS_SERVER_PROFILE_START                                                                                   \
+    long long t;                                                                                                       \
+    long long dt;                                                                                                      \
+    _calls_counter++;                                                                                                  \
+    t = current_timestamp()
+
+#define VS_PRVS_SERVER_PROFILE_END(DESC)                                                                               \
+    do {                                                                                                               \
+        dt = current_timestamp() - t;                                                                                  \
+        _processing_time += dt;                                                                                        \
+        VS_LOG_INFO("[" #DESC "]. Time op = %lld ms Total time: %lld ms Calls: %ld",                                   \
+                    dt,                                                                                                \
+                    _processing_time,                                                                                  \
+                    _calls_counter);                                                                                   \
+    } while (0)
+#else
+#define VS_PRVS_SERVER_PROFILE_START
+#define VS_PRVS_SERVER_PROFILE_END(DESC)
+#endif
+
 /******************************************************************************/
 static bool
 vs_prvs_server_is_initialized(void) {
@@ -69,6 +105,8 @@ vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
     uint16_t sign_sz = 0;
     vs_sign_t *sign;
     vs_status_e ret_code;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     // Check input parameters
     VS_IOT_ASSERT(device_info);
@@ -107,6 +145,8 @@ vs_prvs_server_device_info(vs_snap_prvs_devi_t *device_info, uint16_t buf_sz) {
 
     device_info->data_sz += sign_sz;
 
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_server_device_info);
+
     return VS_CODE_OK;
 }
 
@@ -116,12 +156,18 @@ vs_prvs_save_data(vs_snap_prvs_element_e element_id, const uint8_t *data, uint16
     uint16_t slot;
     vs_status_e ret_code;
 
+    VS_PRVS_SERVER_PROFILE_START;
+
     VS_IOT_ASSERT(_secmodule);
     VS_IOT_ASSERT(_secmodule->slot_save);
 
     STATUS_CHECK_RET(vs_provision_get_slot_num((vs_provision_element_id_e)element_id, &slot), "Unable to get slot");
 
-    return _secmodule->slot_save(slot, data, data_sz);
+    ret_code = _secmodule->slot_save(slot, data, data_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_save_data);
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -130,6 +176,8 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     uint16_t key_sz = 0;
     vs_secmodule_keypair_type_e ec_type;
     vs_status_e ret_code;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     VS_IOT_ASSERT(asav_response);
     VS_IOT_ASSERT(resp_sz);
@@ -151,40 +199,63 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     asav_response->meta_data_sz = 0;
     *resp_sz = sizeof(vs_pubkey_t) + key_sz;
 
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_finalize_storage);
+
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
 vs_prvs_start_save_tl(const uint8_t *data, uint16_t data_sz) {
+    vs_status_e ret_code;
     vs_tl_element_info_t info;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     info.id = VS_TL_ELEMENT_TLH;
     info.index = 0;
 
-    return vs_tl_save_part(&info, data, data_sz);
+    ret_code = vs_tl_save_part(&info, data, data_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_start_save_tl);
+
+    return ret_code;
 }
 
 /******************************************************************************/
 static vs_status_e
 vs_prvs_save_tl_part(const uint8_t *data, uint16_t data_sz) {
     vs_tl_element_info_t info;
+    vs_status_e ret_code;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     info.id = VS_TL_ELEMENT_TLC;
     info.index = 0;
 
-    return vs_tl_save_part(&info, data, data_sz);
+    ret_code = vs_tl_save_part(&info, data, data_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_save_tl_part);
+
+    return ret_code;
 }
 
 /******************************************************************************/
 static vs_status_e
 vs_prvs_finalize_tl(const uint8_t *data, uint16_t data_sz) {
     vs_tl_element_info_t info;
+    vs_status_e ret_code;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     info.id = VS_TL_ELEMENT_TLF;
     info.index = 0;
 
-    return vs_tl_save_part(&info, data, data_sz);
+    ret_code = vs_tl_save_part(&info, data, data_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_finalize_tl);
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -193,6 +264,8 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     uint16_t sign_sz;
     uint16_t pubkey_sz;
     vs_status_e ret_code;
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     VS_IOT_ASSERT(signature_sz);
     VS_IOT_ASSERT(data);
@@ -236,6 +309,8 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     response->ec_type = (uint8_t)keypair_type;
     *signature_sz = sizeof(vs_sign_t) + sign_sz + pubkey_sz;
 
+    VS_PRVS_SERVER_PROFILE_END(vs_prvs_sign_data);
+
     return VS_CODE_OK;
 }
 
@@ -247,6 +322,8 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
+
+    VS_PRVS_SERVER_PROFILE_START;
 
     vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
 
@@ -263,6 +340,8 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
     dnid_response->device_roles = vs_snap_device_roles();
     *response_sz = sizeof(vs_snap_prvs_dnid_element_t);
 
+    VS_PRVS_SERVER_PROFILE_END(_prvs_dnid_process_request);
+
     return VS_CODE_OK;
 }
 
@@ -272,7 +351,13 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
                                vs_snap_element_t element_id,
                                const uint8_t *key,
                                const uint16_t key_sz) {
-    return vs_prvs_save_data(element_id, key, key_sz);
+    VS_PRVS_SERVER_PROFILE_START;
+
+    vs_status_e ret_code = vs_prvs_save_data(element_id, key, key_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(_prvs_key_save_process_request);
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -287,12 +372,16 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
     vs_status_e ret_code;
     vs_snap_prvs_devi_t *devi_response = (vs_snap_prvs_devi_t *)response;
 
+    VS_PRVS_SERVER_PROFILE_START;
+
     STATUS_CHECK_RET(vs_prvs_server_device_info(devi_response, response_buf_sz), "Unable to get device info");
 
     *response_sz = sizeof(vs_snap_prvs_devi_t) + devi_response->data_sz;
 
     // Normalize byte order
     vs_snap_prvs_devi_t_encode(devi_response);
+
+    VS_PRVS_SERVER_PROFILE_END(_prvs_devi_process_request);
 
     return VS_CODE_OK;
 }
@@ -306,8 +395,14 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
 
+    VS_PRVS_SERVER_PROFILE_START;
+
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
-    return vs_prvs_finalize_storage(asav_response, response_sz);
+    vs_status_e ret_code = vs_prvs_finalize_storage(asav_response, response_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(_prvs_asav_process_request);
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -322,10 +417,14 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
     vs_status_e ret_code;
     uint16_t result_sz;
 
+    VS_PRVS_SERVER_PROFILE_START;
+
     STATUS_CHECK_RET(vs_prvs_sign_data(request, request_sz, response, response_buf_sz, &result_sz),
                      "Unable to sign data");
 
     *response_sz = result_sz;
+
+    VS_PRVS_SERVER_PROFILE_END(_prvs_asgn_process_request);
 
     return VS_CODE_OK;
 }
