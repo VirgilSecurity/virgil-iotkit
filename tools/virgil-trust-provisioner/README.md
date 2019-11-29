@@ -841,7 +841,7 @@ $ ./scripts/publish-firmware.sh --tl-file  [path to TrustList file] --app-token 
 ```
 
 - Once the TrustList uploaded to Virgil Cloud, an IoT gateway gets notification about new TrustList.
-- Then IoT gateway gets new TrustList, verifies its signatures and installs it.
+- Then IoT gateway gets new TrustList, verifies its signatures (signatures of Firmware and Auth Keys) and installs it.
 - At the same time, IoT gateway distributes TrustList to all IoT devices.
 - Every IoT device also verifies TrustList signatures and installs it.  
 

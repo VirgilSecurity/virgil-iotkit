@@ -156,8 +156,8 @@ $ ./scripts/publish-firmware.sh --update-file [path to firmware *_update file] -
 ```
 
 - Once the firmware uploaded to the Virgil Cloud, an IoT gateway gets notification about available update.
-- The IoT gateway downloads a new firmware and verifies its signature.
-- After firmware signature is validated:
+- The IoT gateway downloads a new firmware and verifies its signatures (signatures of Firmware and Auth Keys).
+- After firmware signatures are validated:
   - IoT gateway accepts a new firmware in case it is intended for it,
   - Or sends the firmware to IoT devices. IoT device also verifies received firmware and update it.
 
