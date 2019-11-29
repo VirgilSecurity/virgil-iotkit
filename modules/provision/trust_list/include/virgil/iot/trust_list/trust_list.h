@@ -67,8 +67,8 @@
  *
  * // ...
  *
- *     const vs_snap_service_t *snap_fldt_server;      // FLDT Server service
- *     vs_mac_addr_t mac_addr;                         // Own MAC address
+ *     vs_snap_service_t *snap_fldt_server;      // FLDT Server service
+ *     vs_mac_addr_t mac_addr;                   // Own MAC address
  *
  *     // Initialize mac_addr
  *
@@ -119,6 +119,11 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/trust_list/tl_structs.h>
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** Trust List initialization
  *
@@ -209,5 +214,10 @@ vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
  */
 void
 vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // TRUST_LIST_H

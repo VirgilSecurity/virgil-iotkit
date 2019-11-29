@@ -49,12 +49,16 @@
  * #vs_snap_service_t structure and register service by #vs_snap_register_service call.
  */
 
+#ifndef AP_SECURITY_SDK_SNAP_H
+#define AP_SECURITY_SDK_SNAP_H
+
 #include <stdint.h>
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -144,7 +148,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_register_service(const vs_snap_service_t *service);
+vs_snap_register_service(vs_snap_service_t *service);
 
 /** MAC address
  *
@@ -194,5 +198,8 @@ vs_snap_stat_t
 vs_snap_get_statistics(void);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
+
+#endif // AP_SECURITY_SDK_SNAP_H
