@@ -830,7 +830,7 @@ TrustList updating is a release of the new TrustList. This function is used in c
 ### TrustList Distribution
 This section describes how to distribute a TrustList to IoT devices.
 
-Once you generated your TrustList, you are able to distribute it to all your IoT devices via the Virgil Cloud. IoT devices will get notification as soon as they get online. In order to upload TrustList to the Virgil Cloud you have to run the `publish-trustlist.sh` script from the scripts folder of Virgil IoTKit.
+Once you generated your TrustList, you are able to distribute it to all your IoT devices via the Virgil Cloud. IoT devices will get notification as soon as they get online. In order to upload TrustList to the Virgil Cloud you have to run the `publish-trustlist.sh` script from the [scripts folder](https://github.com/VirgilSecurity/virgil-iotkit/tree/master/scripts) of Virgil IoTKit.
 
 Here is how it works:
 - First of all you have to install [jq](https://stedolan.github.io/jq/download/) library.
