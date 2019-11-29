@@ -45,7 +45,13 @@
 #include <stdbool.h>
 #include <virgil/iot/provision/provision-structs.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 struct vs_netif_t;
+struct vs_snap_service_t;
 struct vs_mac_addr_t;
 
 /**  SNAP transaction ID
@@ -64,12 +70,12 @@ typedef uint32_t vs_snap_service_id_t;
  */
 typedef uint32_t vs_snap_element_t;
 
-/** Received data callback
+/** Received data
  *
- * Callback for #vs_netif_init_t function callback.
- * This callback is used when new SNAP data has been loaded.
+ * Implementation for #vs_netif_init_t function.
+ * This implementation is used when new SNAP data has been loaded.
  *
- * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Received portion of data. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  * \param[out] packet_data Buffer to store packed data. Cannot be NULL.
@@ -83,12 +89,12 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
                                         const uint8_t **packet_data,
                                         uint16_t *packet_data_sz);
 
-/** Preprocessed data callback
+/** Preprocessed data
  *
- * Callback for #vs_netif_init_t function callback.
- * This callback is used to preprocess data.
+ * Implementation for #vs_netif_init_t function.
+ * This implementation is used to preprocess data.
  *
- * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
@@ -96,60 +102,67 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
  */
 typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
-/** Send data callback
+/** Send data
  *
- * Callback for \a tx member of #vs_netif_t structure.
- * This callback is used to send data.
+ * Implementation for \a tx member of #vs_netif_t structure.
+ * This function is used to send data.
  * Called from #vs_snap_send call.
  *
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Get MAC address
  *
- * Callback for \a mac_addr member of #vs_netif_t structure.
- * This callback is used to receive current MAC address.
+ * Implementation for \a mac_addr member of #vs_netif_t structure.
+ * This function is used to receive current MAC address.
  * Called from #vs_snap_mac_addr call.
  *
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[out] mac_addr #vs_mac_addr_t MAC address buffer. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
+typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 /** Initializer
  *
- * Callback for \a init member of #vs_netif_t structure.
- * This callback is used to initialize SNAP implementation.
+ * Implementation for \a init member of #vs_netif_t structure.
+ * This function is used to initialize SNAP implementation.
  * Called from #vs_snap_init call.
  *
- * \param[in] rx_cb #vs_netif_rx_cb_t  callback. Cannot be NULL.
- * \param[in] process_cb #vs_netif_process_cb_t callback. Cannot be NULL.
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
+ * \param[in] rx_cb #vs_netif_rx_cb_t implementation. Cannot be NULL.
+ * \param[in] process_cb #vs_netif_process_cb_t implementation. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
+                                       const vs_netif_rx_cb_t rx_cb,
+                                       const vs_netif_process_cb_t process_cb);
 
 /** Destructor
  *
- * Callback for \a deinit member of #vs_netif_t structure.
- * This callback is used to destroy SNAP implementation.
+ * Implementation for \a deinit member of #vs_netif_t structure.
+ * This function is used to destroy SNAP implementation.
  * Called from #vs_snap_deinit call.
+ *
+ * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_deinit_t)(void);
+typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
 
 /** SNAP Service Request Processor
  *
- * Callback for \a request_process member of #vs_snap_service_t structure.
- * This callback is called to process SNAP service \a request and to prepare \a response if needed.
+ * Implementation for \a request_process member of #vs_snap_service_t structure.
+ * This function is called to process SNAP service \a request and to prepare \a response if needed.
  *
- * \param[in] netif #vs_netif_t network interface. Cannot be NULL.
+ * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] request Request data buffer.
  * \param[in] request_sz Request data size.
@@ -159,7 +172,7 @@ typedef vs_status_e (*vs_netif_deinit_t)(void);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif_t *netif,
+typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_service_t *service,
                                                            vs_snap_element_t element_id,
                                                            const uint8_t *request,
                                                            const uint16_t request_sz,
@@ -169,10 +182,10 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
 
 /** SNAP Service Response Processor
  *
- * Callback for \a response_process member of #vs_snap_service_t structure.
- * This callback is called to process SNAP service response.
+ * Implementation for \a response_process member of #vs_snap_service_t structure.
+ * This function is called to process SNAP service response.
  *
- * \param[in] netif #vs_netif_t network interface. Cannot be NULL.
+ * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] is_ack Boolean flag indicating successful packet receiving
  * \param[in] response Response buffer.
@@ -180,7 +193,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_netif_t *netif,
+typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_service_t *service,
                                                             vs_snap_element_t element_id,
                                                             bool is_ack,
                                                             const uint8_t *response,
@@ -188,22 +201,26 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_neti
 
 /** SNAP Periodical data
  *
- * Callback for \a periodical_process member of #vs_snap_service_t structure.
- * This callback is called when there is no input data.
+ * Implementation for \a periodical_process member of #vs_snap_service_t structure.
+ * This function is called when there is no input data.
  * It can be used to send some statistical data as it is done for INFO service.
+ *
+ * \param[in] service Service interface with user data. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_periodical_processor_t)(void);
+typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_service_t *service);
 
 /** SNAP Service Destructor
  *
- * Callback for \a deinit member of #vs_snap_service_t structure.
- * This callback is called to destroy SNAP service.
+ * Implementation for \a deinit member of #vs_snap_service_t structure.
+ * This function is called to destroy SNAP service.
+ *
+ * \param[in] service Service interface with user data. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_deinit_t)(void);
+typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_snap_service_t *service);
 
 /** Device roles
  *
@@ -282,10 +299,10 @@ typedef struct vs_netif_t {
     void *user_data; /**< User data */
 
     // Functions
-    vs_netif_init_t init;     /**< Initialization callback */
-    vs_netif_deinit_t deinit; /**< Destroy callback */
-    vs_netif_tx_t tx;         /**< Transmit data callback */
-    vs_netif_mac_t mac_addr;  /**< MAC address callback */
+    vs_netif_init_t init;     /**< Initialization */
+    vs_netif_deinit_t deinit; /**< Destroy */
+    vs_netif_tx_t tx;         /**< Transmit data */
+    vs_netif_mac_t mac_addr;  /**< MAC address */
 
     // Incoming packet
     uint8_t packet_buf[VS_NETIF_PACKET_BUF_SIZE]; /**< Packet buffer */
@@ -297,12 +314,12 @@ typedef struct vs_netif_t {
  *
  * This structure contains SNAP service callbacks and service specific information
  */
-typedef struct {
+typedef struct vs_snap_service_t {
     void *user_data;                                           /**< User data */
     vs_snap_service_id_t id;                                   /**< Service ID */
-    vs_snap_service_request_processor_t request_process;       /**< Reqeust processing callback */
-    vs_snap_service_response_processor_t response_process;     /**< Response processing callback */
-    vs_snap_service_periodical_processor_t periodical_process; /**< Periodical task callback */
+    vs_snap_service_request_processor_t request_process;       /**< Reqeust processing */
+    vs_snap_service_response_processor_t response_process;     /**< Response processing */
+    vs_snap_service_periodical_processor_t periodical_process; /**< Periodical task */
     vs_snap_service_deinit_t deinit;                           /**< Destructor call */
 } vs_snap_service_t;
 
@@ -310,8 +327,13 @@ typedef struct {
 /** SNAP statistics
  */
 typedef struct {
-    uint32_t sent;     /**< Sents amount */
+    uint32_t sent;     /**< Sends amount */
     uint32_t received; /**< Receives amount */
 } vs_snap_stat_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_SNAP_STRUCTS_H

@@ -50,7 +50,7 @@
  *
  * Here you can see an example of FLDT client initialization :
  * \code
- *  const vs_snap_service_t *snap_fldt_client;
+ *  vs_snap_service_t *snap_fldt_client;
  *  snap_fldt_client = vs_snap_fldt_client( _on_file_updated );
  *  STATUS_CHECK( vs_snap_register_service( snap_fldt_client ), "Cannot register FLDT client service");
  *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ),
@@ -92,13 +92,14 @@
 
 #if FLDT_CLIENT
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** Got new file callback
  *
@@ -128,7 +129,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback);
 
 /** Add file type
@@ -155,7 +156,8 @@ vs_status_e
 vs_fldt_client_request_all_files(void);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // FLDT_CLIENT

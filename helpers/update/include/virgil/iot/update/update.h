@@ -54,6 +54,11 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/provision/provision.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** File types */
 enum vs_update_file_type_id_t {
     VS_UPDATE_FIRMWARE, /**< Firmware files for different manufactures and device types */
@@ -290,5 +295,10 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_storage_op_ctx_t *storage_context; /**< Storage context */
 
 } vs_update_interface_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_UPDATE_H

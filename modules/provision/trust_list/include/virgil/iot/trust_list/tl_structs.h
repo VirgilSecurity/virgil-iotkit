@@ -43,6 +43,11 @@
 #include <stdbool.h>
 #include <virgil/iot/provision/provision.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Trust List storage types */
 typedef enum {
     TL_STORAGE_TYPE_STATIC = 0, /**< Default Trust List backup for restoring it in case of provision error */
@@ -79,5 +84,10 @@ typedef struct vs_tl_element_info_s {
     vs_tl_element_e id;
     int index;
 } vs_tl_element_info_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // TL_STRUCTS_H
