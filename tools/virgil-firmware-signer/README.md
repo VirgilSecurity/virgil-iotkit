@@ -149,7 +149,7 @@ Once you signed your firmware using the Virgil Firmware Signer, you are able to 
 
 Here is how it works:
 - First of all you have to install [jq](https://stedolan.github.io/jq/download/) library.
-- Then navigate to your terminal (CLI) and run the `publish-firmware.sh` from scripts folder.
+- Then navigate to your terminal (CLI) and run the `publish-firmware.sh` from [scripts folder](./scripts).
 
 ```bash
 $ ./scripts/publish-firmware.sh --update-file [path to firmware *_update file] --app-token [Virgil AppToken]

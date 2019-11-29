@@ -54,7 +54,7 @@ Virgil Security also provides a set of tools for secure device lifecycle:
 <div id='run-iotkit-sandbox'/>
 
 ## Run IoTKit Sandbox
-To demonstrate our IoTKit in action we developed [Sandbox based on IoTKit](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
+To demonstrate our IoTKit in action we developed [Sandbox based on IoTKit](/scripts).
 
 The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user) and shows the secure lifecycle of IoT devices. The Sandbox allows you to:
 - **Generate trusted provisioning package**. To start working with emulated IoT infrastructure, the Sandbox uses Virgil Trust Provisioner utility for generating provisioning files, such as private keys (e.g. for factory, firmware) and a distributed TrustList that contains public keys and signatures of trusted service providers (e.g. factory, cloud).
@@ -67,7 +67,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
 
 
-To start working with the Sandbox follow [Sandbox README](https://github.com/VirgilSecurity/virgil-iotkit/tree/release/v0.1.0-alpha/scripts).
+To start working with the Sandbox follow [Sandbox README](/scripts).
 
 <div id='modules'/>
 
