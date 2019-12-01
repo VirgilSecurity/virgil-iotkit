@@ -45,7 +45,7 @@ $ sudo yum install virgil-iot-sdk-tools
 ```
 
 #### Mac OS
-We don't currently don't provide a built package for Mac OS, so you'll need to build and run it yourself using [cmake](https://cmake.org).
+At this moment we don't provide a built package for Mac OS, so you'll have to build and run it by yourself using [cmake](https://cmake.org).
 
 ```bash
 $ git clone --recursive https://github.com/VirgilSecurity/virgil-iot-sdk.git
