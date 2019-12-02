@@ -64,7 +64,7 @@ static vs_fldt_server_add_filetype_cb _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
 static vs_status_e
-_fldt_destroy_server(struct vs_snap_service_t *service);
+_fldt_destroy_server(vs_snap_service_user_data_t service_user_data);
 
 /******************************************************************/
 static vs_fldt_server_file_type_mapping_t *
@@ -585,11 +585,11 @@ terminate:;
 
 /******************************************************************/
 static vs_status_e
-_fldt_destroy_server(struct vs_snap_service_t *service) {
+_fldt_destroy_server(vs_snap_service_user_data_t service_user_data) {
     uint32_t id;
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
-    (void)service;
+    (void)service_user_data;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
         file_type_mapping->update_context->free_item(file_type_mapping->update_context->storage_context,
@@ -604,14 +604,14 @@ _fldt_destroy_server(struct vs_snap_service_t *service) {
 
 /******************************************************************************/
 static int
-_fldt_server_request_processor(struct vs_snap_service_t *service,
+_fldt_server_request_processor(vs_snap_service_user_data_t service_user_data,
                                vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void)service;
+    (void)service_user_data;
 
     *response_sz = 0;
 
@@ -639,12 +639,12 @@ _fldt_server_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static int
-_fldt_server_response_processor(struct vs_snap_service_t *service,
+_fldt_server_response_processor(vs_snap_service_user_data_t service_user_data,
                                 vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
-    (void)service;
+    (void)service_user_data;
 
     if (!is_ack) {
         VS_LOG_WARNING("Received response %08x packet with is_ack == false", element_id);

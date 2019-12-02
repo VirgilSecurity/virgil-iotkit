@@ -81,7 +81,12 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-struct vs_snap_prvs_client_impl_t;
+/** User data for prvs client
+ *
+ * High level user data for PRVS Client service user. For example, C++ can store here pointer to the class
+ * instance that implements it.
+ */
+typedef void *vs_prvs_client_user_data_t;
 
 /** Stop waiting implementation
  *
@@ -90,33 +95,35 @@ struct vs_snap_prvs_client_impl_t;
  * \a stop_wait_func member or #vs_snap_prvs_client_impl_t structure.
  * \a wait_func member or #vs_snap_prvs_client_impl_t structure.
  *
- * \param[in] ctx Service context.
+ * \param[in] prvs_client_user_data PRVS Client service user data.
  * \param[in] condition Condition buffer. Must not be NULL.
  * \param[in] expect Expected value to be set.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(struct vs_snap_prvs_client_impl_t *ctx, int *condition, int expect);
+typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(vs_prvs_client_user_data_t *prvs_client_user_data,
+                                                int *condition,
+                                                int expect);
 
 /** Wait implementation
  *
  * This function checks \a condition variable during \a wait_ms when it will be equal to the \a idle condition
  *
- * \param[in] ctx Service context.
+ * \param[in] prvs_client_user_data PRVS Client service user data.
  * \param[in] wait_ms Wait in milliseconds.
  * \param[in] condition Condition buffer. Must not be NULL.
  * \param[in] idle Idle condition.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_wait_t)(struct vs_snap_prvs_client_impl_t *ctx,
+typedef vs_status_e (*vs_snap_prvs_wait_t)(vs_prvs_client_user_data_t *prvs_client_user_data,
                                            uint32_t wait_ms,
                                            int *condition,
                                            int idle);
 
 /** PRVS client implementation */
 typedef struct vs_snap_prvs_client_impl_t {
-    void *user_data;                         /**< User data */
+    vs_prvs_client_user_data_t user_data;    /**< User data */
     vs_snap_prvs_stop_wait_t stop_wait_func; /**< Stop waiting implementation */
     vs_snap_prvs_wait_t wait_func;           /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;

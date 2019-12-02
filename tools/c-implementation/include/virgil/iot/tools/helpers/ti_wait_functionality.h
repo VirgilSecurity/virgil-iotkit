@@ -40,9 +40,9 @@
 #include <virgil/iot/protocols/snap/prvs/prvs-client.h>
 
 vs_status_e
-vs_wait_func(struct vs_snap_prvs_client_impl_t *ctx, uint32_t wait_ms, int *condition, int idle);
+vs_wait_func(vs_snap_service_user_data_t service_user_data, uint32_t wait_ms, int *condition, int idle);
 
 vs_status_e
-vs_wait_stop_func(struct vs_snap_prvs_client_impl_t *ctx, int *condition, int expect);
+vs_wait_stop_func(vs_snap_service_user_data_t service_user_data, int *condition, int expect);
 
 #endif // VS_TOOLS_WAIT_FUNCTIONALITY_H

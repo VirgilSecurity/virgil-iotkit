@@ -83,17 +83,17 @@
  * \code
  *
  * vs_status_e
- * _device_start_impl(struct vs_snap_service_t *service, vs_snap_info_device_t *device) {
+ * _device_start_impl(vs_snap_service_user_data_t service_user_data, vs_snap_info_device_t *device) {
  *      // Process startup notification
  *  }
  *
  * vs_status_e
- * _general_info_impl(struct vs_snap_service_t *service, vs_info_general_t *general_info) {
+ * _general_info_impl(vs_snap_service_user_data_t service_user_data, vs_info_general_t *general_info) {
  *      // Process general device information
  *  }
  *
  * vs_status_e
- * _statistics_impl(struct vs_snap_service_t *service, vs_info_statistics_t *statistics) {
+ * _statistics_impl(vs_snap_service_user_data_t service_user_data, vs_info_statistics_t *statistics) {
  *      // Process device statistics
  *  }
 
@@ -149,12 +149,13 @@ typedef vs_status_e (*vs_snap_info_stop_wait_t)(int *condition, int expect);
  *
  * This function is called by receiving startup notification from device.
  *
- * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] service Snap Service user data.
  * \param[in] device Device statical information. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_service_t *service, vs_snap_info_device_t *device);
+typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(vs_snap_service_user_data_t service_user_data,
+                                                     vs_snap_info_device_t *device);
 
 /** General device information request
  *
@@ -163,12 +164,13 @@ typedef vs_status_e (*vs_snap_info_start_notif_cb_t)(struct vs_snap_service_t *s
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_GENERAL bit.
  *
- * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] service_user_data Snap Service user data.
  * \param[in] general_info Device general information. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_service_t *service, vs_info_general_t *general_info);
+typedef vs_status_e (*vs_snap_info_general_cb_t)(vs_snap_service_user_data_t service_user_data,
+                                                 vs_info_general_t *general_info);
 
 /** Device statistics request
  *
@@ -177,12 +179,12 @@ typedef vs_status_e (*vs_snap_info_general_cb_t)(struct vs_snap_service_t *servi
  * General device information polling is started by #vs_snap_info_set_polling call when \a elements contains
  * VS_SNAP_INFO_STATISTICS bit.
  *
- * \param[in] service Snap Service context with user data. Cannot be NULL.
+ * \param[in] service_user_data Snap Service user data.
  * \param[in] statistics Device statistics. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_info_statistics_cb_t)(struct vs_snap_service_t *service,
+typedef vs_status_e (*vs_snap_info_statistics_cb_t)(vs_snap_service_user_data_t service_user_data,
                                                     vs_info_statistics_t *statistics);
 
 /** INFO client implementations

@@ -349,14 +349,14 @@ _prvs_finalize_tl_process_request(const uint8_t *request, const uint16_t request
 
 /******************************************************************************/
 static vs_status_e
-_prvs_service_request_processor(struct vs_snap_service_t *service,
+_prvs_service_request_processor(vs_snap_service_user_data_t service_user_data,
                                 vs_snap_element_t element_id,
                                 const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
-    (void)service;
+    (void)service_user_data;
 
     *response_sz = 0;
 
