@@ -101,7 +101,7 @@ typedef void *vs_prvs_client_user_data_t;
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(vs_prvs_client_user_data_t *prvs_client_user_data,
+typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(vs_prvs_client_user_data_t prvs_client_user_data,
                                                 int *condition,
                                                 int expect);
 
@@ -116,7 +116,7 @@ typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(vs_prvs_client_user_data_t *prvs
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_wait_t)(vs_prvs_client_user_data_t *prvs_client_user_data,
+typedef vs_status_e (*vs_snap_prvs_wait_t)(vs_prvs_client_user_data_t prvs_client_user_data,
                                            uint32_t wait_ms,
                                            int *condition,
                                            int idle);

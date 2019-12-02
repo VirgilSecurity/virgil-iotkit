@@ -47,8 +47,8 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 
 /******************************************************************************/
 vs_status_e
-vs_wait_stop_func(vs_snap_service_user_data_t service_user_data, int *condition, int expect) {
-    (void)service_user_data;
+vs_wait_stop_func(vs_prvs_client_user_data_t prvs_client_user_data, int *condition, int expect) {
+    (void)prvs_client_user_data;
 
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
         VS_LOG_ERROR("pthread_mutex_lock %s %d", strerror(errno), errno);
@@ -79,11 +79,11 @@ _is_greater_timespec(struct timespec a, struct timespec b) {
 
 /******************************************************************************/
 vs_status_e
-vs_wait_func(vs_snap_service_user_data_t service_user_data, uint32_t wait_ms, int *condition, int idle) {
+vs_wait_func(vs_prvs_client_user_data_t prvs_client_user_data, uint32_t wait_ms, int *condition, int idle) {
     struct timespec time_to_wait;
     struct timespec ts_now;
 
-    (void)service_user_data;
+    (void)prvs_client_user_data;
 
     // Check for expected condition
     if (*condition != idle) {
