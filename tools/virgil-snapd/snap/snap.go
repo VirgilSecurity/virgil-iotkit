@@ -171,7 +171,7 @@ func roles2strings(roles C.uint32_t) []string {
 }
 
 //export goDeviceStartNotifCb
-func goDeviceStartNotifCb(service_user_data *C.vs_snap_service_user_data_t, device *C.vs_snap_info_device_t) C.int {
+func goDeviceStartNotifCb(service_user_data C.vs_snap_service_user_data_t, device *C.vs_snap_info_device_t) C.int {
      if 0 != C._set_polling() {
         utils.Log.Println("can't set devices polling. SNAP:INFO:POLL error")
         return -1
@@ -181,7 +181,7 @@ func goDeviceStartNotifCb(service_user_data *C.vs_snap_service_user_data_t, devi
 }
 
 //export goGeneralInfoCb
-func goGeneralInfoCb(service_user_data *C.vs_snap_service_user_data_t, general_info *C.vs_info_general_t) C.int {
+func goGeneralInfoCb(service_user_data C.vs_snap_service_user_data_t, general_info *C.vs_info_general_t) C.int {
     if nil != generalInfoCb {
         var goInfo devices.DeviceInfo
         goInfo.ID = ""
@@ -206,7 +206,7 @@ func goGeneralInfoCb(service_user_data *C.vs_snap_service_user_data_t, general_i
 }
 
 //export goDeviceStatCb
-func goDeviceStatCb(service_user_data *C.vs_snap_service_user_data_t, stat *C.vs_info_statistics_t) C.int {
+func goDeviceStatCb(service_user_data C.vs_snap_service_user_data_t, stat *C.vs_info_statistics_t) C.int {
     if nil != statisticsCb {
         var goStat devices.DeviceInfo
         goStat.MAC = mac2string(&stat.default_netif_mac[0])
