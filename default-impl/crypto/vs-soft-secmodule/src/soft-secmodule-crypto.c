@@ -407,9 +407,9 @@ _aes_cbc_crypt(bool is_encrypt,
     vs_status_e res = VS_CODE_ERR_CRYPTO;
     size_t sz;
     uint8_t *padding_ptr;
-    uint8_t tmp_padding[16];
+    uint8_t tmp_padding[VS_AES_256_BLOCK_SIZE];
 
-    CHECK_RET(256 == key_bitlen, VS_CODE_ERR_NOT_IMPLEMENTED, "Unsupported key len");
+    CHECK_RET(VS_AES_256_KEY_BITLEN == key_bitlen, VS_CODE_ERR_NOT_IMPLEMENTED, "Unsupported key len");
     CHECK_RET(0 == mbedtls_cipher_setup(&ctx, mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_CBC)),
               VS_CODE_ERR_CRYPTO,
               "Error cipher setup");
@@ -474,9 +474,10 @@ _aes_gcm_crypt(bool is_encrypt,
 
     // Auth tag check if decrypt
     if (!is_encrypt) {
-        uint8_t check_tag[16];
-        CHECK(0 == mbedtls_gcm_finish(&ctx, check_tag, 16), "AES GCM CRYPTO authenticated decryption failed");
-        MEMCMP_CHECK(tag, check_tag, 16);
+        uint8_t check_tag[VS_AES_256_GCM_AUTH_TAG_SIZE];
+        CHECK(0 == mbedtls_gcm_finish(&ctx, check_tag, VS_AES_256_GCM_AUTH_TAG_SIZE),
+              "AES GCM CRYPTO authenticated decryption failed");
+        MEMCMP_CHECK(tag, check_tag, VS_AES_256_GCM_AUTH_TAG_SIZE);
     } else {
         CHECK(0 == mbedtls_gcm_finish(&ctx, tag, tag_len), "AES GCM CRYPTO error encryption/decryption");
     }

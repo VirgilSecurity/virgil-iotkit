@@ -62,6 +62,14 @@
 #define VS_HASH_SHA384_LEN (48)
 #define VS_HASH_SHA512_LEN (64)
 
+#define VS_AES_256_KEY_SIZE (32)
+#define VS_AES_256_KEY_BITLEN (VS_AES_256_KEY_SIZE * 8)
+#define VS_AES_256_BLOCK_SIZE (16)
+
+#define VS_AES_256_GCM_IV_SIZE (12)
+#define VS_AES_256_GCM_AUTH_TAG_SIZE (16)
+
+#define VS_AES_256_CBC_IV_SIZE (16)
 
 /** Get public key length
  *

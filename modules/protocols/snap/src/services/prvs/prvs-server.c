@@ -53,7 +53,7 @@ static bool _prvs_service_ready = false;
 
 static vs_secmodule_impl_t *_secmodule = NULL;
 
-#define VS_PRVS_SERVER_PROFILE 0
+#define VS_PRVS_SERVER_PROFILE 1
 
 #if VS_PRVS_SERVER_PROFILE
 #include <sys/time.h>
@@ -72,8 +72,10 @@ current_timestamp() {
 #define VS_PRVS_SERVER_PROFILE_START                                                                                   \
     long long t;                                                                                                       \
     long long dt;                                                                                                      \
-    _calls_counter++;                                                                                                  \
-    t = current_timestamp()
+    do {                                                                                                               \
+        _calls_counter++;                                                                                              \
+        t = current_timestamp();                                                                                       \
+    } while (0)
 
 #define VS_PRVS_SERVER_PROFILE_END(DESC)                                                                               \
     do {                                                                                                               \
