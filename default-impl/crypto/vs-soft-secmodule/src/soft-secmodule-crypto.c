@@ -36,6 +36,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
+#include "mbedtls/sha512.h"
+#include <mbedtls/kdf.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/pk_internal.h>
+#include <mbedtls/ecdh.h>
+#include <mbedtls/gcm.h>
+#include <mbedtls/cipher.h>
+
 #include "private/vs-soft-secmodule-internal.h"
 
 #include <virgil/iot/secmodule/secmodule.h>
@@ -44,30 +55,6 @@
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
-
-#include <virgil/crypto/foundation/vscf_secp256r1_private_key.h>
-#include <virgil/crypto/foundation/vscf_secp256r1_public_key.h>
-#include <virgil/crypto/foundation/vscf_curve25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_curve25519_public_key.h>
-#include <virgil/crypto/foundation/vscf_ed25519_private_key.h>
-#include <virgil/crypto/foundation/vscf_ed25519_public_key.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/foundation/vscf_rsa_private_key.h>
-#include <virgil/crypto/foundation/vscf_rsa_public_key.h>
-#include <virgil/crypto/foundation/vscf_sha256.h>
-#include <virgil/crypto/foundation/vscf_sha384.h>
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/foundation/vscf_sign_hash.h>
-#include <virgil/crypto/foundation/vscf_verify_hash.h>
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
-#include <virgil/crypto/foundation/vscf_aes256_gcm.h>
-#include <virgil/crypto/foundation/vscf_aes256_cbc.h>
-#include <virgil/crypto/foundation/vscf_kdf2.h>
-#include <virgil/crypto/foundation/vscf_hmac.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/vsc_data.h>
 
 #define RNG_MAX_REQUEST (256)
 
@@ -79,191 +66,93 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
                          uint8_t *hash,
                          uint16_t hash_buf_sz,
                          uint16_t *hash_sz) {
-    vsc_data_t in_data;
-    vsc_buffer_t out_data;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
 
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash_buf_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    VS_LOG_DEBUG("Generate hash %s for data size %d", vs_secmodule_hash_type_descr(hash_type), data_sz);
-
-    in_data = vsc_data(data, data_sz);
-
-    vsc_buffer_init(&out_data);
-    vsc_buffer_use(&out_data, hash, hash_buf_sz);
+    vs_status_e res = VS_CODE_OK;
 
     switch (hash_type) {
     case VS_HASH_SHA_256:
-        vscf_sha256_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA256_LEN;
+        mbedtls_sha256(data, data_sz, hash, 0);
         break;
 
     case VS_HASH_SHA_384:
-        vscf_sha384_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA384_LEN;
+        mbedtls_sha512(data, data_sz, hash, 1);
         break;
 
     case VS_HASH_SHA_512:
-        vscf_sha512_hash(in_data, &out_data);
+        *hash_sz = VS_HASH_SHA512_LEN;
+        mbedtls_sha512(data, data_sz, hash, 0);
         break;
 
     default:
         assert(false && "Unsupported hash type");
         VS_LOG_ERROR("Unsupported hash type");
-        goto terminate;
-    }
-
-    *hash_sz = vsc_buffer_len(&out_data);
-
-    VS_LOG_DEBUG("Hash size %d, type %s", *hash_sz, vs_secmodule_hash_type_descr(hash_type));
-
-    res = VS_CODE_OK;
-
-terminate:
-
-    if (VS_CODE_OK != res) {
-        vsc_buffer_cleanup(&out_data);
-    }
-
-    return res;
-}
-
-/********************************************************************************/
-static vs_status_e
-_load_prvkey(vs_iot_secmodule_slot_e key_slot, vscf_impl_t **prvkey, vs_secmodule_keypair_type_e *keypair_type) {
-    uint8_t prvkey_buf[MAX_KEY_SZ];
-    uint16_t prvkey_buf_sz = sizeof(prvkey_buf);
-    vsc_data_t prvkey_data;
-    vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
-
-    CHECK_NOT_ZERO_RET(prvkey, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(keypair_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
-    STATUS_CHECK_RET(vs_secmodule_keypair_get_prvkey(key_slot, prvkey_buf, prvkey_buf_sz, &prvkey_buf_sz, keypair_type),
-                     "Unable to load private key data from slot %s",
-                     get_slot_name(key_slot));
-
-    prvkey_data = vsc_data(prvkey_buf, prvkey_buf_sz);
-
-    switch (*keypair_type) {
-    case VS_KEYPAIR_EC_SECP256R1:
-        *prvkey = vscf_secp256r1_private_key_impl(vscf_secp256r1_private_key_new());
-        CHECK_VSCF(vscf_secp256r1_private_key_import_private_key((vscf_secp256r1_private_key_t *)*prvkey, prvkey_data),
-                   "Unable to import private key");
-        break;
-
-    case VS_KEYPAIR_EC_CURVE25519:
-        *prvkey = vscf_curve25519_private_key_impl(vscf_curve25519_private_key_new());
-        CHECK_VSCF(
-                vscf_curve25519_private_key_import_private_key((vscf_curve25519_private_key_t *)*prvkey, prvkey_data),
-                "Unable to import private key");
-        break;
-
-    case VS_KEYPAIR_EC_ED25519:
-        *prvkey = vscf_ed25519_private_key_impl(vscf_ed25519_private_key_new());
-        CHECK_VSCF(vscf_ed25519_private_key_import_private_key((vscf_ed25519_private_key_t *)*prvkey, prvkey_data),
-                   "Unable to import private key");
-        break;
-
-    case VS_KEYPAIR_RSA_2048:
-        *prvkey = vscf_rsa_private_key_impl(vscf_rsa_private_key_new());
-        CHECK_VSCF(vscf_rsa_private_key_import_private_key((vscf_rsa_private_key_t *)*prvkey, prvkey_data),
-                   "Unable to import private key");
-        break;
-
-
-    default:
-        assert(false && "Unsupported keypair type");
-        VS_LOG_ERROR("Unsupported keypair type %d (%s)", keypair_type, vs_secmodule_keypair_type_descr(*keypair_type));
-        ret_code = VS_CODE_ERR_NOT_IMPLEMENTED;
-        goto terminate;
-    }
-
-    ret_code = VS_CODE_OK;
-
-terminate:
-
-    return ret_code;
-}
-
-/********************************************************************************/
-static vs_status_e
-_create_pubkey_ctx(vs_secmodule_keypair_type_e keypair_type,
-                   const uint8_t *public_key,
-                   uint16_t public_key_sz,
-                   vscf_impl_t **pubkey) {
-    vs_status_e res = VS_CODE_OK;
-
-    *pubkey = NULL;
-
-    switch (keypair_type) {
-    case VS_KEYPAIR_EC_SECP256R1:
-        *pubkey = vscf_secp256r1_public_key_impl(vscf_secp256r1_public_key_new());
-        CHECK_RET(vscf_status_SUCCESS ==
-                          vscf_secp256r1_public_key_import_public_key((vscf_secp256r1_public_key_t *)*pubkey,
-                                                                      vsc_data(public_key, public_key_sz)),
-                  VS_CODE_ERR_CRYPTO,
-                  "Unable to import public key");
-        break;
-
-    case VS_KEYPAIR_EC_CURVE25519:
-        *pubkey = vscf_curve25519_public_key_impl(vscf_curve25519_public_key_new());
-        CHECK_RET(vscf_status_SUCCESS ==
-                          vscf_curve25519_public_key_import_public_key((vscf_curve25519_public_key_t *)*pubkey,
-                                                                       vsc_data(public_key, public_key_sz)),
-                  VS_CODE_ERR_CRYPTO,
-                  "Unable to import public key");
-        break;
-
-    case VS_KEYPAIR_EC_ED25519:
-        *pubkey = vscf_ed25519_public_key_impl(vscf_ed25519_public_key_new());
-        CHECK_RET(vscf_status_SUCCESS == vscf_ed25519_public_key_import_public_key((vscf_ed25519_public_key_t *)*pubkey,
-                                                                                   vsc_data(public_key, public_key_sz)),
-                  VS_CODE_ERR_CRYPTO,
-                  "Unable to import public key");
-        break;
-
-    case VS_KEYPAIR_RSA_2048:
-        *pubkey = vscf_rsa_public_key_impl(vscf_rsa_public_key_new());
-        CHECK_RET(vscf_status_SUCCESS == vscf_rsa_public_key_import_public_key((vscf_rsa_public_key_t *)*pubkey,
-                                                                               vsc_data(public_key, public_key_sz)),
-                  VS_CODE_ERR_CRYPTO,
-                  "Unable to import public key");
-        break;
-
-    default:
-        VS_LOG_ERROR("Unsupported keypair type %d (%s)", keypair_type, vs_secmodule_keypair_type_descr(keypair_type));
         res = VS_CODE_ERR_NOT_IMPLEMENTED;
+        break;
     }
 
     return res;
+}
+
+/********************************************************************************/
+static mbedtls_md_type_t
+_hash_to_mbedtls(vs_secmodule_hash_type_e hash_type) {
+    switch (hash_type) {
+    case VS_HASH_SHA_256:
+        return MBEDTLS_MD_SHA256;
+    case VS_HASH_SHA_384:
+        return MBEDTLS_MD_SHA384;
+    case VS_HASH_SHA_512:
+        return MBEDTLS_MD_SHA512;
+    default:
+        return MBEDTLS_MD_NONE;
+    }
 }
 
 /********************************************************************************/
 static bool
-_set_hash_info(vs_secmodule_hash_type_e hash_type, vscf_alg_id_t *hash_id, uint16_t *hash_sz) {
+_create_context_for_private_key(mbedtls_pk_context *ctx, const uint8_t *private_key, size_t private_key_sz) {
+    mbedtls_pk_context res;
+    mbedtls_pk_init(&res);
 
-    *hash_sz = (uint16_t)vs_secmodule_get_hash_len(hash_type);
-
-    switch (hash_type) {
-    case VS_HASH_SHA_256:
-        *hash_id = vscf_alg_id_SHA256;
+    if (0 == mbedtls_pk_parse_key(&res, (const unsigned char *)private_key, private_key_sz, NULL, 0)) {
+        *ctx = res;
         return true;
+    }
+    return false;
+}
 
-    case VS_HASH_SHA_384:
-        *hash_id = vscf_alg_id_SHA384;
-        return true;
+/********************************************************************************/
+static bool
+_create_context_for_public_key(mbedtls_pk_context *ctx,
+                               vs_secmodule_keypair_type_e keypair_type,
+                               const uint8_t *public_key,
+                               size_t public_key_sz) {
+    mbedtls_pk_context res;
+    mbedtls_pk_init(&res);
 
-    case VS_HASH_SHA_512:
-        *hash_id = vscf_alg_id_SHA512;
-        return true;
+    uint8_t internal_key[MAX_INTERNAL_PUBKEY_SIZE];
+    uint8_t *p_internal_key;
+    uint16_t internal_key_sz = 0;
 
-    default:
-        VS_LOG_ERROR("Unsupported hash type %d", hash_type);
+    if (vs_converters_pubkey_to_virgil(
+                keypair_type, public_key, public_key_sz, internal_key, sizeof(internal_key), &internal_key_sz)) {
+        p_internal_key = (unsigned char *)internal_key;
+    } else {
         return false;
     }
+
+    if (0 == mbedtls_pk_parse_public_key(&res, p_internal_key, internal_key_sz)) {
+        *ctx = res;
+        return true;
+    }
+    return false;
 }
 
 /********************************************************************************/
@@ -274,54 +163,56 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
                         uint8_t *signature,
                         uint16_t signature_buf_sz,
                         uint16_t *signature_sz) {
-    vscf_impl_t *prvkey = NULL;
-    vscf_alg_id_t hash_id = vscf_alg_id_NONE;
-    uint16_t hash_sz = 0;
-    vsc_buffer_t sign_data;
-    vs_secmodule_keypair_type_e keypair_type = VS_KEYPAIR_INVALID;
-    uint16_t required_sign_sz = 0;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
 
+    vs_status_e ret_code;
+    vs_secmodule_keypair_type_e keypair_type;
+    int32_t slot_sz = _get_slot_size(key_slot);
+    uint16_t private_key_sz;
+    size_t sign_len;
+    const char *pers = "sign";
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    mbedtls_pk_context private_key_ctx;
+
+    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect slot number");
     CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(signature_buf_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(signature_buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    vsc_buffer_init(&sign_data);
+    uint8_t private_key[slot_sz];
+    uint8_t internal_sign[MAX_INTERNAL_SIGN_SIZE];
 
-    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
+    STATUS_CHECK_RET(vs_secmodule_keypair_get_prvkey(key_slot, private_key, slot_sz, &private_key_sz, &keypair_type),
+                     "Unable to load private key data from slot %s",
+                     _get_slot_name(key_slot));
+    ret_code = VS_CODE_ERR_CRYPTO;
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    mbedtls_pk_init(&private_key_ctx);
 
-    CHECK(VS_CODE_OK == _load_prvkey(key_slot, &prvkey, &keypair_type),
-          "Unable to load private key from slot %d (%s)",
-          key_slot,
-          get_slot_name((key_slot)));
-
-    required_sign_sz = vscf_sign_hash_signature_len(prvkey);
-
-    vsc_buffer_alloc(&sign_data, required_sign_sz);
-
-    CHECK_VSCF(vscf_sign_hash(prvkey, vsc_data(hash, hash_sz), hash_id, &sign_data), "Unable to sign data");
-
-    *signature_sz = vsc_buffer_len(&sign_data);
-
-    VS_LOG_DEBUG("Internal signature size : %d bytes", *signature_sz);
-
-    CHECK(vs_converters_mbedtls_sign_to_raw(
-                  keypair_type, vsc_buffer_begin(&sign_data), *signature_sz, signature, signature_buf_sz, signature_sz),
-          "Unable to convert Virgil signature format to the raw one");
-
-    VS_LOG_DEBUG("Output signature size : %d bytes", *signature_sz);
-
-    res = VS_CODE_OK;
-
-terminate:
-    vsc_buffer_release(&sign_data);
-
-    if (prvkey) {
-        vscf_impl_destroy(&prvkey);
+    if (_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
+        0 == mbedtls_ctr_drbg_seed(
+                     &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers)) &&
+        0 == mbedtls_pk_sign(&private_key_ctx,
+                             _hash_to_mbedtls(hash_type),
+                             hash,
+                             0,
+                             internal_sign,
+                             &sign_len,
+                             mbedtls_ctr_drbg_random,
+                             &ctr_drbg) &&
+        sign_len <= UINT16_MAX &&
+        vs_converters_mbedtls_sign_to_raw(
+                keypair_type, internal_sign, sign_len, signature, signature_buf_sz, signature_sz)) {
+        ret_code = VS_CODE_OK;
     }
 
-    return res;
+    mbedtls_entropy_free(&entropy);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_pk_free(&private_key_ctx);
+
+    return ret_code;
 }
 
 /********************************************************************************/
@@ -333,13 +224,9 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
                           const uint8_t *hash,
                           const uint8_t *signature,
                           uint16_t signature_sz) {
-#define MAX_INT_SIGN_SIZE 256
-    uint8_t int_sign[MAX_INT_SIGN_SIZE];
-    uint16_t int_sign_sz = sizeof(int_sign);
-    vscf_impl_t *pubkey = NULL;
-    vscf_alg_id_t hash_id = vscf_alg_id_NONE;
-    uint16_t hash_sz = 0;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
+    mbedtls_pk_context public_key_ctx;
+    vs_status_e ret_code = VS_CODE_ERR_CRYPTO;
+    uint8_t internal_sign[MAX_INTERNAL_SIGN_SIZE];
 
     CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(public_key_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -347,29 +234,17 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
     CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK(vs_converters_raw_sign_to_mbedtls(keypair_type, signature, signature_sz, int_sign, int_sign_sz, &int_sign_sz),
-          "Unable to convert Virgil signature format to the raw one");
+    mbedtls_pk_init(&public_key_ctx);
 
-    VS_LOG_DEBUG("Internal signature size : %d bytes", int_sign_sz);
+    if (_create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
+        vs_converters_raw_sign_to_mbedtls(
+                keypair_type, signature, signature_sz, internal_sign, sizeof(internal_sign), &signature_sz) &&
+        0 == mbedtls_pk_verify(&public_key_ctx, _hash_to_mbedtls(hash_type), hash, 0, internal_sign, signature_sz)) {
+        ret_code = VS_CODE_OK;
+    }
 
-    STATUS_CHECK(_create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey), "Unable to create public key");
-
-    res = VS_CODE_ERR_CRYPTO;
-
-    CHECK(_set_hash_info(hash_type, &hash_id, &hash_sz), "Unable to set hash info");
-
-    CHECK(vscf_verify_hash(pubkey, vsc_data(hash, hash_sz), hash_id, vsc_data(int_sign, int_sign_sz)),
-          "Unable to verify signature");
-
-    res = VS_CODE_OK;
-
-terminate:
-
-    vscf_impl_delete(pubkey);
-
-    return res;
-
-#undef MAX_INT_SIGN_SIZE
+    mbedtls_pk_free(&public_key_ctx);
+    return ret_code;
 }
 
 /********************************************************************************/
@@ -382,9 +257,6 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
                   uint8_t *output,
                   uint16_t output_buf_sz,
                   uint16_t *output_sz) {
-
-    vscf_impl_t *hash_impl;
-    vsc_buffer_t out_buf;
     int hash_sz;
 
     CHECK_NOT_ZERO_RET(key, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -396,38 +268,15 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
     CHECK_RET(hash_sz >= 0, VS_CODE_ERR_CRYPTO, "Unsupported hash type %d", hash_type);
     CHECK_RET(output_buf_sz >= hash_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Output buffer too small");
 
-    vscf_hmac_t *hmac = vscf_hmac_new();
-
-    switch (hash_type) {
-    case VS_HASH_SHA_256:
-        hash_impl = vscf_sha256_impl(vscf_sha256_new());
-        break;
-
-    case VS_HASH_SHA_384:
-        hash_impl = vscf_sha384_impl(vscf_sha384_new());
-        break;
-
-    case VS_HASH_SHA_512:
-        hash_impl = vscf_sha512_impl(vscf_sha512_new());
-        break;
-
-    default:
-        VS_LOG_ERROR("HASH key type %d is not implemented", hash_type);
-        VS_IOT_ASSERT(false);
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    vscf_hmac_take_hash(hmac, hash_impl);
-
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_buf_sz);
-
-    vscf_hmac_mac(hmac, vsc_data(key, key_sz), vsc_data(input, input_sz), &out_buf);
-
     *output_sz = (uint16_t)hash_sz;
-    vscf_hmac_delete(hmac);
-
-    return VS_CODE_OK;
+    return (0 == mbedtls_md_hmac(mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type)),
+                                 (const unsigned char *)key,
+                                 key_sz,
+                                 (const unsigned char *)input,
+                                 input_sz,
+                                 (unsigned char *)output))
+                   ? VS_CODE_OK
+                   : VS_CODE_ERR_CRYPTO;
 }
 
 /********************************************************************************/
@@ -439,42 +288,16 @@ vs_secmodule_kdf(vs_secmodule_kdf_type_e kdf_type,
                  uint8_t *output,
                  uint16_t output_sz) {
 
-    vscf_kdf2_t *kdf2;
-    vscf_impl_t *hash_impl;
-    vsc_buffer_t out_buf;
-
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(kdf_type == VS_KDF_2, VS_CODE_ERR_NOT_IMPLEMENTED, "KDF type %d is not implemented", kdf_type);
 
-    kdf2 = vscf_kdf2_new();
+    const mbedtls_kdf_info_t *kdf_info = mbedtls_kdf_info_from_type(MBEDTLS_KDF_KDF2);
+    const mbedtls_md_info_t *md_info = mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type));
 
-    switch (hash_type) {
-    case VS_HASH_SHA_256:
-        hash_impl = vscf_sha256_impl(vscf_sha256_new());
-        break;
+    CHECK_RET(kdf_info && md_info, VS_CODE_ERR_CRYPTO, "Error create kdf info");
 
-    case VS_HASH_SHA_384:
-        hash_impl = vscf_sha384_impl(vscf_sha384_new());
-        break;
-
-    case VS_HASH_SHA_512:
-        hash_impl = vscf_sha512_impl(vscf_sha512_new());
-        break;
-
-    default:
-        VS_LOG_ERROR("HASH key type %d is not implemented", hash_type);
-        VS_IOT_ASSERT(false);
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_sz);
-    vscf_kdf2_take_hash(kdf2, hash_impl);
-    vscf_kdf2_derive(kdf2, vsc_data(input, input_sz), output_sz, &out_buf);
-
-    vscf_kdf2_delete(kdf2);
-    return VS_CODE_OK;
+    return (0 == mbedtls_kdf(kdf_info, md_info, input, input_sz, output, output_sz)) ? VS_CODE_OK : VS_CODE_ERR_CRYPTO;
 }
 
 /********************************************************************************/
@@ -493,138 +316,176 @@ vs_secmodule_hkdf(vs_secmodule_hash_type_e hash_type,
 }
 
 /********************************************************************************/
-static vscf_impl_t *random_impl = NULL;
+static vs_status_e
+vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
+    static bool is_init = false;
+    static mbedtls_entropy_context entropy;
+    static mbedtls_ctr_drbg_context ctr_drbg;
 
+    uint16_t cur_off = 0;
+    uint16_t cur_size = 0;
+
+    CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_INCORRECT_PARAMETER);
+
+    if (!is_init) {
+        const char *pers = "gen_random";
+        mbedtls_entropy_init(&entropy);
+        mbedtls_ctr_drbg_init(&ctr_drbg);
+
+        if (0 != mbedtls_ctr_drbg_seed(
+                         &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) {
+            VS_LOG_ERROR("Error drbg initialization");
+            mbedtls_entropy_free(&entropy);
+            mbedtls_ctr_drbg_free(&ctr_drbg);
+            return VS_CODE_ERR_CRYPTO;
+        }
+        is_init = true;
+    }
+
+    while (cur_off < output_sz) {
+        cur_size = (output_sz - cur_off) > RNG_MAX_REQUEST ? RNG_MAX_REQUEST : (output_sz - cur_off);
+
+        CHECK_RET(0 == mbedtls_ctr_drbg_random(&ctr_drbg, output + cur_off, cur_size),
+                  VS_CODE_ERR_CRYPTO,
+                  "Unable to generate random sequence");
+
+        cur_off += cur_size;
+    }
+
+    return VS_CODE_OK;
+}
+
+/****************************************************************/
 static void
-destroy_random_impl() {
-    vscf_ctr_drbg_delete((vscf_ctr_drbg_t *)random_impl);
+_aes_cbc_add_pkcs_padding(unsigned char *output, size_t output_len, size_t data_len) {
+    size_t padding_len = output_len - data_len;
+    unsigned char i;
+
+    for (i = 0; i < padding_len; i++) {
+        output[data_len + i] = (unsigned char)padding_len;
+    }
+}
+
+/****************************************************************/
+static int
+_aes_cbc_get_pkcs_padding(unsigned char *input, size_t input_len, size_t *data_len) {
+    size_t i, pad_idx;
+    unsigned char padding_len, bad = 0;
+
+    if (NULL == input || NULL == data_len)
+        return (MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA);
+
+    padding_len = input[input_len - 1];
+    *data_len = input_len - padding_len;
+
+    /* Avoid logical || since it results in a branch */
+    bad |= padding_len > input_len;
+    bad |= padding_len == 0;
+
+    /* The number of bytes checked must be independent of padding_len,
+     * so pick input_len, which is usually 8 or 16 (one block) */
+    pad_idx = input_len - padding_len;
+    for (i = 0; i < input_len; i++)
+        bad |= (input[i] ^ padding_len) * (i >= pad_idx);
+
+    return (MBEDTLS_ERR_CIPHER_INVALID_PADDING * (bad != 0));
 }
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
+_aes_cbc_crypt(bool is_encrypt,
+               const uint8_t *key,
+               uint16_t key_bitlen,
+               const uint8_t *iv,
+               uint16_t iv_len,
+               uint16_t buf_len,
+               const uint8_t *input,
+               uint8_t *output) {
+
+    mbedtls_cipher_context_t ctx;
     vs_status_e res = VS_CODE_ERR_CRYPTO;
-    vsc_buffer_t out_buf;
-    uint16_t cur_off = 0;
-    uint16_t cur_size = 0;
+    size_t sz;
+    uint8_t *padding_ptr;
+    uint8_t tmp_padding[VS_AES_256_BLOCK_SIZE];
 
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, output, output_sz);
+    CHECK_RET(VS_AES_256_KEY_BITLEN == key_bitlen, VS_CODE_ERR_NOT_IMPLEMENTED, "Unsupported key len");
+    CHECK_RET(0 == mbedtls_cipher_setup(&ctx, mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_CBC)),
+              VS_CODE_ERR_CRYPTO,
+              "Error cipher setup");
+    ctx.add_padding = _aes_cbc_add_pkcs_padding;
+    ctx.get_padding = _aes_cbc_get_pkcs_padding;
 
-    if (!random_impl) {
-        CHECK(random_impl = (vscf_impl_t *)vscf_ctr_drbg_new(), "Unable to allocate random implementation context");
+    CHECK(0 == mbedtls_cipher_setkey(&ctx, key, key_bitlen, is_encrypt ? MBEDTLS_ENCRYPT : MBEDTLS_DECRYPT) &&
+                  0 == mbedtls_cipher_set_iv(&ctx, iv, iv_len) && 0 == mbedtls_cipher_reset(&ctx),
+          "AES GCM CRYPTO error during initialization");
 
-        atexit(destroy_random_impl);
+    CHECK(0 == mbedtls_cipher_update(&ctx, input, buf_len, output, &sz), "AES CBC CRYPTO error encryption/decryption");
 
-        CHECK_VSCF(vscf_ctr_drbg_setup_defaults((vscf_ctr_drbg_t *)random_impl),
-                   "Unable to initialize random number generator");
-    }
+    padding_ptr = is_encrypt ? (uint8_t *)(output + sz) : tmp_padding;
 
-    for (cur_off = 0; cur_off < output_sz; cur_off += RNG_MAX_REQUEST) {
-        cur_size = output_sz - cur_off;
-
-        if (cur_size > RNG_MAX_REQUEST) {
-            cur_size = RNG_MAX_REQUEST;
-        }
-
-        CHECK_VSCF(vscf_random(random_impl, cur_size, &out_buf), "Unable to generate random sequence");
-    }
+    CHECK(0 == mbedtls_cipher_finish(&ctx, padding_ptr, &sz), "AES CBC CRYPTO error encryption/decryption");
 
     res = VS_CODE_OK;
 
 terminate:
-
-    if (VS_CODE_OK != res) {
-        vsc_buffer_cleanup(&out_buf);
-    }
-
+    mbedtls_cipher_free(&ctx);
     return res;
 }
 
 /********************************************************************************/
 static vs_status_e
-_aes_gcm_encrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 const uint8_t *add,
-                 uint16_t add_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output,
-                 uint8_t *tag,
-                 uint16_t tag_len) {
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vsc_buffer_t tag_buf;
-    vscf_aes256_gcm_t *aes256_gcm = NULL;
+_aes_gcm_crypt(bool is_encrypt,
+               const uint8_t *key,
+               uint16_t key_bitlen,
+               const uint8_t *iv,
+               uint16_t iv_len,
+               const uint8_t *add,
+               uint16_t add_len,
+               uint16_t buf_len,
+               const uint8_t *input,
+               uint8_t *output,
+               uint8_t *tag,
+               uint16_t tag_len) {
+
+    mbedtls_gcm_context ctx;
     vs_status_e res = VS_CODE_ERR_CRYPTO;
+    uint8_t add_data = 0;
+    uint8_t *add_ptr = &add_data;
 
     CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(0 == add_len || add, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    key_len = key_bitlen / 8;
-
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
+    if (NULL != add) {
+        add_ptr = (uint8_t *)add;
     }
+    mbedtls_gcm_init(&ctx);
 
-    aes256_gcm = vscf_aes256_gcm_new();
+    CHECK(0 == mbedtls_gcm_setkey(&ctx, MBEDTLS_CIPHER_ID_AES, key, key_bitlen) &&
+                  0 == mbedtls_gcm_starts(&ctx,
+                                          is_encrypt ? MBEDTLS_GCM_ENCRYPT : MBEDTLS_GCM_DECRYPT,
+                                          iv,
+                                          iv_len,
+                                          add_ptr,
+                                          add_len),
+          "AES GCM CRYPTO error during initialization");
 
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_gcm_encrypted_len(aes256_gcm, buf_len));
-    vsc_buffer_init(&tag_buf);
-    vsc_buffer_use(&tag_buf, tag, tag_len);
+    CHECK(0 == mbedtls_gcm_update(&ctx, buf_len, input, output), "mbedtls_gcm_update failed");
 
-
-    vscf_aes256_gcm_set_key(aes256_gcm, vsc_data(key, key_len));
-    vscf_aes256_gcm_set_nonce(aes256_gcm, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS ==
-        vscf_aes256_gcm_auth_encrypt(aes256_gcm, vsc_data(input, buf_len), vsc_data(add, add_len), out_buf, &tag_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), buf_len);
+    // Auth tag check if decrypt
+    if (!is_encrypt) {
+        uint8_t check_tag[VS_AES_256_GCM_AUTH_TAG_SIZE];
+        CHECK(0 == mbedtls_gcm_finish(&ctx, check_tag, VS_AES_256_GCM_AUTH_TAG_SIZE),
+              "AES GCM CRYPTO authenticated decryption failed");
+        MEMCMP_CHECK(tag, check_tag, VS_AES_256_GCM_AUTH_TAG_SIZE);
+    } else {
+        CHECK(0 == mbedtls_gcm_finish(&ctx, tag, tag_len), "AES GCM CRYPTO error encryption/decryption");
     }
+    res = VS_CODE_OK;
+terminate:
 
-    vscf_aes256_gcm_delete(aes256_gcm);
-    vsc_buffer_delete(out_buf);
+    mbedtls_gcm_free(&ctx);
 
-    return res;
-}
-
-/********************************************************************************/
-static vs_status_e
-_aes_cbc_encrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output) {
-
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_cbc_t *aes256_cbc = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
-    key_len = key_bitlen / 8;
-
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    aes256_cbc = vscf_aes256_cbc_new();
-
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_cbc_encrypted_len(aes256_cbc, buf_len));
-
-    vscf_aes256_cbc_set_key(aes256_cbc, vsc_data(key, key_len));
-    vscf_aes256_cbc_set_nonce(aes256_cbc, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS == vscf_aes256_cbc_encrypt(aes256_cbc, vsc_data(input, buf_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), vsc_buffer_len(out_buf));
-    }
-
-    vscf_aes256_cbc_delete(aes256_cbc);
-    vsc_buffer_delete(out_buf);
     return res;
 }
 
@@ -650,53 +511,14 @@ vs_secmodule_aes_encrypt(vs_iot_aes_type_e aes_type,
 
     switch (aes_type) {
     case VS_AES_GCM:
-        return _aes_gcm_encrypt(key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, tag, tag_len);
+        return _aes_gcm_crypt(true, key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, tag, tag_len);
     case VS_AES_CBC:
-        return _aes_cbc_encrypt(key, key_bitlen, iv, iv_len, buf_len, input, output);
+        return _aes_cbc_crypt(true, key, key_bitlen, iv, iv_len, buf_len, input, output);
     default:
         VS_IOT_ASSERT(false);
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 }
-
-/********************************************************************************/
-static vs_status_e
-_aes_cbc_decrypt(const uint8_t *key,
-                 uint16_t key_bitlen,
-                 const uint8_t *iv,
-                 uint16_t iv_len,
-                 uint16_t buf_len,
-                 const uint8_t *input,
-                 uint8_t *output) {
-    uint16_t key_len;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_cbc_t *aes256_cbc = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
-    key_len = key_bitlen / 8;
-
-    if (key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    aes256_cbc = vscf_aes256_cbc_new();
-
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_cbc_decrypted_len(aes256_cbc, buf_len));
-
-    vscf_aes256_cbc_set_key(aes256_cbc, vsc_data(key, key_len));
-    vscf_aes256_cbc_set_nonce(aes256_cbc, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS == vscf_aes256_cbc_decrypt(aes256_cbc, vsc_data(input, buf_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), vsc_buffer_len(out_buf));
-    }
-
-    vscf_aes256_cbc_delete(aes256_cbc);
-    vsc_buffer_delete(out_buf);
-
-    return res;
-}
-
 
 /********************************************************************************/
 static vs_status_e
@@ -720,7 +542,7 @@ vs_secmodule_aes_decrypt(vs_iot_aes_type_e aes_type,
 
     switch (aes_type) {
     case VS_AES_CBC:
-        return _aes_cbc_decrypt(key, key_bitlen, iv, iv_len, buf_len, input, output);
+        return _aes_cbc_crypt(false, key, key_bitlen, iv, iv_len, buf_len, input, output);
     default:
         VS_IOT_ASSERT(false);
         return VS_CODE_ERR_NOT_IMPLEMENTED;
@@ -742,50 +564,16 @@ vs_secmodule_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
                               const uint8_t *tag,
                               uint16_t tag_len) {
 
-    uint16_t key_len;
-    uint8_t add_data = 0;
-    vsc_buffer_t *out_buf = NULL;
-    vscf_aes256_gcm_t *aes256_gcm = NULL;
-    vs_status_e res = VS_CODE_ERR_CRYPTO;
-
     CHECK_NOT_ZERO_RET(key, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(iv, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    if (add_len) {
-        CHECK_NOT_ZERO_RET(add, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    }
+    CHECK_RET(VS_AES_GCM == aes_type, VS_CODE_ERR_NOT_IMPLEMENTED, "AES GCM auth decrypt is only supported");
 
-    if (NULL == add) {
-        add = &add_data;
-    }
-
-    key_len = key_bitlen / 8;
-
-    if (VS_AES_GCM != aes_type || key_len != vscf_aes256_gcm_KEY_LEN) {
-        return VS_CODE_ERR_NOT_IMPLEMENTED;
-    }
-
-    aes256_gcm = vscf_aes256_gcm_new();
-
-    out_buf = vsc_buffer_new_with_capacity(vscf_aes256_gcm_auth_decrypted_len(aes256_gcm, buf_len));
-
-    vscf_aes256_gcm_set_key(aes256_gcm, vsc_data(key, key_len));
-    vscf_aes256_gcm_set_nonce(aes256_gcm, vsc_data(iv, iv_len));
-
-    if (vscf_status_SUCCESS ==
-        vscf_aes256_gcm_auth_decrypt(
-                aes256_gcm, vsc_data(input, buf_len), vsc_data(add, add_len), vsc_data(tag, tag_len), out_buf)) {
-        res = VS_CODE_OK;
-        memcpy(output, vsc_buffer_bytes(out_buf), buf_len);
-    }
-
-    vscf_aes256_gcm_delete(aes256_gcm);
-    vsc_buffer_delete(out_buf);
-
-    return res;
+    return _aes_gcm_crypt(
+            false, key, key_bitlen, iv, iv_len, add, add_len, buf_len, input, output, (uint8_t *)tag, tag_len);
 }
 
 /********************************************************************************/
@@ -797,41 +585,85 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
                   uint8_t *shared_secret,
                   uint16_t buf_sz,
                   uint16_t *shared_secret_sz) {
-    vscf_impl_t *prvkey = NULL;
-    vscf_impl_t *pubkey = NULL;
-    vsc_buffer_t out_buf;
-    size_t required_sz;
     vs_status_e ret_code;
+    vs_secmodule_keypair_type_e prvkey_type;
+    int32_t slot_sz = _get_slot_size(slot);
+    uint16_t private_key_sz;
+    bool is_fast = false;
+    const char *pers = "virgil_compute_shared";
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+    mbedtls_pk_context private_key_ctx;
+    mbedtls_pk_context public_key_ctx;
+    mbedtls_ecdh_context ecdh_ctx;
+    size_t required_sz;
 
     CHECK_NOT_ZERO_RET(public_key, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(public_key_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(shared_secret, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(shared_secret_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(shared_secret_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
-    STATUS_CHECK_RET(_load_prvkey(slot, &prvkey, &keypair_type),
-                     "Unable to load private key from slot %d (%s)",
-                     slot,
-                     get_slot_name((slot)));
+    uint8_t private_key[slot_sz];
 
-    if ((required_sz = vscf_compute_shared_key_shared_key_len(prvkey)) > buf_sz) {
-        VS_LOG_ERROR("Output buffer too small");
-        ret_code = VS_CODE_ERR_TOO_SMALL_BUFFER;
-        goto terminate;
-    }
-    *shared_secret_sz = (uint16_t)required_sz;
+    STATUS_CHECK_RET(vs_secmodule_keypair_get_prvkey(slot, private_key, slot_sz, &private_key_sz, &prvkey_type),
+                     "Unable to load private key data from slot %s",
+                     _get_slot_name(slot));
+    ret_code = VS_CODE_ERR_CRYPTO;
 
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, shared_secret, buf_sz);
+    CHECK_RET(prvkey_type == keypair_type, VS_CODE_ERR_CRYPTO, "EC type of private and public key is not equal");
 
-    ret_code = _create_pubkey_ctx(keypair_type, public_key, public_key_sz, &pubkey);
-
-    if (VS_CODE_OK == ret_code) {
-        ret_code = (vscf_status_SUCCESS == vscf_compute_shared_key(prvkey, pubkey, &out_buf)) ? VS_CODE_OK
-                                                                                              : VS_CODE_ERR_CRYPTO;
+    if ((VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type)) {
+        is_fast = true;
+    } else if (keypair_type > VS_KEYPAIR_EC_SECP_MAX) {
+        return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 
-terminate:
-    vscf_impl_delete(prvkey);
-    vscf_impl_delete(pubkey);
+    mbedtls_entropy_init(&entropy);
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    mbedtls_pk_init(&private_key_ctx);
+    mbedtls_pk_init(&public_key_ctx);
+    VS_IOT_MEMSET(&ecdh_ctx, 0, sizeof(ecdh_ctx));
+
+    if (_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
+        _create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
+        0 == mbedtls_ctr_drbg_seed(
+                     &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) {
+
+        if (!is_fast) {
+            mbedtls_ecp_keypair *public_keypair = mbedtls_pk_ec(public_key_ctx);
+            mbedtls_ecp_keypair *private_keypair = mbedtls_pk_ec(private_key_ctx);
+            if (public_keypair && private_keypair && 0 == mbedtls_ecp_group_copy(&ecdh_ctx.grp, &public_keypair->grp) &&
+                0 == mbedtls_ecp_copy(&ecdh_ctx.Qp, &public_keypair->Q) &&
+                0 == mbedtls_ecp_copy(&ecdh_ctx.Q, &private_keypair->Q) &&
+                0 == mbedtls_mpi_copy(&ecdh_ctx.d, &private_keypair->d) &&
+                0 == mbedtls_ecdh_calc_secret(
+                             &ecdh_ctx, &required_sz, shared_secret, buf_sz, mbedtls_ctr_drbg_random, &ctr_drbg)) {
+                *shared_secret_sz = required_sz;
+                ret_code = VS_CODE_OK;
+            }
+
+        } else {
+
+            mbedtls_fast_ec_keypair_t *public_keypair_fast = mbedtls_pk_fast_ec(public_key_ctx);
+            mbedtls_fast_ec_keypair_t *private_keypair_fast = mbedtls_pk_fast_ec(private_key_ctx);
+            required_sz = mbedtls_fast_ec_get_shared_len(private_keypair_fast->info);
+
+            if (required_sz <= buf_sz && public_keypair_fast &&
+                0 == mbedtls_fast_ec_compute_shared(
+                             public_keypair_fast, private_keypair_fast, shared_secret, required_sz)) {
+                *shared_secret_sz = required_sz;
+                ret_code = VS_CODE_OK;
+            }
+        }
+    }
+
+    mbedtls_ecdh_free(&ecdh_ctx);
+    mbedtls_entropy_free(&entropy);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_pk_free(&private_key_ctx);
+    mbedtls_pk_free(&public_key_ctx);
+
     return ret_code;
 }
 

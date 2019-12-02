@@ -149,7 +149,7 @@
  *  \param[in] SIZE Data size.
  */
 #define MEMCMP_CHECK(BUF1, BUF2, SIZE)                                                                             \
-    CHECK(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \
+    CHECK(VS_IOT_MEMCMP((BUF1), (BUF2), (SIZE)) == 0,                                                                \
                    #BUF1 " is not equal to " #BUF2 " while comparing %d bytes",                                        \
                    (int)(SIZE))
 

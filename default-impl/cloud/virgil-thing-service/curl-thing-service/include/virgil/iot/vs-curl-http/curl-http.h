@@ -54,7 +54,9 @@ vs_cloud_init(vs_curl_http_impl(), vs_aws_message_bin_impl(), secmodule_impl);
 \endcode
 *
 * You need to implement custom storage implementation. As an example you can see default implementation in
-* <a href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/helpers/app-storage.c#L73"> vs_app_storage_init_impl()</a> function in app-storage.c file.
+* <a
+href="https://github.com/VirgilSecurity/demo-iotkit-nix/blob/release/v0.1.0-alpha/common/src/helpers/app-storage.c#L73">
+vs_app_storage_init_impl()</a> function in app-storage.c file.
  */
 
 #ifndef VS_CURL_HTTP_DEFAULT_IMPL_H
