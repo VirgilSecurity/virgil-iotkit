@@ -714,12 +714,15 @@ _fldt_destroy_client(void) {
 
 /******************************************************************************/
 static int
-_fldt_client_request_processor(vs_snap_element_t element_id,
+_fldt_client_request_processor(const struct vs_netif_t *netif,
+                               vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
+    (void)netif;
+
     *response_sz = 0;
 
     switch (element_id) {
@@ -742,10 +745,13 @@ _fldt_client_request_processor(vs_snap_element_t element_id,
 
 /******************************************************************************/
 static int
-_fldt_client_response_processor(vs_snap_element_t element_id,
+_fldt_client_response_processor(const struct vs_netif_t *netif,
+                                vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
+    (void)netif;
+
     switch (element_id) {
 
     case VS_FLDT_INFV:
@@ -797,7 +803,6 @@ _fldt_client_periodical_processor(void) {
 /******************************************************************************/
 const vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback) {
-
     VS_IOT_ASSERT(got_file_callback);
     VS_IOT_ASSERT(CLIENT_FILE_TYPE_ARRAY_SIZE);
 

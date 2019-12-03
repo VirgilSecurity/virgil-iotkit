@@ -48,7 +48,7 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr);
 static vs_status_e
 test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 static vs_status_e
-test_netif_deinit(void);
+test_netif_deinit();
 
 static vs_netif_t _test_netif = {
         .init = test_netif_init,
@@ -106,7 +106,7 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
 /**********************************************************/
 static vs_status_e
-test_netif_deinit(void) {
+test_netif_deinit() {
 
     netif_state.initialized = 0;
     netif_state.deinitialized = 1;

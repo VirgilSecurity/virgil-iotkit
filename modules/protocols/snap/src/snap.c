@@ -68,7 +68,7 @@ static long _calls_counter = 0;
 
 /******************************************************************************/
 static long long
-current_timestamp(void) {
+current_timestamp() {
     struct timeval te;
     gettimeofday(&te, NULL);                               // get current time
     long long us = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate ms
@@ -123,7 +123,8 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             // Process response
             if (packet->header.flags & VS_SNAP_FLAG_ACK || packet->header.flags & VS_SNAP_FLAG_NACK) {
                 if (_snap_services[i]->response_process) {
-                    _snap_services[i]->response_process(packet->header.element_id,
+                    _snap_services[i]->response_process(netif,
+                                                        packet->header.element_id,
                                                         !!(packet->header.flags & VS_SNAP_FLAG_ACK),
                                                         packet->content,
                                                         packet->header.content_size);
@@ -133,7 +134,8 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             } else if (_snap_services[i]->request_process) {
                 need_response = true;
                 _statistics.received++;
-                res = _snap_services[i]->request_process(packet->header.element_id,
+                res = _snap_services[i]->request_process(netif,
+                                                         packet->header.element_id,
                                                          packet->content,
                                                          packet->header.content_size,
                                                          response_packet->content,
@@ -344,7 +346,7 @@ vs_snap_init(vs_netif_t *default_netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_deinit(void) {
+vs_snap_deinit() {
     int i;
     CHECK_NOT_ZERO_RET(_snap_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -429,7 +431,7 @@ vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 vs_snap_transaction_id_t
-_snap_transaction_id(void) {
+_snap_transaction_id() {
     static vs_snap_transaction_id_t id = 0;
 
     return id++;

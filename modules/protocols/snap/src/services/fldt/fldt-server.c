@@ -602,12 +602,15 @@ _fldt_destroy_server(void) {
 
 /******************************************************************************/
 static int
-_fldt_server_request_processor(vs_snap_element_t element_id,
+_fldt_server_request_processor(const struct vs_netif_t *netif,
+                               vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
+    (void)netif;
+
     *response_sz = 0;
 
     switch (element_id) {
@@ -634,10 +637,13 @@ _fldt_server_request_processor(vs_snap_element_t element_id,
 
 /******************************************************************************/
 static int
-_fldt_server_response_processor(vs_snap_element_t element_id,
+_fldt_server_response_processor(const struct vs_netif_t *netif,
+                                vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
+    (void)netif;
+
     if (!is_ack) {
         VS_LOG_WARNING("Received response %08x packet with is_ack == false", element_id);
         return VS_CODE_COMMAND_NO_RESPONSE;

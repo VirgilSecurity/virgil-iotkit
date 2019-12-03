@@ -148,7 +148,7 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_deinit(void);
+vs_tl_deinit();
 
 /** Trust List element saving
  *

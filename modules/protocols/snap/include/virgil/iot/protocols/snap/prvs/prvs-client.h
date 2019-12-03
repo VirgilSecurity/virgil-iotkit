@@ -123,7 +123,7 @@ typedef struct vs_snap_prvs_client_impl_t {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
 /** Enumerate devices, which don't have initialization provision yet

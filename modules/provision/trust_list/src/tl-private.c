@@ -365,7 +365,7 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *se
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_deinit_internal(void) {
+vs_tl_storage_deinit_internal() {
     const vs_storage_op_ctx_t *op_ctx = _tl_dynamic_ctx.storage_ctx;
 
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);

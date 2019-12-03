@@ -37,10 +37,10 @@
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
-vs_status_e
+int
 _snap_fill_header(const vs_mac_addr_t *recipient_mac, vs_snap_packet_t *packet);
 
 vs_snap_transaction_id_t
-_snap_transaction_id(void);
+_snap_transaction_id();
 
 #endif // VS_SNAP_PRIVATE_H

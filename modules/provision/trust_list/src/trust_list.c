@@ -47,7 +47,7 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_deinit(void) {
+vs_tl_deinit() {
     return vs_tl_storage_deinit_internal();
 }
 

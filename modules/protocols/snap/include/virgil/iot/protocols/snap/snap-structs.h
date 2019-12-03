@@ -71,8 +71,8 @@ typedef uint32_t vs_snap_element_t;
 
 /** Received data
  *
- * Implementation for #vs_netif_init_t function.
- * This implementation is used when new SNAP data has been loaded.
+ * Callback for #vs_netif_init_t function.
+ * This function is used when new SNAP data has been loaded.
  *
  * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Received portion of data. Cannot be NULL.
@@ -90,8 +90,8 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
 
 /** Preprocessed data
  *
- * Implementation for #vs_netif_init_t function.
- * This implementation is used to preprocess data.
+ * Callback for #vs_netif_init_t function.
+ * This function is used to preprocess data.
  *
  * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
@@ -154,6 +154,7 @@ typedef vs_status_e (*vs_netif_deinit_t)(void);
  * Implementation for \a request_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service \a request and to prepare \a response if needed.
  *
+ * \param[in] netif Network interface.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] request Request data buffer.
  * \param[in] request_sz Request data size.
@@ -163,7 +164,8 @@ typedef vs_status_e (*vs_netif_deinit_t)(void);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_request_processor_t)(vs_snap_element_t element_id,
+typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif_t *netif,
+                                                           vs_snap_element_t element_id,
                                                            const uint8_t *request,
                                                            const uint16_t request_sz,
                                                            uint8_t *response,
@@ -175,6 +177,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(vs_snap_element_t ele
  * Implementation for \a response_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service response.
  *
+ * \param[in] netif Network interface.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] is_ack Boolean flag indicating successful packet receiving
  * \param[in] response Response buffer.
@@ -182,7 +185,8 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(vs_snap_element_t ele
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(vs_snap_element_t element_id,
+typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_netif_t *netif,
+                                                            vs_snap_element_t element_id,
                                                             bool is_ack,
                                                             const uint8_t *response,
                                                             const uint16_t response_sz);
