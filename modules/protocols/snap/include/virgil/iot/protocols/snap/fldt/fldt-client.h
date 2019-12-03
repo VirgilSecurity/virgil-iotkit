@@ -50,7 +50,7 @@
  *
  * Here you can see an example of FLDT client initialization :
  * \code
- *  vs_snap_service_t *snap_fldt_client;
+ *  const vs_snap_service_t *snap_fldt_client;
  *  snap_fldt_client = vs_snap_fldt_client( _on_file_updated );
  *  STATUS_CHECK( vs_snap_register_service( snap_fldt_client ), "Cannot register FLDT client service");
  *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ),
@@ -129,7 +129,7 @@ typedef void (*vs_fldt_got_file)(vs_update_file_type_t *file_type,
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback);
 
 /** Add file type

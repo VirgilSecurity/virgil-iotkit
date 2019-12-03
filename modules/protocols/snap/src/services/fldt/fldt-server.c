@@ -64,7 +64,7 @@ static vs_fldt_server_add_filetype_cb _add_filetype_callback = NULL;
 static vs_mac_addr_t _gateway_mac;
 
 static vs_status_e
-_fldt_destroy_server(struct vs_snap_service_t *service);
+_fldt_destroy_server(void);
 
 /******************************************************************/
 static vs_fldt_server_file_type_mapping_t *
@@ -575,7 +575,7 @@ _init_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb ad
 
     CHECK_NOT_ZERO(add_filetype);
 
-    _fldt_destroy_server(NULL);
+    _fldt_destroy_server();
 
     _gateway_mac = *gateway_mac;
     _add_filetype_callback = add_filetype;
@@ -585,11 +585,9 @@ terminate:;
 
 /******************************************************************/
 static vs_status_e
-_fldt_destroy_server(struct vs_snap_service_t *service) {
+_fldt_destroy_server(void) {
     uint32_t id;
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
-
-    (void)service;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
         file_type_mapping->update_context->free_item(file_type_mapping->update_context->storage_context,
@@ -604,15 +602,12 @@ _fldt_destroy_server(struct vs_snap_service_t *service) {
 
 /******************************************************************************/
 static int
-_fldt_server_request_processor(struct vs_snap_service_t *service,
-                               vs_snap_element_t element_id,
+_fldt_server_request_processor(vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void)service;
-
     *response_sz = 0;
 
     switch (element_id) {
@@ -639,13 +634,10 @@ _fldt_server_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static int
-_fldt_server_response_processor(struct vs_snap_service_t *service,
-                                vs_snap_element_t element_id,
+_fldt_server_response_processor(vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
-    (void)service;
-
     if (!is_ack) {
         VS_LOG_WARNING("Received response %08x packet with is_ack == false", element_id);
         return VS_CODE_COMMAND_NO_RESPONSE;
@@ -667,7 +659,7 @@ _fldt_server_response_processor(struct vs_snap_service_t *service,
 }
 
 /******************************************************************************/
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype) {
 
     VS_IOT_ASSERT(SERVER_FILE_TYPE_ARRAY_SIZE);

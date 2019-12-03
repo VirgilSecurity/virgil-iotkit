@@ -48,7 +48,7 @@ static vs_cloud_message_bin_handlers_t _topic_handlers;
 #define VS_HTTPS_INPUT_BUFFER_SIZE (8192)
 /*************************************************************************/
 static void
-_mb_mqtt_ctx_free() {
+_mb_mqtt_ctx_free(void) {
 
     _mb_ctx.is_filled = false;
     _mb_ctx.is_active = false;

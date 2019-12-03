@@ -76,9 +76,7 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
-    CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -153,9 +151,7 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
-    CHECK_RET(!default_netif->mac_addr(default_netif, &stat_data->mac),
-              -1,
-              "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!default_netif->mac_addr(&stat_data->mac), -1, "Cannot get MAC for Default Network Interface");
 
     // Set statistics data
     stat_data->received = stat.received;
@@ -211,7 +207,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     default_netif = vs_snap_default_netif();
 
-    CHECK_RET(!default_netif->mac_addr(default_netif, &general_info->default_netif_mac),
+    CHECK_RET(!default_netif->mac_addr(&general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
@@ -317,15 +313,12 @@ _snot_request_processor(const uint8_t *request,
 
 /******************************************************************************/
 static vs_status_e
-_info_request_processor(struct vs_snap_service_t *service,
-                        vs_snap_element_t element_id,
+_info_request_processor(vs_snap_element_t element_id,
                         const uint8_t *request,
                         const uint16_t request_sz,
                         uint8_t *response,
                         const uint16_t response_buf_sz,
                         uint16_t *response_sz) {
-    (void)service;
-
     *response_sz = 0;
 
     switch (element_id) {
@@ -354,10 +347,9 @@ _info_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static vs_status_e
-_info_server_periodical_processor(struct vs_snap_service_t *service) {
+_info_server_periodical_processor(void) {
     vs_status_e ret_code;
     static bool started = false;
-    (void)service;
 
     // Send broadcast notification about self start
     if (!started) {
@@ -395,7 +387,7 @@ _info_server_periodical_processor(struct vs_snap_service_t *service) {
 }
 
 /******************************************************************************/
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
                     vs_snap_info_start_notif_srv_cb_t startup_cb) {

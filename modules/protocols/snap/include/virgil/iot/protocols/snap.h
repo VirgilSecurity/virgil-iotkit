@@ -148,7 +148,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_register_service(vs_snap_service_t *service);
+vs_snap_register_service(const vs_snap_service_t *service);
 
 /** MAC address
  *
