@@ -803,6 +803,7 @@ _fldt_client_periodical_processor(void) {
 /******************************************************************************/
 const vs_snap_service_t *
 vs_snap_fldt_client(vs_fldt_got_file got_file_callback) {
+
     VS_IOT_ASSERT(got_file_callback);
     VS_IOT_ASSERT(CLIENT_FILE_TYPE_ARRAY_SIZE);
 

@@ -282,7 +282,6 @@ _prvs_devi_process_request(const struct vs_netif_t *netif,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
-    (void)netif;
 
     vs_status_e ret_code;
     vs_snap_prvs_devi_t *devi_response = (vs_snap_prvs_devi_t *)response;
@@ -306,9 +305,6 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
-
-    (void)netif;
-
     return vs_prvs_finalize_storage(asav_response, response_sz);
 }
 
@@ -323,8 +319,6 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
     vs_status_e ret_code;
     uint16_t result_sz;
 
-    (void)netif;
-
     STATUS_CHECK_RET(vs_prvs_sign_data(request, request_sz, response, response_buf_sz, &result_sz),
                      "Unable to sign data");
 
@@ -337,9 +331,6 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 static vs_status_e
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    (void)netif;
-
     STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save Trust List");
     return VS_CODE_OK;
 }
@@ -348,9 +339,6 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 static vs_status_e
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    (void)netif;
-
     STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save Trust List part");
     return VS_CODE_OK;
 }
@@ -359,9 +347,6 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 static vs_status_e
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-
-    (void)netif;
-
     STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize Trust List");
     return VS_CODE_OK;
 }

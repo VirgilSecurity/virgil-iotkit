@@ -609,7 +609,6 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void)netif;
 
     *response_sz = 0;
 
@@ -642,7 +641,6 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
-    (void)netif;
 
     if (!is_ack) {
         VS_LOG_WARNING("Received response %08x packet with is_ack == false", element_id);
@@ -669,7 +667,6 @@ const vs_snap_service_t *
 vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype) {
 
     VS_IOT_ASSERT(SERVER_FILE_TYPE_ARRAY_SIZE);
-
     _fldt_server.user_data = 0;
     _fldt_server.id = VS_FLDT_SERVICE_ID;
     _fldt_server.request_process = _fldt_server_request_processor;

@@ -62,7 +62,6 @@ static uint8_t _last_data[PRVS_BUF_SZ];
 /******************************************************************************/
 static vs_status_e
 _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *response, const uint16_t response_sz) {
-    (void)netif;
 
     vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
 

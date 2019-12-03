@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const vs_netif_t *_snap_default_netif = NULL;
+static const vs_netif_t *_snap_default_netif = 0;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))

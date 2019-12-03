@@ -48,7 +48,6 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 /******************************************************************************/
 vs_status_e
 vs_wait_stop_func(int *condition, int expect) {
-
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
         VS_LOG_ERROR("pthread_mutex_lock %s %d", strerror(errno), errno);
     }

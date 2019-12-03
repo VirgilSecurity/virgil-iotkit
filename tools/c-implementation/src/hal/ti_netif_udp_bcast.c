@@ -197,7 +197,6 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
 static vs_status_e
 _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
-
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
     _netif_udp_bcast.packet_buf_filled = 0;

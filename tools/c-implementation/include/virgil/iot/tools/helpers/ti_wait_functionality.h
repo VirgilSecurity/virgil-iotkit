@@ -37,7 +37,6 @@
 
 #include <stdint.h>
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-client.h>
 
 vs_status_e
 vs_wait_func(uint32_t wait_ms, int *condition, int idle);

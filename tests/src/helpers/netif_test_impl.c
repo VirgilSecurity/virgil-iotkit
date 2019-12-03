@@ -107,7 +107,6 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 /**********************************************************/
 static vs_status_e
 test_netif_deinit() {
-
     netif_state.initialized = 0;
     netif_state.deinitialized = 1;
     return VS_CODE_OK;

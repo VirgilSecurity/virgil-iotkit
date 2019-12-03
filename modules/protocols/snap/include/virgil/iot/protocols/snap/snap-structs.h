@@ -74,7 +74,7 @@ typedef uint32_t vs_snap_element_t;
  * Callback for #vs_netif_init_t function.
  * This function is used when new SNAP data has been loaded.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] data Received portion of data. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  * \param[out] packet_data Buffer to store packed data. Cannot be NULL.
@@ -93,7 +93,7 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
  * Callback for #vs_netif_init_t function.
  * This function is used to preprocess data.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
@@ -132,8 +132,8 @@ typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
  * This function is used to initialize SNAP implementation.
  * Called from #vs_snap_init call.
  *
- * \param[in] rx_cb #vs_netif_rx_cb_t implementation. Cannot be NULL.
- * \param[in] process_cb #vs_netif_process_cb_t implementation. Cannot be NULL.
+ * \param[in] rx_cb #vs_netif_rx_cb_t callback. Cannot be NULL.
+ * \param[in] process_cb #vs_netif_process_cb_t callback. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */

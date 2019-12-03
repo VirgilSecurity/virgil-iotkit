@@ -166,7 +166,7 @@ _process_own_firmware(vs_firmware_header_t *fw_info, vs_firmware_header_t *heade
 }
 
 void
-_send_firmware(void){
+_send_firmware(){
     if (vs_fldt_server_add_file_type(queued_file, vs_firmware_update_ctx(), true)) {
         VS_LOG_ERROR("Unable to add new firmware");
         // Error processing
