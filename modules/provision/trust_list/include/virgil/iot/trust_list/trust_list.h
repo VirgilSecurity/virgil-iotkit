@@ -67,8 +67,8 @@
  *
  * // ...
  *
- *     vs_snap_service_t *snap_fldt_server;      // FLDT Server service
- *     vs_mac_addr_t mac_addr;                   // Own MAC address
+ *     const vs_snap_service_t *snap_fldt_server;   // FLDT Server service
+ *     vs_mac_addr_t mac_addr;                      // Own MAC address
  *
  *     // Initialize mac_addr
  *
@@ -148,7 +148,7 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_deinit();
+vs_tl_deinit(void);
 
 /** Trust List element saving
  *

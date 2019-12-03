@@ -43,12 +43,12 @@
 #include <stdio.h>
 #include <string.h>
 
-static vs_netif_t *_snap_default_netif = 0;
+static const vs_netif_t *_snap_default_netif = NULL;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
 #define SERVICES_CNT_MAX (10)
-static vs_snap_service_t *_snap_services[SERVICES_CNT_MAX];
+static const vs_snap_service_t *_snap_services[SERVICES_CNT_MAX];
 static uint32_t _snap_services_num = 0;
 static vs_mac_addr_t _snap_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
@@ -68,7 +68,7 @@ static long _calls_counter = 0;
 
 /******************************************************************************/
 static long long
-current_timestamp() {
+current_timestamp(void) {
     struct timeval te;
     gettimeofday(&te, NULL);                               // get current time
     long long us = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate ms
@@ -86,7 +86,7 @@ _is_broadcast(const vs_mac_addr_t *mac_addr) {
 static bool
 _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
     vs_mac_addr_t netif_mac_addr;
-    netif->mac_addr(netif, &netif_mac_addr);
+    netif->mac_addr(&netif_mac_addr);
 
     return 0 == memcmp(mac_addr->bytes, netif_mac_addr.bytes, ETH_ADDR_LEN);
 }
@@ -123,8 +123,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             // Process response
             if (packet->header.flags & VS_SNAP_FLAG_ACK || packet->header.flags & VS_SNAP_FLAG_NACK) {
                 if (_snap_services[i]->response_process) {
-                    _snap_services[i]->response_process(_snap_services[i],
-                                                        packet->header.element_id,
+                    _snap_services[i]->response_process(packet->header.element_id,
                                                         !!(packet->header.flags & VS_SNAP_FLAG_ACK),
                                                         packet->content,
                                                         packet->header.content_size);
@@ -134,8 +133,7 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             } else if (_snap_services[i]->request_process) {
                 need_response = true;
                 _statistics.received++;
-                res = _snap_services[i]->request_process(_snap_services[i],
-                                                         packet->header.element_id,
+                res = _snap_services[i]->request_process(packet->header.element_id,
                                                          packet->content,
                                                          packet->header.content_size,
                                                          response_packet->content,
@@ -180,7 +178,7 @@ _snap_periodical(void) {
     // Detect required command
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->periodical_process) {
-            _snap_services[i]->periodical_process(_snap_services[i]);
+            _snap_services[i]->periodical_process();
         }
     }
 
@@ -341,23 +339,23 @@ vs_snap_init(vs_netif_t *default_netif,
     _snap_default_netif = default_netif;
 
     // Init default network interface
-    return default_netif->init(default_netif, _snap_rx_cb, _snap_process_cb);
+    return default_netif->init(_snap_rx_cb, _snap_process_cb);
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_deinit() {
+vs_snap_deinit(void) {
     int i;
     CHECK_NOT_ZERO_RET(_snap_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
-    _snap_default_netif->deinit(_snap_default_netif);
+    _snap_default_netif->deinit();
 
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
         if (_snap_services[i]->deinit) {
-            _snap_services[i]->deinit(_snap_services[i]);
+            _snap_services[i]->deinit();
         }
     }
 
@@ -391,7 +389,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     }
 
     if (!netif || netif == _snap_default_netif) {
-        return _snap_default_netif->tx(_snap_default_netif, data, data_sz);
+        return _snap_default_netif->tx(data, data_sz);
     }
 
     return VS_CODE_ERR_SNAP_UNKNOWN;
@@ -399,7 +397,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 
 /******************************************************************************/
 vs_status_e
-vs_snap_register_service(vs_snap_service_t *service) {
+vs_snap_register_service(const vs_snap_service_t *service) {
 
     VS_IOT_ASSERT(service);
 
@@ -422,7 +420,7 @@ vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     if (!netif || netif == _snap_default_netif) {
         VS_IOT_ASSERT(_snap_default_netif);
         VS_IOT_ASSERT(_snap_default_netif->mac_addr);
-        _snap_default_netif->mac_addr(_snap_default_netif, mac_addr);
+        _snap_default_netif->mac_addr(mac_addr);
         return VS_CODE_OK;
     }
 
@@ -431,7 +429,7 @@ vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 vs_snap_transaction_id_t
-_snap_transaction_id() {
+_snap_transaction_id(void) {
     static vs_snap_transaction_id_t id = 0;
 
     return id++;

@@ -103,7 +103,7 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
     request.enable = enable ? 1 : 0;
     request.period_seconds = period_seconds;
     if (default_netif && default_netif->mac_addr) {
-        default_netif->mac_addr(default_netif, &request.recipient_mac);
+        default_netif->mac_addr(&request.recipient_mac);
     } else {
         VS_IOT_MEMSET(request.recipient_mac.bytes, 0xFF, ETH_ADDR_LEN);
     }
@@ -144,7 +144,7 @@ _snot_request_processor(const uint8_t *request,
     device_info.device_roles = enum_request->device_roles;
 
     // Invoke callback
-    _impl.device_start(&_info_client, &device_info);
+    _impl.device_start(&device_info);
 
     return VS_CODE_COMMAND_NO_RESPONSE;
 }
@@ -194,7 +194,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.device_roles = ginf_request->device_roles;
 
     // Invoke callback function
-    _impl.general_info(&_info_client, &general_info);
+    _impl.general_info(&general_info);
 
     *response_sz = 0;
 
@@ -231,7 +231,7 @@ _stat_request_processor(const uint8_t *request,
     stat_info.sent = stat_request->sent;
 
     // Invoke callback function
-    _impl.statistics(&_info_client, &stat_info);
+    _impl.statistics(&stat_info);
 
     *response_sz = 0;
 
@@ -267,15 +267,12 @@ _poll_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 
 /******************************************************************************/
 static vs_status_e
-_info_client_request_processor(struct vs_snap_service_t *service,
-                               vs_snap_element_t element_id,
+_info_client_request_processor(vs_snap_element_t element_id,
                                const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
                                uint16_t *response_sz) {
-    (void)service;
-
     *response_sz = 0;
 
     switch (element_id) {
@@ -302,13 +299,10 @@ _info_client_request_processor(struct vs_snap_service_t *service,
 
 /******************************************************************************/
 static vs_status_e
-_info_client_response_processor(struct vs_snap_service_t *service,
-                                vs_snap_element_t element_id,
+_info_client_response_processor(vs_snap_element_t element_id,
                                 bool is_ack,
                                 const uint8_t *response,
                                 const uint16_t response_sz) {
-    (void)service;
-
     switch (element_id) {
 
     case VS_INFO_SNOT:
@@ -330,7 +324,7 @@ _info_client_response_processor(struct vs_snap_service_t *service,
 }
 
 /******************************************************************************/
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_info_client(vs_snap_info_client_service_t impl) {
 
     _info_client.user_data = 0;

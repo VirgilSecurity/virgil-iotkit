@@ -47,7 +47,7 @@
  *
  *     vs_secmodule_impl_t *secmodule_impl;         // Security module implementation
  *     vs_storage_op_ctx_t slots_storage_impl;      // Slots storage implementation
- *     vs_snap_service_t *snap_prvs_server;         // PRVS Server
+ *     const vs_snap_service_t *snap_prvs_server;   // PRVS Server
 
  *     // Initialize slots_storage_impl, secmodule_impl.
  *
@@ -85,7 +85,7 @@ extern "C" {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_prvs_server(vs_secmodule_impl_t *secmodule);
 
 #ifdef __cplusplus

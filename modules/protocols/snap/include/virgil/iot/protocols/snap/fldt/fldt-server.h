@@ -49,7 +49,7 @@
  *
  * Here you can see an example of FLDT server initialization :
  * \code
- *  vs_snap_service_t *snap_fldt_server;
+ *  const vs_snap_service_t *snap_fldt_server;
  *  const vs_mac_addr_t mac_addr;
  *  snap_fldt_server = vs_snap_fldt_server( &mac_addr, _add_filetype );
  *
@@ -124,7 +124,7 @@ typedef vs_status_e (*vs_fldt_server_add_filetype_cb)(const vs_update_file_type_
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_fldt_server(const vs_mac_addr_t *gateway_mac, vs_fldt_server_add_filetype_cb add_filetype);
 
 /** Add file type

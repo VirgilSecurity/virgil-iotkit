@@ -41,6 +41,6 @@ vs_status_e
 _snap_fill_header(const vs_mac_addr_t *recipient_mac, vs_snap_packet_t *packet);
 
 vs_snap_transaction_id_t
-_snap_transaction_id();
+_snap_transaction_id(void);
 
 #endif // VS_SNAP_PRIVATE_H

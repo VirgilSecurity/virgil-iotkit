@@ -349,15 +349,12 @@ _prvs_finalize_tl_process_request(const uint8_t *request, const uint16_t request
 
 /******************************************************************************/
 static vs_status_e
-_prvs_service_request_processor(struct vs_snap_service_t *service,
-                                vs_snap_element_t element_id,
+_prvs_service_request_processor(vs_snap_element_t element_id,
                                 const uint8_t *request,
                                 const uint16_t request_sz,
                                 uint8_t *response,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
-    (void)service;
-
     *response_sz = 0;
 
     switch (element_id) {
@@ -410,7 +407,7 @@ _prepare_prvs_service() {
 }
 
 /******************************************************************************/
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_prvs_server(vs_secmodule_impl_t *secmodule) {
 
     CHECK_NOT_ZERO_RET(secmodule, NULL);

@@ -51,7 +51,6 @@ extern "C" {
 #endif
 
 struct vs_netif_t;
-struct vs_snap_service_t;
 struct vs_mac_addr_t;
 
 /**  SNAP transaction ID
@@ -108,13 +107,12 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uin
  * This function is used to send data.
  * Called from #vs_snap_send call.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
 
 /** Get MAC address
  *
@@ -122,12 +120,11 @@ typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *da
  * This function is used to receive current MAC address.
  * Called from #vs_snap_mac_addr call.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[out] mac_addr #vs_mac_addr_t MAC address buffer. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
+typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
 /** Initializer
  *
@@ -135,15 +132,12 @@ typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t *netif, struct vs_
  * This function is used to initialize SNAP implementation.
  * Called from #vs_snap_init call.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
  * \param[in] rx_cb #vs_netif_rx_cb_t implementation. Cannot be NULL.
  * \param[in] process_cb #vs_netif_process_cb_t implementation. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
-                                       const vs_netif_rx_cb_t rx_cb,
-                                       const vs_netif_process_cb_t process_cb);
+typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 /** Destructor
  *
@@ -151,18 +145,15 @@ typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
  * This function is used to destroy SNAP implementation.
  * Called from #vs_snap_deinit call.
  *
- * \param[in] netif #vs_netif_t Network interface with user data. Cannot be NULL.
- *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
+typedef vs_status_e (*vs_netif_deinit_t)(void);
 
 /** SNAP Service Request Processor
  *
  * Implementation for \a request_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service \a request and to prepare \a response if needed.
  *
- * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] request Request data buffer.
  * \param[in] request_sz Request data size.
@@ -172,8 +163,7 @@ typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_service_t *service,
-                                                           vs_snap_element_t element_id,
+typedef vs_status_e (*vs_snap_service_request_processor_t)(vs_snap_element_t element_id,
                                                            const uint8_t *request,
                                                            const uint16_t request_sz,
                                                            uint8_t *response,
@@ -185,7 +175,6 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_servic
  * Implementation for \a response_process member of #vs_snap_service_t structure.
  * This function is called to process SNAP service response.
  *
- * \param[in] service Service interface with user data. Cannot be NULL.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
  * \param[in] is_ack Boolean flag indicating successful packet receiving
  * \param[in] response Response buffer.
@@ -193,8 +182,7 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(struct vs_snap_servic
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_service_t *service,
-                                                            vs_snap_element_t element_id,
+typedef vs_status_e (*vs_snap_service_response_processor_t)(vs_snap_element_t element_id,
                                                             bool is_ack,
                                                             const uint8_t *response,
                                                             const uint16_t response_sz);
@@ -205,22 +193,18 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(struct vs_snap_servi
  * This function is called when there is no input data.
  * It can be used to send some statistical data as it is done for INFO service.
  *
- * \param[in] service Service interface with user data. Cannot be NULL.
- *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_periodical_processor_t)(struct vs_snap_service_t *service);
+typedef vs_status_e (*vs_snap_service_periodical_processor_t)(void);
 
 /** SNAP Service Destructor
  *
  * Implementation for \a deinit member of #vs_snap_service_t structure.
  * This function is called to destroy SNAP service.
  *
- * \param[in] service Service interface with user data. Cannot be NULL.
- *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_service_deinit_t)(struct vs_snap_service_t *service);
+typedef vs_status_e (*vs_snap_service_deinit_t)(void);
 
 /** Device roles
  *

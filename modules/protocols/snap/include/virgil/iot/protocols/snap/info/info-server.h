@@ -50,7 +50,7 @@
  *
  *    vs_storage_op_ctx_t tl_storage_impl;        // Trust List storage implementation
  *    vs_storage_op_ctx_t fw_storage_impl;        // Firmware storage implementation
- *    vs_snap_service_t *snap_info_server;        // INFO Server SNAP service
+ *    const vs_snap_service_t *snap_info_server;  // INFO Server SNAP service
  *
  *     // Initialize tl_storage_impl, fw_storage_impl
  *
@@ -100,7 +100,7 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-vs_snap_service_t *
+const vs_snap_service_t *
 vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
                     vs_storage_op_ctx_t *fw_ctx,
                     vs_snap_info_start_notif_srv_cb_t startup_cb);

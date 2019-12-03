@@ -26,7 +26,7 @@ typedef struct {
 vs_status_e
 vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 vs_status_e
-vs_tl_storage_deinit_internal();
+vs_tl_storage_deinit_internal(void);
 
 vs_status_e
 vs_tl_invalidate(size_t storage_type);
