@@ -69,14 +69,14 @@ static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 /******************************************************************/
 static vs_status_e
 _fill_enum_data(vs_info_enum_response_t *enum_data) {
-    const vs_netif_t *defautl_netif;
+    const vs_netif_t *default_netif;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(enum_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     // Set MAC address for default network interface
-    defautl_netif = vs_snap_default_netif();
-    CHECK_RET(!defautl_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    default_netif = vs_snap_default_netif();
+    CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -352,6 +352,7 @@ _info_request_processor(const struct vs_netif_t *netif,
 static vs_status_e
 _info_server_periodical_processor(void) {
     vs_status_e ret_code;
+
     static bool started = false;
 
     // Send broadcast notification about self start

@@ -341,7 +341,9 @@ vs_snap_init(vs_netif_t *default_netif,
     _snap_default_netif = default_netif;
 
     // Init default network interface
-    return default_netif->init(_snap_rx_cb, _snap_process_cb);
+    default_netif->init(_snap_rx_cb, _snap_process_cb);
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

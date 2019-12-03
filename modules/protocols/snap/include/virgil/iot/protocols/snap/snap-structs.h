@@ -71,8 +71,8 @@ typedef uint32_t vs_snap_element_t;
 
 /** Received data
  *
- * Callback for #vs_netif_init_t function.
- * This function is used when new SNAP data has been loaded.
+ * Callback for #vs_netif_init_t function callback.
+ * This callback is used when new SNAP data has been loaded.
  *
  * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] data Received portion of data. Cannot be NULL.
@@ -90,8 +90,8 @@ typedef vs_status_e (*vs_netif_rx_cb_t)(struct vs_netif_t *netif,
 
 /** Preprocessed data
  *
- * Callback for #vs_netif_init_t function.
- * This function is used to preprocess data.
+ * Callback for #vs_netif_init_t function callback.
+ * This callback is used to preprocess data.
  *
  * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
@@ -103,8 +103,8 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uin
 
 /** Send data
  *
- * Implementation for \a tx member of #vs_netif_t structure.
- * This function is used to send data.
+ * Callback for \a tx member of #vs_netif_t structure.
+ * This callback is used to send data.
  * Called from #vs_snap_send call.
  *
  * \param[in] data Data buffer. Cannot be NULL.
@@ -116,8 +116,8 @@ typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz
 
 /** Get MAC address
  *
- * Implementation for \a mac_addr member of #vs_netif_t structure.
- * This function is used to receive current MAC address.
+ * Callback for \a mac_addr member of #vs_netif_t structure.
+ * This callback is used to receive current MAC address.
  * Called from #vs_snap_mac_addr call.
  *
  * \param[out] mac_addr #vs_mac_addr_t MAC address buffer. Cannot be NULL.
@@ -128,8 +128,8 @@ typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
 
 /** Initializer
  *
- * Implementation for \a init member of #vs_netif_t structure.
- * This function is used to initialize SNAP implementation.
+ * Callback for \a init member of #vs_netif_t structure.
+ * This callback is used to initialize SNAP implementation.
  * Called from #vs_snap_init call.
  *
  * \param[in] rx_cb #vs_netif_rx_cb_t callback. Cannot be NULL.
@@ -141,8 +141,8 @@ typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_ne
 
 /** Destructor
  *
- * Implementation for \a deinit member of #vs_netif_t structure.
- * This function is used to destroy SNAP implementation.
+ * Callback for \a deinit member of #vs_netif_t structure.
+ * This callback is used to destroy SNAP implementation.
  * Called from #vs_snap_deinit call.
  *
  * \return #VS_CODE_OK in case of success or error code.
@@ -151,8 +151,8 @@ typedef vs_status_e (*vs_netif_deinit_t)(void);
 
 /** SNAP Service Request Processor
  *
- * Implementation for \a request_process member of #vs_snap_service_t structure.
- * This function is called to process SNAP service \a request and to prepare \a response if needed.
+ * Callback for \a request_process member of #vs_snap_service_t structure.
+ * This callback is called to process SNAP service \a request and to prepare \a response if needed.
  *
  * \param[in] netif Network interface.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
@@ -174,8 +174,8 @@ typedef vs_status_e (*vs_snap_service_request_processor_t)(const struct vs_netif
 
 /** SNAP Service Response Processor
  *
- * Implementation for \a response_process member of #vs_snap_service_t structure.
- * This function is called to process SNAP service response.
+ * Callback for \a response_process member of #vs_snap_service_t structure.
+ * This callback is called to process SNAP service response.
  *
  * \param[in] netif Network interface.
  * \param[in] element_id #vs_snap_element_t service element. Normally this is command ID.
@@ -193,8 +193,8 @@ typedef vs_status_e (*vs_snap_service_response_processor_t)(const struct vs_neti
 
 /** SNAP Periodical data
  *
- * Implementation for \a periodical_process member of #vs_snap_service_t structure.
- * This function is called when there is no input data.
+ * Callback for \a periodical_process member of #vs_snap_service_t structure.
+ * This callback is called when there is no input data.
  * It can be used to send some statistical data as it is done for INFO service.
  *
  * \return #VS_CODE_OK in case of success or error code.

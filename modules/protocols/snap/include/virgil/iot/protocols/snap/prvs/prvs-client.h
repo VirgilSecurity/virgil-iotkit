@@ -43,9 +43,9 @@
  * Before first call it is necessary to register PRVS service :
  *
  * \code
- *    const vs_snap_service_t *snap_prvs_client;    // INFO service
- *    vs_snap_prvs_dnid_list_t dnid_list;           // Array of "Do Not Initialized Devices"
- *    uint32_t wait_ms = 3000;                      // Waiting 3 seconds for all devices enumerating
+ *    const vs_snap_service_t *snap_prvs_client;      // INFO service
+ *    vs_snap_prvs_dnid_list_t dnid_list;             // Array of "Do Not Initialized Devices"
+ *    uint32_t wait_ms = 3000;                        // Waiting 3 seconds for all devices enumerating
  *
  *    // Initialize snap_prvs_client
  *
@@ -81,8 +81,6 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-struct vs_snap_prvs_client_impl_t;
-
 /** Stop waiting implementation
  *
  * This function interrupts asynchronously waiting started by #wait_func and sets for \a condition the value \expect
@@ -110,7 +108,7 @@ typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int *condition, int expect);
 typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
 
 /** PRVS client implementation */
-typedef struct vs_snap_prvs_client_impl_t {
+typedef struct {
     vs_snap_prvs_stop_wait_t stop_wait_func; /**< Stop waiting implementation */
     vs_snap_prvs_wait_t wait_func;           /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;
