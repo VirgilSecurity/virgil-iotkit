@@ -53,7 +53,7 @@ static bool _prvs_service_ready = false;
 
 static vs_secmodule_impl_t *_secmodule = NULL;
 
-#define VS_PRVS_SERVER_PROFILE 1
+#define VS_PRVS_SERVER_PROFILE 0
 
 #if VS_PRVS_SERVER_PROFILE
 #include <sys/time.h>
