@@ -203,8 +203,8 @@ typedef vs_status_e (*vs_snap_service_periodical_processor_t)(void);
 
 /** SNAP Service Destructor
  *
- * Implementation for \a deinit member of #vs_snap_service_t structure.
- * This function is called to destroy SNAP service.
+ * Callback for \a deinit member of #vs_snap_service_t structure.
+ * This callback is called to destroy SNAP service.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
