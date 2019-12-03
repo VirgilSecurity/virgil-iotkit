@@ -78,6 +78,11 @@ init_manufacture_id(manufacture_id, MANUFACTURE_ID);
 #include <virgil/iot/status_code/status_code.h>
 #include <trust_list-config.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define HTONL_IN_COMPILE_TIME(val)                                                                                     \
     (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
@@ -233,5 +238,10 @@ typedef struct {
     vs_key_type_e key_type;
     uint8_t element_buf[VS_TL_STORAGE_MAX_PART_SIZE];
 } vs_provision_tl_find_ctx_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_IOT_PROVISION_STRUCTS_H

@@ -62,13 +62,13 @@ static int _set_polling(void) {
 }
 
 static int _register_info_client(void) {
-    vs_snap_info_callbacks_t _cb;
+    vs_snap_info_client_service_t _impl;
 
-    _cb.device_start_cb = goDeviceStartNotifCb;
-    _cb.general_info_cb = goGeneralInfoCb;
-    _cb.statistics_cb = goDeviceStatCb;
+    _impl.device_start = goDeviceStartNotifCb;
+    _impl.general_info = goGeneralInfoCb;
+    _impl.statistics = goDeviceStatCb;
 
-    return vs_snap_register_service(vs_snap_info_client(_cb));
+    return vs_snap_register_service(vs_snap_info_client(_impl));
 }
 */
 import "C"

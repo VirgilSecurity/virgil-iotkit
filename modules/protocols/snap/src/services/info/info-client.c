@@ -52,7 +52,7 @@ static size_t _devices_list_max = 0;
 static size_t _devices_list_cnt = 0;
 
 // Callbacks for devices polling
-static vs_snap_info_callbacks_t _callbacks = {NULL, NULL, NULL};
+static vs_snap_info_client_service_t _impl = {NULL, NULL, NULL};
 
 /******************************************************************************/
 vs_status_e
@@ -130,7 +130,7 @@ _snot_request_processor(const uint8_t *request,
     vs_snap_info_device_t device_info;
 
     // Check is callback present
-    if (!_callbacks.device_start_cb) {
+    if (!_impl.device_start) {
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 
@@ -144,7 +144,7 @@ _snot_request_processor(const uint8_t *request,
     device_info.device_roles = enum_request->device_roles;
 
     // Invoke callback
-    _callbacks.device_start_cb(&device_info);
+    _impl.device_start(&device_info);
 
     return VS_CODE_COMMAND_NO_RESPONSE;
 }
@@ -161,7 +161,7 @@ _ginf_request_processor(const uint8_t *request,
     vs_info_general_t general_info;
 
     // Check is callback present
-    if (!_callbacks.general_info_cb) {
+    if (!_impl.general_info) {
         return VS_CODE_OK;
     }
 
@@ -194,7 +194,7 @@ _ginf_request_processor(const uint8_t *request,
     general_info.device_roles = ginf_request->device_roles;
 
     // Invoke callback function
-    _callbacks.general_info_cb(&general_info);
+    _impl.general_info(&general_info);
 
     *response_sz = 0;
 
@@ -213,7 +213,7 @@ _stat_request_processor(const uint8_t *request,
     vs_info_statistics_t stat_info;
 
     // Check is callback present
-    if (!_callbacks.statistics_cb) {
+    if (!_impl.statistics) {
         return VS_CODE_OK;
     }
 
@@ -231,7 +231,7 @@ _stat_request_processor(const uint8_t *request,
     stat_info.sent = stat_request->sent;
 
     // Invoke callback function
-    _callbacks.statistics_cb(&stat_info);
+    _impl.statistics(&stat_info);
 
     *response_sz = 0;
 
@@ -331,7 +331,7 @@ _info_client_response_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_client(vs_snap_info_callbacks_t callbacks) {
+vs_snap_info_client(vs_snap_info_client_service_t impl) {
 
     _info_client.user_data = 0;
     _info_client.id = VS_INFO_SERVICE_ID;
@@ -340,7 +340,7 @@ vs_snap_info_client(vs_snap_info_callbacks_t callbacks) {
     _info_client.periodical_process = NULL;
 
     // Save callbacks
-    VS_IOT_MEMCPY(&_callbacks, &callbacks, sizeof(callbacks));
+    VS_IOT_MEMCPY(&_impl, &impl, sizeof(impl));
 
     return &_info_client;
 }

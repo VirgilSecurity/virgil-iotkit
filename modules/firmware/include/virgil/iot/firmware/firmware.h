@@ -215,6 +215,11 @@ Firmware module");
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Firmware descriptor */
 typedef struct __attribute__((__packed__)) {
     vs_file_info_t info;      /**< File information */
@@ -511,5 +516,10 @@ vs_firmware_hton_descriptor(vs_firmware_descriptor_t *desc);
  */
 void
 vs_firmware_hton_header(vs_firmware_header_t *header);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_FIRMWARE_H

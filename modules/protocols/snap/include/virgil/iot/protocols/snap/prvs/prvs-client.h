@@ -72,14 +72,14 @@
 
 #if PRVS_CLIENT
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
-
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision-structs.h>
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** Stop waiting implementation
  *
@@ -289,7 +289,8 @@ vs_snap_prvs_set_tl_footer(const vs_netif_t *netif,
                            uint32_t wait_ms);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // PRVS_CLIENT

@@ -127,6 +127,11 @@
 #include <stdint.h>
 #include "jsmn.h"
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 #define MOD_ERROR_START(x) (x << 12 | 0)
 
 #ifdef JSMN_SHORT_TOKENS
@@ -723,5 +728,10 @@ json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements);
  */
 int
 json_array_release_array_object(jobj_t *jobj);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif /* __JSON_PARSER_H__ */

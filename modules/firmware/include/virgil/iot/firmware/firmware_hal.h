@@ -45,6 +45,11 @@
 
 #include <virgil/iot/status_code/status_code.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Prepare space
  *
  * Signature for function that is called by #vs_firmware_install_firmware Firmware library function to prepare space for
@@ -88,5 +93,10 @@ vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz);
  */
 vs_status_e
 vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_FIRMWARE_INTERFACE_H
