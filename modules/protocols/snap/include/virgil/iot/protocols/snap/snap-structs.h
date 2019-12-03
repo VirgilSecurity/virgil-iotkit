@@ -302,7 +302,7 @@ typedef struct vs_netif_t {
  *
  * This structure contains SNAP service callbacks and service specific information
  */
-typedef struct vs_snap_service_t {
+typedef struct {
     void *user_data;                                           /**< User data */
     vs_snap_service_id_t id;                                   /**< Service ID */
     vs_snap_service_request_processor_t request_process;       /**< Reqeust processing */

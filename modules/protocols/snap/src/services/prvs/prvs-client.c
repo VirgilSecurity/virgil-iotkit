@@ -83,6 +83,7 @@ _prvs_service_response_processor(const struct vs_netif_t *netif,
                                  bool is_ack,
                                  const uint8_t *response,
                                  const uint16_t response_sz) {
+
     VS_IOT_ASSERT(_prvs_impl.stop_wait_func);
 
     switch (element_id) {

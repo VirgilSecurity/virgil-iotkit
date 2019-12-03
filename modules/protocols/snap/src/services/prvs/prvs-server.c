@@ -247,6 +247,7 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
+
     vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
 
     // Check input parameters
@@ -304,6 +305,7 @@ _prvs_asav_process_request(const struct vs_netif_t *netif,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
+
     vs_pubkey_t *asav_response = (vs_pubkey_t *)response;
     return vs_prvs_finalize_storage(asav_response, response_sz);
 }
@@ -316,6 +318,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
                            uint8_t *response,
                            const uint16_t response_buf_sz,
                            uint16_t *response_sz) {
+
     vs_status_e ret_code;
     uint16_t result_sz;
 
