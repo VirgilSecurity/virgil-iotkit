@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2018 Virgil Security Inc.
+# Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -388,10 +388,50 @@ function(target_apple_framework target)
     get_target_property(BUNDLE_VERSION ${target} VERSION)
     get_target_property(BUNDLE_SOVERSION ${target} SOVERSION)
 
-    configure_file(
-            "${CMAKE_CURRENT_LIST_DIR}/Info.plist.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/Info.plist"
-    )
+    if(NOT BUNDLE_VERSION)
+        set(BUNDLE_VERSION "${PROJECT_VERSION}")
+    endif()
+
+    if(NOT BUNDLE_SOVERSION)
+        set(BUNDLE_SOVERSION "${PROJECT_VERSION_MAJOR}")
+    endif()
+
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/Info.plist.in")
+        configure_file(
+                "${CMAKE_CURRENT_LIST_DIR}/Info.plist.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/Info.plist"
+        )
+    else()
+        set(INFO_PLIST_FILE "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
+        file(WRITE "${INFO_PLIST_FILE}" "")
+        file(APPEND "${INFO_PLIST_FILE}" "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n")
+        file(APPEND "${INFO_PLIST_FILE}" "<plist version=\"1.0\">\n")
+        file(APPEND "${INFO_PLIST_FILE}" "<dict>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleDevelopmentRegion</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>en</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleExecutable</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>${FRAMEWORK_NAME}</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleIdentifier</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>${FRAMEWORK_IDENTIFIER}</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleInfoDictionaryVersion</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>6.0</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundlePackageType</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>FMWK</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleSignature</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>????</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleVersion</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>${BUNDLE_SOVERSION}</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CFBundleShortVersionString</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>${BUNDLE_VERSION}</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>CSResourcesFileMapped</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <true/>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <key>MinimumOSVersion</key>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "    <string>${APPLE_DEPLOYMENT_TARGET}</string>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "</dict>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "</plist>\n")
+        file(APPEND "${INFO_PLIST_FILE}" "")
+    endif()
 
     set_target_properties(${target} PROPERTIES
             MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist"
@@ -413,7 +453,11 @@ function(target_apple_framework target)
     #
     # Set module.modulemap
     #
-    if (FRAMEWORK_MODULE_MAP)
+    if(NOT FRAMEWORK_MODULE_MAP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/module.modulemap")
+        set(FRAMEWORK_MODULE_MAP "${CMAKE_CURRENT_LIST_DIR}/module.modulemap")
+    endif()
+
+    if(FRAMEWORK_MODULE_MAP)
         target_sources (${target} PRIVATE "${FRAMEWORK_MODULE_MAP}")
 
         set_property(

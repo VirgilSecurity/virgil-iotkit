@@ -46,10 +46,6 @@ else()
     message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-# Include and build external libraries
-include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
-
-set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
         CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"

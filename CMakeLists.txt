@@ -39,7 +39,7 @@ include(GNUInstallDirs)
 # ---------------------------------------------------------------------------
 #   Check build type
 # ---------------------------------------------------------------------------
-if (ANDROID)
+if (ANDROID OR APPLE_PLATFORM)
     set(MOBILE_PLATFORM ON)
     set(GO_DISABLE ON)
 endif()
@@ -67,7 +67,11 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/clangformat.cmake)
+
+set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+include (TransitiveToolchainArgs)
+include (clangformat)
 
 
 # ---------------------------------------------------------------------------

@@ -23,8 +23,9 @@ set(AWS_MQTT_INCLUDE  "${AWS_MQTT_ROOT}/include")
 set(AWS_MQTT_EXT_LIBS  "${AWS_MQTT_ROOT}/external_libs")
 
 # Include and build external libraries
+
+#TODO: Remove this include
 include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
-set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
         CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
