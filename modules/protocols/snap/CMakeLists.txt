@@ -138,22 +138,30 @@ function(add_snap _targetname _firmware_update _definitions)
 
 endfunction()
 
-#
-#   SNAP For factory purposes
-#
-add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
+if (NOT MOBILE_PLATFORM)
+    #
+    #   SNAP For factory purposes
+    #
+    add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
 
-#
-#   SNAP Devices initializer
-#
-add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1")
+    #
+    #   SNAP Devices initializer
+    #
+    add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1")
 
-#
-#   SNAP For Thing
-#
-add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
+    #
+    #   SNAP For Thing
+    #
+    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
 
-#
-#   SNAP For Gateway
-#
-add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+    #
+    #   SNAP For Gateway
+    #
+    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+
+else()
+    #
+    #   SNAP For Control
+    #
+    add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1")
+endif()

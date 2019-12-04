@@ -37,6 +37,17 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------
+#   Check build type
+# ---------------------------------------------------------------------------
+if (ANDROID)
+    set(MOBILE_PLATFORM ON)
+    set(GO_DISABLE ON)
+    set(VIRGIL_IOT_DEFAULT_IMPL OFF)
+
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain/android.cmake")
+endif()
+
+# ---------------------------------------------------------------------------
 #   Enable Golang
 # ---------------------------------------------------------------------------
 if(NOT GO_DISABLE)
