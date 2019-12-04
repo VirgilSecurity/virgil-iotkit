@@ -84,6 +84,11 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Security box operation type */
 typedef enum {
     VS_SECBOX_SIGNED,               /**< Signed data */
@@ -160,5 +165,10 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
  */
 vs_status_e
 vs_secbox_del(vs_storage_element_id_t id);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_IOT_SECBOX_H

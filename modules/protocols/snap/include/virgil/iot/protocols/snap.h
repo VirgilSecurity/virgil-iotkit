@@ -49,12 +49,16 @@
  * #vs_snap_service_t structure and register service by #vs_snap_register_service call.
  */
 
+#ifndef AP_SECURITY_SDK_SNAP_H
+#define AP_SECURITY_SDK_SNAP_H
+
 #include <stdint.h>
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -194,5 +198,8 @@ vs_snap_stat_t
 vs_snap_get_statistics(void);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
+
+#endif // AP_SECURITY_SDK_SNAP_H

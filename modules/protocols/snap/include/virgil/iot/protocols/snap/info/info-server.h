@@ -69,13 +69,14 @@
 
 #if INFO_SERVER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/firmware/firmware.h>
 #include "info-structs.h"
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** Startup notification
  *
@@ -116,7 +117,8 @@ vs_status_e
 vs_snap_info_start_notification(const vs_netif_t *netif);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // INFO_SERVER

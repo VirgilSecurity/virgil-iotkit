@@ -42,6 +42,11 @@
 #ifndef VS_SECMODULE_HELPERS_H_
 #define VS_SECMODULE_HELPERS_H_
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 #include <virgil/iot/secmodule/secmodule.h>
 
 #define VS_PUBKEY_SECP192_LEN (49)
@@ -155,4 +160,10 @@ vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIG
                                               uint8_t *virgil_sign,
                                               uint16_t buf_sz,
                                               uint16_t *virgil_sign_sz);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
 #endif // VS_SECMODULE_HELPERS_H_

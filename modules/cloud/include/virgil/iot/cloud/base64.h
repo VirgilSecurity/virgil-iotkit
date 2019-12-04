@@ -115,6 +115,7 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -182,7 +183,8 @@ bool
 base64encode(const unsigned char *in, int inlen, char *out, int *outlen);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif /* _BASE64_H_ */

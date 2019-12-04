@@ -89,13 +89,14 @@
 
 #if FLDT_SERVER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <virgil/iot/update/update.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/status_code/status_code.h>
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** Add new file type callback
  *
@@ -143,7 +144,8 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
                              bool broadcast_file_info);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // FLDT_SERVER

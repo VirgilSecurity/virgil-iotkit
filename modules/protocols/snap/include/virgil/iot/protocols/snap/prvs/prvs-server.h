@@ -67,13 +67,15 @@
 
 #if PRVS_SERVER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/secmodule/secmodule.h>
+
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
 /** PRVS Server SNAP Service implementation
  *
@@ -87,7 +89,8 @@ const vs_snap_service_t *
 vs_snap_prvs_server(vs_secmodule_impl_t *secmodule);
 
 #ifdef __cplusplus
-}
+} // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // PRVS_SERVER

@@ -92,7 +92,7 @@ endif()
 #
 #   Target platform
 #
-option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" ON)
+option(VIRGIL_IOT_MCU_BUILD "Disable build for MCU by default" OFF)
 
 #
 #   Additional HAL include paths

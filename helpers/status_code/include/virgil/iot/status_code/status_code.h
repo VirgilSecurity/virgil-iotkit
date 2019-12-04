@@ -65,6 +65,11 @@
 
 #include <virgil/iot/macros/macros.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Status code
  *
  * Zero value #VS_CODE_OK is used for non-error values. Negative values mean error
@@ -158,5 +163,10 @@ typedef enum {
  *  \return false in case of non-successful result.
  */
 #define STATUS_CHECK_RET_BOOL(OPERATION, MESSAGE, ...)   BOOL_CHECK_RET(VS_CODE_OK == (OPERATION), (MESSAGE), ##__VA_ARGS__)
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_IOT_SDK_STATUS_CODE

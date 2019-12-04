@@ -75,6 +75,11 @@
 #ifndef _JSON_GENERATOR_H_
 #define _JSON_GENERATOR_H_
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 #define MAX_JSON_STR_LEN 64  /* Maximum object or member name length */
 #define MAX_JSON_VAL_LEN 128 /* Maximum value name length */
 typedef enum {
@@ -398,4 +403,10 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
 #define json_set_array_bool(jptr, val)                                                                                 \
     ((val == true) ? (json_set_array_value(jptr, NULL, 1, 0.0, JSON_VAL_BOOL))                                         \
                    : (json_set_array_value(jptr, NULL, 0, 0.0, JSON_VAL_BOOL)))
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
 #endif /* _JSON_GENERATOR_H_ */

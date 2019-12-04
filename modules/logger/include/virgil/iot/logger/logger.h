@@ -72,6 +72,11 @@ logger_hal_implementation
 #include <stdarg.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Logging level
  */
 typedef enum {
@@ -292,5 +297,10 @@ vs_logger_message_hex(vs_log_level_t level,
 #define VS_LOG_DEBUG(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 
 #endif // VS_IOT_LOGGER_USE_LIBRARY
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // AP_SECURITY_SDK_LOGGER_H

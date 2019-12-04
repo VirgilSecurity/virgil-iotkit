@@ -102,6 +102,11 @@ if( vs_provision_tl_find_first_key(&search_ctx, VS_KEY_IOT_DEVICE, &pubkey_dated
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
 /** Provision initialization
  *
  * This function must be called before any other Provision call.
@@ -218,5 +223,10 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
                               uint16_t *pubkey_sz,
                               uint8_t **meta,
                               uint16_t *meta_sz);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
 
 #endif // VS_IOT_PROVISION_H
