@@ -51,7 +51,7 @@ endif()
 
 if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
     #   aws-sdk
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ext/aws-sdk)
     #   message bin
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
 endif()
