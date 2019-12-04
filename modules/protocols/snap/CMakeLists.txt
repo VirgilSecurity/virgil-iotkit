@@ -77,11 +77,6 @@ function(add_snap _targetname _firmware_update _definitions)
             )
 
     #
-    #   -Wall -Werror
-    #
-    set_target_properties(${_targetname} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
-
-    #
     #   Config path
     #
 
@@ -138,11 +133,12 @@ function(add_snap _targetname _firmware_update _definitions)
 
 endfunction()
 
+#
+#   SNAP For factory purposes
+#
+add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
+
 if (NOT MOBILE_PLATFORM)
-    #
-    #   SNAP For factory purposes
-    #
-    add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
 
     #
     #   SNAP Devices initializer

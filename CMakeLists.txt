@@ -69,8 +69,6 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-include (TransitiveToolchainArgs)
 include (clangformat)
 
 
@@ -138,30 +136,10 @@ option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE "Enable default Virgil crypto
 option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
 option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws implementation" ON)
 
-#
-#   aws-sdk
-#
-if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
-endif()
-
-
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
 # ---------------------------------------------------------------------------
-
-#
-#   Virgil crypto
-#
-set(ENABLE_TESTING OFF CACHE BOOL "On/Off integration tests." FORCE)
-set(VIRGIL_C_TESTING OFF CACHE BOOL "On/Off C library integration tests." FORCE)
-set(VIRGIL_LIB_PYTHIA OFF CACHE BOOL "Build 'pythia' library" FORCE)
-set(VIRGIL_LIB_ED25519 OFF CACHE BOOL "Build 'ed25519' library" FORCE)
-set(VIRGIL_LIB_RATCHET OFF CACHE BOOL "Build 'ratchet' library" FORCE)
-set(VIRGIL_LIB_PHE OFF CACHE BOOL "Build 'phe' library" FORCE)
-set(VIRGIL_INSTALL_HDRS  OFF CACHE BOOL "Install headers" FORCE)
-set(VIRGIL_INSTALL_LIBS  OFF CACHE BOOL "Install libraries" FORCE)
-set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "Install CMake configuration files" FORCE)
+include (virgil_depends)
 
 #
 #   Tools
