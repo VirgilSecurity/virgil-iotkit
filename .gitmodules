@@ -1,3 +1,6 @@
 [submodule "ext/aws-sdk/aws-iot-device-sdk-embedded-C"]
 	path = ext/aws-sdk/aws-iot-device-sdk-embedded-C
 	url = https://github.com/VirgilSecurity/aws-iot-device-sdk-embedded-C
+[submodule "ext/microchip-hsm"]
+	path = ext/microchip-hsm
+	url = https://github.com/MicrochipTech/cryptoauthlib.git

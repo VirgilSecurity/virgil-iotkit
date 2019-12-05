@@ -34,29 +34,48 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+project(vs-default-ateccx08A-secmodule VERSION 0.1.0 LANGUAGES C)
+
+add_library(vs-default-ateccx08A-secmodule)
+
+target_sources(vs-default-ateccx08A-secmodule
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-ateccx08A-secmodule/vs-ateccx08A-secmodule.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-ateccx08A-secmodule-internal.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-ateccx08A-secmodule.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/ateccx08A-secmodule-crypto.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/ateccx08A-secmodule-keypair.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/ateccx08A-secmodule-slots.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/ateccx08A-secmodule-sha2.c
+
+        )
+
 #
-#   Default Crypto implementations module
+#   Common include directories
 #
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE AND VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
-    message(FATAL_ERROR "[default impl secmodule] Must be enabled only one default implementation")
-endif ()
+target_include_directories(vs-default-ateccx08A-secmodule
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
-
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
-endif()
-
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-ateccx08A-secmodule)
-endif()
+        INTERFACE
+        $<INSTALL_INTERFACE:include>
+        )
 
 #
-#   Default cloud implementations module
+#   Link libraries
 #
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
-endif()
+target_link_libraries(vs-default-ateccx08A-secmodule
+        PUBLIC
+        converters
+        vs-module-secmodule
+        storage_hal
+        cryptoauth
+        )
 
-if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
+if(COMMAND add_clangformat)
+    add_clangformat(vs-default-ateccx08A-secmodule)
 endif()

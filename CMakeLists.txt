@@ -119,6 +119,7 @@ option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 # Default crypto implementations
 #
 option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" ON)
+option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
 
 #
 # Default cloud implementations
@@ -133,6 +134,18 @@ if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
 endif()
 
+#
+#   Microchip cryptoauth library for ATECCx08 hsm devices
+#
+if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
+    if (VIRGIL_IOT_MCU_BUILD)
+        set(ATCA_HAL_I2C ON CACHE BOOL "Include the I2C Hal Driver - Linux & MCU only" FORCE)
+    else()
+        set(ATCA_HAL_KIT_HID ON CACHE BOOL "Include the HID HAL Driver" FORCE)
+    endif ()
+    set(ATCA_BUILD_SHARED_LIBS OFF CACHE BOOL "Build CryptoAuthLib as shared library" FORCE)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/microchip-hsm)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
