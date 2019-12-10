@@ -38,8 +38,6 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
-#define VS_SLOTS_STORAGE_MAX_SIZE (1024)
-
 /** Initialize ateccx08A crypto implementation
  *
  * \param[in] slots_storage_impl Storage context. Must not be NULL.

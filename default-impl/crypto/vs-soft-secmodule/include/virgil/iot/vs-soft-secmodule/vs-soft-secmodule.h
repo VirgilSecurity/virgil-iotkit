@@ -46,7 +46,7 @@ vs_storage_op_ctx_t slots_storage_impl;     // Storage implementation for slot
 vs_secmodule_impl_t *secmodule_impl;        // Security implementation
 
 // Init storage implementation
-vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE)
+vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), KEY_SLOT_EXT_DATA_SIZE)
 
 // You can initialize security module by software implementation :
 secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
@@ -66,8 +66,6 @@ function in app-storage.c file.
 
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
-
-#define VS_SLOTS_STORAGE_MAX_SIZE (1024)
 
 /** Initialize software crypto implementation
  *
