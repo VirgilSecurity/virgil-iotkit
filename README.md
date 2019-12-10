@@ -1,5 +1,5 @@
 # Virgil IoTKit
-[![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://virgilsecurity.github.io/virgil-iotkit/v0.1.0-alpha/)
+[![Documentation Doxygen](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://virgilsecurity.github.io/virgil-iotkit/)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/VirgilSecurity/virgil-iotkit/release/LICENSE)
 
 
@@ -226,7 +226,7 @@ Virgil IoTKit also provides default mandatory implementations:
 <div id='api-reference'/>
 
 ## API Reference
-- [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/v0.1.0-alpha/)
+- [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/)
 
 <div id='license'/>
 
