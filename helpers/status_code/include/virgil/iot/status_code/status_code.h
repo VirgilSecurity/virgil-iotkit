@@ -122,6 +122,11 @@ typedef enum {
     VS_CODE_ERR_PLC = -83, /**< PLC error */
     VS_CODE_ERR_NOINIT = -84, /**< Not initialized */
 
+    VS_CODE_ERR_INIT_SNAP = -90, /**< Error while #vs_netif_t . init call */
+    VS_CODE_ERR_DEINIT_SNAP = -91, /**< Error while #vs_netif_t . deinit call */
+    VS_CODE_ERR_TX_SNAP = -92, /**< Error while #vs_netif_t . tx call */
+    VS_CODE_ERR_MAC_SNAP = -93, /**< Error while #vs_netif_t . mac call */
+
     VS_CODE_ERR_USER = -128 /**< User specific error codes start with this value */
 
 } vs_status_e;

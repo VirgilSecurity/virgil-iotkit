@@ -102,7 +102,7 @@ extern "C" {
  *
  * Timestamps are stored as seconds since January 1, 2015 UTC. This is constant for UNIX time conversions
  */
-#define VS_START_EPOCH (1420070400);
+#define VS_START_EPOCH (1420070400)
 
 /** Device serial ID size */
 #define VS_DEVICE_SERIAL_SIZE (32)
