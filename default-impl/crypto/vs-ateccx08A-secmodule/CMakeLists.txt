@@ -44,6 +44,7 @@ target_sources(vs-default-ateccx08A-secmodule
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-ateccx08A-secmodule/vs-ateccx08A-secmodule.h
         ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-ateccx08A-secmodule-internal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-secmodule-slots-config/vs-secmodule-slots-config.h
 
         # Sources
         ${CMAKE_CURRENT_LIST_DIR}/src/vs-ateccx08A-secmodule.c

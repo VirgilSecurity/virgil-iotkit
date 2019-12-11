@@ -131,27 +131,27 @@ vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot) {
 /******************************************************************************/
 int32_t
 _get_slot_size(vs_iot_secmodule_slot_e slot) {
-    if (slot < VS_KEY_SLOT_STD_OTP_MAX) {
+    if (slot <= VS_KEY_SLOT_STD_OTP_MAX) {
         return KEY_SLOT_STD_DATA_SIZE;
     }
 
-    if (slot < VS_KEY_SLOT_OTP_MAX) {
+    if (slot <= VS_KEY_SLOT_OTP_MAX) {
         return KEY_SLOT_EXT_DATA_SIZE;
     }
 
-    if (slot < VS_KEY_SLOT_STD_MTP_MAX) {
+    if (slot <= VS_KEY_SLOT_STD_MTP_MAX) {
         return KEY_SLOT_STD_DATA_SIZE;
     }
 
-    if (slot < VS_KEY_SLOT_MTP_MAX) {
+    if (slot <= VS_KEY_SLOT_MTP_MAX) {
         return KEY_SLOT_EXT_DATA_SIZE;
     }
 
-    if (slot < VS_KEY_SLOT_STD_TMP_MAX) {
+    if (slot <= VS_KEY_SLOT_STD_TMP_MAX) {
         return KEY_SLOT_STD_DATA_SIZE;
     }
 
-    if (slot < VS_KEY_SLOT_TMP_MAX) {
+    if (slot <= VS_KEY_SLOT_TMP_MAX) {
         return KEY_SLOT_EXT_DATA_SIZE;
     }
 

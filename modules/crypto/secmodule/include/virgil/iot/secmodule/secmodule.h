@@ -65,8 +65,7 @@ vs_soft_secmodule_deinit();
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <virgil/iot/secmodule/devices/secmodule-soft.h>
-
+#include <vs-secmodule-slots-config.h>
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {

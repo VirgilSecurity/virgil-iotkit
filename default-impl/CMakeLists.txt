@@ -37,18 +37,17 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #
 #   Default Crypto implementations module
 #
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE AND VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
-    message(FATAL_ERROR "[default impl secmodule] Must be enabled only one default implementation")
-endif ()
 
+if (VIRGIL_IOT_DEFAULT_SECMODULE_IMPL)
+    if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
+    endif()
 
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
+    if (VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-ateccx08A-secmodule)
+    endif()
 endif()
 
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-ateccx08A-secmodule)
-endif()
 
 #
 #   Default cloud implementations module

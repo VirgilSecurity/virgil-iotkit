@@ -112,40 +112,66 @@ option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
 option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
-option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+# default implementations
+option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" OFF)
+option(VIRGIL_IOT_DEFAULT_SECMODULE_IMPL "Enable Default secmodule implementations" OFF)
 
-#
-# Default crypto implementations
-#
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
+if (VIRGIL_IOT_DEFAULT_IMPL)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
 
-#
-# Default cloud implementations
-#
-option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" ON)
-option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws implementation" ON)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/CheckEnabledDefaultOptions.cmake)
 
-#
-#   aws-sdk
-#
-if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
-endif()
+    if (VIRGIL_IOT_DEFAULT_SECMODULE_IMPL)
 
-#
-#   Microchip cryptoauth library for ATECCx08 hsm devices
-#
-if(VIRGIL_IOT_DEFAULT_IMPL AND VIRGIL_IOT_DEFAULT_CRYPTO_VS_ATECCx08A_SECMODULE)
-    if (VIRGIL_IOT_MCU_BUILD)
-        set(ATCA_HAL_I2C ON CACHE BOOL "Include the I2C Hal Driver - Linux & MCU only" FORCE)
-    else()
-        set(ATCA_HAL_KIT_HID ON CACHE BOOL "Include the HID HAL Driver" FORCE)
+        #
+        # Default secmodule implementations
+        #
+        option(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" OFF)
+        option(VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
+
+        check_enabled_options("secmodule default impl" VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
+
+        if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
+            # set a path to directory where the secmodule can find a header file with slot configuration
+            set(VS_SECMODULE_SLOTS_CONFIG_DIRECTORY
+                    "${CMAKE_CURRENT_LIST_DIR}/default-impl/crypto/vs-soft-secmodule/include/virgil/iot/vs-secmodule-slots-config"
+                    CACHE STRING "Path to the slots config file")
+        endif()
+
+        if(VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
+            # set a path to directory where the secmodule can find a header file with slot configuration
+            set(VS_SECMODULE_SLOTS_CONFIG_DIRECTORY
+                    "${CMAKE_CURRENT_LIST_DIR}/default-impl/crypto/vs-ateccx08A-secmodule/include/virgil/iot/vs-secmodule-slots-config"
+                    CACHE STRING "Path to the slots config file")
+
+            #
+            #   Microchip cryptoauth library for ATECCx08 hsm devices
+            #
+            if (VIRGIL_IOT_MCU_BUILD)
+                set(ATCA_HAL_I2C ON CACHE BOOL "Include the I2C Hal Driver - Linux & MCU only" FORCE)
+            else()
+                set(ATCA_HAL_KIT_HID ON CACHE BOOL "Include the HID HAL Driver" FORCE)
+            endif ()
+            set(ATCA_BUILD_SHARED_LIBS OFF CACHE BOOL "Build CryptoAuthLib as shared library" FORCE)
+            add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ext/microchip-hsm)
+
+        endif()
     endif ()
-    set(ATCA_BUILD_SHARED_LIBS OFF CACHE BOOL "Build CryptoAuthLib as shared library" FORCE)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/microchip-hsm)
-endif()
+
+    #
+    # Default cloud implementations
+    #
+    option(VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP "Enable default curl http implementation" OFF)
+    option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws implementation" OFF)
+
+        #
+        #   aws-sdk
+        #
+        if(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ext/aws-sdk)
+        endif()
+endif ()
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
@@ -180,13 +206,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/helpers)
 #   Modules
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
-
-#
-#   Default implementations
-#
-if (VIRGIL_IOT_DEFAULT_IMPL)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
-endif()
 
 #
 #   Tests

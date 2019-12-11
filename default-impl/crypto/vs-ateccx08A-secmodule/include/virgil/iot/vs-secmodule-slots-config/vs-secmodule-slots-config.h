@@ -33,17 +33,16 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /**
- * @file secmodule-soft.h
- * @brief Software Security Module constants
+ * @file vs-secmodule-slots-config.h
+ * @brief ATECCx08A Security Module slots configuration
  *
- * This header contains defines and constants for Software Security Module implementation. They are used
+ * This header contains slots configuration for ATECCx08A Security Module implementation. They are used
  * by Virgil IoT KIT functions
  *
  */
 
-#ifndef VS_SECMODULE_SOFT_DEVICE_H
-#define VS_SECMODULE_SOFT_DEVICE_H
-
+#ifndef VS_SECMODULE_SLOTS_CONFIG_H
+#define VS_SECMODULE_SLOTS_CONFIG_H
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
@@ -72,9 +71,9 @@ typedef enum {
     VS_KEY_SLOT_STD_OTP_12,
     VS_KEY_SLOT_STD_OTP_13,
     VS_KEY_SLOT_STD_OTP_14,
-    VS_KEY_SLOT_STD_OTP_MAX,
+    VS_KEY_SLOT_STD_OTP_MAX = VS_KEY_SLOT_STD_OTP_14,
     VS_KEY_SLOT_EXT_OTP_0,
-    VS_KEY_SLOT_OTP_MAX,
+    VS_KEY_SLOT_OTP_MAX = VS_KEY_SLOT_EXT_OTP_0,
     VS_KEY_SLOT_STD_MTP_0,
     VS_KEY_SLOT_STD_MTP_1,
     VS_KEY_SLOT_STD_MTP_2,
@@ -90,7 +89,7 @@ typedef enum {
     VS_KEY_SLOT_STD_MTP_12,
     VS_KEY_SLOT_STD_MTP_13,
     VS_KEY_SLOT_STD_MTP_14,
-    VS_KEY_SLOT_STD_MTP_MAX,
+    VS_KEY_SLOT_STD_MTP_MAX = VS_KEY_SLOT_STD_MTP_14,
     VS_KEY_SLOT_EXT_MTP_0,
     VS_KEY_SLOT_MTP_MAX,
     VS_KEY_SLOT_STD_TMP_0,
@@ -100,12 +99,12 @@ typedef enum {
     VS_KEY_SLOT_STD_TMP_4,
     VS_KEY_SLOT_STD_TMP_5,
     VS_KEY_SLOT_STD_TMP_6,
-    VS_KEY_SLOT_STD_TMP_MAX,
+    VS_KEY_SLOT_STD_TMP_MAX = VS_KEY_SLOT_STD_TMP_6,
     VS_KEY_SLOT_EXT_TMP_0,
-    VS_KEY_SLOT_TMP_MAX
+    VS_KEY_SLOT_TMP_MAX = VS_KEY_SLOT_EXT_TMP_0
 } vs_iot_secmodule_slot_e;
 
-/** Provision keys amount */
+/** Provision keys amount for each type */
 #define PROVISION_KEYS_QTY 2
 
 /** Private key slot */
@@ -139,4 +138,4 @@ typedef enum {
 } // namespace VirgilIoTKit
 #endif
 
-#endif // VS_SECMODULE_SOFT_DEVICE_H
+#endif // VS_SECMODULE_SLOTS_CONFIG_H

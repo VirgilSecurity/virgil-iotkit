@@ -58,6 +58,7 @@ target_sources(vs-default-soft-secmodule
 
         # Headers
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-secmodule-slots-config/vs-secmodule-slots-config.h
 
         ${CMAKE_CURRENT_LIST_DIR}/include/private/vs-soft-secmodule-internal.h
 
@@ -75,6 +76,7 @@ target_sources(vs-default-soft-secmodule
 target_include_directories(vs-default-soft-secmodule
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-secmodule-slots-config>
 
         INTERFACE
         $<INSTALL_INTERFACE:include>
