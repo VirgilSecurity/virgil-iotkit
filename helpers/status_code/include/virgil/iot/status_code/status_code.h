@@ -126,6 +126,7 @@ typedef enum {
     VS_CODE_ERR_DEINIT_SNAP = -91, /**< Error while #vs_netif_t . deinit call */
     VS_CODE_ERR_TX_SNAP = -92, /**< Error while #vs_netif_t . tx call */
     VS_CODE_ERR_MAC_SNAP = -93, /**< Error while #vs_netif_t . mac call */
+    VS_CODE_ERR_POLLING_INFO_CLIENT = -94, /**< Error while starting polling */
 
     VS_CODE_ERR_USER = -128 /**< User specific error codes start with this value */
 
