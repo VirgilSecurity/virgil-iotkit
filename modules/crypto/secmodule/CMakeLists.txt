@@ -72,12 +72,6 @@ else()
     message(STATUS "[vs-module-secmodule] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-if (NOT VS_SECMODULE_SLOTS_CONFIG_DIRECTORY)
-    message(FATAL_ERROR "[vs-module-secmodule] VS_SECMODULE_SLOTS_CONFIG_DIRECTORY variable containing path to the slots config is not specified")
-else()
-    message(STATUS "[vs-module-secmodule] path to the slots config : ${VS_SECMODULE_SLOTS_CONFIG_DIRECTORY}")
-endif ()
-
 target_compile_definitions(vs-module-secmodule
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
@@ -95,7 +89,6 @@ target_include_directories(vs-module-secmodule
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
-        $<BUILD_INTERFACE:${VS_SECMODULE_SLOTS_CONFIG_DIRECTORY}>
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

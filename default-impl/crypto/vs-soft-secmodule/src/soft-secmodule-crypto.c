@@ -157,7 +157,7 @@ _create_context_for_public_key(mbedtls_pk_context *ctx,
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
+vs_secmodule_ecdsa_sign(uint16_t key_slot,
                         vs_secmodule_hash_type_e hash_type,
                         const uint8_t *hash,
                         uint8_t *signature,
@@ -578,7 +578,7 @@ vs_secmodule_aes_auth_decrypt(vs_iot_aes_type_e aes_type,
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
+vs_secmodule_ecdh(uint16_t slot,
                   vs_secmodule_keypair_type_e keypair_type,
                   const uint8_t *public_key,
                   uint16_t public_key_sz,

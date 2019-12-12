@@ -41,8 +41,8 @@
  *
  */
 
-#ifndef VS_SECMODULE_SLOTS_CONFIG_H
-#define VS_SECMODULE_SLOTS_CONFIG_H
+#ifndef VS_SOFT_SLOTS_CONFIG_H
+#define VS_SOFT_SLOTS_CONFIG_H
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
@@ -91,7 +91,7 @@ typedef enum {
     VS_KEY_SLOT_STD_MTP_14,
     VS_KEY_SLOT_STD_MTP_MAX = VS_KEY_SLOT_STD_MTP_14,
     VS_KEY_SLOT_EXT_MTP_0,
-    VS_KEY_SLOT_MTP_MAX,
+    VS_KEY_SLOT_MTP_MAX = VS_KEY_SLOT_EXT_MTP_0,
     VS_KEY_SLOT_STD_TMP_0,
     VS_KEY_SLOT_STD_TMP_1,
     VS_KEY_SLOT_STD_TMP_2,
@@ -103,9 +103,6 @@ typedef enum {
     VS_KEY_SLOT_EXT_TMP_0,
     VS_KEY_SLOT_TMP_MAX = VS_KEY_SLOT_EXT_TMP_0
 } vs_iot_secmodule_slot_e;
-
-/** Provision keys amount for each type */
-#define PROVISION_KEYS_QTY 2
 
 /** Private key slot */
 #define PRIVATE_KEY_SLOT VS_KEY_SLOT_STD_OTP_1
@@ -138,4 +135,4 @@ typedef enum {
 } // namespace VirgilIoTKit
 #endif
 
-#endif // VS_SECMODULE_SLOTS_CONFIG_H
+#endif // VS_SOFT_SLOTS_CONFIG_H

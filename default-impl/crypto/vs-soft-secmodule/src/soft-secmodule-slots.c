@@ -40,7 +40,7 @@ static vs_storage_op_ctx_t *_storage = NULL;
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz) {
+vs_secmodule_slot_save(uint16_t slot, const uint8_t *data, uint16_t data_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
@@ -75,7 +75,7 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_slot_load(vs_iot_secmodule_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
+vs_secmodule_slot_load(uint16_t slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
@@ -113,7 +113,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot) {
+vs_secmodule_slot_delete(uint16_t slot) {
     vs_storage_element_id_t id;
     const char *slot_name = _get_slot_name(slot);
 

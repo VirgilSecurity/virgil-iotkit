@@ -37,6 +37,7 @@
 
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/vs-ateccx08A-secmodule/vs-ateccx08A-slots-config.h>
 
 /** Initialize ateccx08A crypto implementation
  *

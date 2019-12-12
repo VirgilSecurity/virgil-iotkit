@@ -115,36 +115,19 @@ option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 # default implementations
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" OFF)
-option(VIRGIL_IOT_DEFAULT_SECMODULE_IMPL "Enable Default secmodule implementations" OFF)
 
 if (VIRGIL_IOT_DEFAULT_IMPL)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
-
-    include(${CMAKE_CURRENT_LIST_DIR}/cmake/CheckEnabledDefaultOptions.cmake)
 
     if (VIRGIL_IOT_DEFAULT_SECMODULE_IMPL)
 
         #
         # Default secmodule implementations
         #
-        option(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" OFF)
-        option(VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
+        option(VIRGIL_IOT_DEFAULT_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" OFF)
+        option(VIRGIL_IOT_DEFAULT_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
 
-        check_enabled_options("secmodule default impl" VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
-
-        if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
-            # set a path to directory where the secmodule can find a header file with slot configuration
-            set(VS_SECMODULE_SLOTS_CONFIG_DIRECTORY
-                    "${CMAKE_CURRENT_LIST_DIR}/default-impl/crypto/vs-soft-secmodule/include/virgil/iot/vs-secmodule-slots-config"
-                    CACHE STRING "Path to the slots config file")
-        endif()
-
-        if(VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
-            # set a path to directory where the secmodule can find a header file with slot configuration
-            set(VS_SECMODULE_SLOTS_CONFIG_DIRECTORY
-                    "${CMAKE_CURRENT_LIST_DIR}/default-impl/crypto/vs-ateccx08A-secmodule/include/virgil/iot/vs-secmodule-slots-config"
-                    CACHE STRING "Path to the slots config file")
-
+        if(VIRGIL_IOT_DEFAULT_ATECCx08A_SECMODULE)
             #
             #   Microchip cryptoauth library for ATECCx08 hsm devices
             #

@@ -36,6 +36,7 @@
 #define VS_SOFT_SECMODULE_PRIVATE_H
 
 #include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 

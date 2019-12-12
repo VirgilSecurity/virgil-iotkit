@@ -65,11 +65,13 @@ vs_soft_secmodule_deinit();
 #include <stddef.h>
 
 #include <virgil/iot/status_code/status_code.h>
-#include <vs-secmodule-slots-config.h>
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
 #endif
+
+/** Provision keys amount for each type */
+#define PROVISION_KEYS_QTY 2
 
 /** Keypair types */
 typedef enum {
@@ -124,7 +126,7 @@ typedef struct {
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_slot_save_t)(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz);
+typedef vs_status_e (*vs_secmodule_slot_save_t)(uint16_t slot, const uint8_t *data, uint16_t data_sz);
 
 /** Load information to the slot
  *
@@ -135,10 +137,7 @@ typedef vs_status_e (*vs_secmodule_slot_save_t)(vs_iot_secmodule_slot_e slot, co
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_slot_load_t)(vs_iot_secmodule_slot_e slot,
-                                                uint8_t *data,
-                                                uint16_t buf_sz,
-                                                uint16_t *out_sz);
+typedef vs_status_e (*vs_secmodule_slot_load_t)(uint16_t slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
 
 /** Delete information from the slot
  *
@@ -146,7 +145,7 @@ typedef vs_status_e (*vs_secmodule_slot_load_t)(vs_iot_secmodule_slot_e slot,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_slot_delete_t)(vs_iot_secmodule_slot_e slot);
+typedef vs_status_e (*vs_secmodule_slot_delete_t)(uint16_t slot);
 
 /** Hash generation
  *
@@ -173,8 +172,7 @@ typedef vs_status_e (*vs_secmodule_hash_create_t)(vs_secmodule_hash_type_e hash_
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_keypair_create_t)(vs_iot_secmodule_slot_e slot,
-                                                     vs_secmodule_keypair_type_e keypair_type);
+typedef vs_status_e (*vs_secmodule_keypair_create_t)(uint16_t slot, vs_secmodule_keypair_type_e keypair_type);
 
 /** Public key retrieval
  *
@@ -189,7 +187,7 @@ typedef vs_status_e (*vs_secmodule_keypair_create_t)(vs_iot_secmodule_slot_e slo
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(vs_iot_secmodule_slot_e slot,
+typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(uint16_t slot,
                                                          uint8_t *buf,
                                                          uint16_t buf_sz,
                                                          uint16_t *key_sz,
@@ -206,7 +204,7 @@ typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(vs_iot_secmodule_slot_e
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_ecdsa_sign_t)(vs_iot_secmodule_slot_e key_slot,
+typedef vs_status_e (*vs_secmodule_ecdsa_sign_t)(uint16_t key_slot,
                                                  vs_secmodule_hash_type_e hash_type,
                                                  const uint8_t *hash,
                                                  uint8_t *signature,
@@ -408,7 +406,7 @@ typedef vs_status_e (*vs_secmodule_aes_auth_decrypt_t)(vs_iot_aes_type_e aes_typ
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_secmodule_ecdh_t)(vs_iot_secmodule_slot_e slot,
+typedef vs_status_e (*vs_secmodule_ecdh_t)(uint16_t slot,
                                            vs_secmodule_keypair_type_e keypair_type,
                                            const uint8_t *public_key,
                                            uint16_t public_key_sz,
