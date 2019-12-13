@@ -39,11 +39,13 @@ include(GNUInstallDirs)
 # ---------------------------------------------------------------------------
 #   Check build type
 # ---------------------------------------------------------------------------
-option(ANDROID "Enable build for Android" OFF)
+#option(ANDROID "Enable build for Android" OFF)
 
 if (ANDROID OR APPLE_PLATFORM)
     set(MOBILE_PLATFORM ON)
     set(GO_DISABLE ON)
+    set(VIRGIL_IOT_DEFAULT_IMPL OFF)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain/android.cmake")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -168,7 +170,9 @@ endif()
 #
 #   Tests
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+if (NOT MOBILE_PLATFORM)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+endif()
 
 #
 #   Documentation
