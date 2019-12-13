@@ -45,7 +45,7 @@
 /** Enable logger
  *
  * Enables logger library.
- * Logger macroses will be empty if it is disabled.
+ * Logger macros will be empty if it is disabled.
  */
 #define VS_IOT_LOGGER_ENABLE 1
 
