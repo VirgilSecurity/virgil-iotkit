@@ -154,10 +154,9 @@ if (NOT MOBILE_PLATFORM)
     #   SNAP For Gateway
     #
     add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
-
-else()
-    #
-    #   SNAP For Control
-    #
-    add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1")
 endif()
+
+#
+#   SNAP For Control
+#
+add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1")
