@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <assert.h>
 #include <stdint.h>
 
 #include "private/vs-soft-secmodule-internal.h"
@@ -44,7 +43,6 @@
 #include <virgil/iot/converters/crypto_format_converters.h>
 
 #include <mbedtls/pk_internal.h>
-#include <mbedtls/oid.h>
 #include <mbedtls/ecp.h>
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
@@ -195,7 +193,7 @@ _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
 
 /********************************************************************************/
 vs_status_e
-vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_type_e keypair_type) {
+vs_secmodule_keypair_create(uint16_t slot, vs_secmodule_keypair_type_e keypair_type) {
     vs_status_e ret_code;
     int32_t slot_sz = _get_slot_size(slot);
     const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
@@ -244,7 +242,7 @@ vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_t
 
 /********************************************************************************/
 vs_status_e
-vs_secmodule_keypair_get_pubkey(vs_iot_secmodule_slot_e slot,
+vs_secmodule_keypair_get_pubkey(uint16_t slot,
                                 uint8_t *buf,
                                 uint16_t buf_sz,
                                 uint16_t *key_sz,
@@ -345,6 +343,35 @@ terminate:
     return ret_code;
 }
 
+/******************************************************************************/
+static vs_status_e
+_get_device_key_slot_num(uint16_t *slot) {
+    CHECK_NOT_ZERO_RET(slot, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    *slot = PRIVATE_KEY_SLOT;
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static vs_status_e
+_device_keypair_create(vs_secmodule_keypair_type_e keypair_type) {
+    vs_status_e ret_code;
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    STATUS_CHECK_RET(_secmodule->slot_clean(PRIVATE_KEY_SLOT), "Unable to clean PRIVATE slot");
+
+    return _secmodule->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1);
+}
+
+/******************************************************************************/
+static vs_status_e
+_load_device_pubkey(uint8_t *buf, uint16_t buf_sz, uint16_t *key_sz, vs_secmodule_keypair_type_e *keypair_type) {
+    const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    return _secmodule->get_pubkey(PRIVATE_KEY_SLOT, buf, buf_sz, key_sz, keypair_type);
+}
+
 /********************************************************************************/
 vs_status_e
 _fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl) {
@@ -352,6 +379,9 @@ _fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl) {
 
     secmodule_impl->create_keypair = vs_secmodule_keypair_create;
     secmodule_impl->get_pubkey = vs_secmodule_keypair_get_pubkey;
+    secmodule_impl->get_device_key_slot_num = _get_device_key_slot_num;
+    secmodule_impl->create_device_key = _device_keypair_create;
+    secmodule_impl->load_device_pubkey = _load_device_pubkey;
 
     return VS_CODE_OK;
 }

@@ -98,7 +98,10 @@ vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
     uint8_t *mac_data;
     uint8_t *iv_data;
 
+    uint16_t device_key_slot_num;
+
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule_impl->get_device_key_slot_num, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->ecdh, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->kdf, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->hmac, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -122,8 +125,9 @@ vs_secmodule_ecies_decrypt(const vs_secmodule_impl_t *secmodule_impl,
                                                                         &encrypted_data,
                                                                         &encrypted_data_sz),
                      "Unable to parse SHA384 AES256");
-
-    STATUS_CHECK_RET(secmodule_impl->ecdh(PRIVATE_KEY_SLOT,
+    STATUS_CHECK_RET(secmodule_impl->get_device_key_slot_num(&device_key_slot_num),
+                     "Unable to get device key slot number");
+    STATUS_CHECK_RET(secmodule_impl->ecdh(device_key_slot_num,
                                           VS_KEYPAIR_EC_SECP256R1,
                                           public_key,
                                           vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),
@@ -214,7 +218,8 @@ vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
     vs_status_e ret_code;
 
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(secmodule_impl->get_pubkey, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule_impl->load_device_pubkey, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(secmodule_impl->get_device_key_slot_num, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->random, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->ecdh, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule_impl->kdf, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -225,6 +230,7 @@ vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
     CHECK_NOT_ZERO_RET(cryptogram_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     vs_secmodule_keypair_type_e ec_type;
+    uint16_t device_key_slot_num;
     uint16_t key_sz = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t pubkey[key_sz];
 
@@ -247,14 +253,16 @@ vs_secmodule_ecies_encrypt(const vs_secmodule_impl_t *secmodule_impl,
 
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    if (VS_CODE_OK != secmodule_impl->get_pubkey(PRIVATE_KEY_SLOT, pubkey, key_sz, &key_sz, &ec_type) ||
+    if (VS_CODE_OK != secmodule_impl->load_device_pubkey(pubkey, key_sz, &key_sz, &ec_type) ||
         !_tiny_pubkey_to_virgil(&pubkey[1], virgil_public_key, &virgil_public_key_sz)) {
         return VS_CODE_ERR_CRYPTO;
     }
 
     STATUS_CHECK_RET(secmodule_impl->random(rnd_buf, sizeof(rnd_buf)), "Unable to generate random buffer");
+    STATUS_CHECK_RET(secmodule_impl->get_device_key_slot_num(&device_key_slot_num),
+                     "Unable to get device key slot number");
 
-    STATUS_CHECK_RET(secmodule_impl->ecdh(PRIVATE_KEY_SLOT,
+    STATUS_CHECK_RET(secmodule_impl->ecdh(device_key_slot_num,
                                           VS_KEYPAIR_EC_SECP256R1,
                                           pubkey,
                                           vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1),

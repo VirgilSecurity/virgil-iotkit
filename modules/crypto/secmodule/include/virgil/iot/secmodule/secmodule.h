@@ -70,9 +70,6 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-/** Provision keys amount for each type */
-#define PROVISION_KEYS_QTY 2
-
 /** Keypair types */
 typedef enum {
     VS_KEYPAIR_INVALID = -1, /**< Invalid keypair */
@@ -165,7 +162,7 @@ typedef vs_status_e (*vs_secmodule_hash_create_t)(vs_secmodule_hash_type_e hash_
                                                   uint16_t hash_buf_sz,
                                                   uint16_t *hash_sz);
 
-/** Key pair generate
+/** The key pair to generate and store in the specified slot
  *
  * \param[in] slot Slot ID to save key pair.
  * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
@@ -181,8 +178,8 @@ typedef vs_status_e (*vs_secmodule_keypair_create_t)(uint16_t slot, vs_secmodule
  *
  * \param[in] slot Slot number.
  * \param[out] buf Output buffer to store public key. Cannot be NULL.
- * \param[in] buf_sz Output buffer size. Cannot be NULL.
- * \param[out] key_sz Output buffer to store public key size. Cannot be NULL.
+ * \param[in] buf_sz Output buffer size. Cannot be zero.
+ * \param[out] key_sz public key size. Cannot be NULL.
  * \param[out] keypair_type Output buffer to store key pair type. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
@@ -193,6 +190,38 @@ typedef vs_status_e (*vs_secmodule_keypair_get_pubkey_t)(uint16_t slot,
                                                          uint16_t *key_sz,
                                                          vs_secmodule_keypair_type_e *keypair_type);
 
+
+/** Get the slot slot number, where device key is stored
+ *
+ * \param[out] slot Slot ID.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_secmodule_get_device_key_slot_num_t)(uint16_t *slot);
+
+/** Device key pair generate in slot, which special configured into implementation
+ *
+ * \param[in] keypair_type Key pair type. Cannot be #VS_KEYPAIR_INVALID or #VS_KEYPAIR_MAX.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_secmodule_device_keypair_create_t)(vs_secmodule_keypair_type_e keypair_type);
+
+/** Load device public key retrieval
+ *
+ * \note Before calling this function, you should call #vs_secmodule_device_keypair_create_t implementation first.
+ *
+ * \param[out] buf Output buffer to store public key. Cannot be NULL.
+ * \param[in] buf_sz Output buffer size. Cannot be zero.
+ * \param[out] key_sz public key size. Cannot be NULL.
+ * \param[out] keypair_type Output buffer to store key pair type. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_secmodule_load_device_pubkey_t)(uint8_t *buf,
+                                                         uint16_t buf_sz,
+                                                         uint16_t *key_sz,
+                                                         vs_secmodule_keypair_type_e *keypair_type);
 /** Signature calculation based on ECDSA
  *
  * \param[in] key_slot Slot number.
@@ -460,6 +489,11 @@ typedef struct {
     vs_secmodule_slot_save_t slot_save;    /**< Slot save information */
     vs_secmodule_slot_load_t slot_load;    /**< Slot load information */
     vs_secmodule_slot_delete_t slot_clean; /**< Slot delete */
+
+    // Device key
+    vs_secmodule_get_device_key_slot_num_t get_device_key_slot_num;
+    vs_secmodule_device_keypair_create_t create_device_key;
+    vs_secmodule_load_device_pubkey_t load_device_pubkey;
 
     // RNG
     vs_secmodule_random_t random; /**< Get random data */

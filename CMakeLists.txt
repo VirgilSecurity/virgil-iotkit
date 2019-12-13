@@ -126,6 +126,7 @@ if (VIRGIL_IOT_DEFAULT_IMPL)
         #
         option(VIRGIL_IOT_DEFAULT_SOFT_SECMODULE "Enable default Virgil crypto soft SECMODULE implementation" OFF)
         option(VIRGIL_IOT_DEFAULT_ATECCx08A_SECMODULE "Enable default Virgil crypto ATECCx08A SECMODULE implementation" OFF)
+        option(VIRGIL_IOT_DEFAULT_SOFT_PROVISION "Enable default Virgil soft provision implementation" OFF)
 
         if(VIRGIL_IOT_DEFAULT_ATECCx08A_SECMODULE)
             #

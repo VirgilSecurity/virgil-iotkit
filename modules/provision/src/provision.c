@@ -44,98 +44,65 @@
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
-static const size_t rec_key_slot[PROVISION_KEYS_QTY] = {REC1_KEY_SLOT, REC2_KEY_SLOT};
-
-static const size_t auth_key_slot[PROVISION_KEYS_QTY] = {AUTH1_KEY_SLOT, AUTH2_KEY_SLOT};
-
-static const size_t tl_key_slot[PROVISION_KEYS_QTY] = {TL1_KEY_SLOT, TL2_KEY_SLOT};
-
-static const size_t fw_key_slot[PROVISION_KEYS_QTY] = {FW1_KEY_SLOT, FW2_KEY_SLOT};
-
 static vs_secmodule_impl_t *_secmodule = NULL;
-
+static const vs_provision_impl_t *_provision = NULL;
 static char *_base_url = NULL;
+
+static const vs_provision_element_id_e _recovery_id[PROVISION_KEYS_QTY] = {VS_PROVISION_PBR1, VS_PROVISION_PBR2};
+static const vs_provision_element_id_e _auth_id[PROVISION_KEYS_QTY] = {VS_PROVISION_PBA1, VS_PROVISION_PBA2};
+static const vs_provision_element_id_e _tl_id[PROVISION_KEYS_QTY] = {VS_PROVISION_PBT1, VS_PROVISION_PBT2};
+static const vs_provision_element_id_e _fw_id[PROVISION_KEYS_QTY] = {VS_PROVISION_PBF1, VS_PROVISION_PBF2};
 
 /******************************************************************************/
 static vs_status_e
-_get_pubkey_slot_num(vs_key_type_e key_type, uint8_t index, vs_iot_secmodule_slot_e *slot) {
-    const size_t *ptr;
-
+_get_pubkey_element_id(vs_key_type_e key_type, uint8_t index, vs_provision_element_id_e *id) {
     switch (key_type) {
     case VS_KEY_RECOVERY:
-        ptr = rec_key_slot;
+        *id = _recovery_id[index];
         break;
     case VS_KEY_AUTH:
-        ptr = auth_key_slot;
+        *id = _auth_id[index];
         break;
     case VS_KEY_TRUSTLIST:
-        ptr = tl_key_slot;
+        *id = _tl_id[index];
         break;
     case VS_KEY_FIRMWARE:
-        ptr = fw_key_slot;
+        *id = _fw_id[index];
         break;
     default:
         VS_LOG_ERROR("Incorrect key type %d", key_type);
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
-
-    *slot = ptr[index];
-
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
 vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
-    size_t index;
-    const size_t *ptr;
 
-    BOOL_CHECK_RET(NULL != slot, "Invalid args");
+    CHECK_NOT_ZERO_RET(slot, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision->get_slot_num, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    switch (id) {
-    case VS_PROVISION_PBR1:
-        ptr = rec_key_slot;
-        index = 0;
-        break;
-    case VS_PROVISION_PBR2:
-        ptr = rec_key_slot;
-        index = 1;
-        break;
-    case VS_PROVISION_PBA1:
-        ptr = auth_key_slot;
-        index = 0;
-        break;
-    case VS_PROVISION_PBA2:
-        ptr = auth_key_slot;
-        index = 1;
-        break;
-    case VS_PROVISION_PBT1:
-        ptr = tl_key_slot;
-        index = 0;
-        break;
-    case VS_PROVISION_PBT2:
-        ptr = tl_key_slot;
-        index = 1;
-        break;
-    case VS_PROVISION_PBF1:
-        ptr = fw_key_slot;
-        index = 0;
-        break;
-    case VS_PROVISION_PBF2:
-        ptr = fw_key_slot;
-        index = 1;
-        break;
-    case VS_PROVISION_SGNP:
-        *slot = SIGNATURE_SLOT;
-        return VS_CODE_OK;
-    default:
-        VS_LOG_ERROR("Incorrect provision element %d", id);
-        return VS_CODE_ERR_INCORRECT_ARGUMENT;
-    }
+    return _provision->get_slot_num(id, slot);
+}
 
-    *slot = ptr[index];
+/******************************************************************************/
+vs_status_e
+vs_provision_element_save(vs_provision_element_id_e id, const uint8_t *data, uint16_t data_sz) {
+    CHECK_NOT_ZERO_RET(_provision, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision->save_element, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    return VS_CODE_OK;
+    return _provision->save_element(_secmodule, id, data, data_sz);
+}
+
+/******************************************************************************/
+vs_status_e
+vs_provision_device_signature_load(uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
+    CHECK_NOT_ZERO_RET(_provision, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision->load_element, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    return _provision->load_element(_secmodule, VS_PROVISION_SGNP, data, buf_sz, out_sz);
 }
 
 /******************************************************************************/
@@ -144,7 +111,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
                               vs_secmodule_keypair_type_e ec_type,
                               const uint8_t *key,
                               uint16_t key_sz) {
-    vs_iot_secmodule_slot_e slot;
+    vs_provision_element_id_e id;
     uint8_t i = 0;
     int ref_key_sz;
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
@@ -154,11 +121,18 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
     uint8_t *pubkey;
 
     VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_provision);
+    VS_IOT_ASSERT(_provision->load_element);
+
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_provision->load_element, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     for (i = 0; i < PROVISION_KEYS_QTY; ++i) {
 
-        STATUS_CHECK_RET(_get_pubkey_slot_num(key_type, i, &slot), "Unable to get public key from slot");
-        STATUS_CHECK_RET(_secmodule->slot_load(slot, buf, sizeof(buf), &_sz), "Unable to load slot data");
+        STATUS_CHECK_RET(_get_pubkey_element_id(key_type, i, &id), "Unable to get public key from slot");
+        STATUS_CHECK_RET(_provision->load_element(_secmodule, id, buf, sizeof(buf), &_sz),
+                         "Unable to load provision data from slot");
 
         ref_key_sz = vs_secmodule_get_pubkey_len(ref_key->pubkey.ec_type);
 
@@ -190,9 +164,14 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
     vs_status_e ret_code;
 
     VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->hash);
+    VS_IOT_ASSERT(_secmodule->ecdsa_verify);
+    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->ecdsa_verify, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    BOOL_CHECK_RET(NULL != key_to_check, "Invalid args");
-    BOOL_CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), "key stuff is too small");
+    CHECK_NOT_ZERO_RET(key_to_check, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(key_size > sizeof(vs_pubkey_dated_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "key stuff is too small");
 
     vs_pubkey_dated_t *key = (vs_pubkey_dated_t *)key_to_check;
 
@@ -247,12 +226,17 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule) {
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx,
+                  vs_secmodule_impl_t *secmodule,
+                  const vs_provision_impl_t *provision) {
+    CHECK_NOT_ZERO_RET(provision, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     _secmodule = secmodule;
+    _provision = provision;
 
     // TrustList module
-    return vs_tl_init(tl_storage_ctx, secmodule);
+    return vs_tl_init(tl_storage_ctx, _secmodule);
 }
 
 /******************************************************************************/

@@ -34,28 +34,42 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Default Crypto implementations module
-#
+project(vs-default-soft-provision VERSION 0.1.0 LANGUAGES C)
 
-if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
-    if (VIRGIL_IOT_DEFAULT_SOFT_PROVISION)
-        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-provision)
-    endif ()
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
-endif()
+add_library(vs-default-soft-provision)
 
-if (VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-ateccx08A-secmodule)
-endif()
+target_sources(vs-default-soft-provision
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-soft-provision/vs-soft-provision.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-soft-provision.c
+        )
 
 #
-#   Default cloud implementations module
+#   Target include directories
 #
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
-endif()
+target_include_directories(vs-default-soft-provision
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
-if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
+        INTERFACE
+        $<INSTALL_INTERFACE:include>
+        )
+
+#
+#   Link libraries
+#
+target_link_libraries(vs-default-soft-provision
+        PUBLIC
+        vs-default-soft-secmodule
+        vs-module-provision
+        PRIVATE
+        virgil-iot-status-code
+        )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-default-soft-provision)
 endif()

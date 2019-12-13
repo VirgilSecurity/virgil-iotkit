@@ -107,17 +107,73 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
+/** Provision keys amount for each type */
+#define PROVISION_KEYS_QTY 2
+
+/** Get slot number of the specified provision element
+ *
+ * This function returns slot number for specified provision element.
+ * \param[in] id Provision element.
+ * \param[out] slot Slot number storage. Must not be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_provision_get_slot_num_t)(vs_provision_element_id_e id, uint16_t *slot);
+
+/** Save high level public key to the specified slot
+ *
+ * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
+ * \param[in] id Provision element.
+ * \param[in] data Data to be saved. Cannot be NULL.
+ * \param[in] data_sz Data size. Cannot be zero.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_provision_save_element_t)(vs_secmodule_impl_t *secmodule,
+                                                   vs_provision_element_id_e id,
+                                                   const uint8_t *data,
+                                                   uint16_t data_sz);
+
+/** Load high level public key from the specified slot
+ *
+ * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
+ * \param[in] id Provision element.
+ * \param[out] buf Output buffer to store public key. Cannot be NULL.
+ * \param[in] buf_sz Output buffer size. Cannot be zero.
+ * \param[out] element_sz provision element size. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef vs_status_e (*vs_provision_load_element_t)(vs_secmodule_impl_t *secmodule,
+                                                   vs_provision_element_id_e id,
+                                                   uint8_t *buf,
+                                                   uint16_t buf_sz,
+                                                   uint16_t *element_sz);
+
+/** Provision Module implementation
+ *
+ * This structure contains all implementations needed for provision operations.
+ */
+typedef struct {
+    vs_provision_get_slot_num_t get_slot_num;
+    vs_provision_save_element_t save_element;
+    vs_provision_load_element_t load_element;
+} vs_provision_impl_t;
+
 /** Provision initialization
  *
  * This function must be called before any other Provision call.
  *
  * \param[in] tl_storage_ctx Storage context. Must not be NULL.
- * \param[in] secmodule Security Module implementation. Must not be NULL.
+ * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
+ * \param[in] provision Provision Module implementation. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule);
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx,
+                  vs_secmodule_impl_t *secmodule,
+                  const vs_provision_impl_t *provision);
 
 /** Provision destruction
  *
@@ -128,16 +184,26 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secm
 vs_status_e
 vs_provision_deinit(void);
 
-/** Get slot number
+/** Save specified provision element to the slot storage
  *
- * This function returns slot number for specified provision element.
- * \param[in] id Provision element.
- * \param[out] slot Slot number storage. Must not be NULL.
+ * \param[in] data Data to be saved. Cannot be NULL.
+ * \param[in] data_sz Data size. Cannot be zero.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
+vs_provision_element_save(vs_provision_element_id_e id, const uint8_t *data, uint16_t data_sz);
+
+/** Load device signature from the slot storage
+ *
+ * \param[out] data Data buffer for loaded information. Cannot be NULL.
+ * \param[in] buf_sz Buffer size. Cannot be zero.
+ * \param[out] out_sz Loaded data size buffer. Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_provision_device_signature_load(uint8_t *data, uint16_t buf_sz, uint16_t *out_sz);
 
 /** Search high level public key
  *
@@ -223,6 +289,7 @@ vs_provision_tl_find_next_key(vs_provision_tl_find_ctx_t *search_ctx,
                               uint16_t *pubkey_sz,
                               uint8_t **meta,
                               uint16_t *meta_sz);
+
 
 #ifdef __cplusplus
 } // extern "C"

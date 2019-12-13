@@ -107,29 +107,6 @@ typedef enum {
 /** Private key slot */
 #define PRIVATE_KEY_SLOT VS_KEY_SLOT_STD_OTP_1
 
-/** Recovery key 1 slot */
-#define REC1_KEY_SLOT VS_KEY_SLOT_STD_OTP_2
-/** Recovery key 2 slot */
-#define REC2_KEY_SLOT VS_KEY_SLOT_STD_OTP_3
-
-/** Signature slot */
-#define SIGNATURE_SLOT VS_KEY_SLOT_STD_OTP_4
-
-/** Authentification key 1 slot */
-#define AUTH1_KEY_SLOT VS_KEY_SLOT_STD_MTP_2
-/** Authentification key 2 slot */
-#define AUTH2_KEY_SLOT VS_KEY_SLOT_STD_MTP_3
-
-/** Trust List key 1 slot */
-#define TL1_KEY_SLOT VS_KEY_SLOT_STD_MTP_4
-/** Trust List key 2 slot */
-#define TL2_KEY_SLOT VS_KEY_SLOT_STD_MTP_5
-
-/** Firmware key 1 slot */
-#define FW1_KEY_SLOT VS_KEY_SLOT_STD_MTP_6
-/** Firmware key 2 slot */
-#define FW2_KEY_SLOT VS_KEY_SLOT_STD_MTP_7
-
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

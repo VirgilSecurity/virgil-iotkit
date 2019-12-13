@@ -19,7 +19,9 @@ _secbox_verify_signature(vs_storage_file_t f, uint8_t data_type, uint8_t *data, 
     uint16_t hash_len = (uint16_t)vs_secmodule_get_hash_len(VS_HASH_SHA_256);
     uint8_t hash[hash_len];
 
-    VS_IOT_ASSERT(_secmodule);
+    CHECK_NOT_ZERO_RET(_secmodule->hash_init, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->hash_update, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->hash_finish, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
@@ -42,7 +44,7 @@ _secbox_verify_signature(vs_storage_file_t f, uint8_t data_type, uint8_t *data, 
         return ret_code;
     }
 
-    STATUS_CHECK_RET(_secmodule->get_pubkey(PRIVATE_KEY_SLOT, pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
+    STATUS_CHECK_RET(_secmodule->load_device_pubkey(pubkey, sizeof(pubkey), &pubkey_sz, &pubkey_type),
                      "Unable to get public key");
     STATUS_CHECK_RET(_secmodule->ecdsa_verify(pubkey_type, pubkey, pubkey_sz, VS_HASH_SHA_256, hash, sign, sign_sz),
                      "Unable to verify");
@@ -67,6 +69,7 @@ vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule) {
 vs_status_e
 vs_secbox_deinit(void) {
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     return _storage_ctx->impl_func.deinit(_storage_ctx->impl_data);
 }
@@ -82,8 +85,11 @@ vs_secbox_file_size(vs_storage_element_id_t id) {
 
     uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
 
-    CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     ssize_t file_sz = _storage_ctx->impl_func.size(_storage_ctx->impl_data, id);
 
@@ -159,12 +165,21 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
 
     uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
+    uint16_t device_key_slot_num;
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(data_sz <= _storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Requested size is too big");
+    CHECK_NOT_ZERO_RET(_secmodule->hash_init, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->hash_update, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_secmodule->hash_finish, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.save, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.sync, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+    CHECK_RET(data_sz <= _storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Requested size is too big");
 
     switch (type) {
     case VS_SECBOX_SIGNED_AND_ENCRYPTED:
@@ -198,7 +213,8 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t 
     _secmodule->hash_update(&hash_ctx, data_to_save, data_to_save_sz);
     _secmodule->hash_finish(&hash_ctx, hash);
 
-    STATUS_CHECK(_secmodule->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
+    STATUS_CHECK(_secmodule->get_device_key_slot_num(&device_key_slot_num), "Cannot get device key slot number");
+    STATUS_CHECK(_secmodule->ecdsa_sign(device_key_slot_num, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
                  "Cannot sign");
 
     // delete the old file if exists
@@ -243,6 +259,10 @@ vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz) {
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.size, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.open, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.load, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.close, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     ssize_t file_sz = _storage_ctx->impl_func.size(_storage_ctx->impl_data, id);
 
@@ -315,6 +335,8 @@ terminate:
 vs_status_e
 vs_secbox_del(vs_storage_element_id_t id) {
     CHECK_NOT_ZERO_RET(_storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_storage_ctx->impl_func.del, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     return _storage_ctx->impl_func.del(_storage_ctx->impl_data, id);
 }
 

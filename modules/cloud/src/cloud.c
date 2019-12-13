@@ -225,6 +225,7 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     vs_device_serial_t serial_number;
     uint32_t _in_out_len = sizeof(serial_hex_str);
     int encoded_len;
+    uint16_t device_key_slot_num;
 
     uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
@@ -250,7 +251,8 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
 
     STATUS_CHECK(_secmodule->hash(VS_HASH_SHA_256, serial_number, sizeof(serial_number), hash, sizeof(hash), &_sz),
                  "Can't create hash for serial number");
-    STATUS_CHECK(_secmodule->ecdsa_sign(PRIVATE_KEY_SLOT, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
+    STATUS_CHECK(_secmodule->get_device_key_slot_num(&device_key_slot_num), "Cannot get device key slot number");
+    STATUS_CHECK(_secmodule->ecdsa_sign(device_key_slot_num, VS_HASH_SHA_256, hash, sign, sign_sz, &sign_sz),
                  "Can't sign the serial number");
     STATUS_CHECK(vs_secmodule_tiny_secp256_signature_to_virgil(sign, virgil_sign, sizeof(virgil_sign), &_sz),
                  "Can't convert raw signature to virgil format");
