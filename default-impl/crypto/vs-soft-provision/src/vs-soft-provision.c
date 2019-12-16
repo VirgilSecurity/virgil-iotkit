@@ -54,14 +54,53 @@ static const vs_provision_impl_t _impl = {.get_slot_num = _get_slot_num,
 /******************************************************************************/
 static vs_status_e
 _get_slot_num(vs_provision_element_id_e id, uint16_t *slot) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    CHECK_NOT_ZERO_RET(slot, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    switch (id) {
+    case VS_PROVISION_PBR1:
+        *slot = REC1_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBR2:
+        *slot = REC2_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBA1:
+        *slot = AUTH1_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBA2:
+        *slot = AUTH2_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBT1:
+        *slot = TL1_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBT2:
+        *slot = TL2_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBF1:
+        *slot = FW1_KEY_SLOT;
+        break;
+    case VS_PROVISION_PBF2:
+        *slot = FW2_KEY_SLOT;
+        break;
+    case VS_PROVISION_SGNP:
+        *slot = SIGNATURE_SLOT;
+        break;
+    default:
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
+    }
+    return VS_CODE_OK;
 }
 
 
 /******************************************************************************/
 static vs_status_e
 _save_element(vs_secmodule_impl_t *secmodule, vs_provision_element_id_e id, const uint8_t *data, uint16_t data_sz) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    uint16_t slot;
+    vs_status_e ret_code;
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    STATUS_CHECK_RET(_get_slot_num(id, &slot), "Incorrect provision element id");
+
+    return secmodule->slot_save(slot, data, data_sz);
 }
 
 
@@ -72,7 +111,14 @@ _load_element(vs_secmodule_impl_t *secmodule,
               uint8_t *buf,
               uint16_t buf_sz,
               uint16_t *element_sz) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    uint16_t slot;
+    vs_status_e ret_code;
+    CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(buf, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(element_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    STATUS_CHECK_RET(_get_slot_num(id, &slot), "Incorrect provision element id");
+
+    return secmodule->slot_load(slot, buf, buf_sz, element_sz);
 }
 
 /******************************************************************************/
