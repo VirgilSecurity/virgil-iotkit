@@ -40,13 +40,13 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
     if (VIRGIL_IOT_DEFAULT_SOFT_PROVISION)
-        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-provision)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-crypto/vs-soft-provision)
     endif ()
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-crypto/vs-soft-secmodule)
 endif()
 
 if (VIRGIL_IOT_DEFAULT_VS_ATECCx08A_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-ateccx08A-secmodule)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/va-ateccx08-crypto/vs-ateccx08A-secmodule)
 endif()
 
 #
