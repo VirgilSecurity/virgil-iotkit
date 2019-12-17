@@ -1,16 +1,49 @@
+#   Copyright (C) 2015-2020 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
 include(CMakeParseArguments)
 
 set(QT_ANDROID_MK_APK_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 function(qt_android_build_apk)
-    message("*** ANDROID_EXTRA_FILES = ${ANDROID_EXTRA_FILES}")
     set(options)
     set(oneValueArgs
-        TARGET PACKAGE_NAME ANDROID_EXTRA_FILES QML_ROOT_PATH
-        SDK_BUILD_TOOLS_VERSION EXTRA_LIBS)
+            TARGET PACKAGE_NAME ANDROID_EXTRA_FILES QML_ROOT_PATH
+            SDK_BUILD_TOOLS_VERSION EXTRA_LIBS)
     set(multiValueArgs)
     cmake_parse_arguments(
-        APK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+            APK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Gather required variables to create the configuration file.
 
@@ -18,104 +51,99 @@ function(qt_android_build_apk)
     # Qt5Core_DIR now points to $Qt5InstallPrefix/lib/cmake/Qt5Core, so
     # we get the parent directory three times:
     get_filename_component(QT5_INSTALL_PREFIX "${Qt5Core_DIR}/../../.." ABSOLUTE)
-    message("Qt5 installed in ${QT5_INSTALL_PREFIX}")
+    message(STATUS "Qt5 installed in ${QT5_INSTALL_PREFIX}")
 
     # Adjust QML root path if not set:
     if(NOT APK_QML_ROOT_PATH)
         set(APK_QML_ROOT_PATH $<TARGET_FILE_DIR:${APK_TARGET}>)
     endif()
 
-    # Get he toolchain prefix, i.e. the folder name within the
-    # toolchains/ folder without the compiler version
-    # APK_NDK_TOOLCHAIN_PREFIX
-
-    message(" **** ")
-    message("CMAKE_ANDROID_NDK = ${CMAKE_ANDROID_NDK}")
-    message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
-    set(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION "")     ### AVN ###
-    message("CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION = ${CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION}")
-
-    file(RELATIVE_PATH APK_NDK_TOOLCHAIN_PREFIX ${CMAKE_ANDROID_NDK} ${CMAKE_CXX_COMPILER})
+    # Get the toolchain prefix which is where androiddeployqt will look for bin-utilities
+    file(RELATIVE_PATH APK_NDK_TOOLCHAIN_PREFIX ${ANDROID_NDK} ${CMAKE_CXX_COMPILER})
+    # Create a list from the relative path
     string(REPLACE "/" ";" APK_NDK_TOOLCHAIN_PREFIX ${APK_NDK_TOOLCHAIN_PREFIX})
-
-    message("APK_NDK_TOOLCHAIN_PREFIX = ${APK_NDK_TOOLCHAIN_PREFIX}")
-
     list(GET APK_NDK_TOOLCHAIN_PREFIX 1 APK_NDK_TOOLCHAIN_PREFIX)
-
-    message("APK_NDK_TOOLCHAIN_PREFIX = ${APK_NDK_TOOLCHAIN_PREFIX}")
-
-    string(LENGTH "-${CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION}" VERSION_LENGTH)
-
-    message("VERSION_LENGTH = ${VERSION_LENGTH}")
-
-    string(LENGTH "${APK_NDK_TOOLCHAIN_PREFIX}" FOLDER_LENGTH)
-
-    message("FOLDER_LENGTH = ${FOLDER_LENGTH}")
-
-    math(EXPR PREFIX_LENGTH ${FOLDER_LENGTH}-${VERSION_LENGTH})
-    string(SUBSTRING "${APK_NDK_TOOLCHAIN_PREFIX}" 0 ${PREFIX_LENGTH} APK_NDK_TOOLCHAIN_PREFIX)
-
-    message("APK_NDK_TOOLCHAIN_PREFIX = ${APK_NDK_TOOLCHAIN_PREFIX}")
-    message(" **** ")
-    set(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION "llvm")     ### AVN ###
-
 
     # Get path to the target:
     set(APK_TARGET_OUTPUT_FILENAME $<TARGET_FILE:${APK_TARGET}>)
 
     # Get Android SDK build tools version:
+    message("SDK ENVIRONMENT VARIABLE $ENV{ANDROID_SDK}")
+    set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK})
     if(NOT APK_SDK_BUILD_TOOLS_VERSION)
         file(GLOB sdk_versions RELATIVE ${ANDROID_SDK_ROOT}/build-tools
-            ${ANDROID_SDK_ROOT}/build-tools/*)
+                ${ANDROID_SDK_ROOT}/build-tools/*)
         list(GET sdk_versions -1 APK_SDK_BUILD_TOOLS_VERSION)
     endif()
+
+    # Get the full path to the android STL
+    # ANDROID_STL_FULL_PATH
+    # Extract STL static vs .so (naming convention is <type>_<shared || static>
+    string(REPLACE "_" ";" STL_POSTFIX_LIST ${ANDROID_STL})
+    list(GET STL_POSTFIX_LIST 1 STL_POSTFIX)
+    if(STL_POSTFIX STREQUAL "shared")
+        set(STL_POSTFIX ".so")
+    elseif(STL_POSTFIX STREQUAL "static")
+        set(STL_POSTFIX ".a")
+    else()
+        message(FATAL_ERROR "Unrecognized STL library post-fix from ${ANDROID_STL}. Expected 'static ' or  'shared' but parsed ${STL_POSTFIX}")
+    endif()
+    # Joint location of all STL sources relative to NDK
+    set(ANDROID_CXX_SOURCE_LOCATION "sources/cxx-stl/llvm-libc++/libs")
+    set(ANDROID_STL_FULL_PATH "${ANDROID_NDK}/${ANDROID_CXX_SOURCE_LOCATION}/${ANDROID_ABI}/lib${ANDROID_STL}${STL_POSTFIX}")
+    message(STATUS "APK generation with ANDROID_STL_FULL_PATH=${ANDROID_STL_FULL_PATH}")
 
     # Step 1: Create an intermediate config file. At this point,
     # the generator expressions will we use are not yet resolved.
     configure_file(
-        ${QT_ANDROID_MK_APK_DIR}/qt-android-deployment.json.in
-        ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json.pre)
+            ${QT_ANDROID_MK_APK_DIR}/qt-android-deployment.json.in
+            ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json.pre)
 
     # Step 2: Run file(CONFIGURE ...) to create the final config JSON
     # with generator expressions resolved:
     file(
-        GENERATE
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json
-        INPUT ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json.pre)
+            GENERATE
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json
+            INPUT ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json.pre)
 
     # Step 3: Create a custom target which will build our APK:
     set(APK_DIR ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-apk-build)
     if(NOT APK_ANDROID_EXTRA_FILES)
-        set(
-            APK_ANDROID_EXTRA_FILES
-            ${QT5_INSTALL_PREFIX}/src/android/templates/)
+        message(FATAL_ERROR "APK_ANDROID_EXTRA_FILES not set. Suggest using those in ${QT5_INSTALL_PREFIX}/src/android/templates/")
+    else()
+        message(STATUS "APK generation with APK_ANDROID_EXTRA_FILES=${APK_ANDROID_EXTRA_FILES}")
     endif()
+
     if(JAVA_HOME)
         set(ANDROIDDEPLOYQT_EXTRA_ARGS
-            ${ANDROIDDEPLOYQT_EXTRA_ARGS} --jdk '${JAVA_HOME}')
+                ${ANDROIDDEPLOYQT_EXTRA_ARGS} --jdk '${JAVA_HOME}')
     endif()
-    if(${CMAKE_BUILD_TYPE} STREQUAL Release)
+    if(CMAKE_BUILD_TYPE EQUAL "RELEASE")
         set(ANDROIDDEPLOYQT_EXTRA_ARGS
-            ${ANDROIDDEPLOYQT_EXTRA_ARGS} --release)
+                ${ANDROIDDEPLOYQT_EXTRA_ARGS} --release)
         set(APK_FILENAME ${APK_TARGET}-apk-build-release-unsigned.apk)
     else()
         set(APK_FILENAME ${APK_TARGET}-apk-build-debug.apk)
     endif()
+
+    message(STATUS "APK_TARGET: ${APK_TARGET}")
+    message(STATUS "APK_DIR: ${APK_DIR}")
+    message(STATUS "APK_ANDROID_EXTRA_FILES: ${APK_ANDROID_EXTRA_FILES}")
     add_custom_target(
-        ${APK_TARGET}-apk
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${APK_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${APK_TARGET}-apk
+            #COMMAND ${CMAKE_COMMAND} -E remove_directory ${APK_DIR}
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${QT5_INSTALL_PREFIX}/src/android/templates/
             ${APK_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${APK_ANDROID_EXTRA_FILES}/
             ${APK_DIR}
-        COMMAND ${CMAKE_COMMAND} -E make_directory
+            COMMAND ${CMAKE_COMMAND} -E make_directory
             ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
-        COMMAND ${CMAKE_COMMAND} -E copy
+            COMMAND ${CMAKE_COMMAND} -E copy
             ${APK_TARGET_OUTPUT_FILENAME}
             ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
-        COMMAND ${QT5_INSTALL_PREFIX}/bin/androiddeployqt
+            COMMAND ${QT5_INSTALL_PREFIX}/bin/androiddeployqt
             --verbose
             --output ${APK_DIR}
             --input ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json
@@ -126,11 +154,13 @@ function(qt_android_build_apk)
 
     # Step 4: Create a custom target which pushes the created APK onto
     # the device.
+    message(STATUS "APK_FILENAME: ${APK_FILENAME}")
+
     add_custom_target(
-        ${APK_TARGET}-apk-install
-        COMMAND ${ANDROID_SDK_ROOT}/platform-tools/adb install -r
-            ${APK_DIR}/build/outputs/apk/${APK_FILENAME}
-        DEPENDS
+            ${APK_TARGET}-apk-install
+            COMMAND ${ANDROID_SDK_ROOT}/platform-tools/adb install -r
+            ${APK_DIR}/build/outputs/apk/${CMAKE_BUILD_TYPE}/${APK_FILENAME}
+            DEPENDS
             ${APK_TARGET}-apk
     )
 
