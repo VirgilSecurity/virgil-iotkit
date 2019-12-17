@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -32,31 +32,6 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11)
 
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
-endif()
-
-#
-#   Default cloud implementations module
-#
-
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
-endif()
-
-if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    #   aws-sdk
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ext/aws-sdk aws-sdk)
-    #   message bin
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
-endif()
-
-#
-#   C++ implementations
-
-add_subdirectory(qt-udp-broadcast)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/info-client)

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -32,31 +32,36 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11)
 
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
+add_library(iotkit-qt-info-client)
+
+target_sources(iotkit-qt-info-client
+        PRIVATE
+
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/qt-snap/info-client/VSQSnapINFOClient.h
+
+        # Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/VSQSnapINFOClient.cpp
+        )
+
+target_include_directories(iotkit-qt-info-client
+        PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        )
+
+target_link_libraries(iotkit-qt-info-client
+        PUBLIC
+
+        iotkit-qt
+        iotkit-qt-snap
+        vs-module-snap-control
+
+        Qt5::Core
+        Qt5::Network
+        )
+
+if(COMMAND add_clangformat)
+    add_clangformat(iotkit-qt-info-client)
 endif()
-
-#
-#   Default cloud implementations module
-#
-
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
-endif()
-
-if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    #   aws-sdk
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ext/aws-sdk aws-sdk)
-    #   message bin
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
-endif()
-
-#
-#   C++ implementations
-
-add_subdirectory(qt-udp-broadcast)

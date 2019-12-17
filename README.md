@@ -98,12 +98,14 @@ Virgil IoTKit is distributed as a package. This section demonstrates on how to i
 
 ### Prerequisites
 To start working with Virgil IoTKit the following components are required:
+- C99 for C.
+- C++14 for C++.
 - CMake v3.11 or higher, for project building
 - GCC or another toolchain for C/C++ compile
 - [Golang](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
-- [curl](https://curl.haxx.se/)
-
+- [curl](https://curl.haxx.se/) for default NIX implementation
+- Android SDK and Android NDK for Android build
 
 ### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
@@ -168,6 +170,9 @@ $ brew install make cmake golang git gcc curl doxygen swig
 ### Windows OS
 Virgil IoTKit for Windows OS is currently in development. To receive product updates, please send a request to our support team: support@VirgilSecurity.com.
 
+### Android
+- Setup Android SDK
+- Download Android NDK. You can downoload 
 
 <div id='tests'/>
 
@@ -198,6 +203,12 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the 
 #### MCU Build
 The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
+#### Android Build
+Specify constants listed below :
+- ANDROID_SDK
+- ANDROID_NDK
+- ANDROID_STL
+- ANDROID
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
