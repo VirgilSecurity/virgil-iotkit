@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <stdio.h>
+
 #include <virgil/iot/tests/helpers.h>
 #include <private/private_helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
@@ -145,7 +146,7 @@ _prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
                   bool corrupt) {
     bool not_implemented = false;
 
-    VS_IOT_STRCPY(descr, "Key ");
+    strcpy(descr, "Key ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_secmodule_keypair_type_descr(keypair_type));
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(alice_slot));

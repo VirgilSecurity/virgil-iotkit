@@ -32,25 +32,42 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/secmodule/secmodule.h>
+#include <stdlib-config.h>
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/firmware/firmware_hal.h>
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/vs-soft-test/vs-soft-test.h>
 
-uint16_t
-test_sign_converters(void);
-uint16_t
-test_pubkeys_converters(void);
+/******************************************************************************/
+static void
+_str_to_bytes(uint8_t *dst, const char *src, size_t buf_size) {
+    size_t pos;
+    size_t len;
 
-/**********************************************************/
-uint16_t
-vs_crypto_test(vs_secmodule_impl_t *secmodule_impl) {
-    uint16_t failed_test_result = 0;
+    VS_IOT_ASSERT(src && *src);
 
-    VS_IOT_ASSERT(secmodule_impl);
-    CHECK_NOT_ZERO_RET(secmodule_impl, 1);
+    VS_IOT_MEMSET(dst, 0, buf_size);
 
-#if !VIRGIL_IOT_MCU_BUILD
-    failed_test_result += test_sign_converters();
-    failed_test_result += test_pubkeys_converters();
-#endif
+    len = VS_IOT_STRLEN(src);
+    for (pos = 0; pos < len && pos < buf_size; ++pos, ++src, ++dst) {
+        *dst = *src;
+    }
+}
 
-    return failed_test_result;
+/******************************************************************************/
+vs_status_e
+vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
+    VS_IOT_ASSERT(footer);
+    VS_IOT_ASSERT(footer_sz >= sizeof(vs_firmware_footer_t));
+
+    CHECK_NOT_ZERO_RET(footer, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(footer_sz >= sizeof(vs_firmware_footer_t), VS_CODE_ERR_INCORRECT_ARGUMENT, "buffer size too small");
+
+    VS_IOT_MEMSET(footer, 0, footer_sz);
+    vs_firmware_footer_t *buf = (vs_firmware_footer_t *)footer;
+
+    _str_to_bytes(buf->descriptor.info.manufacture_id, TEST_MANUFACTURE_ID, sizeof(vs_device_manufacture_id_t));
+    _str_to_bytes(buf->descriptor.info.device_type, TEST_DEVICE_TYPE, sizeof(vs_device_type_t));
+
+    return VS_CODE_OK;
 }

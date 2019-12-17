@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <virgil/iot/tests/tests.h>
+
 #include <virgil/iot/tests/helpers.h>
 
 #include <stdlib-config.h>
@@ -14,6 +14,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 
+#include <private/private_helpers.h>
 #include <private/test_hl_keys_data.h>
 #include <private/test_tl_data.h>
 

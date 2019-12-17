@@ -36,6 +36,7 @@
 #include <global-hal.h>
 
 #include <virgil/iot/tests/helpers.h>
+#include <private/private_helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/secmodule/secmodule.h>
 

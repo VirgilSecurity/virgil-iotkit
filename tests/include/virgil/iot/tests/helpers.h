@@ -41,25 +41,11 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
-#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_10
-#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_11
-#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_12
-#define TEST_TL_KEYPAIR VS_KEY_SLOT_STD_MTP_13
-#define TEST_USER_KEYPAIR VS_KEY_SLOT_STD_MTP_14
-
 #define VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                 \
     do {                                                                                                               \
         if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                              \
             VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
             return true;                                                                                               \
-        }                                                                                                              \
-    } while (0)
-
-#define CHECK_GOTO(OPERATION, DESCRIPTION, ...)                                                                        \
-    do {                                                                                                               \
-        if (!(OPERATION)) {                                                                                            \
-            VS_LOG_ERROR(DESCRIPTION, ##__VA_ARGS__);                                                                  \
-            goto terminate;                                                                                            \
         }                                                                                                              \
     } while (0)
 
@@ -69,25 +55,6 @@
 #define PUBKEY_MAX_BUF_SIZE (256)
 
 #define BORDER VS_LOG_INFO("------------------------------------------------------");
-
-#define START_TESTS                                                                                                    \
-    do {                                                                                                               \
-        BORDER;                                                                                                        \
-        VS_LOG_INFO("[TESTS-BEGIN]");                                                                                  \
-    } while (0)
-
-#define FINISH_TESTS                                                                                                   \
-    do {                                                                                                               \
-        BORDER;                                                                                                        \
-        VS_LOG_INFO("[TESTS-END]");                                                                                    \
-        if (failed_test_result == 0) {                                                                                 \
-            VS_LOG_INFO("Test have been finished successfully");                                                       \
-        } else if (failed_test_result == 1) {                                                                          \
-            VS_LOG_INFO("1 test has been failed");                                                                     \
-        } else if (failed_test_result > 1) {                                                                           \
-            VS_LOG_INFO("%lu tests have been failed", failed_test_result);                                             \
-        }                                                                                                              \
-    } while (0)
 
 #define START_TEST(NAME)                                                                                               \
     do {                                                                                                               \
@@ -128,14 +95,4 @@
 
 #define VS_HEADER_SUBCASE(MESSAGE, ...) VS_LOG_INFO("    CASE: " MESSAGE, ##__VA_ARGS__)
 
-bool
-vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl);
-bool
-vs_test_create_device_key(vs_secmodule_impl_t *secmodule_impl);
-bool
-vs_test_save_hl_pubkeys(vs_secmodule_impl_t *secmodule_impl);
-bool
-vs_test_create_test_hl_keys(vs_secmodule_impl_t *secmodule_impl);
-bool
-vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl);
 #endif // VS_IOT_SDK_TESTS_HELPERS_H_

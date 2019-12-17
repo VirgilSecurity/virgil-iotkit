@@ -42,6 +42,11 @@ if(VIRGIL_IOT_DEFAULT_VS_SOFT_SECMODULE)
     if (VIRGIL_IOT_DEFAULT_SOFT_PROVISION)
         add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-crypto/vs-soft-provision)
     endif ()
+
+    if (VIRGIL_IOT_DEFAULT_SOFT_TEST)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-crypto/vs-soft-test)
+    endif ()
+
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-crypto/vs-soft-secmodule)
 endif()
 

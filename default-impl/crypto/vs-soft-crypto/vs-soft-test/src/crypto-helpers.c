@@ -36,6 +36,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
+
+#include <private/private_helpers.h>
 #include <private/test_hl_keys_data.h>
 
 #include <trust_list-config.h>
@@ -45,6 +47,8 @@
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/vs-soft-provision/vs-soft-provision.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 
 /******************************************************************************/
 static bool
@@ -64,8 +68,8 @@ _save_hl_key(vs_secmodule_impl_t *secmodule_impl,
 static bool
 _create_test_signed_hl_key(vs_secmodule_impl_t *secmodule_impl,
                            vs_key_type_e hl_key_type,
-                           vs_iot_secmodule_slot_e slot_with_hl_keypair,
-                           vs_iot_secmodule_slot_e slot_to_save_pubkey,
+                           uint16_t slot_with_hl_keypair,
+                           uint16_t slot_to_save_pubkey,
                            bool with_signature) {
     uint8_t buf[PUBKEY_MAX_BUF_SIZE];
     uint8_t hash_buf[32];
@@ -118,14 +122,24 @@ _create_test_signed_hl_key(vs_secmodule_impl_t *secmodule_impl,
 /**********************************************************/
 bool
 vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl) {
+    uint16_t slot;
     VS_HEADER_SUBCASE("Erase otp slots");
-    if (VS_CODE_OK != secmodule_impl->slot_clean(PRIVATE_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(REC1_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(REC2_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(SIGNATURE_SLOT)) {
-        VS_LOG_ERROR("[AP] Error. Can't erase OTP slots. ");
+    if (VS_CODE_OK != secmodule_impl->get_device_key_slot_num(&slot) ||
+        VS_CODE_OK != secmodule_impl->slot_clean(slot)) {
+        VS_LOG_ERROR("[AP] Error. Can't erase Private key slot. ");
         return false;
     }
+    if (VS_CODE_OK != vs_provision_get_slot_num(VS_PROVISION_PBR1, &slot) ||
+        VS_CODE_OK != secmodule_impl->slot_clean(slot)) {
+        VS_LOG_ERROR("[AP] Error. Can't erase PEC1 key slot. ");
+        return false;
+    }
+    if (VS_CODE_OK != vs_provision_get_slot_num(VS_PROVISION_PBR2, &slot) ||
+        VS_CODE_OK != secmodule_impl->slot_clean(slot)) {
+        VS_LOG_ERROR("[AP] Error. Can't erase PEC2 key slot. ");
+        return false;
+    }
+
     return true;
 }
 
@@ -133,28 +147,46 @@ vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl) {
 bool
 vs_test_create_device_key(vs_secmodule_impl_t *secmodule_impl) {
     VS_HEADER_SUBCASE("Create device keypair");
-    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create device key");
+    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_device_key(VS_KEYPAIR_EC_SECP256R1), "Error create device key");
     return true;
 }
 
 /**********************************************************/
 bool
 vs_test_save_hl_pubkeys(vs_secmodule_impl_t *secmodule_impl) {
-    bool res = true;
-    res &= _save_hl_key(secmodule_impl, REC1_KEY_SLOT, "PBR1", recovery1_pub, recovery1_pub_len);
-    res &= _save_hl_key(secmodule_impl, REC2_KEY_SLOT, "PBR2", recovery2_pub, recovery2_pub_len);
 
-    res &= _save_hl_key(secmodule_impl, AUTH1_KEY_SLOT, "PBA1", auth1_pub, auth1_pub_len);
-    res &= _save_hl_key(secmodule_impl, AUTH2_KEY_SLOT, "PBA2", auth2_pub, auth2_pub_len);
+    uint16_t slot;
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBR1, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBR1", recovery1_pub, recovery1_pub_len),
+                   "Error save REC1 key");
 
-    res &= _save_hl_key(secmodule_impl, FW1_KEY_SLOT, "PBF1", firmware1_pub, firmware1_pub_len);
-    res &= _save_hl_key(secmodule_impl, FW2_KEY_SLOT, "PBF2", firmware2_pub, firmware2_pub_len);
 
-    res &= _save_hl_key(secmodule_impl, TL1_KEY_SLOT, "PBT1", tl_service1_pub, tl_service1_pub_len);
-    res &= _save_hl_key(secmodule_impl, TL2_KEY_SLOT, "PBT2", tl_service2_pub, tl_service2_pub_len);
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBR2, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBR2", recovery2_pub, recovery2_pub_len),
+                   "Error save REC2 key");
 
-    return res;
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBA1, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBA1", auth1_pub, auth1_pub_len),
+                   "Error save AUTH1 key");
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBA2, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBA2", auth2_pub, auth2_pub_len),
+                   "Error save AUTH2 key");
+
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBF1, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBF1", firmware1_pub, firmware1_pub_len),
+                   "Error save FW1 key");
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBF2, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBF2", firmware2_pub, firmware2_pub_len),
+                   "Error save FW2 key");
+
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBT1, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBT1", tl_service1_pub, tl_service1_pub_len),
+                   "Error save TL1 key");
+    BOOL_CHECK_RET((VS_CODE_OK == vs_provision_get_slot_num(VS_PROVISION_PBT2, &slot)) &&
+                           _save_hl_key(secmodule_impl, slot, "PBT2", tl_service2_pub, tl_service2_pub_len),
+                   "Error save TL2 key");
+
+    return true;
 }
 
 /**********************************************************/
@@ -285,94 +317,4 @@ vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
     BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLF, 0, buf, footer_sz), "Error write tl footer");
 
     return true;
-}
-
-/******************************************************************************/
-const char *
-vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot) {
-    switch (slot) {
-    case VS_KEY_SLOT_STD_OTP_0:
-        return "STD_OTP_0";
-    case VS_KEY_SLOT_STD_OTP_1:
-        return "STD_OTP_1";
-    case VS_KEY_SLOT_STD_OTP_2:
-        return "STD_OTP_2";
-    case VS_KEY_SLOT_STD_OTP_3:
-        return "STD_OTP_3";
-    case VS_KEY_SLOT_STD_OTP_4:
-        return "STD_OTP_4";
-    case VS_KEY_SLOT_STD_OTP_5:
-        return "STD_OTP_5";
-    case VS_KEY_SLOT_STD_OTP_6:
-        return "STD_OTP_6";
-    case VS_KEY_SLOT_STD_OTP_7:
-        return "STD_OTP_7";
-    case VS_KEY_SLOT_STD_OTP_8:
-        return "STD_OTP_8";
-    case VS_KEY_SLOT_STD_OTP_9:
-        return "STD_OTP_9";
-    case VS_KEY_SLOT_STD_OTP_10:
-        return "STD_OTP_10";
-    case VS_KEY_SLOT_STD_OTP_11:
-        return "STD_OTP_11";
-    case VS_KEY_SLOT_STD_OTP_12:
-        return "STD_OTP_12";
-    case VS_KEY_SLOT_STD_OTP_13:
-        return "STD_OTP_13";
-    case VS_KEY_SLOT_STD_OTP_14:
-        return "STD_OTP_14";
-    case VS_KEY_SLOT_EXT_OTP_0:
-        return "EXT_OTP_0";
-    case VS_KEY_SLOT_STD_MTP_0:
-        return "STD_MTP_0";
-    case VS_KEY_SLOT_STD_MTP_1:
-        return "STD_MTP_1";
-    case VS_KEY_SLOT_STD_MTP_2:
-        return "STD_MTP_2";
-    case VS_KEY_SLOT_STD_MTP_3:
-        return "STD_MTP_3";
-    case VS_KEY_SLOT_STD_MTP_4:
-        return "STD_MTP_4";
-    case VS_KEY_SLOT_STD_MTP_5:
-        return "STD_MTP_5";
-    case VS_KEY_SLOT_STD_MTP_6:
-        return "STD_MTP_6";
-    case VS_KEY_SLOT_STD_MTP_7:
-        return "STD_MTP_7";
-    case VS_KEY_SLOT_STD_MTP_8:
-        return "STD_MTP_8";
-    case VS_KEY_SLOT_STD_MTP_9:
-        return "STD_MTP_9";
-    case VS_KEY_SLOT_STD_MTP_10:
-        return "STD_MTP_10";
-    case VS_KEY_SLOT_STD_MTP_11:
-        return "STD_MTP_11";
-    case VS_KEY_SLOT_STD_MTP_12:
-        return "STD_MTP_12";
-    case VS_KEY_SLOT_STD_MTP_13:
-        return "STD_MTP_13";
-    case VS_KEY_SLOT_STD_MTP_14:
-        return "STD_MTP_14";
-    case VS_KEY_SLOT_EXT_MTP_0:
-        return "EXT_MTP_0";
-    case VS_KEY_SLOT_STD_TMP_0:
-        return "STD_TMP_0";
-    case VS_KEY_SLOT_STD_TMP_1:
-        return "STD_TMP_1";
-    case VS_KEY_SLOT_STD_TMP_2:
-        return "STD_TMP_2";
-    case VS_KEY_SLOT_STD_TMP_3:
-        return "STD_TMP_3";
-    case VS_KEY_SLOT_STD_TMP_4:
-        return "STD_TMP_4";
-    case VS_KEY_SLOT_STD_TMP_5:
-        return "STD_TMP_5";
-    case VS_KEY_SLOT_STD_TMP_6:
-        return "STD_TMP_6";
-    case VS_KEY_SLOT_EXT_TMP_0:
-        return "EXT_TMP_0";
-    default:
-        VS_IOT_ASSERT(false && "Unsupported slot");
-        return "";
-    }
 }

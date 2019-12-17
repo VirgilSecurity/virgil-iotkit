@@ -38,19 +38,10 @@
 #include <stdbool.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
-#define TEST_MANUFACTURE_ID "VRGL"
-#define TEST_DEVICE_TYPE "TEST"
-
 uint16_t
 vs_snap_tests(void);
 
 uint16_t
 vs_crypto_test(vs_secmodule_impl_t *secmodule_impl);
-
-uint16_t
-vs_secbox_test(vs_secmodule_impl_t *secmodule_impl);
-
-uint16_t
-vs_firmware_test(vs_secmodule_impl_t *secmodule_impl);
 
 #endif // VS_IOT_SDK_TESTS_H

@@ -36,6 +36,13 @@
 #define VS_TESTS_PRIVATE_HELPERS_H
 
 #include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
+
+#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_10
+#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_11
+#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_12
+#define TEST_TL_KEYPAIR VS_KEY_SLOT_STD_MTP_13
+#define TEST_USER_KEYPAIR VS_KEY_SLOT_STD_MTP_14
 
 const char *
 vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot);
@@ -77,5 +84,16 @@ vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot);
                                                   sizeof(shared_secret_1),                                             \
                                                   &shared_secret_sz_1));                                               \
     } while (0)
+
+bool
+vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl);
+bool
+vs_test_create_device_key(vs_secmodule_impl_t *secmodule_impl);
+bool
+vs_test_save_hl_pubkeys(vs_secmodule_impl_t *secmodule_impl);
+bool
+vs_test_create_test_hl_keys(vs_secmodule_impl_t *secmodule_impl);
+bool
+vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl);
 
 #endif // VS_TESTS_PRIVATE_HELPERS_H

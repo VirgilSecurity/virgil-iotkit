@@ -39,10 +39,12 @@
 #include <virgil/iot/tests/tests.h>
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
-
+#include <virgil/iot/vs-soft-test/vs-soft-test.h>
+#include <private/private_helpers.h>
 #include <virgil/iot/firmware/firmware.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 
 #define VS_TEST_FIRMWARE_DATA "test firmware data for verifying update library"
 #define VS_TEST_FILL_SIZE 256

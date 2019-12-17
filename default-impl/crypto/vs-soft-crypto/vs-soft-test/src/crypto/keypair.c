@@ -2,6 +2,7 @@
 #include <private/private_helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 #include <stdlib-config.h>
 
 typedef struct {

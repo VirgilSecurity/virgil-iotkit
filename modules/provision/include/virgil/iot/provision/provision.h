@@ -184,6 +184,16 @@ vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx,
 vs_status_e
 vs_provision_deinit(void);
 
+/** Get slot number
+ * This function returns slot number for specified provision element.
+ * \param[in] id Provision element.
+ * \param[out] slot Slot number storage. Must not be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_provision_get_slot_num(vs_provision_element_id_e id, uint16_t *slot);
+
 /** Save specified provision element to the slot storage
  *
  * \param[in] data Data to be saved. Cannot be NULL.
