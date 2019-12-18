@@ -162,7 +162,6 @@ function(qt_android_build_apk)
             ${QT5_INSTALL_PREFIX}/src/android/templates/
             ${APK_DIR}
 
-
             COMMAND echo ${CMAKE_COMMAND} -E make_directory
             ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
 

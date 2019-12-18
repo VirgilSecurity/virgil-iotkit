@@ -34,6 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
+
 add_library(iotkit-qt-netif-udp-broadcast)
 
 target_sources(iotkit-qt-netif-udp-broadcast
