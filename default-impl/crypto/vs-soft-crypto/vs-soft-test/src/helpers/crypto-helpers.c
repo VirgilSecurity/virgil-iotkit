@@ -37,8 +37,8 @@
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
 
-#include <private/private_helpers.h>
-#include <private/test_hl_keys_data.h>
+#include <private/soft-test-helpers.h>
+#include <private/test-hl-keys-data.h>
 
 #include <trust_list-config.h>
 
@@ -46,7 +46,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/trust-list.h>
 #include <virgil/iot/vs-soft-provision/vs-soft-provision.h>
 #include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 

@@ -45,9 +45,9 @@ add_library(vs-default-soft-crypto-test)
 target_sources(vs-default-soft-crypto-test
         PRIVATE
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/test_hl_keys_data.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/test_tl_data.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/private_helpers.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/test-hl-keys-data.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/test-tl-data.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/private/soft-test-helpers.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/vs-soft-test/vs-soft-test.h
 
         # Sources
@@ -58,21 +58,21 @@ target_sources(vs-default-soft-crypto-test
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/hmac.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/kdf.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/keypair.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil_ecies.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/virgil-ecies.c
         ${CMAKE_CURRENT_LIST_DIR}/src/crypto/random.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust_list.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox_test.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/trust-list.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/secbox/secbox-test.c
 
         ${CMAKE_CURRENT_LIST_DIR}/src/firmware/firmware_test.c
 
-        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_hl_keys_data.c
-        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test_tl_data.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test-hl-keys-data.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/test_data/test-tl-data.c
 
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto-helpers.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/crypto-helpers.c
         ${CMAKE_CURRENT_LIST_DIR}/src/vs-soft-crypto-test.c
 
         PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/firmware_test_impl.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/helpers/firmware-test-impl.c
         )
 
 target_link_libraries(vs-default-soft-crypto-test

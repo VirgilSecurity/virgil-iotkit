@@ -9,14 +9,14 @@
 #include <trust_list-config.h>
 #include <global-hal.h>
 #include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/trust-list.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 
-#include <private/private_helpers.h>
-#include <private/test_hl_keys_data.h>
-#include <private/test_tl_data.h>
+#include <private/soft-test-helpers.h>
+#include <private/test-hl-keys-data.h>
+#include <private/test-tl-data.h>
 
 typedef struct {
     const uint8_t *key;

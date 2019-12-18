@@ -49,7 +49,7 @@ target_sources(trust_list
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/include/private/tl-private.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/tl_structs.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/trust_list.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/trust-list.h
 
         ${CMAKE_CURRENT_LIST_DIR}/src/tl-private.c
         ${CMAKE_CURRENT_LIST_DIR}/src/trust_list.c

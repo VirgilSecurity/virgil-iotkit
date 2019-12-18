@@ -40,7 +40,7 @@
 #include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/vs-soft-test/vs-soft-test.h>
-#include <private/private_helpers.h>
+#include <private/soft-test-helpers.h>
 #include <virgil/iot/firmware/firmware.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/provision/provision.h>

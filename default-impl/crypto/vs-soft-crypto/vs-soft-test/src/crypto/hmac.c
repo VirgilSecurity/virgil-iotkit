@@ -1,6 +1,6 @@
 
 #include <virgil/iot/tests/helpers.h>
-#include <private/private_helpers.h>
+#include <private/soft-test-helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 

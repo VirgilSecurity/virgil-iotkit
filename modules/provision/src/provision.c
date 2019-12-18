@@ -42,7 +42,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/trust-list.h>
 
 static vs_secmodule_impl_t *_secmodule = NULL;
 static const vs_provision_impl_t *_provision = NULL;
