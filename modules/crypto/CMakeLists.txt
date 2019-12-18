@@ -42,6 +42,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/secmodule)
 #
 #   Converters
 #
-if(NOT ANDROID AND NOT VIRGIL_IOT_MCU_BUILD)
+if(NOT ANDROID_QT AND NOT VIRGIL_IOT_MCU_BUILD)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/converters)
 endif()

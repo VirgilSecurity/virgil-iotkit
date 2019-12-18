@@ -77,7 +77,7 @@ endfunction()
 #   Known ANDROID toolchain configuration arguments.
 # ---------------------------------------------------------------------------
 function(TRANSITIVE_ANDROID_ARGS_ADD)
-    if(CMAKE_CROSSCOMPILING AND ANDROID)
+    if(CMAKE_CROSSCOMPILING AND ANDROID_QT)
         transitive_args_add(
                 ANDROID_TOOLCHAIN
                 ANDROID_ABI

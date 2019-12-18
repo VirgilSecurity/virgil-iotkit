@@ -39,7 +39,7 @@ set(QT_ANDROID_MK_APK_DIR ${CMAKE_CURRENT_LIST_DIR})
 function(qt_android_build_apk)
     set(options)
     set(oneValueArgs
-            TARGET PACKAGE_NAME ANDROID_EXTRA_FILES QML_ROOT_PATH
+            TARGET ANDROID_EXTRA_FILES QML_ROOT_PATH
             SDK_BUILD_TOOLS_VERSION EXTRA_LIBS)
     set(multiValueArgs)
     cmake_parse_arguments(
@@ -63,12 +63,20 @@ function(qt_android_build_apk)
     # Create a list from the relative path
     string(REPLACE "/" ";" APK_NDK_TOOLCHAIN_PREFIX ${APK_NDK_TOOLCHAIN_PREFIX})
     list(GET APK_NDK_TOOLCHAIN_PREFIX 1 APK_NDK_TOOLCHAIN_PREFIX)
+    if(APK_NDK_TOOLCHAIN_PREFIX STREQUAL "llvm")
+        set(ANDROID_APK_NDK_TOOLCHAIN_PREFIX_IS_LLVM true)
+    else()
+        set(ANDROID_APK_NDK_TOOLCHAIN_PREFIX_IS_LLVM false)
+    endif()
 
     # Get path to the target:
     set(APK_TARGET_OUTPUT_FILENAME $<TARGET_FILE:${APK_TARGET}>)
 
+    # Android host
+    set(ANDROID_HOST "${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}")
+    string(TOLOWER "${ANDROID_HOST}" ANDROID_HOST)
+
     # Get Android SDK build tools version:
-    message("SDK ENVIRONMENT VARIABLE $ENV{ANDROID_SDK}")
     set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK})
     if(NOT APK_SDK_BUILD_TOOLS_VERSION)
         file(GLOB sdk_versions RELATIVE ${ANDROID_SDK_ROOT}/build-tools
@@ -131,25 +139,60 @@ function(qt_android_build_apk)
     message(STATUS "APK_ANDROID_EXTRA_FILES: ${APK_ANDROID_EXTRA_FILES}")
     add_custom_target(
             ${APK_TARGET}-apk
-            #COMMAND ${CMAKE_COMMAND} -E remove_directory ${APK_DIR}
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${QT5_INSTALL_PREFIX}/src/android/templates/
+
+            COMMAND echo ======= ${APK_TARGET}-apk
+
+            COMMAND echo ${CMAKE_COMMAND} -E remove_directory ${APK_DIR}
+
+            COMMAND ${CMAKE_COMMAND} -E remove_directory ${APK_DIR}
+
+            COMMAND echo ${CMAKE_COMMAND} -E copy_directory
+            ${APK_ANDROID_EXTRA_FILES}/
             ${APK_DIR}
+
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${APK_ANDROID_EXTRA_FILES}/
             ${APK_DIR}
+
+            COMMAND echo ${CMAKE_COMMAND} -E copy_directory
+            ${QT5_INSTALL_PREFIX}/src/android/templates/
+            ${APK_DIR}
+
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${QT5_INSTALL_PREFIX}/src/android/templates/
+            ${APK_DIR}
+
+
+            COMMAND echo ${CMAKE_COMMAND} -E make_directory
+            ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
+
             COMMAND ${CMAKE_COMMAND} -E make_directory
             ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
+
+            COMMAND echo ${CMAKE_COMMAND} -E copy
+            ${APK_TARGET_OUTPUT_FILENAME}
+            ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
+
             COMMAND ${CMAKE_COMMAND} -E copy
             ${APK_TARGET_OUTPUT_FILENAME}
             ${APK_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}
-            COMMAND ${QT5_INSTALL_PREFIX}/bin/androiddeployqt
-            --verbose
+
+            COMMAND echo ${QT5_INSTALL_PREFIX}/bin/androiddeployqt
+            #            --verbose
             --output ${APK_DIR}
             --input ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json
             --deployment bundled
             --gradle
             ${ANDROIDDEPLOYQT_EXTRA_ARGS}
+
+            COMMAND ${QT5_INSTALL_PREFIX}/bin/androiddeployqt
+            #            --verbose
+            --output ${APK_DIR}
+            --input ${CMAKE_CURRENT_BINARY_DIR}/${APK_TARGET}-config.json
+            --deployment bundled
+            --gradle
+            ${ANDROIDDEPLOYQT_EXTRA_ARGS}
+
     )
 
     # Step 4: Create a custom target which pushes the created APK onto
@@ -158,8 +201,14 @@ function(qt_android_build_apk)
 
     add_custom_target(
             ${APK_TARGET}-apk-install
+
+            COMMAND echo ======= ${APK_TARGET}-apk-install
+
+            COMMAND echo ${ANDROID_SDK_ROOT}/platform-tools/adb install -r ${APK_DIR}/build/outputs/apk/${CMAKE_BUILD_TYPE}/${APK_FILENAME}
+
             COMMAND ${ANDROID_SDK_ROOT}/platform-tools/adb install -r
             ${APK_DIR}/build/outputs/apk/${CMAKE_BUILD_TYPE}/${APK_FILENAME}
+
             DEPENDS
             ${APK_TARGET}-apk
     )
