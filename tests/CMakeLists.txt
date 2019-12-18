@@ -50,7 +50,6 @@ target_sources(virgil-iot-sdk-tests
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/tests/tests.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test_crypto.c
         ${CMAKE_CURRENT_LIST_DIR}/src/snap/snap_tests.c
         ${CMAKE_CURRENT_LIST_DIR}/src/helpers/netif_test_impl.c
         )
@@ -58,8 +57,8 @@ target_sources(virgil-iot-sdk-tests
 if (NOT VIRGIL_IOT_MCU_BUILD)
     target_sources(virgil-iot-sdk-tests
             PRIVATE
-            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/sign_converters.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/pubkeys_converters.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test-sign-converters.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/crypto/test-pubkeys-converters.c
             )
     target_link_libraries(virgil-iot-sdk-tests
             converters

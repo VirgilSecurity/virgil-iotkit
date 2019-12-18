@@ -148,7 +148,7 @@ _test_case_converters_sign_pass(vs_secmodule_hash_type_e hash_alg,
 
 /******************************************************************************/
 uint16_t
-test_sign_converters(void) {
+vs_sign_converters_test(void) {
     uint16_t failed_test_result = 0;
 
 #define TEST_CONVERTERS_SIGN_PASS(HASH, KEYPAIR)                                                                       \

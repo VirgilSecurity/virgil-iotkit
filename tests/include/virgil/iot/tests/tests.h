@@ -42,6 +42,9 @@ uint16_t
 vs_snap_tests(void);
 
 uint16_t
-vs_crypto_test(vs_secmodule_impl_t *secmodule_impl);
+vs_sign_converters_test(void);
+
+uint16_t
+vs_pubkeys_converters_test(void);
 
 #endif // VS_IOT_SDK_TESTS_H

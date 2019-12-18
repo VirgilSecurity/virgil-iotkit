@@ -113,7 +113,7 @@ _test_case_converters_pubkey_pass(vs_secmodule_keypair_type_e keypair_type,
 
 /******************************************************************************/
 uint16_t
-test_pubkeys_converters(void) {
+vs_pubkeys_converters_test(void) {
     uint16_t failed_test_result = 0;
 
 #define TEST_CONVERTERS_PUBKEY_PASS(KEY, VIRGIL_PUBKEY, VIRGIL_PUBKEY_SZ, RAW_PUBKEY, RAW_PUBKEY_SZ)                   \
