@@ -89,7 +89,6 @@ test_keypair(vs_secmodule_impl_t *secmodule_impl) {
     static const size_t cases_amount = sizeof(test_cases) / sizeof(test_cases[0]);
     size_t pos;
     char buf[256];
-    bool not_implemented = false;
 
     START_TEST("Keypair tests");
 
@@ -98,9 +97,7 @@ test_keypair(vs_secmodule_impl_t *secmodule_impl) {
 
         test_case->initialized = false;
 
-        TEST_KEYPAIR_NOT_IMPLEMENTED(test_case->slot, test_case->keypair_type);
-
-        if (not_implemented) {
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == secmodule_impl->create_keypair(test_case->slot, test_case->keypair_type)) {
             VS_LOG_WARNING("Keypair type %s is not implemented",
                            vs_secmodule_keypair_type_descr(test_case->keypair_type));
             continue;

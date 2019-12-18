@@ -61,11 +61,13 @@ _test_ecdh_pass(vs_secmodule_impl_t *secmodule_impl,
     uint8_t shared_secret_2[128] = {0};
     uint16_t shared_secret_sz_2 = 0;
 
+    vs_status_e res;
 
     // Create key pair for Alice
-    STATUS_CHECK_RET_BOOL(secmodule_impl->create_keypair(alice_slot, keypair_type),
-                          "Can't create keypair %s for Alice",
-                          vs_secmodule_keypair_type_descr(keypair_type));
+    res = secmodule_impl->create_keypair(alice_slot, keypair_type);
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            res, true, "Keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
+    STATUS_CHECK_RET_BOOL(res, "Can't create keypair %s for Alice", vs_secmodule_keypair_type_descr(keypair_type));
 
     STATUS_CHECK_RET_BOOL(
             secmodule_impl->get_pubkey(
@@ -89,13 +91,16 @@ _test_ecdh_pass(vs_secmodule_impl_t *secmodule_impl,
             vs_test_secmodule_slot_descr(bob_slot));
 
     // ECDH for Alice - Bob
-    STATUS_CHECK_RET_BOOL(secmodule_impl->ecdh(alice_slot,
-                                               bob_keypair_type,
-                                               bob_public_key,
-                                               bob_public_key_sz,
-                                               shared_secret_1,
-                                               sizeof(shared_secret_1),
-                                               &shared_secret_sz_1),
+    res = secmodule_impl->ecdh(alice_slot,
+                               bob_keypair_type,
+                               bob_public_key,
+                               bob_public_key_sz,
+                               shared_secret_1,
+                               sizeof(shared_secret_1),
+                               &shared_secret_sz_1);
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            res, true, "ECDH for keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
+    STATUS_CHECK_RET_BOOL(res,
                           "Can't process ECDH (slot %s, keypair type %s) for Alice",
                           vs_test_secmodule_slot_descr(alice_slot),
                           vs_secmodule_keypair_type_descr(bob_keypair_type));
@@ -137,41 +142,6 @@ _test_ecdh_pass(vs_secmodule_impl_t *secmodule_impl,
 }
 
 /******************************************************************************/
-static bool
-_prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
-                  char *descr,
-                  vs_secmodule_keypair_type_e keypair_type,
-                  vs_iot_secmodule_slot_e alice_slot,
-                  vs_iot_secmodule_slot_e bob_slot,
-                  bool corrupt) {
-    bool not_implemented = false;
-
-    strcpy(descr, "Key ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_secmodule_keypair_type_descr(keypair_type));
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Alice's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(alice_slot));
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", Bob's slot ");
-    VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(bob_slot));
-    if (corrupt) {
-        VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", key corruption");
-    }
-
-    TEST_KEYPAIR_NOT_IMPLEMENTED(alice_slot, keypair_type);
-    if (not_implemented) {
-        VS_LOG_WARNING("Keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
-        return false;
-    }
-
-    TEST_ECDH_NOT_IMPLEMENTED(alice_slot, keypair_type);
-    if (not_implemented) {
-        VS_LOG_WARNING("ECDH for keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
-        return false;
-    }
-
-    return true;
-}
-
-/******************************************************************************/
 uint16_t
 test_ecdh(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
@@ -182,13 +152,10 @@ test_ecdh(vs_secmodule_impl_t *secmodule_impl) {
 
 #define TEST_ECDH_PASS(KEY, SLOT_ALICE, SLOT_BOB, CORRUPT)                                                             \
     do {                                                                                                               \
-                                                                                                                       \
-        if (_prepare_and_test(secmodule_impl, descr, (KEY), (SLOT_ALICE), (SLOT_BOB), (CORRUPT))) {                    \
-            if (CORRUPT) {                                                                                             \
-                TEST_CASE_NOT_OK(descr, _test_ecdh_pass(secmodule_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));          \
-            } else {                                                                                                   \
-                TEST_CASE_OK(descr, _test_ecdh_pass(secmodule_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));              \
-            }                                                                                                          \
+        if (CORRUPT) {                                                                                                 \
+            TEST_CASE_NOT_OK(descr, _test_ecdh_pass(secmodule_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));              \
+        } else {                                                                                                       \
+            TEST_CASE_OK(descr, _test_ecdh_pass(secmodule_impl, KEY, CORRUPT, SLOT_ALICE, SLOT_BOB));                  \
         }                                                                                                              \
     } while (0)
 

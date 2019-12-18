@@ -38,53 +38,14 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/vs-soft-secmodule/vs-soft-slots-config.h>
 
-#define TEST_REC_KEYPAIR VS_KEY_SLOT_STD_MTP_10
-#define TEST_AUTH_KEYPAIR VS_KEY_SLOT_STD_MTP_11
-#define TEST_FW_KEYPAIR VS_KEY_SLOT_STD_MTP_12
-#define TEST_TL_KEYPAIR VS_KEY_SLOT_STD_MTP_13
-#define TEST_USER_KEYPAIR VS_KEY_SLOT_STD_MTP_14
+#define TEST_RECOVERY_KEYPAIR_SLOT VS_KEY_SLOT_STD_MTP_10
+#define TEST_AUTH_KEYPAIR_SLOT VS_KEY_SLOT_STD_MTP_11
+#define TEST_TL_KEYPAIR_SLOT VS_KEY_SLOT_STD_MTP_12
+#define TEST_FW_KEYPAIR_SLOT VS_KEY_SLOT_STD_MTP_13
+#define TEST_USER_KEYPAIR_SLOT VS_KEY_SLOT_STD_MTP_14
 
 const char *
 vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot);
-
-#define TEST_NOT_IMPLEMENTED(OPERATION)                                                                                \
-    do {                                                                                                               \
-        vs_log_level_t prev_loglev;                                                                                    \
-        prev_loglev = vs_logger_get_loglev();                                                                          \
-        vs_logger_set_loglev(VS_LOGLEV_CRITICAL);                                                                      \
-        not_implemented = (OPERATION) == VS_CODE_ERR_NOT_IMPLEMENTED;                                                  \
-        vs_logger_set_loglev(prev_loglev);                                                                             \
-    } while (0)
-
-#define TEST_KEYPAIR_NOT_IMPLEMENTED(SLOT, KEYPAIR_TYPE)                                                               \
-    do {                                                                                                               \
-        TEST_NOT_IMPLEMENTED(secmodule_impl->create_keypair((SLOT), (KEYPAIR_TYPE)));                                  \
-    } while (0)
-
-#define TEST_HASH_NOT_IMPLEMENTED(HASH)                                                                                \
-    do {                                                                                                               \
-        static const uint8_t test_data[] = "Stub";                                                                     \
-        uint8_t result_buf[128];                                                                                       \
-        uint16_t tmp_size;                                                                                             \
-        TEST_NOT_IMPLEMENTED(secmodule_impl->hash(                                                                     \
-                (HASH), (const uint8_t *)test_data, sizeof(test_data), result_buf, sizeof(result_buf), &tmp_size));    \
-    } while (0)
-
-#define TEST_ECDH_NOT_IMPLEMENTED(SLOT, KEYPAIR_TYPE)                                                                  \
-    do {                                                                                                               \
-        uint8_t pubkey[256] = {0};                                                                                     \
-        uint16_t pubkey_sz = 0;                                                                                        \
-        uint8_t shared_secret_1[128] = {0};                                                                            \
-        uint16_t shared_secret_sz_1 = 0;                                                                               \
-        TEST_NOT_IMPLEMENTED(secmodule_impl->ecdh((SLOT),                                                              \
-                                                  (KEYPAIR_TYPE),                                                      \
-                                                  pubkey,                                                              \
-                                                  pubkey_sz,                                                           \
-                                                  shared_secret_1,                                                     \
-                                                  sizeof(shared_secret_1),                                             \
-                                                  &shared_secret_sz_1));                                               \
-    } while (0)
-
 bool
 vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl);
 bool

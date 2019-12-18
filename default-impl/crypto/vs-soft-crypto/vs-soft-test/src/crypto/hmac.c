@@ -27,8 +27,8 @@ _test_hmac_case(vs_secmodule_impl_t *secmodule_impl,
     res = secmodule_impl->hmac(
             hash_type, key_raw, sizeof(key_raw), input_raw, sizeof(input_raw), buf, sizeof(buf), &sz);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(
-            res, "HMAC for %s algorithm is not implemented", vs_secmodule_hash_type_descr(hash_type));
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            res, true, "HMAC for %s algorithm is not implemented", vs_secmodule_hash_type_descr(hash_type));
     STATUS_CHECK_RET_BOOL(res, "vs_secmodule_hmac incorrect result");
 
     MEMCMP_CHECK_RET(correct, buf, correct_sz, false);

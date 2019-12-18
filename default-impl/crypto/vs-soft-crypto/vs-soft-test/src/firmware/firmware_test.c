@@ -134,12 +134,12 @@ _create_test_firmware_footer(vs_secmodule_impl_t *secmodule_impl, vs_firmware_de
 
     vs_sign_t *sign = (vs_sign_t *)footer->signatures;
 
-    BOOL_CHECK_RET(_create_test_firmware_signature(secmodule_impl, VS_KEY_AUTH, TEST_AUTH_KEYPAIR, hash, sign),
+    BOOL_CHECK_RET(_create_test_firmware_signature(secmodule_impl, VS_KEY_AUTH, TEST_AUTH_KEYPAIR_SLOT, hash, sign),
                    "Error while creating auth signature");
 
     sign = (vs_sign_t *)(sign->raw_sign_pubkey + sign_len + key_len);
 
-    BOOL_CHECK_RET(_create_test_firmware_signature(secmodule_impl, VS_KEY_FIRMWARE, TEST_FW_KEYPAIR, hash, sign),
+    BOOL_CHECK_RET(_create_test_firmware_signature(secmodule_impl, VS_KEY_FIRMWARE, TEST_FW_KEYPAIR_SLOT, hash, sign),
                    "Error while creating fw signature");
 
     return true;

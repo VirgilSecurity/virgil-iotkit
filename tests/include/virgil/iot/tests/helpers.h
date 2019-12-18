@@ -41,18 +41,24 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/secmodule/secmodule.h>
 
-#define VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(OPERATION, MESSAGE, ...)                                                 \
-    do {                                                                                                               \
-        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                              \
-            VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
-            return true;                                                                                               \
-        }                                                                                                              \
-    } while (0)
-
-#define RESULT_BUF_SIZE (1024)
+#define RESULT_BUF_SIZE (256)
 #define HASH_MAX_BUF_SIZE (64)
 #define SHA256_SIZE (32)
 #define PUBKEY_MAX_BUF_SIZE (256)
+
+#define CHECK_IS_NOT_IMPLEMENTED_RET(OPERATION, RETCODE, MESSAGE, ...)                                                 \
+    do {                                                                                                               \
+        vs_log_level_t prev_loglev;                                                                                    \
+        prev_loglev = vs_logger_get_loglev();                                                                          \
+        vs_logger_set_loglev(VS_LOGLEV_CRITICAL);                                                                      \
+        if (VS_CODE_ERR_NOT_IMPLEMENTED == (OPERATION)) {                                                              \
+            VS_LOG_WARNING(MESSAGE, ##__VA_ARGS__);                                                                    \
+            vs_logger_set_loglev(prev_loglev);                                                                         \
+            return (RETCODE);                                                                                          \
+        }                                                                                                              \
+        vs_logger_set_loglev(prev_loglev);                                                                             \
+    } while (0)
+
 
 #define BORDER VS_LOG_INFO("------------------------------------------------------");
 

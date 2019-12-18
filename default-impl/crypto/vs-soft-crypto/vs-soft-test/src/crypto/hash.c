@@ -42,13 +42,16 @@ _test_long_sha_pass(vs_secmodule_impl_t *secmodule_impl,
                     const uint8_t *data,
                     uint16_t data_sz,
                     const uint8_t *ref_result,
-                    uint16_t ref_result_size) {
+                    uint16_t ref_result_size,
+                    vs_status_e *op_status) {
     static uint8_t result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
+    *op_status = secmodule_impl->hash(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz);
 
-    BOOL_CHECK_RET(VS_CODE_OK ==
-                           secmodule_impl->hash(hash_type, data, data_sz, result_buf, sizeof(result_buf), &result_sz),
-                   "Error execute hash op");
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            *op_status, true, "Hash for %s algorithm is not implemented", vs_secmodule_hash_type_descr(hash_type));
+
+    BOOL_CHECK_RET(VS_CODE_OK == *op_status, "Error execute hash op");
     BOOL_CHECK_RET(result_sz == ref_result_size, "Incorrect size of result");
 
     MEMCMP_CHECK_RET(ref_result, result_buf, result_sz, false);
@@ -66,13 +69,13 @@ _test_sha_pass(vs_secmodule_impl_t *secmodule_impl,
     static uint8_t another_result_buf[HASH_MAX_BUF_SIZE];
     uint16_t result_sz;
 
-    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->hash(hash_type,
-                                                      (uint8_t *)test_data,
-                                                      VS_IOT_STRLEN(test_data),
-                                                      result_buf,
-                                                      sizeof(result_buf),
-                                                      &result_sz),
-                   "Error execute hash op");
+    vs_status_e res = secmodule_impl->hash(
+            hash_type, (uint8_t *)test_data, VS_IOT_STRLEN(test_data), result_buf, sizeof(result_buf), &result_sz);
+
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            res, true, "Hash for %s algorithm is not implemented", vs_secmodule_hash_type_descr(hash_type));
+
+    BOOL_CHECK_RET(VS_CODE_OK == res, "Error execute hash op");
     BOOL_CHECK_RET(result_sz == correct_result_size, "Incorrect size of result");
 
     MEMCMP_CHECK_RET(correct_result_raw, result_buf, result_sz, false);
@@ -129,21 +132,15 @@ _test_partial_sha_pass(vs_secmodule_impl_t *secmodule_impl,
         const uint8_t *correct_result_raw = correct_result_sha_##BITLEN##_raw;                                         \
         uint16_t correct_result_size = sizeof(correct_result_sha_##BITLEN##_raw);                                      \
                                                                                                                        \
-        TEST_HASH_NOT_IMPLEMENTED(hash_type);                                                                          \
-                                                                                                                       \
-        if (not_implemented) {                                                                                         \
-            VS_LOG_WARNING("Hash for SHA_" #BITLEN " algorithm is not implemented");                                   \
-        } else {                                                                                                       \
-            TEST_CASE_OK(vs_secmodule_hash_type_descr(hash_type),                                                      \
-                         _test_sha_pass(secmodule_impl, hash_type, correct_result_raw, correct_result_size));          \
-        }                                                                                                              \
+        TEST_CASE_OK(vs_secmodule_hash_type_descr(hash_type),                                                          \
+                     _test_sha_pass(secmodule_impl, hash_type, correct_result_raw, correct_result_size));              \
     } while (0)
 
 /******************************************************************************/
 uint16_t
 test_hash(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
-    bool not_implemented = false;
+    vs_status_e op_status;
 
     VS_IOT_ASSERT(secmodule_impl);
     CHECK_NOT_ZERO_RET(secmodule_impl, 1);
@@ -156,17 +153,19 @@ test_hash(vs_secmodule_impl_t *secmodule_impl) {
                                      long_test_data,
                                      sizeof(long_test_data),
                                      long_sha256_hash,
-                                     sizeof(long_sha256_hash)));
+                                     sizeof(long_sha256_hash),
+                                     &op_status));
 
-    TEST_STEP(256);
-
-    if (!not_implemented) {
+    if (VS_CODE_ERR_NOT_IMPLEMENTED == op_status) {
         TEST_CASE_OK("SHA256 partial calculating pass",
                      _test_partial_sha_pass(secmodule_impl,
                                             VS_HASH_SHA_256,
                                             correct_result_sha_256_raw,
                                             sizeof(correct_result_sha_256_raw)));
     }
+
+    TEST_STEP(256);
+
 
     TEST_STEP(384);
     TEST_STEP(512);

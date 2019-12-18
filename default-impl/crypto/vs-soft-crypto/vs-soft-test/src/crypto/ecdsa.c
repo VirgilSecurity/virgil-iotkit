@@ -44,6 +44,20 @@ _test_sign_verify_pass(vs_secmodule_impl_t *secmodule_impl,
     return true;
 }
 
+static bool
+_is_hash_implemented(vs_secmodule_impl_t *secmodule_impl, vs_secmodule_hash_type_e hash) {
+    const uint8_t test_data[] = "Stub";
+    uint8_t result_buf[64];
+    uint16_t tmp_size;
+    CHECK_IS_NOT_IMPLEMENTED_RET(
+            secmodule_impl->hash(
+                    hash, (const uint8_t *)test_data, sizeof(test_data), result_buf, sizeof(result_buf), &tmp_size),
+            true,
+            "Hash %s is not implemented",
+            vs_secmodule_hash_type_descr(hash));
+    return false;
+}
+
 /******************************************************************************/
 static bool
 _prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
@@ -51,7 +65,6 @@ _prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
                   vs_iot_secmodule_slot_e slot,
                   vs_secmodule_hash_type_e hash,
                   vs_secmodule_keypair_type_e keypair_type) {
-    bool not_implemented = false;
 
     VS_IOT_STRCPY(descr, "slot ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_test_secmodule_slot_descr(slot));
@@ -60,15 +73,12 @@ _prepare_and_test(vs_secmodule_impl_t *secmodule_impl,
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), ", keypair type ");
     VS_IOT_STRCPY(descr + VS_IOT_STRLEN(descr), vs_secmodule_keypair_type_descr(keypair_type));
 
-    TEST_KEYPAIR_NOT_IMPLEMENTED(slot, keypair_type);
-    if (not_implemented) {
+    if (VS_CODE_ERR_NOT_IMPLEMENTED == secmodule_impl->create_keypair(slot, keypair_type)) {
         VS_LOG_WARNING("Keypair type %s is not implemented", vs_secmodule_keypair_type_descr(keypair_type));
         return false;
     }
 
-    TEST_HASH_NOT_IMPLEMENTED(hash);
-    if (not_implemented) {
-        VS_LOG_WARNING("Hash %s is not implemented", vs_secmodule_hash_type_descr(hash));
+    if (_is_hash_implemented(secmodule_impl, hash)) {
         return false;
     }
 

@@ -33,6 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/tests/helpers.h>
+#include <private/soft-test-helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <stdlib-config.h>
 /******************************************************************************/
@@ -68,7 +69,7 @@ test_aes_cbc_cases(vs_secmodule_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_encrypt(
             VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, data_sz, source, crypted, NULL, 0);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC encrypt is not implemented");
+    CHECK_IS_NOT_IMPLEMENTED_RET(res, true, "AES CBC encrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to encrypt data");
     MEMCMP_CHECK_RET(encrypted_source, crypted, sizeof(encrypted_source), false);
@@ -78,7 +79,7 @@ test_aes_cbc_cases(vs_secmodule_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_decrypt(
             VS_AES_CBC, key, key_bitsz, iv_tmp, iv_sz, NULL, 0, sizeof(crypted), crypted, decrypted, NULL, 0);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES CBC decrypt is not implemented");
+    CHECK_IS_NOT_IMPLEMENTED_RET(res, true, "AES CBC decrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to decrypt");
     MEMCMP_CHECK_RET(source, decrypted, data_sz, false);
@@ -127,7 +128,7 @@ test_aes_gcm_cases(vs_secmodule_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_encrypt(
             VS_AES_GCM, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM encrypt is not implemented");
+    CHECK_IS_NOT_IMPLEMENTED_RET(res, true, "AES GCM encrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(res, "Unable to encrypt data");
 
@@ -136,7 +137,7 @@ test_aes_gcm_cases(vs_secmodule_impl_t *secmodule_impl) {
     res = vs_secmodule_aes_decrypt(
                         aes_type, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, decrypted, tag, tag_sz);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM decrypt is not implemented");
+    CHECK_IS_NOT_IMPLEMENTED_RET(res, true, "AES GCM decrypt is not implemented");
 
     STATUS_CHECK_RET_BOOL(ret,"Unable to decrypt data");
 #endif
@@ -144,7 +145,7 @@ test_aes_gcm_cases(vs_secmodule_impl_t *secmodule_impl) {
     res = secmodule_impl->aes_auth_decrypt(
             VS_AES_GCM, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, crypted, auth_decrypted, tag, tag_sz);
 
-    VS_SECMODULE_CHECK_IS_NOT_IMPLEMENTED(res, "AES GCM auth decrypt is not implemented");
+    CHECK_IS_NOT_IMPLEMENTED_RET(res, true, "AES GCM auth decrypt is not implemented");
 
     MEMCMP_CHECK_RET(source, auth_decrypted, data_sz, false);
 
