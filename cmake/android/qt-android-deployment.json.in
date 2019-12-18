@@ -1,5 +1,4 @@
 {
- "description": "@ANDROID_APP_DESCRIPTION@",
  "qt": "@QT5_INSTALL_PREFIX@",
  "sdk": "@ANDROID_SDK_ROOT@",
  "sdkBuildToolsRevision": "@APK_SDK_BUILD_TOOLS_VERSION@",
