@@ -48,14 +48,10 @@
  *
  * \code
  *
- *    vs_storage_op_ctx_t tl_storage_impl;        // Trust List storage implementation
- *    vs_storage_op_ctx_t fw_storage_impl;        // Firmware storage implementation
  *    const vs_snap_service_t *snap_info_server;  // INFO Server SNAP service
  *
- *     // Initialize tl_storage_impl, fw_storage_impl
- *
  *     // Register INFO Server service
- *    snap_info_server = vs_snap_info_server(&tl_storage_impl, &fw_storage_impl, NULL);
+ *    snap_info_server = vs_snap_info_server(NULL);
  *    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO Server service");
  *
  * \endcode
@@ -94,16 +90,12 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
  *
  * \note \a startup_cb can be NULL. In this case standard notifications will be done.
  *
- * \param[in] tl_ctx Trust List storage context. Must not be NULL.
- * \param[in] fw_ctx Firmware storage context. Must not be NULL.
  * \param[in] startup_cb Startup notification server callback. If NULL, it won't be used.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 const vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb);
+vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb);
 
 /** INFO Server startup notification
  *
