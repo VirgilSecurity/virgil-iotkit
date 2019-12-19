@@ -44,7 +44,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/trust_list/trust-list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/tl-structs.h>
 #include <virgil/iot/firmware/firmware_hal.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/json/json_parser.h>

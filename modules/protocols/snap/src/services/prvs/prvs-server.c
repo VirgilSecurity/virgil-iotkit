@@ -47,7 +47,7 @@
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/provision/provision.h>
-#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/trust-list.h>
 
 static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;

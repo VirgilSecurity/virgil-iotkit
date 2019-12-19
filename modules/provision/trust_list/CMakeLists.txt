@@ -48,7 +48,7 @@ add_library(trust_list)
 target_sources(trust_list
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/include/private/tl-private.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/tl_structs.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/tl-structs.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/trust_list/trust-list.h
 
         ${CMAKE_CURRENT_LIST_DIR}/src/tl-private.c
@@ -96,8 +96,8 @@ target_link_libraries(trust_list
 #
 target_include_directories(trust_list
         PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         PUBLIC
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>

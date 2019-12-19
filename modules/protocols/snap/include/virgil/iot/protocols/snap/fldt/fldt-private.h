@@ -42,7 +42,7 @@ extern "C" {
 #include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/update/update.h>
-#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/tl-structs.h>
 #include <virgil/iot/macros/macros.h>
 
 

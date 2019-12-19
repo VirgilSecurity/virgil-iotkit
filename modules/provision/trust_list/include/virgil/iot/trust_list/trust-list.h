@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file trust_list.h
+/*! \file trust-list.h
  * \brief Trust List module
  *
  * This file provides interface for Trust Lists processing.
@@ -118,7 +118,7 @@
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/update/update.h>
-#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/tl-structs.h>
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {

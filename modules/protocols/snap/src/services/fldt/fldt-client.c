@@ -43,7 +43,7 @@
 #include <virgil/iot/update/update.h>
 #include <stdlib-config.h>
 #include <global-hal.h>
-#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/trust-list.h>
 
 #define DEBUG_CHUNKS (0)
 

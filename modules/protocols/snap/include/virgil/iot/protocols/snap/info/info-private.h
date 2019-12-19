@@ -41,7 +41,7 @@
 #include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/trust_list/trust-list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/tl-structs.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
 // mute "error: multi-character character constant" message

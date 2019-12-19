@@ -37,8 +37,8 @@
 #include <virgil/iot/protocols/snap/fldt/fldt-server.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-private.h>
 #include <virgil/iot/protocols/snap/generated/snap_cvt.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/trust-list.h>
+#include <virgil/iot/trust_list/tl-structs.h>
 #include <virgil/iot/macros/macros.h>
 #include <endian-config.h>
 #include <virgil/iot/update/update.h>

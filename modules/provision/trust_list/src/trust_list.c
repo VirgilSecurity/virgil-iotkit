@@ -34,7 +34,7 @@
 
 #include <stdlib-config.h>
 
-#include "virgil/iot/trust_list/tl_structs.h"
+#include "virgil/iot/trust_list/tl-structs.h"
 #include <private/tl-private.h>
 #include "virgil/iot/trust_list/trust-list.h"
 #include <endian-config.h>
