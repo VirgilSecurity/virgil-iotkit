@@ -77,7 +77,7 @@ function(qt_android_build_apk)
     string(TOLOWER "${ANDROID_HOST}" ANDROID_HOST)
 
     # Get Android SDK build tools version:
-    set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK})
+    set(ANDROID_SDK_ROOT ${ANDROID_SDK})
     if(NOT APK_SDK_BUILD_TOOLS_VERSION)
         file(GLOB sdk_versions RELATIVE ${ANDROID_SDK_ROOT}/build-tools
                 ${ANDROID_SDK_ROOT}/build-tools/*)
