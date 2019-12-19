@@ -146,7 +146,7 @@ add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
 #
 #   SNAP Devices initializer
 #
-add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1")
+add_snap("vs-module-snap-initializer" 1 "PRVS_SERVER=1 INFO_SERVER=1")
 
 #
 #   SNAP For Thing

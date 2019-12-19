@@ -151,6 +151,10 @@ func roles2strings(roles C.uint32_t) []string {
             res = append(res, "THING")
         }
 
+        if (roles & C.VS_SNAP_DEV_INITIALIZER) == C.VS_SNAP_DEV_INITIALIZER {
+            res = append(res, "INITIALIZER")
+        }
+
         if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
             res = append(res, "CONTROL")
         }
