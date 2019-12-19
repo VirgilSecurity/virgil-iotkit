@@ -50,9 +50,6 @@
 #include <endian-config.h>
 
 // Commands
-
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
 #define FW_DESCR_BUF 128
 
 // Polling
@@ -398,16 +395,10 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb) {
+vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb) {
 
-    static vs_snap_service_t _info = {0};
+    static vs_snap_service_t _info;
 
-    CHECK_NOT_ZERO_RET(tl_ctx, NULL);
-
-    _tl_ctx = tl_ctx;
-    _fw_ctx = fw_ctx;
     _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
@@ -415,7 +406,6 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
-    //    _info.deinit =
 
     return &_info;
 }
