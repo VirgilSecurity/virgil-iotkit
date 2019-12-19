@@ -36,24 +36,29 @@
 
 const VSQMac broadcastMac(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
+// TODO : set default MAC address for invalid one
+const VSQMac VSQMac::m_invalidMac(0x01, 0x02, 0x03, 0x04, 0x05, 0x06);
+
 VSQMac &
 VSQMac::set(const QString &mac) {
-    constexpr QChar divider(':');
+    static const QChar divider(':');
 
-    if (!mac.size() || !mac.contains(divider)) {
-        VS_LOG_WARNING("Empty MAC address has been returned");
-
-        // TODO : process empty MAC address
-        *this = VSQMac(10, 20, 30, 40, 50, 60);
-
-    } else {
+    if (!mac.isEmpty() && mac.contains(divider)) {
         QStringList macBytes = mac.split(divider);
-        Q_ASSERT(macBytes.size() == m_mac.size());
+        if (macBytes.size() == m_mac.size()) {
 
-        for (size_t pos = 0; pos < m_mac.size(); ++pos) {
-            m_mac.data()[pos] = macBytes[pos].toShort(nullptr, 16);
+            for (size_t pos = 0; pos < m_mac.size(); ++pos) {
+                m_mac.data()[pos] = macBytes[pos].toShort(nullptr, 16);
+            }
+
+            return *this;
         }
     }
+
+    VS_LOG_WARNING("Incorrect MAC address string : %s", mac.toStdString().c_str());
+
+    // TODO : process empty MAC address
+    set(m_invalidMac);
 
     return *this;
 }

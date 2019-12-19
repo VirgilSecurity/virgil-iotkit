@@ -77,7 +77,7 @@ private slots:
 private:
     quint16 m_port;
     QUdpSocket m_socket;
-    //    VSQMac m_mac;
+    VSQMac m_mac;
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_UDP_H_

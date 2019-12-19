@@ -39,6 +39,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_library(iotkit-qt-netif-udp-broadcast)
 
@@ -65,6 +66,7 @@ target_link_libraries(iotkit-qt-netif-udp-broadcast
 
         Qt5::Core
         Qt5::Network
+        Qt5::Widgets
         )
 
 if(COMMAND add_clangformat)

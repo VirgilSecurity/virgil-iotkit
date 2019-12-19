@@ -69,6 +69,16 @@ public:
         return set(mac);
     }
 
+    VSQMac &
+    operator=(const QString &mac) {
+        return set(mac);
+    }
+
+    VSQMac &
+    operator=(const quint8 *bytes) {
+        return set(bytes);
+    }
+
     bool
     operator==(const VSQMac &mac) const {
         return equal(mac);
@@ -98,6 +108,7 @@ public:
 
 private:
     QByteArray m_mac;
+    static const VSQMac m_invalidMac;
 
     VSQMac &
     set(const QString &mac);
