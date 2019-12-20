@@ -62,4 +62,6 @@ endif()
 #
 #   C++ implementations
 
-add_subdirectory(qt-udp-broadcast)
+if (VIRGIL_IOT_QT)
+    add_subdirectory(qt-udp-broadcast)
+endif()

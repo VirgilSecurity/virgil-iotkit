@@ -42,4 +42,6 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/snap)
 #
 #   Qt SNAP protocol implementation
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/qt-snap)
+if (VIRGIL_IOT_QT)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/qt-snap)
+endif()
