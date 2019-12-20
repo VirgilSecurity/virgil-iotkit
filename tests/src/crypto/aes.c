@@ -62,7 +62,7 @@ test_aes_cbc_cases(vs_secmodule_impl_t *secmodule_impl) {
     uint8_t crypted[sizeof(source) + 16 - (sizeof(source) % 16)];
     uint8_t decrypted[sizeof(source)];
     uint8_t iv_tmp[iv_sz];
-    int res;
+    vs_status_e res;
 
     VS_IOT_MEMCPY(iv_tmp, iv, iv_sz);
 
@@ -123,7 +123,7 @@ test_aes_gcm_cases(vs_secmodule_impl_t *secmodule_impl) {
     static const uint16_t add_sz = sizeof(add);
     static const uint16_t tag_sz = sizeof(tag);
     static const uint16_t key_bitsz = sizeof(key) * 8;
-    int res;
+    vs_status_e res;
 
     res = secmodule_impl->aes_encrypt(
             VS_AES_GCM, key, key_bitsz, iv, iv_sz, add, add_sz, data_sz, source, crypted, tag, tag_sz);

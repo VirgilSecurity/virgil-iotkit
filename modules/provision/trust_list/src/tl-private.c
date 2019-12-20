@@ -548,7 +548,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     int key_len;
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_pubkey_dated_t element;
-    //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
     vs_storage_element_id_t file_id;
     uint16_t _sz;
 
@@ -588,7 +587,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 vs_status_e
 vs_tl_invalidate(size_t storage_type) {
     vs_tl_header_t header;
-    //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
