@@ -38,10 +38,3 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 #   SNAP protocol
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/snap)
-
-#
-#   Qt SNAP protocol implementation
-#
-if (VIRGIL_IOT_QT)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/qt-snap)
-endif()

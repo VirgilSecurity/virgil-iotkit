@@ -58,10 +58,3 @@ if (VIRGIL_IOT_DEFAULT_IMPL AND NOT MOBILE_PLATFORM)
         add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
     endif()
 endif()
-
-#
-#   C++ implementations
-
-if (VIRGIL_IOT_QT)
-    add_subdirectory(qt-udp-broadcast)
-endif()

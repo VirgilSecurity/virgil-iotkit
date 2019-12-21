@@ -63,10 +63,3 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../ext/jsmn "jsmn")
 #   vs-json
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)
-
-#
-#   Qt IoTKIT
-#
-if (VIRGIL_IOT_QT)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/iotkit-qt)
-endif()
