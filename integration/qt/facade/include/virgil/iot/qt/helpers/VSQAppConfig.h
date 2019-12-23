@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef _VSQ_APP_CONFIG_H_
-#define _VSQ_APP_CONFIG_H_
+#ifndef VIRGIL_IOTKIT_QT_APP_CONFIG_H
+#define VIRGIL_IOTKIT_QT_APP_CONFIG_H
 
 #include <virgil/iot/qt/helpers/VSQManufactureId.h>
 #include <virgil/iot/qt/helpers/VSQDeviceType.h>
@@ -102,4 +102,4 @@ private:
     VirgilIoTKit::vs_log_level_t m_logLevel;
 };
 
-#endif // _VSQ_APP_CONFIG_H_
+#endif // VIRGIL_IOTKIT_QT_APP_CONFIG_H

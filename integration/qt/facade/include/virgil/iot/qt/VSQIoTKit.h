@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOTKIT_C_QT_DEMO_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_C_QT_DEMO_VSQIOTKIT_H
+#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
 
 #include <cstdint>
 
@@ -51,4 +51,4 @@
 
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 
-#endif // VIRGIL_IOTKIT_C_QT_DEMO_VSQIOTKIT_H
+#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H

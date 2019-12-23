@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef _VIRGIL_IOTKIT_QT_SNAP_UDP_H_
-#define _VIRGIL_IOTKIT_QT_SNAP_UDP_H_
+#ifndef VIRGIL_IOTKIT_QT_UDP_BROADCAST_H_
+#define VIRGIL_IOTKIT_QT_UDP_BROADCAST_H_
 
 #include <QtCore>
 #include <QtNetwork>
@@ -80,4 +80,4 @@ private:
     VSQMac m_mac;
 };
 
-#endif // _VIRGIL_IOTKIT_QT_SNAP_UDP_H_
+#endif // VIRGIL_IOTKIT_QT_UDP_BROADCAST_H_
