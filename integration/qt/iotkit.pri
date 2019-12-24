@@ -17,6 +17,7 @@ CONFIG(release, debug|release) {
 unix:mac:      OS_NAME = macos
 unix:ios:      OS_NAME = ios
 linux:android: OS_NAME = android
+linux:         OS_NAME = linux
 
 VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
 
@@ -90,3 +91,9 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/storage_hal/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/update/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/config/pc
+
+#
+#   Compiler options
+#
+linux:!android: QMAKE_CFLAGS+=-Wno-multichar
+linux:!android: QMAKE_CXXFLAGS+=-Wno-multichar
