@@ -41,7 +41,18 @@ function build() {
 #
 
 #
-#   macOS
+#   linux
+#
+if [[ "${PLATFORM}" == "linux" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DGO_DISABLE=ON \
+        -DAPPLE_PLATFORM=OFF \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+    "
+
+#
+#   Mac OS
 #
 if [[ "${PLATFORM}" == "macos" ]]; then
 
@@ -94,7 +105,7 @@ else
     echo "Virgil IoTKIT build script usage : "
     echo "$0 platform platform-specific"
     echo "where : "
-    echo "   platform - platform selector. Currently supported: macos, ios, ios-sim, android"
+    echo "   platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos"
     echo "   platform-specific for Android :"
     echo "     android_ABI [android_platform]"
 

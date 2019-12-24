@@ -48,9 +48,10 @@ CONFIG(release, debug|release) {
     BUILD_TYPE = release
 }
 
-unix:mac:      OS_NAME = macos
-unix:ios:      OS_NAME = ios
-linux:android: OS_NAME = android
+unix:mac:       OS_NAME = macos
+unix:ios:       OS_NAME = ios
+linux:android:  OS_NAME = android
+linux:!android: OS_NAME = linux
 
 VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
 
