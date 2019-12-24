@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -32,24 +32,51 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#ifndef _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_
+#define _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_
 
-#include <cstdint>
+#include <virgil/iot/qt/VSQIoTKit.h>
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
+class VSQSnapInfoClientQml final :
+        virtual public QObject,
+        public VSQSnapInfoClient,
+        public VSQSingleton<VSQSnapInfoClientQml>,
+        public QAbstractListModel {
+Q_OBJECT
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
+    friend VSQSingleton<VSQSnapInfoClientQml>;
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+public:
+
+    enum DeviceInfoRoles {
+        MacAddress = Qt::UserRole + 1,
+        DeviceRoles,
+        ManufactureId,
+        DeviceType,
+        FwVer,
+        TlVer,
+        Sent,
+        Received,
+        LastTimestamp,
+        IsActive,
+        HasGeneralInfo,
+        HasStatistics
+    };
+
+    using VSQSingleton<VSQSnapInfoClientQml>::instance;
+
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
+
+private:
+    VSQSnapInfoClientQml() = default;
+    ~VSQSnapInfoClientQml() = default;
+
+    void startNotifyProcess(const VSQDeviceInfo& device) override;
+    void generalInfoProcess(const VSQDeviceInfo& device) override;
+    void statisticsProcess(const VSQDeviceInfo& device) override;
+    void emitDataChanged(const VSQDeviceInfo& device) const;
+};
+
+#endif // _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_

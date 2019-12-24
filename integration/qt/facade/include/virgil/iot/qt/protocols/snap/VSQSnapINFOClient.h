@@ -35,8 +35,6 @@
 #ifndef _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_H_
 #define _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_H_
 
-#include <vector>
-
 #include <QtCore>
 
 #include <virgil/iot/qt/VSQIoTKit.h>
@@ -84,7 +82,11 @@ struct VSQDeviceInfo {
     }
 };
 
-class VSQSnapInfoClient final : public QObject, public VSQSingleton<VSQSnapInfoClient>, public VSQSnapServiceBase {
+class VSQSnapInfoClient :
+        public QObject,
+        public VSQSingleton<VSQSnapInfoClient>,
+        public VSQSnapServiceBase {
+
     Q_OBJECT
 
     friend VSQSingleton<VSQSnapInfoClient>;
@@ -125,6 +127,8 @@ public:
                 {VSQSnapInfoClient::GENERAL_INFO, VSQSnapInfoClient::STATISTICS}, deviceMac, true, periodSeconds);
     }
 
+    const TEnumDevicesArray &devicesList() const { return m_devicesInfo; }
+
 signals:
     void
     fireDeviceInfo(const VSQDeviceInfo &deviceInfo);
@@ -132,18 +136,24 @@ signals:
     void
     fireNewDevice(const VSQDeviceInfo &deviceInfo);
 
+protected:
+    VSQSnapInfoClient();
+    ~VSQSnapInfoClient() = default;
+
+    virtual void startNotifyProcess(const VSQDeviceInfo& device) {}
+    virtual void generalInfoProcess(const VSQDeviceInfo& device) {}
+    virtual void statisticsProcess(const VSQDeviceInfo& device) {}
+
 private:
     const VirgilIoTKit::vs_snap_service_t *m_snapService;
     mutable VirgilIoTKit::vs_snap_info_client_service_t m_snapInfoImpl;
     TEnumDevicesArray m_devicesInfo;
     int m_deviceAliveTimer = 0;
 
-    VSQSnapInfoClient();
-
     void
     timerEvent(QTimerEvent *event) override;
 
-    VSQDeviceInfo &
+    VSQDeviceInfo
     getDevice(const VSQMac &mac);
 
     static VirgilIoTKit::vs_status_e
