@@ -35,8 +35,6 @@
 #ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
 #define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
 
-#include <cstdint>
-
 #include <virgil/iot/qt/helpers/VSQAppConfig.h>
 #include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
 #include <virgil/iot/qt/helpers/VSQDeviceSerial.h>

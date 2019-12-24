@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef _VSQ_FEATURES_H_
-#define _VSQ_FEATURES_H_
+#ifndef VIRGIL_IOTKIT_QT_FEATURES_H
+#define VIRGIL_IOTKIT_QT_FEATURES_H
 
 #include <QSet>
 
@@ -67,4 +67,4 @@ private:
     TSet m_features;
 };
 
-#endif // _VSQ_FEATURES_H_
+#endif // VIRGIL_IOTKIT_QT_FEATURES_H

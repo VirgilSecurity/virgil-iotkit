@@ -34,6 +34,37 @@
 
 #include <virgil/iot/qt/VSQIoTKit.h>
 
+VSQSnapInfoClientQml::VSQSnapInfoClientQml() {
+    QObject::connect(&VSQSnapInfoClient::instance(), &VSQSnapInfoClient::fireNewDevice, this, &VSQSnapInfoClientQml::onNewDevice);
+    QObject::connect(&VSQSnapInfoClient::instance(), &VSQSnapInfoClient::fireDeviceInfo, this, &VSQSnapInfoClientQml::onDeviceInfo);
+}
+
+void
+VSQSnapInfoClientQml::onNewDevice(const VSQDeviceInfo &deviceInfo) {
+    beginInsertRows(QModelIndex(), rowCount() - 1, rowCount() - 1);
+    endInsertRows();
+}
+
+void
+VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
+    const auto &devices = devicesList();
+
+    for(size_t pos = 0; pos < devices.size(); ++pos) {
+        const auto &device = devices[pos];
+
+        if(device.m_mac != deviceInfo.m_mac) {
+            continue;
+        }
+
+        auto idx = index(pos, pos);
+        emit dataChanged(idx, idx);
+
+        return;
+    }
+
+    Q_ASSERT(false && "Normally unreachable code");
+}
+
 int VSQSnapInfoClientQml::rowCount(const QModelIndex & parent ) const {
     Q_UNUSED(parent);
     return devicesList().size();
@@ -78,30 +109,5 @@ QHash<int, QByteArray> VSQSnapInfoClientQml::roleNames() const {
     };
 
     return roles;
-}
-
-void VSQSnapInfoClientQml::startNotifyProcess(const VSQDeviceInfo& device) {
-    emitDataChanged(device);
-}
-
-void VSQSnapInfoClientQml::generalInfoProcess(const VSQDeviceInfo& device) {
-    emitDataChanged(device);
-}
-
-void VSQSnapInfoClientQml::statisticsProcess(const VSQDeviceInfo& device) {
-    emitDataChanged(device);
-}
-
-void VSQSnapInfoClientQml::emitDataChanged(const VSQDeviceInfo& device) const {
-    auto &devices = devicesList();
-
-    for(size_t pos = 0; pos < devices.size(); ++pos){
-        if( devices[pos] == device ){
-            auto curIndex = index(pos, pos);
-            emit dataChanged( curIndex, curIndex);
-        }
-    }
-
-    Q_ASSERT(false && "Unreachable code");
 }
 

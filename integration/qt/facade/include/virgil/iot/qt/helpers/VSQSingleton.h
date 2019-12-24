@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOTKIT_QT_VSQSINGLETON_H
-#define VIRGIL_IOTKIT_QT_VSQSINGLETON_H
+#ifndef VIRGIL_IOTKIT_QT_SINGLETON_H
+#define VIRGIL_IOTKIT_QT_SINGLETON_H
 
 #include <type_traits>
 
@@ -60,4 +60,4 @@ VSQSingleton<T, D>::instance() {
     return inst;
 }
 
-#endif // VIRGIL_IOTKIT_QT_VSQSINGLETON_H
+#endif // VIRGIL_IOTKIT_QT_SINGLETON_H

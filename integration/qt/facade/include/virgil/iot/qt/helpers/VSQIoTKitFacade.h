@@ -32,21 +32,19 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VSQIOTKITFACADE_H
-#define VSQIOTKITFACADE_H
+#ifndef VIRGIL_IOTKIT_QT_FACADE_H
+#define VIRGIL_IOTKIT_QT_FACADE_H
 
 #include <QtCore>
 #include <QtNetwork>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision-structs.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
 #include <virgil/iot/qt/helpers/VSQFeatures.h>
 #include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
 #include <virgil/iot/qt/helpers/VSQAppConfig.h>
-
-class VSQSnapInfoClient;
-class VSQSnapServiceBase;
+#include <virgil/iot/qt/helpers/VSQSingleton.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 
 class VSQIoTKitFacade : public QObject, public VSQSingleton<VSQIoTKitFacade> {
     Q_OBJECT
@@ -72,4 +70,4 @@ private:
     registerService(VSQSnapServiceBase &service);
 };
 
-#endif // VSQIOTKITFACADE_H
+#endif // VIRGIL_IOTKIT_QT_FACADE_H

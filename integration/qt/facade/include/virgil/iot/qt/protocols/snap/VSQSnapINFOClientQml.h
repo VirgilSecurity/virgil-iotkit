@@ -35,19 +35,19 @@
 #ifndef _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_
 #define _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_
 
-#include <virgil/iot/qt/VSQIoTKit.h>
+#include <QtQml>
+
+#include <virgil/iot/qt/helpers/VSQSingleton.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 
 class VSQSnapInfoClientQml final :
-        virtual public QObject,
-        public VSQSnapInfoClient,
-        public VSQSingleton<VSQSnapInfoClientQml>,
-        public QAbstractListModel {
+        public QAbstractListModel,
+        public VSQSingleton<VSQSnapInfoClientQml> {
 Q_OBJECT
 
     friend VSQSingleton<VSQSnapInfoClientQml>;
 
 public:
-
     enum DeviceInfoRoles {
         MacAddress = Qt::UserRole + 1,
         DeviceRoles,
@@ -63,20 +63,22 @@ public:
         HasStatistics
     };
 
-    using VSQSingleton<VSQSnapInfoClientQml>::instance;
-
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    VSQSnapInfoClientQml() = default;
+    VSQSnapInfoClientQml();
     ~VSQSnapInfoClientQml() = default;
 
-    void startNotifyProcess(const VSQDeviceInfo& device) override;
-    void generalInfoProcess(const VSQDeviceInfo& device) override;
-    void statisticsProcess(const VSQDeviceInfo& device) override;
-    void emitDataChanged(const VSQDeviceInfo& device) const;
+    static const VSQSnapInfoClient::TEnumDevicesArray &devicesList()  { return VSQSnapInfoClient::instance().devicesList(); }
+
+private slots:
+    void
+    onDeviceInfo(const VSQDeviceInfo &deviceInfo);
+
+    void
+    onNewDevice(const VSQDeviceInfo &deviceInfo);
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_

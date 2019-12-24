@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef _VSQ_IMPLEMENTATIONS_H_
-#define _VSQ_IMPLEMENTATIONS_H_
+#ifndef VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
+#define VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
 
 #include <QtCore>
 
@@ -57,4 +57,4 @@ private:
     QSharedPointer<VSQNetifBase> m_netif;
 };
 
-#endif // _VSQ_IMPLEMENTATIONS_H_
+#endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H

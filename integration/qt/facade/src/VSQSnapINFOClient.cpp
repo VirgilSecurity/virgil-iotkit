@@ -67,15 +67,12 @@ VSQSnapInfoClient::startNotify(vs_snap_info_device_t *deviceRaw) {
     device.m_isActive = true;
     device.m_lastTimestamp = QDateTime::currentDateTime();
 
-    emit instance().fireNewDevice(device);
     emit instance().fireDeviceInfo(device);
 
     if (!instance().startFullPolling(device.m_mac)) {
         VS_LOG_CRITICAL("Unable to start polling for device %s", device.m_mac.description().toStdString().c_str());
         return VS_CODE_ERR_POLLING_INFO_CLIENT;
     }
-
-    instance().startNotifyProcess(device);
 
     return VS_CODE_OK;
 }
@@ -96,9 +93,6 @@ VSQSnapInfoClient::generalInfo(vs_info_general_t *generalData) {
 
     emit instance().fireDeviceInfo(device);
 
-    instance().generalInfoProcess(device);
-
-
     return VS_CODE_OK;
 }
 
@@ -114,8 +108,6 @@ VSQSnapInfoClient::statistics(vs_info_statistics_t *statistics) {
     device.m_lastTimestamp = QDateTime::currentDateTime();
 
     emit instance().fireDeviceInfo(device);
-
-    instance().statisticsProcess(device);
 
     return VS_CODE_OK;
 }
@@ -159,6 +151,7 @@ VSQSnapInfoClient::getDevice(const VSQMac &mac) {
     if (!device) {
         m_devicesInfo.push_back(VSQDeviceInfo(mac));
         device = &m_devicesInfo.last();
+        emit fireNewDevice(*device);
     }
 
     return *device;
