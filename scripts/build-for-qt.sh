@@ -29,7 +29,7 @@ function build() {
 
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
-    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON
 
     make vs-module-logger
     make vs-module-provision
@@ -41,23 +41,11 @@ function build() {
 #
 
 #
-#   linux
-#
-if [[ "${PLATFORM}" == "linux" ]]; then
-
-    CMAKE_ARGUMENTS=" \
-        -DGO_DISABLE=ON \
-        -DAPPLE_PLATFORM=OFF \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
-#
-#   Mac OS
+#   macOS
 #
 if [[ "${PLATFORM}" == "macos" ]]; then
 
     CMAKE_ARGUMENTS=" \
-        -DGO_DISABLE=ON \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
 
@@ -101,6 +89,16 @@ elif [[ "${PLATFORM}" == "android" ]]; then
         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
+
+#
+#   Linux
+#
+elif [[ "${PLATFORM}" == "linux" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+    "
+
 else
     echo "Virgil IoTKIT build script usage : "
     echo "$0 platform platform-specific"

@@ -127,3 +127,8 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/storage_hal/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/update/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/config/pc
+
+#
+#   Compiler options
+#
+linux:!android: QMAKE_CFLAGS+=-Wno-multichar

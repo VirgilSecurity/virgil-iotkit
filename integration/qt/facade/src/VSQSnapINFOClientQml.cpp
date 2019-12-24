@@ -41,6 +41,7 @@ VSQSnapInfoClientQml::VSQSnapInfoClientQml() {
 
 void
 VSQSnapInfoClientQml::onNewDevice(const VSQDeviceInfo &deviceInfo) {
+    (void) deviceInfo;
     beginInsertRows(QModelIndex(), rowCount() - 1, rowCount() - 1);
     endInsertRows();
 }
@@ -49,7 +50,7 @@ void
 VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
     const auto &devices = devicesList();
 
-    for(size_t pos = 0; pos < devices.size(); ++pos) {
+    for(int pos = 0; pos < devices.size(); ++pos) {
         const auto &device = devices[pos];
 
         if(device.m_mac != deviceInfo.m_mac) {
