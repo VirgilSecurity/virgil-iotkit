@@ -48,7 +48,7 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
-static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0};
+static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;
 
 static vs_secmodule_impl_t *_secmodule = NULL;
@@ -277,6 +277,7 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     VS_IOT_ASSERT(_secmodule->ecdsa_sign);
     VS_IOT_ASSERT(_secmodule->get_pubkey);
 
+    *signature_sz = 0;
     vs_snap_prvs_sgnp_req_t *request = (vs_snap_prvs_sgnp_req_t *)data;
     vs_sign_t *response = (vs_sign_t *)signature;
     int hash_len = vs_secmodule_get_hash_len(request->hash_type);

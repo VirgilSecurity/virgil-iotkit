@@ -61,7 +61,7 @@ typedef struct {
 } vs_poll_ctx_t;
 
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
-static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+static vs_poll_ctx_t _poll_ctx;
 
 /******************************************************************/
 static vs_status_e
@@ -406,7 +406,7 @@ vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb) {
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
-
+    VS_IOT_MEMSET(&_poll_ctx, 0, sizeof(_poll_ctx));
     return &_info;
 }
 
