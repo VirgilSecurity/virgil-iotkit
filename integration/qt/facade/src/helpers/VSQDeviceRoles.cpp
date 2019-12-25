@@ -63,7 +63,7 @@ VSQDeviceRoles::operator uint32_t() const {
 }
 
 QString
-VSQDeviceRoles::description() const {
+VSQDeviceRoles::description(const QString &divider) const {
     static const QMap<VirgilIoTKit::vs_snap_device_role_e, QString> rolesDescription = {
             {VirgilIoTKit::VS_SNAP_DEV_GATEWAY, "Gateway"},
             {VirgilIoTKit::VS_SNAP_DEV_THING, "Thing"},
@@ -79,7 +79,7 @@ VSQDeviceRoles::description() const {
         if (firstSymbol) {
             firstSymbol = false;
         } else {
-            descr += QString(", ");
+            descr += divider;
         }
 
         descr += rolesDescription[role];

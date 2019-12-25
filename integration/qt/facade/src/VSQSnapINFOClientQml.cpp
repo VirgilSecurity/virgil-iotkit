@@ -78,7 +78,7 @@ QVariant VSQSnapInfoClientQml::data(const QModelIndex & index, int role) const {
     const VSQDeviceInfo& deviceInfo = devicesList()[index.row()];
     switch(role){
     case MacAddress : return deviceInfo.m_mac.description();
-    case DeviceRoles : return deviceInfo.m_deviceRoles.description();
+    case DeviceRoles : return deviceInfo.m_deviceRoles.description("\n");
     case ManufactureId : return deviceInfo.m_manufactureId.description();
     case DeviceType : return deviceInfo.m_deviceType.description();
     case FwVer : return deviceInfo.m_fwVer.description();
@@ -89,24 +89,25 @@ QVariant VSQSnapInfoClientQml::data(const QModelIndex & index, int role) const {
     case IsActive : return deviceInfo.m_isActive;
     case HasGeneralInfo : return deviceInfo.m_hasGeneralInfo;
     case HasStatistics : return deviceInfo.m_hasStatistics;
+
     default :   Q_ASSERT(false); return QString("Unsupported");
     }
 }
 
 QHash<int, QByteArray> VSQSnapInfoClientQml::roleNames() const {
     static const QHash<int, QByteArray> roles{
-    { MacAddress, "MacAddress" },
-    { DeviceRoles, "DeviceRoles" },
-    { ManufactureId, "ManufactureId" },
-    { DeviceType, "DeviceType" },
-    { FwVer, "FwVer" },
-    { TlVer, "TlVer" },
-    { Sent, "Sent" },
-    { Received, "Received" },
-    { LastTimestamp, "LastTimestamp" },
-    { IsActive, "IsActive" },
-    { HasGeneralInfo, "HasGeneralInfo" },
-    { HasStatistics, "HasStatistic" }
+    { MacAddress, "macAddress" },
+    { DeviceRoles, "deviceRoles" },
+    { ManufactureId, "manufactureId" },
+    { DeviceType, "deviceType" },
+    { FwVer, "fwVer" },
+    { TlVer, "tlVer" },
+    { Sent, "sent" },
+    { Received, "received" },
+    { LastTimestamp, "lastTimestamp" },
+    { IsActive, "isActive" },
+    { HasGeneralInfo, "hasGeneralInfo" },
+    { HasStatistics, "hasStatistic" }
     };
 
     return roles;

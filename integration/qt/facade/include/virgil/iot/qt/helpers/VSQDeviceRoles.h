@@ -52,7 +52,7 @@ public:
     }
 
     QString
-    description() const;
+    description(const QString &divider = QString(", ")) const;
 
     operator QString() const {
         return description();
