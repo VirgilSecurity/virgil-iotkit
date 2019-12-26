@@ -32,6 +32,38 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQIoTKitFacade.h
+ * \brief Facade pattern for Virgil IoT Kit Qt integration
+ *
+ * #VSQIoTKitFacade class implements facade pattern for Virgil IoT Kit Qt integration usage. This is singleton class.
+ *
+ * This class contains all elements needed to initialize Virgil IoT KIT Qt library :
+ * - #VSQFeatures contains the list of features that application uses (for example, #VSQFeatures::SNAP_INFO_CLIENT)
+ * - #VSQImplementations contains the list of implementations shared pointers to use (for example, #VSQUdpBroadcast)
+ * - #VSQAppConfig contains application parameters like manufacture ID, device roles, logger initialization
+ *
+ * \section VSQIoTKitFacade_usage Facade pattern for Virgil IoT Kit Qt integration usage
+ *
+ * #VSQIoTKitFacade class usage is obvious. You initialize its components and call #VSQIoTKitFacade::init function :
+ * \code
+
+    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT;
+    auto impl = VSQImplementations() << QSharedPointer<VSQUdpBroadcast>::create();
+    auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
+    auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
+                                    << VirgilIoTKit::VS_LOGLEV_DEBUG << roles;
+
+    if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
+        VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
+    }
+
+ * \endcode
+ *
+ * See #VSQFeatures, #VSQImplementations and #VSQAppConfig for initialization details.
+ *
+ * After this call Virgil IoT Kit can be used.
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_FACADE_H
 #define VIRGIL_IOTKIT_QT_FACADE_H
 
@@ -45,13 +77,34 @@
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
 
+/** Facade pattern for Virgil IoTKit Qt integration
+ *
+ * This class inherits QObject and VSQSingleton.
+ *
+ * Initialize Virgil IoT KIT Qt by calling VSQIoTKitFacade::init function through its instance :
+ * \code
+ * VSQIoTKitFacade::instance().init( ... )
+ * \endcode
+ */
 class VSQIoTKitFacade : public QObject, public VSQSingleton<VSQIoTKitFacade> {
     Q_OBJECT
 
 public:
+    /** Facade initialization
+     *
+     * Call this function to initialize Virgil IoT Kit facade.
+     *
+     * \param features Application features
+     * \param impl Implementations to be used
+     * \param appConfig Application configuration
+     * \return true if initialized successfully, false otherwise
+     */
     bool
     init(const VSQFeatures &features, const VSQImplementations &impl, const VSQAppConfig &appConfig);
+
+    VSQSnapSnifferQml *snapSniffer()    { return m_snapSniffer.get(); }
 
 private slots:
     void
@@ -62,6 +115,7 @@ private:
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
     QSharedPointer<VSQSnapInfoClient> m_serviceInfoClient;
+    QSharedPointer<VSQSnapSnifferQml> m_snapSniffer;
 
     void
     initSnap();

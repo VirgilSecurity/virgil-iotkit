@@ -32,6 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQIoTKit.h
+ * \brief Umbrella header for Virgil IoT Kit Qt integration
+ *
+ * This header contains all headers needed to use Virgil IoT Kit Qt integration.
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
 #define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
 

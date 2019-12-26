@@ -32,37 +32,102 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQDeviceRoles.h
+ * \brief Virgil IoT Kit Qt device roles
+ *
+ * #VSQDeviceRoles is the list of device roles.
+ *
+ * Configure #VSQDeviceRoles by using operator << :
+ * \code
+    auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
+
+    if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
+        VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
+    }
+ * \endcode
+ *
+ * You can output devices roles to the string representation :
+ * \code
+
+    VSQDeviceRoles roles;   // Initialized device roles
+    QString rolesDescription = roles;
+
+ * \endcode
+ *
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_DEVICE_ROLES_H
 #define VIRGIL_IOTKIT_QT_DEVICE_ROLES_H
 
 #include <QtCore>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
+/** Device roles */
 class VSQDeviceRoles {
 public:
+    /** Device roles list */
     using TRolesList = std::initializer_list<VirgilIoTKit::vs_snap_device_role_e>;
 
     VSQDeviceRoles() = default;
+
+    /** Assign device roles as bits mask
+     *
+     * \param roles Device roles #vs_snap_device_role_e bits mask
+     */
     VSQDeviceRoles(uint32_t roles);
 
+    /** Add device role
+     *
+     * \param role Device role
+     * \return Reference to the #VSQDeviceRoles instance
+     */
     VSQDeviceRoles &
     operator<<(VirgilIoTKit::vs_snap_device_role_e role) {
         m_deviceRoles << role;
         return *this;
     }
 
+    /** Describe device roles
+     *
+     * Call this function to receive text description. You can set any \a divider divider, for example '\n'
+     * to obtain multiline description
+     *
+     * \param divider Divider string
+     * \return Device roles text description
+     */
     QString
     description(const QString &divider = QString(", ")) const;
 
+    /** Describe device roles
+     *
+     * #description function call
+     */
     operator QString() const {
         return description();
     }
+
+    /** Get #vs_snap_device_role_e bits mask */
     operator uint32_t() const;
 
+    /** Check device role
+     *
+     * This function returns true if \a role is present in the device roles list
+     *
+     * \param role Device role to check
+     * \return true if \a role is present
+     */
     bool
     hasRole(VirgilIoTKit::vs_snap_device_role_e role) const {
         return m_deviceRoles.contains(role);
     }
+
+    /** Check device roles
+     *
+     * This function returns true if all roles from the \a roles list are present in the device roles list
+     *
+     * \param roles Device roles list to check
+     * \return true if all \a roles are present
+     */
     bool
     hasRoles(TRolesList roles) const;
 
