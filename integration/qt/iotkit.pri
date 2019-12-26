@@ -52,6 +52,7 @@ unix:mac:       OS_NAME = macos
 unix:ios:       OS_NAME = ios
 linux:android:  OS_NAME = android
 linux:!android: OS_NAME = linux
+win32:          OS_NAME = windows
 
 VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
 
@@ -111,6 +112,8 @@ LIBS += $$add_virgiliotkit_library("modules/logger",         "vs-module-logger")
 LIBS += $$add_virgiliotkit_library("modules/provision",      "vs-module-provision")
 LIBS += $$add_virgiliotkit_library("modules/protocols/snap", "vs-module-snap-control")
 
+win32: LIBS += -lws2_32
+
 #
 #   Include path
 #
@@ -131,4 +134,5 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
 #
 #   Compiler options
 #
-linux:!android: QMAKE_CFLAGS+=-Wno-multichar
+win32|linux:!android: QMAKE_CFLAGS+=-Wno-multichar
+win32|linux:!android: QMAKE_CXXFLAGS+=-Wno-multichar
