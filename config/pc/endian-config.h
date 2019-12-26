@@ -39,7 +39,11 @@
 #ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
 #define VS_IOT_SDK_ENDIAN_CONFIG_H
 
+#ifdef WIN32
+#include <Winsock2.h>
+#else
 #include <arpa/inet.h>
+#endif
 
 /** Converts the unsigned short integer from network byte order to host byte order */
 #define VS_IOT_NTOHS ntohs
