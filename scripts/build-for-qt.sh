@@ -29,11 +29,11 @@ function build() {
 
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
-    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON
+    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
 
-    make vs-module-logger
-    make vs-module-provision
-    make vs-module-snap-control
+    make -j 10 vs-module-logger
+    make -j 10 vs-module-provision
+    make -j 10 vs-module-snap-control
 }
 
 #
@@ -41,9 +41,9 @@ function build() {
 #
 
 #
-#   macOS
+#   Host OS: macOS, Linux, Windows
 #
-if [[ "${PLATFORM}" == "macos" ]]; then
+if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" || "${PLATFORM}" == "windows" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
@@ -90,20 +90,11 @@ elif [[ "${PLATFORM}" == "android" ]]; then
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
 
-#
-#   Linux
-#
-elif [[ "${PLATFORM}" == "linux" ]]; then
-
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
 else
     echo "Virgil IoTKIT build script usage : "
     echo "$0 platform platform-specific"
     echo "where : "
-    echo "   platform - platform selector. Currently supported: macos, ios, ios-sim, android, linux"
+    echo "   platform - platform selector. Currently supported: macos, ios, ios-sim, android, linux, windows"
     echo "   platform-specific for Android :"
     echo "     android_ABI [android_platform]"
 
