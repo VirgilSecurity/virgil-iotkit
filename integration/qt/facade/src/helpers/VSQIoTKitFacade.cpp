@@ -88,8 +88,7 @@ VSQIoTKitFacade::initSnap() {
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
-        constexpr auto maximumLogLines = 20;
-        m_snapSniffer = decltype(m_snapSniffer)::create(maximumLogLines, &m_impl.netif());
+        m_snapSniffer = decltype(m_snapSniffer)::create(m_appConfig.snifferConfig(), &m_impl.netif());
     }
 }
 

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -32,47 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef _VIRGIL_IOTKIT_QT_SNAP_SNIFFER_QML_H_
-#define _VIRGIL_IOTKIT_QT_SNAP_SNIFFER_QML_H_
+#ifndef VIRGIL_IOTKIT_QT_SNIFFER_CONFIGURATION_H
+#define VIRGIL_IOTKIT_QT_SNIFFER_CONFIGURATION_H
 
-#include <QtQml>
+#include <QtCore>
+#include <virgil/iot/protocols/snap.h>
 
-#include <virgil/iot/qt/protocols/snap/VSQNetifBase.h>
-
-class VSQSnifferConfig;
-
-class VSQSnapSnifferQml final :
-        public QAbstractListModel{
-Q_OBJECT
-
+class VSQSnifferConfig {
 public:
-    VSQSnapSnifferQml(const VSQSnifferConfig &snifferConfig, VSQNetifBase *netif);
-    ~VSQSnapSnifferQml() = default;
+    VSQSnifferConfig(int maxLogLines = 20): m_maxLogLines(maxLogLines) {}
 
-    using TPackets = QLinkedList<VSQSnapPacket>;
-
-    enum DeviceInfoRoles {
-        MacDst = Qt::UserRole + 1,
-        MacSrc,
-        EthernetPacketType,
-        TransactionId,
-        ServiceId,
-        ElementId,
-        Flags,
-        Content,
-        Timestamp
-    };
-
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-    QHash<int, QByteArray> roleNames() const override;
+    int maxLogLines() const { return m_maxLogLines; }
 
 private:
-    TPackets m_packets;
-    const int m_maxPacketsAmount;
-
-private slots:
-    void onNewPacket(VSQSnapPacket packet);
+    int m_maxLogLines;
 };
 
-#endif // _VIRGIL_IOTKIT_QT_SNAP_SNIFFER_QML_H_
+#endif // VIRGIL_IOTKIT_QT_SNIFFER_CONFIGURATION_H

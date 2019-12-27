@@ -34,8 +34,8 @@
 
 #include <virgil/iot/qt/VSQIoTKit.h>
 
-VSQSnapSnifferQml::VSQSnapSnifferQml(int maxPacketsAmount, VSQNetifBase *netif):
-        m_maxPacketsAmount(maxPacketsAmount)
+VSQSnapSnifferQml::VSQSnapSnifferQml(const VSQSnifferConfig &snifferConfig, VSQNetifBase *netif):
+        m_maxPacketsAmount(snifferConfig.maxLogLines())
 {
     Q_CHECK_PTR(netif);
 

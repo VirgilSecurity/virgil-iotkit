@@ -53,6 +53,7 @@
  * - #VSQDeviceSerial : device serial
  * - #VSQDeviceType : device type
  * - #VSQManufactureId : manufacture ID
+ * - #VSQSnifferConfig : sniffer configuration. Requires #SNAP_SNIFFER feature
  * - #vs_log_level_t : logging level
  */
 
@@ -63,6 +64,7 @@
 #include <virgil/iot/qt/helpers/VSQDeviceType.h>
 #include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
 #include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
+#include <virgil/iot/qt/helpers/VSQSnifferConfig.h>
 #include <virgil/iot/logger/logger.h>
 
 /** Application configuration
@@ -80,6 +82,19 @@ public:
     VSQAppConfig &
     operator<<(const VSQManufactureId &manufactureId) {
         m_manufactureId = manufactureId;
+        return *this;
+    }
+
+    /** Sniffer configuration
+     *
+     * Requires #SNAP_SNIFFER feature to be set up.
+     *
+     * \param snifferConfig Sniffer configuration
+     * \return Reference to the #VSQAppConfig instance
+     */
+    VSQAppConfig &
+    operator<<(const VSQSnifferConfig &snifferConfig) {
+        m_snifferConfig = snifferConfig;
         return *this;
     }
 
@@ -138,6 +153,17 @@ public:
         return m_manufactureId;
     }
 
+    /** Get sniffer configuration
+     *
+     * Returns sniffer configuration
+     *
+     * \return Sniffer configuration
+     */
+    const VSQSnifferConfig &
+    snifferConfig() const {
+        return m_snifferConfig;
+    }
+
     /** Get device type
      *
      * Returns device type that has been initialized before
@@ -187,6 +213,7 @@ private:
     VSQDeviceType m_deviceType;
     VSQDeviceSerial m_deviceSerial;
     VSQDeviceRoles m_deviceRoles;
+    VSQSnifferConfig m_snifferConfig;
     VirgilIoTKit::vs_log_level_t m_logLevel;
 };
 
