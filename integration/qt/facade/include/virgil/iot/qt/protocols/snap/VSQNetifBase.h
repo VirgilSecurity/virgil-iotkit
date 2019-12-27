@@ -41,6 +41,18 @@
 
 #include <virgil/iot/protocols/snap.h>
 
+struct VSQSnapPacket {
+    VSQMac m_dest;
+    VSQMac m_src;
+    uint16_t m_ethernetPacketType;
+    VirgilIoTKit::vs_snap_transaction_id_t m_transactionId;
+    VirgilIoTKit::vs_snap_service_id_t m_serviceId;
+    VirgilIoTKit::vs_snap_element_t m_elementId;
+    uint32_t m_flags;
+    QByteArray m_content;
+    QDateTime m_timestamp;
+};
+
 class VSQNetifBase: public QObject {
     Q_OBJECT
 
@@ -56,6 +68,7 @@ public:
 
 signals:
     void fireStateChanged(QAbstractSocket::SocketState connectionState);
+    void fireNewPacket(VSQSnapPacket packet);
 
 protected:
     virtual bool init() = 0;

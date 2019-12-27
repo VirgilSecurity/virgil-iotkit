@@ -32,65 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOTKIT_QT_FILE_VERSION_H
-#define VIRGIL_IOTKIT_QT_FILE_VERSION_H
+#include <iostream>
 
-#include <QtCore>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
+extern "C" bool
+vs_logger_output_hal(const char *buffer) {
+    std::cout << buffer;
 
-class VSQFileVersion {
-public:
-    VSQFileVersion();
-    VSQFileVersion(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion) {
-        set(fileVersion);
-    }
-    VSQFileVersion(const VirgilIoTKit::vs_file_version_t &fileVersion) {
-        set(fileVersion);
-    }
+    return true;
+}
 
-    QString
-    description(bool outputDate = false) const;
-
-    operator QString() const {
-        return description();
-    }
-    VSQFileVersion &
-    operator=(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion) {
-        return set(fileVersion);
-    }
-
-    VSQFileVersion &
-    operator=(const VirgilIoTKit::vs_file_version_t &fileVersion) {
-        return set(fileVersion);
-    }
-
-    bool
-    equal(const VSQFileVersion &fileVersion) const;
-
-    bool
-    operator==(const VSQFileVersion &fileVersion) const {
-        return equal(fileVersion);
-    }
-
-    bool
-    operator!=(const VSQFileVersion &fileVersion) const {
-        return !equal(fileVersion);
-    }
-
-private:
-    quint8 m_major;
-    quint8 m_minor;
-    quint8 m_patch;
-    quint32 m_build;
-    QDateTime m_timestamp;
-
-    VSQFileVersion &
-    set(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion);
-
-    VSQFileVersion &
-    set(const VirgilIoTKit::vs_file_version_t &fileVersion);
-};
-
-
-#endif // VIRGIL_IOTKIT_QT_FILE_VERSION_H
+extern "C" void
+vs_impl_msleep(size_t msec) {
+    (void)msec;
+}

@@ -84,6 +84,12 @@ VSQIoTKitFacade::initSnap() {
 
         QObject::connect(
                 &m_impl.netif(), &VSQNetifBase::fireStateChanged, this, &VSQIoTKitFacade::restartInfoClientPolling);
+
+    }
+
+    if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
+        constexpr auto maximumLogLines = 20;
+        m_snapSniffer = decltype(m_snapSniffer)::create(maximumLogLines, &m_impl.netif());
     }
 }
 

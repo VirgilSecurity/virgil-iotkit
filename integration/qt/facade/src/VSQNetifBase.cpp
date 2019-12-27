@@ -68,6 +68,23 @@ bool VSQNetifBase::processData(const QByteArray &data) {
     if( !m_lowLevelPacketProcess )
         return true;
 
+    if(receivers(SIGNAL(fireNewPacket(VSQSnapPacket))) > 0) {
+        VSQSnapPacket snapPacket;
+        const VirgilIoTKit::vs_snap_packet_t *srcPacket = reinterpret_cast<const VirgilIoTKit::vs_snap_packet_t *>(packet_data);
+
+        snapPacket.m_timestamp = QDateTime::currentDateTime();
+        snapPacket.m_dest = srcPacket->eth_header.dest;
+        snapPacket.m_src = srcPacket->eth_header.src;
+        snapPacket.m_ethernetPacketType = srcPacket->eth_header.type;
+        snapPacket.m_transactionId = srcPacket->header.transaction_id;
+        snapPacket.m_serviceId = srcPacket->header.service_id;
+        snapPacket.m_elementId = srcPacket->header.element_id;
+        snapPacket.m_flags = srcPacket->header.flags;
+        snapPacket.m_content = QByteArray::fromRawData(reinterpret_cast<const char*>(srcPacket->content), srcPacket->header.content_size);
+
+        emit fireNewPacket(snapPacket);
+    }
+
     if( m_lowLevelPacketProcess( &m_lowLevelNetif, packet_data, packet_data_sz ) != VirgilIoTKit::VS_CODE_OK ) {
         VS_LOG_ERROR( "Unable to process received packet" );
         return false;

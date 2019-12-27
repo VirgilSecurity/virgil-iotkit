@@ -55,5 +55,6 @@
 
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
 
 #endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H

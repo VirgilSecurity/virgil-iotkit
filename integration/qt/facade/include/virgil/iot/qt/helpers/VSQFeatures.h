@@ -39,7 +39,7 @@
 
 class VSQFeatures {
 public:
-    enum EFeature { SNAP_INFO_CLIENT };
+    enum EFeature { SNAP_INFO_CLIENT, SNAP_SNIFFER };
     using TSet = QSet<EFeature>;
 
     VSQFeatures &
