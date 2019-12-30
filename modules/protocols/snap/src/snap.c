@@ -109,6 +109,15 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
 }
 
 /******************************************************************************/
+static bool
+_need_routing(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+    bool dst_is_broadcast = _is_broadcast(dest_mac);
+    bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
+    bool src_is_my_mac = _is_my_mac(netif, src_mac);
+    return !src_is_my_mac && (dst_is_broadcast || !dst_is_my_mac);
+}
+
+/******************************************************************************/
 static vs_status_e
 _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
     uint32_t i;
@@ -206,6 +215,7 @@ _snap_rx_cb(vs_netif_t *netif,
     int bytes_processed = 0;
     int need_bytes_for_header;
     int need_bytes_for_packet;
+    size_t i;
     uint16_t packet_sz;
     uint16_t copy_bytes;
 
@@ -262,11 +272,22 @@ _snap_rx_cb(vs_netif_t *netif,
 
         if (packet) {
 
-            // Normalize byte order
-            vs_snap_packet_t_decode(packet);
+            // Route incoming packet, if it's required and our role is Gateway
+            if (_need_routing(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
+                if (_device_roles & VS_SNAP_DEV_GATEWAY) {
+                    for (i = 0; i < _netifs_cnt; i++) {
+                        if (_netifs[i] && _netifs[i] != netif) {
+                            _netifs[i]->tx(_default_netif(), (uint8_t *)packet, packet_sz);
+                        }
+                    }
+                }
+            }
 
             // Check is my packet
             if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
+
+                // Normalize byte order
+                vs_snap_packet_t_decode(packet);
 
                 // Prepare for processing
                 *packet_data = (uint8_t *)packet;
@@ -405,12 +426,14 @@ vs_snap_netif_routing(void) {
 /******************************************************************************/
 vs_status_e
 vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
-    VS_IOT_ASSERT(_default_netif());
-    VS_IOT_ASSERT(_default_netif()->tx);
+    size_t i;
+
+    VS_IOT_ASSERT(netif);
+
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
 
     if (data_sz < sizeof(vs_snap_packet_t)) {
-        return -1;
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
     // Normalize byte order
@@ -418,11 +441,19 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
         vs_snap_packet_t_encode(packet);
     }
 
-    if (!netif || netif == _default_netif()) {
-        return _default_netif()->tx(_default_netif(), data, data_sz);
+    // Is routing required ?
+    if (netif == vs_snap_netif_routing()) {
+        for (i = 0; i < _netifs_cnt; i++) {
+            if (_netifs[i]) {
+                _netifs[i]->tx(_default_netif(), data, data_sz);
+            }
+        }
+
+        return VS_CODE_OK;
     }
 
-    return VS_CODE_ERR_SNAP_UNKNOWN;
+    // Send message to certain network interface
+    return netif->tx(_default_netif(), data, data_sz);
 }
 
 /******************************************************************************/
