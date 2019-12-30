@@ -50,9 +50,6 @@
 #include <endian-config.h>
 
 // Commands
-
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
 #define FW_DESCR_BUF 128
 
 // Polling
@@ -64,7 +61,7 @@ typedef struct {
 } vs_poll_ctx_t;
 
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
-static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+static vs_poll_ctx_t _poll_ctx;
 
 /******************************************************************/
 static vs_status_e
@@ -214,15 +211,21 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
-    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
-    vs_tl_header_to_host(&tl_header, &tl_header);
+
+    general_info->device_roles = vs_snap_device_roles();
+
+    if (general_info->device_roles & (uint32_t)VS_SNAP_DEV_INITIALIZER) {
+        VS_IOT_MEMSET((void *)&tl_header, 0, sizeof(tl_header));
+    } else {
+        STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
+                         "Unable to obtain Trust List version");
+        vs_tl_header_to_host(&tl_header, &tl_header);
+    }
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
     VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
     VS_IOT_MEMCPY(&general_info->tl_version, &tl_header.version, sizeof(tl_header.version));
-    general_info->device_roles = vs_snap_device_roles();
 
     VS_LOG_DEBUG(
             "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
@@ -257,9 +260,9 @@ _ginf_request_processing(const uint8_t *request,
 
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
+    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, "Too small buffer");
 
-    STATUS_CHECK_RET(_fill_ginf_data(general_info), 0);
+    STATUS_CHECK_RET(_fill_ginf_data(general_info), "Cannot fill SNAP general info");
 
     *response_sz = sizeof(vs_info_ginf_response_t);
 
@@ -366,7 +369,7 @@ _info_server_periodical_processor(void) {
         _poll_ctx.time_counter = 0;
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
-            STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
+            STATUS_CHECK_RET(_fill_ginf_data(&general_info), "Cannot fill SNAP general info");
             vs_snap_send_request(NULL,
                                  &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
@@ -392,17 +395,10 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb) {
+vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb) {
 
-    static vs_snap_service_t _info = {0};
+    static vs_snap_service_t _info;
 
-    CHECK_NOT_ZERO_RET(tl_ctx, NULL);
-    CHECK_NOT_ZERO_RET(fw_ctx, NULL);
-
-    _tl_ctx = tl_ctx;
-    _fw_ctx = fw_ctx;
     _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
@@ -410,8 +406,7 @@ vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
     _info.request_process = _info_request_processor;
     _info.response_process = NULL;
     _info.periodical_process = _info_server_periodical_processor;
-    //    _info.deinit =
-
+    VS_IOT_MEMSET(&_poll_ctx, 0, sizeof(_poll_ctx));
     return &_info;
 }
 
