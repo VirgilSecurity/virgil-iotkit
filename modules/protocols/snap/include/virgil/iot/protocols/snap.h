@@ -90,6 +90,19 @@ vs_snap_init(vs_netif_t *default_netif,
 vs_status_e
 vs_snap_deinit();
 
+/** Add network interface
+ *
+ * Adds network interface for SNAP. Uses \a init call from #vs_netif_t network interface.
+ * Must be called after #vs_snap_init, but before any other SNAP call.
+ * Pay attention to a maximum amount of network interfaces #VS_SNAP_NETIF_MAX
+ *
+ * \param[in] netif Network interface to be added. Must not be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_snap_netif_add(vs_netif_t *netif);
+
 /** Return current manufacture ID
  *
  * \return #vs_device_manufacture_id_t Manufacture ID. Cannot be NULL.

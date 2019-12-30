@@ -43,7 +43,8 @@
 #include <stdio.h>
 #include <string.h>
 
-static const vs_netif_t *_snap_default_netif = 0;
+static vs_netif_t *_netifs[VS_SNAP_NETIF_MAX];
+static size_t _netifs_cnt = 0;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
@@ -75,6 +76,13 @@ current_timestamp() {
     return us;
 }
 #endif
+
+/******************************************************************************/
+static vs_netif_t *
+_default_netif(void) {
+    VS_IOT_ASSERT(_netifs_cnt);
+    return _netifs[0];
+}
 
 /******************************************************************************/
 static bool
@@ -338,23 +346,18 @@ vs_snap_init(vs_netif_t *default_netif,
     _device_roles = device_roles;
 
     // Save default network interface
-    _snap_default_netif = default_netif;
-
-    // Init default network interface
-    default_netif->init(default_netif, _snap_rx_cb, _snap_process_cb);
-
-    return VS_CODE_OK;
+    return vs_snap_netif_add(default_netif);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_snap_deinit() {
     int i;
-    CHECK_NOT_ZERO_RET(_snap_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_default_netif(), VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_default_netif()->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
-    _snap_default_netif->deinit(_snap_default_netif);
+    _default_netif()->deinit(_default_netif());
 
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
@@ -370,17 +373,34 @@ vs_snap_deinit() {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_snap_netif_add(vs_netif_t *netif) {
+    VS_IOT_ASSERT(netif);
+    VS_IOT_ASSERT(netif->init);
+    VS_IOT_ASSERT(netif->tx);
+
+    if (_netifs_cnt >= VS_SNAP_NETIF_MAX) {
+        return VS_CODE_ERR_SNAP_TOO_MUCH_NETIFS;
+    }
+
+    _netifs[_netifs_cnt++] = netif;
+
+    // Init network interface
+    return netif->init(netif, _snap_rx_cb, _snap_process_cb);
+}
+
+/******************************************************************************/
 const vs_netif_t *
 vs_snap_default_netif(void) {
-    VS_IOT_ASSERT(_snap_default_netif);
-    return _snap_default_netif;
+    VS_IOT_ASSERT(_default_netif());
+    return _default_netif();
 }
 
 /******************************************************************************/
 vs_status_e
 vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
-    VS_IOT_ASSERT(_snap_default_netif);
-    VS_IOT_ASSERT(_snap_default_netif->tx);
+    VS_IOT_ASSERT(_default_netif());
+    VS_IOT_ASSERT(_default_netif()->tx);
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
 
     if (data_sz < sizeof(vs_snap_packet_t)) {
@@ -392,8 +412,8 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
         vs_snap_packet_t_encode(packet);
     }
 
-    if (!netif || netif == _snap_default_netif) {
-        return _snap_default_netif->tx(_snap_default_netif, data, data_sz);
+    if (!netif || netif == _default_netif()) {
+        return _default_netif()->tx(_default_netif(), data, data_sz);
     }
 
     return VS_CODE_ERR_SNAP_UNKNOWN;
@@ -421,10 +441,10 @@ vs_status_e
 vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
-    if (!netif || netif == _snap_default_netif) {
-        VS_IOT_ASSERT(_snap_default_netif);
-        VS_IOT_ASSERT(_snap_default_netif->mac_addr);
-        _snap_default_netif->mac_addr(_snap_default_netif, mac_addr);
+    if (!netif || netif == _default_netif()) {
+        VS_IOT_ASSERT(_default_netif());
+        VS_IOT_ASSERT(_default_netif()->mac_addr);
+        _default_netif()->mac_addr(_default_netif(), mac_addr);
         return VS_CODE_OK;
     }
 

@@ -115,6 +115,7 @@ typedef enum {
     VS_CODE_ERR_SNAP_UNKNOWN = -70, /**< SNAP error */
     VS_CODE_ERR_SNAP_NOT_MY_PACKET = -71, /**< SNAP error "not my packet" */
     VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES = -72, /**< Too much services to be registered by SNAP */
+    VS_CODE_ERR_SNAP_TOO_MUCH_NETIFS = -73, /**< Too much network interfaces to be registered by SNAP */
 
     VS_CODE_ERR_THREAD = -80, /**< Error during thread processing */
     VS_CODE_ERR_NO_SIMULATOR = -81, /**< No simulator has been found */
