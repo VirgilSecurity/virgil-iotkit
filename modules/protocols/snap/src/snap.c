@@ -391,9 +391,15 @@ vs_snap_netif_add(vs_netif_t *netif) {
 
 /******************************************************************************/
 const vs_netif_t *
-vs_snap_default_netif(void) {
+vs_snap_netif_default(void) {
     VS_IOT_ASSERT(_default_netif());
     return _default_netif();
+}
+
+/******************************************************************************/
+const vs_netif_t *
+vs_snap_netif_routing(void) {
+    return (vs_netif_t *)1;
 }
 
 /******************************************************************************/

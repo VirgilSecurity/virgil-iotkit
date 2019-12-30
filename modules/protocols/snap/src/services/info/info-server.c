@@ -72,7 +72,7 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
     CHECK_NOT_ZERO_RET(enum_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     // Set MAC address for default network interface
-    default_netif = vs_snap_default_netif();
+    default_netif = vs_snap_netif_default();
     CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
               -1,
               "Cannot get MAC for Default Network Interface");
@@ -149,7 +149,7 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
     CHECK_NOT_ZERO_RET(stat_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     // Set MAC address for default network interface
-    defautl_netif = vs_snap_default_netif();
+    defautl_netif = vs_snap_netif_default();
     CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &stat_data->mac),
               -1,
               "Cannot get MAC for Default Network Interface");
@@ -206,7 +206,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
-    defautl_netif = vs_snap_default_netif();
+    defautl_netif = vs_snap_netif_default();
 
     CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &general_info->default_netif_mac),
               -1,
@@ -297,7 +297,7 @@ _snot_request_processor(const uint8_t *request,
               response_sz);
 
 #if FLDT_CLIENT
-    STATUS_CHECK_RET(vs_snap_mac_addr(vs_snap_default_netif(), &self_mac), "Unable to request self MAC address");
+    STATUS_CHECK_RET(vs_snap_mac_addr(vs_snap_netif_default(), &self_mac), "Unable to request self MAC address");
 
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
         (vs_snap_device_roles() & VS_SNAP_DEV_THING) &&                                // current device is Thing
@@ -374,7 +374,7 @@ _info_server_periodical_processor(void) {
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), "Cannot fill SNAP general info");
-            vs_snap_send_request(NULL,
+            vs_snap_send_request(vs_snap_netif_routing(),
                                  &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_GINF,
@@ -385,7 +385,7 @@ _info_server_periodical_processor(void) {
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_STATISTICS) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SNAP statistics");
-            vs_snap_send_request(NULL,
+            vs_snap_send_request(vs_snap_netif_routing(),
                                  &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_STAT,

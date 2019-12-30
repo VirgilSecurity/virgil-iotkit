@@ -64,6 +64,7 @@ typedef struct {
     uint32_t expected_offset;
 
     vs_mac_addr_t gateway_mac;
+    const vs_netif_t *gateway_netif;
     uint32_t command;
     uint8_t data[VS_FLDT_REQUEST_SZ_MAX];
     uint16_t data_sz;
@@ -95,6 +96,7 @@ terminate:;
 /******************************************************************/
 static vs_status_e
 _update_process_set(vs_fldt_update_ctx_t *update_ctx,
+                    const vs_netif_t *netif,
                     vs_mac_addr_t mac,
                     uint32_t command,
                     uint32_t expected_offset,
@@ -108,6 +110,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
     update_ctx->tick_cnt = 0;
     update_ctx->retry_used = 0;
     update_ctx->command = command;
+    update_ctx->gateway_netif = netif;
     update_ctx->gateway_mac = mac;
     update_ctx->expected_offset = expected_offset;
     VS_IOT_MEMCPY(update_ctx->data, request_data, request_data_sz);
@@ -134,7 +137,7 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
         return VS_CODE_OK;
     }
 
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(update_ctx->gateway_netif,
                                     &update_ctx->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
                                     update_ctx->command,
@@ -224,7 +227,7 @@ _check_download_need(const char *opcode,
 
 /******************************************************************/
 static vs_status_e
-_file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_info) {
+_file_info_processor(const struct vs_netif_t *netif, const char *cmd_prefix, const vs_fldt_file_info_t *file_info) {
 
     const vs_file_version_t *new_file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
@@ -272,13 +275,14 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         vs_fldt_gnfh_header_request_t_encode(&header_request);
 
         _update_process_set(&file_type_info->update_ctx,
+                            netif,
                             file_type_info->gateway_mac,
                             VS_FLDT_GNFH,
                             0,
                             (const uint8_t *)&header_request,
                             sizeof(header_request));
 
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(netif,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFH,
@@ -294,7 +298,8 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
 
 /******************************************************************/
 static int
-vs_fldt_INFV_request_processor(const uint8_t *request,
+vs_fldt_INFV_request_processor(const struct vs_netif_t *netif,
+                               const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
                                const uint16_t response_buf_sz,
@@ -316,14 +321,17 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
 
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
-    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
+    STATUS_CHECK_RET(_file_info_processor(netif, "INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 static int
-vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+vs_fldt_GFTI_response_processor(const struct vs_netif_t *netif,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
 
     vs_fldt_gfti_fileinfo_response_t *new_file = (vs_fldt_infv_new_file_request_t *)response;
     vs_status_e ret_code;
@@ -339,14 +347,17 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
-    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
+    STATUS_CHECK_RET(_file_info_processor(netif, "INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 static int
-vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+vs_fldt_GNFH_response_processor(const struct vs_netif_t *netif,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
     vs_fldt_gnfh_header_response_t *file_header = (vs_fldt_gnfh_header_response_t *)response;
     vs_file_version_t *file_ver = NULL;
     vs_update_file_type_t *file_type = NULL;
@@ -410,13 +421,14 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_gnfd_data_request_t_encode(&data_request);
 
     _update_process_set(&file_type_info->update_ctx,
+                        netif,
                         file_type_info->gateway_mac,
                         VS_FLDT_GNFD,
                         data_request.offset,
                         (const uint8_t *)&data_request,
                         sizeof(data_request));
 
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(netif,
                                     &file_type_info->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GNFD,
@@ -430,7 +442,10 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
 /******************************************************************/
 static int
-vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+vs_fldt_GNFD_response_processor(const struct vs_netif_t *netif,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
     vs_fldt_gnfd_data_response_t *file_data = (vs_fldt_gnfd_data_response_t *)response;
     vs_file_version_t *file_ver = NULL;
     vs_update_file_type_t *file_type = NULL;
@@ -493,13 +508,14 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         vs_fldt_gnfd_data_request_t_encode(&data_request);
 
         _update_process_set(&file_type_info->update_ctx,
+                            netif,
                             file_type_info->gateway_mac,
                             VS_FLDT_GNFD,
                             data_request.offset,
                             (const uint8_t *)&data_request,
                             sizeof(data_request));
 
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(netif,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFD,
@@ -519,13 +535,14 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         vs_fldt_gnff_footer_request_t_encode(&footer_request);
 
         _update_process_set(&file_type_info->update_ctx,
+                            netif,
                             file_type_info->gateway_mac,
                             VS_FLDT_GNFF,
                             0,
                             (const uint8_t *)&footer_request,
                             sizeof(footer_request));
 
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(netif,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFF,
@@ -550,13 +567,14 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
     vs_fldt_gfti_fileinfo_request_t_encode(file_type_request);
 
     _update_process_set(&file_type_info->update_ctx,
+                        vs_snap_netif_routing(),
                         file_type_info->gateway_mac,
                         VS_FLDT_GFTI,
                         0,
                         (const uint8_t *)file_type_request,
                         sizeof(*file_type_request));
 
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(vs_snap_netif_routing(),
                                     vs_snap_broadcast_mac(),
                                     VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GFTI,
@@ -570,7 +588,10 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
 
 /******************************************************************/
 static int
-vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
+vs_fldt_GNFF_response_processor(const struct vs_netif_t *netif,
+                                bool is_ack,
+                                const uint8_t *response,
+                                const uint16_t response_sz) {
     vs_fldt_gnff_footer_response_t *file_footer = (vs_fldt_gnff_footer_response_t *)response;
     vs_file_version_t *file_ver = NULL;
     vs_update_file_type_t *file_type = NULL;
@@ -728,7 +749,7 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-        return vs_fldt_INFV_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+        return vs_fldt_INFV_request_processor(netif, request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GFTI:
     case VS_FLDT_GNFH:
@@ -761,16 +782,16 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
         return VS_CODE_COMMAND_NO_RESPONSE;
 
     case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
+        return vs_fldt_GFTI_response_processor(netif, is_ack, response, response_sz);
 
     case VS_FLDT_GNFH:
-        return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
+        return vs_fldt_GNFH_response_processor(netif, is_ack, response, response_sz);
 
     case VS_FLDT_GNFD:
-        return vs_fldt_GNFD_response_processor(is_ack, response, response_sz);
+        return vs_fldt_GNFD_response_processor(netif, is_ack, response, response_sz);
 
     case VS_FLDT_GNFF:
-        return vs_fldt_GNFF_response_processor(is_ack, response, response_sz);
+        return vs_fldt_GNFF_response_processor(netif, is_ack, response, response_sz);
 
 
     default:
