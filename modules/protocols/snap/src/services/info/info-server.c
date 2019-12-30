@@ -73,7 +73,9 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
-    CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -148,7 +150,9 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 
     // Set MAC address for default network interface
     defautl_netif = vs_snap_default_netif();
-    CHECK_RET(!defautl_netif->mac_addr(&stat_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &stat_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set statistics data
     stat_data->received = stat.received;
@@ -204,7 +208,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     defautl_netif = vs_snap_default_netif();
 
-    CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
+    CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
