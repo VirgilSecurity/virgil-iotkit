@@ -43,7 +43,10 @@ template <typename T, typename D = T> class VSQSingleton {
 
 public:
     static T &
-    instance();
+    instance(){
+        static D inst;
+        return inst;
+    }
 
 private:
     VSQSingleton() = default;
@@ -52,12 +55,5 @@ private:
     VSQSingleton &
     operator=(const VSQSingleton &) = delete;
 };
-
-template <typename T, typename D>
-T &
-VSQSingleton<T, D>::instance() {
-    static D inst;
-    return inst;
-}
 
 #endif // VIRGIL_IOTKIT_QT_SINGLETON_H

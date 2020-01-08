@@ -113,15 +113,15 @@ QVariant VSQSnapSnifferQml::data(const QModelIndex & index, int role) const {
 
 QHash<int, QByteArray> VSQSnapSnifferQml::roleNames() const {
     static const QHash<int, QByteArray> roles{
-            { MacDst, "macDst"},
-             { MacSrc, "macSrc"},
-              { EthernetPacketType, "ethernetPacketType"},
-               { TransactionId, "transactionId"},
-                { ServiceId, "serviceId"},
-                 { ElementId, "elementId"},
-                  { Flags, "flags"},
-                   { Content, "content"},
-                    { Timestamp, "timestamp"}
+        { MacDst, "macDst"},
+        { MacSrc, "macSrc"},
+        { EthernetPacketType, "ethernetPacketType"},
+        { TransactionId, "transactionId"},
+        { ServiceId, "serviceId"},
+        { ElementId, "elementId"},
+        { Flags, "flags"},
+        { Content, "content"},
+        { Timestamp, "timestamp"}
     };
 
     return roles;

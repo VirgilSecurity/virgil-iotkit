@@ -104,6 +104,10 @@ public:
     bool
     init(const VSQFeatures &features, const VSQImplementations &impl, const VSQAppConfig &appConfig);
 
+    /** Get installed sniffer
+     *
+     * \return #VSQSnapSnifferQml object or nullptr if ni sniffer is initialized
+     */
     VSQSnapSnifferQml *snapSniffer()    { return m_snapSniffer.get(); }
 
 private slots:

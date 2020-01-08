@@ -71,7 +71,9 @@ private:
     VSQSnapInfoClientQml();
     ~VSQSnapInfoClientQml() = default;
 
-    static const VSQSnapInfoClient::TEnumDevicesArray &devicesList()  { return VSQSnapInfoClient::instance().devicesList(); }
+    static const VSQSnapInfoClient::TEnumDevicesArray &devicesList()  {
+        return VSQSnapInfoClient::instance().devicesList();
+    }
 
 private slots:
     void

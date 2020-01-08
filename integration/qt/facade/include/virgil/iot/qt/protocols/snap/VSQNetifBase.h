@@ -62,9 +62,11 @@ public:
     VSQNetifBase &operator=(VSQNetifBase const &) = delete;
 
     virtual ~VSQNetifBase() = default;
-    virtual QAbstractSocket::SocketState connectionState() const  = 0;
+    virtual QAbstractSocket::SocketState connectionState() const = 0;
 
-    operator VirgilIoTKit::vs_netif_t *()   { return &m_lowLevelNetif; }
+    operator VirgilIoTKit::vs_netif_t *() {
+        return &m_lowLevelNetif;
+    }
 
 signals:
     void fireStateChanged(QAbstractSocket::SocketState connectionState);
@@ -76,8 +78,14 @@ protected:
     virtual bool tx(const QByteArray &data) = 0;
     virtual QString macAddr() const = 0;
 
-    // This method must be called by implementation of network interface.
-    // It uses low level callbacks and sends data using signals
+    /** Process packet data
+     *
+     * \warning This method must be called by implementation of network interface. It uses low level callbacks and sends data using signals
+     *
+     * \param data Incoming data
+     *
+     * \return true if data eas processed successfully
+     */
     bool processData(const QByteArray &data);
 
 private:

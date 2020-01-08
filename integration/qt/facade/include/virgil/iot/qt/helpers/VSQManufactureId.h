@@ -47,7 +47,7 @@ public:
         set(manufactureId);
     }
 
-    VSQManufactureId(const VirgilIoTKit::vs_device_manufacture_id_t &buf) {
+    VSQManufactureId(const VirgilIoTKit::vs_device_manufacture_id_t &buf) : VSQManufactureId() {
         set(buf);
     }
 

@@ -53,8 +53,9 @@ struct VSQDeviceInfo {
           m_hasStatistics(false) {
     }
 
-    VSQDeviceInfo(const VSQMac &mac) : VSQDeviceInfo() {
-        m_mac = mac;
+    VSQDeviceInfo(const VSQMac &mac)
+        : VSQDeviceInfo() {
+            m_mac = mac;
     }
 
     quint16 m_pollingInterval;

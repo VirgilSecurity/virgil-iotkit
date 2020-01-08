@@ -36,6 +36,7 @@
  * \brief Umbrella header for Virgil IoT Kit Qt integration
  *
  * This header contains all headers needed to use Virgil IoT Kit Qt integration.
+ * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
  */
 
 #ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
