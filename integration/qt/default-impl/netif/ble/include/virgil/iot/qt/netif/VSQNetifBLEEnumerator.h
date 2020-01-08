@@ -56,10 +56,9 @@ public:
 
     /**
      * @brief Get devices list which can be used for connection
-     * @return VSQBLEDevices
+     * @return QStringList
      */
-    VSQBLEDevices devicesList() const;
-
+    Q_INVOKABLE QStringList devicesList() const;
 
 public slots:
     /**
