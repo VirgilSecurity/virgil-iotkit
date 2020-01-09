@@ -615,7 +615,7 @@ vs_tl_invalidate(size_t storage_type) {
         return VS_CODE_OK;
     }
 
-    for (i = 0; i < header.pub_keys_count; ++i) {
+    for (i = 0; i < VS_IOT_NTOHS(header.pub_keys_count); ++i) {
         // cppcheck-suppress uninitvar
         _create_data_filename(storage_type, VS_TL_ELEMENT_TLC, i, file_id);
         if (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id)) {
