@@ -36,10 +36,9 @@
 #include <virgil/iot/qt/netif/VSQNetifBLEEnumerator.h>
 
 void VSQNetifBLEEnumerator::onDeviceDiscovered(const QBluetoothDeviceInfo & deviceInfo) {
-    if (deviceInfo.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) {
-        const QString _devName(deviceInfo.name().isEmpty() ? "Virgil Device" : deviceInfo.name());
-
-        m_devices[_devName] = deviceInfo;
+    if (deviceInfo.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration
+      && !deviceInfo.name().isEmpty()) {
+        m_devices[deviceInfo.name()] = deviceInfo;
         qDebug() << "[VIRGIL] Device Discovered : " << deviceInfo.name()
                  << " : "
                  << deviceInfo.deviceUuid();
@@ -56,6 +55,12 @@ void VSQNetifBLEEnumerator::onDiscoveryFinished() {
 
 QStringList VSQNetifBLEEnumerator::devicesList() const {
     return m_devices.keys();
+}
+
+void VSQNetifBLEEnumerator::select(QString devName) const {
+    if (m_devices.keys().contains(devName)) {
+        emit fireDeviceSelected(m_devices[devName]);
+    }
 }
 
 void VSQNetifBLEEnumerator::startDiscovery() {

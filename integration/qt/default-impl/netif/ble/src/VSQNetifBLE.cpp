@@ -35,9 +35,9 @@
 #include <virgil/iot/qt/VSQIoTKit.h>
 #include <virgil/iot/qt/netif/VSQNetifBLE.h>
 
-const QString VSQNetifBLE::_serviceUuid("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
-const QString VSQNetifBLE::_serviceUuidTx("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
-const QString VSQNetifBLE::_serviceUuidRx("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
+const QString VSQNetifBLE::_serviceUuid("0000abf0-0000-1000-8000-00805f9b34fb");
+const QString VSQNetifBLE::_serviceUuidTx("0000abf1-0000-1000-8000-00805f9b34fb");
+const QString VSQNetifBLE::_serviceUuidRx("0000abf2-0000-1000-8000-00805f9b34fb");
 const size_t VSQNetifBLE::_sendSizeLimit(20);
 
 VSQNetifBLE::VSQNetifBLE() : m_canCommunicate(false),
@@ -47,29 +47,8 @@ VSQNetifBLE::VSQNetifBLE() : m_canCommunicate(false),
 
 bool
 VSQNetifBLE::init() {
-
-//    if (!m_socket.bind(m_port, QUdpSocket::ReuseAddressHint)) {
-//        VS_LOG_ERROR(
-//                "Unable to bind LocalHost:%d. Last error : %s", m_port, m_socket.errorString().toStdString().c_str());
-//        return false;
-//    }
-
-//    // TODO : set current network interface m_socket MAC address
-//    for (auto &interface : QNetworkInterface::allInterfaces()) {
-//        if (interface.flags() & QNetworkInterface::IsLoopBack) {
-//            continue;
-//        }
-
-//        QString address = interface.hardwareAddress();
-//        if (address.isEmpty()) {
-//            continue;
-//        }
-
-//        m_mac = address;
-//    }
-
-//    connect(&m_socket, &QUdpSocket::readyRead, this, &VSQNetifBLE::onHasInputData);
-
+    // TODO: Fix it
+    m_mac = VSQMac("01:02:03:04:05:06");
     return true;
 }
 
@@ -117,12 +96,16 @@ bool VSQNetifBLE::prepareNotificationReceiver() {
     foreach (const QLowEnergyCharacteristic &ch, m_leService->characteristics()) {
         if (QBluetoothUuid(_serviceUuidRx) == ch.uuid()) {
             notificationCharacteristic = ch;
+            break;
         }
     }
 
     if (notificationCharacteristic.isValid()) {
         QLowEnergyDescriptor notification = notificationCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-        if (!notification.isValid()) return false;
+        if (!notification.isValid()) {
+            qWarning() << "ERROR: Invalid notification";
+            return false;
+        }
 
         connect(m_leService.data(), SIGNAL(characteristicChanged(const QLowEnergyCharacteristic &, const QByteArray &)),
                 this, SLOT(onNotification(const QLowEnergyCharacteristic &, const QByteArray &)));
@@ -147,6 +130,7 @@ void VSQNetifBLE::onServiceDetailsDiscovered(QLowEnergyService::ServiceState ser
     bool canWrite(false);
 
     foreach (const QLowEnergyCharacteristic &ch, chars) {
+        qDebug() << ">>> " << ch.uuid();
         if (QBluetoothUuid(_serviceUuidRx) == ch.uuid()) {
             canRead = true;
         } else if (QBluetoothUuid(_serviceUuidTx) == ch.uuid()) {
@@ -156,13 +140,15 @@ void VSQNetifBLE::onServiceDetailsDiscovered(QLowEnergyService::ServiceState ser
         if (canRead && canWrite) break;
     }
 
-    if (!canRead || !canWrite) {
+    if (!canRead || !canWrite || !prepareNotificationReceiver()) {
         onDeviceDisconnected();
+        qWarning() << "Cannot start communication";
     }
 
     qDebug() << "VSQNetifBLE::onConnected";
     m_canCommunicate = true;
-    prepareNotificationReceiver();
+
+    tx(QByteArray::fromStdString("Hello World !!!"));
 }
 
 void VSQNetifBLE::onServicesDiscoveryFinished() {
@@ -186,7 +172,7 @@ void VSQNetifBLE::onDeviceDisconnected() {
     m_canCommunicate = false;
 }
 
-bool VSQNetifBLE::openDevice(const QBluetoothDeviceInfo & device) {
+bool VSQNetifBLE::onOpenDevice(const QBluetoothDeviceInfo device) {
     deactivate();
     VSQNetifBase::resetPacketForced();  // Force packet reset
 
@@ -232,6 +218,7 @@ bool VSQNetifBLE::sendPartOfData() {
     foreach (const QLowEnergyCharacteristic &ch, m_leService->characteristics()) {
         if (QBluetoothUuid(_serviceUuidTx) == ch.uuid()) {
             writeCharacteristic = ch;
+            break;
         }
     }
 

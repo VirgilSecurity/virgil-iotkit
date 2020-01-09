@@ -59,6 +59,7 @@ public:
      * @return QStringList
      */
     Q_INVOKABLE QStringList devicesList() const;
+    Q_INVOKABLE void select(QString devName) const;
 
 public slots:
     /**
@@ -67,6 +68,8 @@ public slots:
     void startDiscovery();
 
 signals:
+
+    void fireDeviceSelected(QBluetoothDeviceInfo dev) const;
 
     void fireDevicesListUpdated();
 

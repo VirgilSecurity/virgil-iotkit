@@ -57,12 +57,13 @@ public:
     QAbstractSocket::SocketState
     connectionState() const override;
 
+public slots:
     /**
      * @brief start bluetooth communication
      * @param[in] device - device info for connection
      * @return "true" if communication started correctly
      */
-    bool openDevice(const QBluetoothDeviceInfo & device);
+    bool onOpenDevice(const QBluetoothDeviceInfo device);
 
 protected:
     bool
