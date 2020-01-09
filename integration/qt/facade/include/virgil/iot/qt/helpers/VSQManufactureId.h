@@ -32,55 +32,114 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQManufactureId.h
+ * \brief Device's manufacture ID
+ *
+ * #VSQManufactureId is the manufacture identifier. This identifier is necessary to match files received
+ * from Cloud and from Gateway.
+ *
+ * Configure #VSQManufactureId by using operator = or directly in the constructor :
+ * \code
+
+    VirgilIoTKit::vs_device_manufacture_id_t rawManufactureId;  // Manufacture identifier
+    VSQManufactureId manufactureId(rawManufactureId);
+
+ * \endcode
+ *
+ * You can output manufacture identifier to the string representation :
+ *
+ * \code
+
+    VSQManufactureId manufactureId;   // Initialized manufacture identifier
+    QString manufactureIdDescription = manufactureId;
+
+ * \endcode
+ *
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_MANUFACTURE_ID_H
 #define VIRGIL_IOTKIT_QT_MANUFACTURE_ID_H
 
 #include <QtCore>
 #include <virgil/iot/protocols/snap.h>
 
+/** Manufacture identifier */
 class VSQManufactureId {
 public:
+    /** Default manufacture identifier constructor */
     VSQManufactureId() : m_manufactureId(VS_DEVICE_MANUFACTURE_ID_SIZE, 0) {
     }
 
+    /** Manufacture identifier copy constructor */
     VSQManufactureId(const VSQManufactureId &manufactureId) : VSQManufactureId() {
         set(manufactureId);
     }
 
+    /** Initialize manufacture identifier from VirgilIoTKit::vs_device_manufacture_id_t */
     VSQManufactureId(const VirgilIoTKit::vs_device_manufacture_id_t &buf) : VSQManufactureId() {
         set(buf);
     }
 
+    /** Assign manufacture identifier
+     *
+     * \param manufactureId Manufacture identifier to copy
+     * \return Current #VSQManufactureId instance
+     */
     VSQManufactureId &
     operator=(const VSQManufactureId &manufactureId) {
         return set(manufactureId);
     }
 
+    /** Assign manufacture identifier
+     *
+     * \param buf Manufacture identifier buffer to copy
+     * \return Current #VSQManufactureId instance
+     */
     VSQManufactureId &
     operator=(const VirgilIoTKit::vs_device_manufacture_id_t &buf) {
         return set(buf);
     }
 
+    /** Compare manufacture identifiers
+     *
+     * \param manufactureId Manufacture identifier to be compared with the current one
+     * \return true if both MAC address are equal
+     */
     bool
     operator==(const VSQManufactureId &manufactureId) const {
         return equal(manufactureId);
     }
 
-    bool
-    operator!=(const VSQManufactureId &manufactureId) const {
-        return !equal(manufactureId);
-    }
-
+    /** Describe manufacture identifier
+     *
+     * Call this function to receive text description. You can configure it by specifying \a stopOnZero and
+     * \a nonPrintableSymbols arguments.
+     *
+     * \param stopOnZero Stop conversion on the first '\0' symbol. By default it is true.
+     * \param nonPrintableSymbols Symbol to output on the non printable symbol. By default it is space.
+     *
+     * \return Manufacture identifier text description
+     */
     QString
     description(bool stopOnZero = true, char nonPrintableSymbols = ' ') const;
 
+    /** Compare manufacture identifiers
+     *
+     * \param manufactureId Device type to compare with the current one
+     * \return true if they are equal
+     */
     bool
     equal(const VSQManufactureId &manufactureId) const {
         return m_manufactureId == manufactureId.m_manufactureId;
     }
 
+    /** Get manufacture identifier as symbols array */
     operator const char *() const;
+
+    /** Get manufacture identifier as bytes array */
     operator const uint8_t *() const;
+
+    /** Get manufacture identifier text description */
     operator QString() const {
         return description();
     }

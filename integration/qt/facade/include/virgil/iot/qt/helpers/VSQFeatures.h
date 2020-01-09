@@ -32,32 +32,86 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQFeatures.h
+ * \brief Virgil IoT Kit Qt framework enabled features
+ *
+ * #VSQFeatures is used to enumerate features to be enabled.
+ *
+ * Configure #VSQFeatures by using operator << :
+ *
+ * \code
+
+    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT << VSQFeatures::SNAP_SNIFFER;
+
+    if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
+        VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
+        return -1;
+    }
+
+ * \endcode
+ *
+ * Use #VSQFeatures::EFeature enumeration as the list of available features.
+ *
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_FEATURES_H
 #define VIRGIL_IOTKIT_QT_FEATURES_H
 
 #include <QSet>
 
+/** Virgil IoT Kit framework enabled features
+ *
+ * Initialize this class and use it for #VSQIoTKitFacade::init call.
+ */
+
 class VSQFeatures {
 public:
-    enum EFeature { SNAP_INFO_CLIENT, SNAP_SNIFFER };
+
+    /** Features enumeration */
+    enum EFeature { SNAP_INFO_CLIENT, /**< INFO client service */
+                    SNAP_SNIFFER      /**< Snap sniffer */
+                    };
+
+    /** Features set */
     using TSet = QSet<EFeature>;
 
+    /** Add feature
+     *
+     * Use this function to add \a feature to the list
+     *
+     * \param feature Feature to enable
+     * \return Reference to the #VSQFeatures instance
+     */
     VSQFeatures &
     operator<<(EFeature feature) {
         m_features.insert(feature);
         return *this;
     }
 
+    /** Get features set
+     *
+     * \return Features set
+     */
     const TSet &
     featuresSet() const {
         return m_features;
     }
 
+    /** Test feature
+     *
+     * This function checks that \a feature is present in the features set
+     * \param feature Feature to check
+     * \return true if \a feature is present in the set
+     */
     bool
     hasFeature(EFeature feature) const {
         return m_features.contains(feature);
     }
 
+    /** Test snap feature
+     *
+     * \return true if snap feature is present in the set
+     */
     bool
     hasSnap() const {
         return hasFeature(SNAP_INFO_CLIENT);

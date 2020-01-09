@@ -53,7 +53,6 @@
 #include <virgil/iot/qt/helpers/VSQMac.h>
 #include <virgil/iot/qt/helpers/VSQManufactureId.h>
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQSnifferConfig.h>
 
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>

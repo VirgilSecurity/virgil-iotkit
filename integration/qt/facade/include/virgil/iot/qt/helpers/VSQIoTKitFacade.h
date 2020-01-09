@@ -83,7 +83,7 @@
  *
  * This class inherits QObject and VSQSingleton.
  *
- * Initialize Virgil IoT KIT Qt by calling VSQIoTKitFacade::init function through its instance :
+ * Initialize Virgil IoT KIT Qt by calling #VSQIoTKitFacade::init function through its instance :
  * \code
  * VSQIoTKitFacade::instance().init( ... )
  * \endcode

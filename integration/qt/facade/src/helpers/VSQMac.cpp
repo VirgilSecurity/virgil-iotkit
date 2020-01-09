@@ -36,8 +36,8 @@
 
 const VSQMac broadcastMac(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
-// TODO : set default MAC address for invalid one
-const VSQMac VSQMac::m_invalidMac(0x01, 0x02, 0x03, 0x04, 0x05, 0x06);
+// TODO : set invalid MAC address
+const VSQMac invalidMac(0x01, 0x02, 0x03, 0x04, 0x05, 0x06);
 
 VSQMac &
 VSQMac::set(const QString &mac) {
@@ -58,7 +58,7 @@ VSQMac::set(const QString &mac) {
     VS_LOG_WARNING("Incorrect MAC address string : %s", mac.toStdString().c_str());
 
     // TODO : process empty MAC address
-    set(m_invalidMac);
+    set(invalidMac);
 
     return *this;
 }

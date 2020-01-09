@@ -872,7 +872,7 @@ RECURSIVE              = YES
 
 EXCLUDE                = cmake/ \
                          debug/ \
-                         cmake-build-*/ \
+                         cmake-build-*\ \
                          ext/ \
                          git-hooks/ \
                          tests/ \
