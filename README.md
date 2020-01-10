@@ -70,7 +70,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
 
-You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grant you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
 
 <div id='modules'/>
 
@@ -95,11 +95,11 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
 - `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
 - `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
 - `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
-  - To get a library for Android: ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a
-  - To get a library for iOS library: ext/virgil-iotkit/scripts/build-for-qt.sh ios
-  - To get a library for Linux library: ext/virgil-iotkit/scripts/build-for-qt.sh linux
-  - To get a library for MacOS library: ext/virgil-iotkit/scripts/build-for-qt.sh mac
-  - To get a library for Windows library: ext/virgil-iotkit/scripts/build-for-qt.sh windows
+  - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
+  - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
+  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
@@ -218,7 +218,7 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the 
 The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
 #### Mobile platforms Build
-To build and deploy Android Qt application use integration/qt/iotkit.pri for Qt Creator.
+To include Virgil IoTKit Qt framewrok use integration/qt/iotkit.pri for Qt Creator.
 
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
