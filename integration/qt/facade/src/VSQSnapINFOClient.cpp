@@ -124,7 +124,7 @@ VSQSnapInfoClient::changePolling(std::initializer_list<EPolling> pollingOptions,
         pollingElements |= pollingOption;
     }
 
-    if (vs_snap_info_set_polling(nullptr, &mac, pollingElements, enable, periodSeconds) != VS_CODE_OK) {
+    if (vs_snap_info_set_polling(vs_snap_netif_routing(), &mac, pollingElements, enable, periodSeconds) != VS_CODE_OK) {
         VS_LOG_ERROR("Unable to setup info polling");
         return false;
     }

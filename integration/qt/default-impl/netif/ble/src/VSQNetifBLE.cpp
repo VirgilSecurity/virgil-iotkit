@@ -250,7 +250,7 @@ VSQNetifBLE::onNotification(const QLowEnergyCharacteristic & characteristic, con
     Q_UNUSED(characteristic)
     if (isActive()) {
         VS_LOG_DEBUG("Notification : %d", data.size());
-        //processData(data.data());
+        processData(data);
     }
 }
 
