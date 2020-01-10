@@ -71,7 +71,7 @@ VirgilIoTKitQtInit() {
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());               // Register INFO Client and "SnapInfoClient" data model for QML's ListView
     context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer());          // Register SNAP Sniffer and "SnapSniffer" data model for QML's ListView
 
-    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));                                            // Use qml/main.qml for main QML object
+    const QUrl url(QStringLiteral("qrc:/qml/Main.qml"));                                            // Use qml/main.qml for main QML object
     engine.load(url);
 
     return QGuiApplication::instance()->exec();                                                     // Start QML application
