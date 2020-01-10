@@ -83,7 +83,7 @@ In this example you connect necessary modules and launch the QML application. Th
 <div id='api-reference'/>
 
 ## API Reference
-Virgil IoTKit Qt framework является частью Virgil IoTKit. C++-классы имеют префикс VSQ. Например, паттерн "фасад" реализуется классом VSQIoTKitFacade.h. См. [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/)
+Virgil IoTKit Qt framework is a part of Virgil IoTKit. C++ classes have VSQ relativizor. E.g. "facade" pattern is realized by VSQIoTKitFacade.h class. See [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/)
 
 <div id='license'/>
 
