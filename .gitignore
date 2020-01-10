@@ -20,7 +20,7 @@ profile
 #####
 # CLion
 .idea
-cmake-build-*/
+cmake-build*/
 VERSION
 
 ####
