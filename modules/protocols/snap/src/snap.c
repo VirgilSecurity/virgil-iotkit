@@ -283,8 +283,6 @@ _snap_rx_cb(vs_netif_t *netif,
                 }
             }
 
-            VS_LOG_DEBUG(">>> R 11");
-
             // Reset filled packet
             netif->packet_buf_filled = 0;
 

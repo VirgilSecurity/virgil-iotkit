@@ -365,7 +365,7 @@ _info_server_periodical_processor(void) {
     // Send broadcast notification about self start
     if (!started) {
         started = true;
-        vs_snap_info_start_notification(NULL);
+        vs_snap_info_start_notification(vs_snap_netif_routing());
     }
 
     _poll_ctx.time_counter++;
