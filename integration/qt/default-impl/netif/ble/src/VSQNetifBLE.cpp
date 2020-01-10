@@ -40,11 +40,13 @@ const QString VSQNetifBLE::_serviceUuidTx("0000abf1-0000-1000-8000-00805f9b34fb"
 const QString VSQNetifBLE::_serviceUuidRx("0000abf2-0000-1000-8000-00805f9b34fb");
 const size_t VSQNetifBLE::_sendSizeLimit(20);
 
+//******************************************************************************
 VSQNetifBLE::VSQNetifBLE() : m_canCommunicate(false),
     m_leController(QSharedPointer <QLowEnergyController> (nullptr)),
     m_leService(QSharedPointer <QLowEnergyService> (nullptr)) {
 }
 
+//******************************************************************************
 bool
 VSQNetifBLE::init() {
     // TODO: Fix it
@@ -52,12 +54,14 @@ VSQNetifBLE::init() {
     return true;
 }
 
+//******************************************************************************
 bool
 VSQNetifBLE::deinit() {
     deactivate();
     return true;
 }
 
+//******************************************************************************
 bool
 VSQNetifBLE::tx(const QByteArray &data) {
     if (!isActive()) return false;
@@ -65,33 +69,64 @@ VSQNetifBLE::tx(const QByteArray &data) {
     qDebug() << "Send data lenght : " << data.size();
     qDebug() << data.toHex();
 
-    m_dataForSend = data;
-    m_sendPos = 0;
 
-    sendPartOfData();
+    QLowEnergyCharacteristic writeCharacteristic;
+    foreach (const QLowEnergyCharacteristic &ch, m_leService->characteristics()) {
+        if (QBluetoothUuid(_serviceUuidTx) == ch.uuid()) {
+            writeCharacteristic = ch;
+            break;
+        }
+    }
 
-    return true;
+    if (!writeCharacteristic.isValid()) {
+        VS_LOG_ERROR("Write characteristic is invalid");
+        return false;
+    }
+
+    int sendPos = 0;
+    while (true) {
+        QByteArray dataPart(data.mid(sendPos, _sendSizeLimit));
+        if (dataPart.isEmpty()) {
+            break;
+        }
+        sendPos += dataPart.size();
+        m_leService->writeCharacteristic(writeCharacteristic,
+                                         dataPart,
+                                         QLowEnergyService::WriteMode::WriteWithoutResponse);
+     }
+
+     return true;
 }
 
+//******************************************************************************
 QString
 VSQNetifBLE::macAddr() const {
 
     return m_mac;
 }
 
-void VSQNetifBLE::onDeviceConnected() {
+//******************************************************************************
+void
+VSQNetifBLE::onDeviceConnected() {
     m_leController->discoverServices();
     m_availableServices.clear();
 }
 
-void VSQNetifBLE::onServiceDiscovered(QBluetoothUuid uuid) {
+//******************************************************************************
+void
+VSQNetifBLE::onServiceDiscovered(QBluetoothUuid uuid) {
     m_availableServices << uuid;
-    qDebug() << "Service discovered : " << uuid;
+    VS_LOG_DEBUG("Service discovered : %s", uuid.toString().toStdString().c_str());
 }
 
-bool VSQNetifBLE::prepareNotificationReceiver() {
-    if (!isActive()) return false;
+//******************************************************************************
+bool
+VSQNetifBLE::prepareNotificationReceiver() {
+    if (m_leController.isNull() || m_leService.isNull()) {
+        return false;
+    }
 
+    // Find BLE characteristic for data receive
     QLowEnergyCharacteristic notificationCharacteristic;
     foreach (const QLowEnergyCharacteristic &ch, m_leService->characteristics()) {
         if (QBluetoothUuid(_serviceUuidRx) == ch.uuid()) {
@@ -101,36 +136,35 @@ bool VSQNetifBLE::prepareNotificationReceiver() {
     }
 
     if (notificationCharacteristic.isValid()) {
+        // Setup notifications from external device
         QLowEnergyDescriptor notification = notificationCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
         if (!notification.isValid()) {
-            qWarning() << "ERROR: Invalid notification";
+            VS_LOG_ERROR("Invalid notification");
             return false;
         }
 
         connect(m_leService.data(), SIGNAL(characteristicChanged(const QLowEnergyCharacteristic &, const QByteArray &)),
                 this, SLOT(onNotification(const QLowEnergyCharacteristic &, const QByteArray &)));
 
-        connect(m_leService.data(), SIGNAL(characteristicWritten(const QLowEnergyCharacteristic &, const QByteArray &)),
-                this, SLOT(onCharacteristicWritten()));
-
-        // enable notification
         m_leService->writeDescriptor(notification, QByteArray::fromHex("0100"));
         return true;
     }
 
-    qWarning() << "ERROR: Can't set notification handler";
+    VS_LOG_ERROR("Can't set notification handler");
     return false;
 }
 
-void VSQNetifBLE::onServiceDetailsDiscovered(QLowEnergyService::ServiceState serviceState) {
+//******************************************************************************
+void
+VSQNetifBLE::onServiceDetailsDiscovered(QLowEnergyService::ServiceState serviceState) {
     if (QLowEnergyService::ServiceDiscovered != serviceState) return;
 
     const QList<QLowEnergyCharacteristic> chars = m_leService->characteristics();
     bool canRead(false);
     bool canWrite(false);
 
+    // Check for required characteristics
     foreach (const QLowEnergyCharacteristic &ch, chars) {
-        qDebug() << ">>> " << ch.uuid();
         if (QBluetoothUuid(_serviceUuidRx) == ch.uuid()) {
             canRead = true;
         } else if (QBluetoothUuid(_serviceUuidTx) == ch.uuid()) {
@@ -142,19 +176,21 @@ void VSQNetifBLE::onServiceDetailsDiscovered(QLowEnergyService::ServiceState ser
 
     if (!canRead || !canWrite || !prepareNotificationReceiver()) {
         onDeviceDisconnected();
-        qWarning() << "Cannot start communication";
+        VS_LOG_ERROR("Cannot start communication");
+        return;
     }
 
-    qDebug() << "VSQNetifBLE::onConnected";
+    VS_LOG_DEBUG("BLE device connected");
     m_canCommunicate = true;
-
-    tx(QByteArray::fromStdString("Hello World !!!"));
+    emit fireDeviceReady();
 }
 
-void VSQNetifBLE::onServicesDiscoveryFinished() {
+//******************************************************************************
+void
+VSQNetifBLE::onServicesDiscoveryFinished() {
     m_leService = QSharedPointer <QLowEnergyService> (m_leController->createServiceObject(QBluetoothUuid(_serviceUuid)));
     if (m_leService.isNull()) {
-        qWarning() << "Cannot create service for uuid = " << _serviceUuid;
+        VS_LOG_ERROR("Cannot create service object: %s", _serviceUuid.toStdString().c_str());
         onDeviceDisconnected();
         return;
     }
@@ -163,16 +199,22 @@ void VSQNetifBLE::onServicesDiscoveryFinished() {
     m_leService->discoverDetails();
 }
 
-void VSQNetifBLE::onServicesDiscoveryError(QLowEnergyController::Error error) {
+//******************************************************************************
+void
+VSQNetifBLE::onServicesDiscoveryError(QLowEnergyController::Error error) {
     Q_UNUSED(error)
     onDeviceDisconnected();
 }
 
-void VSQNetifBLE::onDeviceDisconnected() {
+//******************************************************************************
+void
+VSQNetifBLE::onDeviceDisconnected() {
     m_canCommunicate = false;
 }
 
-bool VSQNetifBLE::onOpenDevice(const QBluetoothDeviceInfo device) {
+//******************************************************************************
+bool
+VSQNetifBLE::onOpenDevice(const QBluetoothDeviceInfo device) {
     deactivate();
     VSQNetifBase::resetPacketForced();  // Force packet reset
 
@@ -193,58 +235,35 @@ bool VSQNetifBLE::onOpenDevice(const QBluetoothDeviceInfo device) {
     return true;
 }
 
-void VSQNetifBLE::deactivate() {
+//******************************************************************************
+void
+VSQNetifBLE::deactivate() {
     if (!m_leController.isNull()) {
         m_leController->disconnectFromDevice();
     }
     m_canCommunicate = false;
 }
 
-void VSQNetifBLE::onNotification(const QLowEnergyCharacteristic & characteristic, const QByteArray & data) {
+//******************************************************************************
+void
+VSQNetifBLE::onNotification(const QLowEnergyCharacteristic & characteristic, const QByteArray & data) {
     Q_UNUSED(characteristic)
     if (isActive()) {
-        qDebug() << "Notification : " << data.size();
-        processData(data.data());
+        VS_LOG_DEBUG("Notification : %d", data.size());
+        //processData(data.data());
     }
 }
 
-bool VSQNetifBLE::sendPartOfData() {
-    if (!isActive()) {
-        m_sendPos = 0;
-        m_dataForSend.clear();
-        return false;
-    }
-    QLowEnergyCharacteristic writeCharacteristic;
-    foreach (const QLowEnergyCharacteristic &ch, m_leService->characteristics()) {
-        if (QBluetoothUuid(_serviceUuidTx) == ch.uuid()) {
-            writeCharacteristic = ch;
-            break;
-        }
-    }
-
-    if (writeCharacteristic.isValid()) {
-        QByteArray dataPart(m_dataForSend.mid(m_sendPos, _sendSizeLimit));
-        if (dataPart.isEmpty()) return false;
-        m_sendPos += dataPart.size();
-        m_leService->writeCharacteristic(writeCharacteristic,
-                                         dataPart);
-        qDebug() << QDateTime::currentMSecsSinceEpoch();
-        return true;
-    } else {
-        qWarning() << "ERROR: Data write to Bluetooth Low Energy";
-    }
-    return false;
-}
-
-void VSQNetifBLE::onCharacteristicWritten() {
-    sendPartOfData();
-}
-
-bool VSQNetifBLE::isActive() const {
+//******************************************************************************
+bool
+VSQNetifBLE::isActive() const {
     return !m_leController.isNull() && !m_leService.isNull() && m_canCommunicate;
 }
 
+//******************************************************************************
 QAbstractSocket::SocketState
 VSQNetifBLE::connectionState() const {
     return isActive() ? QAbstractSocket::ConnectedState : QAbstractSocket::UnconnectedState;
 }
+
+//******************************************************************************

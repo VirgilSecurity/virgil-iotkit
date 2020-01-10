@@ -65,6 +65,9 @@ public slots:
      */
     bool onOpenDevice(const QBluetoothDeviceInfo device);
 
+signals:
+    void fireDeviceReady();
+
 protected:
     bool
     init() override;
@@ -84,11 +87,6 @@ private slots:
      * @brief Data for read are presend.
      */
     void onNotification(const QLowEnergyCharacteristic & characteristic, const QByteArray & data);
-
-    /**
-     * @brief Characteristic was written successfully.
-     */
-    void onCharacteristicWritten();
 
     /**
      * @brief Called when connection with device established, but services not discovered
@@ -130,8 +128,6 @@ private:
     QSharedPointer <QLowEnergyController> m_leController;   /**< Controller for current device */
     QSharedPointer <QLowEnergyService> m_leService;         /**< Bluetooth low energy service */
     QList <QBluetoothUuid> m_availableServices;             /**< List of available services for current device */
-    QByteArray m_dataForSend;                               /**< Container for sending data */
-    size_t m_sendPos;                                       /**< Position of data part  for send */
 
     static const QString _serviceUuid;                      /**< Bluetooth low energy service common */
     static const QString _serviceUuidTx;                    /**< uuid for transmit bluetooth service of our devices */
@@ -142,11 +138,6 @@ private:
      * @brief Set slot for notifications receive
      */
     bool prepareNotificationReceiver();
-
-    /**
-     * @brief Send part of data (20 bytes for Bluetooth Low Energy)
-     */
-    bool sendPartOfData();
 
     /**
      * @brief Check is net connection is active

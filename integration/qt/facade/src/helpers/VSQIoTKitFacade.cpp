@@ -79,7 +79,7 @@ VSQIoTKitFacade::initSnap() {
         registerService(VSQSnapInfoClient::instance());
 
         if (m_impl.netif().connectionState() == QAbstractSocket::BoundState) {
-            VSQSnapInfoClient::instance().startFullPolling();
+            VSQSnapInfoClient::instance().onStartFullPolling();
         }
 
         QObject::connect(
@@ -102,6 +102,6 @@ VSQIoTKitFacade::registerService(VSQSnapServiceBase &service) {
 void
 VSQIoTKitFacade::restartInfoClientPolling(QAbstractSocket::SocketState connectionState) {
     if (connectionState == QAbstractSocket::BoundState) {
-        VSQSnapInfoClient::instance().startFullPolling();
+        VSQSnapInfoClient::instance().onStartFullPolling();
     }
 }

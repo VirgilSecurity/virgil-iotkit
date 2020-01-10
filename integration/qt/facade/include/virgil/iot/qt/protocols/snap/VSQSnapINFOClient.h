@@ -125,13 +125,16 @@ public:
                   bool enable = true,
                   quint16 periodSeconds = 1);
 
+
+
+    const TEnumDevicesArray &devicesList() const { return m_devicesInfo; }
+
+public slots:
     bool
-    startFullPolling(const VSQMac &deviceMac = broadcastMac, quint16 periodSeconds = 1) {
+    onStartFullPolling(const VSQMac &deviceMac = broadcastMac, quint16 periodSeconds = 1) {
         return changePolling(
                 {VSQSnapInfoClient::GENERAL_INFO, VSQSnapInfoClient::STATISTICS}, deviceMac, true, periodSeconds);
     }
-
-    const TEnumDevicesArray &devicesList() const { return m_devicesInfo; }
 
 signals:
     void

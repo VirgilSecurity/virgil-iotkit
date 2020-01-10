@@ -69,7 +69,7 @@ VSQSnapInfoClient::startNotify(vs_snap_info_device_t *deviceRaw) {
 
     emit instance().fireDeviceInfo(device);
 
-    if (!instance().startFullPolling(device.m_mac)) {
+    if (!instance().onStartFullPolling(device.m_mac)) {
         VS_LOG_CRITICAL("Unable to start polling for device %s", device.m_mac.description().toStdString().c_str());
         return VS_CODE_ERR_POLLING_INFO_CLIENT;
     }

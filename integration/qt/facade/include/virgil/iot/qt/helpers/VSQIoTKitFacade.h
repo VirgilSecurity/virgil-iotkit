@@ -114,7 +114,6 @@ private:
     VSQFeatures m_features;
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
-    QSharedPointer<VSQSnapInfoClient> m_serviceInfoClient;
     QSharedPointer<VSQSnapSnifferQml> m_snapSniffer;
 
     void
