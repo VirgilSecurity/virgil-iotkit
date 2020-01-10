@@ -64,7 +64,7 @@
 
     QQmlApplicationEngine engine;                   // QML engine
     QQmlContext *context = engine.rootContext();    // Get root context
-    context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer());  // Get sniffer instance and set it as "SnapSniffer" QML data model
+    context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer().get());  // Get sniffer instance and set it as "SnapSniffer" QML data model
 
  * \endcode
  *

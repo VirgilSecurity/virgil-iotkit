@@ -104,11 +104,15 @@ public:
     bool
     init(const VSQFeatures &features, const VSQImplementations &impl, const VSQAppConfig &appConfig);
 
+    /** SNAP Sniffer pointer type
+     */
+    using VSQSnapSnifferPtr = QSharedPointer<VSQSnapSnifferQml>;
+
     /** Get installed sniffer
      *
-     * \return #VSQSnapSnifferQml object or nullptr if ni sniffer is initialized
+     * \return #VSQSnapSnifferQml object or nullptr if sniffer is not initialized
      */
-    VSQSnapSnifferQml *snapSniffer()    { return m_snapSniffer.get(); }
+    VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
 
 private slots:
     void
@@ -118,8 +122,7 @@ private:
     VSQFeatures m_features;
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
-    QSharedPointer<VSQSnapInfoClient> m_serviceInfoClient;
-    QSharedPointer<VSQSnapSnifferQml> m_snapSniffer;
+    VSQSnapSnifferPtr m_snapSniffer;
 
     void
     initSnap();
