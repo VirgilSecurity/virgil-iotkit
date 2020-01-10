@@ -40,7 +40,7 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Protocols Module**. IoTKit provides a flexible, programmable security network adaptive protocol (SNAP) for device-to-device, device-to-cloud, and cloud-to-device communication. SNAP can be used for secure firmware distribution, secure notification about device state, and secure device provision. Also, SNAP contains a set of functions and interfaces that allows you to work with any transport protocol (BLE, Wi-Fi, PLC, NoiseSocket, etc.).  
 - **Cloud Module. API for working with the Virgil IoT Security Platform**. IoTKit interacts with the Virgil IoT Security Platform to provide you with the services for the security, management, and monitoring of IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
-- Library is implemented on C99. There are C++14 classes based on Qt crossplatform library. Also there are tools implemented on Golang.
+- **C/C++ support**. Library is implemented on C99. There is C++ integration based on Qt crossplatform library. Also there are tools implemented on Golang.
 
 <div id='iot-dev-tools'/>
 
@@ -70,6 +70,8 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grant you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
+
 <div id='modules'/>
 
 ## Modules
@@ -92,6 +94,12 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
 - `run-sandbox` is used to run IoTKit sandbox. Read more about the sandbox and its functionality [here](/scripts).
 - `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
 - `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
+- `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
+  - To get a library for Android: ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a
+  - To get a library for iOS library: ext/virgil-iotkit/scripts/build-for-qt.sh ios
+  - To get a library for Linux library: ext/virgil-iotkit/scripts/build-for-qt.sh linux
+  - To get a library for MacOS library: ext/virgil-iotkit/scripts/build-for-qt.sh mac
+  - To get a library for Windows library: ext/virgil-iotkit/scripts/build-for-qt.sh windows
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
@@ -105,8 +113,10 @@ To start working with Virgil IoTKit the following components are required:
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/) for default NIX implementation
 
-Virgil IoTKIT provides `cmake/android/qt-android-mk-apk.cmake` CMake file. It allows you to deploy application for Android
-by using androiddeployqt tool provided by Qt library. To use it you need to install Android SDK, NDK and Qt with Android components.
+Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. You can see an example of its usage as [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project. Following components are required to use Qt integration :
+- C++14.
+- Qt 5.12.6 or higher.
+- Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
 
 ### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
@@ -171,10 +181,10 @@ $ brew install make cmake golang git gcc curl doxygen swig
 ### Windows OS
 Virgil IoTKit for Windows OS is currently in development. To receive product updates, please send a request to our support team: support@VirgilSecurity.com.
 
-### Android
-- Setup Android SDK.
-- Download Android NDK. You can download it by using Android SDK.
-- Qt with Android with Android components. It can be downloaded by Maintenance tool or they can be build locally.
+### Qt integration
+- Setup Qt with your target platforms support. Each platform has its own requirement. See Qt documentation for details.
+- Compile Virgil IoTKit library for target platform. See [Scripts](#scripts) section, `build-for-qt.sh` script description for details.
+- Build and deploy application.
 
 <div id='tests'/>
 
@@ -186,6 +196,8 @@ To make sure that everything goes in the right way, we also provide a set of rea
 - SNAP (Secure Network Adjustable Protocol tests): send, receive etc.
 
 Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix/tree/release/v0.1.0-alpha/tests) of our IoTKit Demo repository to find preferred tests and start working with them.
+
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project to test Qt integration usage. To have full testing start any IoT devices in your network and observe its states by using demo-iotkit-qt software. You can use Sandbox as such devices set.
 
 <div id='iotkit-usage'/>
 
@@ -205,33 +217,8 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the 
 #### MCU Build
 The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
-#### Android Build
-To build and deploy Android Qt application call `qt_android_build_apk` CMake function stored in `cmake/android/qt-android-mk-apk.cmake` file :
-
-```cmake
-    include(${VIRGIL_IOTKIT_PATH}/cmake/android/qt-android-mk-apk.cmake)
-    qt_android_build_apk(
-            TARGET iotkit-qt-example
-            QML_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}
-            ANDROID_EXTRA_FILES ${CMAKE_CURRENT_SOURCE_DIR}/android
-    )
-```
-
-There are several parameters to specify :
-- TARGET : target name. It will create `${TARGET}-apk` target to make APK-file and `${TARGET}-apk-install`  to deploy it on device.
-- QML_ROOT_PATH : root path for your Qt/QML application.
-- ANDROID_EXTRA_FILES : folder with additional files. AndroidManifest.xml should be stored in this folder.
-
-You can visit ["Demo IoTKit QT" project](https://github.com/VirgilSecurity/demo-iotkit-qt) to see an example of this functionality usage. With Qt library it can be compiled for various desktop and mobile platforms. It is tested on Mac OS and Android platforms. In future it will be tested for Linux, iOS and other platforms.
-
-Also it is necessary to specify constants listed below :
-- ANDROID_QT must be enable to use this feature. You can provide CMake option -DANDROID_QT:BOOL=ON .
-- ANDROID_SDK : root path for Android SDK. If SDK is installed on ~/Android/SDK path, it will be "~/Android/SDK"
-- ANDROID_NDK : root path for Android NDK. If NDK is downloaded by SDK and its version is 20.1.5948944, it will be "~/Android/SDK/ndk/20.1.5948944"
-- ANDROID_STL : STL library used for C++ application to be deployed on Android device. For example, "c++_shared". See [C++ Library Support](https://developer.android.com/ndk/guides/cpp-support.html) for details.
-- ANDROID_STDCPP_PATH : C++ library path. It depends on library type (static, shared), used toolchain etc. For example, it could be "~/Android/SDK/ndk/20.1.5948944/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so".
-- ANDROID_APP_DESCRIPTION : application description. It could be any text string.
-- ANDROID_NDK_TOOLCHAIN_VERSION : NDK toolchain version. For example, this is "4.9".
+#### Mobile platforms Build
+To build and deploy Android Qt application use integration/qt/iotkit.pri for Qt Creator.
 
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
