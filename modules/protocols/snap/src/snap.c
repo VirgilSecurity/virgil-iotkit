@@ -283,6 +283,11 @@ _snap_rx_cb(vs_netif_t *netif,
                 }
             }
 
+            VS_LOG_DEBUG(">>> R 11");
+
+            // Reset filled packet
+            netif->packet_buf_filled = 0;
+
             // Check is my packet
             if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
 
@@ -292,11 +297,10 @@ _snap_rx_cb(vs_netif_t *netif,
                 // Prepare for processing
                 *packet_data = (uint8_t *)packet;
                 *packet_data_sz = packet_sz;
-                return 0;
+                return VS_CODE_OK;
             }
 
             packet = 0;
-            netif->packet_buf_filled = 0;
         }
     }
 
