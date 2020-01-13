@@ -77,6 +77,7 @@ QVariant VSQSnapSnifferQml::data(const QModelIndex & index, int role) const {
     case TransactionId : return QString("%1").arg(packet.m_transactionId);
     case Flags : return QString("%1h").arg(packet.m_flags, 0, 16);
     case Timestamp : return packet.m_timestamp.toString("H:mm:ss");
+    case ContentSize : return packet.m_content.size();
     case ServiceId :
     case ElementId :
     {
@@ -121,6 +122,7 @@ QHash<int, QByteArray> VSQSnapSnifferQml::roleNames() const {
         { ElementId, "elementId"},
         { Flags, "flags"},
         { Content, "content"},
+        { ContentSize, "contentSize"},
         { Timestamp, "timestamp"}
     };
 

@@ -149,6 +149,7 @@ public:
         ElementId,                  /**< Hex string representation of element's ID. #VSQSnapPacket::m_elementId field. Use it as "elementId" in QML */
         Flags,                      /**< Hex string representation of packet's flags. #VSQSnapPacket::m_flags field. Use it as "flags" in QML */
         Content,                    /**< Packet's content. #VSQSnapPacket::m_content field. Use it as "content" in QML */
+        ContentSize,                /**< Packet's content size. #VSQSnapPacket::m_content field data size. Use it as "contentSize" in QML */
         Timestamp                   /**< Timestamp. #VSQSnapPacket::m_timestamp field. Use it as "timestamp" in QML */
     };
 
