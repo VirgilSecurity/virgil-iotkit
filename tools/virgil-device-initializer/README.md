@@ -157,7 +157,7 @@ Success: upload TrustList chunk 0
 Upload TrustList chunk 1
 Success: upload TrustList chunk 1
 Upload TrustList Footer
-OK: Trust List set successfully.
+OK: TrustList set successfully.
 OK: Device initialization done successfully.
 Device info: {"manufacturer":"0x5652474c000000000000000000000000","model":"0x43663031","roles":["GATEWAY"],"mac":"25:f4:69:0c:99:5a","serial":"JfRpDJlaAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM=","publicKeyTiny":"BCMBfTZGL1wlVUv3EvN3dq25rjFAou/1q428ycEUswE3Rd8YM7JUfrXJd8g9bBKALMWxzGbmQOf5+d4kmftVi8w=","signature":"Nbzx4vmyH8CAkZ4PRB9+4y/uhuUm/O891UvR0ttpexMn65jvb86Ce7+i2u5GvZQR8NjyOGTQ0Qv94wYetFHW+A==","key_type":5}
 Card request: eyJjb250ZW50X3NuYXBzaG90IjoiZXlKcFpHVnVkR2wwZVNJNklqSTFaalEyT1RCak9UazFZVEF6TURNd016QXpNRE13TXpBek1E
