@@ -61,11 +61,10 @@ public:
     Q_INVOKABLE QStringList devicesList() const;
     Q_INVOKABLE void select(QString devName) const;
 
-public slots:
     /**
      * @brief Start devices discovery
      */
-    void startDiscovery();
+    Q_INVOKABLE void startDiscovery();
 
 signals:
 
