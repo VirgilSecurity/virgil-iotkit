@@ -278,7 +278,7 @@ func (p *DeviceProcessor) SetTrustList() error {
         return fmt.Errorf("failed to set TrustList footer")
     }
 
-    fmt.Println("OK: TrustList set successfully.")
+    fmt.Println("OK: Trust List set successfully.")
 
     return nil
 }

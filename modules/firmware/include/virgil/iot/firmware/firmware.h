@@ -83,8 +83,8 @@ _add_filetype(const vs_update_file_type_t *file_type, vs_update_interface_t **up
     case VS_UPDATE_FIRMWARE:    // Firmware file request
         *update_ctx = vs_firmware_update_ctx();     // Firmware's Update context
         break;
-    case VS_UPDATE_TRUST_LIST:  // TrustList file request
-        *update_ctx = vs_tl_update_ctx();           // TrustList's Update context
+    case VS_UPDATE_TRUST_LIST:  // Trust List file request
+        *update_ctx = vs_tl_update_ctx();           // Trust List's Update context
         break;
     default:                    // Unsupported file type request
         VS_LOG_ERROR("Unsupported file type : %d", file_type->type);

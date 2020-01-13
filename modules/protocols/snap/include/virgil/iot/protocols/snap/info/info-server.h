@@ -48,7 +48,7 @@
  *
  * \code
  *
- *    vs_storage_op_ctx_t tl_storage_impl;        // TrustList storage implementation
+ *    vs_storage_op_ctx_t tl_storage_impl;        // Trust List storage implementation
  *    vs_storage_op_ctx_t fw_storage_impl;        // Firmware storage implementation
  *    const vs_snap_service_t *snap_info_server;  // INFO Server SNAP service
  *
@@ -94,7 +94,7 @@ typedef vs_status_e (*vs_snap_info_start_notif_srv_cb_t)(vs_snap_info_device_t *
  *
  * \note \a startup_cb can be NULL. In this case standard notifications will be done.
  *
- * \param[in] tl_ctx TrustList storage context. Must not be NULL.
+ * \param[in] tl_ctx Trust List storage context. Must not be NULL.
  * \param[in] fw_ctx Firmware storage context. Must not be NULL.
  * \param[in] startup_cb Startup notification server callback. If NULL, it won't be used.
  *

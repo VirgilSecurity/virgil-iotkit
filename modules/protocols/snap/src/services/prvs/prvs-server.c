@@ -435,7 +435,7 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 static vs_status_e
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save TrustList");
+    STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save Trust List");
     return VS_CODE_OK;
 }
 
@@ -443,7 +443,7 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 static vs_status_e
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save TrustList part");
+    STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save Trust List part");
     return VS_CODE_OK;
 }
 
@@ -451,7 +451,7 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 static vs_status_e
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize TrustList");
+    STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize Trust List");
     return VS_CODE_OK;
 }
 

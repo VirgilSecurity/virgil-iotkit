@@ -142,7 +142,7 @@ func main() {
 }
 
 func createStatusTable(t time.Time) string {
-	table := "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>TrustList Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
+	table := "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
     devices := devicesInfo.GetItems()
 
@@ -206,7 +206,7 @@ var HtmlPage = `
 
 
     var table_output = document.getElementById("tbl");
-    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>TrustList Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
+    table_output.innerHTML = "<tr> <td>MAC</td> <td>ManufactureID</td> <td>DeviceType</td> <td>Firmware Version</td> <td>Trust List Version</td> <td>Sent</td>  <td>Received</td> <td>Device Roles</td> </tr>"
 
     var device_table_socket = new WebSocket(url + "ws/devices");
    

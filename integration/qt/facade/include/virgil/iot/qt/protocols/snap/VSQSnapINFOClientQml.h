@@ -119,7 +119,7 @@ public:
         ManufactureId,  /**< Manufacture ID. #VSQDeviceInfo::m_manufactureId field. Use it as "manufactureId" QML */
         DeviceType, /**< Device type. #VSQDeviceInfo::m_deviceType field. Use it as "deviceType" QML */
         FwVer,  /**< File version. #VSQDeviceInfo::m_fwVer field. Use it as "fwVer" QML */
-        TlVer,  /**< TrustList version. #VSQDeviceInfo::m_tlVer field. Use it as "tlVer" QML */
+        TlVer,  /**< Trust List version. #VSQDeviceInfo::m_tlVer field. Use it as "tlVer" QML */
         Sent,   /**< Sent packets. #VSQDeviceInfo::m_sent field. Use it as "sent" QML */
         Received,   /**< Received packets. #VSQDeviceInfo::m_received field. Use it as "received" QML */
         LastTimestamp,  /**< Last information timestamp. #VSQDeviceInfo::m_lastTimestamp field. Use it as "lastTimestamp" QML */

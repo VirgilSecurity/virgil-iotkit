@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file tl_structs.h
- * \brief TrustList structures
+ * \brief Trust List structures
  */
 
 #ifndef TL_STRUCTS_H
@@ -48,27 +48,27 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-/** TrustList storage types */
+/** Trust List storage types */
 typedef enum {
-    TL_STORAGE_TYPE_STATIC = 0, /**< Default TrustList backup for restoring it in case of provision error */
-    TL_STORAGE_TYPE_DYNAMIC,    /**< TrustList during the provision process */
-    TL_STORAGE_TYPE_TMP,        /**< TrustList that is loading. After successful verification it is saved to \a
+    TL_STORAGE_TYPE_STATIC = 0, /**< Default Trust List backup for restoring it in case of provision error */
+    TL_STORAGE_TYPE_DYNAMIC,    /**< Trust List during the provision process */
+    TL_STORAGE_TYPE_TMP,        /**< Trust list that is loading. After successful verification it is saved to \a
                                    TL_STORAGE_TYPE_STATIC */
 } vs_tl_storage_t;
 
 typedef size_t vs_tl_key_handle;
 
-/** TrustList header */
+/** Trust List header */
 typedef struct __attribute__((__packed__)) {
-    uint32_t tl_size;          /**< TrustList size = header + public keys + footer */
+    uint32_t tl_size;          /**< Trust List size = header + public keys + footer */
     vs_file_version_t version; /**< Version */
     uint16_t pub_keys_count;   /**< Public keys amount */
     uint8_t signatures_count;  /**< Signatures amount */
 } vs_tl_header_t;
 
-/** TrustList footer */
+/** Trust List footer */
 typedef struct __attribute__((__packed__)) {
-    uint8_t tl_type;      /**< TrustList type */
+    uint8_t tl_type;      /**< Trust List type */
     uint8_t signatures[]; /**< Signatures */
 } vs_tl_footer_t;
 

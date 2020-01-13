@@ -39,7 +39,7 @@
  * - obtaining credentials from thing service
  * - connecting to message bin broker over MQTT and subscribing to the list of topics
  * - processing messages received over message bin
- * - downloading firmware binaries and TrustList files from cloud storage
+ * - downloading firmware binaries and trust list files from cloud storage
  *
  * Virgil IoT KIT provides MQTT implementation based on AWS IoT library.
  *
@@ -48,7 +48,7 @@
  * Function #vs_cloud_message_bin_process tries to obtain credentials for connecting to message bin broker from thing
  * service using #vs_cloud_http_request_func_t and connect to the broker using #vs_cloud_mb_connect_subscribe_func_t.
  * Then it waits for new messages, periodically calling #vs_cloud_mb_process_func_t. User can register own handlers for
- * events of new firmware or TrustList by calling #vs_cloud_message_bin_register_default_handler or custom handler for
+ * events of new firmware or trust list by calling #vs_cloud_message_bin_register_default_handler or custom handler for
  * raw data processing from some topics by calling #vs_cloud_message_bin_register_custom_handler. Cloud module uses
  * provision and firmware modules, which must be initialized before.
  *
@@ -65,9 +65,9 @@ that
 const vs_cloud_impl_t *cloud_impl;                          // Cloud implementation
 const vs_cloud_message_bin_impl_t *message_bin_impl;        // Message bin implementation
 vs_secmodule_impl_t *secmodule_impl;                        // Security module implementation
-vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // TrustList topic processor
+vs_cloud_mb_process_default_topic_cb_t tl_topic_process;    // Trust List topic processor
 vs_cloud_mb_process_default_topic_cb_t fw_topic_process;    // Firmware topic processor
-vs_storage_op_ctx_t tl_storage_impl;                        // TrustList storage implementation
+vs_storage_op_ctx_t tl_storage_impl;                        // Trust List storage implementation
 vs_storage_op_ctx_t fw_storage_impl;                        // Firmware storage implementation
 static vs_device_manufacture_id_t manufacture_id;           // Manufacture ID
 static vs_device_type_t device_type;                        // Device type
@@ -85,7 +85,7 @@ Firmware module");
 // Cloud module
 STATUS_CHECK(vs_cloud_init(cloud_impl, message_bin_impl, secmodule_impl), "Unable to initialize Cloud module");
 STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_TL, tl_topic_process),
-    "Error register handler for TrustList topic");
+    "Error register handler for Trust List topic");
 
 STATUS_CHECK(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, fw_topic_process), "Error register
 handler for Firmware topic");
@@ -136,7 +136,7 @@ void
 tl_topic_process(const uint8_t *url, uint16_t length) {
 
      if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(url)) {
-         // TrustList is correct. Process it
+         // Trust list is correct. Process it
      }
  }
 
@@ -220,11 +220,11 @@ typedef struct {
 vs_status_e
 vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header);
 
-/** Fetch and store TrustList
+/** Fetch and store Trust List
  *
- * Fetches TrustList and stores it in internal storage.
+ * Fetches Trust List and stores it in internal storage.
  *
- * \param[in] tl_file_url TrustList URL to fetch. Must not be NULL.
+ * \param[in] tl_file_url Trust List URL to fetch. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
@@ -246,7 +246,7 @@ typedef struct {
  * This is the list of default topics processed by #vs_cloud_mb_process_default_topic_cb_t() implementation.
  */
 typedef enum {
-    VS_CLOUD_MB_TOPIC_TL, /**< TrustList */
+    VS_CLOUD_MB_TOPIC_TL, /**< Trust List */
     VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
 } vs_cloud_mb_topic_id_t;
 
@@ -267,7 +267,7 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
 /** Implementation for default topics processing
  *
  * Virgil IoT KIT preprocesses topics from #vs_cloud_mb_topic_id_t enumeration. It calls this function when receives
- * a notification about a new version of TrustList or Firmware
+ * a notification about a new version of Trust List or Firmware
  * to load data for this topic.
  *
  * \param[in] url URL where user can fetch a new version of file.

@@ -81,27 +81,27 @@ func main()  {
         &cli.StringFlag{
             Name:    "tl_pub_key_1",
             Aliases: []string{"b"},
-            Usage:   "File with 1st TrustList public key",
+            Usage:   "File with 1st trust list public key",
         },
         &cli.StringFlag{
             Name:    "tl_pub_key_2",
             Aliases: []string{"k"},
-            Usage:   "File with 2nd TrustList public key",
+            Usage:   "File with 2nd trust list public key",
         },
         &cli.StringFlag{
             Name:    "fw_pub_key_1",
             Aliases: []string{"w"},
-            Usage:   "File with 1st Firmware public key",
+            Usage:   "File with 1st firmware public key",
         },
         &cli.StringFlag{
             Name:    "fw_pub_key_2",
             Aliases: []string{"x"},
-            Usage:   "File with 2nd Firmware public key",
+            Usage:   "File with 2nd firmware public key",
         },
         &cli.StringFlag{
             Name:    "trust_list",
             Aliases: []string{"f"},
-            Usage:   "File with TrustList",
+            Usage:   "File with trust list",
         },
         &cli.BoolFlag{
             Name:    "create_card_only",
@@ -111,7 +111,7 @@ func main()  {
         &cli.BoolFlag{
             Name:    "trust_list_only",
             Aliases: []string{"y"},
-            Usage:   "Use TrustList only",
+            Usage:   "Use Trust List only",
         },
         &cli.StringFlag{
             Name:    "factory_key",

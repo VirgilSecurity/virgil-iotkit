@@ -62,7 +62,7 @@ extern "C" {
 /** File types */
 enum vs_update_file_type_id_t {
     VS_UPDATE_FIRMWARE, /**< Firmware files for different manufactures and device types */
-    VS_UPDATE_TRUST_LIST, /**< TrustList files */
+    VS_UPDATE_TRUST_LIST, /**< Trust List files */
     VS_UPDATE_USER_FILES = 256 /**< User file types must have an identifier that is not lower than this code */
 };
 
