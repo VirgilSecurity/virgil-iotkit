@@ -1,0 +1,7 @@
+<map id="vs_snap_info_client_service_t" name="vs_snap_info_client_service_t">
+<area shape="rect" id="node1" title="INFO client implementations." alt="" coords="156,192,295,231"/>
+<area shape="rect" id="node2" href="$structvs__info__statistics__t.html" title="Device statistics." alt="" coords="5,105,139,131"/>
+<area shape="rect" id="node3" href="$structvs__info__general__t.html" title="Device general information." alt="" coords="162,105,289,131"/>
+<area shape="rect" id="node4" href="$structvs__file__version__unpacked__t.html" title="File version." alt="" coords="132,5,318,31"/>
+<area shape="rect" id="node5" href="$structvs__snap__info__device__t.html" title="Device information." alt="" coords="312,105,469,131"/>
+</map>
