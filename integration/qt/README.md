@@ -13,6 +13,7 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
 
 This is Virgil IoTKit C library wrapper for C++ based on Qt crossplatform framework.
 
+Qt - is a crossplatform framework for creating modern console and GUI applications. It supports wide range of desktop and mobile platforms like Windows, Linux, MacOS, Android, iOS etc.
 ## Content
 - [Features](#features)
 - [Installation](#installation)
