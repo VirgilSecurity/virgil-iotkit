@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: info-server.h File Reference</title>
+<title>Virgil IoT SDK: info-server.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -103,7 +103,7 @@ Functions</h2></td></tr>
 <h1><a class="anchor" id="info_server_usage"></a>
 INFO Server usage</h1>
 <p>Before first INFO calls usage it is necessary to register INFO Server service :</p>
-<div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;        <span class="comment">// TrustList storage implementation</span></div>
+<div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;        <span class="comment">// Trust List storage implementation</span></div>
 <div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> fw_storage_impl;        <span class="comment">// Firmware storage implementation</span></div>
 <div class="line"><span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *snap_info_server;  <span class="comment">// INFO Server SNAP service</span></div>
 <div class="line"> </div>
@@ -176,7 +176,7 @@ INFO Server usage</h1>
 <dl class="section note"><dt>Note</dt><dd><em>startup_cb</em> can be NULL. In this case standard notifications will be done.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">tl_ctx</td><td>TrustList storage context. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tl_ctx</td><td>Trust List storage context. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fw_ctx</td><td>Firmware storage context. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">startup_cb</td><td>Startup notification server callback. If NULL, it won't be used.</td></tr>
   </table>
@@ -215,10 +215,10 @@ INFO Server usage</h1>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:145</div></div>
-<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:312</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:300</div></div>
 <div class="ttc" id="ainfo-server_8h_html_a462ed38c75ba3c3ebf7eac326d6679da"><div class="ttname"><a href="info-server_8h.html#a462ed38c75ba3c3ebf7eac326d6679da">vs_snap_info_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx, vs_storage_op_ctx_t *fw_ctx, vs_snap_info_start_notif_srv_cb_t startup_cb)</div><div class="ttdoc">INFO Server SNAP Service implementation.</div></div>
-<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:221</div></div>
+<div class="ttc" id="astructvs__storage__op__ctx__t_html"><div class="ttname"><a href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a></div><div class="ttdoc">Storage element context.</div><div class="ttdef"><b>Definition:</b> storage_hal.h:216</div></div>
 <div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

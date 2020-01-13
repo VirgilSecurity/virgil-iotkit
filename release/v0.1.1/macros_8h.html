@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: macros.h File Reference</title>
+<title>Virgil IoT SDK: macros.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -450,7 +450,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a>(<a class="code" href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a>((BUF1), (BUF2), (SIZE)) == 0,                                                                \</div>
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a>(memcmp((BUF1), (BUF2), (SIZE)) == 0,                                                                \</div>
 <div class="line">                   #BUF1 <span class="stringliteral">&quot; is not equal to &quot;</span> #BUF2 <span class="stringliteral">&quot; while comparing %d bytes&quot;</span>,                                        \</div>
 <div class="line">                   (<span class="keywordtype">int</span>)(SIZE))</div>
 </div><!-- fragment -->
@@ -536,14 +536,14 @@ Macros</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6">VS_CODE_ERR_NULLPTR_ARGUMENT</a></div><div class="ttdoc">Argument is NULL pointer while it must be not NULL.</div><div class="ttdef"><b>Definition:</b> status_code.h:81</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a00e9f0bad43fb850432978eed21636a6">VS_CODE_ERR_NULLPTR_ARGUMENT</a></div><div class="ttdoc">Argument is NULL pointer while it must be not NULL.</div><div class="ttdef"><b>Definition:</b> status_code.h:76</div></div>
 <div class="ttc" id="amacros_8h_html_a84c7d845ef01ed2d68a597cc1b904cf6"><div class="ttname"><a href="macros_8h.html#a84c7d845ef01ed2d68a597cc1b904cf6">CHECK_RET</a></div><div class="ttdeci">#define CHECK_RET(CONDITION, RETCODE, MESSAGE,...)</div><div class="ttdoc">Check condition and return RETCODE if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:108</div></div>
-<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90">VS_CODE_OLD_VERSION</a></div><div class="ttdoc">Provided file is not newer than the current file.</div><div class="ttdef"><b>Definition:</b> status_code.h:79</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432ade27b2be1959b87ab9fed36e8a5e2d90">VS_CODE_OLD_VERSION</a></div><div class="ttdoc">Provided file is not newer than the current file.</div><div class="ttdef"><b>Definition:</b> status_code.h:74</div></div>
 <div class="ttc" id="amacros_8h_html_ac1208e1c61101d1e3f100fc9e650f022"><div class="ttname"><a href="macros_8h.html#ac1208e1c61101d1e3f100fc9e650f022">CHECK_NOT_ZERO_RET</a></div><div class="ttdeci">#define CHECK_NOT_ZERO_RET(ARG, RETCODE)</div><div class="ttdoc">Checks that ARG is non-zero and return RETCODE in case of zero one.</div><div class="ttdef"><b>Definition:</b> macros.h:199</div></div>
 <div class="ttc" id="amacros_8h_html_a62831c3051dabf6bfe98dff179136f71"><div class="ttname"><a href="macros_8h.html#a62831c3051dabf6bfe98dff179136f71">MEMCMP_CHECK_RET</a></div><div class="ttdeci">#define MEMCMP_CHECK_RET(BUF1, BUF2, SIZE, RETCODE)</div><div class="ttdoc">Compares two buffers and return RETCODE if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:171</div></div>
 <div class="ttc" id="amacros_8h_html_add6be4b0ddc855d3c6649871b7486f93"><div class="ttname"><a href="macros_8h.html#add6be4b0ddc855d3c6649871b7486f93">CHECK</a></div><div class="ttdeci">#define CHECK(CONDITION, MESSAGE,...)</div><div class="ttdoc">Check condition and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> macros.h:90</div></div>
 <div class="ttc" id="astdlib-config_8h_html_a3f8b70bd029faecf3d1ece93a432d905"><div class="ttname"><a href="stdlib-config_8h.html#a3f8b70bd029faecf3d1ece93a432d905">VS_IOT_MEMCMP</a></div><div class="ttdeci">#define VS_IOT_MEMCMP</div><div class="ttdoc">memcmp call</div><div class="ttdef"><b>Definition:</b> stdlib-config.h:62</div></div>
-<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf">VS_CODE_ERR_INCORRECT_PARAMETER</a></div><div class="ttdoc">Incorrect parameter.</div><div class="ttdef"><b>Definition:</b> status_code.h:84</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a0f63ad2e8164e6f099250e30750ab5bf">VS_CODE_ERR_INCORRECT_PARAMETER</a></div><div class="ttdoc">Incorrect parameter.</div><div class="ttdef"><b>Definition:</b> status_code.h:79</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

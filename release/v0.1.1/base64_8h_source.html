@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: base64.h Source File</title>
+<title>Virgil IoT SDK: base64.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -132,28 +132,26 @@ $(function() {
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keyword">namespace </span>VirgilIoTKit {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<a class="code" href="base64_8h.html#aa80d8b2eee8faccef48cb64a8dc23331">base64decode_len</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<a class="code" href="base64_8h.html#a69a4ebdf4ec5275c547df7f8f9237145">base64decode</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *out, <span class="keywordtype">int</span> *outlen);</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="keywordtype">int</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<a class="code" href="base64_8h.html#a40268c2c2f0462bbd2895b74747319a8">base64encode_len</a>(<span class="keywordtype">int</span> len);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<a class="code" href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">base64encode</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen, <span class="keywordtype">char</span> *out, <span class="keywordtype">int</span> *outlen);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;} <span class="comment">// extern &quot;C&quot;</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;} <span class="comment">// namespace VirgilIoTKit</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _BASE64_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<a class="code" href="base64_8h.html#aa80d8b2eee8faccef48cb64a8dc23331">base64decode_len</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<a class="code" href="base64_8h.html#a69a4ebdf4ec5275c547df7f8f9237145">base64decode</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *out, <span class="keywordtype">int</span> *outlen);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keywordtype">int</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<a class="code" href="base64_8h.html#a40268c2c2f0462bbd2895b74747319a8">base64encode_len</a>(<span class="keywordtype">int</span> len);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<a class="code" href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">base64encode</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *in, <span class="keywordtype">int</span> inlen, <span class="keywordtype">char</span> *out, <span class="keywordtype">int</span> *outlen);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160; </div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _BASE64_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="abase64_8h_html_abf8e8c791f697eeb9ecc8ff2a0380e9b"><div class="ttname"><a href="base64_8h.html#abf8e8c791f697eeb9ecc8ff2a0380e9b">base64encode</a></div><div class="ttdeci">bool base64encode(const unsigned char *in, int inlen, char *out, int *outlen)</div><div class="ttdoc">Base64 Encode data.</div></div>
 <div class="ttc" id="abase64_8h_html_a40268c2c2f0462bbd2895b74747319a8"><div class="ttname"><a href="base64_8h.html#a40268c2c2f0462bbd2895b74747319a8">base64encode_len</a></div><div class="ttdeci">int base64encode_len(int len)</div><div class="ttdoc">Get Base64 Encoded len.</div></div>

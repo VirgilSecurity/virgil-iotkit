@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: firmware_hal.h Source File</title>
+<title>Virgil IoT SDK: firmware_hal.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -108,28 +108,18 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="status__code_8h.html">virgil/iot/status_code/status_code.h</a>&gt;</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">namespace </span>VirgilIoTKit {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<a class="code" href="firmware__hal_8h.html#a6361dcf901a4b728825270a0f4b017d0">vs_firmware_install_prepare_space_hal</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<a class="code" href="firmware__hal_8h.html#ae9371a81bc87662f09d6850e99d57f3f">vs_firmware_install_append_data_hal</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *data, uint16_t data_sz);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<a class="code" href="firmware__hal_8h.html#aeddb14caa9557a737cef826449cf861f">vs_firmware_get_own_firmware_footer_hal</a>(<span class="keywordtype">void</span> *footer, <span class="keywordtype">size_t</span> footer_sz);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;} <span class="comment">// extern &quot;C&quot;</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;} <span class="comment">// namespace VirgilIoTKit</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif // VS_FIRMWARE_INTERFACE_H</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<a class="code" href="firmware__hal_8h.html#a6361dcf901a4b728825270a0f4b017d0">vs_firmware_install_prepare_space_hal</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<a class="code" href="firmware__hal_8h.html#ae9371a81bc87662f09d6850e99d57f3f">vs_firmware_install_append_data_hal</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *data, uint16_t data_sz);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<a class="code" href="firmware__hal_8h.html#aeddb14caa9557a737cef826449cf861f">vs_firmware_get_own_firmware_footer_hal</a>(<span class="keywordtype">void</span> *footer, <span class="keywordtype">size_t</span> footer_sz);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif // VS_FIRMWARE_INTERFACE_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code.</div><div class="ttdef"><b>Definition:</b> status_code.h:77</div></div>
+<div class="ttc" id="astatus__code_8h_html_af385b5c6ab5f3183ce75d4d1e676e432"><div class="ttname"><a href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a></div><div class="ttdeci">vs_status_e</div><div class="ttdoc">Status code.</div><div class="ttdef"><b>Definition:</b> status_code.h:72</div></div>
 <div class="ttc" id="astatus__code_8h_html"><div class="ttname"><a href="status__code_8h.html">status_code.h</a></div><div class="ttdoc">Status codes and macroses.</div></div>
 <div class="ttc" id="afirmware__hal_8h_html_aeddb14caa9557a737cef826449cf861f"><div class="ttname"><a href="firmware__hal_8h.html#aeddb14caa9557a737cef826449cf861f">vs_firmware_get_own_firmware_footer_hal</a></div><div class="ttdeci">vs_status_e vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz)</div><div class="ttdoc">Get own firmware footer.</div></div>
 <div class="ttc" id="afirmware__hal_8h_html_ae9371a81bc87662f09d6850e99d57f3f"><div class="ttname"><a href="firmware__hal_8h.html#ae9371a81bc87662f09d6850e99d57f3f">vs_firmware_install_append_data_hal</a></div><div class="ttdeci">vs_status_e vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz)</div><div class="ttdoc">Append data.</div></div>

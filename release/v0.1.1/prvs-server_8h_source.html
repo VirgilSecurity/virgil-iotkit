@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: prvs-server.h Source File</title>
+<title>Virgil IoT SDK: prvs-server.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -108,32 +108,29 @@ $(function() {
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#if PRVS_SERVER</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="snap-structs_8h.html">virgil/iot/protocols/snap/snap-structs.h</a>&gt;</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="prvs-structs_8h.html">virgil/iot/protocols/snap/prvs/prvs-structs.h</a>&gt;</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="provision_8h.html">virgil/iot/provision/provision.h</a>&gt;</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="secmodule_8h.html">virgil/iot/secmodule/secmodule.h</a>&gt;</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">namespace </span>VirgilIoTKit {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<a class="code" href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a>(<a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} <span class="comment">// extern &quot;C&quot;</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;} <span class="comment">// namespace VirgilIoTKit</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif // PRVS_SERVER</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_SERVER_H</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="snap-structs_8h.html">virgil/iot/protocols/snap/snap-structs.h</a>&gt;</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="prvs-structs_8h.html">virgil/iot/protocols/snap/prvs/prvs-structs.h</a>&gt;</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="provision_8h.html">virgil/iot/provision/provision.h</a>&gt;</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="secmodule_8h.html">virgil/iot/secmodule/secmodule.h</a>&gt;</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<a class="code" href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a>(<a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif // PRVS_SERVER</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif // VS_SECURITY_SDK_SNAP_SERVICES_PRVS_SERVER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:458</div></div>
+<div class="ttc" id="astructvs__secmodule__impl__t_html"><div class="ttname"><a href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a></div><div class="ttdoc">Security Module implementation.</div><div class="ttdef"><b>Definition:</b> secmodule.h:454</div></div>
 <div class="ttc" id="aprovision_8h_html"><div class="ttname"><a href="provision_8h.html">provision.h</a></div><div class="ttdoc">Provision interface.</div></div>
 <div class="ttc" id="asnap-structs_8h_html"><div class="ttname"><a href="snap-structs_8h.html">snap-structs.h</a></div><div class="ttdoc">SNAP structures.</div></div>
-<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:312</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:300</div></div>
 <div class="ttc" id="aprvs-structs_8h_html"><div class="ttname"><a href="prvs-structs_8h.html">prvs-structs.h</a></div><div class="ttdoc">PRVS structures.</div></div>
 <div class="ttc" id="aprvs-server_8h_html_ad94bd9f42dce4e8a68bbab711baada8b"><div class="ttname"><a href="prvs-server_8h.html#ad94bd9f42dce4e8a68bbab711baada8b">vs_snap_prvs_server</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_server(vs_secmodule_impl_t *secmodule)</div><div class="ttdoc">PRVS Server SNAP Service implementation.</div></div>
 <div class="ttc" id="asecmodule_8h_html"><div class="ttname"><a href="secmodule_8h.html">secmodule.h</a></div><div class="ttdoc">Security Module implementations signatures.</div></div>

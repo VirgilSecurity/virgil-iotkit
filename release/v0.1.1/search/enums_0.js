@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deviceinforoles_1552',['DeviceInfoRoles',['../class_v_s_q_snap_info_client_qml.html#ad9eafc83b5f439db5f122cfe446d3de6',1,'VSQSnapInfoClientQml::DeviceInfoRoles()'],['../class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311b',1,'VSQSnapSnifferQml::DeviceInfoRoles()']]]
+  ['json_5fdata_5ftypes_1280',['json_data_types',['../json__generator_8h.html#a914b6da7b1da8584f7c44f8c20738e4f',1,'json_generator.h']]]
 ];

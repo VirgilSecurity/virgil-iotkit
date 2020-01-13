@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: provision-structs.h File Reference</title>
+<title>Virgil IoT SDK: provision-structs.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -109,7 +109,7 @@ Macros</h2></td></tr>
 <tr class="separator:abe60935d8cfe78ec7fd2aafcdec66105"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeffdb5d6efa1355a7d8d887c86b53229"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#aeffdb5d6efa1355a7d8d887c86b53229">HTONS_IN_COMPILE_TIME</a>(val)&#160;&#160;&#160;(uint16_t)(((uint16_t)val &amp; 0xFF) &lt;&lt; 8 | ((uint16_t)val &amp; 0xFF00) &gt;&gt; 8)</td></tr>
 <tr class="separator:aeffdb5d6efa1355a7d8d887c86b53229"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a663b5e774b602fac7e8276f7a6d4c6d2">VS_START_EPOCH</a>&#160;&#160;&#160;(1420070400)</td></tr>
+<tr class="memitem:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a663b5e774b602fac7e8276f7a6d4c6d2">VS_START_EPOCH</a>&#160;&#160;&#160;(1420070400);</td></tr>
 <tr class="memdesc:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">The start time point for UNIX time format.  <a href="provision-structs_8h.html#a663b5e774b602fac7e8276f7a6d4c6d2">More...</a><br /></td></tr>
 <tr class="separator:a663b5e774b602fac7e8276f7a6d4c6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9602fd0c6eab3f4618927cee4452c632"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="provision-structs_8h.html#a9602fd0c6eab3f4618927cee4452c632">VS_DEVICE_SERIAL_SIZE</a>&#160;&#160;&#160;(32)</td></tr>
@@ -318,7 +318,7 @@ Provision structures usage</h1>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define VS_START_EPOCH&#160;&#160;&#160;(1420070400)</td>
+          <td class="memname">#define VS_START_EPOCH&#160;&#160;&#160;(1420070400);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -399,7 +399,7 @@ Provision structures usage</h1>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a229d4a1ba75438434992059a2062cad9"></a>VS_KEY_AUTH&#160;</td><td class="fielddoc"><p>Authentication key. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9ab4264fd585abc1385bce310ae624b3e0"></a>VS_KEY_TRUSTLIST&#160;</td><td class="fielddoc"><p>TrustList key. </p>
+<tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9ab4264fd585abc1385bce310ae624b3e0"></a>VS_KEY_TRUSTLIST&#160;</td><td class="fielddoc"><p>Trust List key. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a8e7c46a325769db43ae2aca03bbe49b9a74495a32f6f89daa80b3994b97fe5866"></a>VS_KEY_FIRMWARE&#160;</td><td class="fielddoc"><p>Firmware key. </p>
 </td></tr>
@@ -494,19 +494,19 @@ Provision structures usage</h1>
 </td></tr>
 <tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56a6d12768445041f03945a9b129732b4bf"></a>VS_PRVS_PBA2&#160;</td><td class="fielddoc"><p>Set Auth Key 2. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ae1b7481b6361c40e46ae2ef82d0a4bc6"></a>VS_PRVS_PBT1&#160;</td><td class="fielddoc"><p>Set TrustList Key 1. </p>
+<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ae1b7481b6361c40e46ae2ef82d0a4bc6"></a>VS_PRVS_PBT1&#160;</td><td class="fielddoc"><p>Set Trust List Key 1. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ae946a5a00460c0133ed9be8f41ff0957"></a>VS_PRVS_PBT2&#160;</td><td class="fielddoc"><p>Set TrustList 2. </p>
+<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ae946a5a00460c0133ed9be8f41ff0957"></a>VS_PRVS_PBT2&#160;</td><td class="fielddoc"><p>Set Trust List 2. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56aa5927c879441e98c2116baf654bb0743"></a>VS_PRVS_PBF1&#160;</td><td class="fielddoc"><p>Set Firmware Key 1. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56af1460ad58d61e9b048f079e2fd97c7d0"></a>VS_PRVS_PBF2&#160;</td><td class="fielddoc"><p>Set Firmware Key 2. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56aa2c50bb8f5d82f57a16fff4ad6359dec"></a>VS_PRVS_TLH&#160;</td><td class="fielddoc"><p>Set TrustList Header. </p>
+<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56aa2c50bb8f5d82f57a16fff4ad6359dec"></a>VS_PRVS_TLH&#160;</td><td class="fielddoc"><p>Set Trust List Header. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ad0ccc69649711ec9e92e04d7b85923de"></a>VS_PRVS_TLC&#160;</td><td class="fielddoc"><p>Set TrustList Chunk. </p>
+<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56ad0ccc69649711ec9e92e04d7b85923de"></a>VS_PRVS_TLC&#160;</td><td class="fielddoc"><p>Set Trust List Chunk. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56a8163de7a38d1239ac06ad44a087a28f5"></a>VS_PRVS_TLF&#160;</td><td class="fielddoc"><p>Set TrustList Footer. </p>
+<tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56a8163de7a38d1239ac06ad44a087a28f5"></a>VS_PRVS_TLF&#160;</td><td class="fielddoc"><p>Set Trust List Footer. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a9361b6db2a362cc3478269962f945c56a6da6f1bd66a46b72cb6b0d19319d261b"></a>VS_PRVS_DEVI&#160;</td><td class="fielddoc"><p>Get DEVice Info. </p>
 </td></tr>
@@ -519,7 +519,7 @@ Provision structures usage</h1>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:120</div></div>
+<div class="ttc" id="aprovision-structs_8h_html_af50a14354959f598dabb99c25aecd685"><div class="ttname"><a href="provision-structs_8h.html#af50a14354959f598dabb99c25aecd685">vs_device_manufacture_id_t</a></div><div class="ttdeci">uint8_t vs_device_manufacture_id_t[VS_DEVICE_MANUFACTURE_ID_SIZE]</div><div class="ttdoc">Manufacture ID type.</div><div class="ttdef"><b>Definition:</b> provision-structs.h:115</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

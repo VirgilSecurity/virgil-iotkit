@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: snap-structs.h File Reference</title>
+<title>Virgil IoT SDK: snap-structs.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -77,9 +77,9 @@ $(function() {
 
 <p>SNAP structures.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
-<code>#include &lt;stdint.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="provision-structs_8h_source.html">virgil/iot/provision/provision-structs.h</a>&gt;</code><br />
 </div>
 <p><a href="snap-structs_8h_source.html">Go to the source code of this file.</a></p>
@@ -139,23 +139,23 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:ad0ec0000ca18d2e4a8b8f0c9240ac9e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">SNAP element ID.  <a href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6">More...</a><br /></td></tr>
 <tr class="separator:ad0ec0000ca18d2e4a8b8f0c9240ac9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4177fb35b2b2554bea8c2ac61110e91a"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">vs_netif_rx_cb_t</a>) (struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const uint8_t *data, const uint16_t data_sz, const uint8_t **packet_data, uint16_t *packet_data_sz)</td></tr>
-<tr class="memdesc:a4177fb35b2b2554bea8c2ac61110e91a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Received data.  <a href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">More...</a><br /></td></tr>
+<tr class="memdesc:a4177fb35b2b2554bea8c2ac61110e91a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Received data callback.  <a href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">More...</a><br /></td></tr>
 <tr class="separator:a4177fb35b2b2554bea8c2ac61110e91a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bec5fd8cab6db0e333f236ef5ad77fd"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">vs_netif_process_cb_t</a>) (struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const uint8_t *data, const uint16_t data_sz)</td></tr>
-<tr class="memdesc:a1bec5fd8cab6db0e333f236ef5ad77fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preprocessed data.  <a href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">More...</a><br /></td></tr>
+<tr class="memdesc:a1bec5fd8cab6db0e333f236ef5ad77fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preprocessed data callback.  <a href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">More...</a><br /></td></tr>
 <tr class="separator:a1bec5fd8cab6db0e333f236ef5ad77fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a214e1ffded07d499f5ca8c0b765196a0"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a214e1ffded07d499f5ca8c0b765196a0">vs_netif_tx_t</a>) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const uint8_t *data, const uint16_t data_sz)</td></tr>
-<tr class="memdesc:a214e1ffded07d499f5ca8c0b765196a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data.  <a href="snap-structs_8h.html#a214e1ffded07d499f5ca8c0b765196a0">More...</a><br /></td></tr>
-<tr class="separator:a214e1ffded07d499f5ca8c0b765196a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0a194aed6fae9591a8a64eb11d2d445"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#af0a194aed6fae9591a8a64eb11d2d445">vs_netif_mac_t</a>) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, struct <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr)</td></tr>
-<tr class="memdesc:af0a194aed6fae9591a8a64eb11d2d445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get MAC address.  <a href="snap-structs_8h.html#af0a194aed6fae9591a8a64eb11d2d445">More...</a><br /></td></tr>
-<tr class="separator:af0a194aed6fae9591a8a64eb11d2d445"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a945953874b67134cf2b0a864bc5e8700"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a945953874b67134cf2b0a864bc5e8700">vs_netif_init_t</a>) (struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const <a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">vs_netif_rx_cb_t</a> rx_cb, const <a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">vs_netif_process_cb_t</a> process_cb)</td></tr>
-<tr class="memdesc:a945953874b67134cf2b0a864bc5e8700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializer.  <a href="snap-structs_8h.html#a945953874b67134cf2b0a864bc5e8700">More...</a><br /></td></tr>
-<tr class="separator:a945953874b67134cf2b0a864bc5e8700"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a88e08360546cfde8b4c730813fa0ec"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a8a88e08360546cfde8b4c730813fa0ec">vs_netif_deinit_t</a>) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif)</td></tr>
-<tr class="memdesc:a8a88e08360546cfde8b4c730813fa0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="snap-structs_8h.html#a8a88e08360546cfde8b4c730813fa0ec">More...</a><br /></td></tr>
-<tr class="separator:a8a88e08360546cfde8b4c730813fa0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0dfba9b8864b019e5ef5c47f79eb482"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#ac0dfba9b8864b019e5ef5c47f79eb482">vs_netif_tx_t</a>) (const uint8_t *data, const uint16_t data_sz)</td></tr>
+<tr class="memdesc:ac0dfba9b8864b019e5ef5c47f79eb482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data callback.  <a href="snap-structs_8h.html#ac0dfba9b8864b019e5ef5c47f79eb482">More...</a><br /></td></tr>
+<tr class="separator:ac0dfba9b8864b019e5ef5c47f79eb482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83c513507a89f90da5f02d6497120e73"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a83c513507a89f90da5f02d6497120e73">vs_netif_mac_t</a>) (struct <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr)</td></tr>
+<tr class="memdesc:a83c513507a89f90da5f02d6497120e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get MAC address.  <a href="snap-structs_8h.html#a83c513507a89f90da5f02d6497120e73">More...</a><br /></td></tr>
+<tr class="separator:a83c513507a89f90da5f02d6497120e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf59e2cbe855cbba1fdf90005e1f9145"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#abf59e2cbe855cbba1fdf90005e1f9145">vs_netif_init_t</a>) (const <a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">vs_netif_rx_cb_t</a> rx_cb, const <a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">vs_netif_process_cb_t</a> process_cb)</td></tr>
+<tr class="memdesc:abf59e2cbe855cbba1fdf90005e1f9145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializer.  <a href="snap-structs_8h.html#abf59e2cbe855cbba1fdf90005e1f9145">More...</a><br /></td></tr>
+<tr class="separator:abf59e2cbe855cbba1fdf90005e1f9145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae6119faddaa749a14b0742391f56736"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#aae6119faddaa749a14b0742391f56736">vs_netif_deinit_t</a>) (void)</td></tr>
+<tr class="memdesc:aae6119faddaa749a14b0742391f56736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="snap-structs_8h.html#aae6119faddaa749a14b0742391f56736">More...</a><br /></td></tr>
+<tr class="separator:aae6119faddaa749a14b0742391f56736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87982ef6c88cd50245825a5413e41951"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="snap-structs_8h.html#a87982ef6c88cd50245825a5413e41951">vs_snap_service_request_processor_t</a>) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, <a class="el" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6">vs_snap_element_t</a> element_id, const uint8_t *request, const uint16_t request_sz, uint8_t *response, const uint16_t response_buf_sz, uint16_t *response_sz)</td></tr>
 <tr class="memdesc:a87982ef6c88cd50245825a5413e41951"><td class="mdescLeft">&#160;</td><td class="mdescRight">SNAP Service Request Processor.  <a href="snap-structs_8h.html#a87982ef6c88cd50245825a5413e41951">More...</a><br /></td></tr>
 <tr class="separator:a87982ef6c88cd50245825a5413e41951"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -306,38 +306,32 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="a8a88e08360546cfde8b4c730813fa0ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a88e08360546cfde8b4c730813fa0ec">&#9670;&nbsp;</a></span>vs_netif_deinit_t</h2>
+<a id="aae6119faddaa749a14b0742391f56736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae6119faddaa749a14b0742391f56736">&#9670;&nbsp;</a></span>vs_netif_deinit_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_deinit_t) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif)</td>
+          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_deinit_t) (void)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Destructor. </p>
 <p>Callback for <em>deinit</em> member of <a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> structure. This callback is used to destroy SNAP implementation. Called from <a class="el" href="snap_8h.html#ace5833963bf0e4eb7e760b76b80deeeb" title="Destroy SNAP.">vs_snap_deinit</a> call.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL.</td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432a81a1881ebbfde7ce78658862b9ec60b6" title="Successful operation.">VS_CODE_OK</a> in case of success or error code. </dd></dl>
 
 </div>
 </div>
-<a id="a945953874b67134cf2b0a864bc5e8700"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a945953874b67134cf2b0a864bc5e8700">&#9670;&nbsp;</a></span>vs_netif_init_t</h2>
+<a id="abf59e2cbe855cbba1fdf90005e1f9145"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf59e2cbe855cbba1fdf90005e1f9145">&#9670;&nbsp;</a></span>vs_netif_init_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_init_t) (struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const <a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">vs_netif_rx_cb_t</a> rx_cb, const <a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">vs_netif_process_cb_t</a> process_cb)</td>
+          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_init_t) (const <a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">vs_netif_rx_cb_t</a> rx_cb, const <a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">vs_netif_process_cb_t</a> process_cb)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -346,9 +340,8 @@ Enumerations</h2></td></tr>
 <p>Callback for <em>init</em> member of <a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> structure. This callback is used to initialize SNAP implementation. Called from <a class="el" href="snap_8h.html#a87bd3294eb685e92c4d98001f8185050" title="Init SNAP.">vs_snap_init</a> call.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rx_cb</td><td><a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a" title="Received data.">vs_netif_rx_cb_t</a> callback. Cannot be NULL. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">process_cb</td><td><a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd" title="Preprocessed data.">vs_netif_process_cb_t</a> callback. Cannot be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rx_cb</td><td><a class="el" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a" title="Received data callback.">vs_netif_rx_cb_t</a> callback. Cannot be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">process_cb</td><td><a class="el" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd" title="Preprocessed data callback.">vs_netif_process_cb_t</a> callback. Cannot be NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -356,14 +349,14 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="af0a194aed6fae9591a8a64eb11d2d445"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0a194aed6fae9591a8a64eb11d2d445">&#9670;&nbsp;</a></span>vs_netif_mac_t</h2>
+<a id="a83c513507a89f90da5f02d6497120e73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83c513507a89f90da5f02d6497120e73">&#9670;&nbsp;</a></span>vs_netif_mac_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_mac_t) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, struct <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr)</td>
+          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_mac_t) (struct <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac_addr)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -372,7 +365,6 @@ Enumerations</h2></td></tr>
 <p>Callback for <em>mac_addr</em> member of <a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> structure. This callback is used to receive current MAC address. Called from <a class="el" href="snap_8h.html#a0c6a2211018cb740d586917ac944139d" title="MAC address.">vs_snap_mac_addr</a> call.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">mac_addr</td><td><a class="el" href="structvs__mac__addr__t.html" title="MAC address.">vs_mac_addr_t</a> MAC address buffer. Cannot be NULL.</td></tr>
   </table>
   </dd>
@@ -393,8 +385,8 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Preprocessed data. </p>
-<p>Callback for <a class="el" href="snap-structs_8h.html#a945953874b67134cf2b0a864bc5e8700" title="Initializer.">vs_netif_init_t</a> function callback. This callback is used to preprocess data.</p>
+<p>Preprocessed data callback. </p>
+<p>Callback for <a class="el" href="snap-structs_8h.html#abf59e2cbe855cbba1fdf90005e1f9145" title="Initializer.">vs_netif_init_t</a> function callback. This callback is used to preprocess data.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL. </td></tr>
@@ -419,8 +411,8 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Received data. </p>
-<p>Callback for <a class="el" href="snap-structs_8h.html#a945953874b67134cf2b0a864bc5e8700" title="Initializer.">vs_netif_init_t</a> function callback. This callback is used when new SNAP data has been loaded.</p>
+<p>Received data callback. </p>
+<p>Callback for <a class="el" href="snap-structs_8h.html#abf59e2cbe855cbba1fdf90005e1f9145" title="Initializer.">vs_netif_init_t</a> function callback. This callback is used when new SNAP data has been loaded.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL. </td></tr>
@@ -435,23 +427,22 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="a214e1ffded07d499f5ca8c0b765196a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a214e1ffded07d499f5ca8c0b765196a0">&#9670;&nbsp;</a></span>vs_netif_tx_t</h2>
+<a id="ac0dfba9b8864b019e5ef5c47f79eb482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0dfba9b8864b019e5ef5c47f79eb482">&#9670;&nbsp;</a></span>vs_netif_tx_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_tx_t) (const struct <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const uint8_t *data, const uint16_t data_sz)</td>
+          <td class="memname">typedef <a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>(* vs_netif_tx_t) (const uint8_t *data, const uint16_t data_sz)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Send data. </p>
+<p>Send data callback. </p>
 <p>Callback for <em>tx</em> member of <a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> structure. This callback is used to send data. Called from <a class="el" href="snap_8h.html#a6c3b2837c70d1df4cb19cf1d8b29d6bd" title="Send SNAP message.">vs_snap_send</a> call.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> Network interface. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Data buffer. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data_sz</td><td>Size in bytes of data portion. Cannot be zero.</td></tr>
   </table>
@@ -547,7 +538,7 @@ Enumerations</h2></td></tr>
 <p>Callback for <em>request_process</em> member of <a class="el" href="structvs__snap__service__t.html" title="SNAP service descriptor.">vs_snap_service_t</a> structure. This callback is called to process SNAP service <em>request</em> and to prepare <em>response</em> if needed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> network interface. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element_id</td><td><a class="el" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6" title="SNAP element ID.">vs_snap_element_t</a> service element. Normally this is command ID. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">request</td><td>Request data buffer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">request_sz</td><td>Request data size. </td></tr>
@@ -577,7 +568,7 @@ Enumerations</h2></td></tr>
 <p>Callback for <em>response_process</em> member of <a class="el" href="structvs__snap__service__t.html" title="SNAP service descriptor.">vs_snap_service_t</a> structure. This callback is called to process SNAP service response.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>Network interface. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td><a class="el" href="structvs__netif__t.html" title="Network interface.">vs_netif_t</a> network interface. Cannot be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element_id</td><td><a class="el" href="snap-structs_8h.html#ad0ec0000ca18d2e4a8b8f0c9240ac9e6" title="SNAP element ID.">vs_snap_element_t</a> service element. Normally this is command ID. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">is_ack</td><td>Boolean flag indicating successful packet receiving </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">response</td><td>Response buffer. </td></tr>

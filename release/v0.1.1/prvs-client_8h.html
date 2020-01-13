@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Virgil IoT KIT: prvs-client.h File Reference</title>
+<title>Virgil IoT SDK: prvs-client.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Virgil IoT KIT
+   <div id="projectname">Virgil IoT SDK
    </div>
   </td>
  </tr>
@@ -121,10 +121,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a26ed793f486e0bdf1ca532b04d52ce7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get data.  <a href="prvs-client_8h.html#a26ed793f486e0bdf1ca532b04d52ce7c">More...</a><br /></td></tr>
 <tr class="separator:a26ed793f486e0bdf1ca532b04d52ce7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92751931c559808a0d460575230e3f47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="prvs-client_8h.html#a92751931c559808a0d460575230e3f47">vs_snap_prvs_set_tl_header</a> (const <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac, const uint8_t *data, uint16_t data_sz, uint32_t wait_ms)</td></tr>
-<tr class="memdesc:a92751931c559808a0d460575230e3f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set TrustList header.  <a href="prvs-client_8h.html#a92751931c559808a0d460575230e3f47">More...</a><br /></td></tr>
+<tr class="memdesc:a92751931c559808a0d460575230e3f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Trust List header.  <a href="prvs-client_8h.html#a92751931c559808a0d460575230e3f47">More...</a><br /></td></tr>
 <tr class="separator:a92751931c559808a0d460575230e3f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10b80bcd22bc3c63299d8e07a8e36d06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="prvs-client_8h.html#a10b80bcd22bc3c63299d8e07a8e36d06">vs_snap_prvs_set_tl_footer</a> (const <a class="el" href="structvs__netif__t.html">vs_netif_t</a> *netif, const <a class="el" href="structvs__mac__addr__t.html">vs_mac_addr_t</a> *mac, const uint8_t *data, uint16_t data_sz, uint32_t wait_ms)</td></tr>
-<tr class="memdesc:a10b80bcd22bc3c63299d8e07a8e36d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set TrustList footer.  <a href="prvs-client_8h.html#a10b80bcd22bc3c63299d8e07a8e36d06">More...</a><br /></td></tr>
+<tr class="memdesc:a10b80bcd22bc3c63299d8e07a8e36d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Trust List footer.  <a href="prvs-client_8h.html#a10b80bcd22bc3c63299d8e07a8e36d06">More...</a><br /></td></tr>
 <tr class="separator:a10b80bcd22bc3c63299d8e07a8e36d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -583,8 +583,8 @@ PRVS Client usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Set TrustList footer. </p>
-<p>Sends request for set <em>data</em> to the TrustList footer for <em>mac</em> device</p>
+<p>Set Trust List footer. </p>
+<p>Sends request for set <em>data</em> to the Trust List footer for <em>mac</em> device</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>SNAP service descriptor. If NULL, default one will be used. </td></tr>
@@ -642,8 +642,8 @@ PRVS Client usage</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Set TrustList header. </p>
-<p>Sends request for set <em>data</em> to the TrustList header for <em>mac</em> device</p>
+<p>Set Trust List header. </p>
+<p>Sends request for set <em>data</em> to the Trust List header for <em>mac</em> device</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">netif</td><td>SNAP service descriptor. If NULL, default one will be used. </td></tr>
@@ -741,10 +741,10 @@ PRVS Client usage</h1>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:145</div></div>
+<div class="ttc" id="astatus__code_8h_html_aa0d986d170e834631b902001dae653a2"><div class="ttname"><a href="status__code_8h.html#aa0d986d170e834631b902001dae653a2">STATUS_CHECK</a></div><div class="ttdeci">#define STATUS_CHECK(OPERATION, MESSAGE,...)</div><div class="ttdoc">Status code check and perform goto terminate if non-successful.</div><div class="ttdef"><b>Definition:</b> status_code.h:134</div></div>
 <div class="ttc" id="aprvs-client_8h_html_a9ced057480a18238abde26c755cc65a4"><div class="ttname"><a href="prvs-client_8h.html#a9ced057480a18238abde26c755cc65a4">vs_snap_prvs_enum_devices</a></div><div class="ttdeci">vs_status_e vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms)</div><div class="ttdoc">Enumerate devices, which don't have initialization provision yet.</div></div>
-<div class="ttc" id="astructvs__snap__prvs__dnid__list__t_html"><div class="ttname"><a href="structvs__snap__prvs__dnid__list__t.html">vs_snap_prvs_dnid_list_t</a></div><div class="ttdoc">Devices enumeration.</div><div class="ttdef"><b>Definition:</b> prvs-structs.h:72</div></div>
-<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:312</div></div>
+<div class="ttc" id="astructvs__snap__prvs__dnid__list__t_html"><div class="ttname"><a href="structvs__snap__prvs__dnid__list__t.html">vs_snap_prvs_dnid_list_t</a></div><div class="ttdoc">Devices enumeration.</div><div class="ttdef"><b>Definition:</b> prvs-structs.h:71</div></div>
+<div class="ttc" id="astructvs__snap__service__t_html"><div class="ttname"><a href="structvs__snap__service__t.html">vs_snap_service_t</a></div><div class="ttdoc">SNAP service descriptor.</div><div class="ttdef"><b>Definition:</b> snap-structs.h:300</div></div>
 <div class="ttc" id="aprvs-client_8h_html_ac47e531e85f60257d157b15a19da8503"><div class="ttname"><a href="prvs-client_8h.html#ac47e531e85f60257d157b15a19da8503">vs_snap_prvs_client</a></div><div class="ttdeci">const vs_snap_service_t * vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl)</div><div class="ttdoc">PRVS Client SNAP Service implementation.</div></div>
 <div class="ttc" id="asnap_8h_html_a692661c304f19a0cd382d3948e3fa862"><div class="ttname"><a href="snap_8h.html#a692661c304f19a0cd382d3948e3fa862">vs_snap_register_service</a></div><div class="ttdeci">vs_status_e vs_snap_register_service(const vs_snap_service_t *service)</div><div class="ttdoc">Register SNAP service.</div></div>
 <!-- start footer part -->
