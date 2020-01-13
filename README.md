@@ -87,9 +87,23 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
   - FLDT: service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
   - PRVS: service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
 
-<div id='installation'/>
+<div id='scripts'/>
 
 ## Scripts
+Virgil IoTKit also contains a set of scripts that can be run from the [scripts folder](/scripts).
+- `run-sandbox` is used to run IoTKit sandbox. Read more about the sandbox and its functionality [here](/scripts).
+- `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
+- `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
+- `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
+  - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
+  - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
+  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
+
+<div id='scripts'/>
+
+## Integration
 Virgil IoTKit also contains a set of scripts that can be run from the [scripts folder](/scripts).
 - `run-sandbox` is used to run IoTKit sandbox. Read more about the sandbox and its functionality [here](/scripts).
 - `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).

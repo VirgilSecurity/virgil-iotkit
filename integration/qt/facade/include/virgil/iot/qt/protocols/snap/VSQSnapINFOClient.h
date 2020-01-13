@@ -186,7 +186,7 @@ public:
      * \param pollingOptions Polling options list
      * \param deviceMac Device's MAC address. #broadcastMac is used by default for broadcast polling options
      * \param enable Enable \a pollingOptions. True by default
-     * \param periodSeconds Polling period in seconds. 1 second by default
+     * \param periodSeconds Polling period in seconds. 1 second is used by default
      *
      * \return
      */
@@ -199,7 +199,7 @@ public:
     /** Start full polling
      *
      * \param deviceMac Device's MAC address. #broadcastMac is used by default for broadcast polling options
-     * \param periodSeconds Polling period in seconds. 1 second by default
+     * \param periodSeconds Polling period in seconds. 1 second is used by default
      *
      * \return
      */

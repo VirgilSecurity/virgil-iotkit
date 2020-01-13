@@ -65,7 +65,7 @@
  * \endcode
  *
  * After such initialization use SnapInfoClient as ListView data model. Use #VSQSnapInfoClientQml::DeviceInfoRoles to
- * obrain needed information :
+ * obtain needed information :
  *
  * \code
 

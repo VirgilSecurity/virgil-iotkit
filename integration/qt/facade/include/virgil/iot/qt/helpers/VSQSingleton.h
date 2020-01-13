@@ -50,7 +50,7 @@ private:
 YourClass::instance().member();         // Class usage
  * \endcode
  *
- * #VSQIoTKitFacade, #VSQSnapInfoClient, #VSQSnapInfoClientQml use #VSQSingleton as base class.
+ * #VSQIoTKitFacade, #VSQSnapInfoClient, #VSQSnapInfoClientQml use #VSQSingleton.
  *
  */
 
