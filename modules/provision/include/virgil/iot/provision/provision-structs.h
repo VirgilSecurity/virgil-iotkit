@@ -147,13 +147,13 @@ typedef enum {
     VS_PRVS_PBR2 = HTONL_IN_COMPILE_TIME('PBR2'), /**< Set Recovery Key 2 */
     VS_PRVS_PBA1 = HTONL_IN_COMPILE_TIME('PBA1'), /**< Set Auth Key 1 */
     VS_PRVS_PBA2 = HTONL_IN_COMPILE_TIME('PBA2'), /**< Set Auth Key 2 */
-    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'), /**< Set Trust List Key 1 */
-    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set Trust List 2 */
+    VS_PRVS_PBT1 = HTONL_IN_COMPILE_TIME('PBT1'), /**< Set TrustList Key 1 */
+    VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set TrustList 2 */
     VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'), /**< Set Firmware Key 1 */
     VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'), /**< Set Firmware Key 2 */
-    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set Trust List Header */
-    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set Trust List Chunk */
-    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set Trust List Footer */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set TrustList Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set TrustList Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set TrustList Footer */
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
@@ -177,7 +177,7 @@ typedef enum {
 typedef enum {
     VS_KEY_RECOVERY = 0,      /**< Recovery key */
     VS_KEY_AUTH,              /**< Authentication key */
-    VS_KEY_TRUSTLIST,         /**< Trust List key*/
+    VS_KEY_TRUSTLIST,         /**< TrustList key*/
     VS_KEY_FIRMWARE,          /**< Firmware key */
     VS_KEY_FACTORY,           /**< Factory key */
     VS_KEY_IOT_DEVICE,        /**< Key of IoT device */

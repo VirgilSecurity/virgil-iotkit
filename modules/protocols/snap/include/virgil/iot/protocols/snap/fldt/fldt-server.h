@@ -45,7 +45,7 @@
  * file has not been added, #vs_fldt_server_add_filetype callback is called to provide such information.
  * In most case it used to output new file version information and gateway address.
  * To successfully file broadcasting #vs_update_interface_t must be provided for each file type. You can see
- * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for TrustList one.
  *
  * Here you can see an example of FLDT server initialization :
  * \code
@@ -58,7 +58,7 @@
  *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx(), false ),
  *      "Unable to add Firmware file type" );
  *  STATUS_CHECK( vs_fldt_server_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx(), false ),
- *      "Unable to add Trust List file type" );
+ *      "Unable to add TrustList file type" );
  *
  * * \endcode
  *
@@ -106,7 +106,7 @@ extern "C" {
  *
  * \warning Valid pointer to the update context with all implementations must be provided.
  *
- * \note In next release default implementation for Firmware and Trust List will be provided.
+ * \note In next release default implementation for Firmware and TrustList will be provided.
  *
  * \param[in] file_type File type descriptor. Cannot be NULL.
  * \param[in, out] update_ctx Pointer to store update nont NULL context pointer for new file type. Cannot be NULL.

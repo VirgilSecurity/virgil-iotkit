@@ -215,7 +215,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
     STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
+                     "Unable to obtain TrustList version");
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
@@ -225,9 +225,8 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     general_info->device_roles = vs_snap_device_roles();
 
     VS_LOG_DEBUG(
-            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
-            "%s, trust list "
-            "version = %d.%d.%d.%d",
+            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", Firmware version = "
+            "%s, TrustList version = %d.%d.%d.%d",
             general_info->manufacture_id,
             general_info->device_type[0],
             general_info->device_type[1],

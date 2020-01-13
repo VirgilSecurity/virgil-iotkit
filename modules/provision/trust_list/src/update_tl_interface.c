@@ -54,7 +54,7 @@ _tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer,
     CHECK_NOT_ZERO(buffer);
     CHECK_NOT_ZERO(buf_size);
 
-    int res = VS_IOT_SNPRINTF(buffer, buf_size, "Trust List");
+    int res = VS_IOT_SNPRINTF(buffer, buf_size, "TrustList");
     CHECK(res > 0 && res <= buf_size, "Error create TL description string");
 
     return buffer;
@@ -353,7 +353,7 @@ _tl_get_version(vs_update_file_type_t *file_type, vs_file_version_t *file_versio
     CHECK_NOT_ZERO_RET(file_version, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(_tl_get_header(NULL, file_type, &tl_header, header_size, &header_size),
-                     "Unable to get Trust List header");
+                     "Unable to get TrustList header");
     VS_IOT_ASSERT(header_size == sizeof(tl_header));
 
     VS_IOT_MEMCPY(file_version, &tl_header.version, sizeof(*file_version));

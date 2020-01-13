@@ -268,13 +268,13 @@ class UtilityManager:
                         ver_parts[indx] += 1
                         break
                 else:
-                    self.__ui.print_warning("Failed to automatically increment trust list version.")
-                    self.__logger.info("Failed to automatically increment trust list version: %s" % current_tl_version)
+                    self.__ui.print_warning("Failed to automatically increment TrustList version.")
+                    self.__logger.info("Failed to automatically increment TrustList version: %s" % current_tl_version)
                     return None
                 major, minor, patch = ver_parts[::-1]
             return "{major}.{minor}.{patch}.{build}".format(**locals())
 
-        # Trust list should contain Cloud key
+        # TrustList should contain Cloud key
         if not self.__receive_cloud_key():
             self.__ui.print_warning("Failed to receive Cloud key")
             self.__logger.info("Failed to receive Cloud key. Virgil api url: %s" % self._context.virgil_api_url)
@@ -294,7 +294,7 @@ class UtilityManager:
         tl_version = self.__ui.get_user_input(
             "Enter the TrustList version [{}]: ".format(incremented_version),
             input_checker_callback=self.__ui.InputCheckers.tl_version_check,
-            input_checker_msg="Trust List version should match following format:"
+            input_checker_msg="TrustList version should match following format:"
                               " [0-255].[0-255].[0-255].[0-4294967295]",
             empty_allow=empty_allow
         )
@@ -334,7 +334,7 @@ class UtilityManager:
 
         signer_keys = [auth_key, tl_key]
 
-        # Generate Trust list
+        # Generate TrustList
         tl = self.__trust_list_generator.generate(signer_keys, tl_version)
         self.__ui.print_message("Generation finished")
         self.__ui.print_message("Storing to file...")
@@ -373,7 +373,7 @@ class UtilityManager:
 
     def __receive_cloud_key(self) -> bool:
         """
-        Receive Cloud key from service and save it to db with trust list public keys
+        Receive Cloud key from service and save it to db with trustList public keys
         """
         # Initialize cloud key (if needed)
         self.__ui.print_message("Try to initialize Cloud key on service")

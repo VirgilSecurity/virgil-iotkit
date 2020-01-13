@@ -46,7 +46,7 @@
  * \warning User has to provide #vs_fldt_got_file function implementation for FLDT Client.
  *
  * To successfully file downloading process #vs_update_interface_t must be provided for each file type. You can see
- * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for Trust List one.
+ * function #vs_firmware_update_file_type for Firmware example and #vs_tl_update_file_type for TrustList one.
  *
  * Here you can see an example of FLDT client initialization :
  * \code
@@ -56,7 +56,7 @@
  *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_firmware_update_file_type(), vs_firmware_update_ctx() ),
  *      "Unable to add Firmware file type" );
  *  STATUS_CHECK( vs_fldt_client_add_file_type( vs_tl_update_file_type(), vs_tl_update_ctx()),
- *      "Unable to add Trust List file type" );
+ *      "Unable to add TrustList file type" );
  *
  * \endcode
  *
@@ -75,7 +75,7 @@
  *
  *     switch(file_type->type) {
  *     case VS_UPDATE_FIRMWARE :   VS_LOG_INFO( "New Firmware has been loaded" );   break;
- *     case VS_UPDATE_TRUST_LIST : VS_LOG_INFO( "New Trust List has been loaded" ); break;
+ *     case VS_UPDATE_TRUST_LIST : VS_LOG_INFO( "New TrustList has been loaded" ); break;
  *     }
  *
  *     if (file_type->type == VS_UPDATE_FIRMWARE && successfully_updated) {

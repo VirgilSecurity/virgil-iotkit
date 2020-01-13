@@ -101,7 +101,7 @@ While working with the Sandbox you can:
 The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user) and shows secure lifecycle of IoT devices. The Sandbox allows you to:
 - **Step #1. Generate trusted provisioning package**.
 
-To start working with emulated IoT infrastructure you have to generate a trusted provisioning package that includes private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
+To start working with emulated IoT infrastructure you have to generate a trusted provisioning package that includes private keys (e.g. for factory, firmware) and a distributed TrustList that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
 
 <img width="320" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/generate_files.png?demo" align="left" hspace="0" vspace="6">  
 
@@ -132,7 +132,7 @@ Generate both of them. The information about generated devices can be found in t
 
 To make each IoT device identifiable, verifiable and trusted by each party of IoT solution you have to make device provisioning.
 
-Sandbox uses the [Virgil Device Initializer](/tools/virgil-device-initializer) for IoT devices provisioning to securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
+Sandbox uses the [Virgil Device Initializer](/tools/virgil-device-initializer) for IoT devices provisioning to securely integrate TrustList and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
 
 The information about initialized (provisioned) devices can be found in the Sandbox window:
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/initialized_device.png?demo" align="left" hspace="0" vspace="6"> &nbsp;

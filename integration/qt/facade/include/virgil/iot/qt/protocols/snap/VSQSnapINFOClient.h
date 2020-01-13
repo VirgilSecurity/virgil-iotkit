@@ -106,7 +106,7 @@ struct VSQDeviceInfo {
     /** File version */
     VSQFileVersion m_fwVer;
 
-    /** Trust List version */
+    /** TrustList version */
     VSQFileVersion m_tlVer;
 
     /** Sent packets */

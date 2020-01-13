@@ -36,7 +36,7 @@
  * \brief Provision interface
  *
  * Provision interface allows user to :
- * - Enumerate Trust List keys (#vs_provision_tl_find_first_key, #vs_provision_tl_find_next_key).
+ * - Enumerate TrustList keys (#vs_provision_tl_find_first_key, #vs_provision_tl_find_next_key).
  * - Search for specified high level key in internal storage (#vs_provision_verify_hl_key).
  * - Verify high level public key (#vs_provision_verify_hl_key).
  * - Get slot number for specific element (#vs_provision_get_slot_num).
@@ -48,7 +48,7 @@
  *
  * \code
 vs_status_e ret_code;                   // Result code
-vs_storage_op_ctx_t tl_storage_impl;    // Trust List storage implementation
+vs_storage_op_ctx_t tl_storage_impl;    // TrustList storage implementation
 vs_secmodule_impl_t *secmodule_impl;    // Security Module implementation
 vs_storage_op_ctx_t slots_storage_impl; // Slots storage implementation
 
@@ -65,9 +65,9 @@ vs_provision_deinit();
 
  * \endcode
  *
- * Storage implementation for Trust List and Slots is described in \ref storage_hal .
+ * Storage implementation for TrustList and Slots is described in \ref storage_hal .
  *
- * Trust List enumeration is done by #vs_provision_tl_find_first_key first call and subsequent
+ * TrustList enumeration is done by #vs_provision_tl_find_first_key first call and subsequent
 #vs_provision_tl_find_next_key ones.
  * Code below calculates IoT device keys amount :
  *

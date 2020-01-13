@@ -249,9 +249,9 @@ vs_snap_prvs_get(const vs_netif_t *netif,
                  uint16_t *data_sz,
                  uint32_t wait_ms);
 
-/** Set Trust List header
+/** Set TrustList header
  *
- * Sends request for set \a data to the Trust List header for \a mac device
+ * Sends request for set \a data to the TrustList header for \a mac device
  *
  * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.
@@ -270,9 +270,9 @@ vs_snap_prvs_set_tl_header(const vs_netif_t *netif,
                            uint32_t wait_ms);
 
 
-/** Set Trust List footer
+/** Set TrustList footer
  *
- * Sends request for set \a data to the Trust List footer for \a mac device
+ * Sends request for set \a data to the TrustList footer for \a mac device
  *
  * \param[in] netif SNAP service descriptor. If NULL, default one will be used.
  * \param[in] mac Device MAC address.

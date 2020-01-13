@@ -254,13 +254,13 @@ vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new
     vs_status_e ret_code;
 
     STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz),
-                     "Unable to load Trust List header");
+                     "Unable to load TrustList header");
 
     // Use host endian
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     info.id = VS_TL_ELEMENT_TLF;
-    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
+    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load TrustList footer");
 
     if (new_tl_type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
         VS_CODE_OK != vs_update_compare_version(new_tl_version, &tl_header.version)) {

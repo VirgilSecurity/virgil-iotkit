@@ -124,9 +124,9 @@ typedef enum {
 /** Authentification key 2 slot */
 #define AUTH2_KEY_SLOT VS_KEY_SLOT_STD_MTP_3
 
-/** Trust List key 1 slot */
+/** TrustList key 1 slot */
 #define TL1_KEY_SLOT VS_KEY_SLOT_STD_MTP_4
-/** Trust List key 2 slot */
+/** TrustList key 2 slot */
 #define TL2_KEY_SLOT VS_KEY_SLOT_STD_MTP_5
 
 /** Firmware key 1 slot */

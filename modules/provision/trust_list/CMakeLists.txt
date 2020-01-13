@@ -37,7 +37,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(trust_list VERSION 0.1.0 LANGUAGES C)
 
 #
-#   Trust List library
+#   TrustList library
 #
 add_library(trust_list)
 

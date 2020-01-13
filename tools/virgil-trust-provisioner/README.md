@@ -210,7 +210,7 @@ Application commands are used to perform operations such as key generating, data
 | ```1```       | Initial Generation. One by one generation of 2 Recovery Keys, 2 Auth Keys, 2 TL Keys, 2 Firmware Keys, 1 Factory Key |
 | ```2```       | Generate 2 Recovery Keys                                                                                                     |
 | ```3```       | Generate 2 Auth Keys                                                                                                         |
-| ```4```       | Generate 2 keys of Trust List (TL) Service                                                                                   |
+| ```4```       | Generate 2 keys of TrustList (TL) Service                                                                                    |
 | ```5```       | Generate a Factory Key                                                                                                       |
 | ```6```       | Delete a Factory Key                                                                                                         |
 | ```7```       | Generate 2 Firmware Keys                                                                                                     |
@@ -730,7 +730,7 @@ TrustList has basic content structure that was created based on general best sec
 After the TrustList is created and signed, it's distributed to all participants (e.g. IoT devices, User Application, etc),  as a result each participant uses the TrustList while interacting with each other to verify wether the participant is authorized to do some operation.
 
 ### TrustList Content
-Each Trust List contains the following information:
+Each TrustList contains the following information:
 
 | Information type | Value                                                |
 |------------------|------------------------------------------------------|
@@ -738,7 +738,7 @@ Each Trust List contains the following information:
 | Signatures       | - Signature of TrustList Key - Signature of Auth Key |
 
 ### TrustList structure
-Trust List has the following structure:
+TrustList has the following structure:
 
 ```bash
 type TrustListContainer struct {
@@ -789,7 +789,7 @@ Distributed list of trust which contains keys information and is used by IoT dev
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```8```   | Virgil Trust Provisioner generates Trust List file |
+| ```8```   | Virgil Trust Provisioner generates TrustList file  |
 
 ### TrustList Generation
 TrustList that contains public keys (factory and Cloud) and signatures (Auth Key and TL Key) of all critical system elements.  All public keys in TrustList are stored in TrustListPubKeys.db.
@@ -825,7 +825,7 @@ $ Please enter option number: 1
 ```
 
 ### TrustList Uploading
-TrustList updating is a release of the new TrustList. This function is used in case you need to change information about any key, re-generate key or add any new key. You need to create and release the new Trust List and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new TrustList to your IoT device.
+TrustList updating is a release of the new TrustList. This function is used in case you need to change information about any key, re-generate key or add any new key. You need to create and release the new TrustList and distribute it to your IoT devices. In this case you need to use command ```10``` and distribute the new TrustList to your IoT device.
 
 ### TrustList Distribution
 This section describes how to distribute a TrustList to IoT devices.
@@ -856,7 +856,7 @@ Virgil Trust Provisioner contains following types of databases.
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | ```UpperLevelKeys.db```       | contains public keys of high-level keys (Recovery public keys, Auth public Keys, TrustList public keys, Firmware public keys) |
 | ```TrustListPubKeys.db```     | contains public keys of Factory,  and cloud                                                           |
-| ```TrustListVerions.db```    | contains versions of created Trust Lists                                                                                              |
+| ```TrustListVerions.db```    | contains versions of created TrustLists                                                                                               |
 | ```FactoryPrivateKeys.db```   | contains private key of Factory key                                                                                                   |
 | ```FirmwarePrivateKeys.db```  | contains private key of Firmware key                                                                                                  |
 | ```AuthPrivateKeys.db```      | contains private key of Auth key                                                                                                      |
@@ -923,11 +923,11 @@ $ Enter comment for [factory] Key: My Added public key
 ```
 
 #### Export data as provision package for Factory
-This command allows you to put together private keys, public keys and trust list necessary for IoT device provisioning in the directory mentioned in ``config file``. Private and public keys are stored in their personal directories and Trust List is stored in the general directory.
+This command allows you to put together private keys, public keys and TrustList necessary for IoT device provisioning in the directory mentioned in ``config file``. Private and public keys are stored in their personal directories and Trust List is stored in the general directory.
 
 | Code | Result                                             |
 |------|----------------------------------------------------|
-| ```11```   | Private and public keys and trust list are put together and are ready to be exported |
+| ```11```   | Private and public keys and TrustList are put together and are ready to be exported |
 
 **Example**
 ```bash

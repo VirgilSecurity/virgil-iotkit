@@ -33,19 +33,19 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file trust_list.h
- * \brief Trust List module
+ * \brief TrustList module
  *
- * This file provides interface for Trust Lists processing.
+ * This file provides interface for TrustLists processing.
  *
- * Trust List contains the list of trusted public keys and signatures. Initial Trust List is obtained by device during
+ * TrustList contains the list of trusted public keys and signatures. Initial TrustList is obtained by device during
  * provision. After that, it can be upgraded by Update library using FLDT service.
  *
- * \section trust_list_usage Trust List Usage
+ * \section trust_list_usage TrustList Usage
  *
- * Trust List is maintained by Virgil IoT KIT modules and doesn't need to be processed by user. Nonetheless, there
+ * TrustList is maintained by Virgil IoT KIT modules and doesn't need to be processed by user. Nonetheless, there
  * are some places where it needs user's attention :
  *
- * - Gateway needs to initialize Trust List file type to retransmit it by Update library and to provide
+ * - Gateway needs to initialize TrustList file type to retransmit it by Update library and to provide
  * #vs_fldt_server_add_filetype_cb for FLDT Server service :
  *
  * \code
@@ -56,7 +56,7 @@
  *
  *     // ...
  *
- *     // Trust List file type
+ *     // TrustList file type
  *         case VS_UPDATE_TRUST_LIST:
  *             *update_ctx = vs_tl_update_ctx();
  *             break;
@@ -76,24 +76,24 @@
  *     snap_fldt_server = vs_snap_fldt_server(&mac_addr, _add_filetype);
  *     STATUS_CHECK(vs_snap_register_service(snap_fldt_server), "Cannot register FLDT server service");
  *     STATUS_CHECK(vs_fldt_server_add_file_type(vs_tl_update_file_type(), vs_tl_update_ctx(), false),
- *                  "Unable to add Trust List file type");
+ *                  "Unable to add TrustList file type");
  *     // Other file types
  *
  * \endcode
  *
- * - After the Gateway receives the new Trust List using Cloud library, it is necessary to send the Trust List version
- * to Things. Use #vs_tl_load_part fir this purpose. This method reads Trust List header :
+ * - After the Gateway receives the new TrustList using Cloud library, it is necessary to send the TrustList version
+ * to Things. Use #vs_tl_load_part fir this purpose. This method reads TrustList header :
  *
  * \code
  *
- *  vs_tl_element_info_t elem = {.id = VS_TL_ELEMENT_TLH};      // Trust List header to be read
+ *  vs_tl_element_info_t elem = {.id = VS_TL_ELEMENT_TLH};      // TrustList header to be read
  *  vs_tl_header_t tl_header;                                   // Header
  *  uint16_t tl_header_sz = sizeof(tl_header);                  // Header size
- *  vs_update_file_type_t tl_info;                              // Trust List file update information
+ *  vs_update_file_type_t tl_info;                              // TrustList file update information
  *
- *  // Load latest local Trust List
+ *  // Load latest local TrustList
  *  STATUS_CHECK(vs_tl_load_part(&elem, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz) &&
- *       tl_header_sz == sizeof(tl_header), "Unable to load Trust List header");
+ *       tl_header_sz == sizeof(tl_header), "Unable to load TrustList header");
  *  vs_tl_header_to_host(&tl_header, &tl_header);
  *
  *  // Prepare Update information
@@ -102,9 +102,9 @@
  *
  *  tl_info.type = VS_UPDATE_TRUST_LIST;
  *
- *  // Broadcast new Trust List information
+ *  // Broadcast new TrustList information
  *  STATUS_CHECK(vs_fldt_server_add_file_type(&tl_info, vs_tl_update_ctx(), true),
- *          "Unable to add new Trust List");
+ *          "Unable to add new TrustList");
  *
  * \endcode
  */
@@ -125,9 +125,9 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-/** Trust List initialization
+/** TrustList initialization
  *
- * Initializes Trust List.
+ * Initializes TrustList.
  *
  * \note It is called by #vs_provision_init.
  *
@@ -139,9 +139,9 @@ extern "C" {
 vs_status_e
 vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 
-/** Trust List destruction
+/** TrustList destruction
  *
- * Destroys Trust List.
+ * Destroys TrustList.
  *
  * \note It is called by #vs_provision_deinit.
  *
@@ -150,9 +150,9 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 vs_status_e
 vs_tl_deinit();
 
-/** Trust List element saving
+/** TrustList element saving
  *
- * Saves Trust List header, footer or data chunk. Element selection is performed by \a element_info selector.
+ * Saves TrustList header, footer or data chunk. Element selection is performed by \a element_info selector.
  *
  * \param[in] element_info Element selection. Must not be NULL.
  * \param[in] in_data Data to be saved. Must not be NULL.
@@ -163,9 +163,9 @@ vs_tl_deinit();
 vs_status_e
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
 
-/** Trust List element loading
+/** TrustList element loading
  *
- * Loads Trust List header, footer or data chunk. Element selection is performed by \a element_info selector.
+ * Loads TrustList header, footer or data chunk. Element selection is performed by \a element_info selector.
  *
  * \param[in] element_info Element selection. Must not be NULL.
  * \param[out] out_data Output buffer to store data. Must not be NULL.
@@ -177,27 +177,27 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 vs_status_e
 vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
 
-/** Update interface for Trust List
+/** Update interface for TrustList
  *
- * Returns Update context for Trust List.
+ * Returns Update context for TrustList.
  *
  * \return #vs_update_interface_t
  */
 vs_update_interface_t *
 vs_tl_update_ctx(void);
 
-/** Trust List file type
+/** TrustList file type
  *
- * Returns Trust List file type for Update module.
+ * Returns TrustList file type for Update module.
  *
  * \return #vs_update_file_type_t
  */
 const vs_update_file_type_t *
 vs_tl_update_file_type(void);
 
-/** Convert Trust List header to host
+/** Convert TrustList header to host
  *
- * Convert Trust List header to the host format.
+ * Convert TrustList header to the host format.
  *
  * \param[in] src_data Data source. Must not be NULL.
  * \param[out] dst_data Data destination. Must not be NULL.
@@ -205,9 +205,9 @@ vs_tl_update_file_type(void);
 void
 vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
 
-/** Convert Trust List header to network
+/** Convert TrustList header to network
  *
- * Convert Trust List header to the network format.
+ * Convert TrustList header to the network format.
  *
  * \param[in] src_data Data source. Must not be NULL.
  * \param[out] dst_data Data destination. Must not be NULL.
