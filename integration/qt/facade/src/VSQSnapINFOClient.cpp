@@ -36,14 +36,6 @@
 
 using namespace VirgilIoTKit;
 
-bool
-VSQDeviceInfo::equal(const VSQDeviceInfo &deviceInfo) const {
-    return m_mac == deviceInfo.m_mac && m_deviceRoles == deviceInfo.m_deviceRoles &&
-           m_manufactureId == deviceInfo.m_manufactureId && m_deviceType == deviceInfo.m_deviceType &&
-           m_fwVer == deviceInfo.m_fwVer && m_tlVer == deviceInfo.m_tlVer && m_sent == deviceInfo.m_sent &&
-           m_received == deviceInfo.m_received && m_lastTimestamp == deviceInfo.m_lastTimestamp;
-}
-
 VSQSnapInfoClient::VSQSnapInfoClient() {
     m_snapInfoImpl.device_start = startNotify;
     m_snapInfoImpl.general_info = generalInfo;

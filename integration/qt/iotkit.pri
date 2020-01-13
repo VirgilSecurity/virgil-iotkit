@@ -61,6 +61,7 @@ message("Virgil IoTKIT libraries : $${VIRGIL_IOTKIT_BUILD_PATH}")
 #
 #   Headers
 #
+
 INC_HELPERS = $$PWD/facade/include/virgil/iot/qt/helpers
 HEADERS += \
         $$PWD/default-impl/netif/udp-broadcast/include/virgil/iot/qt/netif/VSQUdpBroadcast.h \
@@ -77,7 +78,6 @@ HEADERS += \
         $${INC_HELPERS}/VSQMac.h \
         $${INC_HELPERS}/VSQManufactureId.h \
         $${INC_HELPERS}/VSQSingleton.h \
-        $${INC_HELPERS}/VSQSnifferConfig.h \
         $$PWD/facade/include/virgil/iot/qt/VSQIoTKit.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQNetifBase.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h \
@@ -88,6 +88,7 @@ HEADERS += \
 #
 #   Sources
 #
+
 SRC_HELPERS = $$PWD/facade/src/helpers
 SOURCES += \
         $$PWD/default-impl/netif/udp-broadcast/src/VSQUdpBroadcast.cpp \
@@ -109,6 +110,7 @@ SOURCES += \
 #
 #   Libraries
 #
+
 defineReplace(add_virgiliotkit_library) {
     LIBRARY_PATH = $$1
     LIBRARY_NAME = $$2
@@ -125,6 +127,7 @@ win32: LIBS += -lws2_32
 #
 #   Include path
 #
+
 INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $$PWD/default-impl/netif/ble/include \
                 $$PWD/facade/include \
@@ -143,5 +146,6 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
 #
 #   Compiler options
 #
+
 win32|linux:!android: QMAKE_CFLAGS+=-Wno-multichar
 win32|linux:!android: QMAKE_CXXFLAGS+=-Wno-multichar

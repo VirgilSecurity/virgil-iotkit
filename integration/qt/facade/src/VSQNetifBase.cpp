@@ -122,6 +122,7 @@ VirgilIoTKit::vs_status_e VSQNetifBase::macAddrCb(const struct VirgilIoTKit::vs_
     VSQNetifBase *instance = reinterpret_cast<VSQNetifBase*>(netif->user_data);
     QString macStr = instance->macAddr();
     VSQMac macInternal = macStr;
+
     *mac_addr = macInternal;
 
     return VirgilIoTKit::VS_CODE_OK;

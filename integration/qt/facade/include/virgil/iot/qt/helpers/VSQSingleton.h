@@ -32,18 +32,55 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQSingleton.h
+ * \brief Singleton implementation
+ *
+ * #VSQSingleton is the singleton implementation. Its minimum usage is simple:
+ * \code
+
+class YourClass :
+    public VSQSingleton<YourClass> {    // public inheritance
+    friend VSQSingleton<YourClass>;     // Singleton has to be friend to call constructor
+
+    void member();                      // Some class member
+private:
+    YourClass();                        // Private constructor that has to be called by VSQSingleton<YourClass> only
+};
+
+YourClass::instance().member();         // Class usage
+ * \endcode
+ *
+ * #VSQIoTKitFacade, #VSQSnapInfoClient, #VSQSnapInfoClientQml use #VSQSingleton.
+ *
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_SINGLETON_H
 #define VIRGIL_IOTKIT_QT_SINGLETON_H
 
 #include <type_traits>
 
+/** Singleton implementation
+ *
+ * You can use \a D parameter as derived from \a T
+ * \tparam T Base class for \a D
+ * \tparam D Class to be singleton
+ */
 template <typename T, typename D = T> class VSQSingleton {
     friend D;
     static_assert(std::is_base_of<T, D>::value, "T should be a base type for D");
 
 public:
+
+    /** Get static instance
+     *
+     * Creates once \a D class instance and returns its base class \a T
+     * \return
+     */
     static T &
-    instance();
+    instance(){
+        static D inst;
+        return inst;
+    }
 
 private:
     VSQSingleton() = default;
@@ -52,12 +89,5 @@ private:
     VSQSingleton &
     operator=(const VSQSingleton &) = delete;
 };
-
-template <typename T, typename D>
-T &
-VSQSingleton<T, D>::instance() {
-    static D inst;
-    return inst;
-}
 
 #endif // VIRGIL_IOTKIT_QT_SINGLETON_H

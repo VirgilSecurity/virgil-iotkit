@@ -49,7 +49,6 @@ VSQIoTKitFacade::init(const VSQFeatures &features, const VSQImplementations &imp
     vs_logger_init(appConfig.logLevel());
 
     try {
-        // SNAP entities
         if (features.hasSnap()) {
             initSnap();
         }

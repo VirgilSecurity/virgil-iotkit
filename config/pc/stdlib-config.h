@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file stdlib-config.h
- * \brief Standart Library calls configuration
+ * \brief PC configuration : Standart Library calls configuration
  */
 #ifndef VS_IOT_SDK_STDLIB_CONFIG_H
 #define VS_IOT_SDK_STDLIB_CONFIG_H

@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/qt/VSQIoTKit.h>
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
 
 VSQUdpBroadcast::VSQUdpBroadcast(quint16 port) : m_port(port) {
@@ -48,9 +47,11 @@ VSQUdpBroadcast::init() {
         return false;
     }
 
-    // TODO : set current network interface m_socket MAC address
     for (auto &interface : QNetworkInterface::allInterfaces()) {
-        if (interface.flags() & QNetworkInterface::IsLoopBack) {
+        if (interface.flags() & QNetworkInterface::IsLoopBack ||
+            !(interface.flags() & QNetworkInterface::CanBroadcast &&
+              interface.flags() & QNetworkInterface::IsRunning &&
+              interface.flags() & QNetworkInterface::IsUp)) {
             continue;
         }
 
@@ -60,6 +61,8 @@ VSQUdpBroadcast::init() {
         }
 
         m_mac = address;
+        VS_LOG_INFO("Current MAC address: %s", m_mac.description().toStdString().c_str());
+        break;
     }
 
     connect(&m_socket, &QUdpSocket::readyRead, this, &VSQUdpBroadcast::onHasInputData);

@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file VSQAppConfig.h
- * \brief Virgil IoT Kit Qt application configuration
+ * \brief Virgil IoT Kit Framework configuration
  *
  * #VSQAppConfig is used to set up application configurations parameters prior to #VSQIoTKitFacade::init call.
  *
@@ -53,7 +53,7 @@
  * - #VSQDeviceSerial : device serial
  * - #VSQDeviceType : device type
  * - #VSQManufactureId : manufacture ID
- * - #VSQSnifferConfig : sniffer configuration. Requires #SNAP_SNIFFER feature
+ * - #VSQSnapSnifferQmlConfig : sniffer configuration. Requires #SNAP_SNIFFER feature
  * - #vs_log_level_t : logging level
  */
 
@@ -64,8 +64,8 @@
 #include <virgil/iot/qt/helpers/VSQDeviceType.h>
 #include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
 #include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQSnifferConfig.h>
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
 
 /** Application configuration
  *
@@ -93,7 +93,7 @@ public:
      * \return Reference to the #VSQAppConfig instance
      */
     VSQAppConfig &
-    operator<<(const VSQSnifferConfig &snifferConfig) {
+    operator<<(const VSQSnapSnifferQmlConfig &snifferConfig) {
         m_snifferConfig = snifferConfig;
         return *this;
     }
@@ -159,7 +159,7 @@ public:
      *
      * \return Sniffer configuration
      */
-    const VSQSnifferConfig &
+    const VSQSnapSnifferQmlConfig &
     snifferConfig() const {
         return m_snifferConfig;
     }
@@ -213,7 +213,7 @@ private:
     VSQDeviceType m_deviceType;
     VSQDeviceSerial m_deviceSerial;
     VSQDeviceRoles m_deviceRoles;
-    VSQSnifferConfig m_snifferConfig;
+    VSQSnapSnifferQmlConfig m_snifferConfig;
     VirgilIoTKit::vs_log_level_t m_logLevel;
 };
 

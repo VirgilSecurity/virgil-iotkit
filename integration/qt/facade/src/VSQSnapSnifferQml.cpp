@@ -34,7 +34,7 @@
 
 #include <virgil/iot/qt/VSQIoTKit.h>
 
-VSQSnapSnifferQml::VSQSnapSnifferQml(const VSQSnifferConfig &snifferConfig, VSQNetifBase *netif):
+VSQSnapSnifferQml::VSQSnapSnifferQml(const VSQSnapSnifferQmlConfig &snifferConfig, VSQNetifBase *netif):
         m_maxPacketsAmount(snifferConfig.maxLogLines())
 {
     Q_CHECK_PTR(netif);
@@ -77,6 +77,7 @@ QVariant VSQSnapSnifferQml::data(const QModelIndex & index, int role) const {
     case TransactionId : return QString("%1").arg(packet.m_transactionId);
     case Flags : return QString("%1h").arg(packet.m_flags, 0, 16);
     case Timestamp : return packet.m_timestamp.toString("H:mm:ss");
+    case ContentSize : return packet.m_content.size();
     case ServiceId :
     case ElementId :
     {
@@ -113,15 +114,16 @@ QVariant VSQSnapSnifferQml::data(const QModelIndex & index, int role) const {
 
 QHash<int, QByteArray> VSQSnapSnifferQml::roleNames() const {
     static const QHash<int, QByteArray> roles{
-            { MacDst, "macDst"},
-             { MacSrc, "macSrc"},
-              { EthernetPacketType, "ethernetPacketType"},
-               { TransactionId, "transactionId"},
-                { ServiceId, "serviceId"},
-                 { ElementId, "elementId"},
-                  { Flags, "flags"},
-                   { Content, "content"},
-                    { Timestamp, "timestamp"}
+        { MacDst, "macDst"},
+        { MacSrc, "macSrc"},
+        { EthernetPacketType, "ethernetPacketType"},
+        { TransactionId, "transactionId"},
+        { ServiceId, "serviceId"},
+        { ElementId, "elementId"},
+        { Flags, "flags"},
+        { Content, "content"},
+        { ContentSize, "contentSize"},
+        { Timestamp, "timestamp"}
     };
 
     return roles;

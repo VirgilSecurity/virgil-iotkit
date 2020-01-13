@@ -83,7 +83,7 @@
  *
  * This class inherits QObject and VSQSingleton.
  *
- * Initialize Virgil IoT KIT Qt by calling VSQIoTKitFacade::init function through its instance :
+ * Initialize Virgil IoT KIT Qt by calling #VSQIoTKitFacade::init function through its instance :
  * \code
  * VSQIoTKitFacade::instance().init( ... )
  * \endcode
@@ -104,7 +104,15 @@ public:
     bool
     init(const VSQFeatures &features, const VSQImplementations &impl, const VSQAppConfig &appConfig);
 
-    VSQSnapSnifferQml *snapSniffer()    { return m_snapSniffer.get(); }
+    /** SNAP Sniffer pointer type
+     */
+    using VSQSnapSnifferPtr = QSharedPointer<VSQSnapSnifferQml>;
+
+    /** Get installed sniffer
+     *
+     * \return #VSQSnapSnifferQml object or nullptr if sniffer is not initialized
+     */
+    VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
 
 private slots:
     void
@@ -114,7 +122,7 @@ private:
     VSQFeatures m_features;
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
-    QSharedPointer<VSQSnapSnifferQml> m_snapSniffer;
+    VSQSnapSnifferPtr m_snapSniffer;
 
     void
     initSnap();

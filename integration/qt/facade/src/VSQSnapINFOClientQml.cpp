@@ -53,7 +53,7 @@ VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
     for(int pos = 0; pos < devices.size(); ++pos) {
         const auto &device = devices[pos];
 
-        if(device.m_mac != deviceInfo.m_mac) {
+        if(!(device.m_mac == deviceInfo.m_mac)) {
             continue;
         }
 
@@ -107,7 +107,7 @@ QHash<int, QByteArray> VSQSnapInfoClientQml::roleNames() const {
     { LastTimestamp, "lastTimestamp" },
     { IsActive, "isActive" },
     { HasGeneralInfo, "hasGeneralInfo" },
-    { HasStatistics, "hasStatistic" }
+    { HasStatistics, "hasStatistics" }
     };
 
     return roles;
