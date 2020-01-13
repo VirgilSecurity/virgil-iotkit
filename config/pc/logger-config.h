@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file logger-config.h
- * \brief Logger settings
+ * \brief PC configuration : logger settings
  *
  * This file provides defines that set up logger behavior.
  *

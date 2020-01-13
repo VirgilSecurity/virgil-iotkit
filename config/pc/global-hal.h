@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file global-hal.h
- * \brief Implementation for shared functions.
+ * \brief PC configuration : implementation for shared functions.
  *
  * This file provides signatures for platform specific functions.
  *

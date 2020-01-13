@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file endian-config.h
- * \brief Endianness configuration
+ * \brief PC configuration : endianness configuration
  */
 
 #ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
