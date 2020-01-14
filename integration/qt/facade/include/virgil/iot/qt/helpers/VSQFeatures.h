@@ -68,7 +68,8 @@ class VSQFeatures {
 public:
 
     /** Features enumeration */
-    enum EFeature { SNAP_INFO_CLIENT, /**< INFO client service */
+    enum EFeature { SNAP_CFG_CLIENT,  /**< CFG client service */
+                    SNAP_INFO_CLIENT, /**< INFO client service */
                     SNAP_SNIFFER      /**< Snap sniffer */
                     };
 

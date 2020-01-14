@@ -77,6 +77,7 @@
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
 
 /** Facade pattern for Virgil IoTKit Qt integration
@@ -113,6 +114,7 @@ public:
      * \return #VSQSnapSnifferQml object or nullptr if sniffer is not initialized
      */
     VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
+    VSQSnapCfgClient & snapCfgClient()    { return VSQSnapCfgClient::instance(); }
 
 private slots:
     void

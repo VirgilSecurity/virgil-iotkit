@@ -32,31 +32,74 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
+#ifndef _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_
+#define _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#include <QtCore>
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+class VSQSnapCfgClient final :
+        public QObject,
+        public VSQSingleton<VSQSnapCfgClient>,
+        public VSQSnapServiceBase {
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+    Q_OBJECT
+
+    friend VSQSingleton<VSQSnapCfgClient>;
+
+public:
+
+    /** Get service interface
+     *
+     * \return Service interface
+     */
+    const VirgilIoTKit::vs_snap_service_t *
+    serviceInterface() override {
+//        return m_snapService;
+        return nullptr;
+    }
+
+    /** Get service feature
+     *
+     * \return Service feature
+     */
+    VSQFeatures::EFeature
+    serviceFeature() const override {
+        return VSQFeatures::SNAP_CFG_CLIENT;
+    }
+
+    /** Get service name
+     *
+     * \return Service name
+     */
+    const QString &
+    serviceName() const override {
+        static QString name{"_CFG Client"};
+        return name;
+    }
+
+public slots:
+    void
+    onConfigureDevices();
+
+    Q_INVOKABLE void
+    onSetConfigData(QString ssid, QString pass, QString account);
+
+private:
+//    const VirgilIoTKit::vs_cfg_service_t *m_cfgService;
+//    mutable VirgilIoTKit::vs_snap_cfg_client_service_t m_snapCfgImpl;
+
+    VSQSnapCfgClient();
+    ~VSQSnapCfgClient() = default;
+
+//    static VirgilIoTKit::vs_status_e
+//    startNotify(VirgilIoTKit::vs_snap_info_device_t *deviceRaw);
+
+    QString m_ssid;
+    QString m_pass;
+    QString m_account;
+};
+
+#endif // _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_

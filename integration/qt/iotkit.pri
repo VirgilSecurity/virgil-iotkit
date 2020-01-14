@@ -81,6 +81,7 @@ HEADERS += \
         $$PWD/facade/include/virgil/iot/qt/VSQIoTKit.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQNetifBase.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h \
+        $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h \
         $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h
@@ -103,6 +104,7 @@ SOURCES += \
         $${SRC_HELPERS}/VSQMac.cpp \
         $${SRC_HELPERS}/VSQManufactureId.cpp \
         $$PWD/facade/src/VSQNetifBase.cpp \
+        $$PWD/facade/src/VSQSnapCFGClient.cpp \
         $$PWD/facade/src/VSQSnapINFOClient.cpp \
         $$PWD/facade/src/VSQSnapINFOClientQml.cpp \
         $$PWD/facade/src/VSQSnapSnifferQml.cpp

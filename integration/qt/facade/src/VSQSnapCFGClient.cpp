@@ -32,31 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
+#include <virgil/iot/qt/VSQIoTKit.h>
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+using namespace VirgilIoTKit;
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
+VSQSnapCfgClient::VSQSnapCfgClient() {
+//    m_snapInfoImpl.device_start = startNotify;
+//    m_snapInfoImpl.general_info = generalInfo;
+//    m_snapInfoImpl.statistics = statistics;
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+//    m_snapService = vs_snap_cfg_client(m_snapCfgImpl);
+}
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+void
+VSQSnapCfgClient::onConfigureDevices() {
+    qDebug() << "Configure ssid:<" << m_ssid << "> pass:<" << m_pass << "> account:<" << m_account << ">";
+}
+
+void
+VSQSnapCfgClient::onSetConfigData(QString ssid, QString pass, QString account) {
+    m_ssid = ssid;
+    m_pass = pass;
+    m_account = account;
+}
