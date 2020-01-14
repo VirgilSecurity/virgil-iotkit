@@ -113,14 +113,17 @@ $(function() {
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_snap_service_base.html#a1fdb71b132eebbcafad246f801cc099e">~VSQSnapServiceBase</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> VirgilIoTKit::vs_snap_service_t *<a class="code" href="class_v_s_q_snap_service_base.html#a8b2600fce47e93c4ccf54316df4e7d92">serviceInterface</a>() = 0;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_features.html#a09bb25b0f16491ec76780a440619b94c">VSQFeatures::EFeature</a> <a class="code" href="class_v_s_q_snap_service_base.html#af73a963157960a9bd8cf8c594341ccaa">serviceFeature</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> QString &amp;<a class="code" href="class_v_s_q_snap_service_base.html#ac9900270d3ef94f29862a1dca1877f31">serviceName</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif // _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> VirgilIoTKit::vs_snap_service_t *</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="class_v_s_q_snap_service_base.html#a8b2600fce47e93c4ccf54316df4e7d92">serviceInterface</a>() = 0;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_features.html#a09bb25b0f16491ec76780a440619b94c">VSQFeatures::EFeature</a></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="class_v_s_q_snap_service_base.html#af73a963157960a9bd8cf8c594341ccaa">serviceFeature</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> QString &amp;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="class_v_s_q_snap_service_base.html#ac9900270d3ef94f29862a1dca1877f31">serviceName</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif // _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclass_v_s_q_snap_service_base_html_a8b2600fce47e93c4ccf54316df4e7d92"><div class="ttname"><a href="class_v_s_q_snap_service_base.html#a8b2600fce47e93c4ccf54316df4e7d92">VSQSnapServiceBase::serviceInterface</a></div><div class="ttdeci">virtual const VirgilIoTKit::vs_snap_service_t * serviceInterface()=0</div><div class="ttdoc">Get service interface.</div></div>
 <div class="ttc" id="a_v_s_q_features_8h_html"><div class="ttname"><a href="_v_s_q_features_8h.html">VSQFeatures.h</a></div><div class="ttdoc">Virgil IoT Kit Qt framework enabled features.</div></div>
@@ -128,7 +131,7 @@ $(function() {
 <div class="ttc" id="aclass_v_s_q_snap_service_base_html_ac9900270d3ef94f29862a1dca1877f31"><div class="ttname"><a href="class_v_s_q_snap_service_base.html#ac9900270d3ef94f29862a1dca1877f31">VSQSnapServiceBase::serviceName</a></div><div class="ttdeci">virtual const QString &amp; serviceName() const =0</div><div class="ttdoc">Get service name.</div></div>
 <div class="ttc" id="asnap-structs_8h_html"><div class="ttname"><a href="snap-structs_8h.html">snap-structs.h</a></div><div class="ttdoc">SNAP structures.</div></div>
 <div class="ttc" id="aclass_v_s_q_snap_service_base_html"><div class="ttname"><a href="class_v_s_q_snap_service_base.html">VSQSnapServiceBase</a></div><div class="ttdoc">SNAP service base class.</div><div class="ttdef"><b>Definition:</b> VSQSnapServiceBase.h:50</div></div>
-<div class="ttc" id="aclass_v_s_q_features_html_a09bb25b0f16491ec76780a440619b94c"><div class="ttname"><a href="class_v_s_q_features.html#a09bb25b0f16491ec76780a440619b94c">VSQFeatures::EFeature</a></div><div class="ttdeci">EFeature</div><div class="ttdoc">Features enumeration.</div><div class="ttdef"><b>Definition:</b> VSQFeatures.h:71</div></div>
+<div class="ttc" id="aclass_v_s_q_features_html_a09bb25b0f16491ec76780a440619b94c"><div class="ttname"><a href="class_v_s_q_features.html#a09bb25b0f16491ec76780a440619b94c">VSQFeatures::EFeature</a></div><div class="ttdeci">EFeature</div><div class="ttdoc">Features enumeration.</div><div class="ttdef"><b>Definition:</b> VSQFeatures.h:70</div></div>
 <div class="ttc" id="aclass_v_s_q_snap_service_base_html_a1fdb71b132eebbcafad246f801cc099e"><div class="ttname"><a href="class_v_s_q_snap_service_base.html#a1fdb71b132eebbcafad246f801cc099e">VSQSnapServiceBase::~VSQSnapServiceBase</a></div><div class="ttdeci">virtual ~VSQSnapServiceBase()=default</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

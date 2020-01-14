@@ -100,7 +100,8 @@ Data Structures</h2></td></tr>
 </div><!-- fragment --><p>To use it as QML model you can set QML context property :</p>
 <div class="fragment"><div class="line">QQmlApplicationEngine engine;                   <span class="comment">// QML engine</span></div>
 <div class="line">QQmlContext *context = engine.rootContext();    <span class="comment">// Get root context</span></div>
-<div class="line">context-&gt;setContextProperty(<span class="stringliteral">&quot;SnapInfoClient&quot;</span>, &amp;<a class="code" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSnapInfoClientQml::instance</a>());  <span class="comment">// Get INFO client instance and set it as &quot;SnapInfoClient&quot; QML data model</span></div>
+<div class="line">context-&gt;setContextProperty(<span class="stringliteral">&quot;SnapInfoClient&quot;</span>,</div>
+<div class="line">    &amp;<a class="code" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSnapInfoClientQml::instance</a>());  <span class="comment">// Get INFO client instance and set it as &quot;SnapInfoClient&quot; QML data model</span></div>
 </div><!-- fragment --><p>After such initialization use SnapInfoClient as ListView data model. Use <a class="el" href="class_v_s_q_snap_info_client_qml.html#ad9eafc83b5f439db5f122cfe446d3de6" title="Data roles.">VSQSnapInfoClientQml::DeviceInfoRoles</a> to obtain needed information :</p>
 <div class="fragment"><div class="line">ListView {</div>
 <div class="line"> </div>
@@ -126,7 +127,7 @@ Data Structures</h2></td></tr>
 <div class="line">   }</div>
 <div class="line">}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
-<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton&lt; VSQIoTKitFacade &gt;::instance</a></div><div class="ttdeci">static VSQIoTKitFacade &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:80</div></div>
+<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton&lt; VSQIoTKitFacade &gt;::instance</a></div><div class="ttdeci">static VSQIoTKitFacade &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:79</div></div>
 <div class="ttc" id="aclass_v_s_q_features_html"><div class="ttname"><a href="class_v_s_q_features.html">VSQFeatures</a></div><div class="ttdoc">Virgil IoT Kit framework enabled features.</div><div class="ttdef"><b>Definition:</b> VSQFeatures.h:67</div></div>
 <div class="ttc" id="alogger_8h_html_a4f47cc7eb09da0ff4313bf6d2f55bd6a"><div class="ttname"><a href="logger_8h.html#a4f47cc7eb09da0ff4313bf6d2f55bd6a">VS_LOG_CRITICAL</a></div><div class="ttdeci">#define VS_LOG_CRITICAL(FRMT,...)</div><div class="ttdoc">Log message with VS_LOGLEV_CRITICAL level.</div><div class="ttdef"><b>Definition:</b> logger.h:152</div></div>
 <div class="ttc" id="aclass_v_s_q_features_html_a09bb25b0f16491ec76780a440619b94ca58fba2e28c500dbc88f65f85d87120bd"><div class="ttname"><a href="class_v_s_q_features.html#a09bb25b0f16491ec76780a440619b94ca58fba2e28c500dbc88f65f85d87120bd">VSQFeatures::SNAP_INFO_CLIENT</a></div><div class="ttdoc">INFO client service.</div><div class="ttdef"><b>Definition:</b> VSQFeatures.h:71</div></div>

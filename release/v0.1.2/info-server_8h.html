@@ -103,7 +103,7 @@ Functions</h2></td></tr>
 <h1><a class="anchor" id="info_server_usage"></a>
 INFO Server usage</h1>
 <p>Before first INFO calls usage it is necessary to register INFO Server service :</p>
-<div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;        <span class="comment">// TrustList storage implementation</span></div>
+<div class="fragment"><div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;        <span class="comment">// Trust List storage implementation</span></div>
 <div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> fw_storage_impl;        <span class="comment">// Firmware storage implementation</span></div>
 <div class="line"><span class="keyword">const</span> <a class="code" href="structvs__snap__service__t.html">vs_snap_service_t</a> *snap_info_server;  <span class="comment">// INFO Server SNAP service</span></div>
 <div class="line"> </div>
@@ -176,7 +176,7 @@ INFO Server usage</h1>
 <dl class="section note"><dt>Note</dt><dd><em>startup_cb</em> can be NULL. In this case standard notifications will be done.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">tl_ctx</td><td>TrustList storage context. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tl_ctx</td><td>Trust List storage context. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fw_ctx</td><td>Firmware storage context. Must not be NULL. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">startup_cb</td><td>Startup notification server callback. If NULL, it won't be used.</td></tr>
   </table>

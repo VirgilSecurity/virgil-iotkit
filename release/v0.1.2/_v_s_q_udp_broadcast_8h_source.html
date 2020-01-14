@@ -114,45 +114,44 @@ $(function() {
 <div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="class_v_s_q_udp_broadcast.html">   66</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> final : <span class="keyword">public</span> <a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    Q_OBJECT</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ae41053df0564262bf2d51b8a0a9207fe">VSQUdpBroadcast</a>(quint16 port = 4100);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ae41053df0564262bf2d51b8a0a9207fe">VSQUdpBroadcast</a>(<a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> &amp;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a640af8b8e73e1e0ef67e26e3055739e0">operator=</a>(<a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_udp_broadcast.html#ab0617bf7740a1ae6eb8a9702d2d372c2">~VSQUdpBroadcast</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    QAbstractSocket::SocketState</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">   90</a></span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">connectionState</a>()<span class="keyword"> const override </span>{</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">return</span> m_socket.state();</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a4cf63b0bd662b76b16228b028b69fc6d">init</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a9cd3cade52bbca20603a701933068d95">deinit</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ad139bbf1253297b3def95ebfece1f8e2">tx</a>(<span class="keyword">const</span> QByteArray &amp;data) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    QString</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#afb7362260e21dcfcdb19e747ff7a9236">macAddr</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    onHasInputData();</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    quint16 m_port;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    QUdpSocket m_socket;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="class_v_s_q_mac.html">VSQMac</a> m_mac;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;};</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_UDP_BROADCAST_H_</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ae41053df0564262bf2d51b8a0a9207fe">VSQUdpBroadcast</a>(quint16 port = 4100);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ae41053df0564262bf2d51b8a0a9207fe">VSQUdpBroadcast</a>(<a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> &amp;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a640af8b8e73e1e0ef67e26e3055739e0">operator=</a>(<a class="code" href="class_v_s_q_udp_broadcast.html">VSQUdpBroadcast</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_udp_broadcast.html#ab0617bf7740a1ae6eb8a9702d2d372c2">~VSQUdpBroadcast</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    QAbstractSocket::SocketState</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">   89</a></span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">connectionState</a>()<span class="keyword"> const override </span>{</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">return</span> m_socket.state();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a4cf63b0bd662b76b16228b028b69fc6d">init</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#a9cd3cade52bbca20603a701933068d95">deinit</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#ad139bbf1253297b3def95ebfece1f8e2">tx</a>(<span class="keyword">const</span> QByteArray &amp;data) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    QString</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <a class="code" href="class_v_s_q_udp_broadcast.html#afb7362260e21dcfcdb19e747ff7a9236">macAddr</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    onHasInputData();</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    quint16 m_port;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    QUdpSocket m_socket;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <a class="code" href="class_v_s_q_mac.html">VSQMac</a> m_mac;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_UDP_BROADCAST_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclass_v_s_q_netif_base_html"><div class="ttname"><a href="class_v_s_q_netif_base.html">VSQNetifBase</a></div><div class="ttdoc">SNAP network interface base class.</div><div class="ttdef"><b>Definition:</b> VSQNetifBase.h:95</div></div>
 <div class="ttc" id="aclass_v_s_q_udp_broadcast_html_a4cf63b0bd662b76b16228b028b69fc6d"><div class="ttname"><a href="class_v_s_q_udp_broadcast.html#a4cf63b0bd662b76b16228b028b69fc6d">VSQUdpBroadcast::init</a></div><div class="ttdeci">bool init() override</div><div class="ttdoc">Initialize network interface.</div></div>
@@ -165,7 +164,7 @@ $(function() {
 <div class="ttc" id="aclass_v_s_q_udp_broadcast_html_afb7362260e21dcfcdb19e747ff7a9236"><div class="ttname"><a href="class_v_s_q_udp_broadcast.html#afb7362260e21dcfcdb19e747ff7a9236">VSQUdpBroadcast::macAddr</a></div><div class="ttdeci">QString macAddr() const override</div><div class="ttdoc">Get current MAC address.</div></div>
 <div class="ttc" id="aclass_v_s_q_udp_broadcast_html_ae41053df0564262bf2d51b8a0a9207fe"><div class="ttname"><a href="class_v_s_q_udp_broadcast.html#ae41053df0564262bf2d51b8a0a9207fe">VSQUdpBroadcast::VSQUdpBroadcast</a></div><div class="ttdeci">VSQUdpBroadcast(quint16 port=4100)</div><div class="ttdoc">Default constructor.</div></div>
 <div class="ttc" id="aclass_v_s_q_mac_html"><div class="ttname"><a href="class_v_s_q_mac.html">VSQMac</a></div><div class="ttdoc">Virgil IoT Kit device MAC address.</div><div class="ttdef"><b>Definition:</b> VSQMac.h:68</div></div>
-<div class="ttc" id="aclass_v_s_q_udp_broadcast_html_ab96af89c72e34e007de84a004b4aa74f"><div class="ttname"><a href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">VSQUdpBroadcast::connectionState</a></div><div class="ttdeci">QAbstractSocket::SocketState connectionState() const override</div><div class="ttdoc">Get current connection status.</div><div class="ttdef"><b>Definition:</b> VSQUdpBroadcast.h:90</div></div>
+<div class="ttc" id="aclass_v_s_q_udp_broadcast_html_ab96af89c72e34e007de84a004b4aa74f"><div class="ttname"><a href="class_v_s_q_udp_broadcast.html#ab96af89c72e34e007de84a004b4aa74f">VSQUdpBroadcast::connectionState</a></div><div class="ttdeci">QAbstractSocket::SocketState connectionState() const override</div><div class="ttdoc">Get current connection status.</div><div class="ttdef"><b>Definition:</b> VSQUdpBroadcast.h:89</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

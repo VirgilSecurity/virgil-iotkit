@@ -95,7 +95,7 @@ Collaboration diagram for VSQSnapSnifferQml:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a766aa6ee7a01d424cebeed1be730311b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311b">DeviceInfoRoles</a> { <br />
-&#160;&#160;<a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba0bd3d32a703e1532736b7d7d4585b556">MacDst</a> = Qt::UserRole + 1, 
+&#160;&#160;<a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba0bd3d32a703e1532736b7d7d4585b556">MacDst</a>, 
 <a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311bae3a95cd54753b4bc5e1d868f679c2919">MacSrc</a>, 
 <a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba2397bab0d840fde4b44b2de8cb337514">EthernetPacketType</a>, 
 <a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311bab4d1926990c6e2db2485029e9a8afb15">TransactionId</a>, 
@@ -105,7 +105,8 @@ Public Types</h2></td></tr>
 <a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba5614d527f787ec4ef82d49906bb57508">Flags</a>, 
 <a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba96cd3e9647c9470dcb0fe5da75c5694b">Content</a>, 
 <br />
-&#160;&#160;<a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba6a6a55774cb21e02c4fd165bfee9f28f">Timestamp</a>
+&#160;&#160;<a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba3f69657bfc547fa364e4c2eace4b871e">ContentSize</a>, 
+<a class="el" href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba6a6a55774cb21e02c4fd165bfee9f28f">Timestamp</a>
 <br />
  }</td></tr>
 <tr class="memdesc:a766aa6ee7a01d424cebeed1be730311b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data roles.  <a href="class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311b">More...</a><br /></td></tr>
@@ -169,6 +170,9 @@ Public Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a766aa6ee7a01d424cebeed1be730311ba96cd3e9647c9470dcb0fe5da75c5694b"></a>Content&#160;</td><td class="fielddoc"><p>Packet's content. </p>
 <p><a class="el" href="struct_v_s_q_snap_packet.html#a25dc66c99108af5822f0f5a56e0e0591" title="Packet&#39;s content.">VSQSnapPacket::m_content</a> field. Use it as "content" in QML </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a766aa6ee7a01d424cebeed1be730311ba3f69657bfc547fa364e4c2eace4b871e"></a>ContentSize&#160;</td><td class="fielddoc"><p>Packet's content size. </p>
+<p><a class="el" href="struct_v_s_q_snap_packet.html#a25dc66c99108af5822f0f5a56e0e0591" title="Packet&#39;s content.">VSQSnapPacket::m_content</a> field data size. Use it as "contentSize" in QML </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a766aa6ee7a01d424cebeed1be730311ba6a6a55774cb21e02c4fd165bfee9f28f"></a>Timestamp&#160;</td><td class="fielddoc"><p>Timestamp. </p>
 <p><a class="el" href="struct_v_s_q_snap_packet.html#ad4932b81199650b2e695faf0c670a729" title="Timestamp.">VSQSnapPacket::m_timestamp</a> field. Use it as "timestamp" in QML </p>

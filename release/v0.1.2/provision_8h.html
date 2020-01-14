@@ -111,7 +111,7 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provision interface. </p>
 <p>Provision interface allows user to :</p><ul>
-<li>Enumerate TrustList keys (<a class="el" href="provision_8h.html#aa66adf3dd794f322c0ecc1a835c7ef95" title="Find first key.">vs_provision_tl_find_first_key</a>, <a class="el" href="provision_8h.html#af9c852b95525bd463832fcfc16c321e2" title="Find Next key.">vs_provision_tl_find_next_key</a>).</li>
+<li>Enumerate Trust List keys (<a class="el" href="provision_8h.html#aa66adf3dd794f322c0ecc1a835c7ef95" title="Find first key.">vs_provision_tl_find_first_key</a>, <a class="el" href="provision_8h.html#af9c852b95525bd463832fcfc16c321e2" title="Find Next key.">vs_provision_tl_find_next_key</a>).</li>
 <li>Search for specified high level key in internal storage (<a class="el" href="provision_8h.html#a384eda27f6bc2a351c6bde1fe7707e48" title="Verify high level public key.">vs_provision_verify_hl_key</a>).</li>
 <li>Verify high level public key (<a class="el" href="provision_8h.html#a384eda27f6bc2a351c6bde1fe7707e48" title="Verify high level public key.">vs_provision_verify_hl_key</a>).</li>
 <li>Get slot number for specific element (<a class="el" href="provision_8h.html#aa1b965f01af8c338f9d89b5df456e298" title="Get slot number.">vs_provision_get_slot_num</a>).</li>
@@ -121,7 +121,7 @@ Functions</h2></td></tr>
 Provision Usage</h1>
 <p>Provision library must be initialized before the first call and destroyed after the last one :</p>
 <div class="fragment"><div class="line"><a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">vs_status_e</a> ret_code;                   <span class="comment">// Result code</span></div>
-<div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;    <span class="comment">// TrustList storage implementation</span></div>
+<div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> tl_storage_impl;    <span class="comment">// Trust List storage implementation</span></div>
 <div class="line"><a class="code" href="structvs__secmodule__impl__t.html">vs_secmodule_impl_t</a> *secmodule_impl;    <span class="comment">// Security Module implementation</span></div>
 <div class="line"><a class="code" href="structvs__storage__op__ctx__t.html">vs_storage_op_ctx_t</a> slots_storage_impl; <span class="comment">// Slots storage implementation</span></div>
 <div class="line"> </div>
@@ -135,8 +135,8 @@ Provision Usage</h1>
 <div class="line"><span class="comment">// Operations</span></div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="provision_8h.html#adafd70511f5ea213adcbf44c180f88a9">vs_provision_deinit</a>();</div>
-</div><!-- fragment --><p>Storage implementation for TrustList and Slots is described in <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> .</p>
-<p>TrustList enumeration is done by <a class="el" href="provision_8h.html#aa66adf3dd794f322c0ecc1a835c7ef95" title="Find first key.">vs_provision_tl_find_first_key</a> first call and subsequent <a class="el" href="provision_8h.html#af9c852b95525bd463832fcfc16c321e2" title="Find Next key.">vs_provision_tl_find_next_key</a> ones. Code below calculates IoT device keys amount :</p>
+</div><!-- fragment --><p>Storage implementation for Trust List and Slots is described in <a class="el" href="storage__hal_8h.html#storage_hal">Storage HAL Usage</a> .</p>
+<p>Trust List enumeration is done by <a class="el" href="provision_8h.html#aa66adf3dd794f322c0ecc1a835c7ef95" title="Find first key.">vs_provision_tl_find_first_key</a> first call and subsequent <a class="el" href="provision_8h.html#af9c852b95525bd463832fcfc16c321e2" title="Find Next key.">vs_provision_tl_find_next_key</a> ones. Code below calculates IoT device keys amount :</p>
 <div class="fragment"><div class="line"><a class="code" href="structvs__provision__tl__find__ctx__t.html">vs_provision_tl_find_ctx_t</a> search_ctx;      <span class="comment">// Used by subsequent find first / next calls</span></div>
 <div class="line">uint8_t *public_key;                        <span class="comment">// Public key pointer</span></div>
 <div class="line">uint16_t public_key_size;                   <span class="comment">// Public key size</span></div>

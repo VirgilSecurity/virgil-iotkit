@@ -113,24 +113,23 @@ $(function() {
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    static_assert(std::is_base_of&lt;T, D&gt;::value, <span class="stringliteral">&quot;T should be a base type for D&quot;</span>);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keyword">static</span> T &amp;</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">   80</a></span>&#160;    <a class="code" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">instance</a>(){</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">static</span> D inst;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">return</span> inst;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    ~<a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>(<span class="keyword">const</span> <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    operator=(<span class="keyword">const</span> <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;};</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_SINGLETON_H</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">static</span> T &amp;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">   79</a></span>&#160;    <a class="code" href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">instance</a>() {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keyword">static</span> D inst;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> inst;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    ~<a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a>(<span class="keyword">const</span> <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    operator=(<span class="keyword">const</span> <a class="code" href="class_v_s_q_singleton.html">VSQSingleton</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;};</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_SINGLETON_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton::instance</a></div><div class="ttdeci">static T &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:80</div></div>
+<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton::instance</a></div><div class="ttdeci">static T &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:79</div></div>
 <div class="ttc" id="aclass_v_s_q_singleton_html"><div class="ttname"><a href="class_v_s_q_singleton.html">VSQSingleton</a></div><div class="ttdoc">Singleton implementation.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:68</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

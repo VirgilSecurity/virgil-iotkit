@@ -132,53 +132,65 @@ $(function() {
 <div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="struct_v_s_q_snap_packet.html#ad4932b81199650b2e695faf0c670a729">   91</a></span>&#160;    QDateTime <a class="code" href="struct_v_s_q_snap_packet.html#ad4932b81199650b2e695faf0c670a729">m_timestamp</a>;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;};</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="class_v_s_q_netif_base.html">   95</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a>: <span class="keyword">public</span> QObject {</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="class_v_s_q_netif_base.html">   95</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> : <span class="keyword">public</span> QObject {</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    Q_OBJECT</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a7066ae19b80a4f9a24832ba2b17bed05">VSQNetifBase</a>();</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a7066ae19b80a4f9a24832ba2b17bed05">VSQNetifBase</a>(<a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> &amp;<a class="code" href="class_v_s_q_netif_base.html#a703ff3792fc2833c6211450e11486b32">operator=</a>(<a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_netif_base.html#a6b294244b32b199ab24d66bffec52a84">~VSQNetifBase</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keyword">virtual</span> QAbstractSocket::SocketState <a class="code" href="class_v_s_q_netif_base.html#a83f262acf8b0be5282e82d97c451dfbb">connectionState</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="class_v_s_q_netif_base.html#a984dc6618c34b9d98e7f1eb24c926c16">  118</a></span>&#160;    <span class="keyword">operator</span> VirgilIoTKit::vs_netif_t *() {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">return</span> &amp;m_lowLevelNetif;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    }</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;signals:</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_v_s_q_netif_base.html#acfbf378c4c26e47900ef8fb55e6e09c8">fireStateChanged</a>(QAbstractSocket::SocketState <a class="code" href="class_v_s_q_netif_base.html#a83f262acf8b0be5282e82d97c451dfbb">connectionState</a>);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_v_s_q_netif_base.html#a4bff14ee2d1c0ae166e37af5498f5350">fireNewPacket</a>(<a class="code" href="struct_v_s_q_snap_packet.html">VSQSnapPacket</a> packet);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_v_s_q_netif_base.html#a72d65cec78b1ffa6033835ffa95856e7">init</a>() = 0;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_v_s_q_netif_base.html#ab388e6b5815f13ab71622961f903ceaf">deinit</a>() = 0;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_v_s_q_netif_base.html#a7f320a09522a4f96538c77e2a7519925">tx</a>(<span class="keyword">const</span> QByteArray &amp;data) = 0;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keyword">virtual</span> QString <a class="code" href="class_v_s_q_netif_base.html#aab895ec76314a883920618fabb16cab5">macAddr</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_v_s_q_netif_base.html#a3d90626861a3d9b3d398e507a06fbe1c">processData</a>(<span class="keyword">const</span> QByteArray &amp;data);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a> initCb(<span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif,</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                                            <span class="keyword">const</span> <a class="code" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">VirgilIoTKit::vs_netif_rx_cb_t</a> rx_cb,</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                                            <span class="keyword">const</span> <a class="code" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">VirgilIoTKit::vs_netif_process_cb_t</a> process_cb);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a> deinitCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a> txCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif, <span class="keyword">const</span> uint8_t *data, <span class="keyword">const</span> uint16_t data_sz);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a> macAddrCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif, <span class="keyword">struct</span> VirgilIoTKit::vs_mac_addr_t *mac_addr);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> &amp;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a703ff3792fc2833c6211450e11486b32">operator=</a>(<a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> <span class="keyword">const</span> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_v_s_q_netif_base.html#a6b294244b32b199ab24d66bffec52a84">~VSQNetifBase</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keyword">virtual</span> QAbstractSocket::SocketState</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a83f262acf8b0be5282e82d97c451dfbb">connectionState</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="class_v_s_q_netif_base.html#a984dc6618c34b9d98e7f1eb24c926c16">  120</a></span>&#160;    <span class="keyword">operator</span> VirgilIoTKit::vs_netif_t *() {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">return</span> &amp;m_lowLevelNetif;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    }</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;signals:</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#acfbf378c4c26e47900ef8fb55e6e09c8">fireStateChanged</a>(QAbstractSocket::SocketState <a class="code" href="class_v_s_q_netif_base.html#a83f262acf8b0be5282e82d97c451dfbb">connectionState</a>);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a4bff14ee2d1c0ae166e37af5498f5350">fireNewPacket</a>(<a class="code" href="struct_v_s_q_snap_packet.html">VSQSnapPacket</a> packet);</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a72d65cec78b1ffa6033835ffa95856e7">init</a>() = 0;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#ab388e6b5815f13ab71622961f903ceaf">deinit</a>() = 0;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a7f320a09522a4f96538c77e2a7519925">tx</a>(<span class="keyword">const</span> QByteArray &amp;data) = 0;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keyword">virtual</span> QString</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#aab895ec76314a883920618fabb16cab5">macAddr</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html#a3d90626861a3d9b3d398e507a06fbe1c">processData</a>(<span class="keyword">const</span> QByteArray &amp;data);</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    VirgilIoTKit::vs_netif_t m_lowLevelNetif;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <a class="code" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">VirgilIoTKit::vs_netif_rx_cb_t</a> m_lowLevelRxCall = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <a class="code" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">VirgilIoTKit::vs_netif_process_cb_t</a> m_lowLevelPacketProcess = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;};</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="preprocessor">#endif //VIRGIL_IOTKIT_QT_VSQNETIFBASE_H</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    initCb(<span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif,</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;           <span class="keyword">const</span> <a class="code" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">VirgilIoTKit::vs_netif_rx_cb_t</a> rx_cb,</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;           <span class="keyword">const</span> <a class="code" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">VirgilIoTKit::vs_netif_process_cb_t</a> process_cb);</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    deinitCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    txCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif, <span class="keyword">const</span> uint8_t *data, <span class="keyword">const</span> uint16_t data_sz);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keyword">static</span> <a class="code" href="status__code_8h.html#af385b5c6ab5f3183ce75d4d1e676e432">VirgilIoTKit::vs_status_e</a></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    macAddrCb(<span class="keyword">const</span> <span class="keyword">struct</span> VirgilIoTKit::vs_netif_t *netif, <span class="keyword">struct</span> VirgilIoTKit::vs_mac_addr_t *mac_addr);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    VirgilIoTKit::vs_netif_t m_lowLevelNetif;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <a class="code" href="snap-structs_8h.html#a4177fb35b2b2554bea8c2ac61110e91a">VirgilIoTKit::vs_netif_rx_cb_t</a> m_lowLevelRxCall = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <a class="code" href="snap-structs_8h.html#a1bec5fd8cab6db0e333f236ef5ad77fd">VirgilIoTKit::vs_netif_process_cb_t</a> m_lowLevelPacketProcess = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;};</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_VSQNETIFBASE_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclass_v_s_q_netif_base_html_a4bff14ee2d1c0ae166e37af5498f5350"><div class="ttname"><a href="class_v_s_q_netif_base.html#a4bff14ee2d1c0ae166e37af5498f5350">VSQNetifBase::fireNewPacket</a></div><div class="ttdeci">void fireNewPacket(VSQSnapPacket packet)</div><div class="ttdoc">Signal &quot;New packet has been received&quot;.</div></div>
 <div class="ttc" id="astruct_v_s_q_snap_packet_html_aa96624b011a9322cf3d28e249f1d9fc2"><div class="ttname"><a href="struct_v_s_q_snap_packet.html#aa96624b011a9322cf3d28e249f1d9fc2">VSQSnapPacket::m_flags</a></div><div class="ttdeci">uint32_t m_flags</div><div class="ttdoc">Packet's flags.</div><div class="ttdef"><b>Definition:</b> VSQNetifBase.h:85</div></div>

@@ -112,29 +112,28 @@ $(function() {
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
 <div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="class_v_s_q_implementations.html">   65</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_v_s_q_implementations.html">VSQImplementations</a> {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="class_v_s_q_implementations.html">VSQImplementations</a> &amp;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">   74</a></span>&#160;    <a class="code" href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">operator&lt;&lt;</a>(QSharedPointer&lt;VSQNetifBase&gt; <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        m_netif = <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> &amp;</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">   86</a></span>&#160;    <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>() {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        Q_ASSERT(m_netif);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> *m_netif.get();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    QSharedPointer&lt;VSQNetifBase&gt; m_netif;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;};</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <a class="code" href="class_v_s_q_implementations.html">VSQImplementations</a> &amp;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">   75</a></span>&#160;    <a class="code" href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">operator&lt;&lt;</a>(QSharedPointer&lt;VSQNetifBase&gt; <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>) {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        m_netif = <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="class_v_s_q_netif_base.html">VSQNetifBase</a> &amp;</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">   87</a></span>&#160;    <a class="code" href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">netif</a>() {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        Q_ASSERT(m_netif);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">return</span> *m_netif.get();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    QSharedPointer&lt;VSQNetifBase&gt; m_netif;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclass_v_s_q_implementations_html_ae1b2b1e01ec15626e249cb79320f3575"><div class="ttname"><a href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">VSQImplementations::operator&lt;&lt;</a></div><div class="ttdeci">VSQImplementations &amp; operator&lt;&lt;(QSharedPointer&lt; VSQNetifBase &gt; netif)</div><div class="ttdoc">Add network interface implementation.</div><div class="ttdef"><b>Definition:</b> VSQImplementations.h:74</div></div>
+<div class="ttc" id="aclass_v_s_q_implementations_html_ae1b2b1e01ec15626e249cb79320f3575"><div class="ttname"><a href="class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575">VSQImplementations::operator&lt;&lt;</a></div><div class="ttdeci">VSQImplementations &amp; operator&lt;&lt;(QSharedPointer&lt; VSQNetifBase &gt; netif)</div><div class="ttdoc">Add network interface implementation.</div><div class="ttdef"><b>Definition:</b> VSQImplementations.h:75</div></div>
 <div class="ttc" id="aclass_v_s_q_netif_base_html"><div class="ttname"><a href="class_v_s_q_netif_base.html">VSQNetifBase</a></div><div class="ttdoc">SNAP network interface base class.</div><div class="ttdef"><b>Definition:</b> VSQNetifBase.h:95</div></div>
 <div class="ttc" id="aclass_v_s_q_implementations_html"><div class="ttname"><a href="class_v_s_q_implementations.html">VSQImplementations</a></div><div class="ttdoc">Implementations configuration.</div><div class="ttdef"><b>Definition:</b> VSQImplementations.h:65</div></div>
-<div class="ttc" id="aclass_v_s_q_implementations_html_a07ecf700e173ab10394155d3dc663758"><div class="ttname"><a href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">VSQImplementations::netif</a></div><div class="ttdeci">VSQNetifBase &amp; netif()</div><div class="ttdoc">Initialised network interface implementation.</div><div class="ttdef"><b>Definition:</b> VSQImplementations.h:86</div></div>
+<div class="ttc" id="aclass_v_s_q_implementations_html_a07ecf700e173ab10394155d3dc663758"><div class="ttname"><a href="class_v_s_q_implementations.html#a07ecf700e173ab10394155d3dc663758">VSQImplementations::netif</a></div><div class="ttdeci">VSQNetifBase &amp; netif()</div><div class="ttdoc">Initialised network interface implementation.</div><div class="ttdef"><b>Definition:</b> VSQImplementations.h:87</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

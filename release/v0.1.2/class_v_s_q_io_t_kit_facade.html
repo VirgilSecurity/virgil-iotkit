@@ -108,6 +108,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae70ba02821e34663b72e11c816b59cca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_v_s_q_io_t_kit_facade.html#ae76addc65eb350ca14b37545163d2642">VSQSnapSnifferPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_v_s_q_io_t_kit_facade.html#ae70ba02821e34663b72e11c816b59cca">snapSniffer</a> ()</td></tr>
 <tr class="memdesc:ae70ba02821e34663b72e11c816b59cca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get installed sniffer.  <a href="class_v_s_q_io_t_kit_facade.html#ae70ba02821e34663b72e11c816b59cca">More...</a><br /></td></tr>
 <tr class="separator:ae70ba02821e34663b72e11c816b59cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a149eb0fd4b7ea382ddf3f1a3e724edd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_v_s_q_snap_info_client.html">VSQSnapInfoClient</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_v_s_q_io_t_kit_facade.html#a149eb0fd4b7ea382ddf3f1a3e724edd2">snapInfoClient</a> ()</td></tr>
+<tr class="memdesc:a149eb0fd4b7ea382ddf3f1a3e724edd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Snap INFO Client implementation.  <a href="class_v_s_q_io_t_kit_facade.html#a149eb0fd4b7ea382ddf3f1a3e724edd2">More...</a><br /></td></tr>
+<tr class="separator:a149eb0fd4b7ea382ddf3f1a3e724edd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -184,6 +187,27 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a149eb0fd4b7ea382ddf3f1a3e724edd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a149eb0fd4b7ea382ddf3f1a3e724edd2">&#9670;&nbsp;</a></span>snapInfoClient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_v_s_q_snap_info_client.html">VSQSnapInfoClient</a>* VSQIoTKitFacade::snapInfoClient </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get Snap INFO Client implementation. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Function will return nullptr if Snap INFO Client feature is not enabled</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the <a class="el" href="class_v_s_q_snap_info_client.html" title="SNAP protocol&#39;s INFO Client implementation.">VSQSnapInfoClient</a> object or nullptr if Snap INFO Client feature is not enabled </dd></dl>
+
+</div>
+</div>
 <a id="ae70ba02821e34663b72e11c816b59cca"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae70ba02821e34663b72e11c816b59cca">&#9670;&nbsp;</a></span>snapSniffer()</h2>
 
@@ -208,6 +232,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get installed sniffer. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Function will return nullptr if sniffer is not initialized</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="class_v_s_q_snap_sniffer_qml.html" title="SNAP Sniffer as ListView data model.">VSQSnapSnifferQml</a> object or nullptr if sniffer is not initialized </dd></dl>
 
 </div>
@@ -216,7 +241,7 @@ Additional Inherited Members</h2></td></tr>
 <li><a class="el" href="_v_s_q_io_t_kit_facade_8h_source.html">VSQIoTKitFacade.h</a></li>
 </ul>
 </div><!-- contents -->
-<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton&lt; VSQIoTKitFacade &gt;::instance</a></div><div class="ttdeci">static VSQIoTKitFacade &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:80</div></div>
+<div class="ttc" id="aclass_v_s_q_singleton_html_a86543bd01a247e4f763981fc2e1dceeb"><div class="ttname"><a href="class_v_s_q_singleton.html#a86543bd01a247e4f763981fc2e1dceeb">VSQSingleton&lt; VSQIoTKitFacade &gt;::instance</a></div><div class="ttdeci">static VSQIoTKitFacade &amp; instance()</div><div class="ttdoc">Get static instance.</div><div class="ttdef"><b>Definition:</b> VSQSingleton.h:79</div></div>
 <div class="ttc" id="aclass_v_s_q_io_t_kit_facade_html_aa7961c86a8d10e43d7d78c86a2ea428f"><div class="ttname"><a href="class_v_s_q_io_t_kit_facade.html#aa7961c86a8d10e43d7d78c86a2ea428f">VSQIoTKitFacade::init</a></div><div class="ttdeci">bool init(const VSQFeatures &amp;features, const VSQImplementations &amp;impl, const VSQAppConfig &amp;appConfig)</div><div class="ttdoc">Facade initialization.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
