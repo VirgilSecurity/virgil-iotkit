@@ -89,6 +89,10 @@ VSQIoTKitFacade::initSnap() {
     if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
         m_snapSniffer = decltype(m_snapSniffer)::create(m_appConfig.snifferConfig(), &m_impl.netif());
     }
+
+    if (m_features.hasFeature(VSQFeatures::SNAP_CFG_CLIENT)) {
+        registerService(VSQSnapCfgClient::instance());
+    }
 }
 
 void

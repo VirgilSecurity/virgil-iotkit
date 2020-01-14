@@ -37,6 +37,8 @@
 
 #include <QtCore>
 
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-client.h>
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 
@@ -57,8 +59,7 @@ public:
      */
     const VirgilIoTKit::vs_snap_service_t *
     serviceInterface() override {
-//        return m_snapService;
-        return nullptr;
+        return m_snapService;
     }
 
     /** Get service feature
@@ -88,14 +89,10 @@ public slots:
     onSetConfigData(QString ssid, QString pass, QString account);
 
 private:
-//    const VirgilIoTKit::vs_cfg_service_t *m_cfgService;
-//    mutable VirgilIoTKit::vs_snap_cfg_client_service_t m_snapCfgImpl;
+    const VirgilIoTKit::vs_snap_service_t *m_snapService;
 
     VSQSnapCfgClient();
     ~VSQSnapCfgClient() = default;
-
-//    static VirgilIoTKit::vs_status_e
-//    startNotify(VirgilIoTKit::vs_snap_info_device_t *deviceRaw);
 
     QString m_ssid;
     QString m_pass;

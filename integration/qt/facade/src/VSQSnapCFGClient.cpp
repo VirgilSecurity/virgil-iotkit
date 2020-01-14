@@ -34,19 +34,40 @@
 
 #include <virgil/iot/qt/VSQIoTKit.h>
 
+#include <cstdio>
+#include <cstring>
+
 using namespace VirgilIoTKit;
 
 VSQSnapCfgClient::VSQSnapCfgClient() {
-//    m_snapInfoImpl.device_start = startNotify;
-//    m_snapInfoImpl.general_info = generalInfo;
-//    m_snapInfoImpl.statistics = statistics;
-
-//    m_snapService = vs_snap_cfg_client(m_snapCfgImpl);
+    m_snapService = vs_snap_cfg_client();
 }
 
 void
 VSQSnapCfgClient::onConfigureDevices() {
     qDebug() << "Configure ssid:<" << m_ssid << "> pass:<" << m_pass << "> account:<" << m_account << ">";
+
+    if (m_ssid.length() >= VS_CFG_STR_MAX) {
+        VS_LOG_ERROR("SSID string is longer than %d", VS_CFG_STR_MAX);
+    }
+
+    if (m_pass.length() >= VS_CFG_STR_MAX) {
+        VS_LOG_ERROR("Password string is longer than %d", VS_CFG_STR_MAX);
+    }
+
+    if (m_account.length() >= VS_CFG_STR_MAX) {
+        VS_LOG_ERROR("Account string is longer than %d", VS_CFG_STR_MAX);
+    }
+
+    vs_cfg_configuration_t config;
+    ::strcpy(reinterpret_cast<char *>(config.ssid), m_ssid.toStdString().c_str());
+    ::strcpy(reinterpret_cast<char *>(config.pass), m_pass.toStdString().c_str());
+    ::strcpy(reinterpret_cast<char *>(config.account), m_account.toStdString().c_str());
+    if (VS_CODE_OK != vs_snap_cfg_configure_device(vs_snap_netif_default(),
+                                 vs_snap_broadcast_mac(),
+                                 &config)) {
+        VS_LOG_ERROR("Cannot configure device");
+    }
 }
 
 void
