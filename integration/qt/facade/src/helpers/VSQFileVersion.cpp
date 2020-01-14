@@ -61,13 +61,9 @@ VSQFileVersion::set(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion)
 
 QString
 VSQFileVersion::description(bool outputDate) const {
-    QString res = QString("%1.%2.%3.%4")
-            .arg((int)m_major)
-            .arg((int)m_minor)
-            .arg((int)m_patch)
-            .arg((int)m_build);
+    QString res = QString("%1.%2.%3.%4").arg((int)m_major).arg((int)m_minor).arg((int)m_patch).arg((int)m_build);
 
-    if(outputDate) {
+    if (outputDate) {
         res += QString(", %1").arg(m_timestamp.toString("hh:mm:ss"));
     }
 

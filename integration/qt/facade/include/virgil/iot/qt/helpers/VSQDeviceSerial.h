@@ -65,7 +65,6 @@
 /** Device serial number */
 class VSQDeviceSerial {
 public:
-
     /** Default serial number constructor */
     VSQDeviceSerial() : m_deviceSerial(VS_DEVICE_SERIAL_SIZE, 0) {
     }

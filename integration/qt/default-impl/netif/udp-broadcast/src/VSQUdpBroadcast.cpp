@@ -49,8 +49,7 @@ VSQUdpBroadcast::init() {
 
     for (auto &interface : QNetworkInterface::allInterfaces()) {
         if (interface.flags() & QNetworkInterface::IsLoopBack ||
-            !(interface.flags() & QNetworkInterface::CanBroadcast &&
-              interface.flags() & QNetworkInterface::IsRunning &&
+            !(interface.flags() & QNetworkInterface::CanBroadcast && interface.flags() & QNetworkInterface::IsRunning &&
               interface.flags() & QNetworkInterface::IsUp)) {
             continue;
         }

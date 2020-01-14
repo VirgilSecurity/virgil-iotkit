@@ -36,10 +36,12 @@
  * \brief SNAP protocol sniffer with QML abilities
  *
  * #VSQSnapInfoClientQml uses #VSQSnapInfoClient signals to retransmit them to a QML.
- * It receives #VSQNetifBase implementation and uses its #VSQNetifBase::fireStateChanged and #VSQNetifBase::fireNewPacket
- * signals to output current state to a ListView QML control. #VSQSnapSnifferQmlConfig is used to configure #VSQSnapSnifferQml .
+ * It receives #VSQNetifBase implementation and uses its #VSQNetifBase::fireStateChanged and
+ * #VSQNetifBase::fireNewPacket signals to output current state to a ListView QML control. #VSQSnapSnifferQmlConfig
+ * is used to configure #VSQSnapSnifferQml .
  *
- * \note Visit <a href="https://github.com/VirgilSecurity/demo-iotkit-qt">Demo IoTKIT Qt</a> for this class usage example
+ * \note Visit <a href="https://github.com/VirgilSecurity/demo-iotkit-qt">Demo IoTKIT Qt</a> for this class usage
+ * example
  *
  * To use it you need to initialize #VSQSnapInfoClient :
  *
@@ -60,7 +62,8 @@
 
     QQmlApplicationEngine engine;                   // QML engine
     QQmlContext *context = engine.rootContext();    // Get root context
-    context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());  // Get INFO client instance and set it as "SnapInfoClient" QML data model
+    context->setContextProperty("SnapInfoClient",
+        &VSQSnapInfoClientQml::instance());  // Get INFO client instance and set it as "SnapInfoClient" QML data model
 
  * \endcode
  *
@@ -104,28 +107,29 @@ ListView {
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
 
 /** INFO Client interface */
-class VSQSnapInfoClientQml final :
-        public QAbstractListModel,
-        public VSQSingleton<VSQSnapInfoClientQml> {
-Q_OBJECT
+class VSQSnapInfoClientQml final : public QAbstractListModel, public VSQSingleton<VSQSnapInfoClientQml> {
+    Q_OBJECT
 
     friend VSQSingleton<VSQSnapInfoClientQml>;
 
 public:
     /** Data roles */
     enum DeviceInfoRoles {
-        MacAddress = Qt::UserRole + 1,  /**< MAC address. #VSQDeviceInfo::m_mac field. Use it as "macAddress" QML */
-        DeviceRoles,    /**< Device roles. #VSQDeviceInfo::m_deviceRoles field. Use it as "deviceRoles" QML */
-        ManufactureId,  /**< Manufacture ID. #VSQDeviceInfo::m_manufactureId field. Use it as "manufactureId" QML */
-        DeviceType, /**< Device type. #VSQDeviceInfo::m_deviceType field. Use it as "deviceType" QML */
-        FwVer,  /**< File version. #VSQDeviceInfo::m_fwVer field. Use it as "fwVer" QML */
-        TlVer,  /**< Trust List version. #VSQDeviceInfo::m_tlVer field. Use it as "tlVer" QML */
-        Sent,   /**< Sent packets. #VSQDeviceInfo::m_sent field. Use it as "sent" QML */
-        Received,   /**< Received packets. #VSQDeviceInfo::m_received field. Use it as "received" QML */
-        LastTimestamp,  /**< Last information timestamp. #VSQDeviceInfo::m_lastTimestamp field. Use it as "lastTimestamp" QML */
-        IsActive,   /**< Device is active. #VSQDeviceInfo::m_isActive field. Use it as "isActive" QML */
-        HasGeneralInfo, /**< Device has general informatio. #VSQDeviceInfo::m_hasGeneralInfo field. Use it as "hasGeneralInfo" QML */
-        HasStatistics   /**< Device has statistics. #VSQDeviceInfo::m_hasStatistics field. Use it as "hasStatistics" QML */
+        MacAddress = Qt::UserRole + 1, /**< MAC address. #VSQDeviceInfo::m_mac field. Use it as "macAddress" QML */
+        DeviceRoles,   /**< Device roles. #VSQDeviceInfo::m_deviceRoles field. Use it as "deviceRoles" QML */
+        ManufactureId, /**< Manufacture ID. #VSQDeviceInfo::m_manufactureId field. Use it as "manufactureId" QML */
+        DeviceType,    /**< Device type. #VSQDeviceInfo::m_deviceType field. Use it as "deviceType" QML */
+        FwVer,         /**< File version. #VSQDeviceInfo::m_fwVer field. Use it as "fwVer" QML */
+        TlVer,         /**< Trust List version. #VSQDeviceInfo::m_tlVer field. Use it as "tlVer" QML */
+        Sent,          /**< Sent packets. #VSQDeviceInfo::m_sent field. Use it as "sent" QML */
+        Received,      /**< Received packets. #VSQDeviceInfo::m_received field. Use it as "received" QML */
+        LastTimestamp, /**< Last information timestamp. #VSQDeviceInfo::m_lastTimestamp field. Use it as "lastTimestamp"
+                          QML */
+        IsActive,      /**< Device is active. #VSQDeviceInfo::m_isActive field. Use it as "isActive" QML */
+        HasGeneralInfo, /**< Device has general informatio. #VSQDeviceInfo::m_hasGeneralInfo field. Use it as
+                           "hasGeneralInfo" QML */
+        HasStatistics   /**< Device has statistics. #VSQDeviceInfo::m_hasStatistics field. Use it as "hasStatistics" QML
+                         */
     };
 
     /** Rows count
@@ -136,7 +140,8 @@ public:
      * \param parent Parent
      * \return Number of rows
      */
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    int
+    rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
     /** Obtain data
      *
@@ -146,20 +151,23 @@ public:
      * \param role #DeviceInfoRoles data role
      * \return
      */
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QVariant
+    data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     /** Role names
      *
      * Returns the model's role names.
      * \return #DeviceInfoRoles to string conversions as QHash
      */
-    QHash<int, QByteArray> roleNames() const override;
+    QHash<int, QByteArray>
+    roleNames() const override;
 
 private:
     VSQSnapInfoClientQml();
     ~VSQSnapInfoClientQml() = default;
 
-    static const VSQSnapInfoClient::TEnumDevicesArray &devicesList()  {
+    static const VSQSnapInfoClient::TEnumDevicesArray &
+    devicesList() {
         return VSQSnapInfoClient::instance().devicesList();
     }
 

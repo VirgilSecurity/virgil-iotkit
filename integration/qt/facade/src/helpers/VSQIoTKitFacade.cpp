@@ -75,15 +75,14 @@ VSQIoTKitFacade::initSnap() {
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_INFO_CLIENT)) {
-        registerService(VSQSnapInfoClient::instance());
+        registerService(*snapInfoClient());
 
         if (m_impl.netif().connectionState() == QAbstractSocket::BoundState) {
-            VSQSnapInfoClient::instance().startFullPolling();
+            snapInfoClient()->startFullPolling();
         }
 
         QObject::connect(
                 &m_impl.netif(), &VSQNetifBase::fireStateChanged, this, &VSQIoTKitFacade::restartInfoClientPolling);
-
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
@@ -101,6 +100,15 @@ VSQIoTKitFacade::registerService(VSQSnapServiceBase &service) {
 void
 VSQIoTKitFacade::restartInfoClientPolling(QAbstractSocket::SocketState connectionState) {
     if (connectionState == QAbstractSocket::BoundState) {
-        VSQSnapInfoClient::instance().startFullPolling();
+        snapInfoClient()->startFullPolling();
+    }
+}
+
+VSQSnapInfoClient *
+VSQIoTKitFacade::snapInfoClient() {
+    if (m_features.hasSnap() && m_features.hasFeature(VSQFeatures::SNAP_INFO_CLIENT)) {
+        return &VSQSnapInfoClient::instance();
+    } else {
+        return nullptr;
     }
 }

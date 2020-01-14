@@ -64,10 +64,11 @@ class VSQNetifBase;
  */
 class VSQImplementations {
 public:
-
     /** Add network interface implementation
      *
-     * \param netif Network interface as #VSQNetifBase child implementation. You could use #VSQUdpBroadcast as default one
+     * \param netif Network interface as #VSQNetifBase child implementation. You could use #VSQUdpBroadcast as default
+     * one
+     *
      * \return Reference to the #VSQImplementations instance
      */
     VSQImplementations &

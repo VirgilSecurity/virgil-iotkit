@@ -51,26 +51,29 @@ VSQNetifBase::VSQNetifBase() {
     m_lowLevelNetif.packet_buf_filled = 0;
 }
 
-bool VSQNetifBase::processData(const QByteArray &data) {
-    if( !m_lowLevelRxCall )
+bool
+VSQNetifBase::processData(const QByteArray &data) {
+    if (!m_lowLevelRxCall)
         return false;
 
-    if(!data.size() )
+    if (!data.size())
         return false;
 
-    const uint8_t *raw_data = reinterpret_cast<const uint8_t*>(data.data());
+    const uint8_t *raw_data = reinterpret_cast<const uint8_t *>(data.data());
     const uint8_t *packet_data = nullptr;
     uint16_t packet_data_sz = 0;
 
-    if( m_lowLevelRxCall( &m_lowLevelNetif, raw_data, data.size(), &packet_data, &packet_data_sz ) != VirgilIoTKit::VS_CODE_OK )
+    if (m_lowLevelRxCall(&m_lowLevelNetif, raw_data, data.size(), &packet_data, &packet_data_sz) !=
+        VirgilIoTKit::VS_CODE_OK)
         return false;
 
-    if( !m_lowLevelPacketProcess )
+    if (!m_lowLevelPacketProcess)
         return true;
 
-    if(receivers(SIGNAL(fireNewPacket(VSQSnapPacket))) > 0) {
+    if (receivers(SIGNAL(fireNewPacket(VSQSnapPacket))) > 0) {
         VSQSnapPacket snapPacket;
-        const VirgilIoTKit::vs_snap_packet_t *srcPacket = reinterpret_cast<const VirgilIoTKit::vs_snap_packet_t *>(packet_data);
+        const VirgilIoTKit::vs_snap_packet_t *srcPacket =
+                reinterpret_cast<const VirgilIoTKit::vs_snap_packet_t *>(packet_data);
 
         snapPacket.m_timestamp = QDateTime::currentDateTime();
         snapPacket.m_dest = srcPacket->eth_header.dest;
@@ -80,23 +83,25 @@ bool VSQNetifBase::processData(const QByteArray &data) {
         snapPacket.m_serviceId = srcPacket->header.service_id;
         snapPacket.m_elementId = srcPacket->header.element_id;
         snapPacket.m_flags = srcPacket->header.flags;
-        snapPacket.m_content = QByteArray::fromRawData(reinterpret_cast<const char*>(srcPacket->content), srcPacket->header.content_size);
+        snapPacket.m_content = QByteArray::fromRawData(reinterpret_cast<const char *>(srcPacket->content),
+                                                       srcPacket->header.content_size);
 
         emit fireNewPacket(snapPacket);
     }
 
-    if( m_lowLevelPacketProcess( &m_lowLevelNetif, packet_data, packet_data_sz ) != VirgilIoTKit::VS_CODE_OK ) {
-        VS_LOG_ERROR( "Unable to process received packet" );
+    if (m_lowLevelPacketProcess(&m_lowLevelNetif, packet_data, packet_data_sz) != VirgilIoTKit::VS_CODE_OK) {
+        VS_LOG_ERROR("Unable to process received packet");
         return false;
     }
 
     return true;
 }
 
-VirgilIoTKit::vs_status_e VSQNetifBase::initCb(struct VirgilIoTKit::vs_netif_t *netif,
-                                                             const VirgilIoTKit::vs_netif_rx_cb_t rx_cb,
-                                                             const VirgilIoTKit::vs_netif_process_cb_t process_cb) {
-    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase*>(netif->user_data);
+VirgilIoTKit::vs_status_e
+VSQNetifBase::initCb(struct VirgilIoTKit::vs_netif_t *netif,
+                     const VirgilIoTKit::vs_netif_rx_cb_t rx_cb,
+                     const VirgilIoTKit::vs_netif_process_cb_t process_cb) {
+    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase *>(netif->user_data);
 
     instance->m_lowLevelRxCall = rx_cb;
     instance->m_lowLevelPacketProcess = process_cb;
@@ -104,22 +109,25 @@ VirgilIoTKit::vs_status_e VSQNetifBase::initCb(struct VirgilIoTKit::vs_netif_t *
     return instance->init() ? VirgilIoTKit::VS_CODE_OK : VirgilIoTKit::VS_CODE_ERR_INIT_SNAP;
 }
 
-VirgilIoTKit::vs_status_e VSQNetifBase::deinitCb(const struct VirgilIoTKit::vs_netif_t *netif) {
-    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase*>(netif->user_data);
+VirgilIoTKit::vs_status_e
+VSQNetifBase::deinitCb(const struct VirgilIoTKit::vs_netif_t *netif) {
+    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase *>(netif->user_data);
 
     return instance->deinit() ? VirgilIoTKit::VS_CODE_OK : VirgilIoTKit::VS_CODE_ERR_DEINIT_SNAP;
 }
 
-VirgilIoTKit::vs_status_e VSQNetifBase::txCb(const struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data_raw, const uint16_t data_sz) {
-    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase*>(netif->user_data);
+VirgilIoTKit::vs_status_e
+VSQNetifBase::txCb(const struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data_raw, const uint16_t data_sz) {
+    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase *>(netif->user_data);
 
-    return instance->tx(QByteArray(reinterpret_cast<const char*>(data_raw), data_sz )) ?
-           VirgilIoTKit::VS_CODE_OK : VirgilIoTKit::VS_CODE_ERR_TX_SNAP;
-
+    return instance->tx(QByteArray(reinterpret_cast<const char *>(data_raw), data_sz))
+                   ? VirgilIoTKit::VS_CODE_OK
+                   : VirgilIoTKit::VS_CODE_ERR_TX_SNAP;
 }
 
-VirgilIoTKit::vs_status_e VSQNetifBase::macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct VirgilIoTKit::vs_mac_addr_t *mac_addr) {
-    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase*>(netif->user_data);
+VirgilIoTKit::vs_status_e
+VSQNetifBase::macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct VirgilIoTKit::vs_mac_addr_t *mac_addr) {
+    VSQNetifBase *instance = reinterpret_cast<VSQNetifBase *>(netif->user_data);
     QString macStr = instance->macAddr();
     VSQMac macInternal = macStr;
 

@@ -66,7 +66,6 @@
 /** Virgil IoT Kit file version */
 class VSQFileVersion {
 public:
-
     /** File version default constructor */
     VSQFileVersion();
 

@@ -36,10 +36,12 @@
  * \brief SNAP protocol sniffer with QML abilities
  *
  * #VSQSnapSnifferQml allows to analyse SNAP traffic and to output its state to a QML based application.
- * It receives #VSQNetifBase implementation and uses its #VSQNetifBase::fireStateChanged and #VSQNetifBase::fireNewPacket
- * signals to output current state to a ListView QML control. #VSQSnapSnifferQmlConfig is used to configure #VSQSnapSnifferQml .
+ * It receives #VSQNetifBase implementation and uses its #VSQNetifBase::fireStateChanged and
+ * #VSQNetifBase::fireNewPacket signals to output current state to a ListView QML control. #VSQSnapSnifferQmlConfig
+ * is used to configure #VSQSnapSnifferQml .
  *
- * \note Visit <a href="https://github.com/VirgilSecurity/demo-iotkit-qt">Demo IoTKIT Qt</a> for this class usage example
+ * \note Visit <a href="https://github.com/VirgilSecurity/demo-iotkit-qt">Demo IoTKIT Qt</a> for this class usage
+ * example
  *
  * To use it you need configure #VSQIoTKitFacade :
  * - set #VSQFeatures::SNAP_SNIFFER feature.
@@ -64,12 +66,13 @@
 
     QQmlApplicationEngine engine;                   // QML engine
     QQmlContext *context = engine.rootContext();    // Get root context
-    context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer().get());  // Get sniffer instance and set it as "SnapSniffer" QML data model
+    context->setContextProperty("SnapSniffer",
+        VSQIoTKitFacade::instance().snapSniffer().get());  // Get sniffer instance and set it as "SnapSniffer" QML data model
 
  * \endcode
  *
- * After such initialization use SnapSniffer as ListView data model. Use #VSQSnapSnifferQml::DeviceInfoRoles to obtain needed information
- * roles :
+ * After such initialization use SnapSniffer as ListView data model. Use #VSQSnapSnifferQml::DeviceInfoRoles to obtain
+ * needed information roles :
  *
  * \code
 
@@ -112,10 +115,14 @@ public:
      *
      * \param maxLogLines Maximum log lines in ListView item. Older will be deleted with each new line
      */
-    VSQSnapSnifferQmlConfig(int maxLogLines = 20): m_maxLogLines(maxLogLines) {}
+    VSQSnapSnifferQmlConfig(int maxLogLines = 20) : m_maxLogLines(maxLogLines) {
+    }
 
     /** Maximum log lines */
-    int maxLogLines() const { return m_maxLogLines; }
+    int
+    maxLogLines() const {
+        return m_maxLogLines;
+    }
 
 private:
     int m_maxLogLines;
@@ -126,9 +133,8 @@ private:
  * \note You do not need to call it directly. #VSQIoTKitFacade::init will call it if you provide
  * #VSQFeatures::SNAP_SNIFFER feature
  */
-class VSQSnapSnifferQml final :
-        public QAbstractListModel{
-Q_OBJECT
+class VSQSnapSnifferQml final : public QAbstractListModel {
+    Q_OBJECT
 
 public:
     /** Constructor
@@ -141,16 +147,22 @@ public:
 
     /** Data roles */
     enum DeviceInfoRoles {
-        MacDst = Qt::UserRole + 1,  /**< Destination's MAC address. #VSQSnapPacket::m_dest field. Use it as "macDst" in QML */
-        MacSrc,                     /**< Source's MAC address. #VSQSnapPacket::m_src field. Use it as "macSrc" in QML */
-        EthernetPacketType,         /**< Hex string representation of Ethernet's packet type. #VSQSnapPacket::m_ethernetPacketType field. Use it as "ethernetPacketType" in QML */
-        TransactionId,              /**< Transaction's ID. #VSQSnapPacket::m_transactionId field. Use it as "transactionId" in QML */
-        ServiceId,                  /**< Hex string representation of service's ID. #VSQSnapPacket::m_serviceId field. Use it as "serviceId" in QML */
-        ElementId,                  /**< Hex string representation of element's ID. #VSQSnapPacket::m_elementId field. Use it as "elementId" in QML */
-        Flags,                      /**< Hex string representation of packet's flags. #VSQSnapPacket::m_flags field. Use it as "flags" in QML */
-        Content,                    /**< Packet's content. #VSQSnapPacket::m_content field. Use it as "content" in QML */
-        ContentSize,                /**< Packet's content size. #VSQSnapPacket::m_content field data size. Use it as "contentSize" in QML */
-        Timestamp                   /**< Timestamp. #VSQSnapPacket::m_timestamp field. Use it as "timestamp" in QML */
+        MacDst = Qt::UserRole +
+                 1,         /**< Destination's MAC address. #VSQSnapPacket::m_dest field. Use it as "macDst" in QML */
+        MacSrc,             /**< Source's MAC address. #VSQSnapPacket::m_src field. Use it as "macSrc" in QML */
+        EthernetPacketType, /**< Hex string representation of Ethernet's packet type.
+                               #VSQSnapPacket::m_ethernetPacketType field. Use it as "ethernetPacketType" in QML */
+        TransactionId, /**< Transaction's ID. #VSQSnapPacket::m_transactionId field. Use it as "transactionId" in QML */
+        ServiceId,     /**< Hex string representation of service's ID. #VSQSnapPacket::m_serviceId field. Use it as
+                          "serviceId" in QML */
+        ElementId,     /**< Hex string representation of element's ID. #VSQSnapPacket::m_elementId field. Use it as
+                          "elementId" in QML */
+        Flags, /**< Hex string representation of packet's flags. #VSQSnapPacket::m_flags field. Use it as "flags" in QML
+                */
+        Content,     /**< Packet's content. #VSQSnapPacket::m_content field. Use it as "content" in QML */
+        ContentSize, /**< Packet's content size. #VSQSnapPacket::m_content field data size. Use it as "contentSize" in
+                        QML */
+        Timestamp    /**< Timestamp. #VSQSnapPacket::m_timestamp field. Use it as "timestamp" in QML */
     };
 
     /** Rows count
@@ -161,7 +173,8 @@ public:
      * \param parent Parent
      * \return Number of rows
      */
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    int
+    rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
     /** Obtain data
      *
@@ -171,14 +184,16 @@ public:
      * \param role #DeviceInfoRoles data role
      * \return
      */
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+    QVariant
+    data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     /** Role names
      *
      * Returns the model's role names.
      * \return #DeviceInfoRoles to string conversions as QHash
      */
-    QHash<int, QByteArray> roleNames() const override;
+    QHash<int, QByteArray>
+    roleNames() const override;
 
 private:
     using TPackets = QLinkedList<VSQSnapPacket>;
@@ -187,7 +202,8 @@ private:
     const int m_maxPacketsAmount;
 
 private slots:
-    void onNewPacket(VSQSnapPacket packet);
+    void
+    onNewPacket(VSQSnapPacket packet);
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_SNIFFER_QML_H_

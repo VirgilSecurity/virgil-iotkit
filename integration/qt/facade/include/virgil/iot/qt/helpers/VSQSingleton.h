@@ -70,14 +70,13 @@ template <typename T, typename D = T> class VSQSingleton {
     static_assert(std::is_base_of<T, D>::value, "T should be a base type for D");
 
 public:
-
     /** Get static instance
      *
      * Creates once \a D class instance and returns its base class \a T
      * \return
      */
     static T &
-    instance(){
+    instance() {
         static D inst;
         return inst;
     }

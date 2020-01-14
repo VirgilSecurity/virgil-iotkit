@@ -67,7 +67,6 @@
 /** Device type */
 class VSQDeviceType {
 public:
-
     /** Default device type constructor */
     VSQDeviceType() : m_deviceType(VS_DEVICE_TYPE_SIZE, 0) {
     }

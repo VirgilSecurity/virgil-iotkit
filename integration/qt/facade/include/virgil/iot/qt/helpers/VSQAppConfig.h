@@ -73,7 +73,6 @@
  */
 class VSQAppConfig {
 public:
-
     /** Manufacture ID initialization
      *
      * \param manufactureId Manufacture ID to be set up

@@ -55,19 +55,22 @@ public:
      *
      * \return Service interface
      */
-    virtual const VirgilIoTKit::vs_snap_service_t *serviceInterface() = 0;
+    virtual const VirgilIoTKit::vs_snap_service_t *
+    serviceInterface() = 0;
 
     /** Get service feature
      *
      * \return Service feature
      */
-    virtual VSQFeatures::EFeature serviceFeature() const = 0;
+    virtual VSQFeatures::EFeature
+    serviceFeature() const = 0;
 
     /** Get service name
      *
      * \return Service name
      */
-    virtual const QString &serviceName() const = 0;
+    virtual const QString &
+    serviceName() const = 0;
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_

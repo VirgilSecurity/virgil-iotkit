@@ -92,14 +92,15 @@ struct VSQSnapPacket {
 };
 
 /** SNAP network interface base class */
-class VSQNetifBase: public QObject {
+class VSQNetifBase : public QObject {
     Q_OBJECT
 
 public:
     /** Default constructor */
     VSQNetifBase();
     VSQNetifBase(VSQNetifBase const &) = delete;
-    VSQNetifBase &operator=(VSQNetifBase const &) = delete;
+    VSQNetifBase &
+    operator=(VSQNetifBase const &) = delete;
 
     virtual ~VSQNetifBase() = default;
 
@@ -109,7 +110,8 @@ public:
      *
      * \return Current connection status
      */
-    virtual QAbstractSocket::SocketState connectionState() const = 0;
+    virtual QAbstractSocket::SocketState
+    connectionState() const = 0;
 
     /** Get network interface
      *
@@ -124,23 +126,25 @@ signals:
      *
      * \param connectionState Current connection state
      */
-    void fireStateChanged(QAbstractSocket::SocketState connectionState);
+    void
+    fireStateChanged(QAbstractSocket::SocketState connectionState);
 
     /** Signal "New packet has been received"
      *
      * \param packet New packet
      */
-    void fireNewPacket(VSQSnapPacket packet);
+    void
+    fireNewPacket(VSQSnapPacket packet);
 
 protected:
-
     /** Initialize network interface
      *
      * \warning You have to implement this function in a child class
      *
      * \return true in case of success
      */
-    virtual bool init() = 0;
+    virtual bool
+    init() = 0;
 
     /** Destruct network interface
      *
@@ -148,7 +152,8 @@ protected:
      *
      * \return true in case of success
      */
-    virtual bool deinit() = 0;
+    virtual bool
+    deinit() = 0;
 
     /** Send binary data
      *
@@ -158,7 +163,8 @@ protected:
      *
      * \return true in case of success
      */
-    virtual bool tx(const QByteArray &data) = 0;
+    virtual bool
+    tx(const QByteArray &data) = 0;
 
     /** Get current MAC address
      *
@@ -166,7 +172,8 @@ protected:
      *
      * \return Current MAC address
      */
-    virtual QString macAddr() const = 0;
+    virtual QString
+    macAddr() const = 0;
 
     /** Process packet data
      *
@@ -174,19 +181,24 @@ protected:
      *
      * \return true if data was processed successfully
      */
-    bool processData(const QByteArray &data);
+    bool
+    processData(const QByteArray &data);
 
 private:
-    static VirgilIoTKit::vs_status_e initCb(struct VirgilIoTKit::vs_netif_t *netif,
-                                            const VirgilIoTKit::vs_netif_rx_cb_t rx_cb,
-                                            const VirgilIoTKit::vs_netif_process_cb_t process_cb);
-    static VirgilIoTKit::vs_status_e deinitCb(const struct VirgilIoTKit::vs_netif_t *netif);
-    static VirgilIoTKit::vs_status_e txCb(const struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
-    static VirgilIoTKit::vs_status_e macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct VirgilIoTKit::vs_mac_addr_t *mac_addr);
+    static VirgilIoTKit::vs_status_e
+    initCb(struct VirgilIoTKit::vs_netif_t *netif,
+           const VirgilIoTKit::vs_netif_rx_cb_t rx_cb,
+           const VirgilIoTKit::vs_netif_process_cb_t process_cb);
+    static VirgilIoTKit::vs_status_e
+    deinitCb(const struct VirgilIoTKit::vs_netif_t *netif);
+    static VirgilIoTKit::vs_status_e
+    txCb(const struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+    static VirgilIoTKit::vs_status_e
+    macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct VirgilIoTKit::vs_mac_addr_t *mac_addr);
 
     VirgilIoTKit::vs_netif_t m_lowLevelNetif;
     VirgilIoTKit::vs_netif_rx_cb_t m_lowLevelRxCall = nullptr;
     VirgilIoTKit::vs_netif_process_cb_t m_lowLevelPacketProcess = nullptr;
 };
 
-#endif //VIRGIL_IOTKIT_QT_VSQNETIFBASE_H
+#endif // VIRGIL_IOTKIT_QT_VSQNETIFBASE_H

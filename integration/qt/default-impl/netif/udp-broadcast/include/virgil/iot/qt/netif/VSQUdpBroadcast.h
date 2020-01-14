@@ -66,7 +66,6 @@
 class VSQUdpBroadcast final : public VSQNetifBase {
     Q_OBJECT
 public:
-
     /** Default constructor
      *
      * \param port UDP port. Default port is 4100

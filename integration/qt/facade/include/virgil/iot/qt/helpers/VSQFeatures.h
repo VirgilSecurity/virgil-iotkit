@@ -66,11 +66,11 @@
 
 class VSQFeatures {
 public:
-
     /** Features enumeration */
-    enum EFeature { SNAP_INFO_CLIENT, /**< INFO client service */
-                    SNAP_SNIFFER      /**< Snap sniffer */
-                    };
+    enum EFeature {
+        SNAP_INFO_CLIENT, /**< INFO client service */
+        SNAP_SNIFFER      /**< Snap sniffer */
+    };
 
     /** Features set */
     using TSet = QSet<EFeature>;

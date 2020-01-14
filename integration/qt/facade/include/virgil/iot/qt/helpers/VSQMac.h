@@ -67,7 +67,6 @@
 /** Virgil IoT Kit device MAC address */
 class VSQMac {
 public:
-
     /** Default MAC address constructor */
     VSQMac() : m_mac(6, 0) {
     }

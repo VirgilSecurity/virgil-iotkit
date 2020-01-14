@@ -28,6 +28,7 @@ function build() {
     echo "===================================="
     echo
 
+    rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
     cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"

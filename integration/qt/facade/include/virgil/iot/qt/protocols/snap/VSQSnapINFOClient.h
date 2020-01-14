@@ -83,9 +83,8 @@ struct VSQDeviceInfo {
     }
 
     /** Copy constructor */
-    VSQDeviceInfo(const VSQMac &mac)
-        : VSQDeviceInfo() {
-            m_mac = mac;
+    VSQDeviceInfo(const VSQMac &mac) : VSQDeviceInfo() {
+        m_mac = mac;
     }
 
     /** Polling interval in seconds */
@@ -126,28 +125,23 @@ struct VSQDeviceInfo {
 
     /** Device has statistics */
     bool m_hasStatistics;
-
 };
 
 /** SNAP protocol's INFO Client implementation
  *
  * Use #VSQIoTKitFacade::init to initialize this class
  */
-class VSQSnapInfoClient final :
-        public QObject,
-        public VSQSingleton<VSQSnapInfoClient>,
-        public VSQSnapServiceBase {
+class VSQSnapInfoClient final : public QObject, public VSQSingleton<VSQSnapInfoClient>, public VSQSnapServiceBase {
 
     Q_OBJECT
 
     friend VSQSingleton<VSQSnapInfoClient>;
 
 public:
-
     /** Polling elements */
     enum EPolling {
-        GENERAL_INFO = VirgilIoTKit::VS_SNAP_INFO_GENERAL,  /**< General information */
-        STATISTICS = VirgilIoTKit::VS_SNAP_INFO_STATISTICS  /**< Statistics information */
+        GENERAL_INFO = VirgilIoTKit::VS_SNAP_INFO_GENERAL, /**< General information */
+        STATISTICS = VirgilIoTKit::VS_SNAP_INFO_STATISTICS /**< Statistics information */
     };
 
     /** "Devices list" data type */
@@ -213,7 +207,10 @@ public:
      *
      * \return Current devices list
      */
-    const TEnumDevicesArray &devicesList() const { return m_devicesInfo; }
+    const TEnumDevicesArray &
+    devicesList() const {
+        return m_devicesInfo;
+    }
 
 signals:
 

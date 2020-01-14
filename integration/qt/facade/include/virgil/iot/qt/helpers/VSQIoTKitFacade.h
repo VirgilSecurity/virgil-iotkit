@@ -110,9 +110,23 @@ public:
 
     /** Get installed sniffer
      *
+     * \warning Function will return nullptr if sniffer is not initialized
+     *
      * \return #VSQSnapSnifferQml object or nullptr if sniffer is not initialized
      */
-    VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
+    VSQSnapSnifferPtr
+    snapSniffer() {
+        return m_snapSniffer;
+    }
+
+    /** Get Snap INFO Client implementation
+     *
+     * \warning Function will return nullptr if Snap INFO Client feature is not enabled
+     *
+     * \return Pointer to the #VSQSnapInfoClient object or nullptr if Snap INFO Client feature is not enabled
+     */
+    VSQSnapInfoClient *
+    snapInfoClient();
 
 private slots:
     void
