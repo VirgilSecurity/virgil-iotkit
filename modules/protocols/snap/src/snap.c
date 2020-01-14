@@ -43,6 +43,8 @@
 #include <stdio.h>
 #include <string.h>
 
+//#define VS_ENABLE_ROUTING (1)
+
 static vs_netif_t *_netifs[VS_SNAP_NETIF_MAX];
 static size_t _netifs_cnt = 0;
 
@@ -109,6 +111,7 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
 }
 
 /******************************************************************************/
+#if VS_ENABLE_ROUTING
 static bool
 _need_routing(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
     bool dst_is_broadcast = _is_broadcast(dest_mac);
@@ -116,7 +119,7 @@ _need_routing(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_ma
     bool src_is_my_mac = _is_my_mac(netif, src_mac);
     return !src_is_my_mac && (dst_is_broadcast || !dst_is_my_mac);
 }
-
+#endif
 /******************************************************************************/
 static vs_status_e
 _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
@@ -215,9 +218,11 @@ _snap_rx_cb(vs_netif_t *netif,
     int bytes_processed = 0;
     int need_bytes_for_header;
     int need_bytes_for_packet;
-    size_t i;
     uint16_t packet_sz;
     uint16_t copy_bytes;
+#if VS_ENABLE_ROUTING
+    size_t i;
+#endif
 
     vs_snap_packet_t *packet = 0;
 
@@ -273,6 +278,7 @@ _snap_rx_cb(vs_netif_t *netif,
         if (packet) {
 
             // Route incoming packet, if it's required and our role is Gateway
+#if VS_ENABLE_ROUTING
             if (_need_routing(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
                 if (_device_roles & VS_SNAP_DEV_GATEWAY) {
                     for (i = 0; i < _netifs_cnt; i++) {
@@ -282,6 +288,7 @@ _snap_rx_cb(vs_netif_t *netif,
                     }
                 }
             }
+#endif
 
             // Reset filled packet
             netif->packet_buf_filled = 0;
