@@ -68,6 +68,16 @@ VSQSnapCfgClient::onConfigureDevices() {
                                  &config)) {
         VS_LOG_ERROR("Cannot configure device");
     }
+
+    // TODO: Fix it
+    // need to receive response
+    auto timer = new QTimer;
+    connect(timer, &QTimer::timeout, [this](){
+        emit this->fireConfigurationDone(true);
+    });
+    connect(timer, &QTimer::timeout, timer, &QTimer::deleteLater);
+    timer->setSingleShot(true);
+    timer->start(1000);
 }
 
 void

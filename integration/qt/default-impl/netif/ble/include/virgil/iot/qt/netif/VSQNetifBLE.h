@@ -65,6 +65,8 @@ public slots:
      */
     bool onOpenDevice(const QBluetoothDeviceInfo device);
 
+    void onCloseDevice();
+
 signals:
     void fireDeviceReady();
 

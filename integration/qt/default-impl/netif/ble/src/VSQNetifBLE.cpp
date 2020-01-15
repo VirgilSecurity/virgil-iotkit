@@ -236,6 +236,11 @@ VSQNetifBLE::onOpenDevice(const QBluetoothDeviceInfo device) {
 }
 
 //******************************************************************************
+void VSQNetifBLE::onCloseDevice() {
+    deactivate();
+}
+
+//******************************************************************************
 void
 VSQNetifBLE::deactivate() {
     if (!m_leController.isNull()) {

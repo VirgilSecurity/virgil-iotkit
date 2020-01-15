@@ -81,6 +81,9 @@ public:
         return name;
     }
 
+signals:
+    void fireConfigurationDone(bool isOK);
+
 public slots:
     void
     onConfigureDevices();
