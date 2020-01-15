@@ -64,9 +64,9 @@ VSQIoTKitFacade::init(const VSQFeatures &features, const VSQImplementations &imp
 void
 VSQIoTKitFacade::initSnap() {
 
-    Q_CHECK_PTR(m_impl.netif());
+    Q_CHECK_PTR(m_impl.netif().lowLevelNetif());
 
-    if (vs_snap_init(m_impl.netif(),
+    if (vs_snap_init(m_impl.netif().lowLevelNetif(),
                      m_appConfig.manufactureId(),
                      m_appConfig.deviceType(),
                      m_appConfig.deviceSerial(),

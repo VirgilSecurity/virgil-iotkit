@@ -117,7 +117,8 @@ public:
      *
      * \return #vs_netif_t network interface
      */
-    operator VirgilIoTKit::vs_netif_t *() {
+    VirgilIoTKit::vs_netif_t *
+    lowLevelNetif() {
         return &m_lowLevelNetif;
     }
 
