@@ -366,7 +366,7 @@ _fw_update_get_file_size(void *context,
     CHECK_NOT_ZERO_RET(file_header, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file_size, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    *file_size = fw_header->firmware_length;
+    *file_size = VS_IOT_NTOHL(fw_header->firmware_length);
 
     return VS_CODE_OK;
 }
