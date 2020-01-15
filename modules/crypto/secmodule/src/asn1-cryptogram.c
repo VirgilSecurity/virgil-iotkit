@@ -359,7 +359,7 @@ vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
 
     CHECK_NOT_ZERO_RET(virgil_sign, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(raw_signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(buf_sz >= secp_sign_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Buffer too small");
+    CHECK_RET(buf_sz >= secp_sign_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Buffer too small");
 
     VS_IOT_MEMSET(raw_signature, 0, secp_sign_sz);
     if (_asn1_step_into(SEQUENCE, &pos, virgil_sign_sz, virgil_sign) &&
