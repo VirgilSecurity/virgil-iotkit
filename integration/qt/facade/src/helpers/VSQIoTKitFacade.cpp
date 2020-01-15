@@ -64,9 +64,11 @@ VSQIoTKitFacade::init(const VSQFeatures &features, const VSQImplementations &imp
 void
 VSQIoTKitFacade::initSnap() {
 
-    Q_CHECK_PTR(m_impl.netif());
+    if (!m_impl.netifs().count() || !m_impl.netifs().first().get()) {
+        throw QString("There is no default network implementation");
+    }
 
-    if (vs_snap_init(m_impl.netif(),
+    if (vs_snap_init(*m_impl.netifs().first().get(),
                      m_appConfig.manufactureId(),
                      m_appConfig.deviceType(),
                      m_appConfig.deviceSerial(),
@@ -74,20 +76,33 @@ VSQIoTKitFacade::initSnap() {
         throw QString("Unable to initialize SNAP");
     }
 
+    // Add additional network interfaces
+    bool isDefault = true;
+    foreach (auto &netif,  m_impl.netifs()) {
+        if (isDefault) {
+            isDefault = false;
+            continue;
+        }
+
+        if (VirgilIoTKit::VS_CODE_OK != vs_snap_netif_add(*netif.get())) {
+            throw QString("Unable to add SNAP network interface");
+        }
+    }
+
     if (m_features.hasFeature(VSQFeatures::SNAP_INFO_CLIENT)) {
         registerService(VSQSnapInfoClient::instance());
 
-        if (m_impl.netif().connectionState() == QAbstractSocket::BoundState) {
+        if (m_impl.netifs().first()->connectionState() == QAbstractSocket::BoundState) {
             VSQSnapInfoClient::instance().onStartFullPolling();
         }
 
         QObject::connect(
-                &m_impl.netif(), &VSQNetifBase::fireStateChanged, this, &VSQIoTKitFacade::restartInfoClientPolling);
+                m_impl.netifs().first().get(), &VSQNetifBase::fireStateChanged, this, &VSQIoTKitFacade::restartInfoClientPolling);
 
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
-        m_snapSniffer = decltype(m_snapSniffer)::create(m_appConfig.snifferConfig(), &m_impl.netif());
+        m_snapSniffer = decltype(m_snapSniffer)::create(m_appConfig.snifferConfig(), m_impl.netifs().first().get());
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_CFG_CLIENT)) {

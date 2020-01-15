@@ -63,7 +63,7 @@ VSQSnapCfgClient::onConfigureDevices() {
     ::strcpy(reinterpret_cast<char *>(config.ssid), m_ssid.toStdString().c_str());
     ::strcpy(reinterpret_cast<char *>(config.pass), m_pass.toStdString().c_str());
     ::strcpy(reinterpret_cast<char *>(config.account), m_account.toStdString().c_str());
-    if (VS_CODE_OK != vs_snap_cfg_configure_device(vs_snap_netif_default(),
+    if (VS_CODE_OK != vs_snap_cfg_configure_device(vs_snap_netif_routing(),
                                  vs_snap_broadcast_mac(),
                                  &config)) {
         VS_LOG_ERROR("Cannot configure device");

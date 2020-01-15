@@ -65,6 +65,8 @@ class VSQNetifBase;
 class VSQImplementations {
 public:
 
+    typedef  QList<QSharedPointer<VSQNetifBase>> VSQNetifList;
+
     /** Add network interface implementation
      *
      * \param netif Network interface as #VSQNetifBase child implementation. You could use #VSQUdpBroadcast as default one
@@ -72,7 +74,7 @@ public:
      */
     VSQImplementations &
     operator<<(QSharedPointer<VSQNetifBase> netif) {
-        m_netif = netif;
+        m_netifs.push_back(netif);
         return *this;
     }
 
@@ -82,14 +84,13 @@ public:
      *
      * \return Current network interface implementation
      */
-    VSQNetifBase &
-    netif() {
-        Q_ASSERT(m_netif);
-        return *m_netif.get();
+    VSQNetifList &
+    netifs() {
+        return m_netifs;
     }
 
 private:
-    QSharedPointer<VSQNetifBase> m_netif;
+    VSQNetifList m_netifs;
 };
 
 #endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
