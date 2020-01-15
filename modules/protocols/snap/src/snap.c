@@ -454,7 +454,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     if (netif == vs_snap_netif_routing()) {
         for (i = 0; i < _netifs_cnt; i++) {
             if (_netifs[i]) {
-                _netifs[i]->tx(_default_netif(), data, data_sz);
+                _netifs[i]->tx(_netifs[i], data, data_sz);
             }
         }
 
