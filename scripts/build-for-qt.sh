@@ -86,11 +86,12 @@ elif [[ "${PLATFORM}" == "android" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DANDROID_QT=ON \
-        ${ANDROID_PLATFORM}
-        -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ABI} \
+        ${ANDROID_PLATFORM} \
+        -DANDROID_ABI=${ANDROID_ABI} \
         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
+    PLATFORM="${PLATFORM}.${ANDROID_ABI}"
 
 else
     echo "Virgil IoTKIT build script usage : "
