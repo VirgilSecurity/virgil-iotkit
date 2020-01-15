@@ -114,7 +114,7 @@ _curl_http_hal(vs_cloud_http_method_e method,
             curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request_body_size);
             break;
         default:
-            res = VS_CODE_ERR_INCORRECT_ARGUMENT;
+            res = VS_CODE_ERR_INCORRECT_PARAMETER;
             goto terminate;
         }
 

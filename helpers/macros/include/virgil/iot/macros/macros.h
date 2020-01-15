@@ -58,7 +58,7 @@
     CHECK(a == 3, "a = %d while it must be equal to 3", a);
 
     // Return in case of error
-    CHECK_RET(a == 3, VS_CODE_ERR_INCORRECT_ARGUMENT, "a = %d while it must be equal to 3", a);
+    CHECK_RET(a == 3, VS_CODE_ERR_INCORRECT_PARAMETER, "a = %d while it must be equal to 3", a);
 
     // Compare two buffers
     MEMCMP_CHECK_RET(buf1, buf2, buf_size, VS_CODE_OLD_VERSION);

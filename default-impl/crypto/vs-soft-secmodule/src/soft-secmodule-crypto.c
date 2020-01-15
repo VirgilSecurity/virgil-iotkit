@@ -174,7 +174,7 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_pk_context private_key_ctx;
 
-    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect slot number");
+    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect slot number");
     CHECK_NOT_ZERO_RET(hash, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature_buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -326,7 +326,7 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
     uint16_t cur_size = 0;
 
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_INCORRECT_PARAMETER);
 
     if (!is_init) {
         const char *pers = "gen_random";

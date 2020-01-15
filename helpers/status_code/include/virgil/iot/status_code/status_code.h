@@ -81,14 +81,16 @@ typedef enum {
     VS_CODE_ERR_NULLPTR_ARGUMENT = -1, /**< Argument is NULL pointer while it must be not NULL */
     VS_CODE_ERR_ZERO_ARGUMENT = -2, /**< Argument is zero while it must be not zero */
     VS_CODE_ERR_INCORRECT_ARGUMENT = -3, /**< Incorrect argument */
-    VS_CODE_ERR_UNSUPPORTED_PARAMETER = -4, /**< Unsupported parameter */
-    VS_CODE_ERR_AMBIGUOUS_INIT_CALL = -5, /**< Ambiguous initialization call */
-    VS_CODE_ERR_CTX_NOT_READY = -6, /**< Context is not ready */
-    VS_CODE_ERR_NOT_IMPLEMENTED = -7, /**< This feature is not implemented */
-    VS_CODE_ERR_NOT_FOUND = -8, /**< Entity has not been found */
-    VS_CODE_ERR_NO_CALLBACK = -9, /**< There is no callback */
-    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE = -10, /**< Unsupported mapping type */
-    VS_CODE_ERR_INCORRECT_SEND_REQUEST = -11, /**< Incorrect send request */
+    VS_CODE_ERR_INCORRECT_PARAMETER = -4, /**< Incorrect parameter */
+    VS_CODE_ERR_UNSUPPORTED_PARAMETER = -5, /**< Unsupported parameter */
+    VS_CODE_ERR_AMBIGUOUS_INIT_CALL = -6, /**< Ambiguous initialization call */
+    VS_CODE_ERR_CTX_NOT_READY = -7, /**< Context is not ready */
+    VS_CODE_ERR_NOT_IMPLEMENTED = -8, /**< This feature is not implemented */
+    VS_CODE_ERR_NOT_FOUND = -9, /**< Entity has not been found */
+
+    VS_CODE_ERR_NO_CALLBACK = -10, /**< There is no callback */
+    VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE = -11, /**< Unsupported mapping type */
+    VS_CODE_ERR_INCORRECT_SEND_REQUEST = -12, /**< Incorrect send request */
 
     VS_CODE_ERR_NO_MEMORY = -20, /**< No memory */
     VS_CODE_ERR_TOO_SMALL_BUFFER = -21, /**< Buffer is too small */

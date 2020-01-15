@@ -135,7 +135,7 @@ _snot_request_processor(const uint8_t *request,
     }
 
     // Check input parameters
-    CHECK_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT, "SNAP:SNOT error on a remote device");
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SNAP:SNOT error on a remote device");
     CHECK_RET(sizeof(vs_info_enum_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 
     // Get data from packed structure
@@ -169,7 +169,7 @@ _ginf_request_processor(const uint8_t *request,
     vs_info_ginf_response_t_decode(ginf_request);
 
     // Check input parameters
-    CHECK_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT, "SNAP:GINF error on a remote device");
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SNAP:GINF error on a remote device");
     CHECK_RET(sizeof(vs_info_ginf_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 
     // Get data from packed structure
@@ -221,7 +221,7 @@ _stat_request_processor(const uint8_t *request,
     vs_info_stat_response_t_decode(stat_request);
 
     // Check input parameters
-    CHECK_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT, "SNAP:STAT error on a remote device");
+    CHECK_RET(request, VS_CODE_ERR_INCORRECT_PARAMETER, "SNAP:STAT error on a remote device");
     CHECK_RET(sizeof(vs_info_stat_response_t) == request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 
     // Get data from packed structure
@@ -244,7 +244,7 @@ _enum_response_processor(bool is_ack, const uint8_t *response, const uint16_t re
 
     vs_info_enum_response_t *enum_response = (vs_info_enum_response_t *)response;
 
-    CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_ARGUMENT, "ENUM error on a remote device");
+    CHECK_RET(is_ack, VS_CODE_ERR_INCORRECT_PARAMETER, "ENUM error on a remote device");
     CHECK_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT, 0);
     CHECK_RET(sizeof(vs_info_enum_response_t) == response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Wrong data size");
 

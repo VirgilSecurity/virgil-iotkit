@@ -201,7 +201,7 @@ vs_secmodule_keypair_create(vs_iot_secmodule_slot_e slot, vs_secmodule_keypair_t
     const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
 
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect slot number");
+    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect slot number");
 
     uint8_t buf[slot_sz];
     keypair_storage_data *keypair_storage = (keypair_storage_data *)buf;
@@ -305,7 +305,7 @@ vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
     int32_t slot_sz = _get_slot_size(slot);
     const vs_secmodule_impl_t *_secmodule = _soft_secmodule_intern();
 
-    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect slot number");
+    CHECK_RET(slot_sz > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect slot number");
     CHECK_NOT_ZERO_RET(_secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(keypair_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(buf, VS_CODE_ERR_NULLPTR_ARGUMENT);

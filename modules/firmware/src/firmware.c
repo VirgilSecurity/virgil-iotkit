@@ -559,7 +559,7 @@ vs_firmware_verify_firmware(const vs_firmware_descriptor_t *descriptor) {
 
     // Calculate fill size
     uint32_t fill_sz = descriptor->app_size - descriptor->firmware_length;
-    CHECK_RET(footer_sz <= fill_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Bad fill size of image");
+    CHECK_RET(footer_sz <= fill_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Bad fill size of image");
     fill_sz -= footer_sz;
     VS_IOT_MEMSET(buf, 0xFF, descriptor->chunk_size > fill_sz ? fill_sz : descriptor->chunk_size);
 

@@ -440,9 +440,9 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_RET(tl_ctx->keys_qty.keys_amount == tl_ctx->keys_qty.keys_count,
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              VS_CODE_ERR_INCORRECT_PARAMETER,
               "Keys amount is not equal");
-    CHECK_RET(footer_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect key size");
+    CHECK_RET(footer_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLF, 0, file_id);
@@ -518,14 +518,14 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
     vs_storage_element_id_t file_id;
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
-    CHECK_RET(key_len > 0, VS_CODE_ERR_INCORRECT_ARGUMENT, "Unsupported ec_type");
+    CHECK_RET(key_len > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Unsupported ec_type");
     CHECK_RET(
-            element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_ARGUMENT, "Invalid key type to save");
-    CHECK_RET(key_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect key size");
+            element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
+    CHECK_RET(key_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element->pubkey.meta_data_sz);
 
-    CHECK_RET(key_len == key_sz, VS_CODE_ERR_INCORRECT_ARGUMENT, "Incorrect key size");
+    CHECK_RET(key_len == key_sz, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     if (tl_ctx->keys_qty.keys_count >= tl_ctx->keys_qty.keys_amount) {
         tl_ctx->keys_qty.keys_count = tl_ctx->keys_qty.keys_amount;

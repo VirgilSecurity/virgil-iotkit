@@ -163,7 +163,7 @@ vs_provision_search_hl_pubkey(vs_key_type_e key_type,
         ref_key_sz = vs_secmodule_get_pubkey_len(ref_key->pubkey.ec_type);
 
         if (ref_key_sz < 0) {
-            return VS_CODE_ERR_INCORRECT_ARGUMENT;
+            return VS_CODE_ERR_INCORRECT_PARAMETER;
         }
 
         pubkey = &ref_key->pubkey.meta_and_pubkey[ref_key->pubkey.meta_data_sz];

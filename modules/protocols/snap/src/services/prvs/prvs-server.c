@@ -283,7 +283,7 @@ vs_prvs_sign_data(const uint8_t *data, uint16_t data_sz, uint8_t *signature, uin
     vs_secmodule_keypair_type_e keypair_type;
 
     if (hash_len <= 0 || buf_sz <= sizeof(vs_sign_t)) {
-        return VS_CODE_ERR_INCORRECT_ARGUMENT;
+        return VS_CODE_ERR_INCORRECT_PARAMETER;
     }
     uint8_t hash[hash_len];
     buf_sz -= sizeof(vs_sign_t);
