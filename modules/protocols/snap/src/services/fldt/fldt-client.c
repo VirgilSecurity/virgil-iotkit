@@ -838,10 +838,6 @@ vs_fldt_client_request_all_files(void) {
     for (id = 0; id < _file_type_mapping_array_size; ++id) {
         file_type_info = &_client_file_type_mapping[id];
 
-        if(file_type_info->update_ctx.in_progress) {
-            continue;
-        }
-
         VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
         file_type_request.type = file_type_info->type;

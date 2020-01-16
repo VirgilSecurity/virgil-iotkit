@@ -51,6 +51,7 @@
 static vs_snap_service_t _fldt_server = {0};
 
 typedef struct {
+    bool distributing_in_progress;
     vs_update_file_type_t type;
     vs_update_interface_t *update_context;
     vs_file_version_t current_version;
@@ -305,7 +306,8 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                              file_type_info->update_context->storage_context, &file_type_info->type, &has_footer),
                      "Unable to check that there is footer for file %s",
                      _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
-    header_response->has_footer = has_footer != 0;
+    header_response->has_footer = (has_footer != 0);
+    file_type_info->distributing_in_progress = (header_response->has_footer != 0);
 
     STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
                              file_type_info->update_context->storage_context, &file_type_info->type, &header_size),
@@ -530,6 +532,8 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     // Normalize byte order
     vs_fldt_gnff_footer_response_t_encode(footer_response);
 
+    file_type_info->distributing_in_progress = false;
+
     return VS_CODE_OK;
 }
 
@@ -660,6 +664,20 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
         VS_IOT_ASSERT(false);
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
+}
+
+/******************************************************************************/
+bool
+vs_fldt_server_is_distributing_in_progress(void) {
+    vs_fldt_server_file_type_mapping_t *file_type_info = _server_file_type_mapping;
+    uint32_t id;
+
+    for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
+        if (file_type_info->distributing_in_progress) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /******************************************************************************/

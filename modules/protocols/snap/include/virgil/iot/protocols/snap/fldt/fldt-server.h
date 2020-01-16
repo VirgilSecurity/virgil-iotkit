@@ -143,6 +143,9 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
                              vs_update_interface_t *update_context,
                              bool broadcast_file_info);
 
+bool
+vs_fldt_server_is_distributing_in_progress(void);
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit
