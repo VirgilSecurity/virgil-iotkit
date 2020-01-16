@@ -99,10 +99,15 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
                     uint32_t command,
                     uint32_t expected_offset,
                     const uint8_t *request_data,
-                    uint32_t request_data_sz) {
+                    uint32_t request_data_sz,
+                    bool forced_update) {
     CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
+
+    if (!forced_update && update_ctx->in_progress && update_ctx->data_sz == request_data_sz) {
+        return VS_CODE_ALREADY_STARTED;
+    }
 
     update_ctx->in_progress = true;
     update_ctx->tick_cnt = 0;
@@ -244,9 +249,9 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:%s] Request for new file from gateway " FLDT_GATEWAY_TEMPLATE " for %s",
+    VS_LOG_DEBUG("[FLDT:%s] Request for new file from gateway " FLDT_MAC_PRINT_TEMPLATE " for %s",
                  cmd_prefix,
-                 FLDT_GATEWAY_ARG(file_info->gateway_mac),
+                 FLDT_MAC_PRINT_ARG(file_info->gateway_mac),
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
     file_type_info->gateway_mac = file_info->gateway_mac;
@@ -271,21 +276,22 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         // Normalize byte order
         vs_fldt_gnfh_header_request_t_encode(&header_request);
 
-        _update_process_set(&file_type_info->update_ctx,
-                            file_type_info->gateway_mac,
-                            VS_FLDT_GNFH,
-                            0,
-                            (const uint8_t *)&header_request,
-                            sizeof(header_request));
-
-        CHECK_RET(!vs_snap_send_request(NULL,
-                                        &file_type_info->gateway_mac,
-                                        VS_FLDT_SERVICE_ID,
-                                        VS_FLDT_GNFH,
-                                        (const uint8_t *)&header_request,
-                                        sizeof(header_request)),
-                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-                  "Unable to send FLDT \"GNFH\" server request");
+        if (VS_CODE_ALREADY_STARTED != _update_process_set(&file_type_info->update_ctx,
+                                                           file_type_info->gateway_mac,
+                                                           VS_FLDT_GNFH,
+                                                           0,
+                                                           (const uint8_t *)&header_request,
+                                                           sizeof(header_request),
+                                                           false)) {
+            CHECK_RET(!vs_snap_send_request(NULL,
+                                            &file_type_info->gateway_mac,
+                                            VS_FLDT_SERVICE_ID,
+                                            VS_FLDT_GNFH,
+                                            (const uint8_t *)&header_request,
+                                            sizeof(header_request)),
+                      VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                      "Unable to send FLDT \"GNFH\" server request");
+        }
     }
 
     return VS_CODE_OK;
@@ -314,6 +320,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
 
+    VS_LOG_DEBUG("[FLDT:INFV] Received from " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(new_file->gateway_mac));
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
     STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
@@ -414,7 +421,8 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                         VS_FLDT_GNFD,
                         data_request.offset,
                         (const uint8_t *)&data_request,
-                        sizeof(data_request));
+                        sizeof(data_request),
+                        true);
 
     CHECK_RET(!vs_snap_send_request(NULL,
                                     &file_type_info->gateway_mac,
@@ -497,7 +505,8 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             VS_FLDT_GNFD,
                             data_request.offset,
                             (const uint8_t *)&data_request,
-                            sizeof(data_request));
+                            sizeof(data_request),
+                            true);
 
         CHECK_RET(!vs_snap_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -523,7 +532,8 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             VS_FLDT_GNFF,
                             0,
                             (const uint8_t *)&footer_request,
-                            sizeof(footer_request));
+                            sizeof(footer_request),
+                            true);
 
         CHECK_RET(!vs_snap_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -549,21 +559,23 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
 
     vs_fldt_gfti_fileinfo_request_t_encode(file_type_request);
 
-    _update_process_set(&file_type_info->update_ctx,
-                        file_type_info->gateway_mac,
-                        VS_FLDT_GFTI,
-                        0,
-                        (const uint8_t *)file_type_request,
-                        sizeof(*file_type_request));
+    if (VS_CODE_ALREADY_STARTED != _update_process_set(&file_type_info->update_ctx,
+                                                       file_type_info->gateway_mac,
+                                                       VS_FLDT_GFTI,
+                                                       0,
+                                                       (const uint8_t *)file_type_request,
+                                                       sizeof(*file_type_request),
+                                                       false)) {
+        CHECK_RET(!vs_snap_send_request(NULL,
+                                        vs_snap_broadcast_mac(),
+                                        VS_FLDT_SERVICE_ID,
+                                        VS_FLDT_GFTI,
+                                        (const uint8_t *)file_type_request,
+                                        sizeof(*file_type_request)),
+                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                  "Unable to send FLDT \"GFTI\" server request");
+    }
 
-    CHECK_RET(!vs_snap_send_request(NULL,
-                                    vs_snap_broadcast_mac(),
-                                    VS_FLDT_SERVICE_ID,
-                                    VS_FLDT_GFTI,
-                                    (const uint8_t *)file_type_request,
-                                    sizeof(*file_type_request)),
-              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-              "Unable to send FLDT \"GFTI\" server request");
 
     return VS_CODE_OK;
 }

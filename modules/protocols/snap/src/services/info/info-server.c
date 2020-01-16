@@ -282,7 +282,7 @@ _snot_request_processor(const uint8_t *request,
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG("[INFO:SNOT] Request from device role %02x", enum_data->device_roles);
+    VS_LOG_DEBUG("[INFO:SNOT] Request from device " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(enum_data->mac));
 
     CHECK_RET(request_sz == sizeof(*enum_data),
               VS_CODE_ERR_INCORRECT_ARGUMENT,

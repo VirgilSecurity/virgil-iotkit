@@ -53,8 +53,8 @@ extern "C" {
 #define FLDT_FILEVER_BUF (196)      // buffer for vs_fldt_file_version_descr
 #define FLDT_FILE_SPEC_INFO_SZ (64) // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
-#define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
-#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                     \
+#define FLDT_MAC_PRINT_TEMPLATE "%x:%x:%x:%x:%x:%x"
+#define FLDT_MAC_PRINT_ARG(MAC_ADDR)                                                                                   \
     (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
             (MAC_ADDR).bytes[5]
 
