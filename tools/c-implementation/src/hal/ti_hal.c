@@ -55,3 +55,7 @@ vs_logger_output_hal(const char *buffer) {
 }
 
 /******************************************************************************/
+bool
+vs_logger_current_time_hal(void) {
+    return true;
+}
