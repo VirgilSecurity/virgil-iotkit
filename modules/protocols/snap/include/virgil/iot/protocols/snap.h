@@ -68,6 +68,7 @@ extern "C" {
  * Must be called prior to any SNAP call.
  *
  * \param[in] default_netif Default network interface. Must not be NULL.
+ * \param[in] packet_preprocessor_cb Packet preprocessor callback. May be NULL.
  * \param[in] manufacturer_id Manufacturer ID.
  * \param[in] device_type Device type.
  * \param[in] device_serial Device serial number.
@@ -77,6 +78,7 @@ extern "C" {
  */
 vs_status_e
 vs_snap_init(vs_netif_t *default_netif,
+             vs_netif_process_cb_t packet_preprocessor_cb,
              const vs_device_manufacture_id_t manufacturer_id,
              const vs_device_type_t device_type,
              const vs_device_serial_t device_serial,
@@ -102,6 +104,9 @@ vs_snap_deinit();
  */
 vs_status_e
 vs_snap_netif_add(vs_netif_t *netif);
+
+vs_status_e
+vs_snap_default_processor(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Return current manufacture ID
  *

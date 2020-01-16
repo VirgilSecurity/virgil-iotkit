@@ -62,6 +62,8 @@ static vs_device_type_t _device_type;
 static vs_device_serial_t _device_serial;
 static uint32_t _device_roles = 0; // See vs_snap_device_role_e
 
+static vs_netif_process_cb_t _preprocessor_cb = NULL;
+
 #define VS_SNAP_PROFILE 0
 
 #if VS_SNAP_PROFILE
@@ -313,8 +315,8 @@ _snap_rx_cb(vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_e
-_snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+vs_status_e
+vs_snap_default_processor(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
     vs_status_e res;
 
@@ -351,6 +353,7 @@ _snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 /******************************************************************************/
 vs_status_e
 vs_snap_init(vs_netif_t *default_netif,
+             vs_netif_process_cb_t packet_preprocessor_cb,
              const vs_device_manufacture_id_t manufacturer_id,
              const vs_device_type_t device_type,
              const vs_device_serial_t device_serial,
@@ -373,6 +376,12 @@ vs_snap_init(vs_netif_t *default_netif,
     }
 #endif
 
+    // Set packet processor
+    if (packet_preprocessor_cb) {
+        _preprocessor_cb = packet_preprocessor_cb;
+    } else {
+        _preprocessor_cb = vs_snap_default_processor;
+    }
     _device_roles = device_roles;
 
     // Save default network interface
@@ -416,7 +425,7 @@ vs_snap_netif_add(vs_netif_t *netif) {
     _netifs[_netifs_cnt++] = netif;
 
     // Init network interface
-    return netif->init(netif, _snap_rx_cb, _snap_process_cb);
+    return netif->init(netif, _snap_rx_cb, _preprocessor_cb);
 }
 
 /******************************************************************************/
