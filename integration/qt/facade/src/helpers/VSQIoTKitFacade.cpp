@@ -39,8 +39,24 @@
 
 using namespace VirgilIoTKit;
 
+VSQIoTKitFacade::~VSQIoTKitFacade() {
+    m_snapProcessorThread->terminate();
+    m_snapProcessorThread->wait();
+    delete m_snapProcessorThread;
+}
+
 bool
 VSQIoTKitFacade::init(const VSQFeatures &features, const VSQImplementations &impl, const VSQAppConfig &appConfig) {
+
+    // Register types
+    qRegisterMetaType<VirgilIoTKit::vs_netif_t*>("VirgilIoTKit::vs_netif_t*");
+    qRegisterMetaType<VSQDeviceInfo>("VSQDeviceInfo");
+    qRegisterMetaType<QAbstractSocket::SocketState>();
+
+    // Process events in separate thread
+    m_snapProcessorThread = new QThread();
+    m_snapProcessorThread->start();
+    moveToThread(m_snapProcessorThread);
 
     m_features = features;
     m_impl = impl;
@@ -69,6 +85,7 @@ VSQIoTKitFacade::initSnap() {
     }
 
     if (vs_snap_init(*m_impl.netifs().first().get(),
+                     netifProcessCb,
                      m_appConfig.manufactureId(),
                      m_appConfig.deviceType(),
                      m_appConfig.deviceSerial(),
@@ -122,4 +139,18 @@ VSQIoTKitFacade::restartInfoClientPolling(QAbstractSocket::SocketState connectio
     if (connectionState == QAbstractSocket::BoundState) {
         VSQSnapInfoClient::instance().onStartFullPolling();
     }
+}
+
+void
+VSQIoTKitFacade::onNetifProcess(struct VirgilIoTKit::vs_netif_t *netif, QByteArray data) {
+    vs_snap_default_processor(netif, reinterpret_cast<const uint8_t *>(data.data()), data.length());
+}
+
+vs_status_e
+VSQIoTKitFacade::netifProcessCb(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+    QMetaObject::invokeMethod(&instance(), "onNetifProcess", Qt::QueuedConnection,
+                            Q_ARG(VirgilIoTKit::vs_netif_t*, netif),
+                            Q_ARG(QByteArray, QByteArray::fromRawData(reinterpret_cast<const char *>(data), data_sz))
+                            );
+    return VS_CODE_OK;
 }

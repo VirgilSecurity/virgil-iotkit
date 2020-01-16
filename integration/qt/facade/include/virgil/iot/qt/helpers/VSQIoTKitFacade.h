@@ -116,21 +116,29 @@ public:
     VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
     VSQSnapCfgClient & snapCfgClient()    { return VSQSnapCfgClient::instance(); }
 
+    virtual ~VSQIoTKitFacade();
+
 private slots:
     void
     restartInfoClientPolling(QAbstractSocket::SocketState connectionState);
+
+    void
+    onNetifProcess(struct VirgilIoTKit::vs_netif_t *netif, QByteArray data);
 
 private:
     VSQFeatures m_features;
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
     VSQSnapSnifferPtr m_snapSniffer;
+    QThread *m_snapProcessorThread;
 
     void
     initSnap();
 
     void
     registerService(VSQSnapServiceBase &service);
+
+    static VirgilIoTKit::vs_status_e netifProcessCb(struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 };
 
 #endif // VIRGIL_IOTKIT_QT_FACADE_H
