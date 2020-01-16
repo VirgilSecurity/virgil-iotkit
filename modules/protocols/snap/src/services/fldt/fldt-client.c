@@ -339,7 +339,7 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
-    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
+    STATUS_CHECK_RET(_file_info_processor("GFTI", new_file), "Unable to process GFTI request");
 
     return VS_CODE_OK;
 }
@@ -837,6 +837,10 @@ vs_fldt_client_request_all_files(void) {
 
     for (id = 0; id < _file_type_mapping_array_size; ++id) {
         file_type_info = &_client_file_type_mapping[id];
+
+        if(file_type_info->update_ctx.in_progress) {
+            continue;
+        }
 
         VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 

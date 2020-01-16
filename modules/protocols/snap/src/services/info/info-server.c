@@ -280,9 +280,10 @@ _snot_request_processor(const uint8_t *request,
     vs_mac_addr_t self_mac;
 #endif
 
-    VS_LOG_DEBUG("[INFO] SNOT received");
-
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    VS_LOG_DEBUG("[INFO:SNOT] Request from device role %02x", enum_data->device_roles);
+
     CHECK_RET(request_sz == sizeof(*enum_data),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
@@ -295,6 +296,7 @@ _snot_request_processor(const uint8_t *request,
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
         (vs_snap_device_roles() & VS_SNAP_DEV_THING) &&                                // current device is Thing
         (enum_data->device_roles & VS_SNAP_DEV_GATEWAY)) {                             // sender is Gateway
+
         ret_code = vs_fldt_client_request_all_files();
         if (ret_code != VS_CODE_OK) {
             VS_LOG_ERROR("[INFO] Unable to request all files update");
