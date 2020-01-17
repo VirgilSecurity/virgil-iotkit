@@ -88,6 +88,7 @@ static vs_fldt_got_file _got_file_callback = NULL;
 static void
 _update_process_reset(vs_fldt_update_ctx_t *update_ctx) {
     CHECK_NOT_ZERO(update_ctx);
+    VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_reset");
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
 terminate:;
 }
@@ -106,6 +107,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
 
     if (!forced_update && update_ctx->in_progress && update_ctx->data_sz == request_data_sz) {
+        VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_set has already started");
         return VS_CODE_ALREADY_STARTED;
     }
 
@@ -127,17 +129,15 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
     vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT; // ???
     CHECK_NOT_ZERO(update_ctx);
 
-    if (!update_ctx->in_progress) {
-        return VS_CODE_OK;
-    }
-
     update_ctx->retry_used++;
 
     if (update_ctx->retry_used > VS_FLDT_RETRY_MAX) {
+        VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT] Update process has been stopped, because of retry limit");
         _update_process_reset(update_ctx);
-        VS_LOG_ERROR("Update process has been stopped, because of retry limit");
         return VS_CODE_OK;
     }
+
+    VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_retry");
 
     CHECK_RET(!vs_snap_send_request(NULL,
                                     &update_ctx->gateway_mac,
@@ -260,10 +260,10 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
                              cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
                      "Unable to check download need");
 
-    // Stop retries for GFTI request if enabled
-    file_type_info->update_ctx.in_progress = false;
-
     if (download) {
+
+        // Stop retries for GFTI request if enabled
+        file_type_info->update_ctx.in_progress = false;
 
         file_type_info->prev_file_version = file_type_info->cur_file_version;
         file_type_info->cur_file_version = file_info->type.info.version;

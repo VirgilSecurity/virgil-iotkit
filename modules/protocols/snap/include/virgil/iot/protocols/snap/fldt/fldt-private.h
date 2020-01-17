@@ -58,6 +58,19 @@ extern "C" {
     (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
             (MAC_ADDR).bytes[5]
 
+#define VS_SNAP_PRINT_DEBUG(SNAP_CMD, STR, ...)                                                                        \
+    do {                                                                                                               \
+        if (vs_logger_is_loglev(VS_LOGLEV_DEBUG)) {                                                                    \
+            union {                                                                                                    \
+                uint8_t byte[sizeof(uint32_t) + 1];                                                                    \
+                uint32_t dword;                                                                                        \
+            } buf;                                                                                                     \
+            VS_IOT_MEMSET(buf.byte, 0, sizeof(buf.byte));                                                              \
+            buf.dword = ntohl((uint32_t)SNAP_CMD);                                                                     \
+            VS_LOG_DEBUG("[%s] " STR, (char *)buf.byte);                                                               \
+        }                                                                                                              \
+    } while (0)
+
 // Commands
 // mute "error: multi-character character constant" message
 #pragma GCC diagnostic push
