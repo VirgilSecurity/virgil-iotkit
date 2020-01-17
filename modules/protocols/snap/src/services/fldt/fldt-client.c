@@ -108,10 +108,17 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
 
-    if (!forced_update && update_ctx->in_progress && update_ctx->data_sz == request_data_sz) {
-        VS_FLDT_PRINT_DEBUG(file_type, update_ctx->command, "Can't execute _update_process_set cause");
-        VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set has already started");
-        return VS_CODE_ALREADY_STARTED;
+    if (!forced_update && update_ctx->in_progress && update_ctx->command != command) {
+        switch (update_ctx->command) {
+        case VS_FLDT_GNFH:
+        case VS_FLDT_GNFD:
+        case VS_FLDT_GNFF:
+            VS_FLDT_PRINT_DEBUG(file_type, update_ctx->command, "Can't execute _update_process_set cause");
+            VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set has already started");
+            return VS_CODE_ALREADY_STARTED;
+        default:
+            break;
+        }
     }
 
     if (update_ctx->command != command) {
@@ -281,23 +288,22 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         // Normalize byte order
         vs_fldt_gnfh_header_request_t_encode(&header_request);
 
-        if (VS_CODE_OK == _update_process_set(&file_type_info->update_ctx,
-                                              file_type_info->gateway_mac,
-                                              VS_FLDT_GNFH,
-                                              0,
-                                              (const uint8_t *)&header_request,
-                                              sizeof(header_request),
-                                              file_type_info->type.type,
-                                              true)) {
-            CHECK_RET(!vs_snap_send_request(NULL,
-                                            &file_type_info->gateway_mac,
-                                            VS_FLDT_SERVICE_ID,
-                                            VS_FLDT_GNFH,
-                                            (const uint8_t *)&header_request,
-                                            sizeof(header_request)),
-                      VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-                      "Unable to send FLDT \"GNFH\" server request");
-        }
+        _update_process_set(&file_type_info->update_ctx,
+                            file_type_info->gateway_mac,
+                            VS_FLDT_GNFH,
+                            0,
+                            (const uint8_t *)&header_request,
+                            sizeof(header_request),
+                            file_type_info->type.type,
+                            true);
+        CHECK_RET(!vs_snap_send_request(NULL,
+                                        &file_type_info->gateway_mac,
+                                        VS_FLDT_SERVICE_ID,
+                                        VS_FLDT_GNFH,
+                                        (const uint8_t *)&header_request,
+                                        sizeof(header_request)),
+                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                  "Unable to send FLDT \"GNFH\" server request");
     }
 
     return VS_CODE_OK;
@@ -329,6 +335,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
     VS_LOG_DEBUG("[FLDT:INFV] Received from " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(new_file->gateway_mac));
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
+
     STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
 
     return VS_CODE_OK;
@@ -352,6 +359,7 @@ vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint
 
     // Normalize byte order
     vs_fldt_file_info_t_decode(new_file);
+
     STATUS_CHECK_RET(_file_info_processor("GFTI", new_file), "Unable to process GFTI request");
 
     return VS_CODE_OK;
