@@ -67,7 +67,28 @@ extern "C" {
             } buf;                                                                                                     \
             VS_IOT_MEMSET(buf.byte, 0, sizeof(buf.byte));                                                              \
             buf.dword = ntohl((uint32_t)SNAP_CMD);                                                                     \
-            VS_LOG_DEBUG("[%s] " STR, (char *)buf.byte);                                                               \
+            VS_LOG_DEBUG("[%s] " STR, (char *)buf.byte, ##__VA_ARGS__);                                                \
+        }                                                                                                              \
+    } while (0)
+
+#define DEBUG_FW_TYPE_STR "[Type FW]"
+#define DEBUG_TL_TYPE_STR "[Type TL]"
+#define DEBUG_USER_TYPE_STR "[Type USER]"
+
+#define VS_FLDT_PRINT_DEBUG(FILE_TYPE, SNAP_CMD, STR, ...)                                                             \
+    do {                                                                                                               \
+        if (vs_logger_is_loglev(VS_LOGLEV_DEBUG)) {                                                                    \
+            switch (FILE_TYPE) {                                                                                       \
+            case VS_UPDATE_FIRMWARE:                                                                                   \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_FW_TYPE_STR, STR);                                        \
+                break;                                                                                                 \
+            case VS_UPDATE_TRUST_LIST:                                                                                 \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_TL_TYPE_STR, STR);                                        \
+                break;                                                                                                 \
+            default:                                                                                                   \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_USER_TYPE_STR, STR);                                      \
+                break;                                                                                                 \
+            }                                                                                                          \
         }                                                                                                              \
     } while (0)
 

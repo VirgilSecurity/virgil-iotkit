@@ -62,7 +62,7 @@ typedef struct {
     int retry_used;
     int tick_cnt;
     uint32_t expected_offset;
-
+    uint16_t file_type;
     vs_mac_addr_t gateway_mac;
     uint32_t command;
     uint8_t data[VS_FLDT_REQUEST_SZ_MAX];
@@ -88,7 +88,8 @@ static vs_fldt_got_file _got_file_callback = NULL;
 static void
 _update_process_reset(vs_fldt_update_ctx_t *update_ctx) {
     CHECK_NOT_ZERO(update_ctx);
-    VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_reset");
+
+    VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_reset");
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
 terminate:;
 }
@@ -101,14 +102,20 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
                     uint32_t expected_offset,
                     const uint8_t *request_data,
                     uint32_t request_data_sz,
+                    uint16_t file_type,
                     bool forced_update) {
     CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
 
     if (!forced_update && update_ctx->in_progress && update_ctx->data_sz == request_data_sz) {
-        VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_set has already started");
+        VS_FLDT_PRINT_DEBUG(file_type, update_ctx->command, "Can't execute _update_process_set cause");
+        VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set has already started");
         return VS_CODE_ALREADY_STARTED;
+    }
+
+    if (update_ctx->command != command) {
+        VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set");
     }
 
     update_ctx->in_progress = true;
@@ -119,7 +126,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
     update_ctx->expected_offset = expected_offset;
     VS_IOT_MEMCPY(update_ctx->data, request_data, request_data_sz);
     update_ctx->data_sz = request_data_sz;
-
+    update_ctx->file_type = file_type;
     return VS_CODE_OK;
 }
 
@@ -132,12 +139,13 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
     update_ctx->retry_used++;
 
     if (update_ctx->retry_used > VS_FLDT_RETRY_MAX) {
-        VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT] Update process has been stopped, because of retry limit");
+        VS_FLDT_PRINT_DEBUG(
+                update_ctx->file_type, update_ctx->command, "Update process has been stopped, because of retry limit");
         _update_process_reset(update_ctx);
         return VS_CODE_OK;
     }
 
-    VS_SNAP_PRINT_DEBUG(update_ctx->command, "[FLDT]_update_process_retry");
+    VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_retry");
 
     CHECK_RET(!vs_snap_send_request(NULL,
                                     &update_ctx->gateway_mac,
@@ -262,9 +270,6 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
 
     if (download) {
 
-        // Stop retries for GFTI request if enabled
-        file_type_info->update_ctx.in_progress = false;
-
         file_type_info->prev_file_version = file_type_info->cur_file_version;
         file_type_info->cur_file_version = file_info->type.info.version;
         header_request.type = *file_type;
@@ -282,7 +287,8 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
                                                            0,
                                                            (const uint8_t *)&header_request,
                                                            sizeof(header_request),
-                                                           false)) {
+                                                           file_type_info->type.type,
+                                                           true)) {
             CHECK_RET(!vs_snap_send_request(NULL,
                                             &file_type_info->gateway_mac,
                                             VS_FLDT_SERVICE_ID,
@@ -422,6 +428,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
                         data_request.offset,
                         (const uint8_t *)&data_request,
                         sizeof(data_request),
+                        file_type_info->type.type,
                         true);
 
     CHECK_RET(!vs_snap_send_request(NULL,
@@ -506,6 +513,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             data_request.offset,
                             (const uint8_t *)&data_request,
                             sizeof(data_request),
+                            file_type_info->type.type,
                             true);
 
         CHECK_RET(!vs_snap_send_request(NULL,
@@ -533,6 +541,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                             0,
                             (const uint8_t *)&footer_request,
                             sizeof(footer_request),
+                            file_type_info->type.type,
                             true);
 
         CHECK_RET(!vs_snap_send_request(NULL,
@@ -565,6 +574,7 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
                                                        0,
                                                        (const uint8_t *)file_type_request,
                                                        sizeof(*file_type_request),
+                                                       file_type_info->type.type,
                                                        false)) {
         CHECK_RET(!vs_snap_send_request(NULL,
                                         vs_snap_broadcast_mac(),
