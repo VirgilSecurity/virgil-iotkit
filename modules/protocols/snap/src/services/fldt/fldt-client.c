@@ -115,7 +115,7 @@ _update_process_set(vs_fldt_update_ctx_t *update_ctx,
     }
 
     if (update_ctx->command != command) {
-        VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set");
+        VS_FLDT_PRINT_DEBUG(file_type, command, "_update_process_set");
     }
 
     update_ctx->in_progress = true;
@@ -281,14 +281,14 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         // Normalize byte order
         vs_fldt_gnfh_header_request_t_encode(&header_request);
 
-        if (VS_CODE_ALREADY_STARTED != _update_process_set(&file_type_info->update_ctx,
-                                                           file_type_info->gateway_mac,
-                                                           VS_FLDT_GNFH,
-                                                           0,
-                                                           (const uint8_t *)&header_request,
-                                                           sizeof(header_request),
-                                                           file_type_info->type.type,
-                                                           true)) {
+        if (VS_CODE_OK == _update_process_set(&file_type_info->update_ctx,
+                                              file_type_info->gateway_mac,
+                                              VS_FLDT_GNFH,
+                                              0,
+                                              (const uint8_t *)&header_request,
+                                              sizeof(header_request),
+                                              file_type_info->type.type,
+                                              true)) {
             CHECK_RET(!vs_snap_send_request(NULL,
                                             &file_type_info->gateway_mac,
                                             VS_FLDT_SERVICE_ID,
@@ -567,17 +567,18 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
     VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
 
     vs_fldt_gfti_fileinfo_request_t_encode(file_type_request);
+    file_type_info->gateway_mac = *vs_snap_broadcast_mac();
 
-    if (VS_CODE_ALREADY_STARTED != _update_process_set(&file_type_info->update_ctx,
-                                                       file_type_info->gateway_mac,
-                                                       VS_FLDT_GFTI,
-                                                       0,
-                                                       (const uint8_t *)file_type_request,
-                                                       sizeof(*file_type_request),
-                                                       file_type_info->type.type,
-                                                       false)) {
+    if (VS_CODE_OK == _update_process_set(&file_type_info->update_ctx,
+                                          file_type_info->gateway_mac,
+                                          VS_FLDT_GFTI,
+                                          0,
+                                          (const uint8_t *)file_type_request,
+                                          sizeof(*file_type_request),
+                                          file_type_info->type.type,
+                                          false)) {
         CHECK_RET(!vs_snap_send_request(NULL,
-                                        vs_snap_broadcast_mac(),
+                                        &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GFTI,
                                         (const uint8_t *)file_type_request,
