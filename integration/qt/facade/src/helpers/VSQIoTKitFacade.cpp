@@ -108,14 +108,6 @@ VSQIoTKitFacade::initSnap() {
 
     if (m_features.hasFeature(VSQFeatures::SNAP_INFO_CLIENT)) {
         registerService(VSQSnapInfoClient::instance());
-
-        if (m_impl.netifs().first()->connectionState() == QAbstractSocket::BoundState) {
-            VSQSnapInfoClient::instance().onStartFullPolling();
-        }
-
-        QObject::connect(
-                m_impl.netifs().first().get(), &VSQNetifBase::fireStateChanged, this, &VSQIoTKitFacade::restartInfoClientPolling);
-
     }
 
     if (m_features.hasFeature(VSQFeatures::SNAP_SNIFFER)) {
@@ -131,13 +123,6 @@ void
 VSQIoTKitFacade::registerService(VSQSnapServiceBase &service) {
     if (vs_snap_register_service(service.serviceInterface()) != VirgilIoTKit::VS_CODE_OK) {
         throw QString("Unable to register SNAP's %1 service").arg(service.serviceName());
-    }
-}
-
-void
-VSQIoTKitFacade::restartInfoClientPolling(QAbstractSocket::SocketState connectionState) {
-    if (connectionState == QAbstractSocket::BoundState) {
-        VSQSnapInfoClient::instance().onStartFullPolling();
     }
 }
 

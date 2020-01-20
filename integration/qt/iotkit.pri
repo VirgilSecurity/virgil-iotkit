@@ -65,6 +65,7 @@ message("Virgil IoTKIT libraries : $${VIRGIL_IOTKIT_BUILD_PATH}")
 INC_HELPERS = $$PWD/facade/include/virgil/iot/qt/helpers
 HEADERS += \
         $$PWD/default-impl/netif/udp-broadcast/include/virgil/iot/qt/netif/VSQUdpBroadcast.h \
+        $$PWD/default-impl/netif/websocket/include/virgil/iot/qt/netif/VSQNetifWebsocket.h \
         $$PWD/default-impl/netif/ble/include/virgil/iot/qt/netif/VSQNetifBLE.h \
         $$PWD/default-impl/netif/ble/include/virgil/iot/qt/netif/VSQNetifBLEEnumerator.h \
         $${INC_HELPERS}/VSQAppConfig.h \
@@ -93,6 +94,7 @@ HEADERS += \
 SRC_HELPERS = $$PWD/facade/src/helpers
 SOURCES += \
         $$PWD/default-impl/netif/udp-broadcast/src/VSQUdpBroadcast.cpp \
+        $$PWD/default-impl/netif/websocket/src/VSQNetifWebsocket.cpp \
         $$PWD/default-impl/netif/ble/src/VSQNetifBLE.cpp \
         $$PWD/default-impl/netif/ble/src/VSQNetifBLEEnumerator.cpp \
         $$PWD/default-impl/hal.cpp \
@@ -131,6 +133,7 @@ win32: LIBS += -lws2_32
 #
 
 INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
+                $$PWD/default-impl/netif/websocket/include \
                 $$PWD/default-impl/netif/ble/include \
                 $$PWD/facade/include \
                 \

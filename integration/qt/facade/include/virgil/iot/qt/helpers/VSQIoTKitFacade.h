@@ -119,8 +119,6 @@ public:
     virtual ~VSQIoTKitFacade();
 
 private slots:
-    void
-    restartInfoClientPolling(QAbstractSocket::SocketState connectionState);
 
     void
     onNetifProcess(struct VirgilIoTKit::vs_netif_t *netif, QByteArray data);
