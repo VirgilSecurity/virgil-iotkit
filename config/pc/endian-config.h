@@ -40,7 +40,7 @@
 #define VS_IOT_SDK_ENDIAN_CONFIG_H
 
 #ifdef WIN32
-#include <Winsock2.h>
+#include <winsock2.h>
 #else
 #include <arpa/inet.h>
 #endif

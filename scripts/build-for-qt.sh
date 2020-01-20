@@ -51,6 +51,17 @@ if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" || "${PLATFORM}" == "
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
 
+
+#
+#   Host OS: mingw32
+#
+elif [[ "${PLATFORM}" == "mingw32" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake"
+    "
+
 #
 #   iOS
 #
@@ -97,7 +108,7 @@ else
     echo "Virgil IoTKIT build script usage : "
     echo "$0 platform platform-specific"
     echo "where : "
-    echo "   platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, windows"
+    echo "   platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, windows, mingw32"
     echo "   platform-specific for Android :"
     echo "     android_ABI [android_platform]"
 
