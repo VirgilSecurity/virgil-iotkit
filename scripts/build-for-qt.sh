@@ -43,12 +43,22 @@ function build() {
 #
 
 #
-#   Host OS: macOS, Linux, Windows
+#   MacOS, Linux
 #
-if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" || "${PLATFORM}" == "windows" ]]; then
+if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+    "
+
+#
+#   Windows
+#
+elif [[ "${PLATFORM}" == "windows" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DOS=WINDOWS \
     "
 
 #

@@ -48,6 +48,11 @@ CONFIG(release, debug|release) {
     BUILD_TYPE = release
 }
 
+win32 {
+    QMAKE_CFLAGS += -mno-ms-bitfields
+    QMAKE_CXXFLAGS += -mno-ms-bitfields
+}
+
 unix:mac:       OS_NAME = macos
 unix:ios:       OS_NAME = ios
 linux:android:  OS_NAME = android.$$ANDROID_TARGET_ARCH
