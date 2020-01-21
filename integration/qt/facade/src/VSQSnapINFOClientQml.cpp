@@ -35,13 +35,19 @@
 #include <virgil/iot/qt/VSQIoTKit.h>
 
 VSQSnapInfoClientQml::VSQSnapInfoClientQml() {
-    QObject::connect(&VSQSnapInfoClient::instance(), &VSQSnapInfoClient::fireNewDevice, this, &VSQSnapInfoClientQml::onNewDevice);
-    QObject::connect(&VSQSnapInfoClient::instance(), &VSQSnapInfoClient::fireDeviceInfo, this, &VSQSnapInfoClientQml::onDeviceInfo);
+    QObject::connect(&VSQSnapInfoClient::instance(),
+                     &VSQSnapInfoClient::fireNewDevice,
+                     this,
+                     &VSQSnapInfoClientQml::onNewDevice);
+    QObject::connect(&VSQSnapInfoClient::instance(),
+                     &VSQSnapInfoClient::fireDeviceInfo,
+                     this,
+                     &VSQSnapInfoClientQml::onDeviceInfo);
 }
 
 void
 VSQSnapInfoClientQml::onNewDevice(const VSQDeviceInfo &deviceInfo) {
-    (void) deviceInfo;
+    (void)deviceInfo;
     beginInsertRows(QModelIndex(), rowCount() - 1, rowCount() - 1);
     endInsertRows();
 }
@@ -50,10 +56,10 @@ void
 VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
     const auto &devices = devicesList();
 
-    for(int pos = 0; pos < devices.size(); ++pos) {
+    for (int pos = 0; pos < devices.size(); ++pos) {
         const auto &device = devices[pos];
 
-        if(device.m_mac != deviceInfo.m_mac) {
+        if (!(device.m_mac == deviceInfo.m_mac)) {
             continue;
         }
 
@@ -66,50 +72,64 @@ VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
     Q_ASSERT(false && "Normally unreachable code");
 }
 
-int VSQSnapInfoClientQml::rowCount(const QModelIndex & parent ) const {
+int
+VSQSnapInfoClientQml::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return devicesList().size();
 }
 
-QVariant VSQSnapInfoClientQml::data(const QModelIndex & index, int role) const {
-    if(!index.isValid() || index.row() >= devicesList().size())
+QVariant
+VSQSnapInfoClientQml::data(const QModelIndex &index, int role) const {
+    if (!index.isValid() || index.row() >= devicesList().size())
         return QVariant();
 
-    const VSQDeviceInfo& deviceInfo = devicesList()[index.row()];
-    switch(role){
-    case MacAddress : return deviceInfo.m_mac.description();
-    case DeviceRoles : return deviceInfo.m_deviceRoles.description("\n");
-    case ManufactureId : return deviceInfo.m_manufactureId.description();
-    case DeviceType : return deviceInfo.m_deviceType.description();
-    case FwVer : return deviceInfo.m_fwVer.description();
-    case TlVer : return deviceInfo.m_tlVer.description();
-    case Sent : return deviceInfo.m_sent;
-    case Received : return deviceInfo.m_received;
-    case LastTimestamp : return deviceInfo.m_lastTimestamp.toString("hh:mm:ss");
-    case IsActive : return deviceInfo.m_isActive;
-    case HasGeneralInfo : return deviceInfo.m_hasGeneralInfo;
-    case HasStatistics : return deviceInfo.m_hasStatistics;
+    const VSQDeviceInfo &deviceInfo = devicesList()[index.row()];
+    switch (role) {
+    case MacAddress:
+        return deviceInfo.m_mac.description();
+    case DeviceRoles:
+        return deviceInfo.m_deviceRoles.description("\n");
+    case ManufactureId:
+        return deviceInfo.m_manufactureId.description();
+    case DeviceType:
+        return deviceInfo.m_deviceType.description();
+    case FwVer:
+        return deviceInfo.m_fwVer.description();
+    case TlVer:
+        return deviceInfo.m_tlVer.description();
+    case Sent:
+        return deviceInfo.m_sent;
+    case Received:
+        return deviceInfo.m_received;
+    case LastTimestamp:
+        return deviceInfo.m_lastTimestamp.toString("hh:mm:ss");
+    case IsActive:
+        return deviceInfo.m_isActive;
+    case HasGeneralInfo:
+        return deviceInfo.m_hasGeneralInfo;
+    case HasStatistics:
+        return deviceInfo.m_hasStatistics;
 
-    default :   Q_ASSERT(false); return QString("Unsupported");
+    default:
+        Q_ASSERT(false);
+        return QString("Unsupported");
     }
 }
 
-QHash<int, QByteArray> VSQSnapInfoClientQml::roleNames() const {
-    static const QHash<int, QByteArray> roles{
-    { MacAddress, "macAddress" },
-    { DeviceRoles, "deviceRoles" },
-    { ManufactureId, "manufactureId" },
-    { DeviceType, "deviceType" },
-    { FwVer, "fwVer" },
-    { TlVer, "tlVer" },
-    { Sent, "sent" },
-    { Received, "received" },
-    { LastTimestamp, "lastTimestamp" },
-    { IsActive, "isActive" },
-    { HasGeneralInfo, "hasGeneralInfo" },
-    { HasStatistics, "hasStatistic" }
-    };
+QHash<int, QByteArray>
+VSQSnapInfoClientQml::roleNames() const {
+    static const QHash<int, QByteArray> roles{{MacAddress, "macAddress"},
+                                              {DeviceRoles, "deviceRoles"},
+                                              {ManufactureId, "manufactureId"},
+                                              {DeviceType, "deviceType"},
+                                              {FwVer, "fwVer"},
+                                              {TlVer, "tlVer"},
+                                              {Sent, "sent"},
+                                              {Received, "received"},
+                                              {LastTimestamp, "lastTimestamp"},
+                                              {IsActive, "isActive"},
+                                              {HasGeneralInfo, "hasGeneralInfo"},
+                                              {HasStatistics, "hasStatistics"}};
 
     return roles;
 }
-

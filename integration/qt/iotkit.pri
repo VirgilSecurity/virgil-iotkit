@@ -48,9 +48,14 @@ CONFIG(release, debug|release) {
     BUILD_TYPE = release
 }
 
+win32 {
+    QMAKE_CFLAGS += -mno-ms-bitfields
+    QMAKE_CXXFLAGS += -mno-ms-bitfields
+}
+
 unix:mac:       OS_NAME = macos
 unix:ios:       OS_NAME = ios
-linux:android:  OS_NAME = android
+linux:android:  OS_NAME = android.$$ANDROID_TARGET_ARCH
 linux:!android: OS_NAME = linux
 win32:          OS_NAME = windows
 
@@ -61,6 +66,8 @@ message("Virgil IoTKIT libraries : $${VIRGIL_IOTKIT_BUILD_PATH}")
 #
 #   Headers
 #
+
+INC_SNAP = $$PWD/facade/include/virgil/iot/qt/protocols/snap
 INC_HELPERS = $$PWD/facade/include/virgil/iot/qt/helpers
 HEADERS += \
         $$PWD/default-impl/netif/udp-broadcast/include/virgil/iot/qt/netif/VSQUdpBroadcast.h \
@@ -76,17 +83,21 @@ HEADERS += \
         $${INC_HELPERS}/VSQManufactureId.h \
         $${INC_HELPERS}/VSQSingleton.h \
         $$PWD/facade/include/virgil/iot/qt/VSQIoTKit.h \
-        $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQNetifBase.h \
-        $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h \
-        $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h \
-        $$PWD/facade/include/virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h
+        $${INC_SNAP}/VSQNetifBase.h \
+        $${INC_SNAP}/VSQSnapServiceBase.h \
+        $${INC_SNAP}/VSQSnapINFOClient.h \
+        $${INC_SNAP}/VSQSnapINFOClientQml.h \
+        $${INC_SNAP}/VSQSnapSnifferQml.h
 
 #
 #   Sources
 #
+
+SRC_SNAP = $$PWD/facade/src
 SRC_HELPERS = $$PWD/facade/src/helpers
 SOURCES += \
         $$PWD/default-impl/netif/udp-broadcast/src/VSQUdpBroadcast.cpp \
+        $$PWD/default-impl/hal.cpp \
         $${SRC_HELPERS}/VSQDeviceRoles.cpp \
         $${SRC_HELPERS}/VSQDeviceSerial.cpp \
         $${SRC_HELPERS}/VSQDeviceType.cpp \
@@ -94,13 +105,15 @@ SOURCES += \
         $${SRC_HELPERS}/VSQIoTKitFacade.cpp \
         $${SRC_HELPERS}/VSQMac.cpp \
         $${SRC_HELPERS}/VSQManufactureId.cpp \
-        $$PWD/facade/src/VSQNetifBase.cpp \
-        $$PWD/facade/src/VSQSnapINFOClient.cpp \
-        $$PWD/facade/src/VSQSnapINFOClientQml.cpp
+        $${SRC_SNAP}/VSQNetifBase.cpp \
+        $${SRC_SNAP}/VSQSnapINFOClient.cpp \
+        $${SRC_SNAP}/VSQSnapINFOClientQml.cpp \
+        $${SRC_SNAP}/VSQSnapSnifferQml.cpp
 
 #
 #   Libraries
 #
+
 defineReplace(add_virgiliotkit_library) {
     LIBRARY_PATH = $$1
     LIBRARY_NAME = $$2
@@ -117,6 +130,7 @@ win32: LIBS += -lws2_32
 #
 #   Include path
 #
+
 INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $$PWD/facade/include \
                 \
@@ -134,5 +148,6 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
 #
 #   Compiler options
 #
+
 win32|linux:!android: QMAKE_CFLAGS+=-Wno-multichar
 win32|linux:!android: QMAKE_CXXFLAGS+=-Wno-multichar

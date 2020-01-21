@@ -32,6 +32,30 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQFileVersion.h
+ * \brief Virgil IoT Kit file version
+ *
+ * #VSQFileVersion is the file version descriptor.
+ *
+ * Configure #VSQFileVersion in the constructor :
+ * \code
+
+    VirgilIoTKit::vs_file_version_t rawFileVersion;  // File version
+    VSQFileVersion fileVersion(rawFileVersion);
+
+ * \endcode
+ *
+ * You can output file version to the string representation :
+ *
+ * \code
+
+    VSQFileVersion fileVersion;   // Initialized file version
+    QString fileVersionDescription = fileVersion;
+
+ * \endcode
+ *
+ */
+
 #ifndef VIRGIL_IOTKIT_QT_FILE_VERSION_H
 #define VIRGIL_IOTKIT_QT_FILE_VERSION_H
 
@@ -39,43 +63,76 @@
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap/info/info-structs.h>
 
+/** Virgil IoT Kit file version */
 class VSQFileVersion {
 public:
+    /** File version default constructor */
     VSQFileVersion();
+
+    /** Initialize file version by using vs_file_version_unpacked_t file version */
     VSQFileVersion(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion) {
         set(fileVersion);
     }
+
+    /** Initialize file version by using vs_file_version_t file version */
     VSQFileVersion(const VirgilIoTKit::vs_file_version_t &fileVersion) {
         set(fileVersion);
     }
 
+    /** Describe file version
+     *
+     * \param outputDate Output file date. By default it is false
+     * \return File date as string
+     */
     QString
-    description() const;
+    description(bool outputDate = false) const;
 
+    /** Describe file version
+     *
+     * Create file description by calling #description with default parameters
+     *
+     * \return File date as string
+     */
     operator QString() const {
         return description();
     }
+
+    /** Set file version by using vs_file_version_unpacked_t file version
+     *
+     * \param fileVersion File version to be copied
+     * \return Reference to the #VSQFileVersion instance
+     */
     VSQFileVersion &
     operator=(const VirgilIoTKit::vs_file_version_unpacked_t &fileVersion) {
         return set(fileVersion);
     }
 
+    /** Set file version by using vs_file_version_t file version
+     *
+     * \param fileVersion File version to be copied
+     * \return Reference to the #VSQFileVersion instance
+     */
     VSQFileVersion &
     operator=(const VirgilIoTKit::vs_file_version_t &fileVersion) {
         return set(fileVersion);
     }
 
+    /** Compare file versions
+     *
+     * \param fileVersion File version to be compared with the current one
+     * \return true if file versions are equal
+     */
     bool
     equal(const VSQFileVersion &fileVersion) const;
 
+    /** Compare file versions
+     *
+     * \param fileVersion File version to be compared with the current one
+     * \return true if file versions are equal
+     */
     bool
     operator==(const VSQFileVersion &fileVersion) const {
         return equal(fileVersion);
-    }
-
-    bool
-    operator!=(const VSQFileVersion &fileVersion) const {
-        return !equal(fileVersion);
     }
 
 private:

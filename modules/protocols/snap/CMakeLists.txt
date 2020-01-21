@@ -125,7 +125,18 @@ function(add_snap _targetname _firmware_update _definitions)
             )
 
     #
-    # Format code
+    #   Windows compiler options
+    #
+
+    if ("${OS}" STREQUAL "WINDOWS")
+        target_compile_options(${_targetname}
+                PRIVATE
+                -mno-ms-bitfields
+                )
+    endif()
+
+    #
+    #   Format code
     #
     if (COMMAND add_clangformat)
         add_clangformat(${_targetname})

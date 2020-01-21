@@ -71,7 +71,5 @@ VSQDeviceSerial::description() const {
         str += QString("%1").arg((int)symbol, 2, 16);
     }
 
-    str.remove(0, 1); // Remove first ':'
-
     return str;
 }

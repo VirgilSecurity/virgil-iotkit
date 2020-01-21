@@ -23,8 +23,12 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
   - [Fedora OS](#fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
+  - [Qt integration](#qt-integration)
 - [Tests](#tests)
 - [IoTKit Usage](#iotkit-usage)
+  - [Configuration parameters](#config-params)
+  - [Mandatory implementations](#mandatory-implementations)
+  - [Default mandatory implementations](#default-mandatory-implementations)
 - [API Reference](#api-reference)
 - [License](#license)
 - [Support](#support)
@@ -40,7 +44,7 @@ Virgil IoTKit provides a set of features for IoT device security and management:
 - **Protocols Module**. IoTKit provides a flexible, programmable security network adaptive protocol (SNAP) for device-to-device, device-to-cloud, and cloud-to-device communication. SNAP can be used for secure firmware distribution, secure notification about device state, and secure device provision. Also, SNAP contains a set of functions and interfaces that allows you to work with any transport protocol (BLE, Wi-Fi, PLC, NoiseSocket, etc.).  
 - **Cloud Module. API for working with the Virgil IoT Security Platform**. IoTKit interacts with the Virgil IoT Security Platform to provide you with the services for the security, management, and monitoring of IoT devices.
 - **Logger Module**. IoTKit contains a set of functions and interfaces for logging device events.
-- Library is implemented on C99. There are C++14 classes based on Qt crossplatform library. Also there are tools implemented on Golang.
+- **C/C++ support**. Library is implemented on C99. There is C++ integration based on Qt crossplatform library. Also there are tools implemented on Golang.
 
 <div id='iot-dev-tools'/>
 
@@ -70,9 +74,11 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
+
 <div id='modules'/>
 
-## Modules
+## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and TrustList files from cloud storage.
 - **Crypto Module** is used for cryptographic operations with callbacks for [Software Security Module](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
@@ -85,16 +91,26 @@ As we mentioned above, Virgil IoTKit provides a set of features that implemented
   - FLDT: service for files download from Gateway to Thing. See [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) and [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html)
   - PRVS: service for make provision for device by factory initializer. See [PRVS Server](https://virgilsecurity.github.io/virgil-iotkit/prvs-server_8h.html) and [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html)
 
-<div id='installation'/>
+<div id='scripts'/>
 
 ## Scripts
 Virgil IoTKit also contains a set of scripts that can be run from the [scripts folder](/scripts).
 - `run-sandbox` is used to run IoTKit sandbox. Read more about the sandbox and its functionality [here](/scripts).
 - `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
 - `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
+- `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
+  - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
+  - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
+  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
+
+<div id='installation'/>
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
+
+<div id='prerequisites'/>
 
 ### Prerequisites
 To start working with Virgil IoTKit the following components are required:
@@ -105,8 +121,12 @@ To start working with Virgil IoTKit the following components are required:
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/) for default NIX implementation
 
-Virgil IoTKIT provides `cmake/android/qt-android-mk-apk.cmake` CMake file. It allows you to deploy application for Android
-by using androiddeployqt tool provided by Qt library. To use it you need to install Android SDK, NDK and Qt with Android components.
+Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. You can see an example of its usage as [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project. Following components are required to use Qt integration :
+- C++14.
+- Qt 5.12.6 or higher.
+- Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
+
+<div id='ubuntu-debian-raspbian-os'/>
 
 ### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
@@ -139,6 +159,8 @@ echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_10 iot" >> /etc/ap
 
 **Note!** All DEB repositories are not signed, therefore to update lists for them use the following command: `apt-get update --allow-insecure-repositories --allow-unauthenticated`
 
+<div id='fedora-os'/>
+
 ### Fedora OS
 To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
 
@@ -162,19 +184,48 @@ yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-b
 yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
+<div id='macos'/>
+
 ### MacOS
 To download and install the Virgil IoTKit on MacOS, use the following command:
 ```shell
 $ brew install make cmake golang git gcc curl doxygen swig
 ```
 
-### Windows OS
-Virgil IoTKit for Windows OS is currently in development. To receive product updates, please send a request to our support team: support@VirgilSecurity.com.
+<div id='windows-os'/>
 
-### Android
-- Setup Android SDK.
-- Download Android NDK. You can download it by using Android SDK.
-- Qt with Android with Android components. It can be downloaded by Maintenance tool or they can be build locally.
+### Windows OS
+It is necessary to install software listed below :
+- [Git](https://git-scm.com/) for Virgil IoTKit components installation and upgrade.
+- [CMake](https://cmake.org/) as Virgil IoTKit framework build system.
+- make. It can be installed separately from [GNUWin32 project](http://gnuwin32.sourceforge.net/packages/make.htm). Also
+it contains in mingw compiler.
+- [MSYS2](https://www.msys2.org/) as shell commands interpreter
+- [mingw-w64](http://mingw-w64.org/) as C/C++ compiler. It is suggested to use mingw to use GCC bytes alignment in
+packet structures.
+- Also you can install [Qt](https://www.qt.io/) that will be used for Qt integration. Qt Maintenance Tool installs mingw,
+CMake and make.
+
+Start MSYS2 and try to see all those software versions :
+
+```shell
+git --version
+cmake --version
+make --version
+gcc --version
+```
+
+If some software has not been found, check PATH system variable. Or you could create direct link by using mklink Windows
+command.
+
+After this you can clone Git repository and use `build-for-qt.sh` script.
+
+<div id='qt-integration'/>
+
+### Qt integration
+- Setup Qt with your target platforms support. Each platform has its own requirement. See Qt documentation for details.
+- Compile Virgil IoTKit library for target platform. See [Scripts](#scripts) section, `build-for-qt.sh` script description for details.
+- Build and deploy application.
 
 <div id='tests'/>
 
@@ -187,12 +238,16 @@ To make sure that everything goes in the right way, we also provide a set of rea
 
 Navigate to the [tests folder](https://github.com/VirgilSecurity/demo-iotkit-nix/tree/release/v0.1.0-alpha/tests) of our IoTKit Demo repository to find preferred tests and start working with them.
 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project to test Qt integration usage. To have full testing start any IoT devices in your network and observe its states by using demo-iotkit-qt software. You can use Sandbox as such devices set.
+
 <div id='iotkit-usage'/>
 
 ## IoTKit Usage
 To start working with Virgil IoTKit you have to:
 - specify configuration parameters.
 - provide implementations (you can also use default implementations).
+
+<div id='config-params'/>
 
 ### Configuration parameters
 
@@ -205,33 +260,10 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the 
 #### MCU Build
 The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
-#### Android Build
-To build and deploy Android Qt application call `qt_android_build_apk` CMake function stored in `cmake/android/qt-android-mk-apk.cmake` file :
+#### Mobile platforms Build
+To include Virgil IoTKit Qt framewrok use integration/qt/iotkit.pri for Qt Creator.
 
-```cmake
-    include(${VIRGIL_IOTKIT_PATH}/cmake/android/qt-android-mk-apk.cmake)
-    qt_android_build_apk(
-            TARGET iotkit-qt-example
-            QML_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}
-            ANDROID_EXTRA_FILES ${CMAKE_CURRENT_SOURCE_DIR}/android
-    )
-```
-
-There are several parameters to specify :
-- TARGET : target name. It will create `${TARGET}-apk` target to make APK-file and `${TARGET}-apk-install`  to deploy it on device.
-- QML_ROOT_PATH : root path for your Qt/QML application.
-- ANDROID_EXTRA_FILES : folder with additional files. AndroidManifest.xml should be stored in this folder.
-
-You can visit ["Demo IoTKit QT" project](https://github.com/VirgilSecurity/demo-iotkit-qt) to see an example of this functionality usage. With Qt library it can be compiled for various desktop and mobile platforms. It is tested on Mac OS and Android platforms. In future it will be tested for Linux, iOS and other platforms.
-
-Also it is necessary to specify constants listed below :
-- ANDROID_QT must be enable to use this feature. You can provide CMake option -DANDROID_QT:BOOL=ON .
-- ANDROID_SDK : root path for Android SDK. If SDK is installed on ~/Android/SDK path, it will be "~/Android/SDK"
-- ANDROID_NDK : root path for Android NDK. If NDK is downloaded by SDK and its version is 20.1.5948944, it will be "~/Android/SDK/ndk/20.1.5948944"
-- ANDROID_STL : STL library used for C++ application to be deployed on Android device. For example, "c++_shared". See [C++ Library Support](https://developer.android.com/ndk/guides/cpp-support.html) for details.
-- ANDROID_STDCPP_PATH : C++ library path. It depends on library type (static, shared), used toolchain etc. For example, it could be "~/Android/SDK/ndk/20.1.5948944/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so".
-- ANDROID_APP_DESCRIPTION : application description. It could be any text string.
-- ANDROID_NDK_TOOLCHAIN_VERSION : NDK toolchain version. For example, this is "4.9".
+<div id='mandatory-implementations'/>
 
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
@@ -246,6 +278,8 @@ See [SNAP Reference](https://virgilsecurity.github.io/virgil-iotkit/snap-structs
 - [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) is a service that is used by a IoT Gateway for files (e.g. firmware, TrustLists) distribution for IoT devices. Server sends new files in the network to IoT Devices and processes Client requests for new files.
 - [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html) is client for FLDT service that used by IoT Devices to receive new files (e.g. Firmware, TrustLists) from IoT Gateway. FLDT Client also can request files versions.
 - [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html): there is a need to implement **vs_snap_prvs_client_impl_t** structure. This structure contains wait functions for SNAP interface. You can see example of implementation in the [c-implementation](https://github.com/VirgilSecurity/virgil-iotkit/blob/release/v0.1.0-alpha/tools/c-implementation/src/helpers/ti_wait_functionality.c).
+
+<div id='default-mandatory-implementations'/>
 
 ### Default Mandatory implementations
 Virgil IoTKit also provides default mandatory implementations:

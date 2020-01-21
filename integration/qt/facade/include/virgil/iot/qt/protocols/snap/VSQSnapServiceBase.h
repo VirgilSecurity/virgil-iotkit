@@ -32,20 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+/*! \file VSQSnapServiceBase.h
+ * \brief SNAP protocol's service interface
+ *
+ * #VSQSnapServiceBase is used as base class for SNAP protocol services. #VSQSnapInfoClient is INFO Client service based
+ * on this interface.
+ *
+ */
+
 #ifndef _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_
 #define _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/protocols/snap/VSQNetifBase.h>
 
+/** SNAP service base class */
 class VSQSnapServiceBase {
 public:
     virtual ~VSQSnapServiceBase() = default;
 
-    virtual const VirgilIoTKit::vs_snap_service_t *serviceInterface() = 0;
-    virtual VSQFeatures::EFeature serviceFeature() const = 0;
-    virtual const QString &serviceName() const = 0;
+    /** Get service interface
+     *
+     * \return Service interface
+     */
+    virtual const VirgilIoTKit::vs_snap_service_t *
+    serviceInterface() = 0;
+
+    /** Get service feature
+     *
+     * \return Service feature
+     */
+    virtual VSQFeatures::EFeature
+    serviceFeature() const = 0;
+
+    /** Get service name
+     *
+     * \return Service name
+     */
+    virtual const QString &
+    serviceName() const = 0;
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_SERVICE_H_

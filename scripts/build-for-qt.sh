@@ -28,6 +28,7 @@ function build() {
     echo "===================================="
     echo
 
+    rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
     cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
@@ -42,12 +43,22 @@ function build() {
 #
 
 #
-#   Host OS: macOS, Linux, Windows
+#   MacOS, Linux
 #
-if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" || "${PLATFORM}" == "windows" ]]; then
+if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+    "
+
+#
+#   Windows
+#
+elif [[ "${PLATFORM}" == "windows" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DOS=WINDOWS \
     "
 
 #
@@ -85,11 +96,12 @@ elif [[ "${PLATFORM}" == "android" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DANDROID_QT=ON \
-        ${ANDROID_PLATFORM}
-        -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ABI} \
+        ${ANDROID_PLATFORM} \
+        -DANDROID_ABI=${ANDROID_ABI} \
         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
+    PLATFORM="${PLATFORM}.${ANDROID_ABI}"
 
 else
     echo "Virgil IoTKIT build script usage : "
