@@ -191,9 +191,9 @@ private:
            const VirgilIoTKit::vs_netif_rx_cb_t rx_cb,
            const VirgilIoTKit::vs_netif_process_cb_t process_cb);
     static VirgilIoTKit::vs_status_e
-    deinitCb(const struct VirgilIoTKit::vs_netif_t *netif);
+    deinitCb(struct VirgilIoTKit::vs_netif_t *netif);
     static VirgilIoTKit::vs_status_e
-    txCb(const struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+    txCb(struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
     static VirgilIoTKit::vs_status_e
     macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct VirgilIoTKit::vs_mac_addr_t *mac_addr);
 
