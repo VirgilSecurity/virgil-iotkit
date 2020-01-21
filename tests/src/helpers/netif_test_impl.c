@@ -42,13 +42,13 @@ vs_mac_addr_t mac_addr_server_call;
 bool is_client_call;
 
 static vs_status_e
-test_netif_tx(const uint8_t *data, const uint16_t data_sz);
+test_netif_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 static vs_status_e
-test_netif_mac_addr(struct vs_mac_addr_t *mac_addr);
+test_netif_mac_addr(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 static vs_status_e
-test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+test_netif_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 static vs_status_e
-test_netif_deinit();
+test_netif_deinit(struct vs_netif_t *netif);
 
 static vs_netif_t _test_netif = {
         .init = test_netif_init,
@@ -63,10 +63,12 @@ static vs_netif_process_cb_t callback_process_cb;
 
 /**********************************************************/
 static vs_status_e
-test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
+test_netif_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     int ret_code = -1;
     const uint8_t *packet_data;
     uint16_t packet_data_sz;
+
+    (void)netif;
 
     is_client_call = !is_client_call;
 
@@ -81,8 +83,10 @@ test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
 
 /**********************************************************/
 static vs_status_e
-test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
+test_netif_mac_addr(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
+
+    (void)netif;
 
     *mac_addr = is_client_call ? mac_addr_client_call : mac_addr_server_call;
 
@@ -93,8 +97,10 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
 
 /**********************************************************/
 static vs_status_e
-test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
+test_netif_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     VS_IOT_ASSERT(rx_cb);
+
+    (void)netif;
 
     callback_rx_cb = rx_cb;
     callback_process_cb = process_cb;
@@ -106,7 +112,8 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
 /**********************************************************/
 static vs_status_e
-test_netif_deinit() {
+test_netif_deinit(struct vs_netif_t *netif) {
+    (void)netif;
     netif_state.initialized = 0;
     netif_state.deinitialized = 1;
     return VS_CODE_OK;

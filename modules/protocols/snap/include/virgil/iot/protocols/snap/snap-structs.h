@@ -113,7 +113,7 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uin
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_tx_t)(const struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Get MAC address
  *
@@ -154,7 +154,7 @@ typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_deinit_t)(const struct vs_netif_t *netif);
+typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
 
 /** SNAP Service Request Processor
  *
