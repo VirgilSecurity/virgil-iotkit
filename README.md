@@ -23,8 +23,12 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
   - [Fedora OS](#fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
+  - [Qt integration](#qt-integration)
 - [Tests](#tests)
 - [IoTKit Usage](#iotkit-usage)
+  - [Configuration parameters](#config-params)
+  - [Mandatory implementations](#mandatory-implementations)
+  - [Default mandatory implementations](#default-mandatory-implementations)
 - [API Reference](#api-reference)
 - [License](#license)
 - [Support](#support)
@@ -74,7 +78,7 @@ You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotki
 
 <div id='modules'/>
 
-## Modules
+## IoTKit Modules
 As we mentioned above, Virgil IoTKit provides a set of features that implemented to modules:
 - **[Cloud Module](https://virgilsecurity.github.io/virgil-iotkit/cloud_8h.html)** is used for for obtaining credentials from Virgil Thing service and downloading firmware images and TrustList files from cloud storage.
 - **Crypto Module** is used for cryptographic operations with callbacks for [Software Security Module](https://virgilsecurity.github.io/virgil-iotkit/secmodule_8h.html) and [cryptographic converters](https://virgilsecurity.github.io/virgil-iotkit/crypto__format__converters_8h.html).
@@ -99,24 +103,14 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
   - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
   - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
   - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
-  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
+  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
 
-<div id='scripts'/>
-
-## Integration
-Virgil IoTKit also contains a set of scripts that can be run from the [scripts folder](/scripts).
-- `run-sandbox` is used to run IoTKit sandbox. Read more about the sandbox and its functionality [here](/scripts).
-- `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
-- `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
-- `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
-  - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
-  - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
-  - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
-  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
-  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
+<div id='installation'/>
 
 ## Installation
 Virgil IoTKit is distributed as a package. This section demonstrates on how to install Virgil IoTKit for preferred platform.
+
+<div id='prerequisites'/>
 
 ### Prerequisites
 To start working with Virgil IoTKit the following components are required:
@@ -131,6 +125,8 @@ Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. You
 - C++14.
 - Qt 5.12.6 or higher.
 - Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
+
+<div id='ubuntu-debian-raspbian-os'/>
 
 ### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
@@ -163,6 +159,8 @@ echo "deb http://virgilsecurity.bintray.com/iot-deb/ Raspbian_10 iot" >> /etc/ap
 
 **Note!** All DEB repositories are not signed, therefore to update lists for them use the following command: `apt-get update --allow-insecure-repositories --allow-unauthenticated`
 
+<div id='fedora-os'/>
+
 ### Fedora OS
 To download and install the Virgil IoTKit on Fedora or CentOS, use the following command:
 
@@ -186,14 +184,43 @@ yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-b
 yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
+<div id='macos'/>
+
 ### MacOS
 To download and install the Virgil IoTKit on MacOS, use the following command:
 ```shell
 $ brew install make cmake golang git gcc curl doxygen swig
 ```
 
+<div id='windows-os'/>
+
 ### Windows OS
-Virgil IoTKit for Windows OS is currently in development. To receive product updates, please send a request to our support team: support@VirgilSecurity.com.
+It is necessary to install software listed below :
+- [Git](https://git-scm.com/) for Virgil IoTKit components installation and upgrade.
+- [CMake](https://cmake.org/) as Virgil IoTKit framework build system.
+- make. It can be installed separately from [GNUWin32 project](http://gnuwin32.sourceforge.net/packages/make.htm). Also
+it contains in mingw compiler.
+- [MSYS2](https://www.msys2.org/) as shell commands interpreter
+- [mingw-w64](http://mingw-w64.org/) as C/C++ compiler. It is suggested to use mingw to use GCC bytes alignment in
+packet structures.
+- Also you can install [Qt](https://www.qt.io/) that will be used for Qt integration. Qt Maintenance Tool installs mingw,
+CMake and make.
+
+Start MSYS2 and try to see all those software versions :
+
+```shell
+git --version
+cmake --version
+make --version
+gcc --version
+```
+
+If some software has not been found, check PATH system variable. Or you could create direct link by using mklink Windows
+command.
+
+After this you can clone Git repository and use `build-for-qt.sh` script.
+
+<div id='qt-integration'/>
 
 ### Qt integration
 - Setup Qt with your target platforms support. Each platform has its own requirement. See Qt documentation for details.
@@ -220,6 +247,8 @@ To start working with Virgil IoTKit you have to:
 - specify configuration parameters.
 - provide implementations (you can also use default implementations).
 
+<div id='config-params'/>
+
 ### Configuration parameters
 
 #### Configuration headers directory
@@ -234,6 +263,8 @@ The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features
 #### Mobile platforms Build
 To include Virgil IoTKit Qt framewrok use integration/qt/iotkit.pri for Qt Creator.
 
+<div id='mandatory-implementations'/>
+
 ### Mandatory implementations
 Some IoTKit modules use external implementations, therefore it's necessary to implement HAL (hardware abstraction layer) functions:
 - [Storage context](https://virgilsecurity.github.io/virgil-iotkit/storage__hal_8h.html): structure **vs_storage_op_ctx_t**
@@ -247,6 +278,8 @@ See [SNAP Reference](https://virgilsecurity.github.io/virgil-iotkit/snap-structs
 - [FLDT Server](https://virgilsecurity.github.io/virgil-iotkit/fldt-server_8h.html) is a service that is used by a IoT Gateway for files (e.g. firmware, TrustLists) distribution for IoT devices. Server sends new files in the network to IoT Devices and processes Client requests for new files.
 - [FLDT Client](https://virgilsecurity.github.io/virgil-iotkit/fldt-client_8h.html) is client for FLDT service that used by IoT Devices to receive new files (e.g. Firmware, TrustLists) from IoT Gateway. FLDT Client also can request files versions.
 - [PRVS Client](https://virgilsecurity.github.io/virgil-iotkit/prvs-client_8h.html): there is a need to implement **vs_snap_prvs_client_impl_t** structure. This structure contains wait functions for SNAP interface. You can see example of implementation in the [c-implementation](https://github.com/VirgilSecurity/virgil-iotkit/blob/release/v0.1.0-alpha/tools/c-implementation/src/helpers/ti_wait_functionality.c).
+
+<div id='default-mandatory-implementations'/>
 
 ### Default Mandatory implementations
 Virgil IoTKit also provides default mandatory implementations:
