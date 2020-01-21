@@ -59,6 +59,8 @@ VSQSnapInfoClient::startNotify(vs_snap_info_device_t *deviceRaw) {
     device.m_isActive = true;
     device.m_lastTimestamp = QDateTime::currentDateTime();
 
+    VS_LOG_INFO("New device : MAC %s", device.m_mac.description().toStdString().c_str());
+
     emit instance().fireDeviceInfo(device);
 
     if (!instance().startFullPolling(device.m_mac)) {
@@ -79,6 +81,16 @@ VSQSnapInfoClient::generalInfo(vs_info_general_t *generalData) {
     device.m_fwVer = generalData->fw_ver;
     device.m_tlVer = generalData->tl_ver;
 
+    VS_LOG_DEBUG(
+            "Device general info : MAC %s, manufacture ID \"%s\", device type \"%s\", device role(s) \"%s\", "
+            "Firmware version \"%s\", TrustList version \"%s\"",
+            device.m_mac.description().toStdString().c_str(),
+            device.m_manufactureId.description().toStdString().c_str(),
+            device.m_deviceType.description().toStdString().c_str(),
+            device.m_deviceRoles.description().toStdString().c_str(),
+            device.m_fwVer.description().toStdString().c_str(),
+            device.m_tlVer.description().toStdString().c_str());
+
     device.m_isActive = true;
     device.m_hasGeneralInfo = true;
     device.m_lastTimestamp = QDateTime::currentDateTime();
@@ -98,6 +110,11 @@ VSQSnapInfoClient::statistics(vs_info_statistics_t *statistics) {
     device.m_isActive = true;
     device.m_hasStatistics = true;
     device.m_lastTimestamp = QDateTime::currentDateTime();
+
+    VS_LOG_DEBUG("Device statistics : MAC %s, sent %d, received %d",
+                 device.m_mac.description().toStdString().c_str(),
+                 device.m_sent,
+                 device.m_received);
 
     emit instance().fireDeviceInfo(device);
 
