@@ -109,6 +109,18 @@ public:
     /** Get #vs_snap_device_role_e bits mask */
     operator uint32_t() const;
 
+    /** Compare device roles
+     *
+     * \param deviceRole Device role to be compared with the current one
+     * \return true if both device roles are equal
+     */
+    bool
+    equal(const VSQDeviceRoles &deviceRole) const {
+        uint32_t first = *this;
+        uint32_t second = deviceRole;
+        return first == second;
+    }
+
     /** Check device role
      *
      * This function returns true if \a role is present in the device roles list
