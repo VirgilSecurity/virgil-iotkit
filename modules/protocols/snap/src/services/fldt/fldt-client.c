@@ -62,7 +62,6 @@ typedef struct {
     int retry_used;
     int tick_cnt;
     uint32_t expected_offset;
-    uint16_t file_type;
     vs_mac_addr_t gateway_mac;
     uint32_t command;
     uint8_t data[VS_FLDT_REQUEST_SZ_MAX];
@@ -86,73 +85,73 @@ static vs_fldt_got_file _got_file_callback = NULL;
 
 /******************************************************************/
 static void
-_update_process_reset(vs_fldt_update_ctx_t *update_ctx) {
-    CHECK_NOT_ZERO(update_ctx);
+_update_process_reset(vs_fldt_client_file_type_mapping_t *object_info) {
+    CHECK_NOT_ZERO(object_info);
+    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
 
-    VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_reset");
+    if (object_info->update_ctx.in_progress) {
+        switch (object_info->update_ctx.command) {
+        case VS_FLDT_GNFH:
+        case VS_FLDT_GNFD:
+        case VS_FLDT_GNFF:
+            object_info->update_interface->delete_object(object_info->update_interface->storage_context,
+                                                         &object_info->type);
+            break;
+        default:
+            break;
+        }
+    }
+
+    VS_FLDT_PRINT_DEBUG(object_info->type.type, update_ctx->command, "_update_process_reset");
     VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
 terminate:;
 }
 
 /******************************************************************/
 static vs_status_e
-_update_process_set(vs_fldt_update_ctx_t *update_ctx,
-                    vs_mac_addr_t mac,
+_update_process_set(vs_fldt_client_file_type_mapping_t *object_info,
                     uint32_t command,
                     uint32_t expected_offset,
                     const uint8_t *request_data,
-                    uint32_t request_data_sz,
-                    uint16_t file_type,
-                    bool forced_update) {
-    CHECK_NOT_ZERO_RET(update_ctx, VS_CODE_ERR_INCORRECT_ARGUMENT);
+                    uint32_t request_data_sz) {
+    CHECK_NOT_ZERO_RET(object_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
 
-    if (!forced_update && update_ctx->in_progress && update_ctx->command != command) {
-        switch (update_ctx->command) {
-        case VS_FLDT_GNFH:
-        case VS_FLDT_GNFD:
-        case VS_FLDT_GNFF:
-            VS_FLDT_PRINT_DEBUG(file_type, update_ctx->command, "Can't execute _update_process_set cause");
-            VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_set has already started");
-            return VS_CODE_ALREADY_STARTED;
-        default:
-            break;
-        }
-    }
+    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
 
     if (update_ctx->command != command) {
-        VS_FLDT_PRINT_DEBUG(file_type, command, "_update_process_set");
+        VS_FLDT_PRINT_DEBUG(object_info->type.type, command, "_update_process_set");
     }
 
     update_ctx->in_progress = true;
     update_ctx->tick_cnt = 0;
     update_ctx->retry_used = 0;
     update_ctx->command = command;
-    update_ctx->gateway_mac = mac;
+    update_ctx->gateway_mac = object_info->gateway_mac;
     update_ctx->expected_offset = expected_offset;
     VS_IOT_MEMCPY(update_ctx->data, request_data, request_data_sz);
     update_ctx->data_sz = request_data_sz;
-    update_ctx->file_type = file_type;
     return VS_CODE_OK;
 }
 
 /******************************************************************/
 static vs_status_e
-_update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
-    vs_status_e res = VS_CODE_ERR_INCORRECT_ARGUMENT; // ???
-    CHECK_NOT_ZERO(update_ctx);
+_update_process_retry(vs_fldt_client_file_type_mapping_t *object_info) {
+
+    CHECK_NOT_ZERO_RET(object_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
 
     update_ctx->retry_used++;
 
     if (update_ctx->retry_used > VS_FLDT_RETRY_MAX) {
         VS_FLDT_PRINT_DEBUG(
-                update_ctx->file_type, update_ctx->command, "Update process has been stopped, because of retry limit");
-        _update_process_reset(update_ctx);
+                object_info->type.type, update_ctx->command, "Update process has been stopped, because of retry limit");
+        _update_process_reset(object_info);
         return VS_CODE_OK;
     }
 
-    VS_FLDT_PRINT_DEBUG(update_ctx->file_type, update_ctx->command, "_update_process_retry");
+    VS_FLDT_PRINT_DEBUG(object_info->type.type, update_ctx->command, "_update_process_retry");
 
     CHECK_RET(!vs_snap_send_request(NULL,
                                     &update_ctx->gateway_mac,
@@ -163,10 +162,7 @@ _update_process_retry(vs_fldt_update_ctx_t *update_ctx) {
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to re-send FLDT request");
 
-    res = VS_CODE_OK;
-
-terminate:;
-    return res;
+    return VS_CODE_OK;
 }
 
 /******************************************************************/
@@ -209,7 +205,7 @@ _filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_d
 }
 
 /******************************************************************/
-static int
+static vs_status_e
 _check_download_need(const char *opcode,
                      vs_fldt_client_file_type_mapping_t *file_type_info,
                      vs_file_version_t *current_file_ver,
@@ -264,7 +260,7 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:%s] Request for new file from gateway " FLDT_MAC_PRINT_TEMPLATE " for %s",
+    VS_LOG_DEBUG("[FLDT:%s] Request from gateway about new file" FLDT_MAC_PRINT_TEMPLATE " for %s",
                  cmd_prefix,
                  FLDT_MAC_PRINT_ARG(file_info->gateway_mac),
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
@@ -288,14 +284,13 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
         // Normalize byte order
         vs_fldt_gnfh_header_request_t_encode(&header_request);
 
-        _update_process_set(&file_type_info->update_ctx,
-                            file_type_info->gateway_mac,
-                            VS_FLDT_GNFH,
-                            0,
-                            (const uint8_t *)&header_request,
-                            sizeof(header_request),
-                            file_type_info->type.type,
-                            true);
+        CHECK_RET(VS_CODE_OK == _update_process_set(file_type_info,
+                                                    VS_FLDT_GNFH,
+                                                    0,
+                                                    (const uint8_t *)&header_request,
+                                                    sizeof(header_request)),
+                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                  "Can't set up retry process");
         CHECK_RET(!vs_snap_send_request(NULL,
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
@@ -343,30 +338,6 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
 
 /******************************************************************/
 static int
-vs_fldt_GFTI_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
-
-    vs_fldt_gfti_fileinfo_response_t *new_file = (vs_fldt_infv_new_file_request_t *)response;
-    vs_status_e ret_code;
-
-    CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GFTI response");
-
-    (void)response_sz;
-
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_RET(response_sz == sizeof(*new_file),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
-
-    // Normalize byte order
-    vs_fldt_file_info_t_decode(new_file);
-
-    STATUS_CHECK_RET(_file_info_processor("GFTI", new_file), "Unable to process GFTI request");
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************/
-static int
 vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     vs_fldt_gnfh_header_response_t *file_header = (vs_fldt_gnfh_header_response_t *)response;
     vs_file_version_t *file_ver = NULL;
@@ -375,27 +346,40 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
+    bool is_need_download;
 
     CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GNFH response");
+    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     // Normalize byte order
     vs_fldt_gnfh_header_response_t_decode(file_header);
 
-    file_ver = &file_header->type.info.version;
-    file_type = &file_header->type;
+    CHECK_NOT_ZERO_RET(file_header->file_size, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    file_ver = &file_header->fldt_info.type.info.version;
+    file_type = &file_header->fldt_info.type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
+
+    STATUS_CHECK_RET(_check_download_need(
+                             "GNFH", file_type_info, &file_type_info->cur_file_version, file_ver, &is_need_download),
+                     "Unable to check download need");
+    if(!is_need_download) {
+        file_type_info->update_ctx.in_progress = false;
+        VS_LOG_WARNING("[FLDT:GNFH] File [type %d] header contains an old version",
+                       file_type->type);
+        return VS_CODE_OLD_VERSION;
+    }
 
     VS_LOG_DEBUG("[FLDT:GNFH] Response file size %d bytes, %s, for file %s",
                  file_header->file_size,
                  file_header->has_footer ? "has footer" : "no footer",
                  _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
 
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(file_header->file_size, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    file_type_info->gateway_mac = file_header->fldt_info.gateway_mac;
 
     CHECK_RET(response_sz >= sizeof(*file_header),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
@@ -421,7 +405,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
 
     data_request.offset = 0;
     data_request.type = *file_type;
-    data_request.type.info.version = file_header->type.info.version;
+    data_request.type.info.version = file_header->fldt_info.type.info.version;
 
     VS_LOG_DEBUG("[FLDT] Ask file data offset %d for file %s",
                  data_request.offset,
@@ -430,14 +414,13 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     // Normalize byte order
     vs_fldt_gnfd_data_request_t_encode(&data_request);
 
-    _update_process_set(&file_type_info->update_ctx,
-                        file_type_info->gateway_mac,
-                        VS_FLDT_GNFD,
-                        data_request.offset,
-                        (const uint8_t *)&data_request,
-                        sizeof(data_request),
-                        file_type_info->type.type,
-                        true);
+    CHECK_RET(VS_CODE_OK == _update_process_set(file_type_info,
+                                                VS_FLDT_GNFD,
+                                                data_request.offset,
+                                                (const uint8_t *)&data_request,
+                                                sizeof(data_request)),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Can't set up retry process");
 
     CHECK_RET(!vs_snap_send_request(NULL,
                                     &file_type_info->gateway_mac,
@@ -515,14 +498,13 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         // Normalize byte order
         vs_fldt_gnfd_data_request_t_encode(&data_request);
 
-        _update_process_set(&file_type_info->update_ctx,
-                            file_type_info->gateway_mac,
-                            VS_FLDT_GNFD,
-                            data_request.offset,
-                            (const uint8_t *)&data_request,
-                            sizeof(data_request),
-                            file_type_info->type.type,
-                            true);
+        CHECK_RET(VS_CODE_OK == _update_process_set(file_type_info,
+                                                    VS_FLDT_GNFD,
+                                                    data_request.offset,
+                                                    (const uint8_t *)&data_request,
+                                                    sizeof(data_request)),
+                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                  "Can't set up retry process");
 
         CHECK_RET(!vs_snap_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -543,14 +525,13 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
         // Normalize byte order
         vs_fldt_gnff_footer_request_t_encode(&footer_request);
 
-        _update_process_set(&file_type_info->update_ctx,
-                            file_type_info->gateway_mac,
-                            VS_FLDT_GNFF,
-                            0,
-                            (const uint8_t *)&footer_request,
-                            sizeof(footer_request),
-                            file_type_info->type.type,
-                            true);
+        CHECK_RET(VS_CODE_OK == _update_process_set(file_type_info,
+                                                    VS_FLDT_GNFF,
+                                                    0,
+                                                    (const uint8_t *)&footer_request,
+                                                    sizeof(footer_request)),
+                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+                  "Can't set up retry process");
 
         CHECK_RET(!vs_snap_send_request(NULL,
                                         &file_type_info->gateway_mac,
@@ -568,32 +549,28 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 /******************************************************************/
 static vs_status_e
 vs_fldt_ask_file_type_info(const char *file_type_descr,
-                           vs_fldt_gfti_fileinfo_request_t *file_type_request,
+                           vs_fldt_gnfh_header_request_t *gnfh_request,
                            vs_fldt_client_file_type_mapping_t *file_type_info) {
-    CHECK_NOT_ZERO_RET(file_type_request, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(gnfh_request, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     VS_LOG_DEBUG("[FLDT] Ask file type information for file type %s", file_type_descr);
 
-    vs_fldt_gfti_fileinfo_request_t_encode(file_type_request);
+    vs_fldt_gnfh_header_request_t_encode(gnfh_request);
     file_type_info->gateway_mac = *vs_snap_broadcast_mac();
 
-    if (VS_CODE_OK == _update_process_set(&file_type_info->update_ctx,
-                                          file_type_info->gateway_mac,
-                                          VS_FLDT_GFTI,
-                                          0,
-                                          (const uint8_t *)file_type_request,
-                                          sizeof(*file_type_request),
-                                          file_type_info->type.type,
-                                          false)) {
-        CHECK_RET(!vs_snap_send_request(NULL,
-                                        &file_type_info->gateway_mac,
-                                        VS_FLDT_SERVICE_ID,
-                                        VS_FLDT_GFTI,
-                                        (const uint8_t *)file_type_request,
-                                        sizeof(*file_type_request)),
-                  VS_CODE_ERR_INCORRECT_SEND_REQUEST,
-                  "Unable to send FLDT \"GFTI\" server request");
-    }
+    CHECK_RET(VS_CODE_OK ==
+                      _update_process_set(
+                              file_type_info, VS_FLDT_GNFH, 0, (const uint8_t *)gnfh_request, sizeof(*gnfh_request)),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Can't set up retry process");
+    CHECK_RET(!vs_snap_send_request(NULL,
+                                    &file_type_info->gateway_mac,
+                                    VS_FLDT_SERVICE_ID,
+                                    VS_FLDT_GNFH,
+                                    (const uint8_t *)gnfh_request,
+                                    sizeof(*gnfh_request)),
+              VS_CODE_ERR_INCORRECT_SEND_REQUEST,
+              "Unable to send FLDT \"GFTI\" server request");
 
 
     return VS_CODE_OK;
@@ -660,9 +637,9 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
 /******************************************************************/
 vs_status_e
-vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_context) {
+vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_interface) {
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_fldt_gnfh_header_request_t gnfh_request;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
     uint32_t header_size;
@@ -680,13 +657,14 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
         VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
                      _file_type_mapping_array_size);
         VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
-        _update_process_reset(&file_type_info->update_ctx);
     } else {
         VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
     }
 
+    _update_process_reset(file_type_info);
+
     file_type_info->type = *file_type;
-    file_type_info->update_interface = update_context;
+    file_type_info->update_interface = update_interface;
 
     VS_LOG_DEBUG("[FLDT] Update file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
@@ -719,8 +697,8 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
 
     VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
 
-    file_type_request.type = *file_type;
-    STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request, file_type_info),
+    gnfh_request.type = *file_type;
+    STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &gnfh_request, file_type_info),
                      "Unable to ask current file information");
 
     return VS_CODE_OK;
@@ -761,7 +739,7 @@ _fldt_client_request_processor(const struct vs_netif_t *netif,
     case VS_FLDT_INFV:
         return vs_fldt_INFV_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
-    case VS_FLDT_GFTI:
+
     case VS_FLDT_GNFH:
     case VS_FLDT_GNFD:
     case VS_FLDT_GNFF:
@@ -790,9 +768,6 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
             VS_LOG_WARNING("GINF Received response packet with is_ack == false");
         }
         return VS_CODE_COMMAND_NO_RESPONSE;
-
-    case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_response_processor(is_ack, response, response_sz);
 
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_response_processor(is_ack, response, response_sz);
@@ -823,7 +798,7 @@ _fldt_client_periodical_processor(void) {
         if (_update_ctx->in_progress) {
             _update_ctx->tick_cnt++;
             if (_update_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
-                _update_process_retry(_update_ctx);
+                _update_process_retry(file_type_info);
             }
         }
     }
@@ -854,7 +829,7 @@ vs_snap_fldt_client(vs_fldt_got_file got_file_callback) {
 vs_status_e
 vs_fldt_client_request_all_files(void) {
     size_t id;
-    vs_fldt_gfti_fileinfo_request_t file_type_request;
+    vs_fldt_gnfh_header_request_t gnfh_request;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
@@ -871,9 +846,9 @@ vs_fldt_client_request_all_files(void) {
 
         VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
 
-        file_type_request.type = file_type_info->type;
+        gnfh_request.type = file_type_info->type;
 
-        STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &file_type_request, file_type_info),
+        STATUS_CHECK_RET(vs_fldt_ask_file_type_info(file_descr, &gnfh_request, file_type_info),
                          "Unable to ask current file information");
     }
 

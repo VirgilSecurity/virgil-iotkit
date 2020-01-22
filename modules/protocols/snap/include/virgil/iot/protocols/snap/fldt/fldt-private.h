@@ -101,7 +101,6 @@ typedef enum { VS_FLDT_SERVICE_ID = HTONL_IN_COMPILE_TIME('FLDT') } vs_fldt_t;
 
 typedef enum {
     VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
-    VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
     VS_FLDT_GNFH = HTONL_IN_COMPILE_TIME('GNFH'), /* Get New File Header */
     VS_FLDT_GNFD = HTONL_IN_COMPILE_TIME('GNFD'), /* Get New File Data */
     VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
@@ -119,22 +118,13 @@ typedef struct __attribute__((__packed__)) {
 // "Inform New File Version"
 typedef vs_fldt_file_info_t vs_fldt_infv_new_file_request_t;
 
-typedef void vs_fldt_infv_new_file_response_t;
-
-// "Get File Type Information"
-typedef struct __attribute__((__packed__)) {
-    vs_update_file_type_t type;
-} vs_fldt_gfti_fileinfo_request_t;
-
-typedef vs_fldt_file_info_t vs_fldt_gfti_fileinfo_response_t;
-
 // "Get New File Header"
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
 } vs_fldt_gnfh_header_request_t;
 
 typedef struct __attribute__((__packed__)) {
-    vs_update_file_type_t type;
+    vs_fldt_file_info_t fldt_info;
     uint32_t file_size;
     uint8_t has_footer;
     uint16_t header_size;

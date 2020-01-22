@@ -335,6 +335,44 @@ _fw_update_file_is_newer(void *context,
 
 /*************************************************************************/
 static void
+_fw_update_delete_object(void *context, vs_update_file_type_t *file_type) {
+    (void)context;
+    (void)file_type;
+    vs_firmware_descriptor_t fw_descr;
+
+    if (VS_CODE_OK !=
+        vs_firmware_load_firmware_descriptor(file_type->info.manufacture_id, file_type->info.device_type, &fw_descr)) {
+        return;
+    }
+
+    vs_firmware_delete_firmware(&fw_descr);
+}
+
+/*************************************************************************/
+static vs_status_e
+_fw_update_verify_object(void *context, vs_update_file_type_t *file_type) {
+    (void)context;
+    (void)file_type;
+    vs_status_e ret_code;
+    vs_firmware_descriptor_t fw_descr;
+    STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(
+                             file_type->info.manufacture_id, file_type->info.device_type, &fw_descr),
+                     "");
+
+    if (VS_CODE_OK != vs_firmware_verify_firmware(&fw_descr)) {
+        VS_LOG_WARNING("Error while verifying firmware");
+
+        if (VS_CODE_OK != (ret_code = vs_firmware_delete_firmware(&fw_descr))) {
+            VS_LOG_ERROR("Unable to delete firmware");
+            return ret_code;
+        }
+        return VS_CODE_ERR_VERIFY;
+    }
+    return VS_CODE_OK;
+}
+
+/*************************************************************************/
+static void
 _fw_update_free_item(void *context, vs_update_file_type_t *file_type) {
     (void)context;
     (void)file_type;
@@ -437,6 +475,8 @@ vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     _fw_update_ctx.set_footer = _fw_update_set_footer;
     _fw_update_ctx.file_is_newer = _fw_update_file_is_newer;
     _fw_update_ctx.free_item = _fw_update_free_item;
+    _fw_update_ctx.verify_object = _fw_update_verify_object;
+    _fw_update_ctx.delete_object = _fw_update_delete_object;
     _fw_update_ctx.describe_type = _fw_update_describe_type;
     _fw_update_ctx.describe_version = _fw_update_describe_version;
     _fw_update_ctx.storage_context = storage_ctx;
