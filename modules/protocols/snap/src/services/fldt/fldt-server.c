@@ -565,7 +565,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
     ret_code = _update_object_info(file_type, update_context, file_element_to_add, &new_file.type);
     if (VS_CODE_OK != ret_code) {
         _file_type_mapping_array_size--;
-         return VS_CODE_ERR_FILE;
+        return VS_CODE_ERR_FILE;
     }
 
     new_file.gateway_mac = _gateway_mac;

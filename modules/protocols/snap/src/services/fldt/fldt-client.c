@@ -365,7 +365,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               "Unregistered file type");
 
     STATUS_CHECK_RET(_check_download_need(
-                             "GNFH", file_type_info, &file_type_info->cur_file_version, file_ver, &is_need_download),
+                             "GNFH", file_type_info, &file_type_info->prev_file_version, file_ver, &is_need_download),
                      "Unable to check download need");
     if (!is_need_download) {
         file_type_info->update_ctx.in_progress = false;
@@ -616,11 +616,6 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                                                             file_footer->footer_size);
     successfully_updated = (ret_code == VS_CODE_OK);
 
-    if (!successfully_updated) {
-        VS_LOG_ERROR("Error while processing footer for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
-    }
-
     // Stop retries
     file_type_info->update_ctx.in_progress = !successfully_updated;
 
@@ -630,6 +625,12 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
                        file_type_info->update_interface,
                        &file_type_info->gateway_mac,
                        successfully_updated);
+
+    if (!successfully_updated) {
+        VS_LOG_ERROR("Error while processing footer for file %s",
+                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+        file_type_info->cur_file_version = file_type_info->prev_file_version;
+    }
 
     return VS_CODE_OK;
 }
@@ -685,9 +686,9 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     if (VS_CODE_OK == ret_code) {
         VS_LOG_INFO("[FLDT] Current file version : %s",
                     _filever_descr(file_type_info, &file_type_info->type.info.version, file_descr, sizeof(file_descr)));
-        VS_IOT_MEMCPY(&file_type_info->cur_file_version,
-                      &file_type_info->type.info.version,
-                      sizeof(file_type_info->type.info.version));
+
+        file_type_info->cur_file_version = file_type_info->type.info.version;
+        file_type_info->prev_file_version = file_type_info->cur_file_version;
     } else {
         VS_LOG_WARNING("[FLDT] File type was not found by Update library");
         VS_IOT_FREE(file_type_info->file_header);
