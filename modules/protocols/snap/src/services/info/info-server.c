@@ -48,6 +48,7 @@
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <endian-config.h>
+#include <global-hal.h>
 
 // Commands
 
@@ -218,8 +219,23 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
     tl_elem_info.id = VS_TL_ELEMENT_TLH;
-    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
+
+    int retry = 0;
+    int max_retry = 100;
+    while ((ret_code = vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz)) !=
+           VS_CODE_OK) {
+        ++retry;
+        VS_LOG_ERROR(
+                "Unable to obtain Trust List version, retry %d. vs_tl_load_part has been returned %d", retry, ret_code);
+        vs_impl_msleep(10);
+        if (retry == max_retry) {
+            VS_LOG_ERROR("Maximum retry value");
+            return ret_code;
+        }
+    }
+    //    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
+    //                     "Unable to obtain Trust List version");
+
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
