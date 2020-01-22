@@ -14,7 +14,7 @@ var searchData=
   ['slot_5fclean_1443',['slot_clean',['../structvs__secmodule__impl__t.html#ad09f00d9801df6907b9651553839d1d1',1,'vs_secmodule_impl_t']]],
   ['slot_5fload_1444',['slot_load',['../structvs__secmodule__impl__t.html#a34a4dca7f6365892e813d7423600f624',1,'vs_secmodule_impl_t']]],
   ['slot_5fsave_1445',['slot_save',['../structvs__secmodule__impl__t.html#a809d05e725b1fb81c549fa9631b01a5a',1,'vs_secmodule_impl_t']]],
-  ['src_1446',['src',['../structvs__ethernet__header__t.html#a5b95d5e1f9e9a4008860dbebc509b391',1,'vs_ethernet_header_t']]],
+  ['src_1446',['src',['../structethernet__header.html#ae275d205b47ecb235d5787b099ae955b',1,'ethernet_header']]],
   ['start_5fdate_1447',['start_date',['../structvs__pubkey__dated__t.html#a93270826edf3c07867ad4755d41f80ee',1,'vs_pubkey_dated_t']]],
   ['state_1448',['state',['../structvs__secmodule__sw__sha256__ctx.html#aa407990a115039def59d9aef9e9f7695',1,'vs_secmodule_sw_sha256_ctx']]],
   ['statistics_1449',['statistics',['../structvs__snap__info__client__service__t.html#a1b1947733912cfb2644a94e0c0e291a3',1,'vs_snap_info_client_service_t']]],

@@ -11,5 +11,5 @@ var searchData=
   ['total_1461',['total',['../structvs__secmodule__sw__sha256__ctx.html#a81a6711e7f349b4d368ae3c9d423bc37',1,'vs_secmodule_sw_sha256_ctx']]],
   ['transaction_5fid_1462',['transaction_id',['../structvs__snap__header__t.html#a9d111a41c16daffa612a3f6eec97617f',1,'vs_snap_header_t']]],
   ['tx_1463',['tx',['../structvs__netif__t.html#adc1e3e52b577e1e80777e19c8b0dd584',1,'vs_netif_t']]],
-  ['type_1464',['type',['../structvs__update__file__type__t.html#a7517c1f608ae4cdb9ea1ecd39b0736a3',1,'vs_update_file_type_t::type()'],['../structvs__ethernet__header__t.html#a482f50fe945f3b24ef55828e6a4deccc',1,'vs_ethernet_header_t::type()']]]
+  ['type_1464',['type',['../structvs__update__file__type__t.html#a7517c1f608ae4cdb9ea1ecd39b0736a3',1,'vs_update_file_type_t::type()'],['../structethernet__header.html#ab912a2dcfbb1117867242dd06a378a1e',1,'ethernet_header::type()']]]
 ];

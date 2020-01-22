@@ -19,6 +19,7 @@ var searchData=
   ['eth_5fmin_5flen_75',['ETH_MIN_LEN',['../snap-structs_8h.html#af569f4cf24c9c1e87d47a19027664b94',1,'snap-structs.h']]],
   ['eth_5fmtu_76',['ETH_MTU',['../snap-structs_8h.html#a6f29d2b24a262d91b7158713728d45f2',1,'snap-structs.h']]],
   ['eth_5ftype_5flen_77',['ETH_TYPE_LEN',['../snap-structs_8h.html#ac546ec45335e29a5f489527650b47365',1,'snap-structs.h']]],
-  ['ethernetpackettype_78',['EthernetPacketType',['../class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba2397bab0d840fde4b44b2de8cb337514',1,'VSQSnapSnifferQml']]],
-  ['expire_5fdate_79',['expire_date',['../structvs__pubkey__dated__t.html#a415ed02d7397eca920db5670805d5be9',1,'vs_pubkey_dated_t']]]
+  ['ethernet_5fheader_78',['ethernet_header',['../structethernet__header.html',1,'']]],
+  ['ethernetpackettype_79',['EthernetPacketType',['../class_v_s_q_snap_sniffer_qml.html#a766aa6ee7a01d424cebeed1be730311ba2397bab0d840fde4b44b2de8cb337514',1,'VSQSnapSnifferQml']]],
+  ['expire_5fdate_80',['expire_date',['../structvs__pubkey__dated__t.html#a415ed02d7397eca920db5670805d5be9',1,'vs_pubkey_dated_t']]]
 ];
