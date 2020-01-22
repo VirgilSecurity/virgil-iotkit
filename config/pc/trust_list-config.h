@@ -33,9 +33,9 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file trust_list-config.h
- * \brief PC configuration : TrustList settings
+ * \brief PC configuration : Trust List settings
  *
- * This file provides defines that set up TrustList behavior.
+ * This file provides defines that set up trust list behavior.
  *
  */
 
@@ -57,7 +57,7 @@
 
 #define VS_TL_STORAGE_MAX_PART_SIZE (512)
 
-/*TrustList signature rules*/
+/* Trust List signature rules */
 
 /** Minimum quantity of required signatures, which must be in TL footer */
 

@@ -27,8 +27,8 @@ Qt is a crossplatform framework for creating modern console and GUI applications
 
 ## Features
 Virgil IoTKit Qt framework provides you with the following possibilities:
-- **Snap Protocol**. The basis of interaction between Virgil IoT devices is the SNAP protocol. IoTKit Qt framework provides you with the basic class for personal implementations creation and UDP Broadcast implementation.
-- **INFO Client**. SNAP protocol gives you the basis for different services building. INFO Service allows for active devices broadcast their versions, statistical information etc. INFO Server is the end device, which transmits its state. INFO Client is a device that collects information over a network. IoTKit Qt framework provides you with the class for INFO Client service operation.
+- **Snap Protocol**. The basis of interaction between Virgil IoT devices is the SNAP protocol. IoTKit Qt framework provides you with the VSQNetifBase basic class for personal implementations creation and UDP Broadcast implementation.
+- **INFO Client**. SNAP protocol gives you the basis for different services building. INFO Service allows for active devices broadcast their versions, statistical information etc. INFO Server is the end device, which transmits its state. INFO Client is a device that collects information over a network. IoTKit Qt framework provides you with the VSQSnapInfoClient class for INFO Client service operation and the VSQSnapInfoClientQml class for use it directly in QML files.
 - **Sniffer**. IoTKit Qt framework provides you with a sniffer for all Virgil IoTKit packets scanning inside of the network.
 - **Simple configuration and initialization of IoTKit Qt framework**. IoTKit Qt framework uses the "facade" pattern. VSQIoTKitFacade class is an object which consists of all framework entities. During the startup it gets full information about the library - which interfaces should be used, which solutions will be used, separate modules settings etc. There is also an unifying umbrella header VSQIoTKit.h with all framework modules except default implementations.
 - **QML Support**. All IoTKit Qt framework classes are created to be used in QML project. You can build lists with a data model based on INFO Client and Sniffer. All future implementations will also support this technology.
@@ -45,6 +45,7 @@ Virgil IoTKit Qt framework provides you with the following possibilities:
   - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
   - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
   - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
+  - To get a library for Windows by using mingw32 on another host platform : `ext/virgil-iotkit/scripts/build-for-qt.sh mingw32`
 
 <div id='example'/>
 
@@ -52,7 +53,7 @@ Virgil IoTKit Qt framework provides you with the following possibilities:
 
 Virgil IoTKit Qt framework is tapped by integration/qt/iotkit.pri file.
 
-Virgil IoTKit Qt framework initialization in C++ code can be performed in the next way:
+Virgil IoTKit Qt framework initialization in C++ code can be performed as listed below:
 ```cpp
 int
 VirgilIoTKitQtInit() {
