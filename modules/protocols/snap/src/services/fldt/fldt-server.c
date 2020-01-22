@@ -139,17 +139,6 @@ _update_object_info(const vs_update_file_type_t *file_type,
                  _filetype_descr(file_element, file_descr, sizeof(file_descr)));
 
     if (file_header_size) {
-        ret_code = file_element->update_context->verify_object(file_element->update_context->storage_context,
-                                                               &file_element->type);
-
-        if (VS_CODE_OK != ret_code) {
-            VS_LOG_ERROR("Unable to verify object type %s",
-                         _filetype_descr(file_element, file_descr, sizeof(file_descr)));
-            file_element->update_context->delete_object(file_element->update_context->storage_context,
-                                                        &file_element->type);
-            goto terminate;
-        }
-
         file_element->file_header = VS_IOT_MALLOC(file_header_size);
 
         ret_code = file_element->update_context->get_header(file_element->update_context->storage_context,
@@ -160,6 +149,17 @@ _update_object_info(const vs_update_file_type_t *file_type,
         STATUS_CHECK(ret_code,
                      "Unable to get header for file type %s",
                      _filetype_descr(file_element, file_descr, sizeof(file_descr)));
+
+        ret_code = file_element->update_context->verify_object(file_element->update_context->storage_context,
+                                                               &file_element->type);
+
+        if (VS_CODE_OK != ret_code) {
+            VS_LOG_ERROR("Unable to verify object type %s",
+                         _filetype_descr(file_element, file_descr, sizeof(file_descr)));
+            file_element->update_context->delete_object(file_element->update_context->storage_context,
+                                                        &file_element->type);
+            goto terminate;
+        }
 
         ret_code = file_element->update_context->get_file_size(file_element->update_context->storage_context,
                                                                &file_element->type,
@@ -242,6 +242,7 @@ _get_object_info_by_type(const vs_update_file_type_t *requested_file_type,
         ret_code = _update_object_info(requested_file_type, update_context, file_element, file_type_for_object);
         if (VS_CODE_OK != ret_code) {
             _file_type_mapping_array_size--;
+            return VS_CODE_ERR_FILE;
         }
     } else {
         VS_IOT_MEMCPY(file_type_for_object, &file_element->type, sizeof(file_element->type));
@@ -564,6 +565,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
     ret_code = _update_object_info(file_type, update_context, file_element_to_add, &new_file.type);
     if (VS_CODE_OK != ret_code) {
         _file_type_mapping_array_size--;
+         return VS_CODE_ERR_FILE;
     }
 
     new_file.gateway_mac = _gateway_mac;
