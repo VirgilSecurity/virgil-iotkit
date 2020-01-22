@@ -155,6 +155,9 @@ VSQSnapInfoClient::timerEvent(QTimerEvent *event) {
         auto currentTime = QDateTime::currentDateTime();
 
         for (auto &device : m_devicesInfo) {
+            if (!device.m_isActive)
+                continue;
+
             constexpr auto deadDelayPollingIntervals = 3;
             constexpr auto SecToMSec = 1000;
 

@@ -63,7 +63,7 @@ VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
             continue;
         }
 
-        auto idx = index(pos, pos);
+        auto idx = index(pos, 0);
         emit dataChanged(idx, idx);
 
         return;
