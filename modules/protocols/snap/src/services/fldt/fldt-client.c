@@ -367,10 +367,9 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     STATUS_CHECK_RET(_check_download_need(
                              "GNFH", file_type_info, &file_type_info->cur_file_version, file_ver, &is_need_download),
                      "Unable to check download need");
-    if(!is_need_download) {
+    if (!is_need_download) {
         file_type_info->update_ctx.in_progress = false;
-        VS_LOG_WARNING("[FLDT:GNFH] File [type %d] header contains an old version",
-                       file_type->type);
+        VS_LOG_WARNING("[FLDT:GNFH] File [type %d] header contains an old version", file_type->type);
         return VS_CODE_OLD_VERSION;
     }
 
