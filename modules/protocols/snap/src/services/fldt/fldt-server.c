@@ -463,7 +463,6 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
 
     vs_fldt_gnff_footer_request_t *footer_request = (vs_fldt_gnff_footer_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
-    const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
@@ -488,7 +487,6 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     vs_fldt_gnff_footer_request_t_decode(footer_request);
 
     file_ver = &footer_request->type.info.version;
-    file_type = &footer_request->type;
 
     STATUS_CHECK_RET(_get_object_info_by_type(&footer_request->type, &existing_file_element, &footer_response->type),
                      "Unable to get information for file %s",
