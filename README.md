@@ -99,11 +99,12 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
 - `publish-firmware.sh` is used to publish a signed firmware on the Virgil Cloud for its distribution to IoT devices. Read more about firmware distribution [here](/tools/virgil-firmware-signer#firmware-distribution).
 - `publish-trustlist.sh` is used to publish a generated TrustList on the Virgil Cloud for its distribution to IoT devices. Read more about TrustLists distribution [here](/tools/virgil-trust-provisioner#trustlist-distribution).
 - `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
-  - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
-  - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
-  - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
-  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
-  - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
+  - To get a library for Android : `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
+  - To get a library for iOS : `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for Linux : `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
+  - To get a library for MacOS : `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for Windows by using mingw32 on another host platform : `ext/virgil-iotkit/scripts/build-for-qt.sh mingw32`
+  - To get a library for Windows : `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
 
 <div id='installation'/>
 
