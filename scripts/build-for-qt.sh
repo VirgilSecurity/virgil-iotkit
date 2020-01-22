@@ -58,6 +58,7 @@ elif [[ "${PLATFORM}" == "mingw32" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DOS=WINDOWS \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake"
     "
 

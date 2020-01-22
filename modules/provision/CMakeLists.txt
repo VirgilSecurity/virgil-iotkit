@@ -69,10 +69,6 @@ target_sources(vs-module-provision
 #   Set additional compiler flags
 #
 
-if ("${OS}" STREQUAL "WINDOWS")
-    set(CFLAGS_PLATFORM -mno-ms-bitfields)
-endif()
-
 if ("${CFLAGS_PLATFORM}" STREQUAL "")
     message("-- No CFLAGS_PLATFORM")
 else()
