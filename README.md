@@ -121,7 +121,7 @@ To start working with Virgil IoTKit the following components are required:
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/) for default NIX implementation
 
-Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Following components are required to use Qt integration :
+Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. You can see an example of its usage as [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project. Following components are required to use Qt integration :
 - C++14.
 - Qt 5.12.6 or higher.
 - Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
@@ -215,9 +215,10 @@ make --version
 gcc --version
 ```
 
-If some software has not been found, check PATH system variable.
+If some software has not been found, check PATH system variable. Or you could create direct link by using mklink Windows
+command.
 
-After these steps you can clone Git repository and use `build-for-qt.sh` script.
+After this you can clone Git repository and use `build-for-qt.sh` script.
 
 <div id='qt-integration'/>
 
@@ -260,7 +261,7 @@ It's necessary to add `VIRGIL_IOT_CONFIG_DIRECTORY` variable that points to the 
 The `VIRGIL_IOT_MCU_BUILD` variable enables or disables microcontroller features. If some microcontroller features are not compatible with your PC configuration or you don't need to use MCU features, you can disable them through the  `VIRGIL_IOT_MCU_BUILD` variable during compilation: `-DVIRGIL_IOT_MCU_BUILD=OFF`.
 
 #### Mobile platforms Build
-Use integration/qt/iotkit.pri qmake script to include Virgil IoTKit Qt framework.
+To include Virgil IoTKit Qt framewrok use integration/qt/iotkit.pri for Qt Creator.
 
 <div id='mandatory-implementations'/>
 
