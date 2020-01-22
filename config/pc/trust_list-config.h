@@ -35,14 +35,14 @@
 /*! \file trust_list-config.h
  * \brief PC configuration : TrustList settings
  *
- * This file provides defines that set up TrustList behavior.
+ * This file provides defines that set up Trust List behavior.
  *
  */
 
 #ifndef VS_IOT_SDK_TL_CONFIG_H
 #define VS_IOT_SDK_TL_CONFIG_H
 
-/** Maximum size of TrustList used.
+/** Maximum size of trust list used.
  *
  * Please note that library uses three type of storage,
  * so you need have at least \a VS_TL_STORAGE_SIZE * 3 memory size
@@ -50,14 +50,14 @@
  */
 #define VS_TL_STORAGE_SIZE (10 * 4096)
 
-/** Maximum size of each part of TrustList.
+/** Maximum size of each part of trust list.
  *
  * It should be not less than max size of tl header, tl footer and tl public key
  */
 
 #define VS_TL_STORAGE_MAX_PART_SIZE (512)
 
-/*TrustList signature rules*/
+/* Trust list signature rules */
 
 /** Minimum quantity of required signatures, which must be in TL footer */
 

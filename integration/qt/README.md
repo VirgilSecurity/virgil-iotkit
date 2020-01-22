@@ -27,19 +27,33 @@ Qt is a crossplatform framework for creating modern console and GUI applications
 
 ## Features
 Virgil IoTKit Qt framework provides you with the following possibilities:
-- **Snap Protocol**. The basis of interaction between Virgil IoT devices is the SNAP protocol. IoTKit Qt framework provides you with the basic class for personal implementations creation and UDP Broadcast implementation.
-- **INFO Client**. SNAP protocol gives you the basis for different services building. INFO Service allows for active devices broadcast their versions, statistical information etc. INFO Server is the end device, which transmits its state. INFO Client is a device that collects information over a network. IoTKit Qt framework provides you with the class for INFO Client service operation.
-- **Sniffer**. IoTKit Qt framework provides you with a sniffer for all Virgil IoTKit packets scanning inside of the network.
-- **Simple configuration and initialization of IoTKit Qt framework**. IoTKit Qt framework uses the "facade" pattern. VSQIoTKitFacade class is an object which consists of all framework entities. During the startup it gets full information about the library - which interfaces should be used, which solutions will be used, separate modules settings etc. There is also an unifying umbrella header VSQIoTKit.h with all framework modules except default implementations.
-- **QML Support**. All IoTKit Qt framework classes are created to be used in QML project. You can build lists with a data model based on INFO Client and Sniffer. All future implementations will also support this technology.
-- **Cross-platform**. Library is implemented on C++ classes based on Qt cross-platform library. Different desktop and mobile platforms like Linux, MacOS, Windows, Android, iOS are supported.
+- **Snap Protocol**. The basis of interaction between Virgil IoT devices is the SNAP protocol. IoTKit Qt framework
+provides you with the VSQNetifBase basic class for personal implementations creation and UDP Broadcast
+implementation.
+- **INFO Client**. SNAP protocol gives you the basis for different services building. INFO Service allows for active
+devices broadcast their versions, statistical information etc. INFO Server is the end device, which transmits its
+state. INFO Client is a device that collects information over a network. IoTKit Qt framework provides you with the
+VSQSnapInfoClient class for INFO Client service operation and the VSQSnapInfoClientQml class for use it directly in
+QML files.
+- **Sniffer**. IoTKit Qt framework provides you with a sniffer for all Virgil IoTKit packets scanning inside of the
+network. It is implemented as VSQSnapSnifferQml class.
+- **Simple configuration and initialization of IoTKit Qt framework**. IoTKit Qt framework uses the "facade" pattern.
+VSQIoTKitFacade class is an object which consists of all framework entities. During the startup it gets full
+information about the library - which interfaces should be used, which solutions will be used, separate modules
+settings etc. There is also an unifying umbrella header VSQIoTKit.h with all framework modules except default
+implementations.
+- **QML Support**. All IoTKit Qt framework classes are created to be used in QML project. You can build lists with
+a data model based on INFO Client and Sniffer. All future implementations will also support this technology.
+- **Cross-platform**. Library is implemented on C++ classes based on Qt cross-platform library. Different desktop and
+mobile platforms like Linux, MacOS, Windows, Android, iOS are supported.
 
 <div id='installation'/>
 
 ## Installation
 - Virgil IoTKit Qt framework is a part of Virgil IoTKit library. Therefore, this library has to be installed first.
 - Next you need to install Qt Framework version 5.12.6 or higher.
-- After that you should compile Virgil IoTKit for the necessary platform. To do this, use the script `scripts/build-for-qt.sh` and indicate the preferred platform. Example:
+- After that you should compile Virgil IoTKit for the necessary platform. To do this, use the script
+`scripts/build-for-qt.sh` and indicate the preferred platform. Example:
   - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
   - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
   - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
@@ -52,7 +66,8 @@ Virgil IoTKit Qt framework provides you with the following possibilities:
 
 Virgil IoTKit Qt framework is tapped by integration/qt/iotkit.pri file.
 
-Virgil IoTKit Qt framework initialization in C++ code can be performed in the next way:
+Virgil IoTKit Qt framework initialization in C++ code can be performed as listed below:
+
 ```cpp
 int
 VirgilIoTKitQtInit() {
@@ -80,12 +95,14 @@ VirgilIoTKitQtInit() {
 }
 ```
 
-In this example you connect necessary modules and launch the QML application. This code is a part of open Virgil IoTKit Qt framework use-case: [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/).
+In this example you connect necessary modules and launch the QML application. This code is a part of open Virgil IoTKit
+Qt framework use-case: [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/).
 
 <div id='api-reference'/>
 
 ## API Reference
-Virgil IoTKit Qt framework is a part of Virgil IoTKit. C++ classes have VSQ prefix. E.g. "facade" pattern is implemented as VSQIoTKitFacade class. See [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/)
+Virgil IoTKit Qt framework is a part of Virgil IoTKit. C++ classes have VSQ prefix. E.g. "facade" pattern is implemented
+as VSQIoTKitFacade class. See [API Reference of IoTKit](https://virgilsecurity.github.io/virgil-iotkit/) for details.
 
 <div id='license'/>
 
