@@ -361,11 +361,6 @@ _fw_update_verify_object(void *context, vs_update_file_type_t *file_type) {
 
     if (VS_CODE_OK != vs_firmware_verify_firmware(&fw_descr)) {
         VS_LOG_WARNING("Error while verifying firmware");
-
-        if (VS_CODE_OK != (ret_code = vs_firmware_delete_firmware(&fw_descr))) {
-            VS_LOG_ERROR("Unable to delete firmware");
-            return ret_code;
-        }
         return VS_CODE_ERR_VERIFY;
     }
     return VS_CODE_OK;
