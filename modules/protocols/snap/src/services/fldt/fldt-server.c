@@ -152,12 +152,9 @@ _update_object_info(const vs_update_file_type_t *file_type,
 
         ret_code = file_element->update_context->verify_object(file_element->update_context->storage_context,
                                                                &file_element->type);
-
         if (VS_CODE_OK != ret_code) {
             VS_LOG_ERROR("Unable to verify object type %s",
                          _filetype_descr(file_element, file_descr, sizeof(file_descr)));
-            file_element->update_context->delete_object(file_element->update_context->storage_context,
-                                                        &file_element->type);
             goto terminate;
         }
 
