@@ -47,6 +47,9 @@
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
+#if INFO_SERVER
+#include <virgil/iot/protocols/snap/info/info-server.h>
+#endif
 
 #include "private/firmware-private.h"
 
@@ -148,6 +151,8 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
+    vs_status_e ret_code;
+
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -155,7 +160,19 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     _storage_ctx = storage_ctx;
     _secmodule = secmodule;
 
-    return vs_update_firmware_init(storage_ctx, manufacture, device_type);
+    STATUS_CHECK_RET(vs_update_firmware_init(storage_ctx, manufacture, device_type),
+                     "Unable to initialize Firmware module");
+
+#if INFO_SERVER
+    vs_firmware_descriptor_t fw_descr;
+
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
+
+    STATUS_CHECK_RET(vs_snap_info_set_current_fw(&fw_descr.info.version),
+                     "Unable to set current firmware version to the INFO Server service");
+#endif
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -712,7 +729,14 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
     STATUS_CHECK_RET(vs_firmware_load_firmware_footer(descriptor, buf, footer_sz, &read_sz),
                      "Unable to load firmware footer");
 
-    return vs_firmware_install_append_data_hal(buf, read_sz);
+    STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, read_sz), "Unable to append data");
+
+#if INFO_SERVER
+    STATUS_CHECK_RET(vs_snap_info_set_current_fw(&descriptor->info.version),
+                     "Unable to set current firmware version to the INFO Server service");
+#endif
+
+    return ret_code;
 }
 
 /*************************************************************************/

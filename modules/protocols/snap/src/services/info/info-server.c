@@ -48,12 +48,10 @@
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <endian-config.h>
-#include <global-hal.h>
 
-// Commands
+static vs_file_version_t _tl_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
+static vs_file_version_t _fw_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
 
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
 #define FW_DESCR_BUF 128
 
 // Polling
@@ -200,12 +198,7 @@ terminate:
 /******************************************************************/
 static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
-    vs_firmware_descriptor_t fw_descr;
     const vs_netif_t *defautl_netif;
-    vs_tl_element_info_t tl_elem_info;
-    vs_tl_header_t tl_header;
-    uint16_t tl_header_sz = sizeof(tl_header);
-    vs_status_e ret_code;
     char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -216,32 +209,10 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
               -1,
               "Cannot get MAC for Default Network Interface");
 
-    STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
-
-    tl_elem_info.id = VS_TL_ELEMENT_TLH;
-
-    int retry = 0;
-    int max_retry = 100;
-    while ((ret_code = vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz)) !=
-           VS_CODE_OK) {
-        ++retry;
-        VS_LOG_ERROR(
-                "Unable to obtain Trust List version, retry %d. vs_tl_load_part has been returned %d", retry, ret_code);
-        vs_impl_msleep(10);
-        if (retry == max_retry) {
-            VS_LOG_ERROR("Maximum retry value");
-            return ret_code;
-        }
-    }
-    //    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-    //                     "Unable to obtain Trust List version");
-
-    vs_tl_header_to_host(&tl_header, &tl_header);
-
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
-    VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
-    VS_IOT_MEMCPY(&general_info->tl_version, &tl_header.version, sizeof(tl_header.version));
+    VS_IOT_MEMCPY(&general_info->fw_version, &_fw_ver, sizeof(_fw_ver));
+    VS_IOT_MEMCPY(&general_info->tl_version, &_tl_ver, sizeof(_tl_ver));
     general_info->device_roles = vs_snap_device_roles();
 
     VS_LOG_DEBUG(
@@ -253,7 +224,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
             general_info->device_type[1],
             general_info->device_type[2],
             general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
+            vs_firmware_describe_version(&_fw_ver, filever_descr, sizeof(filever_descr)),
             general_info->tl_version.major,
             general_info->tl_version.minor,
             general_info->tl_version.patch,
@@ -300,10 +271,9 @@ _snot_request_processor(const uint8_t *request,
     vs_mac_addr_t self_mac;
 #endif
 
-    CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
     VS_LOG_DEBUG("[INFO:SNOT] Request from device " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(enum_data->mac));
 
+    CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(request_sz == sizeof(*enum_data),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "vs_info_enum_response_t with sizeof=%d has been waited, but actual sizeof=%d",
@@ -316,7 +286,6 @@ _snot_request_processor(const uint8_t *request,
     if (VS_IOT_MEMCMP(enum_data->mac.bytes, self_mac.bytes, sizeof(self_mac.bytes)) && // different devices
         (vs_snap_device_roles() & VS_SNAP_DEV_THING) &&                                // current device is Thing
         (enum_data->device_roles & VS_SNAP_DEV_GATEWAY)) {                             // sender is Gateway
-
         ret_code = vs_fldt_client_request_all_files();
         if (ret_code != VS_CODE_OK) {
             VS_LOG_ERROR("[INFO] Unable to request all files update");
@@ -414,17 +383,10 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb) {
+vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb) {
 
     static vs_snap_service_t _info = {0};
 
-    CHECK_NOT_ZERO_RET(tl_ctx, NULL);
-    CHECK_NOT_ZERO_RET(fw_ctx, NULL);
-
-    _tl_ctx = tl_ctx;
-    _fw_ctx = fw_ctx;
     _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
@@ -453,6 +415,34 @@ vs_snap_info_start_notification(const vs_netif_t *netif) {
                                           (uint8_t *)&enum_data,
                                           sizeof(enum_data)),
                      "Cannot send data");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+vs_status_e
+vs_snap_info_set_current_tl(const vs_file_version_t *tl_ver) {
+    VS_IOT_ASSERT(tl_ver && "tl_ver pointer must not be NULL");
+
+    if (tl_ver) {
+        _tl_ver = *tl_ver;
+        VS_LOG_DEBUG(
+                "[INFO:SERVER] Update TL : %d.%d.%d.%d", _tl_ver.major, _tl_ver.minor, _tl_ver.patch, _tl_ver.build);
+    }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
+vs_status_e
+vs_snap_info_set_current_fw(const vs_file_version_t *fw_ver) {
+    VS_IOT_ASSERT(fw_ver && "fw_ver pointer must not be NULL");
+
+    if (fw_ver) {
+        _fw_ver = *fw_ver;
+        VS_LOG_DEBUG(
+                "[INFO:SERVER] Update FW : %d.%d.%d.%d", _fw_ver.major, _fw_ver.minor, _fw_ver.patch, _fw_ver.build);
+    }
 
     return VS_CODE_OK;
 }

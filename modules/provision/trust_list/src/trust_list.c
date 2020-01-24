@@ -38,11 +38,20 @@
 #include <private/tl-private.h>
 #include "virgil/iot/trust_list/trust_list.h"
 #include <endian-config.h>
+#if INFO_SERVER
+#include <virgil/iot/protocols/snap/info/info-server.h>
+#endif
 
 /******************************************************************************/
 vs_status_e
 vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
-    return vs_tl_storage_init_internal(op_ctx, secmodule);
+    vs_status_e ret_code;
+
+    STATUS_CHECK_RET(vs_tl_storage_init_internal(op_ctx, secmodule), "Unable to initialize Trust List module");
+
+    STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update Trust List file version for INFO Server service");
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -53,41 +62,70 @@ vs_tl_deinit() {
 
 /******************************************************************************/
 vs_status_e
+vs_tl_update_info_server(void) {
+    vs_status_e ret_code = VS_CODE_OK;
+
+#if INFO_SERVER
+    vs_tl_header_t tl_header;
+    vs_tl_element_info_t elem_info;
+    uint16_t header_size = sizeof(tl_header);
+
+    elem_info.id = VS_TL_ELEMENT_TLH;
+
+    STATUS_CHECK_RET(vs_tl_load_part(&elem_info, (uint8_t *)&tl_header, header_size, &header_size),
+                     "Unable to get header");
+
+    STATUS_CHECK_RET(vs_snap_info_set_current_tl(&tl_header.version),
+                     "Unable to set current firmware version to the INFO Server service");
+#endif
+
+    return ret_code;
+}
+
+/******************************************************************************/
+vs_status_e
 vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz) {
     if (NULL == element_info || NULL == in_data || element_info->id <= VS_TL_ELEMENT_MIN ||
         element_info->id >= VS_TL_ELEMENT_MAX) {
         return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
-    vs_status_e res = VS_CODE_ERR_FILE_WRITE;
+    vs_status_e ret_code = VS_CODE_ERR_FILE_WRITE;
 
     switch (element_info->id) {
     case VS_TL_ELEMENT_TLH:
         if (sizeof(vs_tl_header_t) == data_sz) {
-            res = vs_tl_header_save(TL_STORAGE_TYPE_TMP, (vs_tl_header_t *)in_data);
+            ret_code = vs_tl_header_save(TL_STORAGE_TYPE_TMP, (vs_tl_header_t *)in_data);
         }
         break;
+
     case VS_TL_ELEMENT_TLF:
 
-        res = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
+        ret_code = vs_tl_footer_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
 
-        if (VS_CODE_OK == res) {
-            res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
-            if (VS_CODE_OK == res && VS_CODE_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
-                res = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
+        if (VS_CODE_OK == ret_code) {
+            ret_code = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_DYNAMIC);
+            if (VS_CODE_OK == ret_code && VS_CODE_OK != vs_tl_verify_storage(TL_STORAGE_TYPE_STATIC)) {
+                ret_code = vs_tl_apply_tmp_to(TL_STORAGE_TYPE_STATIC);
             }
         }
 
         vs_tl_invalidate(TL_STORAGE_TYPE_TMP);
+
+        STATUS_CHECK_RET(vs_tl_update_info_server(),
+                         "Unable to update Trust List file version for INFO Server service");
+
         break;
+
     case VS_TL_ELEMENT_TLC:
-        res = vs_tl_key_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
+        ret_code = vs_tl_key_save(TL_STORAGE_TYPE_TMP, in_data, data_sz);
         break;
+
     default:
         break;
     }
 
-    return res;
+    return ret_code;
 }
 
 /******************************************************************************/

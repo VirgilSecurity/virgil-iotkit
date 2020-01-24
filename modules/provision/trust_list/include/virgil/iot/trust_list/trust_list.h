@@ -195,6 +195,15 @@ vs_tl_update_ctx(void);
 const vs_update_file_type_t *
 vs_tl_update_file_type(void);
 
+/** Update Trust List file version for INFO Server service
+ *
+ * \note This function does nothing if INFO Server is not enabled
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_tl_update_info_server(void);
+
 /** Convert Trust List header to host
  *
  * Convert Trust List header to the host format.
