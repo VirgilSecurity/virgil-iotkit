@@ -115,3 +115,13 @@ target_link_libraries(vs-module-provision
 if(COMMAND add_clangformat)
     add_clangformat(vs-module-provision)
 endif()
+
+install(TARGETS vs-module-provision
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )

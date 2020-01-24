@@ -136,6 +136,16 @@ function(add_snap _targetname _firmware_update _definitions)
         add_clangformat(${_targetname})
     endif ()
 
+    install(TARGETS ${_targetname}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+    install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
 endfunction()
 
 #

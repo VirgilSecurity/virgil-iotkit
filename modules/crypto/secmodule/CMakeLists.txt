@@ -101,3 +101,13 @@ if(COMMAND add_clangformat)
     add_clangformat(vs-module-secmodule)
 endif()
 
+install(TARGETS vs-module-secmodule
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+

@@ -51,3 +51,13 @@ target_include_directories(storage_hal
 #if(COMMAND add_clangformat)
 #    add_clangformat(storage_hal)
 #endif()
+
+install(TARGETS storage_hal
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
