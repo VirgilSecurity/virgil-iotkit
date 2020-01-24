@@ -96,6 +96,7 @@ _update_process_reset(vs_fldt_client_file_type_mapping_t *object_info) {
         case VS_FLDT_GNFF:
             object_info->update_interface->delete_object(object_info->update_interface->storage_context,
                                                          &object_info->type);
+            object_info->cur_file_version = object_info->prev_file_version;
             break;
         default:
             break;
@@ -539,6 +540,7 @@ vs_fldt_ask_file_type_info(const char *file_type_descr,
     vs_fldt_gnfh_header_request_t_encode(gnfh_request);
     file_type_info->gateway_mac = *vs_snap_broadcast_mac();
 
+    _update_process_reset(file_type_info);
     CHECK_RET(VS_CODE_OK ==
                       _update_process_set(
                               file_type_info, VS_FLDT_GNFH, 0, (const uint8_t *)gnfh_request, sizeof(*gnfh_request)),
