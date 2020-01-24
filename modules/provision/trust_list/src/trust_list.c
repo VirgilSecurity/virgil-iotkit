@@ -46,6 +46,7 @@ static vs_status_e
 vs_tl_update_info_server(void) {
     vs_status_e ret_code = VS_CODE_OK;
 
+    vs_tl_header_t tl_host_header;
     vs_tl_header_t tl_header;
     vs_tl_element_info_t elem_info;
     uint16_t header_size = sizeof(tl_header);
@@ -55,7 +56,10 @@ vs_tl_update_info_server(void) {
     STATUS_CHECK_RET(vs_tl_load_part(&elem_info, (uint8_t *)&tl_header, header_size, &header_size),
                      "Unable to get header");
 
-    _current_tl_ver = tl_header.version;
+    vs_tl_header_to_host(&tl_header, &tl_host_header);
+    
+    _current_tl_ver = tl_host_header.version;
+
     VS_LOG_DEBUG("Current Trust list version has been updated : %d.%d.%d.%d",
                  _current_tl_ver.major,
                  _current_tl_ver.minor,
