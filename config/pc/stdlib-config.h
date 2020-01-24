@@ -97,5 +97,8 @@
 /** conversion from time_t to ASCIIZ */
 #define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))
 
+#include <pthread.h>
+/** Get current thread ID */
+#define VS_IOT_GET_THREAD_ID    pthread_self()
 
 #endif // VS_IOT_SDK_STDLIB_CONFIG_H

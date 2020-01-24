@@ -133,6 +133,18 @@ typedef enum {
 #define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
     vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
 
+/** Set current thread description
+ *
+ * \note This function does nothing if #VS_IOT_LOGGER_OUTPUT_THREAD_ID is not set to 1
+ *
+ * \param description Human readable thread description.
+ * \warning description must be static string pointer valid during program functioning
+ *
+ * \return false if no space is available to store thread description
+ */
+bool
+vs_log_thread_descriptor(const char *description);
+
 #ifdef __cplusplus
 #define VS_LOG_MAKE_LEVEL(LEVEL) VirgilIoTKit::LEVEL
 #else
@@ -195,6 +207,9 @@ void
 vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *log_format, ...);
 
 /** Initialize logging level
+ *
+ * \a log_level is initialized and default title for thread is provided. You can change this name by
+ * #vs_log_thread_descriptor call
  *
  * \param[int] log_level Message log level
  */
@@ -285,6 +300,7 @@ vs_logger_message_hex(vs_log_level_t level,
 #define vs_logger_set_loglev(log_level) (void)log_level;
 #define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER
 #define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)
+#define vs_log_thread_descriptor() (true)
 
 #define VS_IOT_LOGGER_VOID(a) (void)a;
 
