@@ -108,28 +108,6 @@ vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb);
 vs_status_e
 vs_snap_info_start_notification(const vs_netif_t *netif);
 
-/** Set current Trust list version for INFO Server
- *
- * Sends current Trust list version to be sent for INFO Clients.
- *
- * \param tl_ver Current Trust list version. Must not be NULL
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-vs_status_e
-vs_snap_info_set_current_tl(const vs_file_version_t *tl_ver);
-
-/** Set current Firmware version for INFO Server
- *
- * Sends current Firmware version to be sent for INFO Clients.
- *
- * \param fw_ver Current Firmware version. Must not be NULL
- *
- * \return #VS_CODE_OK in case of success or error code.
- */
-vs_status_e
-vs_snap_info_set_current_fw(const vs_file_version_t *fw_ver);
-
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

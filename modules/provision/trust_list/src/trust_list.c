@@ -38,34 +38,14 @@
 #include <private/tl-private.h>
 #include "virgil/iot/trust_list/trust_list.h"
 #include <endian-config.h>
-#if INFO_SERVER
-#include <virgil/iot/protocols/snap/info/info-server.h>
-#endif
+
+static vs_file_version_t _current_tl_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
 
 /******************************************************************************/
-vs_status_e
-vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
-    vs_status_e ret_code;
-
-    STATUS_CHECK_RET(vs_tl_storage_init_internal(op_ctx, secmodule), "Unable to initialize Trust List module");
-
-    STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update Trust List file version for INFO Server service");
-
-    return ret_code;
-}
-
-/******************************************************************************/
-vs_status_e
-vs_tl_deinit() {
-    return vs_tl_storage_deinit_internal();
-}
-
-/******************************************************************************/
-vs_status_e
+static vs_status_e
 vs_tl_update_info_server(void) {
     vs_status_e ret_code = VS_CODE_OK;
 
-#if INFO_SERVER
     vs_tl_header_t tl_header;
     vs_tl_element_info_t elem_info;
     uint16_t header_size = sizeof(tl_header);
@@ -75,11 +55,32 @@ vs_tl_update_info_server(void) {
     STATUS_CHECK_RET(vs_tl_load_part(&elem_info, (uint8_t *)&tl_header, header_size, &header_size),
                      "Unable to get header");
 
-    STATUS_CHECK_RET(vs_snap_info_set_current_tl(&tl_header.version),
-                     "Unable to set current firmware version to the INFO Server service");
-#endif
+    _current_tl_ver = tl_header.version;
+    VS_LOG_DEBUG("Current Trust list version has been updated : %d.%d.%d.%d",
+                 _current_tl_ver.major,
+                 _current_tl_ver.minor,
+                 _current_tl_ver.patch,
+                 _current_tl_ver.build);
 
     return ret_code;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
+    vs_status_e ret_code;
+
+    STATUS_CHECK_RET(vs_tl_storage_init_internal(op_ctx, secmodule), "Unable to initialize Trust List module");
+
+    STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update current Trust List file version");
+
+    return ret_code;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_tl_deinit() {
+    return vs_tl_storage_deinit_internal();
 }
 
 /******************************************************************************/
@@ -112,8 +113,7 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 
         vs_tl_invalidate(TL_STORAGE_TYPE_TMP);
 
-        STATUS_CHECK_RET(vs_tl_update_info_server(),
-                         "Unable to update Trust List file version for INFO Server service");
+        STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update current Trust List file version");
 
         break;
 
@@ -181,4 +181,15 @@ vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
     dst_data->tl_size = VS_IOT_HTONL(src_data->tl_size);
     dst_data->version.build = VS_IOT_HTONL(src_data->version.build);
     dst_data->version.timestamp = VS_IOT_HTONL(src_data->version.timestamp);
+}
+
+/******************************************************************************/
+const vs_file_version_t *
+vs_tl_get_current_version(void) {
+    VS_LOG_DEBUG("Current Trust list version request : %d.%d.%d.%d",
+                 _current_tl_ver.major,
+                 _current_tl_ver.minor,
+                 _current_tl_ver.patch,
+                 _current_tl_ver.build);
+    return &_current_tl_ver;
 }

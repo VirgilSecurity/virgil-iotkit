@@ -473,6 +473,13 @@ vs_firmware_update_ctx(void);
 const vs_update_file_type_t *
 vs_firmware_update_file_type(void);
 
+/** Get current Firmware file version
+ *
+ * \return Current Firmware file version
+ */
+const vs_file_version_t *
+vs_firmware_get_current_version(void);
+
 /** ntoh conversion for descriptor
  *
  * This call makes network-to-host firmware descriptor conversion.

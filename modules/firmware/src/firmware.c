@@ -47,9 +47,6 @@
 #include <virgil/iot/provision/provision.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
-#if INFO_SERVER
-#include <virgil/iot/protocols/snap/info/info-server.h>
-#endif
 
 #include "private/firmware-private.h"
 
@@ -59,6 +56,7 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 
 static vs_storage_op_ctx_t *_storage_ctx = NULL;
 static vs_secmodule_impl_t *_secmodule = NULL;
+static vs_file_version_t _current_fw_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
 
 /*************************************************************************/
 static void
@@ -152,6 +150,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
     vs_status_e ret_code;
+    vs_firmware_descriptor_t fw_descr;
 
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -163,14 +162,14 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     STATUS_CHECK_RET(vs_update_firmware_init(storage_ctx, manufacture, device_type),
                      "Unable to initialize Firmware module");
 
-#if INFO_SERVER
-    vs_firmware_descriptor_t fw_descr;
-
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
-    STATUS_CHECK_RET(vs_snap_info_set_current_fw(&fw_descr.info.version),
-                     "Unable to set current firmware version to the INFO Server service");
-#endif
+    _current_fw_ver = fw_descr.info.version;
+    VS_LOG_DEBUG("Current Firmware version has been updated : %d.%d.%d.%d",
+                 _current_fw_ver.major,
+                 _current_fw_ver.minor,
+                 _current_fw_ver.patch,
+                 _current_fw_ver.build);
 
     return ret_code;
 }
@@ -731,10 +730,12 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
 
     STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, read_sz), "Unable to append data");
 
-#if INFO_SERVER
-    STATUS_CHECK_RET(vs_snap_info_set_current_fw(&descriptor->info.version),
-                     "Unable to set current firmware version to the INFO Server service");
-#endif
+    _current_fw_ver = descriptor->info.version;
+    VS_LOG_DEBUG("Current Firmware version has been updated : %d.%d.%d.%d",
+                 _current_fw_ver.major,
+                 _current_fw_ver.minor,
+                 _current_fw_ver.patch,
+                 _current_fw_ver.build);
 
     return ret_code;
 }
@@ -824,3 +825,12 @@ vs_firmware_hton_header(vs_firmware_header_t *header) {
 }
 
 /*************************************************************************/
+const vs_file_version_t *
+vs_firmware_get_current_version(void) {
+    VS_LOG_DEBUG("Current Firmware version request : %d.%d.%d.%d",
+                 _current_fw_ver.major,
+                 _current_fw_ver.minor,
+                 _current_fw_ver.patch,
+                 _current_fw_ver.build);
+    return &_current_fw_ver;
+}

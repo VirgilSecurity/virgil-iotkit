@@ -38,6 +38,8 @@
 #include <virgil/iot/protocols/snap/fldt/fldt-client.h>
 #endif
 
+#include <virgil/iot/firmware/firmware.h>
+#include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/protocols/snap/info/info-server.h>
 #include <virgil/iot/protocols/snap/info/info-private.h>
 #include <virgil/iot/protocols/snap/info/info-structs.h>
@@ -48,9 +50,6 @@
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <endian-config.h>
-
-static vs_file_version_t _tl_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
-static vs_file_version_t _fw_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
 
 #define FW_DESCR_BUF 128
 
@@ -211,8 +210,8 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
-    VS_IOT_MEMCPY(&general_info->fw_version, &_fw_ver, sizeof(_fw_ver));
-    VS_IOT_MEMCPY(&general_info->tl_version, &_tl_ver, sizeof(_tl_ver));
+    general_info->fw_version = *vs_firmware_get_current_version();
+    general_info->tl_version = *vs_tl_get_current_version();
     general_info->device_roles = vs_snap_device_roles();
 
     VS_LOG_DEBUG(
@@ -224,7 +223,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
             general_info->device_type[1],
             general_info->device_type[2],
             general_info->device_type[3],
-            vs_firmware_describe_version(&_fw_ver, filever_descr, sizeof(filever_descr)),
+            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
             general_info->tl_version.major,
             general_info->tl_version.minor,
             general_info->tl_version.patch,
@@ -415,34 +414,6 @@ vs_snap_info_start_notification(const vs_netif_t *netif) {
                                           (uint8_t *)&enum_data,
                                           sizeof(enum_data)),
                      "Cannot send data");
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************/
-vs_status_e
-vs_snap_info_set_current_tl(const vs_file_version_t *tl_ver) {
-    VS_IOT_ASSERT(tl_ver && "tl_ver pointer must not be NULL");
-
-    if (tl_ver) {
-        _tl_ver = *tl_ver;
-        VS_LOG_DEBUG(
-                "[INFO:SERVER] Update TL : %d.%d.%d.%d", _tl_ver.major, _tl_ver.minor, _tl_ver.patch, _tl_ver.build);
-    }
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************/
-vs_status_e
-vs_snap_info_set_current_fw(const vs_file_version_t *fw_ver) {
-    VS_IOT_ASSERT(fw_ver && "fw_ver pointer must not be NULL");
-
-    if (fw_ver) {
-        _fw_ver = *fw_ver;
-        VS_LOG_DEBUG(
-                "[INFO:SERVER] Update FW : %d.%d.%d.%d", _fw_ver.major, _fw_ver.minor, _fw_ver.patch, _fw_ver.build);
-    }
 
     return VS_CODE_OK;
 }
