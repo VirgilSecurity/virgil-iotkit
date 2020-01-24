@@ -205,18 +205,18 @@ _filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_d
 }
 
 /******************************************************************/
-static vs_status_e
+static bool
 _check_download_need(const char *opcode,
                      vs_fldt_client_file_type_mapping_t *file_type_info,
                      vs_file_version_t *current_file_ver,
-                     const vs_file_version_t *new_file_ver,
-                     bool *download) {
+                     const vs_file_version_t *new_file_ver) {
     char file_descr[FLDT_FILEVER_BUF];
+    bool download;
 
-    CHECK_NOT_ZERO_RET(opcode, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(file_type_info, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(current_file_ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(new_file_ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    VS_IOT_ASSERT(opcode);
+    VS_IOT_ASSERT(file_type_info);
+    VS_IOT_ASSERT(current_file_ver);
+    VS_IOT_ASSERT(new_file_ver);
 
     VS_LOG_DEBUG("[FLDT:%s] Current file version : %s",
                  opcode,
@@ -226,57 +226,65 @@ _check_download_need(const char *opcode,
                  opcode,
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
-    *download = file_type_info->update_interface->file_is_newer(
+    download = file_type_info->update_interface->file_is_newer(
             file_type_info->update_interface->storage_context, &file_type_info->type, current_file_ver, new_file_ver);
 
-    if (*download) {
+    if (download) {
         VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
     } else {
         VS_LOG_DEBUG("[FLDT:%s] No need to download new version", opcode);
     }
 
-    return VS_CODE_OK;
+    return download;
 }
 
 /******************************************************************/
-static vs_status_e
-_file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_info) {
+static int
+vs_fldt_INFV_request_processor(const uint8_t *request,
+                               const uint16_t request_sz,
+                               uint8_t *response,
+                               const uint16_t response_buf_sz,
+                               uint16_t *response_sz) {
 
+    vs_fldt_infv_new_file_request_t *new_file = (vs_fldt_infv_new_file_request_t *)request;
     const vs_file_version_t *new_file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_gnfh_header_request_t header_request;
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
-    bool download;
     char file_descr[FLDT_FILEVER_BUF];
-    vs_status_e ret_code;
 
-    VS_IOT_ASSERT(cmd_prefix);
-    VS_IOT_ASSERT(file_info);
+    (void)response;
+    (void)response_buf_sz;
+    (void)response_sz;
 
-    new_file_ver = &file_info->type.info.version;
-    file_type = &file_info->type;
+    CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_ZERO_ARGUMENT);
+
+    CHECK_RET(request_sz == sizeof(*new_file),
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
+
+    VS_LOG_DEBUG("[FLDT:INFV] Received from " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(new_file->gateway_mac));
+    // Normalize byte order
+    vs_fldt_file_info_t_decode(new_file);
+
+    new_file_ver = &new_file->type.info.version;
+    file_type = &new_file->type;
 
     CHECK_RET(file_type_info = _get_mapping_elem(file_type),
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    VS_LOG_DEBUG("[FLDT:%s] Request from gateway about new file" FLDT_MAC_PRINT_TEMPLATE " for %s",
-                 cmd_prefix,
-                 FLDT_MAC_PRINT_ARG(file_info->gateway_mac),
+    VS_LOG_DEBUG("[FLDT:INFV] Request from gateway about new file" FLDT_MAC_PRINT_TEMPLATE " for %s",
+                 FLDT_MAC_PRINT_ARG(new_file->gateway_mac),
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
-    file_type_info->gateway_mac = file_info->gateway_mac;
+    file_type_info->gateway_mac = new_file->gateway_mac;
 
-    STATUS_CHECK_RET(_check_download_need(
-                             cmd_prefix, file_type_info, &file_type_info->cur_file_version, new_file_ver, &download),
-                     "Unable to check download need");
+    if (_check_download_need("INFV", file_type_info, &file_type_info->cur_file_version, new_file_ver)) {
 
-    if (download) {
-
-        file_type_info->prev_file_version = file_type_info->cur_file_version;
-        file_type_info->cur_file_version = file_info->type.info.version;
         header_request.type = *file_type;
-        header_request.type.info.version = file_info->type.info.version;
+        header_request.type.info.version = new_file->type.info.version;
 
         VS_LOG_DEBUG("[FLDT] Ask file header for file %s",
                      _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
@@ -304,38 +312,6 @@ _file_info_processor(const char *cmd_prefix, const vs_fldt_file_info_t *file_inf
     return VS_CODE_OK;
 }
 
-
-/******************************************************************/
-static int
-vs_fldt_INFV_request_processor(const uint8_t *request,
-                               const uint16_t request_sz,
-                               uint8_t *response,
-                               const uint16_t response_buf_sz,
-                               uint16_t *response_sz) {
-
-    vs_fldt_infv_new_file_request_t *new_file = (vs_fldt_infv_new_file_request_t *)request;
-    vs_status_e ret_code;
-
-    (void)response;
-    (void)response_buf_sz;
-    (void)response_sz;
-
-    CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_ZERO_ARGUMENT);
-
-    CHECK_RET(request_sz == sizeof(*new_file),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Unsupported request structure, vs_fldt_infv_new_file_request_t has been waited");
-
-    VS_LOG_DEBUG("[FLDT:INFV] Received from " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(new_file->gateway_mac));
-    // Normalize byte order
-    vs_fldt_file_info_t_decode(new_file);
-
-    STATUS_CHECK_RET(_file_info_processor("INFV", new_file), "Unable to process INFV request");
-
-    return VS_CODE_OK;
-}
-
 /******************************************************************/
 static int
 vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
@@ -346,7 +322,6 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
     vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
-    bool is_need_download;
 
     CHECK_RET(is_ack, VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE, "wrong GNFH response");
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -364,14 +339,14 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
-    STATUS_CHECK_RET(_check_download_need(
-                             "GNFH", file_type_info, &file_type_info->prev_file_version, file_ver, &is_need_download),
-                     "Unable to check download need");
-    if (!is_need_download) {
+    if (!_check_download_need("GNFH", file_type_info, &file_type_info->cur_file_version, file_ver)) {
         file_type_info->update_ctx.in_progress = false;
         VS_LOG_WARNING("[FLDT:GNFH] File [type %d] header contains an old version", file_type->type);
         return VS_CODE_OLD_VERSION;
     }
+
+    file_type_info->prev_file_version = file_type_info->cur_file_version;
+    file_type_info->cur_file_version = file_type->info.version;
 
     VS_LOG_DEBUG("[FLDT:GNFH] Response file size %d bytes, %s, for file %s",
                  file_header->file_size,
@@ -471,6 +446,13 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
     CHECK_RET(response_sz >= sizeof(*file_data) && (response_sz == sizeof(*file_data) + file_data->data_size),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnfd_data_response_t type");
+
+    if (0 != VS_IOT_MEMCMP(&file_type_info->cur_file_version, file_ver, sizeof(file_type_info->cur_file_version))) {
+        VS_LOG_WARNING("[FLDT:GNFD] File [type %d] data contains an old version", file_type->type);
+        _update_process_reset(file_type_info);
+
+        return VS_CODE_OLD_VERSION;
+    }
 
     STATUS_CHECK_RET(file_type_info->update_interface->set_data(file_type_info->update_interface->storage_context,
                                                                 file_type,
@@ -608,6 +590,12 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     CHECK_RET(response_sz >= sizeof(*file_footer) && (response_sz == sizeof(*file_footer) + file_footer->footer_size),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response must be of vs_fldt_gnff_footer_response_t type");
+
+    if (0 != VS_IOT_MEMCMP(&file_type_info->cur_file_version, file_ver, sizeof(file_type_info->cur_file_version))) {
+        VS_LOG_WARNING("[FLDT:GNFF] File [type %d] footer contains an old version", file_type->type);
+        _update_process_reset(file_type_info);
+        return VS_CODE_OLD_VERSION;
+    }
 
     ret_code = file_type_info->update_interface->set_footer(file_type_info->update_interface->storage_context,
                                                             file_type,
@@ -834,7 +822,7 @@ vs_fldt_client_request_all_files(void) {
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
 
-    VS_LOG_DEBUG("[FLDT] Request all registered file types update");
+    VS_LOG_DEBUG("[FLDT] Request info for all registered file types");
 
     if (!_file_type_mapping_array_size) {
         VS_LOG_WARNING("[FLDT] No registered file types");

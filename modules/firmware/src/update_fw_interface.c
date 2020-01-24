@@ -357,7 +357,7 @@ _fw_update_verify_object(void *context, vs_update_file_type_t *file_type) {
     vs_firmware_descriptor_t fw_descr;
     STATUS_CHECK_RET(vs_firmware_load_firmware_descriptor(
                              file_type->info.manufacture_id, file_type->info.device_type, &fw_descr),
-                     "");
+                     "Unable to load firmware descriptor");
 
     if (VS_CODE_OK != vs_firmware_verify_firmware(&fw_descr)) {
         VS_LOG_WARNING("Error while verifying firmware");
