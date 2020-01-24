@@ -84,6 +84,19 @@ _get_mapping_elem(const vs_update_file_type_t *file_type) {
 }
 
 /******************************************************************/
+static vs_status_e
+_new_mapping_element(vs_fldt_server_file_type_mapping_t **file_element_to_add) {
+    VS_IOT_ASSERT(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1));
+    CHECK_RET(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1),
+              VS_CODE_ERR_NO_MEMORY,
+              "[FLDT] Can't add new file type. Array is full");
+    *file_element_to_add = &_server_file_type_mapping[_file_type_mapping_array_size++];
+    VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d", _file_type_mapping_array_size);
+    VS_IOT_MEMSET(*file_element_to_add, 0, sizeof(vs_fldt_server_file_type_mapping_t));
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
 static const char *
 _filever_descr(vs_fldt_server_file_type_mapping_t *file_type_info,
                const vs_file_version_t *file_ver,
@@ -107,151 +120,137 @@ _filetype_descr(vs_fldt_server_file_type_mapping_t *file_type_info, char *file_d
     return vs_update_type_descr(&file_type_info->type, file_type_info->update_context, file_descr, descr_buff_size);
 }
 
-
 /******************************************************************/
 static vs_status_e
-_file_info(const vs_update_file_type_t *file_type,
-           vs_update_interface_t *update_context,
-           vs_fldt_server_file_type_mapping_t **file_type_info_ptr,
-           vs_fldt_file_info_t *file_info) {
-    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+_update_object_info(const vs_update_file_type_t *file_type,
+                    vs_update_interface_t *update_context,
+                    vs_fldt_server_file_type_mapping_t *file_element,
+                    vs_update_file_type_t *file_type_for_object) {
     char file_descr[FLDT_FILEVER_BUF];
     vs_status_e ret_code;
+    file_element->type = *file_type;
+    file_element->update_context = update_context;
     uint32_t file_header_size;
 
-    VS_IOT_ASSERT(file_type);
-    VS_IOT_ASSERT(file_type_info_ptr);
-
-    file_type_info = _get_mapping_elem(file_type);
-
-    if (!file_type_info) {
-        VS_IOT_ASSERT(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1));
-        CHECK_RET(_file_type_mapping_array_size < (SERVER_FILE_TYPE_ARRAY_SIZE - 1),
-                  VS_CODE_ERR_NO_MEMORY,
-                  "[FLDT] Can't add new file type. Array is full");
-        file_type_info = &_server_file_type_mapping[_file_type_mapping_array_size++];
-        VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
-                     _file_type_mapping_array_size);
-        VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
-    } else {
-        VS_LOG_DEBUG("[FLDT] File type is initialized and present, update it");
-        VS_IOT_FREE(file_type_info->file_header);
-    }
-
-    file_type_info->type = *file_type;
-    file_type_info->update_context = update_context;
-
-    STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
-                             file_type_info->update_context->storage_context, &file_type_info->type, &file_header_size),
-                     "Unable to get header size for file type %s",
-                     _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+    ret_code = file_element->update_context->get_header_size(
+            file_element->update_context->storage_context, &file_element->type, &file_header_size);
+    STATUS_CHECK(ret_code,
+                 "Unable to get header size for file type %s",
+                 _filetype_descr(file_element, file_descr, sizeof(file_descr)));
 
     if (file_header_size) {
-        file_type_info->file_header = VS_IOT_MALLOC(file_header_size);
+        file_element->file_header = VS_IOT_MALLOC(file_header_size);
 
-        STATUS_CHECK_RET(file_type_info->update_context->get_header(file_type_info->update_context->storage_context,
-                                                                    &file_type_info->type,
-                                                                    file_type_info->file_header,
-                                                                    file_header_size,
-                                                                    &file_header_size),
-                         "Unable to get header for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+        ret_code = file_element->update_context->get_header(file_element->update_context->storage_context,
+                                                            &file_element->type,
+                                                            file_element->file_header,
+                                                            file_header_size,
+                                                            &file_header_size);
+        STATUS_CHECK(ret_code,
+                     "Unable to get header for file type %s",
+                     _filetype_descr(file_element, file_descr, sizeof(file_descr)));
 
-        STATUS_CHECK_RET(file_type_info->update_context->get_file_size(file_type_info->update_context->storage_context,
-                                                                       &file_type_info->type,
-                                                                       file_type_info->file_header,
-                                                                       &file_type_info->file_size),
-                         "Unable to get header size for file type %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+        ret_code = file_element->update_context->verify_object(file_element->update_context->storage_context,
+                                                               &file_element->type);
+        if (VS_CODE_OK != ret_code) {
+            VS_LOG_ERROR("Unable to verify object type %s",
+                         _filetype_descr(file_element, file_descr, sizeof(file_descr)));
+            goto terminate;
+        }
 
-        file_type_info->current_version = file_type_info->type.info.version;
+        ret_code = file_element->update_context->get_file_size(file_element->update_context->storage_context,
+                                                               &file_element->type,
+                                                               file_element->file_header,
+                                                               &file_element->file_size);
+        STATUS_CHECK(ret_code,
+                     "Unable to get header size for file type %s",
+                     _filetype_descr(file_element, file_descr, sizeof(file_descr)));
+
+        file_element->current_version = file_element->type.info.version;
     } else {
-        file_type_info->file_header = NULL;
+        file_element->file_header = NULL;
         VS_LOG_WARNING("There is no header data for file type %s",
-                       _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+                       _filetype_descr(file_element, file_descr, sizeof(file_descr)));
     }
 
     VS_LOG_DEBUG("[FLDT] Update file %s",
-                 _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
+                 _filever_descr(file_element, &file_element->current_version, file_descr, sizeof(file_descr)));
 
-    VS_IOT_MEMSET(file_info, 0, sizeof(*file_info));
+    VS_IOT_MEMSET(file_type_for_object, 0, sizeof(*file_type_for_object));
 
-    file_info->type.type = file_type->type;
-    VS_IOT_MEMCPY(file_info->type.info.manufacture_id,
+
+    file_type_for_object->type = file_type->type;
+
+    VS_IOT_MEMCPY(file_type_for_object->info.manufacture_id,
                   file_type->info.manufacture_id,
                   sizeof(file_type->info.manufacture_id));
-    VS_IOT_MEMCPY(file_info->type.info.device_type, file_type->info.device_type, sizeof(file_type->info.device_type));
-    VS_IOT_MEMCPY(&file_info->type.info.version, &file_type->info.version, sizeof(file_type->info.version));
+    VS_IOT_MEMCPY(
+            file_type_for_object->info.device_type, file_type->info.device_type, sizeof(file_type->info.device_type));
 
-    file_info->type.info.version = file_type_info->current_version;
-    file_info->gateway_mac = _gateway_mac;
-
-    *file_type_info_ptr = file_type_info;
+    file_type_for_object->info.version = file_element->current_version;
 
     return VS_CODE_OK;
+
+terminate:
+    if (file_element->file_header) {
+        VS_IOT_FREE(file_element->file_header);
+    }
+    VS_IOT_MEMSET(file_element, 0, sizeof(*file_element));
+    return ret_code;
 }
 
 /******************************************************************/
-int
-vs_fldt_GFTI_request_processor(const uint8_t *request,
-                               const uint16_t request_sz,
-                               uint8_t *response,
-                               const uint16_t response_buf_sz,
-                               uint16_t *response_sz) {
-
-    vs_fldt_gfti_fileinfo_request_t *file_info_request = (vs_fldt_gfti_fileinfo_request_t *)request;
-    const vs_update_file_type_t *file_type = NULL;
-    vs_fldt_server_file_type_mapping_t *file_type_info;
-    char file_descr[FLDT_FILEVER_BUF];
+static vs_status_e
+_get_object_info_by_type(const vs_update_file_type_t *requested_file_type,
+                         vs_fldt_server_file_type_mapping_t **element_type_info_ptr,
+                         vs_update_file_type_t *file_type_for_object) {
     vs_status_e ret_code;
     vs_update_interface_t *update_context;
-    vs_fldt_file_info_t *file_info = (vs_fldt_file_info_t *)response;
+    vs_fldt_server_file_type_mapping_t *file_element = NULL;
+    *element_type_info_ptr = NULL;
 
-    (void)response_buf_sz;
+    file_element = _get_mapping_elem(requested_file_type);
 
-    CHECK_NOT_ZERO_RET(request, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(request_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(request_sz == sizeof(*file_info_request),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Request buffer must be of vs_fldt_gfti_fileinfo_request_t type");
-    CHECK_RET(response_buf_sz >= sizeof(*file_info),
-              VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Response buffer must be of vs_fldt_file_info_t type");
+    if (file_element && file_element->update_context->file_is_newer(file_element->update_context->storage_context,
+                                                                    &file_element->type,
+                                                                    &file_element->type.info.version,
+                                                                    &requested_file_type->info.version)) {
+        if (file_element->file_header) {
+            VS_IOT_FREE(file_element->file_header);
+        }
+        _file_type_mapping_array_size--;
+        VS_IOT_MEMSET(file_element, 0, sizeof(*file_element));
+        file_element = NULL;
+    }
 
-    // Normalize byte order
-    vs_fldt_gfti_fileinfo_request_t_decode(file_info_request);
-
-    file_type = &file_info_request->type;
-    file_type_info = _get_mapping_elem(file_type);
-
-    if (!file_type_info) {
+    if (!file_element) {
 
         CHECK_RET(_add_filetype_callback,
                   VS_CODE_ERR_NO_CALLBACK,
-                  "No add_filetype callback for file type requested by user : %s",
-                  _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+                  "No has add_filetype_callback for file type [%d]",
+                  requested_file_type->type);
 
-        STATUS_CHECK_RET(_add_filetype_callback(file_type, &update_context),
-                         "Unable to add file type requested by user : %s",
-                         _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+        STATUS_CHECK_RET(_add_filetype_callback(requested_file_type, &update_context),
+                         "Unable to add file type [%d]",
+                         requested_file_type->type);
+
+        STATUS_CHECK_RET(_new_mapping_element(&file_element), "");
+
+        ret_code = _update_object_info(requested_file_type, update_context, file_element, file_type_for_object);
+        if (VS_CODE_OK != ret_code) {
+            _file_type_mapping_array_size--;
+            return VS_CODE_ERR_FILE;
+        }
     } else {
-        update_context = file_type_info->update_context;
+        VS_IOT_MEMCPY(file_type_for_object, &file_element->type, sizeof(file_element->type));
     }
 
-    STATUS_CHECK_RET(_file_info(file_type, update_context, &file_type_info, file_info),
-                     "Unable to get information for file %s",
-                     _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
-
-    // Normalize byte order
-    vs_fldt_file_info_t_encode(file_info);
-    *response_sz = sizeof(*file_info);
-
+    *element_type_info_ptr = file_element;
     return VS_CODE_OK;
 }
 
 /******************************************************************/
-int
+static vs_status_e
 vs_fldt_GNFH_request_processor(const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
@@ -260,8 +259,8 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
 
     vs_fldt_gnfh_header_request_t *header_request = (vs_fldt_gnfh_header_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
-    const vs_update_file_type_t *file_type = NULL;
-    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+    const vs_update_file_type_t *requested_file_type = NULL;
+    vs_fldt_server_file_type_mapping_t *file_element = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     uint32_t header_size;
@@ -284,33 +283,32 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     vs_fldt_gnfh_header_request_t_decode(header_request);
 
     file_ver = &header_request->type.info.version;
-    file_type = &header_request->type;
-
-    CHECK_RET(file_type_info = _get_mapping_elem(file_type),
-              VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
-              "Unregistered file type");
-
-    VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
-                 _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+    requested_file_type = &header_request->type;
 
     CHECK_RET(response_buf_sz > sizeof(*header_response),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnfh_header_response_t structure");
 
-    header_response->type = *file_type;
-    header_response->type.info.version = header_request->type.info.version;
-    header_response->file_size = file_type_info->file_size;
+    STATUS_CHECK_RET(_get_object_info_by_type(requested_file_type, &file_element, &header_response->fldt_info.type),
+                     "Unable to get information for file %s",
+                     _filetype_descr(file_element, file_descr, sizeof(file_descr)));
+    header_response->fldt_info.gateway_mac = _gateway_mac;
 
-    STATUS_CHECK_RET(file_type_info->update_context->has_footer(
-                             file_type_info->update_context->storage_context, &file_type_info->type, &has_footer),
+    VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
+                 _filever_descr(file_element, file_ver, file_descr, sizeof(file_descr)));
+
+    header_response->file_size = file_element->file_size;
+
+    STATUS_CHECK_RET(file_element->update_context->has_footer(
+                             file_element->update_context->storage_context, &file_element->type, &has_footer),
                      "Unable to check that there is footer for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
-    header_response->has_footer = has_footer != 0;
+                     _filever_descr(file_element, file_ver, file_descr, sizeof(file_descr)));
+    header_response->has_footer = (has_footer != 0);
 
-    STATUS_CHECK_RET(file_type_info->update_context->get_header_size(
-                             file_type_info->update_context->storage_context, &file_type_info->type, &header_size),
+    STATUS_CHECK_RET(file_element->update_context->get_header_size(
+                             file_element->update_context->storage_context, &file_element->type, &header_size),
                      "Unable to get header size for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+                     _filever_descr(file_element, file_ver, file_descr, sizeof(file_descr)));
     if (header_size > UINT16_MAX) {
         VS_LOG_ERROR("Header size %d is bigger that vs_fldt_gnfh_header_response_t.header_size %d can transmit",
                      header_size,
@@ -325,7 +323,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                 response_buf_sz,
                 sizeof(vs_fldt_gnfh_header_response_t) + header_size);
     } else {
-        VS_IOT_MEMCPY(header_response->header_data, file_type_info->file_header, header_size);
+        VS_IOT_MEMCPY(header_response->header_data, file_element->file_header, header_size);
         *response_sz = sizeof(*header_response) + header_response->header_size;
     }
 
@@ -341,7 +339,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
 }
 
 /******************************************************************/
-int
+static vs_status_e
 vs_fldt_GNFD_request_processor(const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
@@ -351,7 +349,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     vs_fldt_gnfd_data_request_t *data_request = (vs_fldt_gnfd_data_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *file_type = NULL;
-    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+    vs_fldt_server_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const uint32_t DATA_SZ = 512;
@@ -379,25 +377,29 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     file_ver = &data_request->type.info.version;
     file_type = &data_request->type;
 
-    CHECK_RET(file_type_info = _get_mapping_elem(file_type),
+    STATUS_CHECK_RET(_get_object_info_by_type(&data_request->type, &existing_file_element, &data_response->type),
+                     "Unable to get information for file %s",
+                     _filetype_descr(existing_file_element, file_descr, sizeof(file_descr)));
+
+    CHECK_RET(existing_file_element = _get_mapping_elem(file_type),
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
               "Unregistered file type");
 
 #if DEBUG_CHUNKS
     VS_LOG_DEBUG("[FLDT:GNFD] Request for data offset %d for file %s",
                  data_request->offset,
-                 _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+                 _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 #endif
 
     CHECK_RET(response_buf_sz > sizeof(*data_response),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnfd_data_response_t structure");
 
-    CHECK_RET(data_request->offset < file_type_info->file_size,
+    CHECK_RET(data_request->offset < existing_file_element->file_size,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request's data offset %d is not inside file data size %d",
               data_request->offset,
-              file_type_info->file_size);
+              existing_file_element->file_size);
 
     data_response->type.info.version = data_request->type.info.version;
     data_response->type = data_request->type;
@@ -409,27 +411,29 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     }
     cur_offset = data_request->offset;
 
-    STATUS_CHECK_RET(file_type_info->update_context->get_data(file_type_info->update_context->storage_context,
-                                                              &file_type_info->type,
-                                                              file_type_info->file_header,
-                                                              data_response->data,
-                                                              max_data_size_to_read,
-                                                              &data_size_read,
-                                                              cur_offset),
-                     "Unable to read %d (%Xh) data items starting from offset %d (%Xh) data items for file %s",
-                     max_data_size_to_read,
-                     cur_offset,
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+    STATUS_CHECK_RET(
+            existing_file_element->update_context->get_data(existing_file_element->update_context->storage_context,
+                                                            &existing_file_element->type,
+                                                            existing_file_element->file_header,
+                                                            data_response->data,
+                                                            max_data_size_to_read,
+                                                            &data_size_read,
+                                                            cur_offset),
+            "Unable to read %d (%Xh) data items starting from offset %d (%Xh) data items for file %s",
+            max_data_size_to_read,
+            cur_offset,
+            _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     data_response->data_size = data_size_read;
 
-    STATUS_CHECK_RET(file_type_info->update_context->inc_data_offset(file_type_info->update_context->storage_context,
-                                                                     &file_type_info->type,
-                                                                     cur_offset,
-                                                                     data_size_read,
-                                                                     &next_offset),
+    STATUS_CHECK_RET(existing_file_element->update_context->inc_data_offset(
+                             existing_file_element->update_context->storage_context,
+                             &existing_file_element->type,
+                             cur_offset,
+                             data_size_read,
+                             &next_offset),
                      "Unable to retrieve offset for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+                     _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     data_response->next_offset = next_offset;
 
@@ -438,7 +442,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
     VS_LOG_DEBUG("[FLDT:GNFD] File data offset %d data items of %d data items size has been sent for file %s",
                  data_response->offset,
                  data_response->data_size,
-                 _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+                 _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 #endif
 
     // Normalize byte order
@@ -448,7 +452,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
 }
 
 /******************************************************************/
-int
+static vs_status_e
 vs_fldt_GNFF_request_processor(const uint8_t *request,
                                const uint16_t request_sz,
                                uint8_t *response,
@@ -457,8 +461,7 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
 
     vs_fldt_gnff_footer_request_t *footer_request = (vs_fldt_gnff_footer_request_t *)request;
     const vs_file_version_t *file_ver = NULL;
-    const vs_update_file_type_t *file_type = NULL;
-    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+    vs_fldt_server_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_gnff_footer_response_t *footer_response = (vs_fldt_gnff_footer_response_t *)response;
     char file_descr[FLDT_FILEVER_BUF];
     static const uint16_t DATA_SZ = 512;
@@ -482,28 +485,28 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
     vs_fldt_gnff_footer_request_t_decode(footer_request);
 
     file_ver = &footer_request->type.info.version;
-    file_type = &footer_request->type;
 
-    CHECK_RET(file_type_info = _get_mapping_elem(file_type),
-              VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
-              "Unregistered file type");
+    STATUS_CHECK_RET(_get_object_info_by_type(&footer_request->type, &existing_file_element, &footer_response->type),
+                     "Unable to get information for file %s",
+                     _filetype_descr(existing_file_element, file_descr, sizeof(file_descr)));
 
     VS_LOG_DEBUG("[FLDT:GNFF] Footer request for %s",
-                 _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+                 _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     CHECK_RET(response_buf_sz > sizeof(*footer_response),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Response buffer must have enough size to store vs_fldt_gnff_footer_response_t structure");
 
-    STATUS_CHECK_RET(file_type_info->update_context->has_footer(
-                             file_type_info->update_context->storage_context, &file_type_info->type, &has_footer),
-                     "Unable to check that there is footer for file %s",
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+    STATUS_CHECK_RET(
+            existing_file_element->update_context->has_footer(
+                    existing_file_element->update_context->storage_context, &existing_file_element->type, &has_footer),
+            "Unable to check that there is footer for file %s",
+            _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     CHECK_RET(has_footer,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "There is no footer for file %s",
-              _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+              _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     footer_response->type = footer_request->type;
     footer_response->type.info.version = footer_request->type.info.version;
@@ -513,15 +516,16 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
         data_size = DATA_SZ;
     }
 
-    STATUS_CHECK_RET(file_type_info->update_context->get_footer(file_type_info->update_context->storage_context,
-                                                                &file_type_info->type,
-                                                                file_type_info->file_header,
-                                                                footer_response->footer_data,
-                                                                data_size,
-                                                                &data_size),
-                     "Unable to read %d (%Xh) footer data items for file %s",
-                     data_size,
-                     _filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)));
+    STATUS_CHECK_RET(
+            existing_file_element->update_context->get_footer(existing_file_element->update_context->storage_context,
+                                                              &existing_file_element->type,
+                                                              existing_file_element->file_header,
+                                                              footer_response->footer_data,
+                                                              data_size,
+                                                              &data_size),
+            "Unable to read %d (%Xh) footer data items for file %s",
+            data_size,
+            _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
 
     footer_response->footer_size = data_size;
 
@@ -538,7 +542,7 @@ vs_status_e
 vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
                              vs_update_interface_t *update_context,
                              bool broadcast_file_info) {
-    vs_fldt_server_file_type_mapping_t *file_type_info = NULL;
+    vs_fldt_server_file_type_mapping_t *file_element_to_add = NULL;
     char file_descr[FLDT_FILEVER_BUF];
     vs_fldt_file_info_t new_file;
     vs_status_e ret_code;
@@ -546,13 +550,28 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(update_context, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    STATUS_CHECK_RET(_file_info(file_type, update_context, &file_type_info, &new_file),
-                     "Unable to prepare information about file %s",
-                     _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
+    file_element_to_add = _get_mapping_elem(file_type);
+
+    if (!file_element_to_add) {
+        STATUS_CHECK_RET(_new_mapping_element(&file_element_to_add), "");
+    } else {
+        VS_LOG_DEBUG("[FLDT] File type is initialized and present, update it");
+        VS_IOT_FREE(file_element_to_add->file_header);
+    }
+
+    ret_code = _update_object_info(file_type, update_context, file_element_to_add, &new_file.type);
+    if (VS_CODE_OK != ret_code) {
+        _file_type_mapping_array_size--;
+        return VS_CODE_ERR_FILE;
+    }
+
+    new_file.gateway_mac = _gateway_mac;
 
     if (broadcast_file_info) {
-        VS_LOG_DEBUG("[FLDT] Broadcast new file information : %s",
-                     _filever_descr(file_type_info, &file_type_info->current_version, file_descr, sizeof(file_descr)));
+        VS_LOG_DEBUG(
+                "[FLDT] Broadcast new file information : %s",
+                _filever_descr(
+                        file_element_to_add, &file_element_to_add->current_version, file_descr, sizeof(file_descr)));
 
         // Normalize byte order
         vs_fldt_file_info_t_encode(&new_file);
@@ -601,7 +620,7 @@ _fldt_destroy_server(void) {
 }
 
 /******************************************************************************/
-static int
+static vs_status_e
 _fldt_server_request_processor(const struct vs_netif_t *netif,
                                vs_snap_element_t element_id,
                                const uint8_t *request,
@@ -616,9 +635,6 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
 
     case VS_FLDT_INFV:
         return VS_CODE_COMMAND_NO_RESPONSE;
-
-    case VS_FLDT_GFTI:
-        return vs_fldt_GFTI_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_FLDT_GNFH:
         return vs_fldt_GNFH_request_processor(request, request_sz, response, response_buf_sz, response_sz);
@@ -635,7 +651,7 @@ _fldt_server_request_processor(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static int
+static vs_status_e
 _fldt_server_response_processor(const struct vs_netif_t *netif,
                                 vs_snap_element_t element_id,
                                 bool is_ack,
@@ -650,7 +666,6 @@ _fldt_server_response_processor(const struct vs_netif_t *netif,
     switch (element_id) {
 
     case VS_FLDT_INFV:
-    case VS_FLDT_GFTI:
     case VS_FLDT_GNFD:
     case VS_FLDT_GNFF:
         return VS_CODE_COMMAND_NO_RESPONSE;

@@ -289,6 +289,30 @@ _tl_file_is_newer(void *context,
 
 /*************************************************************************/
 static void
+_tl_delete_object(void *context, vs_update_file_type_t *file_type) {
+    (void)context;
+    (void)file_type;
+}
+
+/*************************************************************************/
+static vs_status_e
+_tl_verify_object(void *context, vs_update_file_type_t *file_type) {
+    (void)context;
+    (void)file_type;
+    vs_tl_element_info_t elem_info;
+    uint16_t out_size;
+    uint8_t data_buffer[sizeof(vs_tl_header_t)];
+    (void)context;
+    (void)file_type;
+
+    elem_info.id = VS_TL_ELEMENT_TLH;
+    elem_info.index = 0;
+
+    return vs_tl_load_part(&elem_info, data_buffer, sizeof(data_buffer), &out_size);
+}
+
+/*************************************************************************/
+static void
 _tl_free_item(void *context, vs_update_file_type_t *file_type) {
     (void)context;
     (void)file_type;
@@ -420,6 +444,8 @@ vs_update_trust_list_init(vs_storage_op_ctx_t *storage_ctx) {
     _tl_update_ctx.set_data = _tl_set_data;
     _tl_update_ctx.set_footer = _tl_set_footer;
     _tl_update_ctx.file_is_newer = _tl_file_is_newer;
+    _tl_update_ctx.verify_object = _tl_verify_object;
+    _tl_update_ctx.delete_object = _tl_delete_object;
     _tl_update_ctx.free_item = _tl_free_item;
     _tl_update_ctx.describe_type = _tl_describe_type;
     _tl_update_ctx.describe_version = _tl_describe_version;

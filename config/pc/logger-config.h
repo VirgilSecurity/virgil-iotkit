@@ -93,7 +93,7 @@
  * Enables current time output at the beginning of log string.
  * Requires #vs_logger_current_time_hal function implementation.
  */
-#define VS_IOT_LOGGER_OUTPUT_TIME   0
+#define VS_IOT_LOGGER_OUTPUT_TIME   1
 
 #else  // VS_IOT_LOGGER_ENABLE
 #define VS_IOT_LOGGER_USE_LIBRARY 0

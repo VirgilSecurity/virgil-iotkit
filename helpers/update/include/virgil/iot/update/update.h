@@ -240,6 +240,26 @@ typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_t
  */
 typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *available_file, const vs_file_version_t *new_file);
 
+/** Delete object of defined type
+ *
+ * \param[in] context File context.
+ * \param[in] file_type Current file type.  Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ *
+ */
+typedef void (*vs_update_delete_object_cb_t)(void *context, vs_update_file_type_t *file_type);
+
+/** Verify object of defined type
+ *
+ * \param[in] context File context.
+ * \param[in] file_type Current file type.  Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ *
+ */
+typedef vs_status_e (*vs_update_verify_object_cb_t)(void *context, vs_update_file_type_t *file_type);
+
 /** Free item during update destruction
  *
  * \param[in] context File context.
@@ -286,6 +306,8 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_set_data_cb_t           set_data; /**< Set data */
     vs_update_set_footer_cb_t         set_footer; /**< Set footer */
 
+    vs_update_delete_object_cb_t        delete_object; /**< Delete item */
+    vs_update_verify_object_cb_t        verify_object; /**< Verify item */
     vs_update_free_item_cb_t          free_item; /**< Free item */
 
     vs_update_file_is_newer_cb_t      file_is_newer; /**< File is newer */

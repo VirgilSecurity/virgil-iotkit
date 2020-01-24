@@ -53,10 +53,44 @@ extern "C" {
 #define FLDT_FILEVER_BUF (196)      // buffer for vs_fldt_file_version_descr
 #define FLDT_FILE_SPEC_INFO_SZ (64) // vs_fldt_infv_new_file_request_t.file_specific_info field size
 
-#define FLDT_GATEWAY_TEMPLATE "%x:%x:%x:%x:%x:%x"
-#define FLDT_GATEWAY_ARG(MAC_ADDR)                                                                                     \
+#define FLDT_MAC_PRINT_TEMPLATE "%x:%x:%x:%x:%x:%x"
+#define FLDT_MAC_PRINT_ARG(MAC_ADDR)                                                                                   \
     (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \
             (MAC_ADDR).bytes[5]
+
+#define VS_SNAP_PRINT_DEBUG(SNAP_CMD, STR, ...)                                                                        \
+    do {                                                                                                               \
+        if (vs_logger_is_loglev(VS_LOGLEV_DEBUG)) {                                                                    \
+            union {                                                                                                    \
+                uint8_t byte[sizeof(uint32_t) + 1];                                                                    \
+                uint32_t dword;                                                                                        \
+            } buf;                                                                                                     \
+            VS_IOT_MEMSET(buf.byte, 0, sizeof(buf.byte));                                                              \
+            buf.dword = ntohl((uint32_t)SNAP_CMD);                                                                     \
+            VS_LOG_DEBUG("[%s] " STR, (char *)buf.byte, ##__VA_ARGS__);                                                \
+        }                                                                                                              \
+    } while (0)
+
+#define DEBUG_FW_TYPE_STR "[Type FW]"
+#define DEBUG_TL_TYPE_STR "[Type TL]"
+#define DEBUG_USER_TYPE_STR "[Type USER]"
+
+#define VS_FLDT_PRINT_DEBUG(FILE_TYPE, SNAP_CMD, STR, ...)                                                             \
+    do {                                                                                                               \
+        if (vs_logger_is_loglev(VS_LOGLEV_DEBUG)) {                                                                    \
+            switch (FILE_TYPE) {                                                                                       \
+            case VS_UPDATE_FIRMWARE:                                                                                   \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_FW_TYPE_STR, STR);                                        \
+                break;                                                                                                 \
+            case VS_UPDATE_TRUST_LIST:                                                                                 \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_TL_TYPE_STR, STR);                                        \
+                break;                                                                                                 \
+            default:                                                                                                   \
+                VS_SNAP_PRINT_DEBUG(SNAP_CMD, "%s %s", DEBUG_USER_TYPE_STR, STR);                                      \
+                break;                                                                                                 \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (0)
 
 // Commands
 // mute "error: multi-character character constant" message
@@ -67,7 +101,6 @@ typedef enum { VS_FLDT_SERVICE_ID = HTONL_IN_COMPILE_TIME('FLDT') } vs_fldt_t;
 
 typedef enum {
     VS_FLDT_INFV = HTONL_IN_COMPILE_TIME('INFV'), /* Inform New File Version */
-    VS_FLDT_GFTI = HTONL_IN_COMPILE_TIME('GFTI'), /* Get File Type Information */
     VS_FLDT_GNFH = HTONL_IN_COMPILE_TIME('GNFH'), /* Get New File Header */
     VS_FLDT_GNFD = HTONL_IN_COMPILE_TIME('GNFD'), /* Get New File Data */
     VS_FLDT_GNFF = HTONL_IN_COMPILE_TIME('GNFF'), /* Get New File Footer */
@@ -85,22 +118,13 @@ typedef struct __attribute__((__packed__)) {
 // "Inform New File Version"
 typedef vs_fldt_file_info_t vs_fldt_infv_new_file_request_t;
 
-typedef void vs_fldt_infv_new_file_response_t;
-
-// "Get File Type Information"
-typedef struct __attribute__((__packed__)) {
-    vs_update_file_type_t type;
-} vs_fldt_gfti_fileinfo_request_t;
-
-typedef vs_fldt_file_info_t vs_fldt_gfti_fileinfo_response_t;
-
 // "Get New File Header"
 typedef struct __attribute__((__packed__)) {
     vs_update_file_type_t type;
 } vs_fldt_gnfh_header_request_t;
 
 typedef struct __attribute__((__packed__)) {
-    vs_update_file_type_t type;
+    vs_fldt_file_info_t fldt_info;
     uint32_t file_size;
     uint8_t has_footer;
     uint16_t header_size;
