@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/iot/qt/VSQIoTKit.h>
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
 
 VSQUdpBroadcast::VSQUdpBroadcast(quint16 port) : m_port(port) {
@@ -42,8 +43,7 @@ bool
 VSQUdpBroadcast::init() {
 
     if (!m_socket.bind(m_port, QUdpSocket::ReuseAddressHint)) {
-        VS_LOG_ERROR(
-                "Unable to bind LocalHost:%d. Last error : %s", m_port, m_socket.errorString().toStdString().c_str());
+        VS_LOG_ERROR("Unable to bind LocalHost:%d. Last error : %s", m_port, VSQCString(m_socket.errorString()));
         return false;
     }
 
@@ -60,7 +60,7 @@ VSQUdpBroadcast::init() {
         }
 
         m_mac = address;
-        VS_LOG_INFO("Current MAC address: %s", m_mac.description().toStdString().c_str());
+        VS_LOG_INFO("Current MAC address: %s", VSQCString(m_mac.description()));
         break;
     }
 
@@ -84,7 +84,7 @@ VSQUdpBroadcast::tx(const QByteArray &data) {
         VS_LOG_ERROR("Sent bytes : %d, data bytes to send : %d. Last error : %s",
                      sentBytes,
                      data.size(),
-                     m_socket.errorString().toStdString().c_str());
+                     VSQCString(m_socket.errorString()));
         return false;
     }
 

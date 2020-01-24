@@ -55,7 +55,7 @@ VSQMac::set(const QString &mac) {
         }
     }
 
-    VS_LOG_WARNING("Incorrect MAC address string : %s", mac.toStdString().c_str());
+    VS_LOG_WARNING("Incorrect MAC address string : %s", VSQCString(mac));
 
     // TODO : process empty MAC address
     set(invalidMac);

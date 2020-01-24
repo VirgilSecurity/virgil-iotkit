@@ -32,31 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
+/*! \file VSQHelpers.h
+ * \brief Helper entities
  *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
  */
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#ifndef VIRGIL_IOTKIT_QT_HELPERS_H
+#define VIRGIL_IOTKIT_QT_HELPERS_H
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#include <QString>
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+#define VSQCString(QSTRING) ((QSTRING).toStdString().c_str())
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#endif // VIRGIL_IOTKIT_QT_HELPERS_H

@@ -72,13 +72,13 @@ VSQSnapInfoClient::startNotify(vs_snap_info_device_t *deviceRaw) {
     device.m_lastTimestamp = QDateTime::currentDateTime();
 
 #if defined(LOG_START_NOTIFY)
-    VS_LOG_INFO("New device : MAC %s", device.m_mac.description().toStdString().c_str());
+    VS_LOG_INFO("New device : MAC %s", VSQCString(device.m_mac.description()));
 #endif
 
     emit instance().fireDeviceInfo(device);
 
     if (!instance().startFullPolling(device.m_mac)) {
-        VS_LOG_CRITICAL("Unable to start polling for device %s", device.m_mac.description().toStdString().c_str());
+        VS_LOG_CRITICAL("Unable to start polling for device %s", VSQCString(device.m_mac.description()));
         return VS_CODE_ERR_POLLING_INFO_CLIENT;
     }
 
@@ -106,15 +106,15 @@ VSQSnapInfoClient::generalInfo(vs_info_general_t *generalData) {
         VS_LOG_DEBUG(
                 "Device general info : MAC %s, manufacture ID \"%s\", device type \"%s\", device role(s) \"%s\", "
                 "Firmware version \"%s\", TrustList version \"%s\"",
-                device.m_mac.description().toStdString().c_str(),
-                device.m_manufactureId.description().toStdString().c_str(),
-                device.m_deviceType.description().toStdString().c_str(),
-                device.m_deviceRoles.description().toStdString().c_str(),
-                device.m_fwVer.description().toStdString().c_str(),
-                device.m_tlVer.description().toStdString().c_str());
+                VSQCString(device.m_mac.description()),
+                VSQCString(device.m_manufactureId.description()),
+                VSQCString(device.m_deviceType.description()),
+                VSQCString(device.m_deviceRoles.description()),
+                VSQCString(device.m_fwVer.description()),
+                VSQCString(device.m_tlVer.description()));
     }
 #else
-    (void) changed;
+    (void)changed;
 #endif
 
     device.m_isActive = true;
@@ -139,7 +139,7 @@ VSQSnapInfoClient::statistics(vs_info_statistics_t *statistics) {
 
 #if defined(LOG_STATISTICS)
     VS_LOG_DEBUG("Device statistics : MAC %s, sent %d, received %d",
-                 device.m_mac.description().toStdString().c_str(),
+                 VSQCString(device.m_mac.description()),
                  device.m_sent,
                  device.m_received);
 #endif
@@ -212,7 +212,7 @@ VSQSnapInfoClient::timerEvent(QTimerEvent *event) {
             if (device.m_lastTimestamp.msecsTo(currentTime) > deadDelayMSec) {
 
 #if defined(LOG_DEAD_DEVICE)
-                VS_LOG_INFO("Dead device : MAC %s", device.m_mac.description().toStdString().c_str());
+                VS_LOG_INFO("Dead device : MAC %s", VSQCString(device.m_mac.description()));
 #endif
                 device.m_isActive = false;
                 emit fireDeviceInfo(device);
