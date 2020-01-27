@@ -82,6 +82,10 @@ typedef struct {
 static uint32_t _file_type_mapping_array_size = 0;
 static vs_fldt_client_file_type_mapping_t _client_file_type_mapping[CLIENT_FILE_TYPE_ARRAY_SIZE];
 static vs_fldt_got_file _got_file_callback = NULL;
+static vs_status_e
+vs_fldt_ask_file_type_info(const char *file_type_descr,
+                           vs_fldt_gnfh_header_request_t *gnfh_request,
+                           vs_fldt_client_file_type_mapping_t *file_type_info);
 
 /******************************************************************/
 static void
@@ -450,7 +454,11 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
 
     if (0 != VS_IOT_MEMCMP(&file_type_info->cur_file_version, file_ver, sizeof(file_type_info->cur_file_version))) {
         VS_LOG_WARNING("[FLDT:GNFD] File [type %d] data contains an old version", file_type->type);
-        _update_process_reset(file_type_info);
+        vs_fldt_gnfh_header_request_t header_request;
+        header_request.type = file_type_info->type;
+        vs_fldt_ask_file_type_info(_filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)),
+                                   &header_request,
+                                   file_type_info);
 
         return VS_CODE_OLD_VERSION;
     }
@@ -595,7 +603,11 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 
     if (0 != VS_IOT_MEMCMP(&file_type_info->cur_file_version, file_ver, sizeof(file_type_info->cur_file_version))) {
         VS_LOG_WARNING("[FLDT:GNFF] File [type %d] footer contains an old version", file_type->type);
-        _update_process_reset(file_type_info);
+        vs_fldt_gnfh_header_request_t header_request;
+        header_request.type = file_type_info->type;
+        vs_fldt_ask_file_type_info(_filever_descr(file_type_info, file_ver, file_descr, sizeof(file_descr)),
+                                   &header_request,
+                                   file_type_info);
         return VS_CODE_OLD_VERSION;
     }
 
