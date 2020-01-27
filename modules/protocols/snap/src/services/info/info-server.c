@@ -129,7 +129,7 @@ _poll_request_processing(const uint8_t *request,
         _poll_ctx.period_seconds = poll_request->period_seconds;
         _poll_ctx.elements_mask |= poll_request->elements;
         _poll_ctx.time_counter = _poll_ctx.period_seconds;
-        VS_IOT_MEMCPY(&_poll_ctx.dest_mac, &poll_request->recipient_mac, sizeof(poll_request->recipient_mac));
+        VS_IOT_MEMCPY(&_poll_ctx.dest_mac, vs_snap_broadcast_mac(), sizeof(_poll_ctx.dest_mac));
     } else {
         _poll_ctx.elements_mask &= ~poll_request->elements;
     }
@@ -370,7 +370,7 @@ _info_server_periodical_processor(void) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
+                                 vs_snap_broadcast_mac(),
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_GINF,
                                  (uint8_t *)&general_info,
@@ -381,7 +381,7 @@ _info_server_periodical_processor(void) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SNAP statistics");
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
+                                 vs_snap_broadcast_mac(),
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_STAT,
                                  (uint8_t *)&stat_data,
