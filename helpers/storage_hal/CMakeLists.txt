@@ -46,6 +46,11 @@ target_sources(storage_hal
 target_include_directories(storage_hal
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 #if(COMMAND add_clangformat)

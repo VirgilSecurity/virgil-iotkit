@@ -46,12 +46,19 @@ target_sources(macros
 target_include_directories(macros
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 target_link_libraries(macros
         INTERFACE
         vs-module-logger
         )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+
 
 #if(COMMAND add_clangformat)
 #    add_clangformat(macros)

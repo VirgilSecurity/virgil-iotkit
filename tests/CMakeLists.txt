@@ -132,8 +132,13 @@ target_include_directories(virgil-iot-sdk-tests
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
+
+install(TARGETS virgil-iot-sdk-tests
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
 
 if(COMMAND add_clangformat)
     add_clangformat(virgil-iot-sdk-tests)

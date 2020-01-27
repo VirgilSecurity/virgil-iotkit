@@ -46,11 +46,20 @@ target_sources(virgil-iot-status-code
 target_include_directories(virgil-iot-status-code
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 target_link_libraries(virgil-iot-status-code
         INTERFACE
         macros
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 #if(COMMAND add_clangformat)

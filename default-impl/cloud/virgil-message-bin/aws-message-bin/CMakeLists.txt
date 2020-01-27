@@ -62,7 +62,17 @@ target_include_directories(vs-default-aws-message-bin
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
         INTERFACE
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )
+
+install(TARGETS vs-default-aws-message-bin
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 if(COMMAND add_clangformat)
