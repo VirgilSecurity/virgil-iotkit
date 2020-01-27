@@ -158,7 +158,7 @@ _udp_bcast_connect() {
     memset((void *)&server, 0, sizeof(struct sockaddr_in));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htons(INADDR_ANY);
-    server.sin_port = htons(UDP_BCAST_PORT);
+    server.sin_port = htons(UDP_BCAST_PORT + 1);
     if (bind(_udp_bcast_sock, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) < 0) {
         printf("UDP Broadcast: UDP Broadcast: Bind error. %s\n", strerror(errno));
         goto terminate;
@@ -185,7 +185,7 @@ _udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
 
     memset((void *)&broadcast_addr, 0, sizeof(struct sockaddr_in));
     broadcast_addr.sin_family = AF_INET;
-    broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+    broadcast_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     broadcast_addr.sin_port = htons(UDP_BCAST_PORT);
 
     sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
