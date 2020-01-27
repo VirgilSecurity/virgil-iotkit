@@ -1,6 +1,6 @@
 import os
 
-from PyCRC.CRCCCITT import CRCCCITT
+from virgil_trust_provisioner.core_utils import CRCCCITT
 
 from virgil_trust_provisioner.data_types import TrustList
 
