@@ -95,6 +95,7 @@ function(add_snap _targetname _firmware_update _definitions)
     target_include_directories(${_targetname}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<INSTALL_INTERFACE:include>
 
             PRIVATE
             $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
@@ -140,6 +141,7 @@ function(add_snap _targetname _firmware_update _definitions)
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
     install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
