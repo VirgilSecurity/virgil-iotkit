@@ -5,7 +5,7 @@ import sys
 from contextlib import contextmanager
 from typing import Union, Optional
 
-from PyCRC.CRCCCITT import CRCCCITT
+from virgil_trust_provisioner.core_utils import CRCCCITT
 from prettytable import PrettyTable
 from virgil_crypto import VirgilKeyPair
 
