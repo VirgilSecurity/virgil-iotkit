@@ -90,4 +90,4 @@ add_custom_target(${LIBS_TARGET}
 #
 #   Virgil Signer
 #
-add_go_executable(vs-tool-virgil-firmware-signer virgil-firmware-signer converters ${LIBS_TARGET})
+add_go_executable(vs-tool-virgil-firmware-signer vs-tool-virgil-firmware-signer converters ${LIBS_TARGET})

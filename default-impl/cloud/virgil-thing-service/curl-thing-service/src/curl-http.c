@@ -32,36 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/cloud/cloud.h>
-#include <string.h>
 #include <curl/curl.h>
+#include <string.h>
+#include <virgil/iot/cloud/cloud.h>
 
 typedef struct resp_buff_s {
-    uint8_t *buff;
+    uint8_t* buff;
     size_t buff_sz;
     size_t used_size;
     vs_fetch_handler_cb_t fetch_handler;
-    void *userdata;
+    void* userdata;
 } resp_buff_t;
 
 static vs_status_e
 _curl_http_hal(vs_cloud_http_method_e method,
-               const char *url,
-               const char *request_body,
-               size_t request_body_size,
-               char *out_data,
-               vs_fetch_handler_cb_t fetch_handler,
-               void *hander_data,
-               size_t *in_out_size);
+    const char* url,
+    const char* request_body,
+    size_t request_body_size,
+    char* out_data,
+    vs_fetch_handler_cb_t fetch_handler,
+    void* hander_data,
+    size_t* in_out_size);
 
 static const vs_cloud_impl_t _impl = {
-        .http_request = _curl_http_hal,
+    .http_request = _curl_http_hal,
 };
 
 /******************************************************************************/
 static size_t
-_write_callback(char *contents, size_t size, size_t nmemb, void *userdata) {
-    resp_buff_t *resp = (resp_buff_t *)userdata;
+_write_callback(char* contents, size_t size, size_t nmemb, void* userdata)
+{
+    resp_buff_t* resp = (resp_buff_t*)userdata;
     size_t chunksize = size * nmemb;
 
     if (resp->fetch_handler) {
@@ -79,14 +80,15 @@ _write_callback(char *contents, size_t size, size_t nmemb, void *userdata) {
 /******************************************************************************/
 static vs_status_e
 _curl_http_hal(vs_cloud_http_method_e method,
-               const char *url,
-               const char *request_body,
-               size_t request_body_size,
-               char *out_data,
-               vs_fetch_handler_cb_t fetch_handler,
-               void *fetch_hander_data,
-               size_t *in_out_size) {
-    CURL *curl;
+    const char* url,
+    const char* request_body,
+    size_t request_body_size,
+    char* out_data,
+    vs_fetch_handler_cb_t fetch_handler,
+    void* fetch_hander_data,
+    size_t* in_out_size)
+{
+    CURL* curl;
     CURLcode curl_res;
     vs_status_e res = VS_CODE_OK;
 
@@ -94,7 +96,7 @@ _curl_http_hal(vs_cloud_http_method_e method,
         return VS_CODE_ERR_REQUEST_PREPARE;
     }
 
-    resp_buff_t resp = {(uint8_t *)out_data, *in_out_size, 0, fetch_handler, fetch_hander_data};
+    resp_buff_t resp = { (uint8_t*)out_data, *in_out_size, 0, fetch_handler, fetch_hander_data };
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
@@ -134,7 +136,8 @@ terminate:
 }
 
 /******************************************************************************/
-const vs_cloud_impl_t *
-vs_curl_http_impl(void) {
+const vs_cloud_impl_t*
+vs_curl_http_impl(void)
+{
     return &_impl;
 }

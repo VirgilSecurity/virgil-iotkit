@@ -32,9 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <private/netif_test_impl.h>
 #include <stdlib-config.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
-#include <private/netif_test_impl.h>
 
 netif_state_t netif_state;
 vs_mac_addr_t mac_addr_client_call;
@@ -42,20 +42,20 @@ vs_mac_addr_t mac_addr_server_call;
 bool is_client_call;
 
 static vs_status_e
-test_netif_tx(const uint8_t *data, const uint16_t data_sz);
+test_netif_tx(const uint8_t* data, const uint16_t data_sz);
 static vs_status_e
-test_netif_mac_addr(struct vs_mac_addr_t *mac_addr);
+test_netif_mac_addr(struct vs_mac_addr_t* mac_addr);
 static vs_status_e
 test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 static vs_status_e
 test_netif_deinit();
 
 static vs_netif_t _test_netif = {
-        .init = test_netif_init,
-        .deinit = test_netif_deinit,
-        .mac_addr = test_netif_mac_addr,
-        .tx = test_netif_tx,
-        .user_data = (void *)&netif_state,
+    .init = test_netif_init,
+    .deinit = test_netif_deinit,
+    .mac_addr = test_netif_mac_addr,
+    .tx = test_netif_tx,
+    .user_data = (void*)&netif_state,
 };
 
 static vs_netif_rx_cb_t callback_rx_cb;
@@ -63,9 +63,10 @@ static vs_netif_process_cb_t callback_process_cb;
 
 /**********************************************************/
 static vs_status_e
-test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
+test_netif_tx(const uint8_t* data, const uint16_t data_sz)
+{
     int ret_code = -1;
-    const uint8_t *packet_data;
+    const uint8_t* packet_data;
     uint16_t packet_data_sz;
 
     is_client_call = !is_client_call;
@@ -81,7 +82,8 @@ test_netif_tx(const uint8_t *data, const uint16_t data_sz) {
 
 /**********************************************************/
 static vs_status_e
-test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
+test_netif_mac_addr(struct vs_mac_addr_t* mac_addr)
+{
     VS_IOT_ASSERT(mac_addr);
 
     *mac_addr = is_client_call ? mac_addr_client_call : mac_addr_server_call;
@@ -93,7 +95,8 @@ test_netif_mac_addr(struct vs_mac_addr_t *mac_addr) {
 
 /**********************************************************/
 static vs_status_e
-test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
+test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb)
+{
     VS_IOT_ASSERT(rx_cb);
 
     callback_rx_cb = rx_cb;
@@ -106,15 +109,17 @@ test_netif_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
 /**********************************************************/
 static vs_status_e
-test_netif_deinit() {
+test_netif_deinit()
+{
     netif_state.initialized = 0;
     netif_state.deinitialized = 1;
     return VS_CODE_OK;
 }
 
 /**********************************************************/
-vs_netif_t *
-vs_test_netif(void) {
+vs_netif_t*
+vs_test_netif(void)
+{
     netif_state.membuf = 0;
     return &_test_netif;
 }

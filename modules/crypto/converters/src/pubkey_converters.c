@@ -32,20 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <string.h>
-#include <stdbool.h>
-#include <mbedtls/pk_internal.h>
 #include <mbedtls/oid.h>
+#include <mbedtls/pk_internal.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include <stdio.h>
 
 #include <private/macros.h>
-#include <virgil/iot/converters/crypto_format_converters.h>
 #include <stdlib-config.h>
+#include <virgil/iot/converters/crypto_format_converters.h>
 
 /******************************************************************************/
 static uint16_t
-_keypair_ec_mpi_size(vs_secmodule_keypair_type_e keypair_type) {
+_keypair_ec_mpi_size(vs_secmodule_keypair_type_e keypair_type)
+{
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
@@ -73,7 +74,8 @@ _keypair_ec_mpi_size(vs_secmodule_keypair_type_e keypair_type) {
 
 /******************************************************************************/
 static mbedtls_ecp_group_id
-_keypair_type_to_ecp_group_id(vs_secmodule_keypair_type_e keypair_type) {
+_keypair_type_to_ecp_group_id(vs_secmodule_keypair_type_e keypair_type)
+{
     switch (keypair_type) {
     case VS_KEYPAIR_EC_SECP192R1:
         return MBEDTLS_ECP_DP_SECP192R1;
@@ -101,11 +103,12 @@ _keypair_type_to_ecp_group_id(vs_secmodule_keypair_type_e keypair_type) {
 /******************************************************************************/
 static bool
 _keypair_ec_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
-                            const uint8_t *public_key_in,
-                            uint16_t public_key_in_sz,
-                            uint8_t *public_key_out,
-                            uint16_t buf_sz,
-                            uint16_t *public_key_out_sz) {
+    const uint8_t* public_key_in,
+    uint16_t public_key_in_sz,
+    uint8_t* public_key_out,
+    uint16_t buf_sz,
+    uint16_t* public_key_out_sz)
+{
     bool res = false;
     mbedtls_ecp_keypair ec_key;
     mbedtls_pk_info_t pk_info;
@@ -130,9 +133,7 @@ _keypair_ec_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
         return false;
     }
 
-    if (0 == mbedtls_mpi_read_binary(&ec_key.Q.X, public_key_in + 1, mpi_size) &&
-        0 == mbedtls_mpi_read_binary(&ec_key.Q.Y, public_key_in + 1 + mpi_size, mpi_size) &&
-        0 == mbedtls_mpi_copy(&ec_key.Q.Z, &ec_key.Q.Y)) {
+    if (0 == mbedtls_mpi_read_binary(&ec_key.Q.X, public_key_in + 1, mpi_size) && 0 == mbedtls_mpi_read_binary(&ec_key.Q.Y, public_key_in + 1 + mpi_size, mpi_size) && 0 == mbedtls_mpi_copy(&ec_key.Q.Z, &ec_key.Q.Y)) {
 
         mbedtls_res = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
@@ -152,11 +153,12 @@ terminate:
 /******************************************************************************/
 static bool
 _keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
-                               const uint8_t *public_key_in,
-                               uint16_t public_key_in_sz,
-                               uint8_t *public_key_out,
-                               uint16_t buf_sz,
-                               uint16_t *public_key_out_sz) {
+    const uint8_t* public_key_in,
+    uint16_t public_key_in_sz,
+    uint8_t* public_key_out,
+    uint16_t buf_sz,
+    uint16_t* public_key_out_sz)
+{
     int res;
     mbedtls_fast_ec_keypair_t fast_ec_key;
     mbedtls_pk_info_t pk_info;
@@ -179,7 +181,7 @@ _keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
     }
 
     fast_ec_key.info = mbedtls_fast_ec_info_from_type(type);
-    fast_ec_key.public_key = (unsigned char *)public_key_in;
+    fast_ec_key.public_key = (unsigned char*)public_key_in;
 
     res = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
     if (res < 0 || buf_sz < res) {
@@ -196,15 +198,15 @@ _keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
 }
 
 /******************************************************************************/
-bool
-vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
-                            const uint8_t *public_key,
-                            uint16_t public_key_sz,
-                            uint8_t *pubkey_raw,
-                            uint16_t buf_sz,
-                            uint16_t *pubkey_raw_sz) {
-    uint8_t *p = (uint8_t *)public_key;
-    uint8_t *end = p + public_key_sz;
+bool vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
+    const uint8_t* public_key,
+    uint16_t public_key_sz,
+    uint8_t* pubkey_raw,
+    uint16_t buf_sz,
+    uint16_t* pubkey_raw_sz)
+{
+    uint8_t* p = (uint8_t*)public_key;
+    uint8_t* end = p + public_key_sz;
     size_t len;
     mbedtls_asn1_bitstring bs;
 
@@ -227,18 +229,18 @@ vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
 }
 
 /******************************************************************************/
-bool
-vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
-                               const uint8_t *public_key_in,
-                               uint16_t public_key_in_sz,
-                               uint8_t *public_key_out,
-                               uint16_t buf_sz,
-                               uint16_t *public_key_out_sz) {
+bool vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
+    const uint8_t* public_key_in,
+    uint16_t public_key_in_sz,
+    uint8_t* public_key_out,
+    uint16_t buf_sz,
+    uint16_t* public_key_out_sz)
+{
     if (VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type) {
         return _keypair_25519_key_to_internal(
-                keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
+            keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
     } else {
         return _keypair_ec_key_to_internal(
-                keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
+            keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
     }
 }

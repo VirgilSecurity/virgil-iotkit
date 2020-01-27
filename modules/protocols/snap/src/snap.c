@@ -33,26 +33,26 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include "stdlib-config.h"
-#include <virgil/iot/logger/logger.h>
-#include <virgil/iot/protocols/snap.h>
-#include <virgil/iot/macros/macros.h>
 #include <private/snap-private.h>
+#include <virgil/iot/logger/logger.h>
+#include <virgil/iot/macros/macros.h>
+#include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/protocols/snap/generated/snap_cvt.h>
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-static const vs_netif_t *_snap_default_netif = 0;
+static const vs_netif_t* _snap_default_netif = 0;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
 #define SERVICES_CNT_MAX (10)
-static const vs_snap_service_t *_snap_services[SERVICES_CNT_MAX];
+static const vs_snap_service_t* _snap_services[SERVICES_CNT_MAX];
 static uint32_t _snap_services_num = 0;
-static vs_mac_addr_t _snap_broadcast_mac = {.bytes = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
+static vs_mac_addr_t _snap_broadcast_mac = { .bytes = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF } };
 
-static vs_snap_stat_t _statistics = {0, 0};
+static vs_snap_stat_t _statistics = { 0, 0 };
 
 static vs_device_manufacture_id_t _manufacture_id;
 static vs_device_type_t _device_type;
@@ -68,9 +68,10 @@ static long _calls_counter = 0;
 
 /******************************************************************************/
 static long long
-current_timestamp() {
+current_timestamp()
+{
     struct timeval te;
-    gettimeofday(&te, NULL);                               // get current time
+    gettimeofday(&te, NULL); // get current time
     long long us = te.tv_sec * 1000LL + te.tv_usec / 1000; // calculate ms
     return us;
 }
@@ -78,13 +79,15 @@ current_timestamp() {
 
 /******************************************************************************/
 static bool
-_is_broadcast(const vs_mac_addr_t *mac_addr) {
+_is_broadcast(const vs_mac_addr_t* mac_addr)
+{
     return 0 == memcmp(mac_addr->bytes, _snap_broadcast_mac.bytes, ETH_ADDR_LEN);
 }
 
 /******************************************************************************/
 static bool
-_is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
+_is_my_mac(const vs_netif_t* netif, const vs_mac_addr_t* mac_addr)
+{
     vs_mac_addr_t netif_mac_addr;
     netif->mac_addr(&netif_mac_addr);
 
@@ -93,7 +96,8 @@ _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 static bool
-_accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+_accept_packet(const vs_netif_t* netif, const vs_mac_addr_t* src_mac, const vs_mac_addr_t* dest_mac)
+{
     bool dst_is_broadcast = _is_broadcast(dest_mac);
     bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
     bool src_is_my_mac = _is_my_mac(netif, src_mac);
@@ -102,12 +106,13 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
 
 /******************************************************************************/
 static vs_status_e
-_process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
+_process_packet(const vs_netif_t* netif, vs_snap_packet_t* packet)
+{
     uint32_t i;
     uint8_t response[RESPONSE_SZ_MAX + RESPONSE_RESERVED_SZ];
     uint16_t response_sz = 0;
     int res;
-    vs_snap_packet_t *response_packet = (vs_snap_packet_t *)response;
+    vs_snap_packet_t* response_packet = (vs_snap_packet_t*)response;
     bool need_response = false;
 
     VS_IOT_MEMSET(response, 0, sizeof(response));
@@ -124,10 +129,10 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
             if (packet->header.flags & VS_SNAP_FLAG_ACK || packet->header.flags & VS_SNAP_FLAG_NACK) {
                 if (_snap_services[i]->response_process) {
                     _snap_services[i]->response_process(netif,
-                                                        packet->header.element_id,
-                                                        !!(packet->header.flags & VS_SNAP_FLAG_ACK),
-                                                        packet->content,
-                                                        packet->header.content_size);
+                        packet->header.element_id,
+                        !!(packet->header.flags & VS_SNAP_FLAG_ACK),
+                        packet->content,
+                        packet->header.content_size);
                 }
 
                 // Process request
@@ -135,12 +140,12 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
                 need_response = true;
                 _statistics.received++;
                 res = _snap_services[i]->request_process(netif,
-                                                         packet->header.element_id,
-                                                         packet->content,
-                                                         packet->header.content_size,
-                                                         response_packet->content,
-                                                         RESPONSE_SZ_MAX,
-                                                         &response_sz);
+                    packet->header.element_id,
+                    packet->content,
+                    packet->header.content_size,
+                    response_packet->content,
+                    RESPONSE_SZ_MAX,
+                    &response_sz);
                 if (0 == res) {
                     // Send response
                     response_packet->header.content_size = response_sz;
@@ -168,14 +173,16 @@ _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
 
 /******************************************************************************/
 static uint16_t
-_packet_sz(const uint8_t *packet_data) {
-    const vs_snap_packet_t *packet = (vs_snap_packet_t *)packet_data;
+_packet_sz(const uint8_t* packet_data)
+{
+    const vs_snap_packet_t* packet = (vs_snap_packet_t*)packet_data;
     return sizeof(vs_snap_packet_t) + VS_IOT_NTOHS(packet->header.content_size);
 }
 
 /******************************************************************************/
 static vs_status_e
-_snap_periodical(void) {
+_snap_periodical(void)
+{
     int i;
     // Detect required command
     for (i = 0; i < _snap_services_num; i++) {
@@ -189,11 +196,12 @@ _snap_periodical(void) {
 
 /******************************************************************************/
 static vs_status_e
-_snap_rx_cb(vs_netif_t *netif,
-            const uint8_t *data,
-            const uint16_t data_sz,
-            const uint8_t **packet_data,
-            uint16_t *packet_data_sz) {
+_snap_rx_cb(vs_netif_t* netif,
+    const uint8_t* data,
+    const uint16_t data_sz,
+    const uint8_t** packet_data,
+    uint16_t* packet_data_sz)
+{
 #define LEFT_INCOMING ((int)data_sz - bytes_processed)
     int bytes_processed = 0;
     int need_bytes_for_header;
@@ -201,7 +209,7 @@ _snap_rx_cb(vs_netif_t *netif,
     uint16_t packet_sz;
     uint16_t copy_bytes;
 
-    vs_snap_packet_t *packet = 0;
+    vs_snap_packet_t* packet = 0;
 
     while (LEFT_INCOMING) {
 
@@ -214,7 +222,7 @@ _snap_rx_cb(vs_netif_t *netif,
                     netif->packet_buf_filled += LEFT_INCOMING;
                     bytes_processed += LEFT_INCOMING;
                 } else {
-                    packet = (vs_snap_packet_t *)&data[bytes_processed];
+                    packet = (vs_snap_packet_t*)&data[bytes_processed];
                     bytes_processed += packet_sz;
                 }
             } else {
@@ -247,7 +255,7 @@ _snap_rx_cb(vs_netif_t *netif,
                 netif->packet_buf_filled += copy_bytes;
 
                 if (netif->packet_buf_filled >= packet_sz) {
-                    packet = (vs_snap_packet_t *)netif->packet_buf;
+                    packet = (vs_snap_packet_t*)netif->packet_buf;
                 }
             }
         }
@@ -261,7 +269,7 @@ _snap_rx_cb(vs_netif_t *netif,
             if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
 
                 // Prepare for processing
-                *packet_data = (uint8_t *)packet;
+                *packet_data = (uint8_t*)packet;
                 *packet_data_sz = packet_sz;
                 return 0;
             }
@@ -276,8 +284,9 @@ _snap_rx_cb(vs_netif_t *netif,
 
 /******************************************************************************/
 static vs_status_e
-_snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-    vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
+_snap_process_cb(vs_netif_t* netif, const uint8_t* data, const uint16_t data_sz)
+{
+    vs_snap_packet_t* packet = (vs_snap_packet_t*)data;
     vs_status_e res;
 
 #if VS_SNAP_PROFILE
@@ -302,9 +311,9 @@ _snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
     dt = current_timestamp() - t;
     _processing_time += dt;
     VS_LOG_INFO("[_process_packet]. Time op = %lld ms Total time: %lld ms Calls: %ld",
-                dt,
-                _processing_time,
-                _calls_counter);
+        dt,
+        _processing_time,
+        _calls_counter);
 #endif
 
     return res;
@@ -312,11 +321,12 @@ _snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 
 /******************************************************************************/
 vs_status_e
-vs_snap_init(vs_netif_t *default_netif,
-             const vs_device_manufacture_id_t manufacturer_id,
-             const vs_device_type_t device_type,
-             const vs_device_serial_t device_serial,
-             uint32_t device_roles) {
+vs_snap_init(vs_netif_t* default_netif,
+    const vs_device_manufacture_id_t manufacturer_id,
+    const vs_device_type_t device_type,
+    const vs_device_serial_t device_serial,
+    uint32_t device_roles)
+{
 
     // Check input data
     VS_IOT_ASSERT(default_netif);
@@ -348,7 +358,8 @@ vs_snap_init(vs_netif_t *default_netif,
 
 /******************************************************************************/
 vs_status_e
-vs_snap_deinit() {
+vs_snap_deinit()
+{
     int i;
     CHECK_NOT_ZERO_RET(_snap_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -370,18 +381,20 @@ vs_snap_deinit() {
 }
 
 /******************************************************************************/
-const vs_netif_t *
-vs_snap_default_netif(void) {
+const vs_netif_t*
+vs_snap_default_netif(void)
+{
     VS_IOT_ASSERT(_snap_default_netif);
     return _snap_default_netif;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
+vs_snap_send(const vs_netif_t* netif, const uint8_t* data, uint16_t data_sz)
+{
     VS_IOT_ASSERT(_snap_default_netif);
     VS_IOT_ASSERT(_snap_default_netif->tx);
-    vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
+    vs_snap_packet_t* packet = (vs_snap_packet_t*)data;
 
     if (data_sz < sizeof(vs_snap_packet_t)) {
         return -1;
@@ -401,14 +414,15 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
 
 /******************************************************************************/
 vs_status_e
-vs_snap_register_service(const vs_snap_service_t *service) {
+vs_snap_register_service(const vs_snap_service_t* service)
+{
 
     VS_IOT_ASSERT(service);
 
     CHECK_RET(_snap_services_num < SERVICES_CNT_MAX,
-              VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES,
-              "SNAP services amount exceed maximum sllowed %d",
-              SERVICES_CNT_MAX);
+        VS_CODE_ERR_SNAP_TOO_MUCH_SERVICES,
+        "SNAP services amount exceed maximum sllowed %d",
+        SERVICES_CNT_MAX);
 
     _snap_services[_snap_services_num] = service;
     _snap_services_num++;
@@ -418,7 +432,8 @@ vs_snap_register_service(const vs_snap_service_t *service) {
 
 /******************************************************************************/
 vs_status_e
-vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
+vs_snap_mac_addr(const vs_netif_t* netif, vs_mac_addr_t* mac_addr)
+{
     VS_IOT_ASSERT(mac_addr);
 
     if (!netif || netif == _snap_default_netif) {
@@ -433,7 +448,8 @@ vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 vs_snap_transaction_id_t
-_snap_transaction_id() {
+_snap_transaction_id()
+{
     static vs_snap_transaction_id_t id = 0;
 
     return id++;
@@ -441,7 +457,8 @@ _snap_transaction_id() {
 
 /******************************************************************************/
 vs_status_e
-_snap_fill_header(const vs_mac_addr_t *recipient_mac, vs_snap_packet_t *packet) {
+_snap_fill_header(const vs_mac_addr_t* recipient_mac, vs_snap_packet_t* packet)
+{
 
     VS_IOT_ASSERT(packet);
 
@@ -465,27 +482,29 @@ _snap_fill_header(const vs_mac_addr_t *recipient_mac, vs_snap_packet_t *packet) 
 }
 
 /******************************************************************************/
-const vs_mac_addr_t *
-vs_snap_broadcast_mac(void) {
+const vs_mac_addr_t*
+vs_snap_broadcast_mac(void)
+{
     return &_snap_broadcast_mac;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_snap_send_request(const vs_netif_t *netif,
-                     const vs_mac_addr_t *mac,
-                     vs_snap_service_id_t service_id,
-                     vs_snap_element_t element_id,
-                     const uint8_t *data,
-                     uint16_t data_sz) {
+vs_snap_send_request(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_service_id_t service_id,
+    vs_snap_element_t element_id,
+    const uint8_t* data,
+    uint16_t data_sz)
+{
 
     uint8_t buffer[sizeof(vs_snap_packet_t) + data_sz];
-    vs_snap_packet_t *packet;
+    vs_snap_packet_t* packet;
 
     VS_IOT_MEMSET(buffer, 0, sizeof(buffer));
 
     // Prepare pointers
-    packet = (vs_snap_packet_t *)buffer;
+    packet = (vs_snap_packet_t*)buffer;
 
     // Prepare request
     packet->header.service_id = service_id;
@@ -503,31 +522,36 @@ vs_snap_send_request(const vs_netif_t *netif,
 
 /******************************************************************************/
 vs_snap_stat_t
-vs_snap_get_statistics(void) {
+vs_snap_get_statistics(void)
+{
     return _statistics;
 }
 
 /******************************************************************************/
-const vs_device_manufacture_id_t *
-vs_snap_device_manufacture(void) {
+const vs_device_manufacture_id_t*
+vs_snap_device_manufacture(void)
+{
     return &_manufacture_id;
 }
 
 /******************************************************************************/
-const vs_device_type_t *
-vs_snap_device_type(void) {
+const vs_device_type_t*
+vs_snap_device_type(void)
+{
     return &_device_type;
 }
 
 /******************************************************************************/
-const vs_device_serial_t *
-vs_snap_device_serial(void) {
+const vs_device_serial_t*
+vs_snap_device_serial(void)
+{
     return &_device_serial;
 }
 
 /******************************************************************************/
 uint32_t
-vs_snap_device_roles(void) {
+vs_snap_device_roles(void)
+{
     return _device_roles;
 }
 

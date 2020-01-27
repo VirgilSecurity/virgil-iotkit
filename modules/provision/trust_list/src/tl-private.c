@@ -32,16 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <endian-config.h>
 #include <stdlib-config.h>
 #include <trust_list-config.h>
-#include <endian-config.h>
 
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 #include "private/tl-private.h"
 
@@ -53,11 +53,12 @@ static vs_tl_context_t _tl_tmp_ctx;
 
 static const vs_key_type_e sign_rules_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
 
-static vs_secmodule_impl_t *_secmodule = NULL;
+static vs_secmodule_impl_t* _secmodule = NULL;
 
 /*************************************************************************/
 static void
-_create_data_filename(size_t storage_type, vs_tl_element_e el_id, size_t index, vs_storage_element_id_t file_id) {
+_create_data_filename(size_t storage_type, vs_tl_element_e el_id, size_t index, vs_storage_element_id_t file_id)
+{
     VS_IOT_ASSERT(sizeof(vs_storage_element_id_t) >= sizeof(storage_type) + sizeof(el_id) + sizeof(index));
 
     VS_IOT_MEMSET(file_id, 0, sizeof(vs_storage_element_id_t));
@@ -67,12 +68,13 @@ _create_data_filename(size_t storage_type, vs_tl_element_e el_id, size_t index, 
 }
 /*************************************************************************/
 static vs_status_e
-_read_data(const vs_storage_op_ctx_t *op_ctx,
-           vs_storage_element_id_t id,
-           uint32_t offset,
-           uint8_t *data,
-           uint16_t buff_sz,
-           uint16_t *data_sz) {
+_read_data(const vs_storage_op_ctx_t* op_ctx,
+    vs_storage_element_id_t id,
+    uint32_t offset,
+    uint8_t* data,
+    uint16_t buff_sz,
+    uint16_t* data_sz)
+{
     vs_storage_file_t f = NULL;
     ssize_t file_sz;
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -101,11 +103,12 @@ _read_data(const vs_storage_op_ctx_t *op_ctx,
 
 /******************************************************************************/
 static vs_status_e
-_write_data(const vs_storage_op_ctx_t *op_ctx,
-            vs_storage_element_id_t id,
-            uint32_t offset,
-            const void *data,
-            uint16_t data_sz) {
+_write_data(const vs_storage_op_ctx_t* op_ctx,
+    vs_storage_element_id_t id,
+    uint32_t offset,
+    const void* data,
+    uint16_t data_sz)
+{
     vs_storage_file_t f = NULL;
 
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -138,7 +141,8 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
 
 /******************************************************************************/
 static bool
-_is_rule_equal_to(vs_key_type_e type) {
+_is_rule_equal_to(vs_key_type_e type)
+{
     uint8_t i;
     for (i = 0; i < VS_TL_SIGNATURES_QTY; ++i) {
         if (sign_rules_list[i] == type) {
@@ -150,15 +154,16 @@ _is_rule_equal_to(vs_key_type_e type) {
 
 /******************************************************************************/
 static bool
-_verify_tl(vs_tl_context_t *tl_ctx) {
+_verify_tl(vs_tl_context_t* tl_ctx)
+{
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t res_sz;
     uint16_t i;
     vs_secmodule_sw_sha256_ctx ctx;
 
-    vs_tl_footer_t *footer;
-    vs_sign_t *sign;
-    uint8_t *pubkey;
+    vs_tl_footer_t* footer;
+    vs_sign_t* sign;
+    uint8_t* pubkey;
     int sign_len;
     int key_len;
     uint8_t sign_rules = 0;
@@ -188,7 +193,7 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
     }
 
     _secmodule->hash_init(&ctx);
-    _secmodule->hash_update(&ctx, (uint8_t *)&tl_ctx->header, sizeof(vs_tl_header_t));
+    _secmodule->hash_update(&ctx, (uint8_t*)&tl_ctx->header, sizeof(vs_tl_header_t));
 
     for (i = 0; i < host_header.pub_keys_count; ++i) {
 
@@ -204,12 +209,12 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         return false;
     }
 
-    footer = (vs_tl_footer_t *)buf;
-    _secmodule->hash_update(&ctx, (uint8_t *)&footer->tl_type, sizeof(footer->tl_type));
+    footer = (vs_tl_footer_t*)buf;
+    _secmodule->hash_update(&ctx, (uint8_t*)&footer->tl_type, sizeof(footer->tl_type));
     _secmodule->hash_finish(&ctx, hash);
 
     // First signature
-    sign = (vs_sign_t *)footer->signatures;
+    sign = (vs_sign_t*)footer->signatures;
 
     BOOL_CHECK_RET(host_header.signatures_count >= VS_TL_SIGNATURES_QTY, "There are not enough signatures");
 
@@ -224,36 +229,30 @@ _verify_tl(vs_tl_context_t *tl_ctx) {
         // Signer raw key pointer
         pubkey = sign->raw_sign_pubkey + (uint16_t)sign_len;
 
-        BOOL_CHECK_RET(VS_CODE_OK == vs_provision_search_hl_pubkey(
-                                             sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
-                       "Signer key is wrong");
+        BOOL_CHECK_RET(VS_CODE_OK == vs_provision_search_hl_pubkey(sign->signer_type, sign->ec_type, pubkey, (uint16_t)key_len),
+            "Signer key is wrong");
 
         if (_is_rule_equal_to(sign->signer_type)) {
-            BOOL_CHECK_RET(VS_CODE_OK == _secmodule->ecdsa_verify(sign->ec_type,
-                                                                  pubkey,
-                                                                  (uint16_t)key_len,
-                                                                  sign->hash_type,
-                                                                  hash,
-                                                                  sign->raw_sign_pubkey,
-                                                                  (uint16_t)sign_len),
-                           "Signature is wrong");
+            BOOL_CHECK_RET(VS_CODE_OK == _secmodule->ecdsa_verify(sign->ec_type, pubkey, (uint16_t)key_len, sign->hash_type, hash, sign->raw_sign_pubkey, (uint16_t)sign_len),
+                "Signature is wrong");
             sign_rules++;
         }
 
         // Next signature
-        sign = (vs_sign_t *)(pubkey + (uint16_t)key_len);
+        sign = (vs_sign_t*)(pubkey + (uint16_t)key_len);
     }
 
     VS_LOG_DEBUG("TL %u. Sign rules is %s",
-                 tl_ctx->storage.storage_type,
-                 sign_rules >= VS_TL_SIGNATURES_QTY ? "correct" : "wrong");
+        tl_ctx->storage.storage_type,
+        sign_rules >= VS_TL_SIGNATURES_QTY ? "correct" : "wrong");
 
     return sign_rules >= VS_TL_SIGNATURES_QTY;
 }
 
 /******************************************************************************/
 static void
-_init_tl_ctx(size_t storage_type, const vs_storage_op_ctx_t *op_ctx, vs_tl_context_t *ctx) {
+_init_tl_ctx(size_t storage_type, const vs_storage_op_ctx_t* op_ctx, vs_tl_context_t* ctx)
+{
     if (!ctx)
         return;
 
@@ -263,8 +262,9 @@ _init_tl_ctx(size_t storage_type, const vs_storage_op_ctx_t *op_ctx, vs_tl_conte
 }
 
 /******************************************************************************/
-static vs_tl_context_t *
-_get_tl_ctx(size_t storage_type) {
+static vs_tl_context_t*
+_get_tl_ctx(size_t storage_type)
+{
     switch (storage_type) {
     case TL_STORAGE_TYPE_STATIC:
         return &_tl_static_ctx;
@@ -280,7 +280,8 @@ _get_tl_ctx(size_t storage_type) {
 
 /******************************************************************************/
 static vs_status_e
-_copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
+_copy_tl_file(vs_tl_context_t* dst, vs_tl_context_t* src)
+{
     vs_tl_header_t header;
     vs_tl_header_t host_header;
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
@@ -291,8 +292,7 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
         return VS_CODE_ERR_CTX_NOT_READY;
     }
 
-    if (VS_CODE_OK != vs_tl_header_load(src->storage.storage_type, &header) ||
-        VS_CODE_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
+    if (VS_CODE_OK != vs_tl_header_load(src->storage.storage_type, &header) || VS_CODE_OK != vs_tl_header_save(dst->storage.storage_type, &header)) {
         dst->ready = false;
         return VS_CODE_ERR_FILE_WRITE;
     }
@@ -300,15 +300,13 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
     vs_tl_header_to_host(&header, &host_header);
 
     for (i = 0; i < host_header.pub_keys_count; ++i) {
-        if (VS_CODE_OK != vs_tl_key_load(src->storage.storage_type, i, buf, sizeof(buf), &res_sz) ||
-            VS_CODE_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
+        if (VS_CODE_OK != vs_tl_key_load(src->storage.storage_type, i, buf, sizeof(buf), &res_sz) || VS_CODE_OK != vs_tl_key_save(dst->storage.storage_type, buf, res_sz)) {
             dst->ready = false;
             return VS_CODE_ERR_FILE_WRITE;
         }
     }
 
-    if (VS_CODE_OK != vs_tl_footer_load(src->storage.storage_type, buf, sizeof(buf), &res_sz) ||
-        VS_CODE_OK != vs_tl_footer_save(dst->storage.storage_type, buf, res_sz)) {
+    if (VS_CODE_OK != vs_tl_footer_load(src->storage.storage_type, buf, sizeof(buf), &res_sz) || VS_CODE_OK != vs_tl_footer_save(dst->storage.storage_type, buf, res_sz)) {
         dst->ready = false;
         return VS_CODE_ERR_FILE_WRITE;
     }
@@ -322,8 +320,9 @@ _copy_tl_file(vs_tl_context_t *dst, vs_tl_context_t *src) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_verify_storage(size_t storage_type) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_verify_storage(size_t storage_type)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
 
@@ -335,7 +334,8 @@ vs_tl_verify_storage(size_t storage_type) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
+vs_tl_storage_init_internal(vs_storage_op_ctx_t* op_ctx, vs_secmodule_impl_t* secmodule)
+{
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -365,13 +365,13 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *se
 
 /******************************************************************************/
 vs_status_e
-vs_tl_storage_deinit_internal() {
-    const vs_storage_op_ctx_t *op_ctx = _tl_dynamic_ctx.storage_ctx;
+vs_tl_storage_deinit_internal()
+{
+    const vs_storage_op_ctx_t* op_ctx = _tl_dynamic_ctx.storage_ctx;
 
     CHECK_NOT_ZERO_RET(op_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
-
 
     VS_IOT_MEMSET(&_tl_dynamic_ctx, 0, sizeof(vs_tl_context_t));
     VS_IOT_MEMSET(&_tl_static_ctx, 0, sizeof(vs_tl_context_t));
@@ -382,8 +382,9 @@ vs_tl_storage_deinit_internal() {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_header_save(size_t storage_type, const vs_tl_header_t* header)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_tl_header_t host_header;
     vs_storage_element_id_t file_id;
 
@@ -394,8 +395,8 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     vs_tl_header_to_host(header, &host_header);
 
     CHECK_RET(host_header.tl_size <= VS_TL_STORAGE_SIZE,
-              VS_CODE_ERR_TOO_SMALL_BUFFER,
-              "TL storage is too small for new TL");
+        VS_CODE_ERR_TOO_SMALL_BUFFER,
+        "TL storage is too small for new TL");
 
     tl_ctx->ready = false;
     tl_ctx->keys_qty.keys_count = 0;
@@ -403,9 +404,9 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLH, 0, file_id);
-    CHECK_RET(VS_CODE_OK == _write_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)header, sizeof(vs_tl_header_t)),
-              VS_CODE_ERR_FILE_WRITE,
-              "Error TL header save");
+    CHECK_RET(VS_CODE_OK == _write_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t*)header, sizeof(vs_tl_header_t)),
+        VS_CODE_ERR_FILE_WRITE,
+        "Error TL header save");
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_CODE_OK;
@@ -413,8 +414,9 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_header_load(size_t storage_type, vs_tl_header_t* header)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
     uint16_t _sz;
 
@@ -423,10 +425,9 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLH, 0, file_id);
-    CHECK_RET(VS_CODE_OK ==
-                      _read_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)header, sizeof(vs_tl_header_t), &_sz),
-              VS_CODE_ERR_FILE_READ,
-              "Error TL header load");
+    CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t*)header, sizeof(vs_tl_header_t), &_sz),
+        VS_CODE_ERR_FILE_READ,
+        "Error TL header load");
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_CODE_OK;
@@ -434,34 +435,36 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_footer_save(size_t storage_type, const uint8_t* footer, uint16_t footer_sz)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_RET(tl_ctx->keys_qty.keys_amount == tl_ctx->keys_qty.keys_count,
-              VS_CODE_ERR_INCORRECT_PARAMETER,
-              "Keys amount is not equal");
+        VS_CODE_ERR_INCORRECT_PARAMETER,
+        "Keys amount is not equal");
     CHECK_RET(footer_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLF, 0, file_id);
     CHECK_RET(VS_CODE_OK == _write_data(tl_ctx->storage_ctx, file_id, 0, footer, footer_sz),
-              VS_CODE_ERR_FILE_WRITE,
-              "Error TL footer save");
+        VS_CODE_ERR_FILE_WRITE,
+        "Error TL footer save");
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_t *footer_sz) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_footer_load(size_t storage_type, uint8_t* footer, uint16_t buf_sz, uint16_t* footer_sz)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
     vs_storage_element_id_t file_id;
 
     // Pointer to first signature
-    vs_sign_t *element = (vs_sign_t *)(buf + sizeof(vs_tl_footer_t));
+    vs_sign_t* element = (vs_sign_t*)(buf + sizeof(vs_tl_footer_t));
 
     // Start determination of footer size
     uint16_t _sz = sizeof(vs_tl_footer_t);
@@ -483,8 +486,8 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         _sz += sizeof(vs_sign_t);
 
         CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, buf, _sz, &read_sz),
-                  VS_CODE_ERR_FILE_READ,
-                  "Error TL footer load");
+            VS_CODE_ERR_FILE_READ,
+            "Error TL footer load");
 
         sign_len = vs_secmodule_get_signature_len(element->ec_type);
         key_len = vs_secmodule_get_pubkey_len(element->ec_type);
@@ -495,14 +498,14 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
         _sz += key_len + sign_len;
 
         // Pointer to the next signature
-        element = (vs_sign_t *)((uint8_t *)element + sizeof(vs_sign_t) + key_len + sign_len);
+        element = (vs_sign_t*)((uint8_t*)element + sizeof(vs_sign_t) + key_len + sign_len);
     }
 
     CHECK_RET(buf_sz >= _sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Out buffer too small");
 
     CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, footer, _sz, &read_sz),
-              VS_CODE_ERR_FILE_READ,
-              "Error TL footer load");
+        VS_CODE_ERR_FILE_READ,
+        "Error TL footer load");
 
     *footer_sz = _sz;
 
@@ -511,16 +514,17 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
 
 /******************************************************************************/
 vs_status_e
-vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
-    vs_pubkey_dated_t *element = (vs_pubkey_dated_t *)key;
+vs_tl_key_save(size_t storage_type, const uint8_t* key, uint16_t key_sz)
+{
+    vs_pubkey_dated_t* element = (vs_pubkey_dated_t*)key;
     int key_len = vs_secmodule_get_pubkey_len(element->pubkey.ec_type);
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_RET(key_len > 0, VS_CODE_ERR_INCORRECT_PARAMETER, "Unsupported ec_type");
     CHECK_RET(
-            element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
+        element->pubkey.key_type < VS_KEY_UNSUPPORTED, VS_CODE_ERR_INCORRECT_PARAMETER, "Invalid key type to save");
     CHECK_RET(key_sz <= tl_ctx->storage_ctx->file_sz_limit, VS_CODE_ERR_INCORRECT_PARAMETER, "Incorrect key size");
 
     key_len += sizeof(vs_pubkey_dated_t) + VS_IOT_NTOHS(element->pubkey.meta_data_sz);
@@ -544,9 +548,10 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint16_t buf_sz, uint16_t *key_sz) {
+vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t* key, uint16_t buf_sz, uint16_t* key_sz)
+{
     int key_len;
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_pubkey_dated_t element;
     vs_storage_element_id_t file_id;
     uint16_t _sz;
@@ -560,10 +565,9 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLC, handle, file_id);
 
     // First, we need to load a meta info of required key to determine a full size
-    CHECK_RET(VS_CODE_OK ==
-                      _read_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)&element, sizeof(vs_pubkey_dated_t), &_sz),
-              VS_CODE_ERR_FILE_READ,
-              "Error TL key load");
+    CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t*)&element, sizeof(vs_pubkey_dated_t), &_sz),
+        VS_CODE_ERR_FILE_READ,
+        "Error TL key load");
 
     key_len = vs_secmodule_get_pubkey_len(element.pubkey.ec_type);
 
@@ -575,8 +579,8 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(key_len <= buf_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Out buffer too small");
 
     CHECK_RET(VS_CODE_OK == _read_data(tl_ctx->storage_ctx, file_id, 0, key, key_len, &_sz),
-              VS_CODE_ERR_FILE_READ,
-              "Error TL key load");
+        VS_CODE_ERR_FILE_READ,
+        "Error TL key load");
 
     *key_sz = key_len;
 
@@ -585,10 +589,11 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 
 /******************************************************************************/
 vs_status_e
-vs_tl_invalidate(size_t storage_type) {
+vs_tl_invalidate(size_t storage_type)
+{
     vs_tl_header_t header;
 
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
     uint16_t i;
 
@@ -602,8 +607,7 @@ vs_tl_invalidate(size_t storage_type) {
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLH, 0, file_id);
 
-    if (!tl_ctx->ready || VS_CODE_OK != vs_tl_header_load(storage_type, &header) ||
-        (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id))) {
+    if (!tl_ctx->ready || VS_CODE_OK != vs_tl_header_load(storage_type, &header) || (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id))) {
         return VS_CODE_OK;
     }
 
@@ -628,8 +632,9 @@ vs_tl_invalidate(size_t storage_type) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_apply_tmp_to(size_t storage_type) {
-    vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
+vs_tl_apply_tmp_to(size_t storage_type)
+{
+    vs_tl_context_t* tl_ctx = _get_tl_ctx(storage_type);
 
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
 

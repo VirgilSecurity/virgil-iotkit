@@ -129,8 +129,7 @@ extern "C" {
  *
  * \return Length of the data that will be obtained after decoding
  */
-int
-base64decode_len(const char *in, int inlen);
+int base64decode_len(const char* in, int inlen);
 
 /** Base64 Decode string
  *
@@ -149,8 +148,7 @@ base64decode_len(const char *in, int inlen);
  * \return -1 on failure
  * \return 0 on success
  */
-bool
-base64decode(const char *in, int inlen, unsigned char *out, int *outlen);
+bool base64decode(const char* in, int inlen, unsigned char* out, int* outlen);
 
 /** Get Base64 Encoded len
  *
@@ -161,8 +159,7 @@ base64decode(const char *in, int inlen, unsigned char *out, int *outlen);
  *
  * \return Length of the string that will be obtained after encoding
  */
-int
-base64encode_len(int len);
+int base64encode_len(int len);
 
 /** Base64 Encode data
  *
@@ -179,8 +176,7 @@ base64encode_len(int len);
  * \return -1 on failure
  * \return 0 on success
  */
-bool
-base64encode(const unsigned char *in, int inlen, char *out, int *outlen);
+bool base64encode(const unsigned char* in, int inlen, char* out, int* outlen);
 
 #ifdef __cplusplus
 } // extern "C"

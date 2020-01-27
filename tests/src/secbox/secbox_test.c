@@ -35,10 +35,10 @@
 #include <stdlib.h>
 
 #include <global-hal.h>
-#include <virgil/iot/tests/helpers.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/secmodule/secmodule.h>
+#include <virgil/iot/tests/helpers.h>
 
 #define TEST_FILENAME_LITTLE_DATA "test_little_file"
 #define TEST_FILENAME_BIG_DATA "test_big_file"
@@ -48,14 +48,15 @@ static const char _little_test_data[] = "Little string for test";
 
 /******************************************************************************/
 static bool
-_test_case_secbox_save_load(const char *filename, vs_secbox_type_t type, const char *test_data, size_t data_sz) {
+_test_case_secbox_save_load(const char* filename, vs_secbox_type_t type, const char* test_data, size_t data_sz)
+{
 
     uint8_t buf[data_sz];
     vs_storage_element_id_t file_id;
     VS_IOT_MEMSET(file_id, 0, sizeof(file_id));
-    VS_IOT_STRCPY((char *)file_id, filename);
+    VS_IOT_STRCPY((char*)file_id, filename);
 
-    BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_save(type, file_id, (uint8_t *)test_data, data_sz), "Error save file");
+    BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_save(type, file_id, (uint8_t*)test_data, data_sz), "Error save file");
 
     BOOL_CHECK_RET(data_sz == vs_secbox_file_size(file_id), "Error file size");
 
@@ -67,15 +68,16 @@ _test_case_secbox_save_load(const char *filename, vs_secbox_type_t type, const c
 
 /******************************************************************************/
 static bool
-_test_case_secbox_del(const char *filename) {
+_test_case_secbox_del(const char* filename)
+{
 
     char buf[] = "test data";
     vs_storage_element_id_t file_id;
     VS_IOT_MEMSET(file_id, 0, sizeof(file_id));
-    VS_IOT_STRCPY((char *)file_id, filename);
+    VS_IOT_STRCPY((char*)file_id, filename);
 
     BOOL_CHECK_RET(_test_case_secbox_save_load(filename, VS_SECBOX_SIGNED, buf, VS_IOT_STRLEN(buf)),
-                   "Error create file for delete test");
+        "Error create file for delete test");
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_secbox_del(file_id), "Error delete file");
 
@@ -86,17 +88,18 @@ _test_case_secbox_del(const char *filename) {
 
 /**********************************************************/
 uint16_t
-vs_secbox_test(vs_secmodule_impl_t *secmodule_impl) {
+vs_secbox_test(vs_secmodule_impl_t* secmodule_impl)
+{
     uint16_t failed_test_result = 0;
-    char *_big_test_data = NULL;
+    char* _big_test_data = NULL;
     START_TEST("Secbox tests");
 
     TEST_CASE_OK("Prepare keystorage",
-                 vs_test_erase_otp_provision(secmodule_impl) && vs_test_create_device_key(secmodule_impl));
+        vs_test_erase_otp_provision(secmodule_impl) && vs_test_create_device_key(secmodule_impl));
 
     TEST_CASE_OK("Read/write small piece of data. Signed only",
-                 _test_case_secbox_save_load(
-                         TEST_FILENAME_LITTLE_DATA, VS_SECBOX_SIGNED, _little_test_data, sizeof(_little_test_data)));
+        _test_case_secbox_save_load(
+            TEST_FILENAME_LITTLE_DATA, VS_SECBOX_SIGNED, _little_test_data, sizeof(_little_test_data)));
 
     size_t big_test_size = (3 * 256 + 128 - 1);
     _big_test_data = VS_IOT_MALLOC(big_test_size);
@@ -109,19 +112,19 @@ vs_secbox_test(vs_secmodule_impl_t *secmodule_impl) {
     }
 
     TEST_CASE_OK("Read/write big piece of data. Signed only",
-                 _test_case_secbox_save_load(TEST_FILENAME_BIG_DATA, VS_SECBOX_SIGNED, _big_test_data, big_test_size));
+        _test_case_secbox_save_load(TEST_FILENAME_BIG_DATA, VS_SECBOX_SIGNED, _big_test_data, big_test_size));
 
     TEST_CASE_OK("Delete file", _test_case_secbox_del(TEST_FILENAME_FOR_DELETE));
 
     TEST_CASE_OK("Read/write small piece of data. Signed and encrypted",
-                 _test_case_secbox_save_load(TEST_FILENAME_LITTLE_DATA,
-                                             VS_SECBOX_SIGNED_AND_ENCRYPTED,
-                                             _little_test_data,
-                                             sizeof(_little_test_data)));
+        _test_case_secbox_save_load(TEST_FILENAME_LITTLE_DATA,
+            VS_SECBOX_SIGNED_AND_ENCRYPTED,
+            _little_test_data,
+            sizeof(_little_test_data)));
 
     TEST_CASE_OK("Read/write big piece of data.Signed and encrypted",
-                 _test_case_secbox_save_load(
-                         TEST_FILENAME_BIG_DATA, VS_SECBOX_SIGNED_AND_ENCRYPTED, _big_test_data, big_test_size));
+        _test_case_secbox_save_load(
+            TEST_FILENAME_BIG_DATA, VS_SECBOX_SIGNED_AND_ENCRYPTED, _big_test_data, big_test_size));
 terminate:;
     if (_big_test_data) {
         VS_IOT_FREE(_big_test_data);

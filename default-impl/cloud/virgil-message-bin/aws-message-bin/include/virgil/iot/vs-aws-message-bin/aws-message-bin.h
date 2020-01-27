@@ -68,7 +68,7 @@ function in app-storage.c file.
  *
  * \return #vs_cloud_message_bin_impl_t
  */
-const vs_cloud_message_bin_impl_t *
+const vs_cloud_message_bin_impl_t*
 vs_aws_message_bin_impl(void);
 
 #endif // VS_AWS_DEFAULT_MESSAGE_BIN_IMPL_H

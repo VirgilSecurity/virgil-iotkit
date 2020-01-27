@@ -32,13 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "aws_iot_log.h"
 #include "aws_iot_error.h"
-#include <string.h>
-#include <stdio.h>
+#include "aws_iot_log.h"
 #include <aws_iot_mqtt_client_interface.h>
-#include <virgil/iot/logger/logger.h>
+#include <stdio.h>
+#include <string.h>
 #include <virgil/iot/cloud/cloud.h>
+#include <virgil/iot/logger/logger.h>
 
 #define VS_MQTT_TIMEOUT_MS (500)
 
@@ -51,30 +51,31 @@ typedef struct {
 static vs_aws_mqtt_message_handler_t _mb_mqtt_handler;
 
 static vs_status_e
-_init_aws_mqtt_client(const char *host,
-                      uint16_t port,
-                      const char *device_cert,
-                      const char *priv_key,
-                      const char *ca_cert);
+_init_aws_mqtt_client(const char* host,
+    uint16_t port,
+    const char* device_cert,
+    const char* priv_key,
+    const char* ca_cert);
 
 static vs_status_e
-_connect_and_subscribe_to_topics(const char *client_id,
-                                 const char *login,
-                                 const char *password,
-                                 const vs_cloud_mb_topics_list_t *topic_list,
-                                 vs_cloud_mb_process_custom_topic_cb_t process_topic);
+_connect_and_subscribe_to_topics(const char* client_id,
+    const char* login,
+    const char* password,
+    const vs_cloud_mb_topics_list_t* topic_list,
+    vs_cloud_mb_process_custom_topic_cb_t process_topic);
 static vs_status_e
 _mqtt_process(void);
 
 static const vs_cloud_message_bin_impl_t _impl = {
-        .init = _init_aws_mqtt_client,
-        .connect_subscribe = _connect_and_subscribe_to_topics,
-        .process = _mqtt_process,
+    .init = _init_aws_mqtt_client,
+    .connect_subscribe = _connect_and_subscribe_to_topics,
+    .process = _mqtt_process,
 };
 
 /******************************************************************************/
 static void
-_disconnect_callback(AWS_IoT_Client *client, void *data) {
+_disconnect_callback(AWS_IoT_Client* client, void* data)
+{
     VS_LOG_WARNING("MQTT Disconnect");
     IoT_Error_t rc;
 
@@ -99,12 +100,13 @@ _disconnect_callback(AWS_IoT_Client *client, void *data) {
 
 /*************************************************************************/
 static void
-_group_callback(AWS_IoT_Client *client,
-                char *topic,
-                uint16_t topic_sz,
-                IoT_Publish_Message_Params *params,
-                void *pData) {
-    uint8_t *p = (uint8_t *)params->payload;
+_group_callback(AWS_IoT_Client* client,
+    char* topic,
+    uint16_t topic_sz,
+    IoT_Publish_Message_Params* params,
+    void* pData)
+{
+    uint8_t* p = (uint8_t*)params->payload;
     p[params->payloadLen] = 0;
     vs_cloud_mb_process_custom_topic_cb_t process_topic = (vs_cloud_mb_process_custom_topic_cb_t)pData;
 
@@ -121,10 +123,11 @@ _group_callback(AWS_IoT_Client *client,
 }
 
 /******************************************************************************/
-static char *
-_get_topic_name_by_index(const vs_cloud_mb_topics_list_t *topic_list, uint32_t index) {
+static char*
+_get_topic_name_by_index(const vs_cloud_mb_topics_list_t* topic_list, uint32_t index)
+{
     uint32_t i;
-    char *topic_list_ptr = topic_list->topic_list;
+    char* topic_list_ptr = topic_list->topic_list;
 
     if (index >= topic_list->topic_count)
         return NULL;
@@ -137,20 +140,21 @@ _get_topic_name_by_index(const vs_cloud_mb_topics_list_t *topic_list, uint32_t i
 
 /******************************************************************************/
 static IoT_Error_t
-_connect_internal(vs_aws_mqtt_message_handler_t *handler,
-                  const char *client_id,
-                  const char *login,
-                  const char *password) {
+_connect_internal(vs_aws_mqtt_message_handler_t* handler,
+    const char* client_id,
+    const char* login,
+    const char* password)
+{
     IoT_Error_t rc;
-    IoT_Client_Connect_Params *pConnectParams = &handler->connect_params;
+    IoT_Client_Connect_Params* pConnectParams = &handler->connect_params;
     pConnectParams->keepAliveIntervalInSec = 10;
     pConnectParams->isCleanSession = true;
     pConnectParams->MQTTVersion = MQTT_3_1_1;
-    pConnectParams->pClientID = (char *)client_id;
+    pConnectParams->pClientID = (char*)client_id;
     pConnectParams->clientIDLen = (uint16_t)strlen(client_id);
     pConnectParams->isWillMsgPresent = false;
-    pConnectParams->pUsername = (char *)login;
-    pConnectParams->pPassword = (char *)password;
+    pConnectParams->pUsername = (char*)login;
+    pConnectParams->pPassword = (char*)password;
     if (login) {
         pConnectParams->usernameLen = (uint16_t)strlen(login);
     } else {
@@ -233,27 +237,28 @@ _publish(vs_aws_mqtt_message_handler_t *handler, const char *topic, uint8_t *dat
 
 /*************************************************************************/
 static vs_status_e
-_init_aws_mqtt_client(const char *host,
-                      uint16_t port,
-                      const char *device_cert,
-                      const char *priv_key,
-                      const char *ca_cert) {
+_init_aws_mqtt_client(const char* host,
+    uint16_t port,
+    const char* device_cert,
+    const char* priv_key,
+    const char* ca_cert)
+{
 
     IoT_Error_t rc;
     vs_status_e res = VS_CODE_OK;
     _mb_mqtt_handler.init_params = iotClientInitParamsDefault;
     _mb_mqtt_handler.connect_params = iotClientConnectParamsDefault;
 
-    IoT_Client_Init_Params *mqttInitParams = &_mb_mqtt_handler.init_params;
+    IoT_Client_Init_Params* mqttInitParams = &_mb_mqtt_handler.init_params;
 
     memset(mqttInitParams, 0, sizeof(IoT_Client_Init_Params));
 
     mqttInitParams->enableAutoReconnect = false; // We enable this later below
-    mqttInitParams->pHostURL = (char *)host;
+    mqttInitParams->pHostURL = (char*)host;
     mqttInitParams->port = port;
-    mqttInitParams->pDeviceCertLocation = (char *)device_cert;
-    mqttInitParams->pDevicePrivateKeyLocation = (char *)priv_key;
-    mqttInitParams->pRootCALocation = (char *)ca_cert;
+    mqttInitParams->pDeviceCertLocation = (char*)device_cert;
+    mqttInitParams->pDevicePrivateKeyLocation = (char*)priv_key;
+    mqttInitParams->pRootCALocation = (char*)ca_cert;
     mqttInitParams->mqttCommandTimeout_ms = 20000;
     mqttInitParams->tlsHandshakeTimeout_ms = 15000;
     mqttInitParams->isSSLHostnameVerify = true;
@@ -271,11 +276,12 @@ _init_aws_mqtt_client(const char *host,
 
 /*************************************************************************/
 static vs_status_e
-_connect_and_subscribe_to_topics(const char *client_id,
-                                 const char *login,
-                                 const char *password,
-                                 const vs_cloud_mb_topics_list_t *topic_list,
-                                 vs_cloud_mb_process_custom_topic_cb_t process_topic) {
+_connect_and_subscribe_to_topics(const char* client_id,
+    const char* login,
+    const char* password,
+    const vs_cloud_mb_topics_list_t* topic_list,
+    vs_cloud_mb_process_custom_topic_cb_t process_topic)
+{
 
     vs_status_e res = VS_CODE_ERR_CLOUD;
     IoT_Error_t rc;
@@ -286,7 +292,7 @@ _connect_and_subscribe_to_topics(const char *client_id,
     }
 
     for (i = 0; i < topic_list->topic_count; ++i) {
-        char *topic_name = _get_topic_name_by_index(topic_list, i);
+        char* topic_name = _get_topic_name_by_index(topic_list, i);
 
         if (0 == topic_list->topic_len_list[i]) {
             continue;
@@ -294,11 +300,11 @@ _connect_and_subscribe_to_topics(const char *client_id,
 
         VS_LOG_INFO("Subscribing to topic %s", topic_name);
         rc = aws_iot_mqtt_subscribe(&_mb_mqtt_handler.client,
-                                    topic_name,
-                                    topic_list->topic_len_list[i] - (uint16_t)1,
-                                    QOS1,
-                                    _group_callback,
-                                    (void *)process_topic);
+            topic_name,
+            topic_list->topic_len_list[i] - (uint16_t)1,
+            QOS1,
+            _group_callback,
+            (void*)process_topic);
         if (SUCCESS != rc) {
             VS_LOG_ERROR("Error subscribing %s : %d ", topic_name, rc);
         } else {
@@ -312,13 +318,15 @@ _connect_and_subscribe_to_topics(const char *client_id,
 
 /*************************************************************************/
 static vs_status_e
-_mqtt_process(void) {
+_mqtt_process(void)
+{
     return (SUCCESS == aws_iot_mqtt_yield(&_mb_mqtt_handler.client, VS_MQTT_TIMEOUT_MS)) ? VS_CODE_OK
                                                                                          : VS_CODE_ERR_CLOUD;
 }
 
 /******************************************************************************/
-const vs_cloud_message_bin_impl_t *
-vs_aws_message_bin_impl(void) {
+const vs_cloud_message_bin_impl_t*
+vs_aws_message_bin_impl(void)
+{
     return &_impl;
 }

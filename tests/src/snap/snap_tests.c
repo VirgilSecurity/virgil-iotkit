@@ -32,35 +32,35 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/iot/tests/helpers.h>
 #include <private/netif_test_impl.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/tests/helpers.h>
 
-
-static vs_netif_t *test_netif;
+static vs_netif_t* test_netif;
 
 /**********************************************************/
 static bool
-test_snap_init_deinit(void) {
+test_snap_init_deinit(void)
+{
 
-    const vs_device_manufacture_id_t manufacturer_id = {0};
-    const vs_device_type_t device_type = {0};
-    const vs_device_serial_t device_serial = {0};
+    const vs_device_manufacture_id_t manufacturer_id = { 0 };
+    const vs_device_type_t device_type = { 0 };
+    const vs_device_serial_t device_serial = { 0 };
     uint32_t device_roles = 0;
 
     netif_state.membuf = 0;
 
     CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
-          "vs_snap_init call");
+        "vs_snap_init call");
     CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_snap_init has not been called");
 
     CHECK(VS_CODE_OK == vs_snap_deinit(test_netif), "vs_snap_deinit call");
     CHECK((netif_state.deinitialized && !netif_state.initialized),
-          "netif operation vs_snap_deinit has not been called");
+        "netif operation vs_snap_deinit has not been called");
 
     CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
-          "vs_snap_init call");
+        "vs_snap_init call");
     CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_snap_init has not been called");
 
     return true;
@@ -72,7 +72,8 @@ terminate:
 
 /**********************************************************/
 static bool
-test_snap_send(void) {
+test_snap_send(void)
+{
     const uint16_t data_sz = sizeof(vs_snap_packet_t);
     uint8_t data[data_sz];
 
@@ -92,7 +93,8 @@ terminate:
 
 /**********************************************************/
 static bool
-test_snap_mac_addr(void) {
+test_snap_mac_addr(void)
+{
 
     vs_mac_addr_t mac_addr;
     netif_state.membuf = 0;
@@ -109,7 +111,8 @@ terminate:
 
 /**********************************************************/
 uint16_t
-vs_snap_tests(void) {
+vs_snap_tests(void)
+{
     uint16_t failed_test_result = 0;
 
     START_TEST("SNAP");

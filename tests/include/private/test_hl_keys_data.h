@@ -1,6 +1,7 @@
 #ifndef TEST_HL_KEYS_DATA_H
 #define TEST_HL_KEYS_DATA_H
 
+#include "stddef.h"
 extern const unsigned char recovery1_pub[];
 extern const size_t recovery1_pub_len;
 

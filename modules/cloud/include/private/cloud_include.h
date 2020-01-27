@@ -35,25 +35,25 @@
 #ifndef VS_CLOUD_INCLUDE_H
 #define VS_CLOUD_INCLUDE_H
 
-#include <trust_list-config.h>
-#include <stdlib-config.h>
-#include <update-config.h>
-#include <global-hal.h>
 #include <endian-config.h>
+#include <global-hal.h>
+#include <stdlib-config.h>
+#include <trust_list-config.h>
+#include <update-config.h>
 
+#include <virgil/iot/firmware/firmware_hal.h>
+#include <virgil/iot/json/json_parser.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/trust_list/tl_structs.h>
-#include <virgil/iot/firmware/firmware_hal.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
-#include <virgil/iot/json/json_parser.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/trust_list/trust_list.h>
 
 #include <virgil/iot/cloud/cloud.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
-#include <private/cloud_parse_manifest.h>
 #include <private/cloud_operations.h>
+#include <private/cloud_parse_manifest.h>
 #include <virgil/iot/cloud/base64.h>
 
 #endif // VS_CLOUD_INCLUDE_H

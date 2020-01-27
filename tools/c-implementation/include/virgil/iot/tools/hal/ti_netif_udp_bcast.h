@@ -35,14 +35,13 @@
 #ifndef VS_NETIF_UDP_BCAST_H
 #define VS_NETIF_UDP_BCAST_H
 
-
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-vs_netif_t *
+vs_netif_t*
 vs_hal_netif_udp_bcast();
 
 #ifdef __cplusplus

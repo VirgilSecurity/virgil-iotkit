@@ -7,9 +7,9 @@
  * Simple JSON Generator
  */
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib-config.h>
+#include <string.h>
 
 #include <virgil/iot/json/json_generator.h>
 #include <virgil/iot/json/json_parser.h>
@@ -17,16 +17,18 @@
 
 /* Utility to jump whitespace and cr/lf */
 /******************************************************************************/
-static const char *
-_skip(const char *in) {
+static const char*
+_skip(const char* in)
+{
     while (in && (unsigned char)*in <= 32)
         in++;
     return in;
 }
 
 /******************************************************************************/
-static const char *
-_rev_skip(const char *in) {
+static const char*
+_rev_skip(const char* in)
+{
     while (in && (unsigned char)*in <= 32)
         in--;
     return in;
@@ -35,7 +37,8 @@ _rev_skip(const char *in) {
 #ifdef CONFIG_JSON_FLOAT
 /******************************************************************************/
 static void
-_print_float(float val, short precision, char *str_val, int len_str_val) {
+_print_float(float val, short precision, char* str_val, int len_str_val)
+{
     int val_int, val_frac;
     int scale = 1;
     short pre_tmp = precision;
@@ -58,14 +61,16 @@ _print_float(float val, short precision, char *str_val, int len_str_val) {
 #else
 /******************************************************************************/
 static void
-_print_float(float val, short precision, char *str_val, size_t len_str_val) {
+_print_float(float val, short precision, char* str_val, size_t len_str_val)
+{
     VS_IOT_SNPRINTF(str_val, len_str_val, "\"unsupported\"");
 }
 #endif
 
 /******************************************************************************/
-const char *
-verify_json_start(const char *buff) {
+const char*
+verify_json_start(const char* buff)
+{
     buff = _skip(buff);
     if (*buff != '{' && *buff != '[') {
         VS_LOG_ERROR("Invalid JSON document");
@@ -77,7 +82,8 @@ verify_json_start(const char *buff) {
 
 /******************************************************************************/
 static int
-_verify_buffer_limit(struct json_str *jptr) {
+_verify_buffer_limit(struct json_str* jptr)
+{
     /*
      * Check for buffer overflow condition here, and then copy remaining
      * data using VS_IOT_SNPRINTF. This makes sure there is no mem corruption in
@@ -91,8 +97,8 @@ _verify_buffer_limit(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-void
-json_str_init(struct json_str *jptr, char *buff, int len) {
+void json_str_init(struct json_str* jptr, char* buff, int len)
+{
     jptr->buff = buff;
     VS_IOT_MEMSET(jptr->buff, 0, len);
     jptr->free_ptr = 0;
@@ -100,29 +106,29 @@ json_str_init(struct json_str *jptr, char *buff, int len) {
 }
 
 /******************************************************************************/
-void
-json_str_init_no_clear(struct json_str *jptr, char *buff, int len) {
+void json_str_init_no_clear(struct json_str* jptr, char* buff, int len)
+{
     jptr->buff = buff;
     jptr->free_ptr = 0;
     jptr->len = len;
 }
 
 /******************************************************************************/
-void
-json_str_finish(struct json_str *jptr) {
+void json_str_finish(struct json_str* jptr)
+{
     jptr->buff[jptr->free_ptr] = 0;
 }
 
 /******************************************************************************/
-int
-json_push_object(struct json_str *jptr, const char *name) {
-    char *buff;
+int json_push_object(struct json_str* jptr, const char* name)
+{
+    char* buff;
 
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
     /* From last skip cr/lf */
-    buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+    buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
     if (*buff != '{') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
 
@@ -133,15 +139,15 @@ json_push_object(struct json_str *jptr, const char *name) {
 }
 
 /******************************************************************************/
-int
-json_push_array_object(struct json_str *jptr, const char *name) {
-    char *buff;
+int json_push_array_object(struct json_str* jptr, const char* name)
+{
+    char* buff;
 
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
     /* From last skip cr/lf */
-    buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+    buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
     if (*buff != '{') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
 
@@ -152,9 +158,9 @@ json_push_array_object(struct json_str *jptr, const char *name) {
 }
 
 /******************************************************************************/
-int
-json_start_object(struct json_str *jptr) {
-    char *buff;
+int json_start_object(struct json_str* jptr)
+{
+    char* buff;
 
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
@@ -166,7 +172,7 @@ json_start_object(struct json_str *jptr) {
          * already present as case in array.
          */
         /* From last skip cr/lf */
-        buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+        buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
 
         if (*buff == '}')
             jptr->buff[jptr->free_ptr++] = ',';
@@ -176,8 +182,8 @@ json_start_object(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-int
-json_close_object(struct json_str *jptr) {
+int json_close_object(struct json_str* jptr)
+{
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
@@ -187,8 +193,8 @@ json_close_object(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-int
-json_pop_array_object(struct json_str *jptr) {
+int json_pop_array_object(struct json_str* jptr)
+{
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
@@ -198,14 +204,14 @@ json_pop_array_object(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-int
-json_start_array(struct json_str *jptr) {
-    char *buff;
+int json_start_array(struct json_str* jptr)
+{
+    char* buff;
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
     /* From last skip cr/lf */
-    buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+    buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
 
     if (*buff == ']')
         jptr->buff[jptr->free_ptr++] = ',';
@@ -215,8 +221,8 @@ json_start_array(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-int
-json_close_array(struct json_str *jptr) {
+int json_close_array(struct json_str* jptr)
+{
     if (_verify_buffer_limit(jptr) < 0)
         return -WM_E_JSON_OBUF;
 
@@ -225,9 +231,9 @@ json_close_array(struct json_str *jptr) {
 }
 
 /******************************************************************************/
-int
-json_set_array_value(struct json_str *jptr, char *str, int value, float val, json_data_types data) {
-    char *buff;
+int json_set_array_value(struct json_str* jptr, char* str, int value, float val, json_data_types data)
+{
+    char* buff;
 
     if (!verify_json_start(jptr->buff))
         return WM_E_JSON_INVSTART;
@@ -236,7 +242,7 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
         return -WM_E_JSON_OBUF;
 
     /* From last skip cr/lf */
-    buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+    buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
 
     if (*buff != '[') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
@@ -263,15 +269,15 @@ json_set_array_value(struct json_str *jptr, char *str, int value, float val, jso
 }
 
 /******************************************************************************/
-int
-json_set_object_value(struct json_str *jptr,
-                      const char *name,
-                      const char *str,
-                      int64_t value,
-                      float val,
-                      short precision,
-                      json_data_types data) {
-    char *buff;
+int json_set_object_value(struct json_str* jptr,
+    const char* name,
+    const char* str,
+    int64_t value,
+    float val,
+    short precision,
+    json_data_types data)
+{
+    char* buff;
 
     if (!verify_json_start(jptr->buff))
         return -WM_E_JSON_INVSTART;
@@ -280,7 +286,7 @@ json_set_object_value(struct json_str *jptr,
         return -WM_E_JSON_OBUF;
 
     /* From last skip cr/lf */
-    buff = (char *)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
+    buff = (char*)_rev_skip(&jptr->buff[jptr->free_ptr - 1]);
 
     if (*buff != '{') /* Element in object */
         jptr->buff[jptr->free_ptr++] = ',';
@@ -313,10 +319,10 @@ json_set_object_value(struct json_str *jptr,
 
     case JSON_VAL_UINT_64:
         VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr],
-                        jptr->len - jptr->free_ptr,
-                        "\"%s\":%llu",
-                        name,
-                        (unsigned long long)value);
+            jptr->len - jptr->free_ptr,
+            "\"%s\":%llu",
+            name,
+            (unsigned long long)value);
         break;
 
     case JSON_VAL_FLOAT:
@@ -326,10 +332,10 @@ json_set_object_value(struct json_str *jptr,
         break;
     case JSON_VAL_BOOL:
         VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr],
-                        jptr->len - jptr->free_ptr,
-                        "\"%s\":%s",
-                        name,
-                        (value == 1) ? "true" : "false");
+            jptr->len - jptr->free_ptr,
+            "\"%s\":%s",
+            name,
+            (value == 1) ? "true" : "false");
         break;
     case JSON_VAL_NULL:
         VS_IOT_SNPRINTF(&jptr->buff[jptr->free_ptr], jptr->len - jptr->free_ptr, "\"%s\":null", name);

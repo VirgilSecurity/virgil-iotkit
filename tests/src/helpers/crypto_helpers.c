@@ -32,47 +32,49 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdlib-config.h>
+#include <private/test_hl_keys_data.h>
 #include <stdbool.h>
+#include <stdlib-config.h>
 #include <stdlib.h>
 #include <virgil/iot/tests/helpers.h>
-#include <private/test_hl_keys_data.h>
 
 #include <trust_list-config.h>
 
 #include <virgil/iot/logger/logger.h>
-#include <virgil/iot/secmodule/secmodule.h>
-#include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <virgil/iot/provision/provision.h>
+#include <virgil/iot/secmodule/secmodule-helpers.h>
+#include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/trust_list/trust_list.h>
 
 /******************************************************************************/
 static bool
-_save_hl_key(vs_secmodule_impl_t *secmodule_impl,
-             size_t slot,
-             const char *id_str,
-             const uint8_t *in_data,
-             uint16_t data_sz) {
+_save_hl_key(vs_secmodule_impl_t* secmodule_impl,
+    size_t slot,
+    const char* id_str,
+    const uint8_t* in_data,
+    uint16_t data_sz)
+{
 
     STATUS_CHECK_RET_BOOL(
-            secmodule_impl->slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
+        secmodule_impl->slot_save(slot, in_data, data_sz), "Unable to save data to slot = %d (%s)", slot, id_str);
 
     return true;
 }
 
 /**********************************************************/
 static bool
-_create_test_signed_hl_key(vs_secmodule_impl_t *secmodule_impl,
-                           vs_key_type_e hl_key_type,
-                           vs_iot_secmodule_slot_e slot_with_hl_keypair,
-                           vs_iot_secmodule_slot_e slot_to_save_pubkey,
-                           bool with_signature) {
+_create_test_signed_hl_key(vs_secmodule_impl_t* secmodule_impl,
+    vs_key_type_e hl_key_type,
+    vs_iot_secmodule_slot_e slot_with_hl_keypair,
+    vs_iot_secmodule_slot_e slot_to_save_pubkey,
+    bool with_signature)
+{
     uint8_t buf[PUBKEY_MAX_BUF_SIZE];
     uint8_t hash_buf[32];
     int key_len = vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
     int sign_len = vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint16_t hl_slot_sz = sizeof(vs_pubkey_dated_t) + key_len + sizeof(vs_sign_t) + sign_len + key_len;
-    vs_pubkey_dated_t *hl_key = (vs_pubkey_dated_t *)buf;
+    vs_pubkey_dated_t* hl_key = (vs_pubkey_dated_t*)buf;
     vs_secmodule_keypair_type_e pubkey_type;
     uint16_t _sz;
 
@@ -83,46 +85,37 @@ _create_test_signed_hl_key(vs_secmodule_impl_t *secmodule_impl,
     hl_key->pubkey.key_type = hl_key_type;
     hl_key->pubkey.meta_data_sz = 0;
 
-    BOOL_CHECK_RET(VS_CODE_OK ==
-                           secmodule_impl->get_pubkey(
-                                   slot_with_hl_keypair, hl_key->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
-                   "Error get test pubkey");
+    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->get_pubkey(slot_with_hl_keypair, hl_key->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
+        "Error get test pubkey");
 
     if (with_signature) {
         STATUS_CHECK_RET_BOOL(
-                secmodule_impl->hash(
-                        VS_HASH_SHA_256, buf, sizeof(vs_pubkey_dated_t) + key_len, hash_buf, sizeof(hash_buf), &_sz),
-                "ERROR while creating hash for test key");
+            secmodule_impl->hash(
+                VS_HASH_SHA_256, buf, sizeof(vs_pubkey_dated_t) + key_len, hash_buf, sizeof(hash_buf), &_sz),
+            "ERROR while creating hash for test key");
 
-        vs_sign_t *sign = (vs_sign_t *)(hl_key->pubkey.meta_and_pubkey + key_len);
+        vs_sign_t* sign = (vs_sign_t*)(hl_key->pubkey.meta_and_pubkey + key_len);
         sign->signer_type = VS_KEY_RECOVERY;
         sign->hash_type = VS_HASH_SHA_256;
         sign->ec_type = VS_KEYPAIR_EC_SECP256R1;
 
         BOOL_CHECK_RET(
-                VS_CODE_OK ==
-                        secmodule_impl->ecdsa_sign(
-                                TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
-                "Error sign test pubkey");
+            VS_CODE_OK == secmodule_impl->ecdsa_sign(TEST_REC_KEYPAIR, VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
+            "Error sign test pubkey");
 
-        BOOL_CHECK_RET(VS_CODE_OK ==
-                               secmodule_impl->get_pubkey(
-                                       TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
-                       "Error get test RECOVERY pubkey");
+        BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->get_pubkey(TEST_REC_KEYPAIR, sign->raw_sign_pubkey + sign_len, key_len, &_sz, &pubkey_type),
+            "Error get test RECOVERY pubkey");
     }
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->slot_save(slot_to_save_pubkey, buf, hl_slot_sz),
-                   "Error save test pubkey");
+        "Error save test pubkey");
     return true;
 }
 
 /**********************************************************/
-bool
-vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl) {
+bool vs_test_erase_otp_provision(vs_secmodule_impl_t* secmodule_impl)
+{
     VS_HEADER_SUBCASE("Erase otp slots");
-    if (VS_CODE_OK != secmodule_impl->slot_clean(PRIVATE_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(REC1_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(REC2_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(SIGNATURE_SLOT)) {
+    if (VS_CODE_OK != secmodule_impl->slot_clean(PRIVATE_KEY_SLOT) || VS_CODE_OK != secmodule_impl->slot_clean(REC1_KEY_SLOT) || VS_CODE_OK != secmodule_impl->slot_clean(REC2_KEY_SLOT) || VS_CODE_OK != secmodule_impl->slot_clean(SIGNATURE_SLOT)) {
         VS_LOG_ERROR("[AP] Error. Can't erase OTP slots. ");
         return false;
     }
@@ -130,17 +123,17 @@ vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl) {
 }
 
 /**********************************************************/
-bool
-vs_test_create_device_key(vs_secmodule_impl_t *secmodule_impl) {
+bool vs_test_create_device_key(vs_secmodule_impl_t* secmodule_impl)
+{
     VS_HEADER_SUBCASE("Create device keypair");
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create device key");
+        "Error create device key");
     return true;
 }
 
 /**********************************************************/
-bool
-vs_test_save_hl_pubkeys(vs_secmodule_impl_t *secmodule_impl) {
+bool vs_test_save_hl_pubkeys(vs_secmodule_impl_t* secmodule_impl)
+{
     bool res = true;
     res &= _save_hl_key(secmodule_impl, REC1_KEY_SLOT, "PBR1", recovery1_pub, recovery1_pub_len);
     res &= _save_hl_key(secmodule_impl, REC2_KEY_SLOT, "PBR2", recovery2_pub, recovery2_pub_len);
@@ -158,33 +151,34 @@ vs_test_save_hl_pubkeys(vs_secmodule_impl_t *secmodule_impl) {
 }
 
 /**********************************************************/
-bool
-vs_test_create_test_hl_keys(vs_secmodule_impl_t *secmodule_impl) {
+bool vs_test_create_test_hl_keys(vs_secmodule_impl_t* secmodule_impl)
+{
     VS_HEADER_SUBCASE("Create test hl keys");
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(TEST_REC_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test recovery keypair");
+        "Error create test recovery keypair");
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(TEST_AUTH_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test auth keypair");
+        "Error create test auth keypair");
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(TEST_FW_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test FW keypair");
+        "Error create test FW keypair");
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(TEST_TL_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test TL keypair");
+        "Error create test TL keypair");
 
     BOOL_CHECK_RET(_create_test_signed_hl_key(secmodule_impl, VS_KEY_RECOVERY, TEST_REC_KEYPAIR, REC1_KEY_SLOT, false),
-                   "Error while creating signed test rec key");
+        "Error while creating signed test rec key");
     BOOL_CHECK_RET(_create_test_signed_hl_key(secmodule_impl, VS_KEY_AUTH, TEST_AUTH_KEYPAIR, AUTH1_KEY_SLOT, true),
-                   "Error while creating signed test auth key");
+        "Error while creating signed test auth key");
     BOOL_CHECK_RET(_create_test_signed_hl_key(secmodule_impl, VS_KEY_FIRMWARE, TEST_FW_KEYPAIR, FW1_KEY_SLOT, true),
-                   "Error while creating signed test FW key");
+        "Error while creating signed test FW key");
     BOOL_CHECK_RET(_create_test_signed_hl_key(secmodule_impl, VS_KEY_TRUSTLIST, TEST_TL_KEYPAIR, TL1_KEY_SLOT, true),
-                   "Error while creating signed test TL key");
+        "Error while creating signed test TL key");
 
     return true;
 }
 
 /******************************************************************************/
 static vs_status_e
-_save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t *data, uint16_t size) {
+_save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t* data, uint16_t size)
+{
     vs_tl_element_info_t info;
     info.id = el;
     info.index = index;
@@ -193,19 +187,19 @@ _save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t *data, uint16_t 
 }
 
 /**********************************************************/
-bool
-vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
+bool vs_test_create_test_tl(vs_secmodule_impl_t* secmodule_impl)
+{
     const vs_key_type_e signer_key_type_list[VS_TL_SIGNATURES_QTY] = VS_TL_SIGNER_TYPE_LIST;
-    const vs_iot_secmodule_slot_e signer_key_slots_list[VS_TL_SIGNATURES_QTY] = {TEST_AUTH_KEYPAIR, TEST_TL_KEYPAIR};
+    const vs_iot_secmodule_slot_e signer_key_slots_list[VS_TL_SIGNATURES_QTY] = { TEST_AUTH_KEYPAIR, TEST_TL_KEYPAIR };
 
     vs_tl_header_t test_header = {
-            .version.major = 0,
-            .version.minor = 0,
-            .version.patch = 0,
-            .version.build = 0,
-            .version.timestamp = 0,
-            .signatures_count = VS_TL_SIGNATURES_QTY,
-            .pub_keys_count = 1,
+        .version.major = 0,
+        .version.minor = 0,
+        .version.patch = 0,
+        .version.build = 0,
+        .version.timestamp = 0,
+        .signatures_count = VS_TL_SIGNATURES_QTY,
+        .pub_keys_count = 1,
     };
     vs_tl_header_t net_header;
     uint16_t key_len = (uint16_t)vs_secmodule_get_pubkey_len(VS_KEYPAIR_EC_SECP256R1);
@@ -220,7 +214,7 @@ vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
     test_header.tl_size = sizeof(vs_tl_header_t) + key_el_sz + footer_sz;
 
     uint8_t buf[key_el_sz > footer_sz ? key_el_sz : footer_sz];
-    vs_pubkey_dated_t *key_el = (vs_pubkey_dated_t *)buf;
+    vs_pubkey_dated_t* key_el = (vs_pubkey_dated_t*)buf;
     VS_IOT_MEMSET(buf, 0, sizeof(buf));
 
     uint16_t _sz;
@@ -232,32 +226,29 @@ vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
     key_el->pubkey.key_type = VS_KEY_FACTORY;
     key_el->pubkey.meta_data_sz = 0;
 
-
     BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->create_keypair(TEST_USER_KEYPAIR, VS_KEYPAIR_EC_SECP256R1),
-                   "Error create test recovery keypair");
+        "Error create test recovery keypair");
 
-    BOOL_CHECK_RET(VS_CODE_OK ==
-                           secmodule_impl->get_pubkey(
-                                   TEST_USER_KEYPAIR, key_el->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
-                   "Error get test pubkey");
+    BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->get_pubkey(TEST_USER_KEYPAIR, key_el->pubkey.meta_and_pubkey, key_len, &_sz, &pubkey_type),
+        "Error get test pubkey");
 
     vs_tl_header_to_net(&test_header, &net_header);
-    secmodule_impl->hash_update(&ctx, (uint8_t *)&net_header, sizeof(vs_tl_header_t));
+    secmodule_impl->hash_update(&ctx, (uint8_t*)&net_header, sizeof(vs_tl_header_t));
 
-    BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)&net_header, sizeof(vs_tl_header_t)),
-                   "Error write tl header");
+    BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t*)&net_header, sizeof(vs_tl_header_t)),
+        "Error write tl header");
 
     secmodule_impl->hash_update(&ctx, buf, key_el_sz);
     BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, 0, buf, key_el_sz), "Error write tl key");
 
     uint16_t i;
 
-    vs_tl_footer_t *footer = (vs_tl_footer_t *)buf;
+    vs_tl_footer_t* footer = (vs_tl_footer_t*)buf;
     footer->tl_type = 0;
-    secmodule_impl->hash_update(&ctx, (uint8_t *)&footer->tl_type, sizeof(footer->tl_type));
+    secmodule_impl->hash_update(&ctx, (uint8_t*)&footer->tl_type, sizeof(footer->tl_type));
     secmodule_impl->hash_finish(&ctx, hash_buf);
 
-    vs_sign_t *sign = (vs_sign_t *)(footer->signatures);
+    vs_sign_t* sign = (vs_sign_t*)(footer->signatures);
 
     for (i = 0; i < VS_TL_SIGNATURES_QTY; ++i) {
         uint8_t signer_key[key_len];
@@ -266,20 +257,14 @@ vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
         sign->hash_type = VS_HASH_SHA_256;
         sign->ec_type = VS_KEYPAIR_EC_SECP256R1;
 
-        BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->get_pubkey(
-                                             signer_key_slots_list[i], signer_key, key_len, &_sz, &pubkey_type),
-                       "Error get test pubkey");
+        BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->get_pubkey(signer_key_slots_list[i], signer_key, key_len, &_sz, &pubkey_type),
+            "Error get test pubkey");
 
-        BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->ecdsa_sign(signer_key_slots_list[i],
-                                                                VS_HASH_SHA_256,
-                                                                hash_buf,
-                                                                sign->raw_sign_pubkey,
-                                                                sign_len,
-                                                                &_sz),
-                       "Error sign test pubkey");
+        BOOL_CHECK_RET(VS_CODE_OK == secmodule_impl->ecdsa_sign(signer_key_slots_list[i], VS_HASH_SHA_256, hash_buf, sign->raw_sign_pubkey, sign_len, &_sz),
+            "Error sign test pubkey");
         VS_IOT_MEMCPY(sign->raw_sign_pubkey + sign_len, signer_key, key_len);
 
-        sign = (vs_sign_t *)((uint8_t *)sign + sizeof(vs_sign_t) + key_len + sign_len);
+        sign = (vs_sign_t*)((uint8_t*)sign + sizeof(vs_sign_t) + key_len + sign_len);
     }
 
     BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLF, 0, buf, footer_sz), "Error write tl footer");
@@ -288,8 +273,9 @@ vs_test_create_test_tl(vs_secmodule_impl_t *secmodule_impl) {
 }
 
 /******************************************************************************/
-const char *
-vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot) {
+const char*
+vs_test_secmodule_slot_descr(vs_iot_secmodule_slot_e slot)
+{
     switch (slot) {
     case VS_KEY_SLOT_STD_OTP_0:
         return "STD_OTP_0";

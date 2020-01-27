@@ -72,8 +72,8 @@
 
 #if PRVS_CLIENT
 
-#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
@@ -93,7 +93,7 @@ extern "C" {
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int *condition, int expect);
+typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int* condition, int expect);
 
 /** Wait implementation
  *
@@ -105,12 +105,12 @@ typedef vs_status_e (*vs_snap_prvs_stop_wait_t)(int *condition, int expect);
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int *condition, int idle);
+typedef vs_status_e (*vs_snap_prvs_wait_t)(uint32_t wait_ms, int* condition, int idle);
 
 /** PRVS client implementation */
 typedef struct {
     vs_snap_prvs_stop_wait_t stop_wait_func; /**< Stop waiting implementation */
-    vs_snap_prvs_wait_t wait_func;           /**< Wait implementation */
+    vs_snap_prvs_wait_t wait_func; /**< Wait implementation */
 } vs_snap_prvs_client_impl_t;
 
 /** PRVS Client SNAP Service implementation
@@ -121,7 +121,7 @@ typedef struct {
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
-const vs_snap_service_t *
+const vs_snap_service_t*
 vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
 
 /** Enumerate devices, which don't have initialization provision yet
@@ -135,7 +135,7 @@ vs_snap_prvs_client(vs_snap_prvs_client_impl_t impl);
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *list, uint32_t wait_ms);
+vs_snap_prvs_enum_devices(const vs_netif_t* netif, vs_snap_prvs_dnid_list_t* list, uint32_t wait_ms);
 
 /** Save provision
  *
@@ -151,11 +151,11 @@ vs_snap_prvs_enum_devices(const vs_netif_t *netif, vs_snap_prvs_dnid_list_t *lis
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_save_provision(const vs_netif_t *netif,
-                            const vs_mac_addr_t *mac,
-                            uint8_t *asav_res,
-                            uint16_t buf_sz,
-                            uint32_t wait_ms);
+vs_snap_prvs_save_provision(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    uint8_t* asav_res,
+    uint16_t buf_sz,
+    uint32_t wait_ms);
 
 /** Request device information
  *
@@ -170,11 +170,11 @@ vs_snap_prvs_save_provision(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_device_info(const vs_netif_t *netif,
-                         const vs_mac_addr_t *mac,
-                         vs_snap_prvs_devi_t *device_info,
-                         uint16_t buf_sz,
-                         uint32_t wait_ms);
+vs_snap_prvs_device_info(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_devi_t* device_info,
+    uint16_t buf_sz,
+    uint32_t wait_ms);
 
 /** Sign data
  *
@@ -192,14 +192,14 @@ vs_snap_prvs_device_info(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_sign_data(const vs_netif_t *netif,
-                       const vs_mac_addr_t *mac,
-                       const uint8_t *data,
-                       uint16_t data_sz,
-                       uint8_t *signature,
-                       uint16_t buf_sz,
-                       uint16_t *signature_sz,
-                       uint32_t wait_ms);
+vs_snap_prvs_sign_data(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint8_t* signature,
+    uint16_t buf_sz,
+    uint16_t* signature_sz,
+    uint32_t wait_ms);
 
 /** Set data
  *
@@ -217,12 +217,12 @@ vs_snap_prvs_sign_data(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_set(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_snap_prvs_element_e element,
-                 const uint8_t *data,
-                 uint16_t data_sz,
-                 uint32_t wait_ms);
+vs_snap_prvs_set(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_element_e element,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms);
 
 /** Get data
  *
@@ -241,13 +241,13 @@ vs_snap_prvs_set(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_get(const vs_netif_t *netif,
-                 const vs_mac_addr_t *mac,
-                 vs_snap_prvs_element_e element,
-                 uint8_t *data,
-                 uint16_t buf_sz,
-                 uint16_t *data_sz,
-                 uint32_t wait_ms);
+vs_snap_prvs_get(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    vs_snap_prvs_element_e element,
+    uint8_t* data,
+    uint16_t buf_sz,
+    uint16_t* data_sz,
+    uint32_t wait_ms);
 
 /** Set Trust List header
  *
@@ -263,12 +263,11 @@ vs_snap_prvs_get(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_set_tl_header(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms);
-
+vs_snap_prvs_set_tl_header(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms);
 
 /** Set Trust List footer
  *
@@ -282,11 +281,11 @@ vs_snap_prvs_set_tl_header(const vs_netif_t *netif,
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_snap_prvs_set_tl_footer(const vs_netif_t *netif,
-                           const vs_mac_addr_t *mac,
-                           const uint8_t *data,
-                           uint16_t data_sz,
-                           uint32_t wait_ms);
+vs_snap_prvs_set_tl_footer(const vs_netif_t* netif,
+    const vs_mac_addr_t* mac,
+    const uint8_t* data,
+    uint16_t data_sz,
+    uint32_t wait_ms);
 
 #ifdef __cplusplus
 } // extern "C"

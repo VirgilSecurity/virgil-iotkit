@@ -35,9 +35,9 @@
 #ifndef CLOUD_PARSE_MANIFEST_H
 #define CLOUD_PARSE_MANIFEST_H
 
-#include <stdint.h>
-#include <stddef.h>
 #include <global-hal.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <virgil/iot/status_code/status_code.h>
 
 #define VS_MANUFACTURE_ID_STR_LEN (32 + 1)
@@ -82,9 +82,9 @@ typedef struct {
 #define VS_TL_TYPE_FIELD "type"
 
 vs_status_e
-vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version);
+vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t* new_tl_version);
 
 vs_status_e
-vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc);
+vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t* new_desc);
 
 #endif // CLOUD_PARSE_MANIFEST_H

@@ -43,7 +43,7 @@ endif()
 #
 #   SNAP convert code generator
 #
-add_go_executable(vs-tool-snap-codgen snap-codgen)
+add_go_executable(vs-tool-snap-codgen vs-tool-snap-codgen)
 
 
 #

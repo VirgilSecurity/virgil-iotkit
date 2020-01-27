@@ -123,9 +123,9 @@
 
 #define MOD_JSON 7
 
+#include "jsmn.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "jsmn.h"
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
@@ -194,11 +194,11 @@ typedef struct {
     /** Internal JSON parser object */
     json_parser_t parser;
     /** Pointer to JSON string */
-    char *js;
+    char* js;
     /** Pointer to JSON tokens array */
-    jsontok_t *tokens;
+    jsontok_t* tokens;
     /** Pointer to current active JSON token */
-    jsontok_t *cur;
+    jsontok_t* cur;
     /** Number of tokens available for parser*/
     int num_tokens;
 } jobj_t;
@@ -236,8 +236,7 @@ typedef struct {
  * JSON array
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_len);
+int json_init(jobj_t* jobj, jsontok_t* tokens, int num_tokens, char* js, size_t js_len);
 
 /** Start JSON Parsing
  *
@@ -271,8 +270,7 @@ json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_l
  * JSON array
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_parse_start(jobj_t *jobj, char *js, size_t js_len);
+int json_parse_start(jobj_t* jobj, char* js, size_t js_len);
 
 /** Stop JSON Parsing
  *
@@ -282,8 +280,7 @@ json_parse_start(jobj_t *jobj, char *js, size_t js_len);
  * \param[in] jobj Pointer to the same JSON object that was passed to
  * json_parse_start()
  */
-void
-json_parse_stop(jobj_t *jobj);
+void json_parse_stop(jobj_t* jobj);
 
 /** Find out if the current object is a JSON Object
  *
@@ -292,8 +289,7 @@ json_parse_stop(jobj_t *jobj);
  * \return true if it is an object
  * \return false if it is not an object
  */
-bool
-json_is_object(jobj_t *jobj);
+bool json_is_object(jobj_t* jobj);
 
 /** Find out if the current object is a JSON Array
  *
@@ -302,8 +298,7 @@ json_is_object(jobj_t *jobj);
  * \return true if it is an array
  * \return false if it is not an array
  */
-bool
-json_is_array(jobj_t *jobj);
+bool json_is_array(jobj_t* jobj);
 /** Get JSON bool value
  *
  * Gets the value of a JSON boolean element from an object based on
@@ -322,8 +317,7 @@ json_is_array(jobj_t *jobj);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_bool(jobj_t *jobj, char *key, bool *value);
+int json_get_val_bool(jobj_t* jobj, char* key, bool* value);
 
 /** Get JSON integer value
  *
@@ -343,8 +337,7 @@ json_get_val_bool(jobj_t *jobj, char *key, bool *value);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_int(jobj_t *jobj, char *key, int *value);
+int json_get_val_int(jobj_t* jobj, char* key, int* value);
 
 /** Get 64bit JSON integer value
  *
@@ -364,8 +357,7 @@ json_get_val_int(jobj_t *jobj, char *key, int *value);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_int64(jobj_t *jobj, char *key, int64_t *value);
+int json_get_val_int64(jobj_t* jobj, char* key, int64_t* value);
 
 /** Get JSON float value
  *
@@ -385,8 +377,7 @@ json_get_val_int64(jobj_t *jobj, char *key, int64_t *value);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_float(jobj_t *jobj, char *key, float *value);
+int json_get_val_float(jobj_t* jobj, char* key, float* value);
 
 /** Get JSON string value
  *
@@ -408,8 +399,7 @@ json_get_val_float(jobj_t *jobj, char *key, float *value);
  * \return -WM_E_JSON_NOMEM if the buffer provided was insufficient.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_str(jobj_t *jobj, char *key, char *value, int max_len);
+int json_get_val_str(jobj_t* jobj, char* key, char* value, int max_len);
 
 /** Get JSON string length
  *
@@ -431,8 +421,7 @@ json_get_val_str(jobj_t *jobj, char *key, char *value, int max_len);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_val_str_len(jobj_t *jobj, char *key, int *len);
+int json_get_val_str_len(jobj_t* jobj, char* key, int* len);
 
 /** Get JSON composite object
  *
@@ -453,8 +442,7 @@ json_get_val_str_len(jobj_t *jobj, char *key, int *len);
  * object or the object found was itself not a valid JSON object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_composite_object(jobj_t *jobj, char *key);
+int json_get_composite_object(jobj_t* jobj, char* key);
 
 /** Release a JSON composite object
  *
@@ -468,8 +456,7 @@ json_get_composite_object(jobj_t *jobj, char *key);
  * \return WM_SUCCESS on success.
  * \return -WM_E_JSON_FAIL if any error was encountered.
  */
-int
-json_release_composite_object(jobj_t *jobj);
+int json_release_composite_object(jobj_t* jobj);
 
 /** Get JSON array object
  *
@@ -491,8 +478,7 @@ json_release_composite_object(jobj_t *jobj);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_get_array_object(jobj_t *jobj, char *key, int *num_elements);
+int json_get_array_object(jobj_t* jobj, char* key, int* num_elements);
 
 /** Release a JSON array object
  *
@@ -506,8 +492,7 @@ json_get_array_object(jobj_t *jobj, char *key, int *num_elements);
  * \return WM_SUCCESS on success.
  * \return -WM_E_JSON_FAIL if any error was encountered.
  */
-int
-json_release_array_object(jobj_t *jobj);
+int json_release_array_object(jobj_t* jobj);
 
 /** Get number of elements in an array
  *
@@ -518,8 +503,7 @@ json_release_array_object(jobj_t *jobj);
  * \return Number of elements in the JSON Array
  * \return -WM_FAIL if the current scope is not an array
  */
-int
-json_array_get_num_elements(jobj_t *jobj);
+int json_array_get_num_elements(jobj_t* jobj);
 
 /** Get JSON bool value from array
  *
@@ -539,8 +523,7 @@ json_array_get_num_elements(jobj_t *jobj);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_bool(jobj_t *jobj, uint16_t index, bool *value);
+int json_array_get_bool(jobj_t* jobj, uint16_t index, bool* value);
 
 /** Get JSON integer value from array
  *
@@ -560,8 +543,7 @@ json_array_get_bool(jobj_t *jobj, uint16_t index, bool *value);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_int(jobj_t *jobj, uint16_t index, int *value);
+int json_array_get_int(jobj_t* jobj, uint16_t index, int* value);
 
 /** Get 64bit JSON integer value from array
  *
@@ -581,8 +563,7 @@ json_array_get_int(jobj_t *jobj, uint16_t index, int *value);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_int64(jobj_t *jobj, uint16_t index, int64_t *value);
+int json_array_get_int64(jobj_t* jobj, uint16_t index, int64_t* value);
 
 /** Get JSON float value from array
  *
@@ -602,8 +583,7 @@ json_array_get_int64(jobj_t *jobj, uint16_t index, int64_t *value);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_float(jobj_t *jobj, uint16_t index, float *value);
+int json_array_get_float(jobj_t* jobj, uint16_t index, float* value);
 
 /** Get JSON string value from array
  *
@@ -625,8 +605,7 @@ json_array_get_float(jobj_t *jobj, uint16_t index, float *value);
  * \return -WM_E_JSON_NOMEM if the buffer provided was insufficient.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_str(jobj_t *jobj, uint16_t index, char *value, int maxlen);
+int json_array_get_str(jobj_t* jobj, uint16_t index, char* value, int maxlen);
 
 /** Get JSON string length from array
  *
@@ -648,8 +627,7 @@ json_array_get_str(jobj_t *jobj, uint16_t index, char *value, int maxlen);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_str_len(jobj_t *jobj, uint16_t index, int *len);
+int json_array_get_str_len(jobj_t* jobj, uint16_t index, int* len);
 
 /** Get JSON composite object from array
  *
@@ -672,8 +650,7 @@ json_array_get_str_len(jobj_t *jobj, uint16_t index, int *len);
  * object.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_composite_object(jobj_t *jobj, uint16_t index);
+int json_array_get_composite_object(jobj_t* jobj, uint16_t index);
 
 /** Release a JSON composite object from an array
  *
@@ -687,8 +664,7 @@ json_array_get_composite_object(jobj_t *jobj, uint16_t index);
  * \return WM_SUCCESS on success.
  * \return -WM_E_JSON_FAIL if any error was encountered.
  */
-int
-json_array_release_composite_object(jobj_t *jobj);
+int json_array_release_composite_object(jobj_t* jobj);
 
 /** Get JSON array object from array
  *
@@ -711,8 +687,7 @@ json_array_release_composite_object(jobj_t *jobj);
  * array.
  * \return -WM_E_JSON_FAIL if any other error was encountered.
  */
-int
-json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements);
+int json_array_get_array_object(jobj_t* jobj, uint16_t index, int* num_elements);
 
 /** Release a JSON array object from an array
  *
@@ -726,8 +701,7 @@ json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements);
  * \return WM_SUCCESS on success.
  * \return -WM_E_JSON_FAIL if any error was encountered.
  */
-int
-json_array_release_array_object(jobj_t *jobj);
+int json_array_release_array_object(jobj_t* jobj);
 
 #ifdef __cplusplus
 } // extern "C"

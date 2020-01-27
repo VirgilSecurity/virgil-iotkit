@@ -32,19 +32,19 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <unistd.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /******************************************************************************/
-void
-vs_impl_msleep(size_t msec) {
+void vs_impl_msleep(size_t msec)
+{
     usleep(msec * 1000);
 }
 
 /******************************************************************************/
-bool
-vs_logger_output_hal(const char *buffer) {
+bool vs_logger_output_hal(const char* buffer)
+{
     if (!buffer) {
         return false;
     }
