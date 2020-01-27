@@ -74,20 +74,16 @@ test_keypair(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     _test_case_t test_cases[] = {
-#if USE_RSA
-        {.slot = VS_KEY_SLOT_EXT_MTP_0, .keypair_type = VS_KEYPAIR_RSA_2048, .expected_size = 256},
-#endif // USE_RSA
-        {.slot = VS_KEY_SLOT_STD_MTP_0, .keypair_type = VS_KEYPAIR_EC_SECP192R1, .expected_size = 49},
-        {.slot = VS_KEY_SLOT_STD_MTP_1, .keypair_type = VS_KEYPAIR_EC_SECP224R1, .expected_size = 57},
-        {.slot = VS_KEY_SLOT_STD_MTP_2, .keypair_type = VS_KEYPAIR_EC_SECP256R1, .expected_size = 65},
-        {.slot = VS_KEY_SLOT_STD_MTP_3, .keypair_type = VS_KEYPAIR_EC_SECP384R1, .expected_size = 97},
-        {.slot = VS_KEY_SLOT_EXT_TMP_0, .keypair_type = VS_KEYPAIR_EC_SECP521R1, .expected_size = 133},
-        {.slot = VS_KEY_SLOT_STD_MTP_4, .keypair_type = VS_KEYPAIR_EC_SECP192K1, .expected_size = 49},
-        {.slot = VS_KEY_SLOT_STD_MTP_5, .keypair_type = VS_KEYPAIR_EC_SECP224K1, .expected_size = 57},
-        {.slot = VS_KEY_SLOT_STD_MTP_6, .keypair_type = VS_KEYPAIR_EC_SECP256K1, .expected_size = 65},
-        {.slot = VS_KEY_SLOT_STD_MTP_7, .keypair_type = VS_KEYPAIR_EC_CURVE25519, .expected_size = 32},
-        {.slot = VS_KEY_SLOT_STD_MTP_8, .keypair_type = VS_KEYPAIR_EC_ED25519, .expected_size = 32}
-    };
+            {.slot = VS_KEY_SLOT_STD_MTP_0, .keypair_type = VS_KEYPAIR_EC_SECP192R1, .expected_size = 49},
+            {.slot = VS_KEY_SLOT_STD_MTP_1, .keypair_type = VS_KEYPAIR_EC_SECP224R1, .expected_size = 57},
+            {.slot = VS_KEY_SLOT_STD_MTP_2, .keypair_type = VS_KEYPAIR_EC_SECP256R1, .expected_size = 65},
+            {.slot = VS_KEY_SLOT_STD_MTP_3, .keypair_type = VS_KEYPAIR_EC_SECP384R1, .expected_size = 97},
+            {.slot = VS_KEY_SLOT_EXT_TMP_0, .keypair_type = VS_KEYPAIR_EC_SECP521R1, .expected_size = 133},
+            {.slot = VS_KEY_SLOT_STD_MTP_4, .keypair_type = VS_KEYPAIR_EC_SECP192K1, .expected_size = 49},
+            {.slot = VS_KEY_SLOT_STD_MTP_5, .keypair_type = VS_KEYPAIR_EC_SECP224K1, .expected_size = 57},
+            {.slot = VS_KEY_SLOT_STD_MTP_6, .keypair_type = VS_KEYPAIR_EC_SECP256K1, .expected_size = 65},
+            {.slot = VS_KEY_SLOT_STD_MTP_7, .keypair_type = VS_KEYPAIR_EC_CURVE25519, .expected_size = 32},
+            {.slot = VS_KEY_SLOT_STD_MTP_8, .keypair_type = VS_KEYPAIR_EC_ED25519, .expected_size = 32}};
 
     static const size_t cases_amount = sizeof(test_cases) / sizeof(test_cases[0]);
     size_t pos;

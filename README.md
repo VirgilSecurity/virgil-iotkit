@@ -103,13 +103,7 @@ To start working with Virgil IoTKit the following components are required:
 - [Golang](https://golang.org/) to compile Virgil IoT dev tools
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/)
-- Virgil Crypto library
 
-
-To install the Virgil Crypto library run the `install-virgil-crypto.sh` from the scripts folder of the Virgil IoTKit:
-```
-$ scripts/install-virgil-crypto.sh
-```
 
 ### Ubuntu, Debian, Raspbian OS
 To download and install the Virgil IoTKit on Ubuntu, use the following command:

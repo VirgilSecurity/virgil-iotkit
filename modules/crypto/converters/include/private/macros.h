@@ -48,7 +48,7 @@
 #define NOT_ZERO(VAL)                                                                                                  \
     do {                                                                                                               \
         if (!(VAL)) {                                                                                                  \
-            return -1;                                                                                                 \
+            return (false);                                                                                            \
         }                                                                                                              \
     } while (0)
 

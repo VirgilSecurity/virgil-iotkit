@@ -66,9 +66,6 @@ _coord_sz(vs_secmodule_keypair_type_e keypair_type) {
     case VS_KEYPAIR_EC_CURVE25519:
     case VS_KEYPAIR_EC_ED25519:
         return 32;
-    case VS_KEYPAIR_RSA_2048:
-        return 256;
-
     default:
         return 0;
     }
@@ -103,9 +100,6 @@ _raw_ec_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
     const int component_sz = _coord_sz(keypair_type);
     mbedtls_mpi r, s;
 
-    NOT_ZERO(raw);
-    NOT_ZERO(signature_sz);
-
     CHECK_BOOL_GOTO(buf_sz >= MBEDTLS_ECDSA_MAX_LEN, -1);
 
     mbedtls_mpi_init(&r);
@@ -125,7 +119,7 @@ _raw_ec_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
     MBEDTLS_ASN1_CHK_ADD(len, mbedtls_asn1_write_len(&p, signature, len));
     MBEDTLS_ASN1_CHK_ADD(len, mbedtls_asn1_write_tag(&p, signature, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE));
 
-    VS_IOT_MEMCPY(signature, p, len);
+    VS_IOT_MEMMOVE(signature, p, len);
     *signature_sz = len;
 
 terminate:
@@ -136,7 +130,7 @@ terminate:
     return res == 0;
 }
 
-///*******************************************************************************/
+/*******************************************************************************/
 bool
 vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                                   const unsigned char *raw,
@@ -144,9 +138,16 @@ vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                                   unsigned char *signature,
                                   uint16_t buf_sz,
                                   uint16_t *signature_sz) {
-    bool res = false;
+    bool res;
+
+    VS_IOT_ASSERT(raw);
+    VS_IOT_ASSERT(signature);
+    VS_IOT_ASSERT(buf_sz);
+    VS_IOT_ASSERT(signature_sz);
 
     NOT_ZERO(raw);
+    NOT_ZERO(signature);
+    NOT_ZERO(buf_sz);
     NOT_ZERO(signature_sz);
 
     if (keypair_type >= VS_KEYPAIR_EC_SECP_MIN && keypair_type <= VS_KEYPAIR_EC_SECP_MAX) {
@@ -154,7 +155,7 @@ vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
     }
 
     CHECK_BOOL_GOTO(buf_sz >= raw_sz, false);
-    VS_IOT_MEMCPY(signature, raw, raw_sz);
+    VS_IOT_MEMMOVE(signature, raw, raw_sz);
     *signature_sz = raw_sz;
 
     res = true;
@@ -179,9 +180,6 @@ _mbedtls_sign_to_raw_ec(vs_secmodule_keypair_type_e keypair_type,
     size_t len;
     mbedtls_mpi r, s;
     const int component_sz = _coord_sz(keypair_type);
-
-    NOT_ZERO(raw_sz);
-    NOT_ZERO(mbedtls_sign);
 
     if (buf_sz < component_sz * 2) {
         return false;
@@ -222,6 +220,12 @@ vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
                                   uint8_t *raw_sign,
                                   uint16_t buf_sz,
                                   uint16_t *raw_sz) {
+    VS_IOT_ASSERT(raw_sz);
+    VS_IOT_ASSERT(mbedtls_sign);
+    VS_IOT_ASSERT(mbedtls_sign_sz);
+    VS_IOT_ASSERT(raw_sign);
+    VS_IOT_ASSERT(raw_sz);
+
     NOT_ZERO(raw_sz);
     NOT_ZERO(mbedtls_sign);
     NOT_ZERO(mbedtls_sign_sz);
@@ -236,7 +240,7 @@ vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
         return false;
     }
 
-    VS_IOT_MEMCPY(raw_sign, mbedtls_sign, mbedtls_sign_sz);
+    VS_IOT_MEMMOVE(raw_sign, mbedtls_sign, mbedtls_sign_sz);
     *raw_sz = mbedtls_sign_sz;
     return true;
 }
@@ -321,7 +325,16 @@ vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
     uint16_t result_sz;
 
     VS_IOT_ASSERT(virgil_sign);
+    VS_IOT_ASSERT(virgil_sign_sz);
     VS_IOT_ASSERT(sign);
+    VS_IOT_ASSERT(buf_sz);
+    VS_IOT_ASSERT(sign_sz);
+
+    NOT_ZERO(virgil_sign);
+    NOT_ZERO(virgil_sign_sz);
+    NOT_ZERO(sign);
+    NOT_ZERO(buf_sz);
+    NOT_ZERO(sign_sz);
 
     if (!_virgil_sign_to_mbedtls(virgil_sign, virgil_sign_sz, &p, &result_sz) ||
         !vs_converters_mbedtls_sign_to_raw(keypair_type, (uint8_t *)p, result_sz, sign, buf_sz, sign_sz)) {
@@ -342,9 +355,17 @@ vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                  uint16_t *virgil_sign_sz) {
     uint16_t result_sz;
 
-    VS_IOT_ASSERT(virgil_sign);
     VS_IOT_ASSERT(raw_sign);
+    VS_IOT_ASSERT(raw_sign_sz);
+    VS_IOT_ASSERT(virgil_sign);
+    VS_IOT_ASSERT(buf_sz);
     VS_IOT_ASSERT(virgil_sign_sz);
+
+    NOT_ZERO(raw_sign);
+    NOT_ZERO(raw_sign_sz);
+    NOT_ZERO(virgil_sign);
+    NOT_ZERO(buf_sz);
+    NOT_ZERO(virgil_sign_sz);
 
     if (!vs_converters_raw_sign_to_mbedtls(keypair_type, raw_sign, raw_sign_sz, virgil_sign, buf_sz, &result_sz) ||
         !_mbedtls_sign_to_virgil(hash_type, virgil_sign, result_sz, virgil_sign, buf_sz, virgil_sign_sz)) {
