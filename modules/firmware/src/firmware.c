@@ -149,7 +149,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type) {
-    vs_status_e ret_code;
+    vs_status_e ret_code = VS_CODE_OK;
     vs_firmware_descriptor_t fw_descr;
 
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);

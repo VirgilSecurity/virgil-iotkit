@@ -72,7 +72,7 @@ vs_tl_update_info_server(void) {
 /******************************************************************************/
 vs_status_e
 vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
-    vs_status_e ret_code;
+    vs_status_e ret_code = VS_CODE_OK;
 
     STATUS_CHECK_RET(vs_tl_storage_init_internal(op_ctx, secmodule), "Unable to initialize Trust List module");
 
