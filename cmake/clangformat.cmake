@@ -24,10 +24,6 @@ function(add_clangformat _targetname)
                 get_filename_component(_source_file ${_source} NAME)
                 get_source_file_property(_clang_loc "${_source}" LOCATION)
 
-                if (${_source} MATCHES "^.*generated.*$" ) # for skipping formatting of generated c code
-                    continue()
-                endif()
-
                 set(_format_file ${_targetname}_${_source_file}.format)
 
                 add_custom_command(OUTPUT ${_format_file}
