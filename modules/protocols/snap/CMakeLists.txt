@@ -95,9 +95,20 @@ function(add_snap _targetname _firmware_update _definitions)
     target_include_directories(${_targetname}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 
             PRIVATE
             $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+            )
+
+    install(TARGETS ${_targetname}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            )
+
+    install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
             )
 
     #
