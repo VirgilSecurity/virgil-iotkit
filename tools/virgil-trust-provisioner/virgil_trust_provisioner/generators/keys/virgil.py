@@ -1,7 +1,7 @@
 import io
 from typing import Optional
 
-from PyCRC.CRCCCITT import CRCCCITT
+from virgil_trust_provisioner.core_utils import CRCCCITT
 
 from virgil_crypto import VirgilCrypto, VirgilKeyPair
 from virgil_crypto.hashes import HashAlgorithm
