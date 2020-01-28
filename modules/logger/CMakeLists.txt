@@ -110,6 +110,6 @@ install(TARGETS vs-module-logger
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         )
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )

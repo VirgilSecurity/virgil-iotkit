@@ -65,5 +65,5 @@ install(TARGETS jsmn
         )
 
 install(FILES ${CMAKE_CURRENT_LIST_DIR}/jsmn.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jsmn
         )

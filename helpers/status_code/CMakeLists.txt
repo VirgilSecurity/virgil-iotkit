@@ -54,11 +54,7 @@ target_link_libraries(virgil-iot-status-code
         macros
         )
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
-
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 

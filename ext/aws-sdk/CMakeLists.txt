@@ -82,8 +82,8 @@ install(TARGETS aws-sdk
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         )
 
-install(DIRECTORY ${AWS_MQTT_INCLUDE}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/aws-iot-device-sdk-embedded-C/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/aws-sdk
         )
 
 

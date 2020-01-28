@@ -49,7 +49,7 @@ target_include_directories(storage_hal
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
