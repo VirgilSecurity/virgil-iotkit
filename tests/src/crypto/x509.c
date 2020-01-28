@@ -3,9 +3,9 @@
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 
-const char not_before[] = "20131231235959";
-const char not_after[] = "20401231235959";
-const uint8_t test_object_id[8] = {1, 2, 3, 4, 5};
+static const char not_before[] = "20131231235959";
+static const char not_after[] = "20401231235959";
+static const uint8_t test_object_id[8] = {1, 2, 3, 4, 5};
 /******************************************************************************/
 static bool
 _test_generate_self_signed_x509(vs_secmodule_impl_t *secmodule_impl) {

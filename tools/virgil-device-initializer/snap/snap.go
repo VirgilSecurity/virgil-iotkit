@@ -173,6 +173,15 @@ func (p *DeviceProcessor) Process() error {
         if err := p.GetProvisionInfo(); err != nil {
             return err
         }
+        if p.ProvisioningInfo.X509 {
+            certificate, err := p.downloadData(C.VS_PRVS_GSSC, "Self-signed certificate");
+
+            if err != nil {
+                return err
+            }
+
+            fmt.Println(base64.URLEncoding.EncodeToString(certificate))
+        }
     }
     fmt.Println("OK: Device initialization done successfully.")
     return nil
@@ -319,6 +328,31 @@ func (p *DeviceProcessor) uploadData(element C.vs_snap_prvs_element_e, data []by
     }
     fmt.Println("Success: upload", name)
     return nil
+}
+
+// Calls vs_snap_prvs_get
+func (p *DeviceProcessor) downloadData(element C.vs_snap_prvs_element_e, name string) ([]byte, error) {
+    fmt.Println("Download", name)
+
+    var cert_sz C.uint16_t
+
+    cert := make([]byte, 1024)
+    certPtr := (*C.uchar)(unsafe.Pointer(&cert[0]))
+
+    mac := p.deviceInfo.mac_addr
+
+    if 0 != C.vs_snap_prvs_get(nil,
+                               &mac,
+                               element,
+                               certPtr,
+                               (C.uint16_t)(len(cert)),
+                               &cert_sz,
+                               DEFAULT_TIMEOUT_MS) {
+        fmt.Println("Failed: download", name)
+        return nil, fmt.Errorf("failed to get %s on device (vs_snap_prvs_get)", name)
+    }
+    fmt.Println("Success: download", name)
+    return cert[:cert_sz], nil
 }
 
 func (p *DeviceProcessor) SetKeys() error {

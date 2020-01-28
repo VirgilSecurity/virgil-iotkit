@@ -124,6 +124,9 @@ func New(context *cli.Context) (*FactoryInitializer, error) {
     // trust_list_only
     provInfo.TlOnly = context.Bool("trust_list_only")
 
+    // Enable x509
+    provInfo.X509 = context.Bool("x509")
+
     fInit.ProvisioningInfo = provInfo
 
     return fInit, nil

@@ -118,6 +118,11 @@ func main()  {
             Aliases: []string{"z"},
             Usage:   "File with Factory private key",
         },
+        &cli.BoolFlag{
+            Name:    "x509",
+            Aliases: []string{"t"},
+            Usage:   "Enable generation of x509 certificate",
+        },
     }
 
     app := &cli.App{
