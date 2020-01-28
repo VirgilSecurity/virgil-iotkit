@@ -61,6 +61,8 @@ else()
     string(REPLACE " " ";" CFLAGS_PLATFORM ${CFLAGS_PLATFORM})
 endif()
 
+message("* VIRGIL_IOT_USE_X509=\"${VIRGIL_IOT_USE_X509}\"")
+
 target_compile_options(vs-module-secmodule
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
@@ -75,6 +77,7 @@ else()
 endif()
 
 target_compile_definitions(vs-module-secmodule
+        PUBLIC  "VIRGIL_IOT_USE_X509=$<BOOL:${VIRGIL_IOT_USE_X509}>"
         PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
         )
 

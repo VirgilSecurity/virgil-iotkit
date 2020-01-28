@@ -114,6 +114,7 @@ option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+option(VIRGIL_IOT_USE_X509 "Use x509 certificates" OFF)
 
 #
 # Default crypto implementations

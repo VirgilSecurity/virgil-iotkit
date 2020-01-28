@@ -157,6 +157,9 @@ typedef enum {
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
+#ifdef VIRGIL_IOT_USE_X509
+    VS_PRVS_GSSC = HTONL_IN_COMPILE_TIME('GSSC'), /**< Get Self-Signed Certificate */
+#endif
 } vs_snap_prvs_element_e;
 #pragma GCC diagnostic pop
 

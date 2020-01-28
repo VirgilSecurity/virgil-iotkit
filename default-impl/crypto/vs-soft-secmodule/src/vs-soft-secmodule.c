@@ -50,7 +50,9 @@ vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
         _fill_crypto_impl(&_soft_secmodule);
         _fill_keypair_impl(&_soft_secmodule);
         _fill_soft_hash_impl(&_soft_secmodule);
-
+#ifdef VIRGIL_IOT_USE_X509
+        _fill_x509_impl(&_soft_secmodule);
+#endif
         _soft_secmodule_ready = true;
     }
     return &_soft_secmodule;

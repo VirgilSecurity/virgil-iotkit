@@ -446,6 +446,17 @@ typedef vs_status_e (*vs_secmodule_sw_sha256_update_t)(vs_secmodule_sw_sha256_ct
  */
 typedef vs_status_e (*vs_secmodule_sw_sha256_final_t)(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest);
 
+#ifdef VIRGIL_IOT_USE_X509
+
+typedef vs_status_e (*vs_secmodule_x509_create_selfsign_t)(const uint8_t *object_id,
+                                                           uint16_t object_id_sz,
+                                                           const char *not_before,
+                                                           const char *not_after,
+                                                           uint8_t *buf,
+                                                           uint16_t buf_sz,
+                                                           uint16_t *out_sz);
+#endif
+
 /** Security Module destruction */
 typedef void (*vs_secmodule_deinit_t)(void);
 
@@ -497,6 +508,11 @@ typedef struct {
 
     // HKDF
     vs_secmodule_hkdf_t hkdf; /**< HKDF calculate */
+
+    // x509
+#ifdef VIRGIL_IOT_USE_X509
+    vs_secmodule_x509_create_selfsign_t x509_create_selfsign; /**< Create x509 self signed certificate */
+#endif
 
 } vs_secmodule_impl_t;
 

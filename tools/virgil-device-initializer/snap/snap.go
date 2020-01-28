@@ -321,6 +321,31 @@ func (p *DeviceProcessor) uploadData(element C.vs_snap_prvs_element_e, data []by
     return nil
 }
 
+// Calls vs_snap_prvs_get
+func (p *DeviceProcessor) downloadData(element C.vs_snap_prvs_element_e, name string) ([]byte, error) {
+    fmt.Println("Download", name)
+
+    var cert_sz C.uint16_t
+
+    cert := make([]byte, 1024)
+    certPtr := (*C.uchar)(unsafe.Pointer(&cert[0]))
+
+    mac := p.deviceInfo.mac_addr
+
+    if 0 != C.vs_snap_prvs_get(nil,
+                               &mac,
+                               element,
+                               certPtr,
+                               (C.uint16_t)(len(cert)),
+                               &cert_sz,
+                               DEFAULT_TIMEOUT_MS) {
+        fmt.Println("Failed: download", name)
+        return nil, fmt.Errorf("failed to get %s on device (vs_snap_prvs_get)", name)
+    }
+    fmt.Println("Success: download", name)
+    return cert[:cert_sz], nil
+}
+
 func (p *DeviceProcessor) SetKeys() error {
     // Recovery public keys
     if err := p.uploadData(C.VS_PRVS_PBR1, p.ProvisioningInfo.RecPubKey1, "Recovery key 1"); err != nil {
@@ -528,4 +553,8 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     }
 
     return signature.RawSignature, nil
+}
+
+func (p *DeviceProcessor) GetDeviceCertificate() ([]byte, error) {
+    return p.downloadData(C.VS_PRVS_GSSC, "Self-signed certificate");
 }

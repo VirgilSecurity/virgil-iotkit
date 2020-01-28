@@ -41,6 +41,7 @@ import (
 )
 
 type ProvisioningInfo struct {
+    X509              bool
     TlOnly            bool
     CardOnly          bool
     AuthPubKey1       []byte

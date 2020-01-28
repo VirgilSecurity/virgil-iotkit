@@ -363,6 +363,37 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
+#ifdef VIRGIL_IOT_USE_X509
+static vs_status_e
+_prvs_selfsigned_cert_request(const struct vs_netif_t *netif,
+                              const uint8_t *request,
+                              const uint16_t request_sz,
+                              uint8_t *response,
+                              const uint16_t response_buf_sz,
+                              uint16_t *response_sz) {
+    vs_mac_addr_t device_mac;
+
+    // TODO: Set correct date
+    static const char *not_before = "20131231235959";
+    static const char *not_after = "20401231235959";
+
+    VS_PRVS_SERVER_PROFILE_START;
+
+    // Check input parameters
+    VS_IOT_ASSERT(_secmodule);
+    VS_IOT_ASSERT(_secmodule->x509_create_selfsign);
+
+    vs_snap_mac_addr(vs_snap_default_netif(), &device_mac);
+
+    vs_status_e ret_code = _secmodule->x509_create_selfsign(
+            device_mac.bytes, sizeof(device_mac.bytes), not_before, not_after, response, response_buf_sz, response_sz);
+
+    VS_PRVS_SERVER_PROFILE_END(_prvs_selfsigned_cert_request);
+
+    return ret_code;
+}
+#endif
+/******************************************************************************/
 static vs_status_e
 _prvs_devi_process_request(const struct vs_netif_t *netif,
                            const uint8_t *request,
@@ -498,6 +529,11 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_PBF2:
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
+
+#ifdef VIRGIL_IOT_USE_X509
+    case VS_PRVS_GSSC:
+        return _prvs_selfsigned_cert_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+#endif
 
     default:
         VS_LOG_ERROR("Unsupported PRVS request %d", element_id);
