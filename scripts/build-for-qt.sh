@@ -47,21 +47,19 @@ function build() {
 #
 if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" || "${PLATFORM}" == "windows" ]]; then
 
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
-
-#
-#   Host OS: mingw32
-#
-elif [[ "${PLATFORM}" == "mingw32" ]]; then
+  if [[ "$(uname)" == "Linux" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake"
+    "  
+  else
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
+  fi
 
+#
 #
 #   iOS
 #
