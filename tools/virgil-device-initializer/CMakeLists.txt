@@ -62,6 +62,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/modules/crypto/secmodule/include
         -I${VIRGIL_IOT_DIRECTORY}/tools/c-implementation/include
         -DPRVS_CLIENT=1
+        -DVIRGIL_IOT_USE_X509=ON
         )
 
 #
