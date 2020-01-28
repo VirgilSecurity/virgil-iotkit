@@ -1,0 +1,4 @@
+<map id="VSQSnapPacket" name="VSQSnapPacket">
+<area shape="rect" id="node1" title="SNAP protocol packet." alt="" coords="5,105,127,131"/>
+<area shape="rect" id="node2" href="$class_v_s_q_mac.html" title="Virgil IoT Kit device MAC address." alt="" coords="29,5,103,31"/>
+</map>

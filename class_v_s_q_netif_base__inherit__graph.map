@@ -1,0 +1,5 @@
+<map id="VSQNetifBase" name="VSQNetifBase">
+<area shape="rect" id="node1" title="SNAP network interface base class." alt="" coords="19,79,126,104"/>
+<area shape="rect" id="node3" href="$class_v_s_q_udp_broadcast.html" title="UDP Broadcast network interface implementation." alt="" coords="5,152,139,177"/>
+<area shape="rect" id="node2" title=" " alt="" coords="37,5,107,31"/>
+</map>
