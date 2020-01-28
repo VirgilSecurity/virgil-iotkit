@@ -148,8 +148,10 @@ $(function() {
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
 <div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="stdlib-config_8h.html#ac42894f8d80756c53cd3df4b90f2665a">   98</a></span>&#160;<span class="preprocessor">#define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&amp;(TIME_T)))</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif // VS_IOT_SDK_STDLIB_CONFIG_H</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#include &lt;pthread.h&gt;</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="stdlib-config_8h.html#a85d2241546bd8447f4cfafbe5e1c3b83">  102</a></span>&#160;<span class="preprocessor">#define VS_IOT_GET_THREAD_ID    pthread_self()</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif // VS_IOT_SDK_STDLIB_CONFIG_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aglobal-hal_8h_html"><div class="ttname"><a href="global-hal_8h.html">global-hal.h</a></div><div class="ttdoc">PC configuration : implementation for shared functions.</div></div>
 <!-- start footer part -->

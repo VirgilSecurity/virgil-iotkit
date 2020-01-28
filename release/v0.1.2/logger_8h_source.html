@@ -150,126 +150,130 @@ $(function() {
 <div class="line"><a name="l00133"></a><span class="lineno"><a class="line" href="logger_8h.html#a8ad1bdb15f43d955414b6ea70c547b22">  133</a></span>&#160;<span class="preprocessor">#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \</span></div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">    vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))</span></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor">#define VS_LOG_MAKE_LEVEL(LEVEL) VirgilIoTKit::LEVEL</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="logger_8h.html#a77eba5845031681f4d3512650628c794">  139</a></span>&#160;<span class="preprocessor">#define VS_LOG_MAKE_LEVEL(LEVEL) LEVEL</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
-<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="logger_8h.html#a976fd8da10c6cf542473a9efdb276b34">  143</a></span>&#160;<span class="preprocessor">#define VS_LOG_INFO(FRMT, ...)                                                                                         \</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_INFO), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
-<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="logger_8h.html#a1494aedb5e6b32062803462c8e1eafc0">  146</a></span>&#160;<span class="preprocessor">#define VS_LOG_FATAL(FRMT, ...)                                                                                        \</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_FATAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno"><a class="line" href="logger_8h.html#aa176904d7527f8e8fca691828eaa89d4">  149</a></span>&#160;<span class="preprocessor">#define VS_LOG_ALERT(FRMT, ...)                                                                                        \</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ALERT), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno"><a class="line" href="logger_8h.html#a4f47cc7eb09da0ff4313bf6d2f55bd6a">  152</a></span>&#160;<span class="preprocessor">#define VS_LOG_CRITICAL(FRMT, ...)                                                                                     \</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_CRITICAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="logger_8h.html#a932c0df8999c8fc5430ff790207e4043">  155</a></span>&#160;<span class="preprocessor">#define VS_LOG_ERROR(FRMT, ...)                                                                                        \</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ERROR), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<a class="code" href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724">vs_log_thread_descriptor</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *description);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="preprocessor">#define VS_LOG_MAKE_LEVEL(LEVEL) VirgilIoTKit::LEVEL</span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="logger_8h.html#a77eba5845031681f4d3512650628c794">  151</a></span>&#160;<span class="preprocessor">#define VS_LOG_MAKE_LEVEL(LEVEL) LEVEL</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="logger_8h.html#a976fd8da10c6cf542473a9efdb276b34">  155</a></span>&#160;<span class="preprocessor">#define VS_LOG_INFO(FRMT, ...)                                                                                         \</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_INFO), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; </div>
-<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="logger_8h.html#a9670a22aee6a67426432ddae2ce64a19">  158</a></span>&#160;<span class="preprocessor">#define VS_LOG_WARNING(FRMT, ...)                                                                                      \</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_WARNING), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="logger_8h.html#a1494aedb5e6b32062803462c8e1eafc0">  158</a></span>&#160;<span class="preprocessor">#define VS_LOG_FATAL(FRMT, ...)                                                                                        \</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_FATAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
-<div class="line"><a name="l00161"></a><span class="lineno"><a class="line" href="logger_8h.html#abf608e51a6c3ebdc3c67e57ee986cd1a">  161</a></span>&#160;<span class="preprocessor">#define VS_LOG_NOTICE(FRMT, ...)                                                                                       \</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_NOTICE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno"><a class="line" href="logger_8h.html#aa176904d7527f8e8fca691828eaa89d4">  161</a></span>&#160;<span class="preprocessor">#define VS_LOG_ALERT(FRMT, ...)                                                                                        \</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ALERT), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="logger_8h.html#a0fff947a8540225f95b358307f72925a">  164</a></span>&#160;<span class="preprocessor">#define VS_LOG_TRACE(FRMT, ...)                                                                                        \</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_TRACE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="logger_8h.html#a4f47cc7eb09da0ff4313bf6d2f55bd6a">  164</a></span>&#160;<span class="preprocessor">#define VS_LOG_CRITICAL(FRMT, ...)                                                                                     \</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_CRITICAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="logger_8h.html#a44f30953a1335a640137dd854157b9a1">  167</a></span>&#160;<span class="preprocessor">#define VS_LOG_DEBUG(FRMT, ...)                                                                                        \</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_DEBUG), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="logger_8h.html#a932c0df8999c8fc5430ff790207e4043">  167</a></span>&#160;<span class="preprocessor">#define VS_LOG_ERROR(FRMT, ...)                                                                                        \</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ERROR), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">// Functions</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<a class="code" href="logger_8h.html#a5a94e5daff9428feaa471d54b466bb75">vs_logger_last_result</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="logger_8h.html#a9670a22aee6a67426432ddae2ce64a19">  170</a></span>&#160;<span class="preprocessor">#define VS_LOG_WARNING(FRMT, ...)                                                                                      \</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_WARNING), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
+<div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="logger_8h.html#abf608e51a6c3ebdc3c67e57ee986cd1a">  173</a></span>&#160;<span class="preprocessor">#define VS_LOG_NOTICE(FRMT, ...)                                                                                       \</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_NOTICE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; </div>
+<div class="line"><a name="l00176"></a><span class="lineno"><a class="line" href="logger_8h.html#a0fff947a8540225f95b358307f72925a">  176</a></span>&#160;<span class="preprocessor">#define VS_LOG_TRACE(FRMT, ...)                                                                                        \</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_TRACE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
+<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="logger_8h.html#a44f30953a1335a640137dd854157b9a1">  179</a></span>&#160;<span class="preprocessor">#define VS_LOG_DEBUG(FRMT, ...)                                                                                        \</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_DEBUG), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)</span></div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="keywordtype">void</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<a class="code" href="logger_8h.html#a659af7b607b3456ceb6f0917faa61b9c">vs_logger_message</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level, <span class="keyword">const</span> <span class="keywordtype">char</span> *cur_filename, uint32_t line_num, <span class="keyword">const</span> <span class="keywordtype">char</span> *log_format, ...);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="keywordtype">void</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<a class="code" href="logger_8h.html#a4f2405964d0d76f191b3127258862f35">vs_logger_init</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> log_level);</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<a class="code" href="logger_8h.html#a60a5c965865c53e281df50fd13bed9e2">vs_logger_set_loglev</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> new_level);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<a class="code" href="logger_8h.html#a08c1cee20f3c1b7b9b7cd009eebd2c72">vs_logger_get_loglev</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160; </div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<a class="code" href="logger_8h.html#a2676922a5a9f25430521a54c2e0f1565">vs_logger_is_loglev</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level);</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keywordtype">void</span></div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<a class="code" href="logger_8h.html#a5bf4832d01a80f6f310c3f7a3e75df99">vs_logger_message_hex</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level,</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">char</span> *cur_filename,</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                      uint32_t line_num,</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">char</span> *prefix,</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">void</span> *data_buf,</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                      <span class="keyword">const</span> uint16_t data_size);</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="preprocessor">#elif VS_IOT_LOGGER_USE_LIBRARY != 1 &amp;&amp; defined(VS_IOT_LOGGER_FUNCTION)</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#define vs_logger_last_result() true</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#define vs_logger_init(log_level) (void)log_level;</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="preprocessor">#define vs_logger_set_loglev(log_level) (void)log_level;</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="preprocessor">#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="preprocessor">#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)                              \</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor">    do {                                                                                                               \</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="preprocessor">        (void)level;                                                                                                   \</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">        (void)cur_filename;                                                                                            \</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="preprocessor">        (void)line_num;                                                                                                \</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">        (void)prefix;                                                                                                  \</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor">        (void)data_buf;                                                                                                \</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">        (void)data_size;                                                                                               \</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor">    } while (0)</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160; </div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor">#define vs_logger_message(level, cur_filename, line_num, log_format, ...)                                              \</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="preprocessor">    do {                                                                                                               \</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor">        (void)level;                                                                                                   \</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="preprocessor">        (void)cur_filename;                                                                                            \</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="preprocessor">        (void)line_num;                                                                                                \</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="preprocessor">        VS_IOT_LOGGER_FUNCTION((log_format), ##__VA_ARGS__);                                                           \</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="preprocessor">        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                                                                     \</span></div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="preprocessor">    } while (0)</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160; </div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="preprocessor">#else // VS_IOT_LOGGER_USE_LIBRARY != 1 &amp;&amp; !defined(VS_IOT_LOGGER_FUNCTION)</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="preprocessor">#include &quot;macro_va_args.h&quot;</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; </div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="preprocessor">#define vs_logger_last_result() true</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="preprocessor">#define vs_logger_init(log_level) (void)log_level;</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#define vs_logger_set_loglev(log_level) (void)log_level;</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor">#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160; </div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#define VS_IOT_LOGGER_VOID(a) (void)a;</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160; </div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor">#define VS_LOG(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="preprocessor">#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE) VS_IOT_MAP(VS_IOT_LOGGER_VOID, PREFIX, BUF, SIZE)</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="preprocessor">#define VS_LOG_INFO(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="preprocessor">#define VS_LOG_FATAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="preprocessor">#define VS_LOG_ALERT(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#define VS_LOG_CRITICAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="preprocessor">#define VS_LOG_ERROR(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#define VS_LOG_WARNING(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#define VS_LOG_NOTICE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="preprocessor">#define VS_LOG_TRACE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#define VS_LOG_DEBUG(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160; </div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#endif // VS_IOT_LOGGER_USE_LIBRARY</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">// Functions</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160; </div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<a class="code" href="logger_8h.html#a5a94e5daff9428feaa471d54b466bb75">vs_logger_last_result</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="keywordtype">void</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<a class="code" href="logger_8h.html#a659af7b607b3456ceb6f0917faa61b9c">vs_logger_message</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level, <span class="keyword">const</span> <span class="keywordtype">char</span> *cur_filename, uint32_t line_num, <span class="keyword">const</span> <span class="keywordtype">char</span> *log_format, ...);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="keywordtype">void</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<a class="code" href="logger_8h.html#a4f2405964d0d76f191b3127258862f35">vs_logger_init</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> log_level);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160; </div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<a class="code" href="logger_8h.html#a60a5c965865c53e281df50fd13bed9e2">vs_logger_set_loglev</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> new_level);</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<a class="code" href="logger_8h.html#a08c1cee20f3c1b7b9b7cd009eebd2c72">vs_logger_get_loglev</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<a class="code" href="logger_8h.html#a2676922a5a9f25430521a54c2e0f1565">vs_logger_is_loglev</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="keywordtype">void</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<a class="code" href="logger_8h.html#a5bf4832d01a80f6f310c3f7a3e75df99">vs_logger_message_hex</a>(<a class="code" href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a> level,</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">char</span> *cur_filename,</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                      uint32_t line_num,</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">char</span> *prefix,</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                      <span class="keyword">const</span> <span class="keywordtype">void</span> *data_buf,</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                      <span class="keyword">const</span> uint16_t data_size);</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160; </div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">#elif VS_IOT_LOGGER_USE_LIBRARY != 1 &amp;&amp; defined(VS_IOT_LOGGER_FUNCTION)</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160; </div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">#define vs_logger_last_result() true</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor">#define vs_logger_init(log_level) (void)log_level;</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="preprocessor">#define vs_logger_set_loglev(log_level) (void)log_level;</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor">#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="preprocessor">#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="preprocessor">#define vs_logger_message_hex(level, cur_filename, line_num, prefix, data_buf, data_size)                              \</span></div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="preprocessor">    do {                                                                                                               \</span></div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="preprocessor">        (void)level;                                                                                                   \</span></div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="preprocessor">        (void)cur_filename;                                                                                            \</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="preprocessor">        (void)line_num;                                                                                                \</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="preprocessor">        (void)prefix;                                                                                                  \</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="preprocessor">        (void)data_buf;                                                                                                \</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="preprocessor">        (void)data_size;                                                                                               \</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="preprocessor">    } while (0)</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160; </div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#define vs_logger_message(level, cur_filename, line_num, log_format, ...)                                              \</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">    do {                                                                                                               \</span></div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor">        (void)level;                                                                                                   \</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="preprocessor">        (void)cur_filename;                                                                                            \</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">        (void)line_num;                                                                                                \</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor">        VS_IOT_LOGGER_FUNCTION((log_format), ##__VA_ARGS__);                                                           \</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor">        VS_IOT_LOGGER_FUNCTION(VS_IOT_LOGGER_EOL);                                                                     \</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="preprocessor">    } while (0)</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="preprocessor">#else // VS_IOT_LOGGER_USE_LIBRARY != 1 &amp;&amp; !defined(VS_IOT_LOGGER_FUNCTION)</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160; </div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#include &quot;macro_va_args.h&quot;</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#define vs_logger_last_result() true</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#define vs_logger_init(log_level) (void)log_level;</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="preprocessor">#define vs_logger_set_loglev(log_level) (void)log_level;</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="preprocessor">#define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#define vs_log_thread_descriptor() (true)</span></div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;} <span class="comment">// extern &quot;C&quot;</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;} <span class="comment">// namespace VirgilIoTKit</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160; </div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="preprocessor">#endif // AP_SECURITY_SDK_LOGGER_H</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor">#define VS_IOT_LOGGER_VOID(a) (void)a;</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160; </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="preprocessor">#define VS_LOG(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor">#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE) VS_IOT_MAP(VS_IOT_LOGGER_VOID, PREFIX, BUF, SIZE)</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="preprocessor">#define VS_LOG_INFO(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="preprocessor">#define VS_LOG_FATAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#define VS_LOG_ALERT(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="preprocessor">#define VS_LOG_CRITICAL(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="preprocessor">#define VS_LOG_ERROR(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="preprocessor">#define VS_LOG_WARNING(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="preprocessor">#define VS_LOG_NOTICE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="preprocessor">#define VS_LOG_TRACE(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="preprocessor">#define VS_LOG_DEBUG(FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="preprocessor">#endif // VS_IOT_LOGGER_USE_LIBRARY</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160; </div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;} <span class="comment">// extern &quot;C&quot;</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;} <span class="comment">// namespace VirgilIoTKit</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160; </div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="preprocessor">#endif // AP_SECURITY_SDK_LOGGER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="alogger_8h_html_a97770dba68bf891ed7f6f2e9191ea6fda922d7fd1c0dfebfa70f701790b690dde"><div class="ttname"><a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fda922d7fd1c0dfebfa70f701790b690dde">VS_LOGLEV_WARNING</a></div><div class="ttdeci">@ VS_LOGLEV_WARNING</div><div class="ttdoc">Warning messages.</div><div class="ttdef"><b>Definition:</b> logger.h:91</div></div>
 <div class="ttc" id="alogger_8h_html_a97770dba68bf891ed7f6f2e9191ea6fdaa7e2b4c9744ec847c504fa1b7aac390b"><div class="ttname"><a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fdaa7e2b4c9744ec847c504fa1b7aac390b">VS_LOGLEV_DEBUG</a></div><div class="ttdeci">@ VS_LOGLEV_DEBUG</div><div class="ttdoc">Debug messages.</div><div class="ttdef"><b>Definition:</b> logger.h:95</div></div>
@@ -283,6 +287,7 @@ $(function() {
 <div class="ttc" id="alogger_8h_html_a4f2405964d0d76f191b3127258862f35"><div class="ttname"><a href="logger_8h.html#a4f2405964d0d76f191b3127258862f35">vs_logger_init</a></div><div class="ttdeci">void vs_logger_init(vs_log_level_t log_level)</div><div class="ttdoc">Initialize logging level.</div></div>
 <div class="ttc" id="alogger_8h_html_a97770dba68bf891ed7f6f2e9191ea6fdae0c347036da67280bfcde850d3009681"><div class="ttname"><a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fdae0c347036da67280bfcde850d3009681">VS_LOGLEV_ERROR</a></div><div class="ttdeci">@ VS_LOGLEV_ERROR</div><div class="ttdoc">Error messages.</div><div class="ttdef"><b>Definition:</b> logger.h:90</div></div>
 <div class="ttc" id="alogger_8h_html_a5a94e5daff9428feaa471d54b466bb75"><div class="ttname"><a href="logger_8h.html#a5a94e5daff9428feaa471d54b466bb75">vs_logger_last_result</a></div><div class="ttdeci">bool vs_logger_last_result(void)</div><div class="ttdoc">Last result.</div></div>
+<div class="ttc" id="alogger_8h_html_a70aaf886c534a0fd8e46a5784b56d724"><div class="ttname"><a href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724">vs_log_thread_descriptor</a></div><div class="ttdeci">bool vs_log_thread_descriptor(const char *description)</div><div class="ttdoc">Set current thread description.</div></div>
 <div class="ttc" id="astdlib-config_8h_html"><div class="ttname"><a href="stdlib-config_8h.html">stdlib-config.h</a></div><div class="ttdoc">PC configuration : Standart Library calls configuration.</div></div>
 <div class="ttc" id="alogger_8h_html_a5bf4832d01a80f6f310c3f7a3e75df99"><div class="ttname"><a href="logger_8h.html#a5bf4832d01a80f6f310c3f7a3e75df99">vs_logger_message_hex</a></div><div class="ttdeci">void vs_logger_message_hex(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *prefix, const void *data_buf, const uint16_t data_size)</div><div class="ttdoc">Log HEX buffer.</div></div>
 <div class="ttc" id="alogger_8h_html_a97770dba68bf891ed7f6f2e9191ea6fdabec49f19dfc55be634b21e03c2ff62c2"><div class="ttname"><a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fdabec49f19dfc55be634b21e03c2ff62c2">VS_LOGLEV_NOTICE</a></div><div class="ttdeci">@ VS_LOGLEV_NOTICE</div><div class="ttdoc">Notifications.</div><div class="ttdef"><b>Definition:</b> logger.h:92</div></div>

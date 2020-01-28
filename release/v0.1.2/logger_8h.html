@@ -157,6 +157,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a70aaf886c534a0fd8e46a5784b56d724"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724">vs_log_thread_descriptor</a> (const char *description)</td></tr>
+<tr class="memdesc:a70aaf886c534a0fd8e46a5784b56d724"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set current thread description.  <a href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724">More...</a><br /></td></tr>
+<tr class="separator:a70aaf886c534a0fd8e46a5784b56d724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a94e5daff9428feaa471d54b466bb75"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a5a94e5daff9428feaa471d54b466bb75">vs_logger_last_result</a> (void)</td></tr>
 <tr class="memdesc:a5a94e5daff9428feaa471d54b466bb75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last result.  <a href="logger_8h.html#a5a94e5daff9428feaa471d54b466bb75">More...</a><br /></td></tr>
 <tr class="separator:a5a94e5daff9428feaa471d54b466bb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -699,6 +702,35 @@ Logger Usage</h1>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a70aaf886c534a0fd8e46a5784b56d724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70aaf886c534a0fd8e46a5784b56d724">&#9670;&nbsp;</a></span>vs_log_thread_descriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool vs_log_thread_descriptor </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>description</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set current thread description. </p>
+<dl class="section note"><dt>Note</dt><dd>This function does nothing if <a class="el" href="logger-config_8h.html#a471be9b1bf69f91249b0b8858421a91c" title="Output current thread title.">VS_IOT_LOGGER_OUTPUT_THREAD_ID</a> is not set to 1</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">description</td><td>Human readable thread description. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>description must be static string pointer valid during program functioning</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>false if no space is available to store thread description </dd></dl>
+
+</div>
+</div>
 <a id="a08c1cee20f3c1b7b9b7cd009eebd2c72"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a08c1cee20f3c1b7b9b7cd009eebd2c72">&#9670;&nbsp;</a></span>vs_logger_get_loglev()</h2>
 
@@ -737,6 +769,7 @@ Logger Usage</h1>
 </div><div class="memdoc">
 
 <p>Initialize logging level. </p>
+<p><em>log_level</em> is initialized and default title for thread is provided. You can change this name by <a class="el" href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724" title="Set current thread description.">vs_log_thread_descriptor</a> call</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">[int]</td><td>log_level Message log level </td></tr>
@@ -954,7 +987,7 @@ Logger Usage</h1>
 <div class="ttc" id="alogger_8h_html_a60a5c965865c53e281df50fd13bed9e2"><div class="ttname"><a href="logger_8h.html#a60a5c965865c53e281df50fd13bed9e2">vs_logger_set_loglev</a></div><div class="ttdeci">vs_log_level_t vs_logger_set_loglev(vs_log_level_t new_level)</div><div class="ttdoc">Set current logging level.</div></div>
 <div class="ttc" id="alogger_8h_html_a97770dba68bf891ed7f6f2e9191ea6fd"><div class="ttname"><a href="logger_8h.html#a97770dba68bf891ed7f6f2e9191ea6fd">vs_log_level_t</a></div><div class="ttdeci">vs_log_level_t</div><div class="ttdoc">Logging level.</div><div class="ttdef"><b>Definition:</b> logger.h:82</div></div>
 <div class="ttc" id="alogger_8h_html_a4f2405964d0d76f191b3127258862f35"><div class="ttname"><a href="logger_8h.html#a4f2405964d0d76f191b3127258862f35">vs_logger_init</a></div><div class="ttdeci">void vs_logger_init(vs_log_level_t log_level)</div><div class="ttdoc">Initialize logging level.</div></div>
-<div class="ttc" id="alogger_8h_html_a1494aedb5e6b32062803462c8e1eafc0"><div class="ttname"><a href="logger_8h.html#a1494aedb5e6b32062803462c8e1eafc0">VS_LOG_FATAL</a></div><div class="ttdeci">#define VS_LOG_FATAL(FRMT,...)</div><div class="ttdoc">Log message with VS_LOGLEV_FATAL level.</div><div class="ttdef"><b>Definition:</b> logger.h:146</div></div>
+<div class="ttc" id="alogger_8h_html_a1494aedb5e6b32062803462c8e1eafc0"><div class="ttname"><a href="logger_8h.html#a1494aedb5e6b32062803462c8e1eafc0">VS_LOG_FATAL</a></div><div class="ttdeci">#define VS_LOG_FATAL(FRMT,...)</div><div class="ttdoc">Log message with VS_LOGLEV_FATAL level.</div><div class="ttdef"><b>Definition:</b> logger.h:158</div></div>
 <div class="ttc" id="alogger_8h_html_a8ad1bdb15f43d955414b6ea70c547b22"><div class="ttname"><a href="logger_8h.html#a8ad1bdb15f43d955414b6ea70c547b22">VS_LOG_HEX</a></div><div class="ttdeci">#define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)</div><div class="ttdoc">Log HEX buffer.</div><div class="ttdef"><b>Definition:</b> logger.h:133</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

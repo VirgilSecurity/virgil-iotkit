@@ -100,6 +100,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a6694e99686a5f23c0aa484fd0bb790f0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0">VS_IOT_LOGGER_OUTPUT_TIME</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:a6694e99686a5f23c0aa484fd0bb790f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output current time.  <a href="logger-config_8h.html#a6694e99686a5f23c0aa484fd0bb790f0">More...</a><br /></td></tr>
 <tr class="separator:a6694e99686a5f23c0aa484fd0bb790f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a471be9b1bf69f91249b0b8858421a91c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger-config_8h.html#a471be9b1bf69f91249b0b8858421a91c">VS_IOT_LOGGER_OUTPUT_THREAD_ID</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a471be9b1bf69f91249b0b8858421a91c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output current thread title.  <a href="logger-config_8h.html#a471be9b1bf69f91249b0b8858421a91c">More...</a><br /></td></tr>
+<tr class="separator:a471be9b1bf69f91249b0b8858421a91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>PC configuration : logger settings. </p>
@@ -170,6 +173,23 @@ Macros</h2></td></tr>
 
 <p>Maximum buffer size. </p>
 <p>Defines maximum internal char buffer for output purposes. </p>
+
+</div>
+</div>
+<a id="a471be9b1bf69f91249b0b8858421a91c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471be9b1bf69f91249b0b8858421a91c">&#9670;&nbsp;</a></span>VS_IOT_LOGGER_OUTPUT_THREAD_ID</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VS_IOT_LOGGER_OUTPUT_THREAD_ID&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Output current thread title. </p>
+<p>Enables current thread title. <a class="el" href="stdlib-config_8h.html#a85d2241546bd8447f4cfafbe5e1c3b83" title="Get current thread ID.">VS_IOT_GET_THREAD_ID</a> is used to obtain current thread identifier. Call <a class="el" href="logger_8h.html#a70aaf886c534a0fd8e46a5784b56d724" title="Set current thread description.">vs_log_thread_descriptor</a> to set human readable thread description. Instead numerical identifier will be output </p>
 
 </div>
 </div>

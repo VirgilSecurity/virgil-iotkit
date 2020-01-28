@@ -80,6 +80,7 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="global-hal_8h_source.html">global-hal.h</a>&quot;</code><br />
+<code>#include &lt;pthread.h&gt;</code><br />
 </div>
 <p><a href="stdlib-config_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -136,6 +137,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ac42894f8d80756c53cd3df4b90f2665a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdlib-config_8h.html#ac42894f8d80756c53cd3df4b90f2665a">VS_IOT_ASCTIME</a>(TIME_T)&#160;&#160;&#160;asctime(localtime(&amp;(TIME_T)))</td></tr>
 <tr class="memdesc:ac42894f8d80756c53cd3df4b90f2665a"><td class="mdescLeft">&#160;</td><td class="mdescRight">conversion from time_t to ASCIIZ  <a href="stdlib-config_8h.html#ac42894f8d80756c53cd3df4b90f2665a">More...</a><br /></td></tr>
 <tr class="separator:ac42894f8d80756c53cd3df4b90f2665a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d2241546bd8447f4cfafbe5e1c3b83"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdlib-config_8h.html#a85d2241546bd8447f4cfafbe5e1c3b83">VS_IOT_GET_THREAD_ID</a>&#160;&#160;&#160;pthread_self()</td></tr>
+<tr class="memdesc:a85d2241546bd8447f4cfafbe5e1c3b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current thread ID.  <a href="stdlib-config_8h.html#a85d2241546bd8447f4cfafbe5e1c3b83">More...</a><br /></td></tr>
+<tr class="separator:a85d2241546bd8447f4cfafbe5e1c3b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>PC configuration : Standart Library calls configuration. </p>
@@ -205,6 +209,22 @@ Macros</h2></td></tr>
 </div><div class="memdoc">
 
 <p>free call </p>
+
+</div>
+</div>
+<a id="a85d2241546bd8447f4cfafbe5e1c3b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85d2241546bd8447f4cfafbe5e1c3b83">&#9670;&nbsp;</a></span>VS_IOT_GET_THREAD_ID</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VS_IOT_GET_THREAD_ID&#160;&#160;&#160;pthread_self()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get current thread ID. </p>
 
 </div>
 </div>
