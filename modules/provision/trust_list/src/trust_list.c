@@ -57,7 +57,7 @@ vs_tl_update_info_server(void) {
                      "Unable to get header");
 
     vs_tl_header_to_host(&tl_header, &tl_host_header);
-    
+
     _current_tl_ver = tl_host_header.version;
 
     VS_LOG_DEBUG("Current Trust list version has been updated : %d.%d.%d.%d",
@@ -117,7 +117,9 @@ vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint
 
         vs_tl_invalidate(TL_STORAGE_TYPE_TMP);
 
-        STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update current Trust List file version");
+        if (VS_CODE_OK == ret_code) {
+            STATUS_CHECK_RET(vs_tl_update_info_server(), "Unable to update current Trust List file version");
+        }
 
         break;
 
