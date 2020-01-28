@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-vs_netif_t*
+vs_netif_t *
 vs_hal_netif_udp_bcast();
 
 #ifdef __cplusplus

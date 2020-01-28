@@ -42,10 +42,10 @@
 #define MAX_INTERNAL_SIGN_SIZE (180)
 #define MAX_INTERNAL_PUBKEY_SIZE (180)
 
-const vs_secmodule_impl_t*
+const vs_secmodule_impl_t *
 _soft_secmodule_intern(void);
 
-const char*
+const char *
 _get_slot_name(vs_iot_secmodule_slot_e slot);
 
 int32_t
@@ -53,31 +53,32 @@ _get_slot_size(vs_iot_secmodule_slot_e slot);
 
 vs_status_e
 _public_key_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
-    const uint8_t* public_key_in,
-    uint16_t public_key_in_sz,
-    uint8_t* public_key_out,
-    uint16_t buf_sz,
-    uint16_t* public_key_out_sz);
+                       const uint8_t *public_key_in,
+                       uint16_t public_key_in_sz,
+                       uint8_t *public_key_out,
+                       uint16_t buf_sz,
+                       uint16_t *public_key_out_sz);
 
 vs_status_e
 vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
-    uint8_t* buf,
-    uint16_t buf_sz,
-    uint16_t* key_sz,
-    vs_secmodule_keypair_type_e* keypair_type);
+                                uint8_t *buf,
+                                uint16_t buf_sz,
+                                uint16_t *key_sz,
+                                vs_secmodule_keypair_type_e *keypair_type);
 
 vs_status_e
-_fill_slots_impl(vs_secmodule_impl_t* secmodule_impl, vs_storage_op_ctx_t* slots_storage_impl);
+_fill_slots_impl(vs_secmodule_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl);
 
 vs_status_e
-_fill_crypto_impl(vs_secmodule_impl_t* secmodule_impl);
+_fill_crypto_impl(vs_secmodule_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_keypair_impl(vs_secmodule_impl_t* secmodule_impl);
+_fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl);
 
 vs_status_e
-_fill_soft_hash_impl(vs_secmodule_impl_t* secmodule_impl);
+_fill_soft_hash_impl(vs_secmodule_impl_t *secmodule_impl);
 
-void _secmodule_deinit(void);
+void
+_secmodule_deinit(void);
 
 #endif // VS_SOFT_SECMODULE_PRIVATE_H

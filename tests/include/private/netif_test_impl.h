@@ -55,7 +55,7 @@ extern vs_mac_addr_t mac_addr_client_call;
 extern vs_mac_addr_t mac_addr_server_call;
 extern bool is_client_call;
 
-vs_netif_t*
+vs_netif_t *
 vs_test_netif(void);
 
 #endif // VS_IOT_SDK_TESTS_SNAP_H_

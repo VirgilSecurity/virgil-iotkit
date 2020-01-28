@@ -36,24 +36,23 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/vs-soft-secmodule/vs-soft-secmodule.h>
 
-static vs_storage_op_ctx_t* _storage = NULL;
+static vs_storage_op_ctx_t *_storage = NULL;
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t* data, uint16_t data_sz)
-{
+vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16_t data_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
-    const char* slot_name = _get_slot_name(slot);
+    const char *slot_name = _get_slot_name(slot);
     vs_status_e res = VS_CODE_ERR_FILE_WRITE;
     vs_status_e res_close = VS_CODE_OK;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
     CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
-        VS_CODE_ERR_TOO_SMALL_BUFFER,
-        "Slot name too big");
-    VS_IOT_STRCPY((char*)id, slot_name);
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
+    VS_IOT_STRCPY((char *)id, slot_name);
 
     // Remove the old file
     STATUS_CHECK(res = _storage->impl_func.del(_storage->impl_data, id), "Can't delete file");
@@ -76,21 +75,20 @@ terminate:
 
 /********************************************************************************/
 static vs_status_e
-vs_secmodule_slot_load(vs_iot_secmodule_slot_e slot, uint8_t* data, uint16_t buf_sz, uint16_t* out_sz)
-{
+vs_secmodule_slot_load(vs_iot_secmodule_slot_e slot, uint8_t *data, uint16_t buf_sz, uint16_t *out_sz) {
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_storage_file_t f;
     vs_storage_element_id_t id;
-    const char* slot_name = _get_slot_name(slot);
+    const char *slot_name = _get_slot_name(slot);
     vs_status_e res = VS_CODE_ERR_FILE_WRITE;
     vs_status_e res_close = VS_CODE_OK;
     ssize_t file_sz;
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
     CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
-        VS_CODE_ERR_TOO_SMALL_BUFFER,
-        "Slot name too big");
-    VS_IOT_STRCPY((char*)id, slot_name);
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
+    VS_IOT_STRCPY((char *)id, slot_name);
 
     CHECK(f = _storage->impl_func.open(_storage->impl_data, id), "Cannot open file");
 
@@ -115,26 +113,24 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot)
-{
+vs_secmodule_slot_delete(vs_iot_secmodule_slot_e slot) {
     vs_storage_element_id_t id;
-    const char* slot_name = _get_slot_name(slot);
+    const char *slot_name = _get_slot_name(slot);
 
     CHECK_NOT_ZERO_RET(_storage, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_IOT_MEMSET(id, 0, sizeof(vs_storage_element_id_t));
     CHECK_RET(VS_IOT_STRLEN(slot_name) < sizeof(vs_storage_element_id_t),
-        VS_CODE_ERR_TOO_SMALL_BUFFER,
-        "Slot name too big");
-    VS_IOT_STRCPY((char*)id, slot_name);
+              VS_CODE_ERR_TOO_SMALL_BUFFER,
+              "Slot name too big");
+    VS_IOT_STRCPY((char *)id, slot_name);
 
     return _storage->impl_func.del(_storage->impl_data, id);
 }
 
 /******************************************************************************/
 int32_t
-_get_slot_size(vs_iot_secmodule_slot_e slot)
-{
+_get_slot_size(vs_iot_secmodule_slot_e slot) {
     if (slot < VS_KEY_SLOT_STD_OTP_MAX) {
         return KEY_SLOT_STD_DATA_SIZE;
     }
@@ -163,8 +159,8 @@ _get_slot_size(vs_iot_secmodule_slot_e slot)
 }
 
 /********************************************************************************/
-void _secmodule_deinit(void)
-{
+void
+_secmodule_deinit(void) {
     if (_storage && _storage->impl_func.deinit) {
         _storage->impl_func.deinit(_storage->impl_data);
     }
@@ -172,8 +168,7 @@ void _secmodule_deinit(void)
 
 /******************************************************************************/
 vs_status_e
-_fill_slots_impl(vs_secmodule_impl_t* secmodule_impl, vs_storage_op_ctx_t* slots_storage_impl)
-{
+_fill_slots_impl(vs_secmodule_impl_t *secmodule_impl, vs_storage_op_ctx_t *slots_storage_impl) {
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(slots_storage_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 

@@ -52,17 +52,17 @@ static vs_status_e
 _udp_bcast_deinit();
 
 static vs_status_e
-_udp_bcast_tx(const uint8_t* data, const uint16_t data_sz);
+_udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
 
 static vs_status_e
-_udp_bcast_mac(struct vs_mac_addr_t* mac_addr);
+_udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
-static vs_netif_t _netif_udp_bcast = { .user_data = NULL,
-    .init = _udp_bcast_init,
-    .deinit = _udp_bcast_deinit,
-    .tx = _udp_bcast_tx,
-    .mac_addr = _udp_bcast_mac,
-    .packet_buf_filled = 0 };
+static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
+                                      .init = _udp_bcast_init,
+                                      .deinit = _udp_bcast_deinit,
+                                      .tx = _udp_bcast_tx,
+                                      .mac_addr = _udp_bcast_mac,
+                                      .packet_buf_filled = 0};
 
 static vs_netif_rx_cb_t _netif_udp_bcast_rx_cb = 0;
 static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;
@@ -75,21 +75,20 @@ static pthread_t receive_thread;
 #define RX_BUF_SZ (2048)
 
 /******************************************************************************/
-static void*
-_udp_bcast_receive_processor(void* sock_desc)
-{
+static void *
+_udp_bcast_receive_processor(void *sock_desc) {
     static uint8_t received_data[RX_BUF_SZ];
     struct sockaddr_in client_addr;
     ssize_t recv_sz;
     socklen_t addr_sz = sizeof(struct sockaddr_in);
-    const uint8_t* packet_data = NULL;
+    const uint8_t *packet_data = NULL;
     uint16_t packet_data_sz = 0;
 
     while (1) {
         memset(received_data, 0, RX_BUF_SZ);
 
         recv_sz = recvfrom(
-            _udp_bcast_sock, received_data, sizeof received_data, 0, (struct sockaddr*)&client_addr, &addr_sz);
+                _udp_bcast_sock, received_data, sizeof received_data, 0, (struct sockaddr *)&client_addr, &addr_sz);
         if (recv_sz < 0) {
             printf("UDP broadcast: recv stop.\n");
             break;
@@ -115,8 +114,7 @@ _udp_bcast_receive_processor(void* sock_desc)
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_connect()
-{
+_udp_bcast_connect() {
     struct sockaddr_in server;
     struct timeval tv;
     int enable = 1;
@@ -157,11 +155,11 @@ _udp_bcast_connect()
     }
 
     // Bind to port
-    memset((void*)&server, 0, sizeof(struct sockaddr_in));
+    memset((void *)&server, 0, sizeof(struct sockaddr_in));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htons(INADDR_ANY);
     server.sin_port = htons(UDP_BCAST_PORT);
-    if (bind(_udp_bcast_sock, (struct sockaddr*)&server, sizeof(struct sockaddr_in)) < 0) {
+    if (bind(_udp_bcast_sock, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) < 0) {
         printf("UDP Broadcast: UDP Broadcast: Bind error. %s\n", strerror(errno));
         goto terminate;
     }
@@ -182,24 +180,22 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_tx(const uint8_t* data, const uint16_t data_sz)
-{
+_udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
     struct sockaddr_in broadcast_addr;
 
-    memset((void*)&broadcast_addr, 0, sizeof(struct sockaddr_in));
+    memset((void *)&broadcast_addr, 0, sizeof(struct sockaddr_in));
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
     broadcast_addr.sin_port = htons(UDP_BCAST_PORT);
 
-    sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr*)&broadcast_addr, sizeof(struct sockaddr_in));
+    sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb)
-{
+_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
@@ -211,8 +207,7 @@ _udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t proces
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_deinit()
-{
+_udp_bcast_deinit() {
     printf("Stop UDP broadcast\n");
     if (_udp_bcast_sock >= 0) {
 #if !defined(__APPLE__)
@@ -227,8 +222,7 @@ _udp_bcast_deinit()
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_mac(struct vs_mac_addr_t* mac_addr)
-{
+_udp_bcast_mac(struct vs_mac_addr_t *mac_addr) {
 
     if (mac_addr) {
         memset(mac_addr->bytes, 0x01, sizeof(vs_mac_addr_t));
@@ -239,9 +233,8 @@ _udp_bcast_mac(struct vs_mac_addr_t* mac_addr)
 }
 
 /******************************************************************************/
-vs_netif_t*
-vs_hal_netif_udp_bcast()
-{
+vs_netif_t *
+vs_hal_netif_udp_bcast() {
     return &_netif_udp_bcast;
 }
 

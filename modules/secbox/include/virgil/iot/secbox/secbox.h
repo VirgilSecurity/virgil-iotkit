@@ -91,7 +91,7 @@ extern "C" {
 
 /** Security box operation type */
 typedef enum {
-    VS_SECBOX_SIGNED, /**< Signed data */
+    VS_SECBOX_SIGNED,               /**< Signed data */
     VS_SECBOX_SIGNED_AND_ENCRYPTED, /**< Signed and encrypted data */
 } vs_secbox_type_t;
 
@@ -105,7 +105,7 @@ typedef enum {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secbox_init(vs_storage_op_ctx_t* ctx, vs_secmodule_impl_t* secmodule);
+vs_secbox_init(vs_storage_op_ctx_t *ctx, vs_secmodule_impl_t *secmodule);
 
 /** Destroy Security Box
  *
@@ -139,7 +139,7 @@ vs_secbox_file_size(vs_storage_element_id_t id);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t* data, size_t data_sz);
+vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t *data, size_t data_sz);
 
 /** Load Security Box element
  *
@@ -152,7 +152,7 @@ vs_secbox_save(vs_secbox_type_t type, vs_storage_element_id_t id, const uint8_t*
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secbox_load(vs_storage_element_id_t id, uint8_t* data, size_t data_sz);
+vs_secbox_load(vs_storage_element_id_t id, uint8_t *data, size_t data_sz);
 
 /** Delete Security Box element
  *

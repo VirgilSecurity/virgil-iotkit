@@ -47,8 +47,7 @@ static pthread_cond_t _wait_cond = PTHREAD_COND_INITIALIZER;
 
 /******************************************************************************/
 vs_status_e
-vs_wait_stop_func(int* condition, int expect)
-{
+vs_wait_stop_func(int *condition, int expect) {
     if (0 != pthread_mutex_lock(&_wait_mutex)) {
         VS_LOG_ERROR("pthread_mutex_lock %s %d", strerror(errno), errno);
     }
@@ -68,8 +67,7 @@ vs_wait_stop_func(int* condition, int expect)
 
 /******************************************************************************/
 static bool
-_is_greater_timespec(struct timespec a, struct timespec b)
-{
+_is_greater_timespec(struct timespec a, struct timespec b) {
     if (a.tv_sec == b.tv_sec) {
         return a.tv_nsec > b.tv_nsec;
     }
@@ -79,8 +77,7 @@ _is_greater_timespec(struct timespec a, struct timespec b)
 
 /******************************************************************************/
 vs_status_e
-vs_wait_func(uint32_t wait_ms, int* condition, int idle)
-{
+vs_wait_func(uint32_t wait_ms, int *condition, int idle) {
     struct timespec time_to_wait;
     struct timespec ts_now;
 

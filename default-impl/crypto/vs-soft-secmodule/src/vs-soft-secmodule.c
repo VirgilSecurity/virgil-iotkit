@@ -40,9 +40,8 @@ static vs_secmodule_impl_t _soft_secmodule;
 static bool _soft_secmodule_ready = false;
 
 /******************************************************************************/
-vs_secmodule_impl_t*
-vs_soft_secmodule_impl(vs_storage_op_ctx_t* slots_storage_impl)
-{
+vs_secmodule_impl_t *
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
     CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
 
@@ -59,8 +58,7 @@ vs_soft_secmodule_impl(vs_storage_op_ctx_t* slots_storage_impl)
 
 /******************************************************************************/
 vs_status_e
-vs_soft_secmodule_deinit(void)
-{
+vs_soft_secmodule_deinit(void) {
     _soft_secmodule_ready = false;
     _secmodule_deinit();
 
@@ -68,9 +66,8 @@ vs_soft_secmodule_deinit(void)
 }
 
 /******************************************************************************/
-const vs_secmodule_impl_t*
-_soft_secmodule_intern(void)
-{
+const vs_secmodule_impl_t *
+_soft_secmodule_intern(void) {
     if (_soft_secmodule_ready) {
         return &_soft_secmodule;
     }
@@ -79,9 +76,8 @@ _soft_secmodule_intern(void)
 }
 
 /******************************************************************************/
-const char*
-_get_slot_name(vs_iot_secmodule_slot_e slot)
-{
+const char *
+_get_slot_name(vs_iot_secmodule_slot_e slot) {
     switch (slot) {
     case VS_KEY_SLOT_STD_OTP_0:
         return "STD_OTP_0";

@@ -38,8 +38,7 @@
 
 /*************************************************************************/
 static int8_t
-_hex_char_to_num(char input)
-{
+_hex_char_to_num(char input) {
     if (input >= '0' && input <= '9') {
         return input - '0';
     }
@@ -57,8 +56,7 @@ _hex_char_to_num(char input)
 
 /*************************************************************************/
 static bool
-_hex_str_to_bin(const char* src, uint16_t src_sz, uint8_t* out, uint16_t out_sz)
-{
+_hex_str_to_bin(const char *src, uint16_t src_sz, uint8_t *out, uint16_t out_sz) {
     int8_t res[2];
     uint16_t used = 0;
 
@@ -92,8 +90,7 @@ _hex_str_to_bin(const char* src, uint16_t src_sz, uint8_t* out, uint16_t out_sz)
 
 /*************************************************************************/
 static bool
-_dec_str_to_num8(const char* str, int8_t str_len, uint8_t* num)
-{
+_dec_str_to_num8(const char *str, int8_t str_len, uint8_t *num) {
     int8_t i;
     uint8_t deg = 1;
     uint16_t tmp = 0;
@@ -121,8 +118,7 @@ _dec_str_to_num8(const char* str, int8_t str_len, uint8_t* num)
 
 /*************************************************************************/
 static bool
-_dec_str_to_num32(const char* str, int8_t str_len, uint32_t* num)
-{
+_dec_str_to_num32(const char *str, int8_t str_len, uint32_t *num) {
     int8_t i;
     uint64_t deg = 1;
     uint64_t tmp = 0;
@@ -149,10 +145,9 @@ _dec_str_to_num32(const char* str, int8_t str_len, uint32_t* num)
 }
 
 /*************************************************************************/
-static char*
-_find_symb_in_str(char* str, char symb)
-{
-    char* ptr = NULL;
+static char *
+_find_symb_in_str(char *str, char symb) {
+    char *ptr = NULL;
 
     while (*str) {
         if (*str == symb) {
@@ -166,10 +161,9 @@ _find_symb_in_str(char* str, char symb)
 
 /*************************************************************************/
 static vs_status_e
-_parse_version(char* version_str, vs_file_version_t* version)
-{
+_parse_version(char *version_str, vs_file_version_t *version) {
     /*parse major*/
-    char* ptr = _find_symb_in_str(version_str, '.');
+    char *ptr = _find_symb_in_str(version_str, '.');
 
     CHECK_NOT_ZERO_RET(ptr, VS_CODE_ERR_JSON);
 
@@ -179,7 +173,7 @@ _parse_version(char* version_str, vs_file_version_t* version)
     ptr++;
 
     /*parse minor*/
-    char* ptr1 = _find_symb_in_str(ptr, '.');
+    char *ptr1 = _find_symb_in_str(ptr, '.');
     CHECK_NOT_ZERO_RET(ptr1, VS_CODE_ERR_JSON);
 
     len = (int8_t)(ptr1 - ptr);
@@ -212,21 +206,20 @@ _parse_version(char* version_str, vs_file_version_t* version)
 
 /*************************************************************************/
 static vs_status_e
-_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t* fm_entry, vs_file_version_t* fw_version)
-{
+_get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_file_version_t *fw_version) {
     vs_status_e ret_code;
     STATUS_CHECK_RET(_parse_version(fm_entry->version, fw_version), "Error parse file version");
 
     /*parse build_timestamp*/
     uint8_t timestamp[sizeof(uint32_t)];
-    CHECK_RET(_hex_str_to_bin((char*)fm_entry->timestamp,
-                  VS_IOT_STRLEN((char*)fm_entry->timestamp),
-                  timestamp,
-                  sizeof(timestamp)),
-        VS_CODE_ERR_JSON,
-        "Incorrect timestamp field");
+    CHECK_RET(_hex_str_to_bin((char *)fm_entry->timestamp,
+                              VS_IOT_STRLEN((char *)fm_entry->timestamp),
+                              timestamp,
+                              sizeof(timestamp)),
+              VS_CODE_ERR_JSON,
+              "Incorrect timestamp field");
 
-    fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t*)timestamp); //-V1032 (PVS_IGNORE)
+    fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t *)timestamp); //-V1032 (PVS_IGNORE)
 
     return VS_CODE_OK;
 }
@@ -234,9 +227,8 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t* fm_entry, vs_f
 /*************************************************************************/
 static bool
 _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFACTURE_ID_SIZE],
-    uint8_t device_type[VS_DEVICE_TYPE_SIZE],
-    vs_file_version_t* cur_version)
-{
+                                        uint8_t device_type[VS_DEVICE_TYPE_SIZE],
+                                        vs_file_version_t *cur_version) {
     vs_firmware_descriptor_t desc;
     int res = vs_firmware_load_firmware_descriptor(manufacture_id, device_type, &desc);
 
@@ -253,16 +245,15 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFAC
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t* new_tl_version)
-{
+vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version) {
     vs_tl_header_t tl_header;
     uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
-    vs_tl_element_info_t info = { .id = VS_TL_ELEMENT_TLH, .index = 0 };
+    vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
     uint16_t res_sz;
     vs_status_e ret_code;
 
-    STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t*)&tl_header, sizeof(vs_tl_header_t), &res_sz),
-        "Unable to load Trust List header");
+    STATUS_CHECK_RET(vs_tl_load_part(&info, (uint8_t *)&tl_header, sizeof(vs_tl_header_t), &res_sz),
+                     "Unable to load Trust List header");
 
     // Use host endian
     vs_tl_header_to_host(&tl_header, &tl_header);
@@ -270,7 +261,8 @@ vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t* new
     info.id = VS_TL_ELEMENT_TLF;
     STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
 
-    if (new_tl_type != ((vs_tl_footer_t*)tl_footer)->tl_type || VS_CODE_OK != vs_update_compare_version(new_tl_version, &tl_header.version)) {
+    if (new_tl_type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
+        VS_CODE_OK != vs_update_compare_version(new_tl_version, &tl_header.version)) {
         return VS_CODE_ERR_NOT_FOUND;
     }
 
@@ -279,8 +271,7 @@ vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t* new
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t* new_desc)
-{
+vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t *new_desc) {
 
     CHECK_NOT_ZERO_RET(new_desc, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -293,8 +284,8 @@ vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t* new_desc)
     vs_file_version_t current_ver;
 
     if (!_is_member_for_vendor_and_model_present(
-            new_desc->info.manufacture_id, new_desc->info.device_type, &current_ver)
-        || VS_CODE_OK != vs_update_compare_version(&new_desc->info.version, &current_ver)) {
+                new_desc->info.manufacture_id, new_desc->info.device_type, &current_ver) ||
+        VS_CODE_OK != vs_update_compare_version(&new_desc->info.version, &current_ver)) {
         return VS_CODE_ERR_NOT_FOUND;
     }
     return VS_CODE_OK;
@@ -302,16 +293,15 @@ vs_cloud_is_new_firmware_version_available(vs_firmware_descriptor_t* new_desc)
 
 /*************************************************************************/
 static vs_status_e
-_is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t* fm_entry)
-{
+_is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t *fm_entry) {
     vs_firmware_descriptor_t new_desc;
     VS_IOT_MEMSET(&new_desc, 0, sizeof(vs_firmware_descriptor_t));
 
-    if (!_hex_str_to_bin((char*)fm_entry->manufacturer_id,
-            VS_IOT_STRLEN((char*)fm_entry->manufacturer_id),
-            new_desc.info.manufacture_id,
-            sizeof(vs_device_manufacture_id_t))
-        || VS_CODE_OK != _get_firmware_version_from_manifest(fm_entry, &new_desc.info.version)) {
+    if (!_hex_str_to_bin((char *)fm_entry->manufacturer_id,
+                         VS_IOT_STRLEN((char *)fm_entry->manufacturer_id),
+                         new_desc.info.manufacture_id,
+                         sizeof(vs_device_manufacture_id_t)) ||
+        VS_CODE_OK != _get_firmware_version_from_manifest(fm_entry, &new_desc.info.version)) {
         return VS_CODE_ERR_JSON;
     }
     VS_IOT_MEMCPY(new_desc.info.device_type, fm_entry->device_type.id, sizeof(vs_device_type_t));
@@ -321,8 +311,7 @@ _is_new_fw_version_available_in_manifest(vs_firmware_manifest_entry_t* fm_entry)
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_parse_firmware_manifest(void* payload, size_t payload_len, char* fw_url)
-{
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url) {
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
     int url_len;
@@ -330,19 +319,21 @@ vs_cloud_parse_firmware_manifest(void* payload, size_t payload_len, char* fw_url
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    VS_LOG_DEBUG("NEW FIRMWARE: %s", (char*)payload);
+    VS_LOG_DEBUG("NEW FIRMWARE: %s", (char *)payload);
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[FW] Error. Invalid JSON");
         return VS_CODE_ERR_JSON;
     }
 
-    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 || url_len > VS_UPD_URL_STR_SIZE) {
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
         VS_LOG_ERROR("[FW] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
 
-    if (VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_URL_FIELD, fm_entry.fw_file_url, sizeof(fm_entry.fw_file_url))) {
+    if (VS_JSON_ERR_OK ==
+        json_get_val_str(&jobj, VS_FW_URL_FIELD, fm_entry.fw_file_url, sizeof(fm_entry.fw_file_url))) {
         if (json_get_composite_object(&jobj, VS_MANIFEST_FILED)) {
             VS_LOG_ERROR("[FW] Get composite JSON obj failed");
             return VS_CODE_ERR_JSON;
@@ -354,7 +345,15 @@ vs_cloud_parse_firmware_manifest(void* payload, size_t payload_len, char* fw_url
 
     int res = VS_CODE_ERR_JSON;
 
-    if (VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_MANUFACTURER_ID_FIELD, (char*)fm_entry.manufacturer_id, sizeof(fm_entry.manufacturer_id)) && VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_DEVICE_TYPE_FIELD, fm_entry.device_type.str, sizeof(fm_entry.device_type)) && VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_VERSION_FIELD, fm_entry.version, sizeof(fm_entry.version)) && VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_TIMESTAMP, fm_entry.timestamp, sizeof(fm_entry.timestamp))) {
+    if (VS_JSON_ERR_OK == json_get_val_str(&jobj,
+                                           VS_FW_MANUFACTURER_ID_FIELD,
+                                           (char *)fm_entry.manufacturer_id,
+                                           sizeof(fm_entry.manufacturer_id)) &&
+        VS_JSON_ERR_OK ==
+                json_get_val_str(
+                        &jobj, VS_FW_DEVICE_TYPE_FIELD, fm_entry.device_type.str, sizeof(fm_entry.device_type)) &&
+        VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_VERSION_FIELD, fm_entry.version, sizeof(fm_entry.version)) &&
+        VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_FW_TIMESTAMP, fm_entry.timestamp, sizeof(fm_entry.timestamp))) {
         VS_LOG_INFO("[FW] new firmware manifest:");
         VS_LOG_INFO("[FW] url = %s", fm_entry.fw_file_url);
         VS_LOG_INFO("[FW] manufacture_id = %s", fm_entry.manufacturer_id);
@@ -373,8 +372,7 @@ vs_cloud_parse_firmware_manifest(void* payload, size_t payload_len, char* fw_url
 
 /*************************************************************************/
 vs_status_e
-vs_cloud_parse_tl_mainfest(void* payload, size_t payload_len, char* tl_url)
-{
+vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
     int url_len;
 
@@ -383,14 +381,15 @@ vs_cloud_parse_tl_mainfest(void* payload, size_t payload_len, char* tl_url)
 
     vs_tl_manifest_entry_t tl_entry;
 
-    VS_LOG_DEBUG("NEW TL: %s", (char*)payload);
+    VS_LOG_DEBUG("NEW TL: %s", (char *)payload);
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
         VS_LOG_ERROR("[TL] Error. Invalid JSON");
         return VS_CODE_ERR_JSON;
     }
 
-    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 || url_len > VS_UPD_URL_STR_SIZE) {
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 ||
+        url_len > VS_UPD_URL_STR_SIZE) {
         VS_LOG_ERROR("[TL] Wrong url field length");
         return VS_CODE_ERR_JSON;
     }
@@ -407,7 +406,9 @@ vs_cloud_parse_tl_mainfest(void* payload, size_t payload_len, char* tl_url)
 
     int res = VS_CODE_ERR_CLOUD;
 
-    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) && VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_TL_VERSION_FIELD, tl_entry.info.version, sizeof(tl_entry.info.version))) {
+    if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
+        VS_JSON_ERR_OK ==
+                json_get_val_str(&jobj, VS_TL_VERSION_FIELD, tl_entry.info.version, sizeof(tl_entry.info.version))) {
         VS_LOG_INFO("[TL] new tl manifest:");
         VS_LOG_INFO("[TL] url = %s", tl_entry.file_url);
         VS_LOG_INFO("[TL] type = %d", tl_entry.info.type);

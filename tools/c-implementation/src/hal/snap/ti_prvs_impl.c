@@ -39,8 +39,7 @@
 
 /******************************************************************************/
 vs_snap_prvs_client_impl_t
-vs_prvs_impl()
-{
+vs_prvs_impl() {
     vs_snap_prvs_client_impl_t res;
 
     memset(&res, 0, sizeof(res));

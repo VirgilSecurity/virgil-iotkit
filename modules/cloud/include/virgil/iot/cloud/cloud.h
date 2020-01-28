@@ -172,7 +172,7 @@ extern "C" {
  *
  * \return Loaded data size of #vs_status_e error code
  */
-typedef size_t (*vs_fetch_handler_cb_t)(const char* contents, size_t chunksize, void* userdata);
+typedef size_t (*vs_fetch_handler_cb_t)(const char *contents, size_t chunksize, void *userdata);
 
 typedef enum {
     VS_CLOUD_REQUEST_GET, /**< HTTP request by GET method */
@@ -195,13 +195,13 @@ typedef enum {
  * \return #VS_CODE_OK in case of success or error code.
  */
 typedef vs_status_e (*vs_cloud_http_request_func_t)(vs_cloud_http_method_e method,
-    const char* url,
-    const char* request_body,
-    size_t request_body_size,
-    char* out_data,
-    vs_fetch_handler_cb_t fetch_handler,
-    void* hander_data,
-    size_t* in_out_size);
+                                                    const char *url,
+                                                    const char *request_body,
+                                                    size_t request_body_size,
+                                                    char *out_data,
+                                                    vs_fetch_handler_cb_t fetch_handler,
+                                                    void *hander_data,
+                                                    size_t *in_out_size);
 
 /** Cloud implementation */
 typedef struct {
@@ -218,7 +218,7 @@ typedef struct {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_cloud_fetch_and_store_fw_file(const char* fw_file_url, vs_firmware_header_t* fetched_header);
+vs_cloud_fetch_and_store_fw_file(const char *fw_file_url, vs_firmware_header_t *fetched_header);
 
 /** Fetch and store Trust List
  *
@@ -229,16 +229,16 @@ vs_cloud_fetch_and_store_fw_file(const char* fw_file_url, vs_firmware_header_t* 
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_cloud_fetch_and_store_tl(const char* tl_file_url);
+vs_cloud_fetch_and_store_tl(const char *tl_file_url);
 
 /** List of available topics
  *
  * This structure contains list of topics to be subscribed.
  */
 typedef struct {
-    char* topic_list; /**< Text string with all topics */
-    uint16_t* topic_len_list; /**< List for each topis size */
-    size_t topic_count; /**< Topics amount for \a topic_list and \a topic_len_list */
+    char *topic_list;         /**< Text string with all topics */
+    uint16_t *topic_len_list; /**< List for each topis size */
+    size_t topic_count;       /**< Topics amount for \a topic_list and \a topic_len_list */
 } vs_cloud_mb_topics_list_t;
 
 /** Default topics
@@ -247,7 +247,7 @@ typedef struct {
  */
 typedef enum {
     VS_CLOUD_MB_TOPIC_TL, /**< Trust List */
-    VS_CLOUD_MB_TOPIC_FW /**< Firmware */
+    VS_CLOUD_MB_TOPIC_FW  /**< Firmware */
 } vs_cloud_mb_topic_id_t;
 
 /** Implementation for custom topics processing
@@ -259,10 +259,10 @@ typedef enum {
  * \param[in] data Topic data. Cannot be NULL
  * \param[in] length Topic data size. Cannot be zero.
  */
-typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char* topic,
-    uint16_t topic_sz,
-    const uint8_t* data,
-    uint16_t length);
+typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char *topic,
+                                                      uint16_t topic_sz,
+                                                      const uint8_t *data,
+                                                      uint16_t length);
 
 /** Implementation for default topics processing
  *
@@ -273,7 +273,7 @@ typedef void (*vs_cloud_mb_process_custom_topic_cb_t)(const char* topic,
  * \param[in] url URL where user can fetch a new version of file.
  * \param[in] length Topic URL size.
  */
-typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t* url, uint16_t length);
+typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t *url, uint16_t length);
 
 /** Register processing handlers for default topics from #vs_cloud_mb_topic_id_t enumeration
  *
@@ -286,7 +286,7 @@ typedef void (*vs_cloud_mb_process_default_topic_cb_t)(const uint8_t* url, uint1
  */
 vs_status_e
 vs_cloud_message_bin_register_default_handler(vs_cloud_mb_topic_id_t topic_id,
-    vs_cloud_mb_process_default_topic_cb_t handler);
+                                              vs_cloud_mb_process_default_topic_cb_t handler);
 
 /** Register custom handler implementation
  *
@@ -314,11 +314,11 @@ vs_cloud_message_bin_register_custom_handler(vs_cloud_mb_process_custom_topic_cb
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char* host,
-    uint16_t port,
-    const char* device_cert,
-    const char* priv_key,
-    const char* ca_cert);
+typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char *host,
+                                               uint16_t port,
+                                               const char *device_cert,
+                                               const char *priv_key,
+                                               const char *ca_cert);
 
 /** Message bin connection and subscription to topic implementation
  *
@@ -334,11 +334,11 @@ typedef vs_status_e (*vs_cloud_mb_init_func_t)(const char* host,
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char* client_id,
-    const char* login,
-    const char* password,
-    const vs_cloud_mb_topics_list_t* topic_list,
-    vs_cloud_mb_process_custom_topic_cb_t process_topic);
+typedef vs_status_e (*vs_cloud_mb_connect_subscribe_func_t)(const char *client_id,
+                                                            const char *login,
+                                                            const char *password,
+                                                            const vs_cloud_mb_topics_list_t *topic_list,
+                                                            vs_cloud_mb_process_custom_topic_cb_t process_topic);
 
 /** Message Bin processing
  *
@@ -352,10 +352,10 @@ typedef vs_status_e (*vs_cloud_mb_process_func_t)(void);
 
 /** Message Bin implementation */
 typedef struct {
-    vs_cloud_mb_init_func_t init; /**< Message bin initialization */
+    vs_cloud_mb_init_func_t init;                           /**< Message bin initialization */
     vs_cloud_mb_connect_subscribe_func_t connect_subscribe; /**< Message bin connection and topic subscribing */
     vs_cloud_mb_process_func_t
-        process; /**< Message bin processing : listen incoming messages and executing implementation calls */
+            process; /**< Message bin processing : listen incoming messages and executing implementation calls */
 } vs_cloud_message_bin_impl_t;
 
 /** Process message bin
@@ -379,9 +379,9 @@ vs_cloud_message_bin_process(void);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_cloud_init(const vs_cloud_impl_t* cloud_impl,
-    const vs_cloud_message_bin_impl_t* message_bin_impl,
-    vs_secmodule_impl_t* secmodule);
+vs_cloud_init(const vs_cloud_impl_t *cloud_impl,
+              const vs_cloud_message_bin_impl_t *message_bin_impl,
+              vs_secmodule_impl_t *secmodule);
 
 #ifdef __cplusplus
 } // extern "C"

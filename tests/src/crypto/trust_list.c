@@ -18,53 +18,52 @@
 #include <private/test_tl_data.h>
 
 typedef struct {
-    const uint8_t* key;
+    const uint8_t *key;
     uint16_t size;
 } test_tl_keys_info_t;
 
-static const vs_tl_header_t* test_header = NULL;
+static const vs_tl_header_t *test_header = NULL;
 static uint16_t test_header_sz;
 
-static test_tl_keys_info_t* test_tl_keys = NULL;
+static test_tl_keys_info_t *test_tl_keys = NULL;
 static uint16_t test_key_max_size = 0;
-static const vs_tl_footer_t* test_footer = NULL;
+static const vs_tl_footer_t *test_footer = NULL;
 static uint16_t test_footer_sz;
 
-#define BOOL_CHECK_RET_LOGLEV_RESTORE(CONDITION) \
-    if (!(CONDITION)) {                          \
-        VS_LOG_SET_LOGLEVEL(prev_loglevel);      \
-        return false;                            \
+#define BOOL_CHECK_RET_LOGLEV_RESTORE(CONDITION)                                                                       \
+    if (!(CONDITION)) {                                                                                                \
+        VS_LOG_SET_LOGLEVEL(prev_loglevel);                                                                            \
+        return false;                                                                                                  \
     }
 
 /******************************************************************************/
 static bool
-_parse_test_tl_data(const uint8_t* data, uint16_t size)
-{
+_parse_test_tl_data(const uint8_t *data, uint16_t size) {
     int sign_len;
     int key_len;
     uint16_t i;
-    vs_sign_t* element;
+    vs_sign_t *element;
     test_footer_sz = sizeof(vs_tl_footer_t);
     uint16_t pub_keys_count;
     uint8_t signatures_count;
 
-    test_header = (vs_tl_header_t*)data;
+    test_header = (vs_tl_header_t *)data;
     test_header_sz = sizeof(vs_tl_header_t);
 
     // Use values in host endian
     pub_keys_count = VS_IOT_NTOHS(test_header->pub_keys_count);
     signatures_count = test_header->signatures_count;
 
-    uint8_t* ptr = (uint8_t*)data + sizeof(vs_tl_header_t);
+    uint8_t *ptr = (uint8_t *)data + sizeof(vs_tl_header_t);
 
-    test_tl_keys = (test_tl_keys_info_t*)VS_IOT_CALLOC(pub_keys_count, sizeof(test_tl_keys_info_t));
+    test_tl_keys = (test_tl_keys_info_t *)VS_IOT_CALLOC(pub_keys_count, sizeof(test_tl_keys_info_t));
 
     BOOL_CHECK_RET(NULL != test_tl_keys, "Allocate memory error");
 
     for (i = 0; i < pub_keys_count; ++i) {
         test_tl_keys[i].key = ptr;
-        key_len = vs_secmodule_get_pubkey_len(((vs_pubkey_dated_t*)ptr)->pubkey.ec_type);
-        uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t*)ptr)->pubkey.meta_data_sz);
+        key_len = vs_secmodule_get_pubkey_len(((vs_pubkey_dated_t *)ptr)->pubkey.ec_type);
+        uint16_t key_meta_data_sz = VS_IOT_NTOHS(((vs_pubkey_dated_t *)ptr)->pubkey.meta_data_sz);
 
         BOOL_CHECK_RET(key_len > 0, "Key parse error");
 
@@ -76,9 +75,9 @@ _parse_test_tl_data(const uint8_t* data, uint16_t size)
         ptr += test_tl_keys[i].size;
     }
 
-    test_footer = (vs_tl_footer_t*)ptr;
+    test_footer = (vs_tl_footer_t *)ptr;
 
-    element = (vs_sign_t*)(test_footer->signatures);
+    element = (vs_sign_t *)(test_footer->signatures);
 
     for (i = 0; i < signatures_count; ++i) {
         test_footer_sz += sizeof(vs_sign_t);
@@ -90,7 +89,7 @@ _parse_test_tl_data(const uint8_t* data, uint16_t size)
 
         test_footer_sz += key_len + sign_len;
 
-        element = (vs_sign_t*)((uint8_t*)element + sizeof(vs_sign_t) + key_len + sign_len);
+        element = (vs_sign_t *)((uint8_t *)element + sizeof(vs_sign_t) + key_len + sign_len);
     }
 
     return true;
@@ -98,8 +97,7 @@ _parse_test_tl_data(const uint8_t* data, uint16_t size)
 
 /******************************************************************************/
 static vs_status_e
-_save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t* data, uint16_t size)
-{
+_save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t *data, uint16_t size) {
     vs_tl_element_info_t info;
     info.id = el;
     info.index = index;
@@ -109,8 +107,7 @@ _save_tl_part(vs_tl_element_e el, uint16_t index, const uint8_t* data, uint16_t 
 
 /******************************************************************************/
 static vs_status_e
-_load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t* data, uint16_t size, uint16_t* readed_bytes)
-{
+_load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t *data, uint16_t size, uint16_t *readed_bytes) {
     vs_tl_element_info_t info;
     info.id = el;
     info.index = index;
@@ -120,8 +117,7 @@ _load_tl_part(vs_tl_element_e el, uint16_t index, uint8_t* data, uint16_t size, 
 
 /******************************************************************************/
 static bool
-_verify_hl_key(const char* id_str, const uint8_t* in_data, uint16_t data_sz)
-{
+_verify_hl_key(const char *id_str, const uint8_t *in_data, uint16_t data_sz) {
 
     BOOL_CHECK_RET(VS_CODE_OK == vs_provision_verify_hl_key(in_data, data_sz), "Error verify key %s", id_str);
 
@@ -130,8 +126,7 @@ _verify_hl_key(const char* id_str, const uint8_t* in_data, uint16_t data_sz)
 
 /******************************************************************************/
 static bool
-_test_verify_hl_keys(void)
-{
+_test_verify_hl_keys(void) {
     bool res = true;
 
     res &= _verify_hl_key("PBR1", recovery1_pub, recovery1_pub_len);
@@ -151,26 +146,25 @@ _test_verify_hl_keys(void)
 
 /******************************************************************************/
 static bool
-_test_tl_header_save_pass()
-{
+_test_tl_header_save_pass() {
 
-    STATUS_CHECK_RET_BOOL(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t*)test_header, test_header_sz),
-        "Error write tl header");
+    STATUS_CHECK_RET_BOOL(_save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)test_header, test_header_sz),
+                          "Error write tl header");
     return true;
 }
 
 /******************************************************************************/
 static bool
-_test_tl_header_read_pass()
-{
+_test_tl_header_read_pass() {
     uint8_t readed_header[test_header_sz];
     uint16_t readed_bytes;
 
     BOOL_CHECK_RET(
-        VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLH, 0, readed_header, sizeof(readed_header), &readed_bytes) && readed_bytes == test_header_sz,
-        "Error read tl header, read %lu bytes, buffer %lu bytes",
-        readed_bytes,
-        test_header_sz);
+            VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLH, 0, readed_header, sizeof(readed_header), &readed_bytes) &&
+                    readed_bytes == test_header_sz,
+            "Error read tl header, read %lu bytes, buffer %lu bytes",
+            readed_bytes,
+            test_header_sz);
 
     MEMCMP_CHECK_RET(test_header, readed_header, sizeof(readed_header), false);
 
@@ -179,8 +173,7 @@ _test_tl_header_read_pass()
 
 /******************************************************************************/
 static bool
-_test_tl_keys_save_pass()
-{
+_test_tl_keys_save_pass() {
     uint16_t i;
     uint16_t pub_keys_count;
 
@@ -188,16 +181,15 @@ _test_tl_keys_save_pass()
 
     for (i = 0; i < pub_keys_count; ++i) {
         BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-            "Error write tl key %u",
-            i);
+                       "Error write tl key %u",
+                       i);
     }
     return true;
 }
 
 /******************************************************************************/
 static bool
-_tl_keys_save_wrong_order()
-{
+_tl_keys_save_wrong_order() {
     uint16_t i;
     uint16_t pub_keys_count;
 
@@ -206,25 +198,24 @@ _tl_keys_save_wrong_order()
     if (pub_keys_count > 2) {
         for (i = 0; i < pub_keys_count - 2; ++i) {
             BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-                "Error write tl key %u",
-                i);
+                           "Error write tl key %u",
+                           i);
         }
     }
     i = pub_keys_count - 1;
     BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-        "Error write tl key %u",
-        i);
+                   "Error write tl key %u",
+                   i);
     i = pub_keys_count - 2;
     BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLC, i, test_tl_keys[i].key, test_tl_keys[i].size),
-        "Error write tl key %u",
-        i);
+                   "Error write tl key %u",
+                   i);
     return true;
 }
 
 /******************************************************************************/
 static bool
-_test_tl_keys_read_pass()
-{
+_test_tl_keys_read_pass() {
     size_t i;
     uint8_t readed_key[VS_TL_STORAGE_MAX_PART_SIZE];
     uint16_t readed_bytes;
@@ -235,10 +226,11 @@ _test_tl_keys_read_pass()
     for (i = 0; i < pub_keys_count; ++i) {
 
         BOOL_CHECK_RET(
-            VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLC, i, readed_key, sizeof(readed_key), &readed_bytes) && test_tl_keys[i].size == readed_bytes,
-            "Error read tl key %lu, read %lu bytes",
-            i,
-            readed_bytes);
+                VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLC, i, readed_key, sizeof(readed_key), &readed_bytes) &&
+                        test_tl_keys[i].size == readed_bytes,
+                "Error read tl key %lu, read %lu bytes",
+                i,
+                readed_bytes);
 
         MEMCMP_CHECK_RET(test_tl_keys[i].key, &readed_key, test_tl_keys[i].size, false);
     }
@@ -248,27 +240,26 @@ _test_tl_keys_read_pass()
 
 /******************************************************************************/
 static bool
-_test_tl_footer_save_pass()
-{
+_test_tl_footer_save_pass() {
 
-    BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t*)test_footer, test_footer_sz),
-        "Error write tl footer");
+    BOOL_CHECK_RET(VS_CODE_OK == _save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t *)test_footer, test_footer_sz),
+                   "Error write tl footer");
 
     return true;
 }
 
 /******************************************************************************/
 static bool
-_test_tl_footer_read_pass()
-{
+_test_tl_footer_read_pass() {
 
     uint8_t readed_footer[test_footer_sz];
     uint16_t readed_bytes;
 
-    BOOL_CHECK_RET(VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLF, 0, readed_footer, test_footer_sz, &readed_bytes) && readed_bytes == test_footer_sz,
-        "Error read tl footer, read %lu bytes, buffer %lu bytes",
-        readed_bytes,
-        test_footer_sz);
+    BOOL_CHECK_RET(VS_CODE_OK == _load_tl_part(VS_TL_ELEMENT_TLF, 0, readed_footer, test_footer_sz, &readed_bytes) &&
+                           readed_bytes == test_footer_sz,
+                   "Error read tl footer, read %lu bytes, buffer %lu bytes",
+                   readed_bytes,
+                   test_footer_sz);
 
     MEMCMP_CHECK_RET(test_footer, &readed_footer, test_footer_sz, false);
 
@@ -277,15 +268,13 @@ _test_tl_footer_read_pass()
 
 /******************************************************************************/
 static bool
-_test_tl_save_pass()
-{
+_test_tl_save_pass() {
     return _test_tl_header_save_pass() && _test_tl_keys_save_pass() && _test_tl_footer_save_pass();
 }
 
 /******************************************************************************/
 static bool
-_test_tl_save_header_fail()
-{
+_test_tl_save_header_fail() {
     vs_tl_header_t header;
     bool res;
     vs_log_level_t prev_loglevel = VS_LOG_SET_LOGLEVEL(VS_LOGLEV_ALERT);
@@ -294,12 +283,12 @@ _test_tl_save_header_fail()
 
     VS_HEADER_SUBCASE("tl has big size");
     header.tl_size = VS_TL_STORAGE_SIZE + 1;
-    res = (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t*)&header, test_header_sz));
+    res = (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)&header, test_header_sz));
     header.tl_size = test_header->tl_size;
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_HEADER_SUBCASE("tl header has wrong size");
-    res = (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t*)&header, test_header_sz - 1));
+    res = (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLH, 0, (uint8_t *)&header, test_header_sz - 1));
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_LOG_SET_LOGLEVEL(prev_loglevel);
@@ -308,11 +297,10 @@ _test_tl_save_header_fail()
 
 /******************************************************************************/
 static bool
-_test_tl_save_keys_fail()
-{
+_test_tl_save_keys_fail() {
     uint8_t key[test_key_max_size];
-    vs_pubkey_dated_t* key_info = (vs_pubkey_dated_t*)key;
-    vs_pubkey_dated_t* ref_key_info = (vs_pubkey_dated_t*)test_tl_keys[0].key;
+    vs_pubkey_dated_t *key_info = (vs_pubkey_dated_t *)key;
+    vs_pubkey_dated_t *ref_key_info = (vs_pubkey_dated_t *)test_tl_keys[0].key;
     vs_log_level_t prev_loglevel = VS_LOG_SET_LOGLEVEL(VS_LOGLEV_ALERT);
     bool res;
 
@@ -320,7 +308,8 @@ _test_tl_save_keys_fail()
 
     VS_HEADER_SUBCASE("tl keys more than necessary");
     res = _test_tl_header_save_pass() && _test_tl_keys_save_pass();
-    res &= (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLC, test_header->pub_keys_count, test_tl_keys[0].key, test_tl_keys[0].size));
+    res &= (VS_CODE_OK !=
+            _save_tl_part(VS_TL_ELEMENT_TLC, test_header->pub_keys_count, test_tl_keys[0].key, test_tl_keys[0].size));
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_HEADER_SUBCASE("tl key has wrong size");
@@ -348,12 +337,11 @@ _test_tl_save_keys_fail()
 
 /******************************************************************************/
 static bool
-_test_tl_save_footer_fail()
-{
+_test_tl_save_footer_fail() {
     uint8_t footer[test_footer_sz];
-    vs_tl_footer_t* footer_info = (vs_tl_footer_t*)footer;
-    vs_sign_t* sign = (vs_sign_t*)footer_info->signatures;
-    vs_sign_t* ref_sign = (vs_sign_t*)test_footer->signatures;
+    vs_tl_footer_t *footer_info = (vs_tl_footer_t *)footer;
+    vs_sign_t *sign = (vs_sign_t *)footer_info->signatures;
+    vs_sign_t *ref_sign = (vs_sign_t *)test_footer->signatures;
     int sign_len;
 
     bool res;
@@ -363,7 +351,7 @@ _test_tl_save_footer_fail()
 
     VS_HEADER_SUBCASE("footer has wrong size");
     res = _test_tl_header_save_pass() && _test_tl_keys_save_pass();
-    res &= (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t*)test_footer, test_footer_sz - 1));
+    res &= (VS_CODE_OK != _save_tl_part(VS_TL_ELEMENT_TLF, 0, (uint8_t *)test_footer, test_footer_sz - 1));
     BOOL_CHECK_RET_LOGLEV_RESTORE(res);
 
     VS_HEADER_SUBCASE("footer signature has wrong ec_type");
@@ -417,15 +405,13 @@ _test_tl_save_footer_fail()
 
 /******************************************************************************/
 static bool
-_test_tl_read_pass()
-{
+_test_tl_read_pass() {
     return _test_tl_header_read_pass() && _test_tl_keys_read_pass() && _test_tl_footer_read_pass();
 }
 
 /******************************************************************************/
 uint16_t
-test_keystorage_and_tl(vs_secmodule_impl_t* secmodule_impl)
-{
+test_keystorage_and_tl(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
 
     START_TEST("Provision and TL tests");

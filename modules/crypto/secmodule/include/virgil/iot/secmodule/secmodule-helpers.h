@@ -84,7 +84,8 @@ extern "C" {
  *
  * \return Public key length
  */
-int vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type);
+int
+vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type);
 
 /** Get signature length
  *
@@ -94,7 +95,8 @@ int vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type);
  *
  * \return Signature length
  */
-int vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type);
+int
+vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type);
 
 /** Get hash length
  *
@@ -104,7 +106,8 @@ int vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type);
  *
  * \return Hash length
  */
-int vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type);
+int
+vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type);
 
 /** Get key pair type description
  *
@@ -114,7 +117,7 @@ int vs_secmodule_get_hash_len(vs_secmodule_hash_type_e hash_type);
  *
  * \return Key pair description in static buffer
  */
-const char*
+const char *
 vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type);
 
 /** Get hash type description
@@ -125,7 +128,7 @@ vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type);
  *
  * \return Hash type description in static buffer
  */
-const char*
+const char *
 vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type);
 
 /** Convert a NIST256 signature from a Virgil format to raw
@@ -138,10 +141,10 @@ vs_secmodule_hash_type_descr(vs_secmodule_hash_type_e type);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t* virgil_sign,
-    uint16_t virgil_sign_sz,
-    uint8_t* raw_signature,
-    uint16_t buf_sz);
+vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t *virgil_sign,
+                                              uint16_t virgil_sign_sz,
+                                              uint8_t *raw_signature,
+                                              uint16_t buf_sz);
 
 /** Convert a NIST-256 signature from raw format to Virgil format
  *
@@ -154,9 +157,9 @@ vs_secmodule_virgil_secp256_signature_to_tiny(const uint8_t* virgil_sign,
  */
 vs_status_e
 vs_secmodule_tiny_secp256_signature_to_virgil(const uint8_t raw_signature[VS_SIGNATURE_SECP256_LEN],
-    uint8_t* virgil_sign,
-    uint16_t buf_sz,
-    uint16_t* virgil_sign_sz);
+                                              uint8_t *virgil_sign,
+                                              uint16_t buf_sz,
+                                              uint16_t *virgil_sign_sz);
 
 #ifdef __cplusplus
 } // extern "C"

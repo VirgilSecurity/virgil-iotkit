@@ -22,9 +22,9 @@
 /******************************************************************************/
 /* Returns true if an exact string match is found, else false */
 static bool
-_json_token_streq(char* js, jsontok_t* t, char* s)
-{
-    return (VS_IOT_STRNCMP(js + t->start, s, t->end - t->start) == 0 && VS_IOT_STRLEN(s) == (size_t)(t->end - t->start));
+_json_token_streq(char *js, jsontok_t *t, char *s) {
+    return (VS_IOT_STRNCMP(js + t->start, s, t->end - t->start) == 0 &&
+            VS_IOT_STRLEN(s) == (size_t)(t->end - t->start));
 }
 
 /******************************************************************************/
@@ -32,10 +32,9 @@ _json_token_streq(char* js, jsontok_t* t, char* s)
  * If there is an array/object inside the given array/object,
  * the function is called recursively to skip all elements
  */
-static jsontok_t*
-_skip_to_last(jsontok_t* element)
-{
-    jsontok_t* t = element;
+static jsontok_t *
+_skip_to_last(jsontok_t *element) {
+    jsontok_t *t = element;
     if (t->size == 0)
         return t;
     int cnt = t->size;
@@ -50,8 +49,7 @@ _skip_to_last(jsontok_t* element)
 /******************************************************************************/
 /* Converts the value held by the token into a boolean */
 static int
-_json_str_to_bool(jobj_t* jobj, jsontok_t* t, bool* value)
-{
+_json_str_to_bool(jobj_t *jobj, jsontok_t *t, bool *value) {
     if (!t || t->type != JSMN_PRIMITIVE)
         return -WM_E_JSON_INVALID_TYPE;
     if (_json_token_streq(jobj->js, t, "true") || _json_token_streq(jobj->js, t, "1"))
@@ -66,11 +64,10 @@ _json_str_to_bool(jobj_t* jobj, jsontok_t* t, bool* value)
 /******************************************************************************/
 /* Converts the value held by the token into an integer */
 static int
-_json_str_to_int(jobj_t* jobj, jsontok_t* t, int* value)
-{
+_json_str_to_int(jobj_t *jobj, jsontok_t *t, int *value) {
     if (!t || t->type != JSMN_PRIMITIVE)
         return -WM_E_JSON_INVALID_TYPE;
-    char* endptr;
+    char *endptr;
     int int_val = (int)strtoul(&jobj->js[t->start], &endptr, 10);
     if (endptr == &(jobj->js[t->end])) {
         *value = int_val;
@@ -83,11 +80,10 @@ _json_str_to_int(jobj_t* jobj, jsontok_t* t, int* value)
 /******************************************************************************/
 /* Converts the value held by the token into an int64 */
 static int
-_json_str_to_int64(jobj_t* jobj, jsontok_t* t, int64_t* value)
-{
+_json_str_to_int64(jobj_t *jobj, jsontok_t *t, int64_t *value) {
     if (!t || t->type != JSMN_PRIMITIVE)
         return -WM_E_JSON_INVALID_TYPE;
-    char* endptr;
+    char *endptr;
     int64_t int_val = strtoull(&jobj->js[t->start], &endptr, 10);
     if (endptr == &(jobj->js[t->end])) {
         *value = int_val;
@@ -100,12 +96,11 @@ _json_str_to_int64(jobj_t* jobj, jsontok_t* t, int64_t* value)
 /******************************************************************************/
 /* Converts the value held by the token into a float */
 static int
-_json_str_to_float(jobj_t* jobj, jsontok_t* t, float* value)
-{
+_json_str_to_float(jobj_t *jobj, jsontok_t *t, float *value) {
     if (!t || t->type != JSMN_PRIMITIVE)
         return -WM_E_JSON_INVALID_TYPE;
-    char* start_ptr = &jobj->js[t->start];
-    char* endptr;
+    char *start_ptr = &jobj->js[t->start];
+    char *endptr;
 
     *value = wm_strtof(start_ptr, &endptr);
     if (endptr != &(jobj->js[t->end]))
@@ -117,8 +112,7 @@ _json_str_to_float(jobj_t* jobj, jsontok_t* t, float* value)
 /******************************************************************************/
 /* Converts the value held by the token into a null terminated string */
 static int
-_json_str_to_str(jobj_t* jobj, jsontok_t* t, char* value, int maxlen)
-{
+_json_str_to_str(jobj_t *jobj, jsontok_t *t, char *value, int maxlen) {
     if (!t || t->type != JSMN_STRING)
         return -WM_E_JSON_INVALID_TYPE;
     if ((t->end - t->start) >= maxlen)
@@ -134,9 +128,8 @@ _json_str_to_str(jobj_t* jobj, jsontok_t* t, char* value, int maxlen)
  * If not found, returns error.
  */
 static int
-_json_get_value(jobj_t* jobj, char* key, jsontok_t** val_t)
-{
-    jsontok_t* t = jobj->cur;
+_json_get_value(jobj_t *jobj, char *key, jsontok_t **val_t) {
+    jsontok_t *t = jobj->cur;
     int num_children = t->size;
     *val_t = NULL;
     /* If there are no children it is an error, since we
@@ -188,9 +181,9 @@ _json_get_value(jobj_t* jobj, char* key, jsontok_t** val_t)
 
 /******************************************************************************/
 /* Search boolean value based on given key */
-int json_get_val_bool(jobj_t* jobj, char* key, bool* value)
-{
-    jsontok_t* t;
+int
+json_get_val_bool(jobj_t *jobj, char *key, bool *value) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -199,9 +192,9 @@ int json_get_val_bool(jobj_t* jobj, char* key, bool* value)
 
 /******************************************************************************/
 /* Search integer value based on given key */
-int json_get_val_int(jobj_t* jobj, char* key, int* value)
-{
-    jsontok_t* t;
+int
+json_get_val_int(jobj_t *jobj, char *key, int *value) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -210,9 +203,9 @@ int json_get_val_int(jobj_t* jobj, char* key, int* value)
 
 /******************************************************************************/
 /* Search int64 value based on given key */
-int json_get_val_int64(jobj_t* jobj, char* key, int64_t* value)
-{
-    jsontok_t* t;
+int
+json_get_val_int64(jobj_t *jobj, char *key, int64_t *value) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -222,26 +215,26 @@ int json_get_val_int64(jobj_t* jobj, char* key, int64_t* value)
 /******************************************************************************/
 /* Search float value based on given key */
 #ifdef CONFIG_JSON_FLOAT
-int json_get_val_float(jobj_t* jobj, char* key, float* value)
-{
-    jsontok_t* t;
+int
+json_get_val_float(jobj_t *jobj, char *key, float *value) {
+    jsontok_t *t;
     int ret = json_get_value(jobj, key, &t);
     if (ret != 0)
         return ret;
     return _json_str_to_float(jobj, t, value);
 }
 #else
-int json_get_val_float(jobj_t* jobj, char* key, float* value)
-{
+int
+json_get_val_float(jobj_t *jobj, char *key, float *value) {
     return -WM_E_JSON_FAIL;
 }
 #endif /* CONFIG_JSON_FLOAT */
 
 /******************************************************************************/
 /* Search string value based on given key */
-int json_get_val_str(jobj_t* jobj, char* key, char* value, int maxlen)
-{
-    jsontok_t* t;
+int
+json_get_val_str(jobj_t *jobj, char *key, char *value, int maxlen) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -249,9 +242,9 @@ int json_get_val_str(jobj_t* jobj, char* key, char* value, int maxlen)
 }
 
 /******************************************************************************/
-int json_get_val_str_len(jobj_t* jobj, char* key, int* len)
-{
-    jsontok_t* t;
+int
+json_get_val_str_len(jobj_t *jobj, char *key, int *len) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -263,9 +256,9 @@ int json_get_val_str_len(jobj_t* jobj, char* key, int* len)
 
 /******************************************************************************/
 /* Search composite object based on given key */
-int json_get_composite_object(jobj_t* jobj, char* key)
-{
-    jsontok_t* t;
+int
+json_get_composite_object(jobj_t *jobj, char *key) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -278,8 +271,8 @@ int json_get_composite_object(jobj_t* jobj, char* key)
 
 /******************************************************************************/
 /* Release a composite object*/
-int json_release_composite_object(jobj_t* jobj)
-{
+int
+json_release_composite_object(jobj_t *jobj) {
     if (jobj->cur->parent < 0)
         return -WM_E_JSON_FAIL;
     /* The parent of the current element will be its "key" */
@@ -294,9 +287,9 @@ int json_release_composite_object(jobj_t* jobj)
 
 /******************************************************************************/
 /* Search array object based on given key */
-int json_get_array_object(jobj_t* jobj, char* key, int* num_elements)
-{
-    jsontok_t* t;
+int
+json_get_array_object(jobj_t *jobj, char *key, int *num_elements) {
+    jsontok_t *t;
     int ret = _json_get_value(jobj, key, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -312,14 +305,14 @@ int json_get_array_object(jobj_t* jobj, char* key, int* num_elements)
 
 /******************************************************************************/
 /* Release array object */
-int json_release_array_object(jobj_t* jobj)
-{
+int
+json_release_array_object(jobj_t *jobj) {
     return json_release_composite_object(jobj);
 }
 
 /******************************************************************************/
-int json_array_get_num_elements(jobj_t* jobj)
-{
+int
+json_array_get_num_elements(jobj_t *jobj) {
     if (jobj->cur->type != JSMN_ARRAY)
         return -WM_E_JSON_FAIL;
     return jobj->cur->size;
@@ -331,15 +324,14 @@ int json_array_get_num_elements(jobj_t* jobj)
  * and 0 is returned. Else error is returned.
  */
 static int
-_json_get_array_index(jobj_t* jobj, uint16_t index, jsontok_t** val_t)
-{
+_json_get_array_index(jobj_t *jobj, uint16_t index, jsontok_t **val_t) {
     *val_t = NULL;
     if (jobj->cur->type != JSMN_ARRAY)
         return -WM_E_JSON_INVALID_JARRAY;
     /* Given index exceeds the size of array. */
     if (index >= jobj->cur->size)
         return -WM_E_JSON_INVALID_INDEX;
-    jsontok_t* t = jobj->cur;
+    jsontok_t *t = jobj->cur;
     /* Incrementing once so that the token pointer points to index 0*/
     t++;
     while (index--) {
@@ -362,9 +354,9 @@ _json_get_array_index(jobj_t* jobj, uint16_t index, jsontok_t** val_t)
 
 /******************************************************************************/
 /* Search boolean value inside an array based on given index */
-int json_array_get_bool(jobj_t* jobj, uint16_t index, bool* value)
-{
-    jsontok_t* t;
+int
+json_array_get_bool(jobj_t *jobj, uint16_t index, bool *value) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -373,9 +365,9 @@ int json_array_get_bool(jobj_t* jobj, uint16_t index, bool* value)
 
 /******************************************************************************/
 /* Search integer value inside an array based on given index */
-int json_array_get_int(jobj_t* jobj, uint16_t index, int* value)
-{
-    jsontok_t* t;
+int
+json_array_get_int(jobj_t *jobj, uint16_t index, int *value) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -384,9 +376,9 @@ int json_array_get_int(jobj_t* jobj, uint16_t index, int* value)
 
 /******************************************************************************/
 /* Search int64 value inside an array based on given index */
-int json_array_get_int64(jobj_t* jobj, uint16_t index, int64_t* value)
-{
-    jsontok_t* t;
+int
+json_array_get_int64(jobj_t *jobj, uint16_t index, int64_t *value) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -396,26 +388,26 @@ int json_array_get_int64(jobj_t* jobj, uint16_t index, int64_t* value)
 /******************************************************************************/
 /* Search float value inside an array based on given index */
 #ifdef CONFIG_JSON_FLOAT
-int json_array_get_float(jobj_t* jobj, uint16_t index, float* value)
-{
-    jsontok_t* t;
+int
+json_array_get_float(jobj_t *jobj, uint16_t index, float *value) {
+    jsontok_t *t;
     int ret = json_get_array_index(jobj, index, &t);
     if (ret != 0)
         return ret;
     return json_str_to_float(jobj, t, value);
 }
 #else
-int json_array_get_float(jobj_t* jobj, uint16_t index, float* value)
-{
+int
+json_array_get_float(jobj_t *jobj, uint16_t index, float *value) {
     return -WM_E_JSON_FAIL;
 }
 #endif /* CONFIG_JSON_FLOAT */
 
 /******************************************************************************/
 /* Search string value inside an array based on given index */
-int json_array_get_str(jobj_t* jobj, uint16_t index, char* value, int maxlen)
-{
-    jsontok_t* t;
+int
+json_array_get_str(jobj_t *jobj, uint16_t index, char *value, int maxlen) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -423,9 +415,9 @@ int json_array_get_str(jobj_t* jobj, uint16_t index, char* value, int maxlen)
 }
 
 /******************************************************************************/
-int json_array_get_str_len(jobj_t* jobj, uint16_t index, int* len)
-{
-    jsontok_t* t;
+int
+json_array_get_str_len(jobj_t *jobj, uint16_t index, int *len) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -437,9 +429,9 @@ int json_array_get_str_len(jobj_t* jobj, uint16_t index, int* len)
 
 /******************************************************************************/
 /* Search composite object inside an array based on given index */
-int json_array_get_composite_object(jobj_t* jobj, uint16_t index)
-{
-    jsontok_t* t;
+int
+json_array_get_composite_object(jobj_t *jobj, uint16_t index) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -451,8 +443,8 @@ int json_array_get_composite_object(jobj_t* jobj, uint16_t index)
 
 /******************************************************************************/
 /* Release the composite object inside the array */
-int json_array_release_composite_object(jobj_t* jobj)
-{
+int
+json_array_release_composite_object(jobj_t *jobj) {
     if (jobj->cur->parent < 0)
         return -WM_E_JSON_FAIL;
     /* The parent of the current element will be the array */
@@ -463,9 +455,9 @@ int json_array_release_composite_object(jobj_t* jobj)
 
 /******************************************************************************/
 /* Search an array inside an array based on given index */
-int json_array_get_array_object(jobj_t* jobj, uint16_t index, int* num_elements)
-{
-    jsontok_t* t;
+int
+json_array_get_array_object(jobj_t *jobj, uint16_t index, int *num_elements) {
+    jsontok_t *t;
     int ret = _json_get_array_index(jobj, index, &t);
     if (ret != VS_JSON_ERR_OK)
         return ret;
@@ -478,16 +470,15 @@ int json_array_get_array_object(jobj_t* jobj, uint16_t index, int* num_elements)
 
 /******************************************************************************/
 /* Release the array */
-int json_array_release_array_object(jobj_t* jobj)
-{
+int
+json_array_release_array_object(jobj_t *jobj) {
     return json_array_release_composite_object(jobj);
 }
 
 /******************************************************************************/
 /* Initialize the JSON parser */
 static void
-_json_obj_init(jobj_t* jobj, jsontok_t* tokens, int num_tokens)
-{
+_json_obj_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens) {
     jobj->js = NULL;
     jobj->tokens = tokens;
     jobj->num_tokens = num_tokens;
@@ -496,8 +487,8 @@ _json_obj_init(jobj_t* jobj, jsontok_t* tokens, int num_tokens)
 }
 
 /******************************************************************************/
-bool json_is_object(jobj_t* jobj)
-{
+bool
+json_is_object(jobj_t *jobj) {
     if (jobj->cur->type == JSMN_OBJECT)
         return true;
     else
@@ -505,8 +496,8 @@ bool json_is_object(jobj_t* jobj)
 }
 
 /******************************************************************************/
-bool json_is_array(jobj_t* jobj)
-{
+bool
+json_is_array(jobj_t *jobj) {
     if (jobj->cur->type == JSMN_ARRAY)
         return true;
     else
@@ -515,9 +506,8 @@ bool json_is_array(jobj_t* jobj)
 
 /******************************************************************************/
 static bool
-_json_is_valid(jobj_t* jobj, jsmnenumtype_t type)
-{
-    jsontok_t* t = jobj->cur;
+_json_is_valid(jobj_t *jobj, jsmnenumtype_t type) {
+    jsontok_t *t = jobj->cur;
     /* If the current token type itself is not correct, return false*/
     if (t->type != type)
         return false;
@@ -555,7 +545,7 @@ _json_is_valid(jobj_t* jobj, jsmnenumtype_t type)
             t++;
         }
         if ((t->type == JSMN_OBJECT) || (t->type == JSMN_ARRAY)) {
-            jsontok_t* tmp_tok = jobj->cur;
+            jsontok_t *tmp_tok = jobj->cur;
             jobj->cur = t;
             bool valid = _json_is_valid(jobj, t->type);
             jobj->cur = tmp_tok;
@@ -575,22 +565,20 @@ _json_is_valid(jobj_t* jobj, jsmnenumtype_t type)
 
 /******************************************************************************/
 static bool
-_json_is_array_valid(jobj_t* jobj)
-{
+_json_is_array_valid(jobj_t *jobj) {
     return _json_is_valid(jobj, JSMN_ARRAY);
 }
 
 /******************************************************************************/
 static bool
-_json_is_object_valid(jobj_t* jobj)
-{
+_json_is_object_valid(jobj_t *jobj) {
     return _json_is_valid(jobj, JSMN_OBJECT);
 }
 
 /******************************************************************************/
 /* Parse the given JSON string */
-int json_init(jobj_t* jobj, jsontok_t* tokens, int num_tokens, char* js, size_t js_len)
-{
+int
+json_init(jobj_t *jobj, jsontok_t *tokens, int num_tokens, char *js, size_t js_len) {
     _json_obj_init(jobj, tokens, num_tokens);
     int parsed_tokens = jsmn_parse(&jobj->parser, js, js_len, jobj->tokens, jobj->num_tokens);
     if (parsed_tokens < 0) {
@@ -623,8 +611,8 @@ int json_init(jobj_t* jobj, jsontok_t* tokens, int num_tokens, char* js, size_t 
 }
 
 /******************************************************************************/
-int json_parse_start(jobj_t* jobj, char* js, size_t js_len)
-{
+int
+json_parse_start(jobj_t *jobj, char *js, size_t js_len) {
     /* Passing NULL for tokens gives us the total number of tokens that
      * will be required to parse the string successfully.
      */
@@ -642,7 +630,7 @@ int json_parse_start(jobj_t* jobj, char* js, size_t js_len)
             return -WM_E_JSON_FAIL;
         }
     }
-    jsontok_t* tokens = VS_IOT_MALLOC(parsed_tokens * sizeof(jsontok_t));
+    jsontok_t *tokens = VS_IOT_MALLOC(parsed_tokens * sizeof(jsontok_t));
     if (!tokens)
         return -WM_E_JSON_NOMEM;
 
@@ -654,8 +642,8 @@ int json_parse_start(jobj_t* jobj, char* js, size_t js_len)
 }
 
 /******************************************************************************/
-void json_parse_stop(jobj_t* jobj)
-{
+void
+json_parse_stop(jobj_t *jobj) {
     if (jobj->tokens)
         VS_IOT_FREE(jobj->tokens);
 }

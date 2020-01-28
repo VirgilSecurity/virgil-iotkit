@@ -84,8 +84,9 @@ extern "C" {
 #endif
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define HTONL_IN_COMPILE_TIME(val) \
-    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 | ((uint32_t)val & 0xFF000000) >> 24)
+#define HTONL_IN_COMPILE_TIME(val)                                                                                     \
+    (uint32_t)(((uint32_t)val & 0xFF) << 24 | ((uint32_t)val & 0xFF00) << 8 | ((uint32_t)val & 0xFF0000) >> 8 |        \
+               ((uint32_t)val & 0xFF000000) >> 24)
 #else
 #define HTONL_IN_COMPILE_TIME(val) (val)
 #endif
@@ -150,9 +151,9 @@ typedef enum {
     VS_PRVS_PBT2 = HTONL_IN_COMPILE_TIME('PBT2'), /**< Set Trust List 2 */
     VS_PRVS_PBF1 = HTONL_IN_COMPILE_TIME('PBF1'), /**< Set Firmware Key 1 */
     VS_PRVS_PBF2 = HTONL_IN_COMPILE_TIME('PBF2'), /**< Set Firmware Key 2 */
-    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'), /**< Set Trust List Header */
-    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'), /**< Set Trust List Chunk */
-    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'), /**< Set Trust List Footer */
+    VS_PRVS_TLH = HTONL_IN_COMPILE_TIME('_TLH'),  /**< Set Trust List Header */
+    VS_PRVS_TLC = HTONL_IN_COMPILE_TIME('_TLC'),  /**< Set Trust List Chunk */
+    VS_PRVS_TLF = HTONL_IN_COMPILE_TIME('_TLF'),  /**< Set Trust List Footer */
     VS_PRVS_DEVI = HTONL_IN_COMPILE_TIME('DEVI'), /**< Get DEVice Info */
     VS_PRVS_ASAV = HTONL_IN_COMPILE_TIME('ASAV'), /**< Action SAVe provision */
     VS_PRVS_ASGN = HTONL_IN_COMPILE_TIME('ASGN'), /**< Action SiGN data */
@@ -174,57 +175,57 @@ typedef enum {
 
 /** Key type */
 typedef enum {
-    VS_KEY_RECOVERY = 0, /**< Recovery key */
-    VS_KEY_AUTH, /**< Authentication key */
-    VS_KEY_TRUSTLIST, /**< Trust List key*/
-    VS_KEY_FIRMWARE, /**< Firmware key */
-    VS_KEY_FACTORY, /**< Factory key */
-    VS_KEY_IOT_DEVICE, /**< Key of IoT device */
-    VS_KEY_USER_DEVICE, /**< Key ofr user device*/
+    VS_KEY_RECOVERY = 0,      /**< Recovery key */
+    VS_KEY_AUTH,              /**< Authentication key */
+    VS_KEY_TRUSTLIST,         /**< Trust List key*/
+    VS_KEY_FIRMWARE,          /**< Firmware key */
+    VS_KEY_FACTORY,           /**< Factory key */
+    VS_KEY_IOT_DEVICE,        /**< Key of IoT device */
+    VS_KEY_USER_DEVICE,       /**< Key ofr user device*/
     VS_KEY_FIRMWARE_INTERNAL, /**< Firmware internal key */
-    VS_KEY_AUTH_INTERNAL, /**< Authentication internal key */
-    VS_KEY_CLOUD, /**< Cloud key */
-    VS_KEY_UNSUPPORTED /**< Unsupported key */
+    VS_KEY_AUTH_INTERNAL,     /**< Authentication internal key */
+    VS_KEY_CLOUD,             /**< Cloud key */
+    VS_KEY_UNSUPPORTED        /**< Unsupported key */
 } vs_key_type_e;
 
 /** Signature type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t signer_type; /**< #vs_key_type_e */
-    uint8_t ec_type; /**< #vs_secmodule_keypair_type_e */
-    uint8_t hash_type; /**< #vs_secmodule_hash_type_e */
+    uint8_t signer_type;       /**< #vs_key_type_e */
+    uint8_t ec_type;           /**< #vs_secmodule_keypair_type_e */
+    uint8_t hash_type;         /**< #vs_secmodule_hash_type_e */
     uint8_t raw_sign_pubkey[]; /**< An array with raw signature and public key, size of elements depends on \a ec_type
                                 */
 } vs_sign_t;
 
 /** Public key type */
 typedef struct __attribute__((__packed__)) {
-    uint8_t key_type; /**< #vs_key_type_e */
-    uint8_t ec_type; /**< #vs_secmodule_keypair_type_e */
-    uint16_t meta_data_sz; /**< Meta data size */
+    uint8_t key_type;          /**< #vs_key_type_e */
+    uint8_t ec_type;           /**< #vs_secmodule_keypair_type_e */
+    uint16_t meta_data_sz;     /**< Meta data size */
     uint8_t meta_and_pubkey[]; /**< Meta data and public key, size of element depends on \a ec_type */
 } vs_pubkey_t;
 
 /** Public key with date information */
 typedef struct __attribute__((__packed__)) {
-    uint32_t start_date; /**< Start date */
+    uint32_t start_date;  /**< Start date */
     uint32_t expire_date; /**< Expiration date */
-    vs_pubkey_t pubkey; /**< Public key */
+    vs_pubkey_t pubkey;   /**< Public key */
 } vs_pubkey_dated_t;
 
 /** File version information */
 typedef struct __attribute__((__packed__)) {
-    uint8_t major; /**< Major version number */
-    uint8_t minor; /**< Minor version number */
-    uint8_t patch; /**< Patch number */
-    uint32_t build; /**< Build number */
+    uint8_t major;      /**< Major version number */
+    uint8_t minor;      /**< Minor version number */
+    uint8_t patch;      /**< Patch number */
+    uint32_t build;     /**< Build number */
     uint32_t timestamp; /**< The number of seconds since #VS_START_EPOCH */
 } vs_file_version_t;
 
 /** File information */
 typedef struct __attribute__((__packed__)) {
     vs_device_manufacture_id_t manufacture_id; /**< Manufacture ID */
-    vs_device_type_t device_type; /**< Device type */
-    vs_file_version_t version; /**< File version */
+    vs_device_type_t device_type;              /**< Device type */
+    vs_file_version_t version;                 /**< File version */
 } vs_file_info_t;
 
 /** Find context

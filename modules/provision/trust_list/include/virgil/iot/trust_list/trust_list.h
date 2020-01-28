@@ -137,7 +137,7 @@ extern "C" {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_init(vs_storage_op_ctx_t* op_ctx, vs_secmodule_impl_t* secmodule);
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
 
 /** Trust List destruction
  *
@@ -161,7 +161,7 @@ vs_tl_deinit();
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_save_part(vs_tl_element_info_t* element_info, const uint8_t* in_data, uint16_t data_sz);
+vs_tl_save_part(vs_tl_element_info_t *element_info, const uint8_t *in_data, uint16_t data_sz);
 
 /** Trust List element loading
  *
@@ -175,7 +175,7 @@ vs_tl_save_part(vs_tl_element_info_t* element_info, const uint8_t* in_data, uint
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_load_part(vs_tl_element_info_t* element_info, uint8_t* out_data, uint16_t buf_sz, uint16_t* out_sz);
+vs_tl_load_part(vs_tl_element_info_t *element_info, uint8_t *out_data, uint16_t buf_sz, uint16_t *out_sz);
 
 /** Update interface for Trust List
  *
@@ -183,7 +183,7 @@ vs_tl_load_part(vs_tl_element_info_t* element_info, uint8_t* out_data, uint16_t 
  *
  * \return #vs_update_interface_t
  */
-vs_update_interface_t*
+vs_update_interface_t *
 vs_tl_update_ctx(void);
 
 /** Trust List file type
@@ -192,7 +192,7 @@ vs_tl_update_ctx(void);
  *
  * \return #vs_update_file_type_t
  */
-const vs_update_file_type_t*
+const vs_update_file_type_t *
 vs_tl_update_file_type(void);
 
 /** Convert Trust List header to host
@@ -202,7 +202,8 @@ vs_tl_update_file_type(void);
  * \param[in] src_data Data source. Must not be NULL.
  * \param[out] dst_data Data destination. Must not be NULL.
  */
-void vs_tl_header_to_host(const vs_tl_header_t* src_data, vs_tl_header_t* dst_data);
+void
+vs_tl_header_to_host(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
 
 /** Convert Trust List header to network
  *
@@ -211,7 +212,8 @@ void vs_tl_header_to_host(const vs_tl_header_t* src_data, vs_tl_header_t* dst_da
  * \param[in] src_data Data source. Must not be NULL.
  * \param[out] dst_data Data destination. Must not be NULL.
  */
-void vs_tl_header_to_net(const vs_tl_header_t* src_data, vs_tl_header_t* dst_data);
+void
+vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -6,25 +6,26 @@
  * 32-bit integer manipulation macros (big endian)
  */
 #ifndef GET_UINT32_BE
-#define GET_UINT32_BE(n, b, i)                                                                                                        \
-    do {                                                                                                                              \
-        (n) = ((uint32_t)(b)[(i)] << 24) | ((uint32_t)(b)[(i) + 1] << 16) | ((uint32_t)(b)[(i) + 2] << 8) | ((uint32_t)(b)[(i) + 3]); \
+#define GET_UINT32_BE(n, b, i)                                                                                         \
+    do {                                                                                                               \
+        (n) = ((uint32_t)(b)[(i)] << 24) | ((uint32_t)(b)[(i) + 1] << 16) | ((uint32_t)(b)[(i) + 2] << 8) |            \
+              ((uint32_t)(b)[(i) + 3]);                                                                                \
     } while (0)
 #endif
 
 #ifndef PUT_UINT32_BE
-#define PUT_UINT32_BE(n, b, i)                     \
-    do {                                           \
-        (b)[(i)] = (unsigned char)((n) >> 24);     \
-        (b)[(i) + 1] = (unsigned char)((n) >> 16); \
-        (b)[(i) + 2] = (unsigned char)((n) >> 8);  \
-        (b)[(i) + 3] = (unsigned char)((n));       \
+#define PUT_UINT32_BE(n, b, i)                                                                                         \
+    do {                                                                                                               \
+        (b)[(i)] = (unsigned char)((n) >> 24);                                                                         \
+        (b)[(i) + 1] = (unsigned char)((n) >> 16);                                                                     \
+        (b)[(i) + 2] = (unsigned char)((n) >> 8);                                                                      \
+        (b)[(i) + 3] = (unsigned char)((n));                                                                           \
     } while (0)
 #endif
 
 /******************************************************************************/
-void vs_secmodule_sw_sha256_init(vs_secmodule_sw_sha256_ctx* ctx)
-{
+void
+vs_secmodule_sw_sha256_init(vs_secmodule_sw_sha256_ctx *ctx) {
     VS_IOT_MEMSET(ctx, 0, sizeof(vs_secmodule_sw_sha256_ctx));
     ctx->total[0] = 0;
     ctx->total[1] = 0;
@@ -41,70 +42,14 @@ void vs_secmodule_sw_sha256_init(vs_secmodule_sw_sha256_ctx* ctx)
 }
 
 static const uint32_t K[] = {
-    0x428A2F98,
-    0x71374491,
-    0xB5C0FBCF,
-    0xE9B5DBA5,
-    0x3956C25B,
-    0x59F111F1,
-    0x923F82A4,
-    0xAB1C5ED5,
-    0xD807AA98,
-    0x12835B01,
-    0x243185BE,
-    0x550C7DC3,
-    0x72BE5D74,
-    0x80DEB1FE,
-    0x9BDC06A7,
-    0xC19BF174,
-    0xE49B69C1,
-    0xEFBE4786,
-    0x0FC19DC6,
-    0x240CA1CC,
-    0x2DE92C6F,
-    0x4A7484AA,
-    0x5CB0A9DC,
-    0x76F988DA,
-    0x983E5152,
-    0xA831C66D,
-    0xB00327C8,
-    0xBF597FC7,
-    0xC6E00BF3,
-    0xD5A79147,
-    0x06CA6351,
-    0x14292967,
-    0x27B70A85,
-    0x2E1B2138,
-    0x4D2C6DFC,
-    0x53380D13,
-    0x650A7354,
-    0x766A0ABB,
-    0x81C2C92E,
-    0x92722C85,
-    0xA2BFE8A1,
-    0xA81A664B,
-    0xC24B8B70,
-    0xC76C51A3,
-    0xD192E819,
-    0xD6990624,
-    0xF40E3585,
-    0x106AA070,
-    0x19A4C116,
-    0x1E376C08,
-    0x2748774C,
-    0x34B0BCB5,
-    0x391C0CB3,
-    0x4ED8AA4A,
-    0x5B9CCA4F,
-    0x682E6FF3,
-    0x748F82EE,
-    0x78A5636F,
-    0x84C87814,
-    0x8CC70208,
-    0x90BEFFFA,
-    0xA4506CEB,
-    0xBEF9A3F7,
-    0xC67178F2,
+        0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
+        0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174,
+        0xE49B69C1, 0xEFBE4786, 0x0FC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA,
+        0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x06CA6351, 0x14292967,
+        0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85,
+        0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070,
+        0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3,
+        0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2,
 };
 
 #define SHR(x, n) ((x & 0xFFFFFFFF) >> n)
@@ -121,18 +66,17 @@ static const uint32_t K[] = {
 
 #define R(t) (W[t] = S1(W[t - 2]) + W[t - 7] + S0(W[t - 15]) + W[t - 16])
 
-#define P(a, b, c, d, e, f, g, h, x, K)          \
-    {                                            \
-        temp1 = h + S3(e) + F1(e, f, g) + K + x; \
-        temp2 = S2(a) + F0(a, b, c);             \
-        d += temp1;                              \
-        h = temp1 + temp2;                       \
+#define P(a, b, c, d, e, f, g, h, x, K)                                                                                \
+    {                                                                                                                  \
+        temp1 = h + S3(e) + F1(e, f, g) + K + x;                                                                       \
+        temp2 = S2(a) + F0(a, b, c);                                                                                   \
+        d += temp1;                                                                                                    \
+        h = temp1 + temp2;                                                                                             \
     }
 
 /******************************************************************************/
 static void
-mbedtls_internal_sha256_process(vs_secmodule_sw_sha256_ctx* ctx, const unsigned char data[64])
-{
+mbedtls_internal_sha256_process(vs_secmodule_sw_sha256_ctx *ctx, const unsigned char data[64]) {
     uint32_t temp1, temp2, W[64];
     uint32_t A[8];
     unsigned int i;
@@ -171,8 +115,7 @@ mbedtls_internal_sha256_process(vs_secmodule_sw_sha256_ctx* ctx, const unsigned 
 
 /******************************************************************************/
 vs_status_e
-vs_secmodule_sw_sha256_update(vs_secmodule_sw_sha256_ctx* ctx, const uint8_t* message, uint32_t len)
-{
+vs_secmodule_sw_sha256_update(vs_secmodule_sw_sha256_ctx *ctx, const uint8_t *message, uint32_t len) {
     size_t fill;
     uint32_t left;
 
@@ -189,7 +132,7 @@ vs_secmodule_sw_sha256_update(vs_secmodule_sw_sha256_ctx* ctx, const uint8_t* me
         ctx->total[1]++;
 
     if (left && len >= fill) {
-        memcpy((void*)(ctx->buffer + left), message, fill);
+        memcpy((void *)(ctx->buffer + left), message, fill);
 
         mbedtls_internal_sha256_process(ctx, ctx->buffer);
 
@@ -206,15 +149,14 @@ vs_secmodule_sw_sha256_update(vs_secmodule_sw_sha256_ctx* ctx, const uint8_t* me
     }
 
     if (len > 0)
-        memcpy((void*)(ctx->buffer + left), message, len);
+        memcpy((void *)(ctx->buffer + left), message, len);
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 vs_status_e
-vs_secmodule_sw_sha256_final(vs_secmodule_sw_sha256_ctx* ctx, uint8_t* digest)
-{
+vs_secmodule_sw_sha256_final(vs_secmodule_sw_sha256_ctx *ctx, uint8_t *digest) {
     uint32_t used;
     uint32_t high, low;
 
@@ -269,8 +211,7 @@ vs_secmodule_sw_sha256_final(vs_secmodule_sw_sha256_ctx* ctx, uint8_t* digest)
 /******************************************************************************/
 
 vs_status_e
-_fill_soft_hash_impl(vs_secmodule_impl_t* secmodule_impl)
-{
+_fill_soft_hash_impl(vs_secmodule_impl_t *secmodule_impl) {
     CHECK_NOT_ZERO_RET(secmodule_impl, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     secmodule_impl->hash_init = vs_secmodule_sw_sha256_init;

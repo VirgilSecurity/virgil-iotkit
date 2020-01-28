@@ -46,29 +46,29 @@
 #define VS_TL_TOPIC_MASK "tl/"
 
 typedef struct {
-    char* login;
-    char* password;
-    char* cert;
-    char* root_ca_cert;
-    char* pk;
-    char* host;
+    char *login;
+    char *password;
+    char *cert;
+    char *root_ca_cert;
+    char *pk;
+    char *host;
     vs_cloud_mb_topics_list_t topic_list;
-    char* client_id;
+    char *client_id;
     uint16_t port;
     bool is_filled;
     bool is_active;
 } vs_cloud_message_bin_ctx_t;
 
 vs_status_e
-vs_cloud_fetch_message_bin_credentials(const char* cloud_host, char* out_answer, size_t* in_out_answer_len);
+vs_cloud_fetch_message_bin_credentials(const char *cloud_host, char *out_answer, size_t *in_out_answer_len);
 
 vs_status_e
-vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t* impl);
+vs_cloud_message_bin_init(const vs_cloud_message_bin_impl_t *impl);
 
 vs_status_e
-vs_cloud_parse_firmware_manifest(void* payload, size_t payload_len, char* fw_url);
+vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url);
 
 vs_status_e
-vs_cloud_parse_tl_mainfest(void* payload, size_t payload_len, char* tl_url);
+vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url);
 
 #endif // VS_CLOUD_OPERATIONS_H

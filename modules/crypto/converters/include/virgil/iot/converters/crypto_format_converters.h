@@ -76,12 +76,13 @@ extern "C" {
  *
  * \return true in case of success or false otherwise
  */
-bool vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
-    const uint8_t* public_key,
-    uint16_t public_key_sz,
-    uint8_t* pubkey_raw,
-    uint16_t buf_sz,
-    uint16_t* pubkey_raw_sz);
+bool
+vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
+                            const uint8_t *public_key,
+                            uint16_t public_key_sz,
+                            uint8_t *pubkey_raw,
+                            uint16_t buf_sz,
+                            uint16_t *pubkey_raw_sz);
 
 /** Convert public key from raw format to Virgil format
  *
@@ -94,12 +95,13 @@ bool vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
  *
  * \return true in case of success or false otherwise
  */
-bool vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
-    const uint8_t* public_key_in,
-    uint16_t public_key_in_sz,
-    uint8_t* public_key_out,
-    uint16_t buf_sz,
-    uint16_t* public_key_out_sz);
+bool
+vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
+                               const uint8_t *public_key_in,
+                               uint16_t public_key_in_sz,
+                               uint8_t *public_key_out,
+                               uint16_t buf_sz,
+                               uint16_t *public_key_out_sz);
 
 /** Convert signature from Virgil format to raw format
  *
@@ -112,12 +114,13 @@ bool vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
  *
  * \return true in case of success and false otherwise
  */
-bool vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
-    const uint8_t* virgil_sign,
-    uint16_t virgil_sign_sz,
-    uint8_t* sign,
-    uint16_t buf_sz,
-    uint16_t* sign_sz);
+bool
+vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
+                                 const uint8_t *virgil_sign,
+                                 uint16_t virgil_sign_sz,
+                                 uint8_t *sign,
+                                 uint16_t buf_sz,
+                                 uint16_t *sign_sz);
 
 /** Convert signature from raw format to Virgil format
  *
@@ -131,13 +134,14 @@ bool vs_converters_virgil_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
  *
  * \return true in case of success and false otherwise
  */
-bool vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
-    vs_secmodule_hash_type_e hash_type,
-    const uint8_t* raw_sign,
-    uint16_t raw_sign_sz,
-    uint8_t* virgil_sign,
-    uint16_t buf_sz,
-    uint16_t* virgil_sign_sz);
+bool
+vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
+                                 vs_secmodule_hash_type_e hash_type,
+                                 const uint8_t *raw_sign,
+                                 uint16_t raw_sign_sz,
+                                 uint8_t *virgil_sign,
+                                 uint16_t buf_sz,
+                                 uint16_t *virgil_sign_sz);
 
 /** Convert signature from MbedTLS format to raw format
  *
@@ -150,12 +154,13 @@ bool vs_converters_raw_sign_to_virgil(vs_secmodule_keypair_type_e keypair_type,
  *
  * \return true in case of success and false otherwise
  */
-bool vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
-    uint8_t* mbedtls_sign,
-    uint16_t mbedtls_sign_sz,
-    uint8_t* raw_sign,
-    uint16_t buf_sz,
-    uint16_t* raw_sz);
+bool
+vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
+                                  uint8_t *mbedtls_sign,
+                                  uint16_t mbedtls_sign_sz,
+                                  uint8_t *raw_sign,
+                                  uint16_t buf_sz,
+                                  uint16_t *raw_sz);
 
 /** Convert signature from raw format to MbedTLS format
  *
@@ -168,12 +173,13 @@ bool vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
  *
  * \return true in case of success and false otherwise
  */
-bool vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
-    const unsigned char* raw,
-    uint16_t raw_sz,
-    unsigned char* signature,
-    uint16_t buf_sz,
-    uint16_t* signature_sz);
+bool
+vs_converters_raw_sign_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
+                                  const unsigned char *raw,
+                                  uint16_t raw_sz,
+                                  unsigned char *signature,
+                                  uint16_t buf_sz,
+                                  uint16_t *signature_sz);
 
 #ifdef __cplusplus
 } // extern "C"

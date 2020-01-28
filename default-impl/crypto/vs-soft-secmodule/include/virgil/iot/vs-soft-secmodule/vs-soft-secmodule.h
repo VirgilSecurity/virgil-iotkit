@@ -75,8 +75,8 @@ function in app-storage.c file.
  *
  * \return Security Module implementation
  */
-vs_secmodule_impl_t*
-vs_soft_secmodule_impl(vs_storage_op_ctx_t* slots_storage_impl);
+vs_secmodule_impl_t *
+vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl);
 
 /** Destroy software crypto implementation
  *

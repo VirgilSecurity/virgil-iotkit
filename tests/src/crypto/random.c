@@ -46,8 +46,7 @@
 /******************************************************************************/
 #define STEPS 4
 static int
-_generate_random(vs_secmodule_impl_t* secmodule_impl, uint8_t* sequence)
-{
+_generate_random(vs_secmodule_impl_t *secmodule_impl, uint8_t *sequence) {
     static const size_t size_step = SEQUENCE_SIZE / STEPS;
     size_t pos;
     int res;
@@ -62,8 +61,8 @@ _generate_random(vs_secmodule_impl_t* secmodule_impl, uint8_t* sequence)
 
         if (pos) {
             CHECK_RET(VS_IOT_MEMCMP(sequence - size_step, sequence, size_step) != 0,
-                VS_CODE_ERR_CRYPTO,
-                "Sequence is the same as previous");
+                      VS_CODE_ERR_CRYPTO,
+                      "Sequence is the same as previous");
         }
 
         sequence += size_step;
@@ -81,8 +80,7 @@ _generate_random(vs_secmodule_impl_t* secmodule_impl, uint8_t* sequence)
 // It must be less that diff_treshold
 //
 static bool
-_frequency_bits(uint8_t* sequence)
-{
+_frequency_bits(uint8_t *sequence) {
     size_t bit_zero = 0;
     size_t bit_one = 0;
     size_t pos;
@@ -111,9 +109,9 @@ _frequency_bits(uint8_t* sequence)
     difference *= 1000; // e-3
     difference /= SEQUENCE_SIZE * 8;
     BOOL_CHECK_RET(difference < limit,
-        "Bits frequency count : amount difference %de-3 is bigger that %de-3",
-        difference,
-        limit);
+                   "Bits frequency count : amount difference %de-3 is bigger that %de-3",
+                   difference,
+                   limit);
 
     return true;
 }
@@ -125,9 +123,8 @@ _frequency_bits(uint8_t* sequence)
 // It must be less that diff_treshold
 //
 static bool
-_frequency_bytes(uint8_t* sequence)
-{
-    size_t byte[256] = { 0 };
+_frequency_bytes(uint8_t *sequence) {
+    size_t byte[256] = {0};
     size_t cur_value;
     size_t pos;
     size_t max_amount = 0;
@@ -149,10 +146,10 @@ _frequency_bytes(uint8_t* sequence)
     max_amount /= SEQUENCE_SIZE;
 
     BOOL_CHECK_RET(max_amount < limit,
-        "Bytes frequency count : amount difference %de-3 for byte '%d' is bigger that %de-3",
-        max_amount,
-        (uint8_t)max_amount_pos,
-        limit);
+                   "Bytes frequency count : amount difference %de-3 for byte '%d' is bigger that %de-3",
+                   max_amount,
+                   (uint8_t)max_amount_pos,
+                   limit);
 
     return true;
 }
@@ -164,9 +161,8 @@ _frequency_bytes(uint8_t* sequence)
 // It must be less that diff_treshold
 //
 static bool
-_frequency_2bytes_diff(uint8_t* sequence)
-{
-    size_t diff[2 * 256] = { 0 };
+_frequency_2bytes_diff(uint8_t *sequence) {
+    size_t diff[2 * 256] = {0};
     size_t cur_value;
     int cur_diff;
     size_t pos;
@@ -188,18 +184,17 @@ _frequency_2bytes_diff(uint8_t* sequence)
     max_amount /= SEQUENCE_SIZE;
 
     BOOL_CHECK_RET(max_amount < limit,
-        "Nearby bytes difference : amount %de-3 for difference '%d' is bigger that %de-3",
-        max_amount,
-        max_amount_pos,
-        limit);
+                   "Nearby bytes difference : amount %de-3 for difference '%d' is bigger that %de-3",
+                   max_amount,
+                   max_amount_pos,
+                   limit);
 
     return true;
 }
 
 /******************************************************************************/
 uint16_t
-test_random(vs_secmodule_impl_t* secmodule_impl)
-{
+test_random(vs_secmodule_impl_t *secmodule_impl) {
     uint16_t failed_test_result = 0;
     uint8_t sequence[SEQUENCE_SIZE];
     int res;

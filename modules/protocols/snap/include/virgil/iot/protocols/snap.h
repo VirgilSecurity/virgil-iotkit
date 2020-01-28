@@ -76,11 +76,11 @@ extern "C" {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_init(vs_netif_t* default_netif,
-    const vs_device_manufacture_id_t manufacturer_id,
-    const vs_device_type_t device_type,
-    const vs_device_serial_t device_serial,
-    uint32_t device_roles);
+vs_snap_init(vs_netif_t *default_netif,
+             const vs_device_manufacture_id_t manufacturer_id,
+             const vs_device_type_t device_type,
+             const vs_device_serial_t device_serial,
+             uint32_t device_roles);
 
 /** Destroy SNAP
  *
@@ -94,21 +94,21 @@ vs_snap_deinit();
  *
  * \return #vs_device_manufacture_id_t Manufacture ID. Cannot be NULL.
  */
-const vs_device_manufacture_id_t*
+const vs_device_manufacture_id_t *
 vs_snap_device_manufacture(void);
 
 /** Return current device type
  *
  * \return #vs_device_type_t Device type. Cannot be NULL.
  */
-const vs_device_type_t*
+const vs_device_type_t *
 vs_snap_device_type(void);
 
 /** Return current device serial number
  *
  * \return #vs_device_serial_t Device serial number. Cannot be NULL.
  */
-const vs_device_serial_t*
+const vs_device_serial_t *
 vs_snap_device_serial(void);
 
 /** Return device role
@@ -122,7 +122,7 @@ vs_snap_device_roles(void);
  *
  * \return #vs_netif_t Device network interface. Cannot be NULL.
  */
-const vs_netif_t*
+const vs_netif_t *
 vs_snap_default_netif(void);
 
 /** Send SNAP message
@@ -137,7 +137,7 @@ vs_snap_default_netif(void);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_send(const vs_netif_t* netif, const uint8_t* data, uint16_t data_sz);
+vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz);
 
 /** Register SNAP service
  *
@@ -148,7 +148,7 @@ vs_snap_send(const vs_netif_t* netif, const uint8_t* data, uint16_t data_sz);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_register_service(const vs_snap_service_t* service);
+vs_snap_register_service(const vs_snap_service_t *service);
 
 /** MAC address
  *
@@ -160,13 +160,13 @@ vs_snap_register_service(const vs_snap_service_t* service);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_mac_addr(const vs_netif_t* netif, vs_mac_addr_t* mac_addr);
+vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr);
 
 /** Return MAC address
  *
  * \return #vs_mac_addr_t MAC address.
  */
-const vs_mac_addr_t*
+const vs_mac_addr_t *
 vs_snap_broadcast_mac(void);
 
 /** Prepare and send SNAP message
@@ -183,12 +183,12 @@ vs_snap_broadcast_mac(void);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_snap_send_request(const vs_netif_t* netif,
-    const vs_mac_addr_t* mac,
-    vs_snap_service_id_t service_id,
-    vs_snap_element_t element_id,
-    const uint8_t* data,
-    uint16_t data_sz);
+vs_snap_send_request(const vs_netif_t *netif,
+                     const vs_mac_addr_t *mac,
+                     vs_snap_service_id_t service_id,
+                     vs_snap_element_t element_id,
+                     const uint8_t *data,
+                     uint16_t data_sz);
 
 /** Return SNAP statistics
  *

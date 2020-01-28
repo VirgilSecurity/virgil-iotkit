@@ -68,7 +68,7 @@ vs_app_storage_init_impl()</a> function in app-storage.c file.
  *
  * \return #vs_cloud_impl_t
  */
-const vs_cloud_impl_t*
+const vs_cloud_impl_t *
 vs_curl_http_impl(void);
 
 #endif // VS_CURL_HTTP_DEFAULT_IMPL_H

@@ -80,7 +80,7 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-#define MAX_JSON_STR_LEN 64 /* Maximum object or member name length */
+#define MAX_JSON_STR_LEN 64  /* Maximum object or member name length */
 #define MAX_JSON_VAL_LEN 128 /* Maximum value name length */
 typedef enum {
     JSON_VAL_STR,
@@ -93,7 +93,7 @@ typedef enum {
 } json_data_types;
 
 struct json_str {
-    char* buff;
+    char *buff;
     size_t len;
     size_t free_ptr; /* Where the \0 currently is, start writing from this offset */
 };
@@ -108,7 +108,8 @@ struct json_str {
  * generated JSON data.
  * \param[in] len The length of the buffer pointed to by buff
  */
-void json_str_init(struct json_str* jptr, char* buff, int len);
+void
+json_str_init(struct json_str *jptr, char *buff, int len);
 
 /** Initialize the JSON generator without clearing the buffer
  *
@@ -125,7 +126,8 @@ void json_str_init(struct json_str* jptr, char* buff, int len);
  * generated JSON data.
  * \param[in] len The length of the buffer pointed to by buff
  */
-void json_str_init_no_clear(struct json_str* jptr, char* buff, int len);
+void
+json_str_init_no_clear(struct json_str *jptr, char *buff, int len);
 
 /* NULL terminate JSON string.
  *
@@ -135,7 +137,8 @@ void json_str_init_no_clear(struct json_str* jptr, char* buff, int len);
  * \param[in] jptr Pointer to json_str object passed to
  * json_str_init_no_clear()
  */
-void json_str_finish(struct json_str* jptr);
+void
+json_str_finish(struct json_str *jptr);
 
 /** Start a new JSON object
  *
@@ -147,7 +150,8 @@ void json_str_finish(struct json_str* jptr);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_start_object(struct json_str* jptr);
+int
+json_start_object(struct json_str *jptr);
 
 /** Start a new composite object
  *
@@ -163,7 +167,8 @@ int json_start_object(struct json_str* jptr);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_push_object(struct json_str* jptr, const char* name);
+int
+json_push_object(struct json_str *jptr, const char *name);
 
 /** Close a composite object
  *
@@ -184,7 +189,8 @@ int json_push_object(struct json_str* jptr, const char* name);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_push_array_object(struct json_str* jptr, const char* name);
+int
+json_push_array_object(struct json_str *jptr, const char *name);
 
 /** Close a JSON array object.
  *
@@ -196,7 +202,8 @@ int json_push_array_object(struct json_str* jptr, const char* name);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_pop_array_object(struct json_str* jptr);
+int
+json_pop_array_object(struct json_str *jptr);
 
 /** Close JSON object
  *
@@ -208,15 +215,17 @@ int json_pop_array_object(struct json_str* jptr);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_close_object(struct json_str* jptr);
+int
+json_close_object(struct json_str *jptr);
 
-int json_set_object_value(struct json_str* jptr,
-    const char* name,
-    const char* str,
-    int64_t value,
-    float val,
-    short precision,
-    json_data_types data);
+int
+json_set_object_value(struct json_str *jptr,
+                      const char *name,
+                      const char *str,
+                      int64_t value,
+                      float val,
+                      short precision,
+                      json_data_types data);
 
 /** Create a key with a string value.
  *
@@ -289,7 +298,7 @@ int json_set_object_value(struct json_str* jptr,
  * \param[in] val The float value of the key
  * \param[in] precision The number of precision digits for float
  */
-#define json_set_val_float_precision(jptr, name, val, precision) \
+#define json_set_val_float_precision(jptr, name, val, precision)                                                       \
     json_set_object_value(jptr, name, NULL, 0, val, precision, JSON_VAL_FLOAT)
 
 /** Create a key with an boolean value.
@@ -302,8 +311,8 @@ int json_set_object_value(struct json_str* jptr,
  * \param[in] name The name of the key
  * \param[in] val The boolean value of the key.
  */
-#define json_set_val_bool(jptr, name, val)                                               \
-    ((val == true) ? (json_set_object_value(jptr, name, NULL, 1, 0.0, 0, JSON_VAL_BOOL)) \
+#define json_set_val_bool(jptr, name, val)                                                                             \
+    ((val == true) ? (json_set_object_value(jptr, name, NULL, 1, 0.0, 0, JSON_VAL_BOOL))                               \
                    : (json_set_object_value(jptr, name, NULL, 0, 0.0, 0, JSON_VAL_BOOL)))
 
 /** Create a key with a null value.
@@ -330,7 +339,8 @@ int json_set_object_value(struct json_str* jptr,
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_start_array(struct json_str* jptr);
+int
+json_start_array(struct json_str *jptr);
 
 /** Close a JSON array
  *
@@ -342,9 +352,11 @@ int json_start_array(struct json_str* jptr);
  * overflow has already occurred.
  * \return WM_SUCCESS if operation successful.
  */
-int json_close_array(struct json_str* jptr);
+int
+json_close_array(struct json_str *jptr);
 
-int json_set_array_value(struct json_str* jptr, char* str, int value, float val, json_data_types data);
+int
+json_set_array_value(struct json_str *jptr, char *str, int value, float val, json_data_types data);
 
 /** Create a string array element
  *
@@ -388,8 +400,8 @@ int json_set_array_value(struct json_str* jptr, char* str, int value, float val,
  * json_str_init() call.
  * \param[in] val The boolean value of the array element.
  */
-#define json_set_array_bool(jptr, val)                                         \
-    ((val == true) ? (json_set_array_value(jptr, NULL, 1, 0.0, JSON_VAL_BOOL)) \
+#define json_set_array_bool(jptr, val)                                                                                 \
+    ((val == true) ? (json_set_array_value(jptr, NULL, 1, 0.0, JSON_VAL_BOOL))                                         \
                    : (json_set_array_value(jptr, NULL, 0, 0.0, JSON_VAL_BOOL)))
 
 #ifdef __cplusplus
