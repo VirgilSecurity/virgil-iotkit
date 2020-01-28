@@ -76,7 +76,7 @@ _data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *
 }
 
 // TODO: Do we need to use other parameters inside the certificate names?
-#define VS_X509_CN_PREFIX "CN="
+#define VS_X509_CN_PREFIX "C=US,O=virgil,CN="
 
 /********************************************************************************/
 static vs_status_e
@@ -108,7 +108,7 @@ _x509_create_selfsign(const uint8_t *object_id,
     char cn_buf[cn_len + strlen(VS_X509_CN_PREFIX)];
 
     _data_to_hex(object_id, object_id_sz, object_id_str, &cn_len);
-    VS_IOT_SNPRINTF(cn_buf, sizeof(cn_buf), "%s%s", "VS_X509_CN_PREFIX", object_id_str);
+    VS_IOT_SNPRINTF(cn_buf, sizeof(cn_buf), "%s%s", VS_X509_CN_PREFIX, object_id_str);
 
     // Get the device's private and public keys
     vs_secmodule_keypair_type_e keypair_type;

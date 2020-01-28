@@ -363,6 +363,7 @@ _prvs_key_save_process_request(const struct vs_netif_t *netif,
 }
 
 /******************************************************************************/
+#ifdef VIRGIL_IOT_USE_X509
 static vs_status_e
 _prvs_selfsigned_cert_request(const struct vs_netif_t *netif,
                               const uint8_t *request,
@@ -391,7 +392,7 @@ _prvs_selfsigned_cert_request(const struct vs_netif_t *netif,
 
     return ret_code;
 }
-
+#endif
 /******************************************************************************/
 static vs_status_e
 _prvs_devi_process_request(const struct vs_netif_t *netif,
@@ -529,8 +530,10 @@ _prvs_service_request_processor(const struct vs_netif_t *netif,
     case VS_PRVS_SGNP:
         return _prvs_key_save_process_request(netif, element_id, request, request_sz);
 
+#ifdef VIRGIL_IOT_USE_X509
     case VS_PRVS_GSSC:
         return _prvs_selfsigned_cert_request(netif, request, request_sz, response, response_buf_sz, response_sz);
+#endif
 
     default:
         VS_LOG_ERROR("Unsupported PRVS request %d", element_id);

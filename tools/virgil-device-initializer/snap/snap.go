@@ -173,15 +173,6 @@ func (p *DeviceProcessor) Process() error {
         if err := p.GetProvisionInfo(); err != nil {
             return err
         }
-        if p.ProvisioningInfo.X509 {
-            certificate, err := p.downloadData(C.VS_PRVS_GSSC, "Self-signed certificate");
-
-            if err != nil {
-                return err
-            }
-
-            fmt.Println(base64.URLEncoding.EncodeToString(certificate))
-        }
     }
     fmt.Println("OK: Device initialization done successfully.")
     return nil
@@ -562,4 +553,8 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     }
 
     return signature.RawSignature, nil
+}
+
+func (p *DeviceProcessor) GetDeviceCertificate() ([]byte, error) {
+    return p.downloadData(C.VS_PRVS_GSSC, "Self-signed certificate");
 }

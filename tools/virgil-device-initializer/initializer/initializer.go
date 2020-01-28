@@ -56,6 +56,7 @@ var (
 type FactoryInitializer struct {
     OutputFile                       string
     DeviceInfoFile                   string
+    CertificatesFile                 string
     DeviceSignPrivateKey             []byte
     DeviceSignPrivateKeyPassword     string
     ProvisioningInfo                 *common.ProvisioningInfo
@@ -125,7 +126,15 @@ func New(context *cli.Context) (*FactoryInitializer, error) {
     provInfo.TlOnly = context.Bool("trust_list_only")
 
     // Enable x509
-    provInfo.X509 = context.Bool("x509")
+
+    if param = context.String("x509"); param == "" {
+        provInfo.X509 = false
+        fmt.Println("x509 is disabled")
+    } else {
+        provInfo.X509 = true
+        fInit.CertificatesFile = filepath.Clean(param)
+        fmt.Println("x509 is enabled")
+    }
 
     fInit.ProvisioningInfo = provInfo
 
@@ -147,6 +156,10 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
 
     requestsPersistenceManager := PersistenceManager{
         FileName:             initializer.OutputFile,
+    }
+
+    certificatesPersistenceManager := PersistenceManager{
+        FileName:             initializer.CertificatesFile,
     }
 
     // Prepare device signer
@@ -190,7 +203,7 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
             if err != nil {
                 return err
             }
-            fmt.Println("Device info:", base64.StdEncoding.EncodeToString(deviceInfo))
+            fmt.Println("\nDevice info:", base64.StdEncoding.EncodeToString(deviceInfo))
             if err := deviceInfoPersistenceManager.Persist((string)(deviceInfo)); err != nil {
                 return err
             }
@@ -200,11 +213,27 @@ func (initializer *FactoryInitializer) InitializeDevices() error {
             if err != nil {
                 return err
             }
-            fmt.Println("Card request:", cardRequest)
+            fmt.Println("\nCard request:", cardRequest)
             if err := requestsPersistenceManager.Persist(cardRequest); err != nil {
                 return err
             }
+
+            if initializer.ProvisioningInfo.X509 {
+                cert, err := deviceProcessor.GetDeviceCertificate()
+                if err != nil {
+                    return err
+                }
+
+                certBase64 := base64.URLEncoding.EncodeToString(cert)
+                fmt.Println("\nx509 certificate: ", certBase64)
+
+                if err := certificatesPersistenceManager.Persist(certBase64); err != nil {
+                    return err
+                }
+            }
         }
+
+        fmt.Println("")
     }
 
     return nil

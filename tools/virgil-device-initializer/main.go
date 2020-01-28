@@ -118,10 +118,10 @@ func main()  {
             Aliases: []string{"z"},
             Usage:   "File with Factory private key",
         },
-        &cli.BoolFlag{
+        &cli.StringFlag{
             Name:    "x509",
             Aliases: []string{"t"},
-            Usage:   "Enable generation of x509 certificate",
+            Usage:   "x509 certificates output file",
         },
     }
 
