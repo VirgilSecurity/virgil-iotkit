@@ -1,6 +1,0 @@
-<map id="VSQSnapInfoClient" name="VSQSnapInfoClient">
-<area shape="rect" id="node1" title="SNAP protocol&#39;s INFO Client implementation." alt="" coords="131,92,268,117"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,12,76,37"/>
-<area shape="rect" id="node3" href="$class_v_s_q_singleton.html" title=" " alt="" coords="100,5,298,44"/>
-<area shape="rect" id="node4" href="$class_v_s_q_snap_service_base.html" title="SNAP service base class." alt="" coords="323,12,478,37"/>
-</map>

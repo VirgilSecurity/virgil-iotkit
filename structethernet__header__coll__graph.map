@@ -1,4 +1,0 @@
-<map id="ethernet_header" name="ethernet_header">
-<area shape="rect" id="node1" title="Ethernet header." alt="" coords="5,105,125,131"/>
-<area shape="rect" id="node2" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="9,5,121,31"/>
-</map>

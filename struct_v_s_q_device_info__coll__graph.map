@@ -1,8 +1,0 @@
-<map id="VSQDeviceInfo" name="VSQDeviceInfo">
-<area shape="rect" id="node1" title="Device information." alt="" coords="298,105,410,131"/>
-<area shape="rect" id="node2" href="$class_v_s_q_device_type.html" title="Device type." alt="" coords="5,5,124,31"/>
-<area shape="rect" id="node3" href="$class_v_s_q_device_roles.html" title="Device roles." alt="" coords="148,5,272,31"/>
-<area shape="rect" id="node4" href="$class_v_s_q_file_version.html" title="Virgil IoT Kit file version." alt="" coords="297,5,412,31"/>
-<area shape="rect" id="node5" href="$class_v_s_q_mac.html" title="Virgil IoT Kit device MAC address." alt="" coords="436,5,510,31"/>
-<area shape="rect" id="node6" href="$class_v_s_q_manufacture_id.html" title="Manufacture identifier." alt="" coords="535,5,670,31"/>
-</map>

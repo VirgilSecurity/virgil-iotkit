@@ -1,3 +1,4 @@
 <map id="vs_netif_t" name="vs_netif_t">
-<area shape="rect" id="node1" title="Network interface." alt="" coords="5,19,84,45"/>
+<area shape="rect" id="node1" title="Network interface." alt="" coords="22,92,101,117"/>
+<area shape="rect" id="node2" href="$structvs__mac__addr__t.html" title="MAC address." alt="" coords="5,5,118,31"/>
 </map>
