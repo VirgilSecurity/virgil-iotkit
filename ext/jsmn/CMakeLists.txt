@@ -54,5 +54,16 @@ target_compile_options(jsmn
 
 target_include_directories(jsmn
         PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}"
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )
+
+install(TARGETS jsmn
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/jsmn.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
