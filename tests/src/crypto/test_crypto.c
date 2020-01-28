@@ -59,6 +59,8 @@ uint16_t
 test_keystorage_and_tl(vs_secmodule_impl_t *secmodule_impl);
 uint16_t
 vs_virgil_ecies_test(vs_secmodule_impl_t *secmodule_impl);
+uint16_t
+test_x509(vs_secmodule_impl_t *secmodule_impl);
 
 /**********************************************************/
 uint16_t
@@ -78,6 +80,9 @@ vs_crypto_test(vs_secmodule_impl_t *secmodule_impl) {
     failed_test_result += test_ecdsa(secmodule_impl);
     failed_test_result += test_ecdh(secmodule_impl);
     failed_test_result += vs_virgil_ecies_test(secmodule_impl);
+#ifdef VIRGIL_IOT_USE_X509
+    failed_test_result += test_x509(secmodule_impl);
+#endif
 #if !VIRGIL_IOT_MCU_BUILD
     failed_test_result += test_sign_converters();
     failed_test_result += test_pubkeys_converters();

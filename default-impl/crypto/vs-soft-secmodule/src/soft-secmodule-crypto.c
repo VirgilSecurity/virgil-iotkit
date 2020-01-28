@@ -116,8 +116,10 @@ _hash_to_mbedtls(vs_secmodule_hash_type_e hash_type) {
 }
 
 /********************************************************************************/
-static bool
-_create_context_for_private_key(mbedtls_pk_context *ctx, const uint8_t *private_key, size_t private_key_sz) {
+bool
+vs_soft_secmodule_create_context_for_private_key(mbedtls_pk_context *ctx,
+                                                 const uint8_t *private_key,
+                                                 size_t private_key_sz) {
     mbedtls_pk_context res;
     mbedtls_pk_init(&res);
 
@@ -129,11 +131,11 @@ _create_context_for_private_key(mbedtls_pk_context *ctx, const uint8_t *private_
 }
 
 /********************************************************************************/
-static bool
-_create_context_for_public_key(mbedtls_pk_context *ctx,
-                               vs_secmodule_keypair_type_e keypair_type,
-                               const uint8_t *public_key,
-                               size_t public_key_sz) {
+bool
+vs_soft_secmodule_create_context_for_public_key(mbedtls_pk_context *ctx,
+                                                vs_secmodule_keypair_type_e keypair_type,
+                                                const uint8_t *public_key,
+                                                size_t public_key_sz) {
     mbedtls_pk_context res;
     mbedtls_pk_init(&res);
 
@@ -191,7 +193,7 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
     mbedtls_ctr_drbg_init(&ctr_drbg);
     mbedtls_pk_init(&private_key_ctx);
 
-    if (_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
+    if (vs_soft_secmodule_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
         0 == mbedtls_ctr_drbg_seed(
                      &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers)) &&
         0 == mbedtls_pk_sign(&private_key_ctx,
@@ -236,7 +238,7 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
 
     mbedtls_pk_init(&public_key_ctx);
 
-    if (_create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
+    if (vs_soft_secmodule_create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
         vs_converters_raw_sign_to_mbedtls(
                 keypair_type, signature, signature_sz, internal_sign, sizeof(internal_sign), &signature_sz) &&
         0 == mbedtls_pk_verify(&public_key_ctx, _hash_to_mbedtls(hash_type), hash, 0, internal_sign, signature_sz)) {
@@ -625,8 +627,8 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
     mbedtls_pk_init(&public_key_ctx);
     VS_IOT_MEMSET(&ecdh_ctx, 0, sizeof(ecdh_ctx));
 
-    if (_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
-        _create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
+    if (vs_soft_secmodule_create_context_for_private_key(&private_key_ctx, private_key, private_key_sz) &&
+        vs_soft_secmodule_create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
         0 == mbedtls_ctr_drbg_seed(
                      &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) {
 

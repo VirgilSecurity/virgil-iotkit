@@ -39,6 +39,8 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 
+#include <mbedtls/pk.h>
+
 #define MAX_INTERNAL_SIGN_SIZE (180)
 #define MAX_INTERNAL_PUBKEY_SIZE (180)
 
@@ -58,7 +60,16 @@ _public_key_to_mbedtls(vs_secmodule_keypair_type_e keypair_type,
                        uint8_t *public_key_out,
                        uint16_t buf_sz,
                        uint16_t *public_key_out_sz);
+bool
+vs_soft_secmodule_create_context_for_private_key(mbedtls_pk_context *ctx,
+                                                 const uint8_t *private_key,
+                                                 size_t private_key_sz);
 
+bool
+vs_soft_secmodule_create_context_for_public_key(mbedtls_pk_context *ctx,
+                                                vs_secmodule_keypair_type_e keypair_type,
+                                                const uint8_t *public_key,
+                                                size_t public_key_sz);
 vs_status_e
 vs_secmodule_keypair_get_prvkey(vs_iot_secmodule_slot_e slot,
                                 uint8_t *buf,
@@ -77,6 +88,9 @@ _fill_keypair_impl(vs_secmodule_impl_t *secmodule_impl);
 
 vs_status_e
 _fill_soft_hash_impl(vs_secmodule_impl_t *secmodule_impl);
+
+vs_status_e
+_fill_x509_impl(vs_secmodule_impl_t *secmodule_impl);
 
 void
 _secmodule_deinit(void);

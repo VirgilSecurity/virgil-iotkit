@@ -67,6 +67,7 @@ target_sources(vs-default-soft-secmodule
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-sha2.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-crypto.c
         ${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-keypair.c
+        $<$<BOOL:${VIRGIL_IOT_USE_X509}>:${CMAKE_CURRENT_LIST_DIR}/src/soft-secmodule-x509.c>
         )
 
 #
@@ -87,6 +88,7 @@ target_link_libraries(vs-default-soft-secmodule
         PRIVATE
         mbedtls::mbedcrypto
         mbedtls::ed25519
+        $<$<BOOL:${VIRGIL_IOT_USE_X509}>:mbedtls::mbedx509>
         converters
         PUBLIC
         vs-module-secmodule
