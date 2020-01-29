@@ -276,18 +276,6 @@ _tl_set_footer(void *context,
 }
 
 /*************************************************************************/
-static bool
-_tl_file_is_newer(void *context,
-                  vs_update_file_type_t *file_type,
-                  const vs_file_version_t *available_file,
-                  const vs_file_version_t *new_file) {
-    (void)context;
-    (void)file_type;
-
-    return (VS_CODE_OK == vs_update_compare_version(new_file, available_file));
-}
-
-/*************************************************************************/
 static void
 _tl_delete_object(void *context, vs_update_file_type_t *file_type) {
     (void)context;
@@ -443,7 +431,6 @@ vs_update_trust_list_init(vs_storage_op_ctx_t *storage_ctx) {
     _tl_update_ctx.set_header = _tl_set_header;
     _tl_update_ctx.set_data = _tl_set_data;
     _tl_update_ctx.set_footer = _tl_set_footer;
-    _tl_update_ctx.file_is_newer = _tl_file_is_newer;
     _tl_update_ctx.verify_object = _tl_verify_object;
     _tl_update_ctx.delete_object = _tl_delete_object;
     _tl_update_ctx.free_item = _tl_free_item;

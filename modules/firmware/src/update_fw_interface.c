@@ -317,23 +317,6 @@ _fw_update_set_footer(void *context,
 }
 
 /*************************************************************************/
-static bool
-_fw_update_file_is_newer(void *context,
-                         vs_update_file_type_t *file_type,
-                         const vs_file_version_t *available_file,
-                         const vs_file_version_t *new_file) {
-    const vs_file_version_t *fw_ver_available = (const vs_file_version_t *)available_file;
-    const vs_file_version_t *fw_ver_new = (const vs_file_version_t *)new_file;
-    (void)context;
-    (void)file_type;
-
-    VS_IOT_ASSERT(available_file);
-    VS_IOT_ASSERT(new_file);
-
-    return (VS_CODE_OK == vs_update_compare_version(fw_ver_new, fw_ver_available));
-}
-
-/*************************************************************************/
 static void
 _fw_update_delete_object(void *context, vs_update_file_type_t *file_type) {
     (void)context;
@@ -468,7 +451,6 @@ vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     _fw_update_ctx.set_header = _fw_update_set_header;
     _fw_update_ctx.set_data = _fw_update_set_data;
     _fw_update_ctx.set_footer = _fw_update_set_footer;
-    _fw_update_ctx.file_is_newer = _fw_update_file_is_newer;
     _fw_update_ctx.free_item = _fw_update_free_item;
     _fw_update_ctx.verify_object = _fw_update_verify_object;
     _fw_update_ctx.delete_object = _fw_update_delete_object;

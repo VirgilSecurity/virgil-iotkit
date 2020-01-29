@@ -229,17 +229,6 @@ typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_typ
  */
 typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, uint32_t footer_size);
 
-/** Check if a file is newer than the current one
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[in] available_file Available file version. Cannot be NULL.
- * \param[in] new_file New file version. Cannot be NULL.
- *
- * \return true if \new_file is newer than \a available_file
- */
-typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *available_file, const vs_file_version_t *new_file);
-
 /** Delete object of defined type
  *
  * \param[in] context File context.
@@ -310,7 +299,6 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_verify_object_cb_t        verify_object; /**< Verify item */
     vs_update_free_item_cb_t          free_item; /**< Free item */
 
-    vs_update_file_is_newer_cb_t      file_is_newer; /**< File is newer */
     vs_update_describe_type_cb_t      describe_type; /**< Describe file type */
     vs_update_describe_version_cb_t   describe_version; /**< Describe file version */
 

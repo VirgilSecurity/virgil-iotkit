@@ -202,11 +202,10 @@ _filever_descr(vs_fldt_client_file_type_mapping_t *file_type_info,
                                                               true);
 }
 
-/******************************************************************/
-static const char *
-_filetype_descr(vs_fldt_client_file_type_mapping_t *file_type_info, char *file_descr, uint32_t descr_buff_size) {
-    VS_IOT_ASSERT(file_type_info);
-    return vs_update_type_descr(&file_type_info->type, file_type_info->update_interface, file_descr, descr_buff_size);
+/*************************************************************************/
+static bool
+_file_is_newer(const vs_file_version_t *available_file, const vs_file_version_t *new_file) {
+    return (VS_CODE_OK == vs_update_compare_version(new_file, available_file));
 }
 
 /******************************************************************/
@@ -231,8 +230,7 @@ _check_download_need(const char *opcode,
                  opcode,
                  _filever_descr(file_type_info, new_file_ver, file_descr, sizeof(file_descr)));
 
-    download = file_type_info->update_interface->file_is_newer(
-            file_type_info->update_interface->storage_context, &file_type_info->type, current_file_ver, new_file_ver);
+    download = _file_is_newer(current_file_ver, new_file_ver);
 
     if (download) {
         VS_LOG_DEBUG("[FLDT:%s] Need to download new version", opcode);
@@ -668,7 +666,7 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     file_type_info->type = *file_type;
     file_type_info->update_interface = update_interface;
 
-    VS_LOG_DEBUG("[FLDT] Update file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+    VS_LOG_DEBUG("[FLDT] Update file type %s", vs_update_type_descr(file_type_info, file_descr, sizeof(file_descr)));
 
     STATUS_CHECK_RET(file_type_info->update_interface->get_header_size(
                              file_type_info->update_interface->storage_context, &file_type_info->type, &header_size),
@@ -846,7 +844,8 @@ vs_fldt_client_request_all_files(void) {
     for (id = 0; id < _file_type_mapping_array_size; ++id) {
         file_type_info = &_client_file_type_mapping[id];
 
-        VS_LOG_DEBUG("[FLDT] Request file type %s", _filetype_descr(file_type_info, file_descr, sizeof(file_descr)));
+        VS_LOG_DEBUG("[FLDT] Request file type %s",
+                     vs_update_type_descr(file_type_info, file_descr, sizeof(file_descr)));
 
         gnfh_request.type = file_type_info->type;
 
