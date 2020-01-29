@@ -70,6 +70,10 @@ target_include_directories(tools-hal
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${VIRGIL_IOT_DIRECTORY}/modules/provision/include
         ${VIRGIL_IOT_DIRECTORY}/modules/crypto/secmodule/include
+
+        INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 #
@@ -81,6 +85,16 @@ target_link_libraries(tools-hal
 
         PRIVATE
         enable_pedantic_mode
+        )
+
+install(TARGETS tools-hal
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 if(COMMAND add_clangformat)

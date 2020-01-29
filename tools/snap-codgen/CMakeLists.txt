@@ -43,7 +43,7 @@ endif()
 #
 #   SNAP convert code generator
 #
-add_go_executable(vs-tool-snap-codgen snap-codgen)
+add_go_executable(vs-tool-snap-codgen vs-tool-snap-codgen)
 
 
 #
@@ -61,7 +61,7 @@ set (SNAP_SRC_TYPES
         )
 
 add_custom_command(TARGET vs-tool-snap-codgen POST_BUILD
-        COMMAND ${vs-tool-snap-codgen_BINARY_DIR}/snap-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
+        COMMAND ${vs-tool-snap-codgen_BINARY_DIR}/vs-tool-snap-codgen -d ${PROJECT_SOURCE_DIR}/tmpl
                                                   ${SNAP_SRC_TYPES}
                                                   -oc ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/src/generated/snap_cvt.c
                                                   -oh ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/generated/snap_cvt.h

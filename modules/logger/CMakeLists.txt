@@ -97,7 +97,7 @@ target_include_directories(vs-module-logger
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 if(COMMAND add_clangformat)
@@ -110,6 +110,6 @@ install(TARGETS vs-module-logger
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         )
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )

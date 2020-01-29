@@ -38,4 +38,4 @@ project(vs-tool-virgil-device-registrar VERSION 0.1.0 LANGUAGES Go)
 #
 #   Virgil Cards Registrar
 #
-add_go_executable(vs-tool-virgil-device-registrar virgil-device-registrar)
+add_go_executable(vs-tool-virgil-device-registrar vs-tool-virgil-device-registrar)

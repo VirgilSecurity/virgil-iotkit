@@ -98,10 +98,11 @@ target_include_directories(vs-module-provision
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${VIRGIL_IOT_SDK_HAL_INC_PATH}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-         $<BUILD_INTERFACE:${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include>
+        $<BUILD_INTERFACE:${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include>
         )
 
 target_link_libraries(vs-module-provision
@@ -111,6 +112,16 @@ target_link_libraries(vs-module-provision
         trust_list
         PRIVATE
         virgil-iot-status-code
+        )
+
+install(TARGETS vs-module-provision
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 if(COMMAND add_clangformat)

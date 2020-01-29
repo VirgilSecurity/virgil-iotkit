@@ -87,7 +87,8 @@ add_custom_target(${LIBS_TARGET}
         ${INITIALIZER_LIB_DIR}
         )
 
+install(DIRECTORY ${CMAKE_BINARY_DIR}/depends/installed/lib DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #
 #   Virgil Signer
 #
-add_go_executable(vs-tool-virgil-firmware-signer virgil-firmware-signer converters ${LIBS_TARGET})
+add_go_executable(vs-tool-virgil-firmware-signer vs-tool-virgil-firmware-signer converters ${LIBS_TARGET})
