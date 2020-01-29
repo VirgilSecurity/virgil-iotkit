@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -194,13 +194,6 @@ vs_tl_update_ctx(void);
  */
 const vs_update_file_type_t *
 vs_tl_update_file_type(void);
-
-/** Get current Trust List file version
- *
- * \return Current Trust List file version
- */
-const vs_file_version_t *
-vs_tl_get_current_version(void);
 
 /** Convert Trust List header to host
  *

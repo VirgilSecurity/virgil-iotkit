@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -66,7 +66,6 @@
 #if INFO_SERVER
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
-#include <virgil/iot/firmware/firmware.h>
 #include "info-structs.h"
 
 #ifdef __cplusplus

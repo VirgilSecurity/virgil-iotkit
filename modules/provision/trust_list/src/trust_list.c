@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -39,8 +39,6 @@
 #include "virgil/iot/trust_list/trust_list.h"
 #include <endian-config.h>
 
-static vs_file_version_t _current_tl_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
-
 /******************************************************************************/
 static vs_status_e
 vs_tl_update_info_server(void) {
@@ -58,13 +56,13 @@ vs_tl_update_info_server(void) {
 
     vs_tl_header_to_host(&tl_header, &tl_host_header);
 
-    _current_tl_ver = tl_host_header.version;
+//    _current_tl_ver = tl_host_header.version;
 
     VS_LOG_DEBUG("Current Trust list version has been updated : %d.%d.%d.%d",
-                 _current_tl_ver.major,
-                 _current_tl_ver.minor,
-                 _current_tl_ver.patch,
-                 _current_tl_ver.build);
+                 tl_host_header.version.major,
+                 tl_host_header.version.minor,
+                 tl_host_header.version.patch,
+                 tl_host_header.version.build);
 
     return ret_code;
 }
@@ -190,12 +188,3 @@ vs_tl_header_to_net(const vs_tl_header_t *src_data, vs_tl_header_t *dst_data) {
 }
 
 /******************************************************************************/
-const vs_file_version_t *
-vs_tl_get_current_version(void) {
-    VS_LOG_DEBUG("Current Trust list version request : %d.%d.%d.%d",
-                 _current_tl_ver.major,
-                 _current_tl_ver.minor,
-                 _current_tl_ver.patch,
-                 _current_tl_ver.build);
-    return &_current_tl_ver;
-}

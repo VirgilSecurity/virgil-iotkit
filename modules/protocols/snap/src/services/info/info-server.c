@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -38,8 +38,6 @@
 #include <virgil/iot/protocols/snap/fldt/fldt-client.h>
 #endif
 
-#include <virgil/iot/firmware/firmware.h>
-#include <virgil/iot/trust_list/trust_list.h>
 #include <virgil/iot/protocols/snap/info/info-server.h>
 #include <virgil/iot/protocols/snap/info/info-private.h>
 #include <virgil/iot/protocols/snap/info/info-structs.h>
@@ -50,8 +48,6 @@
 #include <virgil/iot/macros/macros.h>
 #include <stdlib-config.h>
 #include <endian-config.h>
-
-#define FW_DESCR_BUF 128
 
 // Polling
 typedef struct {
@@ -159,10 +155,6 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
     stat_data->received = stat.received;
     stat_data->sent = stat.sent;
 
-    VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
-                 (unsigned long)stat_data->sent,
-                 (unsigned long)stat_data->received);
-
     // Normalize byte order
     vs_info_stat_response_t_encode(stat_data);
 
@@ -198,7 +190,6 @@ terminate:
 static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     const vs_netif_t *defautl_netif;
-    char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
@@ -210,24 +201,9 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
-    general_info->fw_version = *vs_firmware_get_current_version();
-    general_info->tl_version = *vs_tl_get_current_version();
+    //    general_info->fw_version = *vs_firmware_get_current_version();
+    //    general_info->tl_version = *vs_tl_get_current_version();
     general_info->device_roles = vs_snap_device_roles();
-
-    VS_LOG_DEBUG(
-            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
-            "%s, trust list "
-            "version = %d.%d.%d.%d",
-            general_info->manufacture_id,
-            general_info->device_type[0],
-            general_info->device_type[1],
-            general_info->device_type[2],
-            general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version.major,
-            general_info->tl_version.minor,
-            general_info->tl_version.patch,
-            general_info->tl_version.build);
 
     // Normalize byte order
     vs_info_ginf_response_t_encode(general_info);
