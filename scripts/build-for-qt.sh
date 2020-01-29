@@ -43,18 +43,19 @@ function build() {
 #
 
 #
-#   MacOS, Linux
+#   MacOS
 #
-if [[ "${PLATFORM}" == "macos" || "${PLATFORM}" == "linux" ]]; then
+if [[ "${PLATFORM}" == "macos" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
 
 #
-#   Host OS: mingw32
+#   Windows (mingw) over Linux
 #
-elif [[ "${PLATFORM}" == "mingw32" ]]; then
+
+elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
@@ -70,6 +71,15 @@ elif [[ "${PLATFORM}" == "windows" ]]; then
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOS=WINDOWS \
+    "
+
+#
+#   Linux
+#
+elif [[ "${PLATFORM}" == "linux" ]]; then
+
+    CMAKE_ARGUMENTS=" \
+        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
 
 #
