@@ -71,6 +71,17 @@ target_include_directories (aws-sdk
         "${CMAKE_CURRENT_LIST_DIR}/platform/common"
         "${CMAKE_CURRENT_LIST_DIR}/platform/mbedtls"
         "${CMAKE_CURRENT_LIST_DIR}/platform/pthread"
+
+        INTERFACE
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
+install(TARGETS aws-sdk
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
 
+install(DIRECTORY ${AWS_MQTT_INCLUDE}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/aws-sdk
+        )
