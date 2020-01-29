@@ -82,6 +82,7 @@ HEADERS += \
         $${INC_HELPERS}/VSQMac.h \
         $${INC_HELPERS}/VSQManufactureId.h \
         $${INC_HELPERS}/VSQSingleton.h \
+        $${INC_HELPERS}/VSQHelpers.h \
         $$PWD/facade/include/virgil/iot/qt/VSQIoTKit.h \
         $${INC_SNAP}/VSQNetifBase.h \
         $${INC_SNAP}/VSQSnapServiceBase.h \

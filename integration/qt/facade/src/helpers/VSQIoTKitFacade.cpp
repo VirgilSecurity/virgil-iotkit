@@ -56,7 +56,7 @@ VSQIoTKitFacade::init(const VSQFeatures &features, const VSQImplementations &imp
         return true;
 
     } catch (QString &descr) {
-        VS_LOG_CRITICAL("Error during Virgil IoT KIT initialization : %s", descr.toStdString().c_str());
+        VS_LOG_CRITICAL("Error during Virgil IoT KIT initialization : %s", VSQCString(descr));
         return false;
     }
 }

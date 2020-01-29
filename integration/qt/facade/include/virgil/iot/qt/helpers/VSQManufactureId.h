@@ -103,7 +103,7 @@ public:
     /** Compare manufacture identifiers
      *
      * \param manufactureId Manufacture identifier to be compared with the current one
-     * \return true if both MAC address are equal
+     * \return true if both manufacture identifiers are equal
      */
     bool
     operator==(const VSQManufactureId &manufactureId) const {
