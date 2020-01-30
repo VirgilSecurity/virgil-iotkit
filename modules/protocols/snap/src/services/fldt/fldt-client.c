@@ -666,7 +666,9 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     file_type_info->type = *file_type;
     file_type_info->update_interface = update_interface;
 
-    VS_LOG_DEBUG("[FLDT] Update file type %s", vs_update_type_descr(file_type_info, file_descr, sizeof(file_descr)));
+    VS_LOG_DEBUG("[FLDT] Update file type %s",
+                 vs_update_type_descr(
+                         &file_type_info->type, file_type_info->update_interface, file_descr, sizeof(file_descr)));
 
     STATUS_CHECK_RET(file_type_info->update_interface->get_header_size(
                              file_type_info->update_interface->storage_context, &file_type_info->type, &header_size),
@@ -845,7 +847,8 @@ vs_fldt_client_request_all_files(void) {
         file_type_info = &_client_file_type_mapping[id];
 
         VS_LOG_DEBUG("[FLDT] Request file type %s",
-                     vs_update_type_descr(file_type_info, file_descr, sizeof(file_descr)));
+                     vs_update_type_descr(
+                             &file_type_info->type, file_type_info->update_interface, file_descr, sizeof(file_descr)));
 
         gnfh_request.type = file_type_info->type;
 

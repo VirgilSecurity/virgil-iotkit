@@ -297,9 +297,9 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     STATUS_CHECK_RET(
             _get_object_info_by_type(requested_file_type, &file_element, &header_response->fldt_info.type),
             "Unable to get information for file %s",
-            file_element ? ""
-                         : vs_update_type_descr(
-                                   &file_element->type, file_element->update_context, file_descr, sizeof(file_descr)));
+            file_element ? vs_update_type_descr(
+                                   &file_element->type, file_element->update_context, file_descr, sizeof(file_descr))
+                         : "");
     header_response->fldt_info.gateway_mac = _gateway_mac;
 
     VS_LOG_DEBUG("[FLDT:GNFH] Request for header for file version %s",
@@ -387,11 +387,11 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
 
     STATUS_CHECK_RET(_get_object_info_by_type(&data_request->type, &existing_file_element, &data_response->type),
                      "Unable to get information for file %s",
-                     existing_file_element ? ""
-                                           : vs_update_type_descr(&existing_file_element->type,
+                     existing_file_element ? vs_update_type_descr(&existing_file_element->type,
                                                                   existing_file_element->update_context,
                                                                   file_descr,
-                                                                  sizeof(file_descr)));
+                                                                  sizeof(file_descr))
+                                           : "");
 
     CHECK_RET(existing_file_element = _get_mapping_elem(file_type),
               VS_CODE_ERR_UNREGISTERED_MAPPING_TYPE,
@@ -500,11 +500,11 @@ vs_fldt_GNFF_request_processor(const uint8_t *request,
 
     STATUS_CHECK_RET(_get_object_info_by_type(&footer_request->type, &existing_file_element, &footer_response->type),
                      "Unable to get information for file %s",
-                     existing_file_element ? ""
-                                           : vs_update_type_descr(&existing_file_element->type,
+                     existing_file_element ? vs_update_type_descr(&existing_file_element->type,
                                                                   existing_file_element->update_context,
                                                                   file_descr,
-                                                                  sizeof(file_descr)));
+                                                                  sizeof(file_descr))
+                                           : "");
 
     VS_LOG_DEBUG("[FLDT:GNFF] Footer request for %s",
                  _filever_descr(existing_file_element, file_ver, file_descr, sizeof(file_descr)));
