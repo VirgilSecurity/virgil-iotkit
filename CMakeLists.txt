@@ -132,6 +132,7 @@ option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
+option(VIRGIL_IOT_HIGH_LEVEL "Enable 'high level'" ON)
 
 #
 # Default crypto implementations
@@ -170,6 +171,13 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules)
 #   Default implementations
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/default-impl)
+
+#
+#   High level
+#
+if (VIRGIL_IOT_HIGH_LEVEL)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/high-level)
+endif()
 
 #
 #   Tests

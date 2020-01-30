@@ -247,12 +247,14 @@ vs_provision_verify_hl_key(const uint8_t *key_to_check, uint16_t key_size) {
 
 /******************************************************************************/
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule) {
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx,
+                  vs_secmodule_impl_t *secmodule,
+                  vs_provision_events_t events_cb) {
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     _secmodule = secmodule;
 
     // TrustList module
-    return vs_tl_init(tl_storage_ctx, secmodule);
+    return vs_tl_init(tl_storage_ctx, secmodule, events_cb.tl_ver_info_cb);
 }
 
 /******************************************************************************/

@@ -60,6 +60,9 @@ typedef struct {
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
+static vs_file_version_t _firmware_ver = {0, 0, 0, 0, 0};
+static vs_file_version_t _tl_ver = {0, 0, 0, 0, 0};
+
 /******************************************************************/
 static vs_status_e
 _fill_enum_data(vs_info_enum_response_t *enum_data) {
@@ -201,8 +204,8 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
-    //    general_info->fw_version = *vs_firmware_get_current_version();
-    //    general_info->tl_version = *vs_tl_get_current_version();
+    general_info->fw_version = _firmware_ver;
+    general_info->tl_version = _tl_ver;
     general_info->device_roles = vs_snap_device_roles();
 
     // Normalize byte order
@@ -392,6 +395,18 @@ vs_snap_info_start_notification(const vs_netif_t *netif) {
                      "Cannot send data");
 
     return VS_CODE_OK;
+}
+
+/******************************************************************************/
+void
+vs_snap_info_set_firmware_ver(vs_file_version_t ver) {
+    _firmware_ver = ver;
+}
+
+/******************************************************************************/
+void
+vs_snap_info_set_tl_ver(vs_file_version_t ver) {
+    _tl_ver = ver;
 }
 
 /******************************************************************************/

@@ -254,6 +254,7 @@ typedef struct __attribute__((__packed__)) {
  * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
+ * \param[out] ver Pointer to #vs_file_version_t. Will be filled by a current version of firmware.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
@@ -261,7 +262,8 @@ vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
-                 vs_device_type_t device_type);
+                 vs_device_type_t device_type,
+                 vs_file_version_t *ver);
 
 /**  Destroy firmware module
  *
@@ -472,13 +474,6 @@ vs_firmware_update_ctx(void);
  */
 const vs_update_file_type_t *
 vs_firmware_update_file_type(void);
-
-/** Get current Firmware file version
- *
- * \return Current Firmware file version
- */
-const vs_file_version_t *
-vs_firmware_get_current_version(void);
 
 /** ntoh conversion for descriptor
  *

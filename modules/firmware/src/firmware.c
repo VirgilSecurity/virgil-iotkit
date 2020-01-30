@@ -56,7 +56,6 @@ static const vs_key_type_e sign_rules_list[VS_FW_SIGNATURES_QTY] = VS_FW_SIGNER_
 
 static vs_storage_op_ctx_t *_storage_ctx = NULL;
 static vs_secmodule_impl_t *_secmodule = NULL;
-static vs_file_version_t _current_fw_ver = {.major = -1, .minor = -1, .patch = -1, .build = -1, .timestamp = -1};
 
 /*************************************************************************/
 static void
@@ -148,10 +147,14 @@ vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
-                 vs_device_type_t device_type) {
+                 vs_device_type_t device_type,
+                 vs_file_version_t *ver) {
     vs_status_e ret_code = VS_CODE_OK;
     vs_firmware_descriptor_t fw_descr;
 
+    VS_IOT_ASSERT(ver);
+
+    CHECK_NOT_ZERO_RET(ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -164,12 +167,13 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
-    _current_fw_ver = fw_descr.info.version;
-    VS_LOG_DEBUG("Current Firmware version has been updated : %d.%d.%d.%d",
-                 _current_fw_ver.major,
-                 _current_fw_ver.minor,
-                 _current_fw_ver.patch,
-                 _current_fw_ver.build);
+    VS_LOG_DEBUG("Current Firmware version: %d.%d.%d.%d",
+                 fw_descr.info.version.major,
+                 fw_descr.info.version.minor,
+                 fw_descr.info.version.patch,
+                 fw_descr.info.version.build);
+
+    *ver = fw_descr.info.version;
 
     return ret_code;
 }
@@ -730,13 +734,6 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
 
     STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, read_sz), "Unable to append data");
 
-    _current_fw_ver = descriptor->info.version;
-    VS_LOG_DEBUG("Current Firmware version has been updated : %d.%d.%d.%d",
-                 _current_fw_ver.major,
-                 _current_fw_ver.minor,
-                 _current_fw_ver.patch,
-                 _current_fw_ver.build);
-
     return ret_code;
 }
 
@@ -773,7 +770,6 @@ vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size
 
     return buffer;
 }
-
 
 /*************************************************************************/
 void
@@ -825,12 +821,3 @@ vs_firmware_hton_header(vs_firmware_header_t *header) {
 }
 
 /*************************************************************************/
-const vs_file_version_t *
-vs_firmware_get_current_version(void) {
-    VS_LOG_DEBUG("Current Firmware version request : %d.%d.%d.%d",
-                 _current_fw_ver.major,
-                 _current_fw_ver.minor,
-                 _current_fw_ver.patch,
-                 _current_fw_ver.build);
-    return &_current_fw_ver;
-}

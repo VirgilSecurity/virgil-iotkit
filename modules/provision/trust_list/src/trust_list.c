@@ -39,6 +39,8 @@
 #include "virgil/iot/trust_list/trust_list.h"
 #include <endian-config.h>
 
+static vs_file_ver_info_cb_t _ver_info_cb = NULL;
+
 /******************************************************************************/
 static vs_status_e
 vs_tl_update_info_server(void) {
@@ -56,7 +58,9 @@ vs_tl_update_info_server(void) {
 
     vs_tl_header_to_host(&tl_header, &tl_host_header);
 
-//    _current_tl_ver = tl_host_header.version;
+    if (_ver_info_cb) {
+        _ver_info_cb(tl_host_header.version);
+    }
 
     VS_LOG_DEBUG("Current Trust list version has been updated : %d.%d.%d.%d",
                  tl_host_header.version.major,
@@ -69,8 +73,10 @@ vs_tl_update_info_server(void) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule, vs_file_ver_info_cb_t ver_info_cb) {
     vs_status_e ret_code = VS_CODE_OK;
+
+    _ver_info_cb = ver_info_cb;
 
     STATUS_CHECK_RET(vs_tl_storage_init_internal(op_ctx, secmodule), "Unable to initialize Trust List module");
 
@@ -81,7 +87,7 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule) {
 
 /******************************************************************************/
 vs_status_e
-vs_tl_deinit() {
+vs_tl_deinit(void) {
     return vs_tl_storage_deinit_internal();
 }
 

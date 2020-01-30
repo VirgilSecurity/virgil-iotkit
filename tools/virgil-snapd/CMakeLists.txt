@@ -81,4 +81,4 @@ set(CMAKE_CGO_LDFLAGS
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(vs-tool-virgil-snapd vs-tool-virgil-snapd tools-hal vs-module-logger)
+add_go_executable(vs-tool-virgil-snapd virgil-snapd tools-hal vs-module-logger)

@@ -107,6 +107,20 @@ vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb);
 vs_status_e
 vs_snap_info_start_notification(const vs_netif_t *netif);
 
+/** Set version of firmware to be sent
+ *
+ * \param[in] ver Firmware version.
+ */
+void
+vs_snap_info_set_firmware_ver(vs_file_version_t ver);
+
+/** Set version of TrustList to be sent
+ *
+ * \param[in] ver TrustList version.
+ */
+void
+vs_snap_info_set_tl_ver(vs_file_version_t ver);
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

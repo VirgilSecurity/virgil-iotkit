@@ -92,4 +92,4 @@ add_dependencies(device-initializer-mbedtls converters)
 #
 #   Virgil IoT Initializer
 #
-add_go_executable(vs-tool-virgil-device-initializer vs-tool-virgil-device-initializer tools-hal device-initializer-mbedtls)
+add_go_executable(vs-tool-virgil-device-initializer virgil-device-initializer tools-hal device-initializer-mbedtls)
