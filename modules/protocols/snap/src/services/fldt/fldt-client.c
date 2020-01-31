@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#if 1 FLDT_CLIENT
+#if FLDT_CLIENT
 
 #include <virgil/iot/protocols/snap/fldt/fldt-private.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-client.h>
