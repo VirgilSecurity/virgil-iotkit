@@ -226,7 +226,6 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     vs_fldt_gnfh_header_request_t *header_request = (vs_fldt_gnfh_header_request_t *)request;
-    const vs_file_version_t *file_ver = NULL;
     const vs_update_file_type_t *requested_file_type = NULL;
     vs_fldt_server_file_type_mapping_t *file_element = NULL;
     vs_fldt_gnfh_header_response_t *header_response = (vs_fldt_gnfh_header_response_t *)response;
@@ -249,7 +248,6 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     // Normalize byte order
     vs_fldt_gnfh_header_request_t_decode(header_request);
 
-    file_ver = &header_request->type.info.version;
     requested_file_type = &header_request->type;
 
     CHECK_RET(response_buf_sz > sizeof(*header_response),
@@ -262,8 +260,8 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     header_response->fldt_info.gateway_mac = _gateway_mac;
 
     VS_LOG_DEBUG("[FLDT:GNFH] Header request for %s %s",
-                 VS_UPDATE_FILE_TYPE_STR_STATIC(&header_response->fldt_info.type),
-                 VS_UPDATE_FILE_VERSION_STR_STATIC(&header_response->fldt_info.type.info.version));
+                 VS_UPDATE_FILE_TYPE_STR_STATIC(&header_request->type),
+                 VS_UPDATE_FILE_VERSION_STR_STATIC(&header_request->type.info.version));
 
     header_response->file_size = file_element->file_size;
 
@@ -277,7 +275,7 @@ vs_fldt_GNFH_request_processor(const uint8_t *request,
     STATUS_CHECK_RET(file_element->update_context->get_header_size(
                              file_element->update_context->storage_context, &file_element->type, &header_size),
                      "Unable to get header size for file %s",
-                     VS_UPDATE_FILE_VERSION_STR_STATIC(&file_element->type.info.version));
+                     VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
     if (header_size > UINT16_MAX) {
         VS_LOG_ERROR("Header size %d is bigger that vs_fldt_gnfh_header_response_t.header_size %d can transmit",
                      header_size,
@@ -316,7 +314,7 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
                                uint16_t *response_sz) {
 
     vs_fldt_gnfd_data_request_t *data_request = (vs_fldt_gnfd_data_request_t *)request;
-    const vs_file_version_t *file_ver = NULL;
+
     const vs_update_file_type_t *file_type = NULL;
     vs_fldt_server_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_gnfd_data_response_t *data_response = (vs_fldt_gnfd_data_response_t *)response;
@@ -342,7 +340,6 @@ vs_fldt_GNFD_request_processor(const uint8_t *request,
               VS_CODE_ERR_INCORRECT_ARGUMENT,
               "Request buffer must be of vs_fldt_gnfd_data_request_t type");
 
-    file_ver = &data_request->type.info.version;
     file_type = &data_request->type;
     STATUS_CHECK_RET(_get_object_info_by_type(&data_request->type, &existing_file_element, &data_response->type),
                      "Unable to get information for file %s",
