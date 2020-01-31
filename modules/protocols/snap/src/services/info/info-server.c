@@ -165,32 +165,6 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 }
 
 /******************************************************************/
-#if 0
-static vs_status_e
-_stat_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-
-    vs_status_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
-
-    CHECK_NOT_ZERO(request);
-    CHECK_NOT_ZERO(response_sz);
-    CHECK(response_buf_sz >= sizeof(vs_info_stat_response_t), "Wrong data size");
-
-    STATUS_CHECK_RET(_fill_stat_data(stat), "Cannot fill SNAP statistics");
-
-    *response_sz = sizeof(*stat);
-    ret_code = VS_CODE_OK;
-
-terminate:
-
-    return ret_code;
-}
-#endif
-/******************************************************************/
 static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     const vs_netif_t *defautl_netif;
@@ -215,28 +189,6 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
     return VS_CODE_OK;
 }
 
-/******************************************************************/
-#if 0
-static vs_status_e
-_ginf_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
-    vs_status_e ret_code;
-
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
-
-    STATUS_CHECK_RET(_fill_ginf_data(general_info), 0);
-
-    *response_sz = sizeof(vs_info_ginf_response_t);
-
-    return VS_CODE_OK;
-}
-#endif
 /******************************************************************************/
 static vs_status_e
 _snot_request_processor(const uint8_t *request,
@@ -305,16 +257,13 @@ _info_request_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_POLL:
         return _poll_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-#if 0
-    case VS_INFO_GINF:
-        return _ginf_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
+    case VS_INFO_GINF:
     case VS_INFO_STAT:
-        return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-#endif
+        return VS_CODE_COMMAND_NO_RESPONSE;
+
     default:
-//        VS_LOG_ERROR("Unsupported INFO command");
-//        VS_IOT_ASSERT(false);
+        VS_LOG_ERROR("Unsupported INFO command");
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
