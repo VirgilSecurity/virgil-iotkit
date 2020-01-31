@@ -64,7 +64,7 @@ vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size
 
 /******************************************************************/
 const char *
-vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz) {
+vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz) {
     static char _buf[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
     int res;
     char *buf = opt_buf != NULL ? opt_buf : _buf;
@@ -86,6 +86,7 @@ vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t 
         } else if(res > sz) {
             buf[sz - 1] = 0;
         }
+        break;
 
     case VS_UPDATE_TRUST_LIST:
         buf = "Trust List";
@@ -107,9 +108,9 @@ vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t 
             } else if(res > sz) {
                 buf[sz - 1] = 0;
             }
-            return buf;
-        }
+        } else {
         buf = "Unknown type";
+        }
         break;
     }
 

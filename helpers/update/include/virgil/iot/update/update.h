@@ -102,7 +102,7 @@ vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size
 #define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
 
 const char *
-vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
+vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
 
 #define VS_UPDATE_FILE_TYPE_STR_STATIC(TYPE_PTR) vs_update_file_type_str(TYPE_PTR, NULL, 0)
 
@@ -253,19 +253,6 @@ typedef vs_status_e (*vs_update_verify_object_cb_t)(void *context, vs_update_fil
  * \param[in] file_type Current file type.  Cannot be NULL.
  */
 typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *file_type);
-
-/** Describe file version
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[in] version Current file version. Cannot be NULL.
- * \param[out] buffer Output buffer to store file version description. Cannot be NULL.
- * \param[in] buf_size Output buffer size. Cannot be zero.
- * \param[in] add_filetype_description If true, \a vs_update_describe_type_cb_t is called and stored to the \a buffer before current file version description
- *
- * \return \a buffer with file type description
- */
-typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, uint32_t buf_size, bool add_filetype_description);
 
 /** Update interface context */
 typedef struct __attribute__((__packed__)) vs_update_interface_t {
