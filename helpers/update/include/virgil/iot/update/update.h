@@ -254,17 +254,6 @@ typedef vs_status_e (*vs_update_verify_object_cb_t)(void *context, vs_update_fil
  */
 typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *file_type);
 
-/** Describe file type
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[out] buffer Output buffer to describe current file type. Cannot be NULL.
- * \param[in] buf_size Buffer size. Cannot be zero.
- *
- * \return \a buffer with file type description
- */
-typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size);
-
 /** Describe file version
  *
  * \param[in] context File context.
@@ -296,9 +285,6 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_delete_object_cb_t        delete_object; /**< Delete item */
     vs_update_verify_object_cb_t        verify_object; /**< Verify item */
     vs_update_free_item_cb_t          free_item; /**< Free item */
-
-    vs_update_describe_type_cb_t      describe_type; /**< Describe file type */
-    vs_update_describe_version_cb_t   describe_version; /**< Describe file version */
 
     vs_storage_op_ctx_t *storage_context; /**< Storage context */
 

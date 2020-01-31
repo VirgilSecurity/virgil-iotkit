@@ -716,41 +716,6 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
 }
 
 /*************************************************************************/
-char *
-vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size) {
-    CHECK_NOT_ZERO_RET(fw_ver, NULL);
-    CHECK_NOT_ZERO_RET(buffer, NULL);
-    CHECK_NOT_ZERO_RET(buf_size, NULL);
-
-#ifdef VS_IOT_ASCTIME
-    time_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
-#else
-    uint32_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
-#endif //   VS_IOT_ASCTIME
-
-    VS_IOT_SNPRINTF(buffer,
-                    buf_size,
-#ifdef VS_IOT_ASCTIME
-                    "ver %d.%d.%d.%llu, %s",
-#else
-                    "ver %d.%d.%d.%llu, UNIX timestamp %u",
-#endif //   VS_IOT_ASCTIME
-                    fw_ver->major,
-                    fw_ver->minor,
-                    fw_ver->patch,
-                    (unsigned long long)fw_ver->build,
-#ifdef VS_IOT_ASCTIME
-                    fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
-#else
-                    timestamp
-#endif //   VS_IOT_ASCTIME
-    );
-
-    return buffer;
-}
-
-
-/*************************************************************************/
 void
 vs_firmware_ntoh_descriptor(vs_firmware_descriptor_t *desc) {
     VS_IOT_ASSERT(desc);

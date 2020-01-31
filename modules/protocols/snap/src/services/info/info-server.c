@@ -233,7 +233,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
             general_info->device_type[1],
             general_info->device_type[2],
             general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
+            vs_update_file_version_str(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
             general_info->tl_version.major,
             general_info->tl_version.minor,
             general_info->tl_version.patch,
