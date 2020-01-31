@@ -107,8 +107,10 @@ _delete_mapping_element(vs_fldt_server_file_type_mapping_t *file_element_to_dele
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
         if (!found) {
             if (file_element_to_delete == file_type_info) {
-                file_element_to_delete->update_context->free_item(
-                        file_element_to_delete->update_context->storage_context, &file_element_to_delete->type);
+                if (file_element_to_delete->update_context && file_element_to_delete->update_context->free_item) {
+                    file_element_to_delete->update_context->free_item(
+                            file_element_to_delete->update_context->storage_context, &file_element_to_delete->type);
+                }
                 if (file_element_to_delete->file_header) {
                     VS_IOT_FREE(file_element_to_delete->file_header);
                     file_element_to_delete->file_header = NULL;
