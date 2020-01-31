@@ -313,8 +313,8 @@ _info_request_processor(const struct vs_netif_t *netif,
         return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 #endif
     default:
-        VS_LOG_ERROR("Unsupported INFO command");
-        VS_IOT_ASSERT(false);
+//        VS_LOG_ERROR("Unsupported INFO command");
+//        VS_IOT_ASSERT(false);
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
