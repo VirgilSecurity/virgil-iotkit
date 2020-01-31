@@ -165,6 +165,7 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 }
 
 /******************************************************************/
+#if 0
 static vs_status_e
 _stat_request_processing(const uint8_t *request,
                          const uint16_t request_sz,
@@ -188,7 +189,7 @@ terminate:
 
     return ret_code;
 }
-
+#endif
 /******************************************************************/
 static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
@@ -215,6 +216,7 @@ _fill_ginf_data(vs_info_ginf_response_t *general_info) {
 }
 
 /******************************************************************/
+#if 0
 static vs_status_e
 _ginf_request_processing(const uint8_t *request,
                          const uint16_t request_sz,
@@ -234,7 +236,7 @@ _ginf_request_processing(const uint8_t *request,
 
     return VS_CODE_OK;
 }
-
+#endif
 /******************************************************************************/
 static vs_status_e
 _snot_request_processor(const uint8_t *request,
@@ -303,13 +305,13 @@ _info_request_processor(const struct vs_netif_t *netif,
 
     case VS_INFO_POLL:
         return _poll_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
+#if 0
     case VS_INFO_GINF:
         return _ginf_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_INFO_STAT:
         return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
+#endif
     default:
         VS_LOG_ERROR("Unsupported INFO command");
         VS_IOT_ASSERT(false);
