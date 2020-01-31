@@ -273,14 +273,6 @@ static vs_status_e
 _info_server_periodical_processor(void) {
     vs_status_e ret_code;
 
-    static bool started = false;
-
-    // Send broadcast notification about self start
-    if (!started) {
-        started = true;
-        vs_snap_info_start_notification(NULL);
-    }
-
     _poll_ctx.time_counter++;
     if (_poll_ctx.time_counter >= _poll_ctx.period_seconds) {
         _poll_ctx.time_counter = 0;
