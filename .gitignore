@@ -39,3 +39,7 @@ Carthage
 
 ####
 format_list.txt
+
+####
+# Python
+__pycache__/
