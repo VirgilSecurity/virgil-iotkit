@@ -123,11 +123,9 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 
 #if INFO_SERVER
     //  INFO server service
-    if (!(device_roles & VS_SNAP_DEV_INITIALIZER)) {
-        const vs_snap_service_t *snap_info_server;
-        snap_info_server = vs_snap_info_server(NULL);
-        STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO server service");
-    }
+    const vs_snap_service_t *snap_info_server;
+    snap_info_server = vs_snap_info_server(NULL);
+    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO server service");
 #endif // INFO_SERVER
 
 
