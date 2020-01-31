@@ -95,6 +95,13 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     // ---------- Initialize Virgil SDK modules ----------
     //
 
+    // Provision module
+    ret_code = vs_provision_init(tl_storage_impl, secmodule_impl, _provision_event);
+    if (VS_CODE_OK != ret_code && VS_CODE_ERR_NOINIT != ret_code) {
+        VS_LOG_ERROR("Cannot initialize Provision module");
+        goto terminate;
+    }
+
 #if FLDT_SERVER || FLDT_CLIENT
     // Firmware module
     vs_file_version_t ver;
@@ -105,13 +112,6 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     vs_snap_info_set_firmware_ver(ver);
 #endif // INFO_SERVER
 #endif // FLDT_SERVER || FLDT_CLIENT
-
-    // Provision module
-    ret_code = vs_provision_init(tl_storage_impl, secmodule_impl, _provision_event);
-    if (VS_CODE_OK != ret_code && VS_CODE_ERR_NOINIT != ret_code) {
-        VS_LOG_ERROR("Cannot initialize Provision module");
-        goto terminate;
-    }
 
     // SNAP module
     STATUS_CHECK(vs_snap_init(netif_impl[0], manufacture_id, device_type, serial, device_roles),
@@ -211,13 +211,13 @@ _on_file_updated(vs_update_file_type_t *file_type,
         file_type_descr = "trust list";
     }
 
-    VS_LOG_INFO("New %s was loaded and %s : %d.%d.%d.%d",
+    VS_LOG_INFO("New %s was loaded and %s : %d.%d.%ull.%ull",
                 file_type_descr,
                 successfully_updated ? "successfully installed" : "did not installed successfully",
                 (int)new_file_ver->major,
                 (int)new_file_ver->minor,
-                (int)new_file_ver->patch,
-                (int)new_file_ver->build);
+                (unsigned long long)new_file_ver->patch,
+                (unsigned long long)new_file_ver->build);
 
 
     if (file_type->type == VS_UPDATE_FIRMWARE && successfully_updated) {
@@ -235,13 +235,13 @@ vs_high_level_deinit(void) {
     // Deinit Virgil SDK modules
     vs_snap_deinit();
 
-    // Deinit provision
-    vs_provision_deinit();
-
-#if FLDT_SERVER
+#if FLDT_SERVER || FLDT_CLIENT
     // Deinit firmware
     vs_firmware_deinit();
 #endif // FLDT_SERVER
+
+    // Deinit provision
+    vs_provision_deinit();
 
     return VS_CODE_OK;
 }
