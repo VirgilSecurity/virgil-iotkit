@@ -74,18 +74,6 @@ typedef struct __attribute__((__packed__)) {
 
 struct vs_update_interface_t;
 
-/** Describe file type
- *
- * \param[in] file_type File type. Cannot be NULL.
- * \param[in] update_context Update interface for current file type. Cannot be NULL.
- * \param[out] buf Buffer to store description. Cannot be NULL.
- * \param[in] buf_size Output buffer size. Must not be zero.
- *
- * \return Output buffer \a buf with file type description or NULL in case of error.
- */
-char *
-vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, uint32_t buf_size);
-
 /** Compare two files types
  *
  * \param file_type Known file type. Cannot be NULL.
@@ -107,6 +95,16 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
  */
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
+
+const char *
+vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz);
+
+#define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
+
+const char *
+vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
+
+#define VS_UPDATE_FILE_TYPE_STR_STATIC(TYPE_PTR) vs_update_file_type_str(TYPE_PTR, NULL, 0)
 
 /** Get file type header size
  *

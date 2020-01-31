@@ -50,8 +50,7 @@ extern "C" {
 //  Internal structures
 //
 
-#define FLDT_FILEVER_BUF (196)      // buffer for vs_fldt_file_version_descr
-#define FLDT_FILE_SPEC_INFO_SZ (64) // vs_fldt_infv_new_file_request_t.file_specific_info field size
+#define FLDT_DESC_BUF (64)
 
 #define FLDT_MAC_PRINT_TEMPLATE "%x:%x:%x:%x:%x:%x"
 #define FLDT_MAC_PRINT_ARG(MAC_ADDR)                                                                                   \
