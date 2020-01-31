@@ -211,11 +211,11 @@ _on_file_updated(vs_update_file_type_t *file_type,
         file_type_descr = "trust list";
     }
 
-    VS_LOG_INFO("New %s was loaded and %s : %d.%d.%ull.%ull",
+    VS_LOG_INFO("New %s was loaded and %s : %u.%u.%ull.%ull",
                 file_type_descr,
                 successfully_updated ? "successfully installed" : "did not installed successfully",
-                (int)new_file_ver->major,
-                (int)new_file_ver->minor,
+                (unsigned)new_file_ver->major,
+                (unsigned)new_file_ver->minor,
                 (unsigned long long)new_file_ver->patch,
                 (unsigned long long)new_file_ver->build);
 

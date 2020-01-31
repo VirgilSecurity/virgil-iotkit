@@ -46,70 +46,6 @@
 static vs_update_interface_t _tl_update_ctx = {.storage_context = NULL};
 
 /*************************************************************************/
-static char *
-_tl_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size) {
-    (void)context;
-    (void)file_type;
-
-    CHECK_NOT_ZERO(buffer);
-    CHECK_NOT_ZERO(buf_size);
-
-    int res = VS_IOT_SNPRINTF(buffer, buf_size, "Trust List");
-    CHECK(res > 0 && res <= buf_size, "Error create TL description string");
-
-    return buffer;
-
-terminate:
-
-    return NULL;
-}
-
-/*************************************************************************/
-static char *
-_tl_describe_version(void *context,
-                     vs_update_file_type_t *file_type,
-                     const vs_file_version_t *version,
-                     char *buffer,
-                     uint32_t buf_size,
-                     bool add_filetype_description) {
-    char *output = buffer;
-    uint32_t type_descr_size;
-    uint32_t string_space = buf_size;
-    static const uint32_t TYPE_DESCR_POSTFIX = 2;
-    (void)context;
-
-    CHECK_NOT_ZERO(buffer);
-    CHECK_NOT_ZERO(buf_size);
-
-    if (add_filetype_description) {
-        CHECK(NULL != _tl_describe_type(context, file_type, buffer, buf_size), "Error description");
-        type_descr_size = VS_IOT_STRLEN(buffer);
-        string_space -= type_descr_size;
-        output += type_descr_size;
-        if (string_space > TYPE_DESCR_POSTFIX) {
-            VS_IOT_STRCPY(output, ", ");
-            string_space -= TYPE_DESCR_POSTFIX;
-            output += TYPE_DESCR_POSTFIX;
-        }
-    }
-
-    VS_IOT_SNPRINTF(output,
-                    string_space,
-                    "version %d.%d.%d.%d",
-                    (int)version->major,
-                    (int)version->minor,
-                    (int)version->patch,
-                    (int)version->build);
-
-    return buffer;
-
-terminate:
-
-    return NULL;
-}
-
-
-/*************************************************************************/
 static vs_status_e
 _tl_get_header_size(void *context, vs_update_file_type_t *file_type, uint32_t *header_size) {
     (void)context;
@@ -276,18 +212,6 @@ _tl_set_footer(void *context,
 }
 
 /*************************************************************************/
-static bool
-_tl_file_is_newer(void *context,
-                  vs_update_file_type_t *file_type,
-                  const vs_file_version_t *available_file,
-                  const vs_file_version_t *new_file) {
-    (void)context;
-    (void)file_type;
-
-    return (VS_CODE_OK == vs_update_compare_version(new_file, available_file));
-}
-
-/*************************************************************************/
 static void
 _tl_delete_object(void *context, vs_update_file_type_t *file_type) {
     (void)context;
@@ -443,12 +367,9 @@ vs_update_trust_list_init(vs_storage_op_ctx_t *storage_ctx) {
     _tl_update_ctx.set_header = _tl_set_header;
     _tl_update_ctx.set_data = _tl_set_data;
     _tl_update_ctx.set_footer = _tl_set_footer;
-    _tl_update_ctx.file_is_newer = _tl_file_is_newer;
     _tl_update_ctx.verify_object = _tl_verify_object;
     _tl_update_ctx.delete_object = _tl_delete_object;
     _tl_update_ctx.free_item = _tl_free_item;
-    _tl_update_ctx.describe_type = _tl_describe_type;
-    _tl_update_ctx.describe_version = _tl_describe_version;
     _tl_update_ctx.storage_context = storage_ctx;
 
     return VS_CODE_OK;

@@ -48,73 +48,6 @@ static vs_device_manufacture_id_t _manufacture;
 static vs_device_type_t _device_type;
 
 /*************************************************************************/
-static char *
-_fw_update_describe_type(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size) {
-    (void)context;
-
-    CHECK_NOT_ZERO(buffer);
-    CHECK_NOT_ZERO(buf_size);
-
-    int res = VS_IOT_SNPRINTF(buffer,
-                              buf_size,
-                              "Firmware (manufacturer = \"%s\", device = \"%c%c%c%c\")",
-                              file_type->info.manufacture_id,
-                              (char)file_type->info.device_type[0],
-                              (char)file_type->info.device_type[1],
-                              (char)file_type->info.device_type[2],
-                              (char)file_type->info.device_type[3]);
-
-    CHECK(res > 0 && res <= buf_size, "Error create firmware description string");
-
-    return buffer;
-
-terminate:
-
-    return NULL;
-}
-
-/*************************************************************************/
-static char *
-_fw_update_describe_version(void *context,
-                            vs_update_file_type_t *file_type,
-                            const vs_file_version_t *version,
-                            char *buffer,
-                            uint32_t buf_size,
-                            bool add_filetype_description) {
-    char *output = buffer;
-    uint32_t string_space = buf_size;
-    uint32_t type_descr_size;
-    static const uint32_t TYPE_DESCR_POSTFIX = 2;
-    const vs_file_version_t *fw_ver = (const vs_file_version_t *)version;
-    (void)context;
-
-    CHECK_NOT_ZERO(file_type);
-    CHECK_NOT_ZERO(version);
-    CHECK_NOT_ZERO(buffer);
-    CHECK_NOT_ZERO(buf_size);
-
-    if (add_filetype_description) {
-        CHECK(NULL != _fw_update_describe_type(context, file_type, buffer, buf_size), "Error description");
-        type_descr_size = VS_IOT_STRLEN(buffer);
-        string_space -= type_descr_size;
-        output += type_descr_size;
-        if (string_space > TYPE_DESCR_POSTFIX) {
-            VS_IOT_STRCPY(output, ", ");
-            string_space -= TYPE_DESCR_POSTFIX;
-            output += TYPE_DESCR_POSTFIX;
-        }
-    }
-
-    vs_firmware_describe_version(fw_ver, output, string_space);
-
-    return buffer;
-
-terminate:
-
-    return NULL;
-}
-
-/*************************************************************************/
 static vs_status_e
 _fw_update_get_header(void *context,
                       vs_update_file_type_t *file_type,
@@ -317,23 +250,6 @@ _fw_update_set_footer(void *context,
 }
 
 /*************************************************************************/
-static bool
-_fw_update_file_is_newer(void *context,
-                         vs_update_file_type_t *file_type,
-                         const vs_file_version_t *available_file,
-                         const vs_file_version_t *new_file) {
-    const vs_file_version_t *fw_ver_available = (const vs_file_version_t *)available_file;
-    const vs_file_version_t *fw_ver_new = (const vs_file_version_t *)new_file;
-    (void)context;
-    (void)file_type;
-
-    VS_IOT_ASSERT(available_file);
-    VS_IOT_ASSERT(new_file);
-
-    return (VS_CODE_OK == vs_update_compare_version(fw_ver_new, fw_ver_available));
-}
-
-/*************************************************************************/
 static void
 _fw_update_delete_object(void *context, vs_update_file_type_t *file_type) {
     (void)context;
@@ -468,12 +384,9 @@ vs_update_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     _fw_update_ctx.set_header = _fw_update_set_header;
     _fw_update_ctx.set_data = _fw_update_set_data;
     _fw_update_ctx.set_footer = _fw_update_set_footer;
-    _fw_update_ctx.file_is_newer = _fw_update_file_is_newer;
     _fw_update_ctx.free_item = _fw_update_free_item;
     _fw_update_ctx.verify_object = _fw_update_verify_object;
     _fw_update_ctx.delete_object = _fw_update_delete_object;
-    _fw_update_ctx.describe_type = _fw_update_describe_type;
-    _fw_update_ctx.describe_version = _fw_update_describe_version;
     _fw_update_ctx.storage_context = storage_ctx;
 
     VS_IOT_MEMCPY(_manufacture, manufacture, sizeof(_manufacture));
