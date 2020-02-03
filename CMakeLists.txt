@@ -79,6 +79,7 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include (clangformat)
+include (TransitiveToolchainArgs)
 
 # ---------------------------------------------------------------------------
 #   Version options
