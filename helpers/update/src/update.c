@@ -81,15 +81,11 @@ vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, s
                               (char)file_type->info.device_type[2],
                               (char)file_type->info.device_type[3]);
 
-        if (res <= 0) {
-            buf[0] = 0;
-        } else if(res > sz) {
-            buf[sz - 1] = 0;
-        }
         break;
 
     case VS_UPDATE_TRUST_LIST:
-        buf = "Trust List";
+        res = VS_IOT_SNPRINTF(buf,
+                              sz,"Trust List");
         break;
     default:
         if (file_type->type <= VS_UPDATE_USER_FILES) {
@@ -103,15 +99,17 @@ vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, s
                                   (char)file_type->info.device_type[2],
                                   (char)file_type->info.device_type[3]);
 
-            if (res <= 0) {
-                buf[0] = 0;
-            } else if(res > sz) {
-                buf[sz - 1] = 0;
-            }
         } else {
-        buf = "Unknown type";
-        }
+            res = VS_IOT_SNPRINTF(buf,
+                                  sz,"Unknown type");
+         }
         break;
+    }
+
+    if (res <= 0) {
+        buf[0] = 0;
+    } else if(res > sz) {
+        buf[sz - 1] = 0;
     }
 
     return buf;
