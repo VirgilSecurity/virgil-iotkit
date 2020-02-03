@@ -146,10 +146,6 @@ _update_object_info(const vs_update_file_type_t *file_type,
         goto terminate;
     }
 
-    CHECK(VS_CODE_OK == ret_code && file_header_size,
-          "Unable to get header size for file type %s",
-          VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
-
     if (file_element->file_header) {
         VS_IOT_FREE(file_element->file_header);
     }
