@@ -80,7 +80,7 @@ test_snap_send(void) {
     netif_state.membuf = 0;
 
     netif_state.sent = 0;
-    vs_snap_send(NULL, data, data_sz);
+    vs_snap_send(vs_snap_netif_routing(), data, data_sz);
     CHECK(netif_state.sent, "netif operation vs_snap_send has not been called");
 
     return true;
@@ -123,7 +123,7 @@ vs_snap_tests(void) {
     CHECK(VS_CODE_OK == vs_snap_deinit(test_netif), "vs_snap_deinit call");
 
     // Call for possible crashes and memory leaks
-    CHECK(VS_CODE_OK == vs_snap_send(NULL, NULL, 0), "vs_snap_send call");
+    CHECK(VS_CODE_OK == vs_snap_send(vs_snap_netif_routing(), NULL, 0), "vs_snap_send call");
 
 terminate:;
     return failed_test_result;

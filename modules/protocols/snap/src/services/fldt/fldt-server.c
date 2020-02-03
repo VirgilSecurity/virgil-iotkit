@@ -529,7 +529,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
 
         // Normalize byte order
         vs_fldt_file_info_t_encode(&new_file);
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(vs_snap_netif_routing(),
                                         vs_snap_broadcast_mac(),
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_INFV,

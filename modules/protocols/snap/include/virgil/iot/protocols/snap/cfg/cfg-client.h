@@ -32,32 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_CFG_CLIENT_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_CFG_CLIENT_H
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#if CFG_CLIENT
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/status_code/status_code.h>
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
+
+const vs_snap_service_t *
+vs_snap_cfg_client(void);
+
+vs_status_e
+vs_snap_cfg_configure_device(const vs_netif_t *netif, const vs_mac_addr_t *mac, const vs_cfg_configuration_t *config);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
+#endif // CFG_CLIENT
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_CLIENT_H

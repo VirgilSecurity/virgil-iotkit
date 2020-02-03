@@ -185,6 +185,10 @@ protected:
     bool
     processData(const QByteArray &data);
 
+    // This method is required very seldom. Only in case of re-initialization of network interface
+    // outside of init function
+    void resetPacketForced();
+
 private:
     static VirgilIoTKit::vs_status_e
     initCb(struct VirgilIoTKit::vs_netif_t *netif,

@@ -76,7 +76,6 @@ target_include_directories(vs-default-soft-secmodule
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 
-
         INTERFACE
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
@@ -103,7 +102,6 @@ target_link_libraries(vs-default-soft-secmodule
         PUBLIC
         vs-module-secmodule
         storage_hal
-
         )
 
 if(COMMAND add_clangformat)

@@ -32,32 +32,31 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_CFG_STRUCTS_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_CFG_STRUCTS_H
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+#define VS_CFG_STR_MAX (64)
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+typedef struct {
+    uint8_t ssid[VS_CFG_STR_MAX];
+    uint8_t pass[VS_CFG_STR_MAX];
+    uint8_t account[VS_CFG_STR_MAX];
+} vs_cfg_configuration_t;
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_STRUCTS_H

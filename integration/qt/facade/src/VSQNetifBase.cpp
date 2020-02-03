@@ -135,3 +135,7 @@ VSQNetifBase::macAddrCb(const struct VirgilIoTKit::vs_netif_t *netif, struct Vir
 
     return VirgilIoTKit::VS_CODE_OK;
 }
+
+void VSQNetifBase::resetPacketForced() {
+    m_lowLevelNetif.packet_buf_filled = 0;
+}

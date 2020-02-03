@@ -53,6 +53,8 @@ extern "C" {
 struct vs_netif_t;
 struct vs_mac_addr_t;
 
+#define VS_SNAP_NETIF_MAX (5) /**< Maximum amout of network interfaces */
+
 /**  SNAP transaction ID
  */
 typedef uint16_t vs_snap_transaction_id_t;

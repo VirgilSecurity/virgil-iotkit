@@ -190,6 +190,13 @@ public:
                   bool enable = true,
                   quint16 periodSeconds = 1);
 
+    /** Get devices list
+     *
+     * \return Current devices list
+     */
+    const TEnumDevicesArray &devicesList() const { return m_devicesInfo; }
+
+public slots:
     /** Start full polling
      *
      * \param deviceMac Device's MAC address. #broadcastMac is used by default for broadcast polling options
@@ -198,20 +205,14 @@ public:
      * \return
      */
     bool
-    startFullPolling(const VSQMac &deviceMac = broadcastMac, quint16 periodSeconds = 1) {
+    onStartFullPolling(const VSQMac &deviceMac = broadcastMac, quint16 periodSeconds = 1) {
         return changePolling(
                 {VSQSnapInfoClient::GENERAL_INFO, VSQSnapInfoClient::STATISTICS}, deviceMac, true, periodSeconds);
     }
 
-    /** Get devices list
-     *
-     * \return Current devices list
-     */
-    const TEnumDevicesArray &
     devicesList() const {
         return m_devicesInfo;
     }
-
 signals:
 
     /** Signal "New information has been received"

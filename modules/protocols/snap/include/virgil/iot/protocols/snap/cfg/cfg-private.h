@@ -32,32 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_CFG_PRIVATE_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_CFG_PRIVATE_H
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-server.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/trust_list/tl_structs.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+// mute "error: multi-character character constant" message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum { VS_CFG_SERVICE_ID = HTONL_IN_COMPILE_TIME('_CFG') } vs_cfg_t;
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+typedef enum {
+    VS_CFG_CONF = HTONL_IN_COMPILE_TIME('CONF'), /* CONFigure device */
+} vs_snap_cfg_element_e;
+#pragma GCC diagnostic pop
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t ssid[VS_CFG_STR_MAX];
+    uint8_t pass[VS_CFG_STR_MAX];
+    uint8_t account[VS_CFG_STR_MAX];
+} vs_cfg_conf_request_t;
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_PRIVATE_H

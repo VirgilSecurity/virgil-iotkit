@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -66,6 +66,7 @@ set(CMAKE_CGO_CFLAGS
         -I${VIRGIL_IOT_DIRECTORY}/config/pc
         -I${CMAKE_CURRENT_LIST_DIR}/../c-implementation/include
         -DINFO_CLIENT=1
+        -DCFG_CLIENT=1
         )
 
 #

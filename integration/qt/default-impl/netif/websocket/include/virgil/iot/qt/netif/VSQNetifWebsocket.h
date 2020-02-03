@@ -32,32 +32,77 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
+#ifndef VIRGIL_IOTKIT_QT_Websocket_H_
+#define VIRGIL_IOTKIT_QT_Websocket_H_
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#include <QtCore>
+#include <QtNetwork>
+#include <QtBluetooth>
+#include <QtWebSockets>
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#include <virgil/iot/qt/protocols/snap/VSQNetifBase.h>
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+class VSQNetifWebsocket final : public VSQNetifBase {
+    Q_OBJECT
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+public:
+    VSQNetifWebsocket(const QUrl &url, const QString &account);
+
+    VSQNetifWebsocket(VSQNetifWebsocket const &) = delete;
+
+    VSQNetifWebsocket &
+    operator=(VSQNetifWebsocket const &) = delete;
+
+    virtual ~VSQNetifWebsocket() override;
+
+    QAbstractSocket::SocketState
+    connectionState() const override;
+
+signals:
+    void fireDeviceReady();
+
+protected:
+    bool
+    init() override;
+
+    bool
+    deinit() override;
+
+    bool
+    tx(const QByteArray &data) override;
+
+    QString
+    macAddr() const override;
+
+
+private slots:
+    void onConnected();
+    void onDisconnected();
+    void onStateChanged(QAbstractSocket::SocketState state);
+    void onError(QAbstractSocket::SocketError error);
+    void onMessageReceived(QString message);
+
+private:
+    VSQMac m_mac;
+
+    bool m_canCommunicate;                                  /**< shows communication state */
+
+    QWebSocket m_webSocket;
+    QUrl m_url;
+    QString m_account;
+
+    static const QString _accountIdTag;
+    static const QString _payloadTag;
+
+    /**
+     * @brief Check is net connection is active
+     * @return "true" is active
+     */
+    virtual bool isActive() const;
+
+
+    void registerReceiver();
+};
+
+#endif // VIRGIL_IOTKIT_QT_BLE_H_
+

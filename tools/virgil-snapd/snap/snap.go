@@ -1,4 +1,4 @@
-//   Copyright (C) 2015-2019 Virgil Security Inc.
+//   Copyright (C) 2015-2020 Virgil Security Inc.
 //
 //   All rights reserved.
 //
@@ -38,6 +38,7 @@ package snap
 #cgo LDFLAGS: -lvs-module-snap-factory -ltools-hal -lvs-module-logger
 #include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/protocols/snap/info/info-client.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-client.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/tools/hal/ti_netif_udp_bcast.h>
 extern int goDeviceStartNotifCb(vs_snap_info_device_t *device);
@@ -50,15 +51,28 @@ static int go_snap_init(void) {
     vs_device_serial_t serial = {0};
     uint32_t roles = VS_SNAP_DEV_SNIFFER;
 
-    return vs_snap_init(vs_hal_netif_udp_bcast(), manufacture_id, device_type, serial, roles);
+    return vs_snap_init(vs_hal_netif_udp_bcast(), NULL, manufacture_id, device_type, serial, roles);
 }
 
 static int _set_polling(void) {
-    return vs_snap_info_set_polling(NULL,
+    return vs_snap_info_set_polling(vs_snap_netif_routing(),
                                     vs_snap_broadcast_mac(),
                                     VS_SNAP_INFO_GENERAL | VS_SNAP_INFO_STATISTICS,
                                     true,
                                     2);
+}
+
+static int _set_test_config(void) {
+
+    vs_cfg_configuration_t config;
+
+    strcpy((char *)config.ssid, "test_ssid");
+    strcpy((char *)config.pass, "test_pass");
+    strcpy((char *)config.account, "test_account");
+
+    return vs_snap_cfg_configure_device(vs_snap_netif_routing(),
+                                        vs_snap_broadcast_mac(),
+                                        &config);
 }
 
 static int _register_info_client(void) {
@@ -69,6 +83,10 @@ static int _register_info_client(void) {
     _impl.statistics = goDeviceStatCb;
 
     return vs_snap_register_service(vs_snap_info_client(_impl));
+}
+
+static int _register_cfg_client(void) {
+    return vs_snap_register_service(vs_snap_cfg_client());
 }
 */
 import "C"
@@ -102,6 +120,10 @@ func ConnectToDeviceNetwork() error {
 
     if 0 != C._register_info_client() {
         return fmt.Errorf("can't register SNAP:INFO client service")
+    }
+
+    if 0 != C._register_cfg_client() {
+        return fmt.Errorf("can't register SNAP:_CFG client service")
     }
 
     return nil
@@ -149,6 +171,10 @@ func roles2strings(roles C.uint32_t) []string {
 
         if (roles & C.VS_SNAP_DEV_THING) == C.VS_SNAP_DEV_THING {
             res = append(res, "THING")
+        }
+
+        if (roles & C.VS_SNAP_DEV_INITIALIZER) == C.VS_SNAP_DEV_INITIALIZER {
+            res = append(res, "INITIALIZER")
         }
 
         if (roles & C.VS_SNAP_DEV_CONTROL) == C.VS_SNAP_DEV_CONTROL {
@@ -227,6 +253,15 @@ func SetupPolling(_generalInfoCb func(generalInfo devices.DeviceInfo) error,
 
     generalInfoCb = _generalInfoCb
     statisticsCb = _statisticsCb
+
+    return nil
+}
+
+func UploadTestConfig() error {
+
+    if 0 != C._set_test_config() {
+        return fmt.Errorf("can't set devices polling. SNAP:_CFG:CONF error")
+    }
 
     return nil
 }

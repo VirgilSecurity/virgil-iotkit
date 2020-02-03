@@ -32,32 +32,29 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQIoTKit.h
- * \brief Umbrella header for Virgil IoT Kit Qt integration
- *
- * This header contains all headers needed to use Virgil IoT Kit Qt integration.
- * However, you need to include implementations. You could use #VSQUdpBroadcast class that is #VSQNetifBase child.
- */
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_CFG_SERVER_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_CFG_SERVER_H
 
-#ifndef VIRGIL_IOTKIT_QT_VSQIOTKIT_H
-#define VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+#if CFG_SERVER
 
-#include <virgil/iot/qt/helpers/VSQAppConfig.h>
-#include <virgil/iot/qt/helpers/VSQDeviceRoles.h>
-#include <virgil/iot/qt/helpers/VSQDeviceSerial.h>
-#include <virgil/iot/qt/helpers/VSQDeviceType.h>
-#include <virgil/iot/qt/helpers/VSQFeatures.h>
-#include <virgil/iot/qt/helpers/VSQFileVersion.h>
-#include <virgil/iot/qt/helpers/VSQImplementations.h>
-#include <virgil/iot/qt/helpers/VSQIoTKitFacade.h>
-#include <virgil/iot/qt/helpers/VSQMac.h>
-#include <virgil/iot/qt/helpers/VSQManufactureId.h>
-#include <virgil/iot/qt/helpers/VSQSingleton.h>
-#include <virgil/iot/qt/helpers/VSQHelpers.h>
+#include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
 
-#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapINFOClientQml.h>
-#include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
-#endif // VIRGIL_IOTKIT_QT_VSQIOTKIT_H
+typedef vs_status_e (*vs_snap_cfg_config_cb_t)(const vs_cfg_configuration_t *configuration);
+
+const vs_snap_service_t *
+vs_snap_cfg_server(vs_snap_cfg_config_cb_t config_cb);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
+#endif // CFG_SERVER
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_SERVER_H

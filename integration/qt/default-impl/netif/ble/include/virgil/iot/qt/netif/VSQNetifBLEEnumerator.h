@@ -32,66 +32,67 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQImplementations.h
- * \brief Virgil IoT Kit Framework implementations configuration
- *
- * #VSQImplementations is used to initialize necessary configurations.
- *
- * For now it is necessary to specify network interface implementation. You need to implement your own as
- * #VSQNetifBase child or use #VSQUdpBroadcast.
- *
- * Configure #VSQImplementations by using operator << :
- * \code
-    auto impl = VSQImplementations() << QSharedPointer<VSQUdpBroadcast>::create();
-
-    if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
-        VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
-    }
- * \endcode
- *
- */
-
-#ifndef VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
-#define VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
+#ifndef VIRGIL_IOTKIT_QT_BLE_ENUMERATOR_H_
+#define VIRGIL_IOTKIT_QT_BLE_ENUMERATOR_H_
 
 #include <QtCore>
+#include <QtNetwork>
+#include <QtBluetooth>
 
-class VSQNetifBase;
+class VSQNetifBLEEnumerator : public QObject {
+    Q_OBJECT
 
-/** Implementations configuration
- *
- * Initialize this class and use it for #VSQIoTKitFacade::init call.
- */
-class VSQImplementations {
+    typedef  QMap<QString, QBluetoothDeviceInfo> VSQBLEDevices;
+
 public:
-    typedef  QList<QSharedPointer<VSQNetifBase>> VSQNetifList;
+    VSQNetifBLEEnumerator() = default;
 
-    /** Add network interface implementation
-     *
-     * \param netif Network interface as #VSQNetifBase child implementation. You could use #VSQUdpBroadcast as default
-     * one
-     *
-     * \return Reference to the #VSQImplementations instance
-     */
-    VSQImplementations &
-    operator<<(QSharedPointer<VSQNetifBase> netif) {
-        m_netifs.push_back(netif);
-        return *this;
-    }
+    VSQNetifBLEEnumerator(VSQNetifBLEEnumerator const &) = delete;
 
-    /** Initialised network interface implementation
-     *
-     * \warning Initialize network interface prior to this function call. In other case you will receive assertion error
-     *
-     * \return Current network interface implementation
+    VSQNetifBLEEnumerator &
+    operator=(VSQNetifBLEEnumerator const &) = delete;
+
+    virtual ~VSQNetifBLEEnumerator() = default;
+
+    /**
+     * @brief Get devices list which can be used for connection
+     * @return QStringList
      */
-    VSQNetifList &
-    netifs() {
-        return m_netifs;
-    }
+    Q_INVOKABLE QStringList devicesList() const;
+    Q_INVOKABLE void select(QString devName) const;
+
+    /**
+     * @brief Start devices discovery
+     */
+    Q_INVOKABLE void startDiscovery();
+
+signals:
+
+    void fireDeviceSelected(QBluetoothDeviceInfo dev) const;
+
+    void fireDevicesListUpdated();
+
+    /**
+     * @brief Emited then discovery finished. New device list can be read by devicesList()
+     */
+    void fireDiscoveryFinished();
+
+private slots:
+
+    /**
+     * @brief Called when one service discovered
+     * @param[in] deviceInfo - instance of discovered device info
+     */
+    void onDeviceDiscovered(const QBluetoothDeviceInfo & deviceInfo);
+
+    /**
+     * @brief Called when devices discovery complitly finished
+     */
+    void onDiscoveryFinished();
 
 private:
-    VSQNetifList m_netifs;
+    VSQBLEDevices m_devices;                                /**< Map of device name -> device info */
 };
 
-#endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
+#endif // VIRGIL_IOTKIT_QT_BLE_ENUMERATOR_H_
+

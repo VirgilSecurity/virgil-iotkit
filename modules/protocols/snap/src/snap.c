@@ -43,7 +43,10 @@
 #include <stdio.h>
 #include <string.h>
 
-static vs_netif_t *_snap_default_netif = 0;
+//#define VS_ENABLE_ROUTING (1)
+
+static vs_netif_t *_netifs[VS_SNAP_NETIF_MAX];
+static size_t _netifs_cnt = 0;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
@@ -58,6 +61,8 @@ static vs_device_manufacture_id_t _manufacture_id;
 static vs_device_type_t _device_type;
 static vs_device_serial_t _device_serial;
 static uint32_t _device_roles = 0; // See vs_snap_device_role_e
+
+static vs_netif_process_cb_t _preprocessor_cb = NULL;
 
 #define VS_SNAP_PROFILE 0
 
@@ -75,6 +80,13 @@ current_timestamp() {
     return us;
 }
 #endif
+
+/******************************************************************************/
+static vs_netif_t *
+_default_netif(void) {
+    VS_IOT_ASSERT(_netifs_cnt);
+    return _netifs[0];
+}
 
 /******************************************************************************/
 static bool
@@ -100,6 +112,16 @@ _accept_packet(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_m
     return !src_is_my_mac && (dst_is_broadcast || dst_is_my_mac);
 }
 
+/******************************************************************************/
+#if VS_ENABLE_ROUTING
+static bool
+_need_routing(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+    bool dst_is_broadcast = _is_broadcast(dest_mac);
+    bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
+    bool src_is_my_mac = _is_my_mac(netif, src_mac);
+    return !src_is_my_mac && (dst_is_broadcast || !dst_is_my_mac);
+}
+#endif
 /******************************************************************************/
 static vs_status_e
 _process_packet(const vs_netif_t *netif, vs_snap_packet_t *packet) {
@@ -200,6 +222,9 @@ _snap_rx_cb(vs_netif_t *netif,
     int need_bytes_for_packet;
     uint16_t packet_sz;
     uint16_t copy_bytes;
+#if VS_ENABLE_ROUTING
+    size_t i;
+#endif
 
     vs_snap_packet_t *packet = 0;
 
@@ -254,20 +279,35 @@ _snap_rx_cb(vs_netif_t *netif,
 
         if (packet) {
 
-            // Normalize byte order
-            vs_snap_packet_t_decode(packet);
+            // Route incoming packet, if it's required and our role is Gateway
+#if VS_ENABLE_ROUTING
+            if (_need_routing(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
+                if (_device_roles & VS_SNAP_DEV_GATEWAY) {
+                    for (i = 0; i < _netifs_cnt; i++) {
+                        if (_netifs[i] && _netifs[i] != netif) {
+                            _netifs[i]->tx(_default_netif(), (uint8_t *)packet, packet_sz);
+                        }
+                    }
+                }
+            }
+#endif
+
+            // Reset filled packet
+            netif->packet_buf_filled = 0;
 
             // Check is my packet
             if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
 
+                // Normalize byte order
+                vs_snap_packet_t_decode(packet);
+
                 // Prepare for processing
                 *packet_data = (uint8_t *)packet;
                 *packet_data_sz = packet_sz;
-                return 0;
+                return VS_CODE_OK;
             }
 
             packet = 0;
-            netif->packet_buf_filled = 0;
         }
     }
 
@@ -275,8 +315,8 @@ _snap_rx_cb(vs_netif_t *netif,
 }
 
 /******************************************************************************/
-static vs_status_e
-_snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+vs_status_e
+vs_snap_default_processor(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
     vs_status_e res;
 
@@ -313,6 +353,7 @@ _snap_process_cb(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz)
 /******************************************************************************/
 vs_status_e
 vs_snap_init(vs_netif_t *default_netif,
+             vs_netif_process_cb_t packet_preprocessor_cb,
              const vs_device_manufacture_id_t manufacturer_id,
              const vs_device_type_t device_type,
              const vs_device_serial_t device_serial,
@@ -335,26 +376,27 @@ vs_snap_init(vs_netif_t *default_netif,
     }
 #endif
 
+    // Set packet processor
+    if (packet_preprocessor_cb) {
+        _preprocessor_cb = packet_preprocessor_cb;
+    } else {
+        _preprocessor_cb = vs_snap_default_processor;
+    }
     _device_roles = device_roles;
 
     // Save default network interface
-    _snap_default_netif = default_netif;
-
-    // Init default network interface
-    default_netif->init(default_netif, _snap_rx_cb, _snap_process_cb);
-
-    return VS_CODE_OK;
+    return vs_snap_netif_add(default_netif);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_snap_deinit() {
     int i;
-    CHECK_NOT_ZERO_RET(_snap_default_netif, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_default_netif(), VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(_default_netif()->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
-    _snap_default_netif->deinit(_snap_default_netif);
+    _default_netif()->deinit(_default_netif());
 
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
@@ -370,21 +412,46 @@ vs_snap_deinit() {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_snap_netif_add(vs_netif_t *netif) {
+    VS_IOT_ASSERT(netif);
+    VS_IOT_ASSERT(netif->init);
+    VS_IOT_ASSERT(netif->tx);
+
+    if (_netifs_cnt >= VS_SNAP_NETIF_MAX) {
+        return VS_CODE_ERR_SNAP_TOO_MUCH_NETIFS;
+    }
+
+    _netifs[_netifs_cnt++] = netif;
+
+    // Init network interface
+    return netif->init(netif, _snap_rx_cb, _preprocessor_cb);
+}
+
+/******************************************************************************/
 const vs_netif_t *
-vs_snap_default_netif(void) {
-    VS_IOT_ASSERT(_snap_default_netif);
-    return _snap_default_netif;
+vs_snap_netif_default(void) {
+    VS_IOT_ASSERT(_default_netif());
+    return _default_netif();
+}
+
+/******************************************************************************/
+const vs_netif_t *
+vs_snap_netif_routing(void) {
+    return (vs_netif_t *)1;
 }
 
 /******************************************************************************/
 vs_status_e
 vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
-    VS_IOT_ASSERT(_snap_default_netif);
-    VS_IOT_ASSERT(_snap_default_netif->tx);
+    size_t i;
+
+    VS_IOT_ASSERT(netif);
+
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;
 
     if (data_sz < sizeof(vs_snap_packet_t)) {
-        return -1;
+        return VS_CODE_ERR_INCORRECT_ARGUMENT;
     }
 
     // Normalize byte order
@@ -392,11 +459,19 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
         vs_snap_packet_t_encode(packet);
     }
 
-    if (!netif || netif == _snap_default_netif) {
-        return _snap_default_netif->tx(_snap_default_netif, data, data_sz);
+    // Is routing required ?
+    if (netif == vs_snap_netif_routing()) {
+        for (i = 0; i < _netifs_cnt; i++) {
+            if (_netifs[i]) {
+                _netifs[i]->tx(_netifs[i], data, data_sz);
+            }
+        }
+
+        return VS_CODE_OK;
     }
 
-    return VS_CODE_ERR_SNAP_UNKNOWN;
+    // Send message to certain network interface
+    return netif->tx(_default_netif(), data, data_sz);
 }
 
 /******************************************************************************/
@@ -421,10 +496,10 @@ vs_status_e
 vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     VS_IOT_ASSERT(mac_addr);
 
-    if (!netif || netif == _snap_default_netif) {
-        VS_IOT_ASSERT(_snap_default_netif);
-        VS_IOT_ASSERT(_snap_default_netif->mac_addr);
-        _snap_default_netif->mac_addr(_snap_default_netif, mac_addr);
+    if (!netif || netif == _default_netif()) {
+        VS_IOT_ASSERT(_default_netif());
+        VS_IOT_ASSERT(_default_netif()->mac_addr);
+        _default_netif()->mac_addr(_default_netif(), mac_addr);
         return VS_CODE_OK;
     }
 

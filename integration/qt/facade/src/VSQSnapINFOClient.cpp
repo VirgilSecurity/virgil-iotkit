@@ -77,7 +77,7 @@ VSQSnapInfoClient::startNotify(vs_snap_info_device_t *deviceRaw) {
 
     emit instance().fireDeviceInfo(device);
 
-    if (!instance().startFullPolling(device.m_mac)) {
+    if (!instance().onStartFullPolling(device.m_mac)) {
         VS_LOG_CRITICAL("Unable to start polling for device %s", VSQCString(device.m_mac.description()));
         return VS_CODE_ERR_POLLING_INFO_CLIENT;
     }
@@ -161,7 +161,7 @@ VSQSnapInfoClient::changePolling(std::initializer_list<EPolling> pollingOptions,
         pollingElements |= pollingOption;
     }
 
-    if (vs_snap_info_set_polling(nullptr, &mac, pollingElements, enable, periodSeconds) != VS_CODE_OK) {
+    if (vs_snap_info_set_polling(vs_snap_netif_routing(), &mac, pollingElements, enable, periodSeconds) != VS_CODE_OK) {
         VS_LOG_ERROR("Unable to setup info polling");
         return false;
     }

@@ -68,6 +68,7 @@ extern "C" {
  * Must be called prior to any SNAP call.
  *
  * \param[in] default_netif Default network interface. Must not be NULL.
+ * \param[in] packet_preprocessor_cb Packet preprocessor callback. May be NULL.
  * \param[in] manufacturer_id Manufacturer ID.
  * \param[in] device_type Device type.
  * \param[in] device_serial Device serial number.
@@ -77,6 +78,7 @@ extern "C" {
  */
 vs_status_e
 vs_snap_init(vs_netif_t *default_netif,
+             vs_netif_process_cb_t packet_preprocessor_cb,
              const vs_device_manufacture_id_t manufacturer_id,
              const vs_device_type_t device_type,
              const vs_device_serial_t device_serial,
@@ -89,6 +91,22 @@ vs_snap_init(vs_netif_t *default_netif,
  */
 vs_status_e
 vs_snap_deinit();
+
+/** Add network interface
+ *
+ * Adds network interface for SNAP. Uses \a init call from #vs_netif_t network interface.
+ * Must be called after #vs_snap_init, but before any other SNAP call.
+ * Pay attention to a maximum amount of network interfaces #VS_SNAP_NETIF_MAX
+ *
+ * \param[in] netif Network interface to be added. Must not be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+vs_status_e
+vs_snap_netif_add(vs_netif_t *netif);
+
+vs_status_e
+vs_snap_default_processor(vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Return current manufacture ID
  *
@@ -123,7 +141,14 @@ vs_snap_device_roles(void);
  * \return #vs_netif_t Device network interface. Cannot be NULL.
  */
 const vs_netif_t *
-vs_snap_default_netif(void);
+vs_snap_netif_default(void);
+
+/** Return device network interface constant for packet routing
+ *
+ * \return #vs_netif_t Device network interface. Cannot be NULL.
+ */
+const vs_netif_t *
+vs_snap_netif_routing(void);
 
 /** Send SNAP message
  *

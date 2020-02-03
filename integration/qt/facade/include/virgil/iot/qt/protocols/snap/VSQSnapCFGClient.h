@@ -32,66 +32,74 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-/*! \file VSQImplementations.h
- * \brief Virgil IoT Kit Framework implementations configuration
- *
- * #VSQImplementations is used to initialize necessary configurations.
- *
- * For now it is necessary to specify network interface implementation. You need to implement your own as
- * #VSQNetifBase child or use #VSQUdpBroadcast.
- *
- * Configure #VSQImplementations by using operator << :
- * \code
-    auto impl = VSQImplementations() << QSharedPointer<VSQUdpBroadcast>::create();
-
-    if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
-        VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
-    }
- * \endcode
- *
- */
-
-#ifndef VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
-#define VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
+#ifndef _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_
+#define _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_
 
 #include <QtCore>
 
-class VSQNetifBase;
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-client.h>
+#include <virgil/iot/qt/helpers/VSQSingleton.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 
-/** Implementations configuration
- *
- * Initialize this class and use it for #VSQIoTKitFacade::init call.
- */
-class VSQImplementations {
+class VSQSnapCfgClient final :
+        public QObject,
+        public VSQSingleton<VSQSnapCfgClient>,
+        public VSQSnapServiceBase {
+
+    Q_OBJECT
+
+    friend VSQSingleton<VSQSnapCfgClient>;
+
 public:
-    typedef  QList<QSharedPointer<VSQNetifBase>> VSQNetifList;
 
-    /** Add network interface implementation
+    /** Get service interface
      *
-     * \param netif Network interface as #VSQNetifBase child implementation. You could use #VSQUdpBroadcast as default
-     * one
-     *
-     * \return Reference to the #VSQImplementations instance
+     * \return Service interface
      */
-    VSQImplementations &
-    operator<<(QSharedPointer<VSQNetifBase> netif) {
-        m_netifs.push_back(netif);
-        return *this;
+    const VirgilIoTKit::vs_snap_service_t *
+    serviceInterface() override {
+        return m_snapService;
     }
 
-    /** Initialised network interface implementation
+    /** Get service feature
      *
-     * \warning Initialize network interface prior to this function call. In other case you will receive assertion error
-     *
-     * \return Current network interface implementation
+     * \return Service feature
      */
-    VSQNetifList &
-    netifs() {
-        return m_netifs;
+    VSQFeatures::EFeature
+    serviceFeature() const override {
+        return VSQFeatures::SNAP_CFG_CLIENT;
     }
+
+    /** Get service name
+     *
+     * \return Service name
+     */
+    const QString &
+    serviceName() const override {
+        static QString name{"_CFG Client"};
+        return name;
+    }
+
+signals:
+    void fireConfigurationDone(bool isOK);
+
+public slots:
+    void
+    onConfigureDevices();
+
+    Q_INVOKABLE void
+    onSetConfigData(QString ssid, QString pass, QString account);
 
 private:
-    VSQNetifList m_netifs;
+    const VirgilIoTKit::vs_snap_service_t *m_snapService;
+
+    VSQSnapCfgClient();
+    ~VSQSnapCfgClient() = default;
+
+    QString m_ssid;
+    QString m_pass;
+    QString m_account;
 };
 
-#endif // VIRGIL_IOTKIT_QT_IMPLEMENTATIONS_H
+#endif // _VIRGIL_IOTKIT_QT_SNAP_CFG_CLIENT_SERVICE_H_

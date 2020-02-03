@@ -91,7 +91,7 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
                          bool enable,
                          uint16_t period_seconds) {
     vs_info_poll_request_t request;
-    const vs_netif_t *default_netif = vs_snap_default_netif();
+    const vs_netif_t *default_netif = vs_snap_netif_default();
     const vs_mac_addr_t *dst_mac;
     vs_status_e ret_code;
 

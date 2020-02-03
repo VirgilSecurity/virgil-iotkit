@@ -64,6 +64,10 @@ function(add_snap _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/prvs/prvs-server.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/prvs/prvs-client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/prvs/prvs-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-structs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/generated/snap_cvt.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/snap.c
@@ -73,6 +77,8 @@ function(add_snap _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/src/services/prvs/prvs-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/cfg/cfg-server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/cfg/cfg-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/generated/snap_cvt.c
             )
 
@@ -146,27 +152,27 @@ endfunction()
 #
 #   SNAP For factory purposes
 #
-add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
+add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1 CFG_CLIENT=1")
 
 if (NOT MOBILE_PLATFORM)
 
     #
     #   SNAP Devices initializer
     #
-    add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1 INFO_SERVER=1")
+    add_snap("vs-module-snap-initializer" 1 "PRVS_SERVER=1 INFO_SERVER=1 CFG_SERVER=1")
 
     #
     #   SNAP For Thing
     #
-    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
+    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1 CFG_SERVER=1")
 
     #
     #   SNAP For Gateway
     #
-    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1 CFG_SERVER=1")
 endif()
 
 #
 #   SNAP For Control
 #
-add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1")
+add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1 CFG_CLIENT=1")

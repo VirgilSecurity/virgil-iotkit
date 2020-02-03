@@ -77,6 +77,7 @@
 #include <virgil/iot/qt/helpers/VSQSingleton.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapServiceBase.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapINFOClient.h>
+#include <virgil/iot/qt/protocols/snap/VSQSnapCFGClient.h>
 #include <virgil/iot/qt/protocols/snap/VSQSnapSnifferQml.h>
 
 /** Facade pattern for Virgil IoTKit Qt integration
@@ -114,10 +115,10 @@ public:
      *
      * \return #VSQSnapSnifferQml object or nullptr if sniffer is not initialized
      */
-    VSQSnapSnifferPtr
-    snapSniffer() {
-        return m_snapSniffer;
-    }
+    VSQSnapSnifferPtr snapSniffer()    { return m_snapSniffer; }
+    VSQSnapCfgClient & snapCfgClient()    { return VSQSnapCfgClient::instance(); }
+
+    virtual ~VSQIoTKitFacade();
 
     /** Get Snap INFO Client implementation
      *
@@ -129,20 +130,24 @@ public:
     snapInfoClient();
 
 private slots:
+
     void
-    restartInfoClientPolling(QAbstractSocket::SocketState connectionState);
+    onNetifProcess(struct VirgilIoTKit::vs_netif_t *netif, QByteArray data);
 
 private:
     VSQFeatures m_features;
     VSQImplementations m_impl;
     VSQAppConfig m_appConfig;
     VSQSnapSnifferPtr m_snapSniffer;
+    QThread *m_snapProcessorThread;
 
     void
     initSnap();
 
     void
     registerService(VSQSnapServiceBase &service);
+
+    static VirgilIoTKit::vs_status_e netifProcessCb(struct VirgilIoTKit::vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 };
 
 #endif // VIRGIL_IOTKIT_QT_FACADE_H
