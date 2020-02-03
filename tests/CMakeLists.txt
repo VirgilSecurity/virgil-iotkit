@@ -136,6 +136,8 @@ target_include_directories(virgil-iot-sdk-tests
         )
 
 install(TARGETS virgil-iot-sdk-tests
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         )
 
