@@ -140,6 +140,12 @@ _update_object_info(const vs_update_file_type_t *file_type,
     uint32_t file_header_size;
 
     ret_code = update_context->get_header_size(update_context->storage_context, &file_element->type, &file_header_size);
+    if (VS_CODE_OK != ret_code || !file_header_size) {
+        VS_LOG_ERROR("Unable to get header size for file type %s", VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
+        ret_code = (VS_CODE_OK == ret_code) ? VS_CODE_ERR_VERIFY : ret_code;
+        goto terminate;
+    }
+
     CHECK(VS_CODE_OK == ret_code && file_header_size,
           "Unable to get header size for file type %s",
           VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
@@ -533,6 +539,7 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
     if (!existing_file_element) {
         STATUS_CHECK_RET(_new_mapping_element(&existing_file_element), "[FLDT] Error to create new mapping element");
     } else {
+        _delete_mapping_element(existing_file_element);
         VS_LOG_DEBUG("[FLDT] File type is initialized and present, update it");
     }
 
