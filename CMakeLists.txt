@@ -91,13 +91,7 @@ include (TransitiveToolchainArgs)
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_IOT_SDK_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
-
 file(WRITE "${CMAKE_CURRENT_LIST_DIR}/VERSION" "${PACKAGE_VERSION}.${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}")
-
-if(VIRGIL_IOT_SDK_VERSION_LABEL)
-    file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
-endif()
 
 file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "\n")
 
