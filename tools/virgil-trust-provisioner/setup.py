@@ -8,10 +8,10 @@ setup(
     install_requires=[
         'virgil-sdk==5.2.1',
         'virgil-crypto>=3,<4',
-        'prettytable>0.7,<0.8',
-        'pyasn1>0.4,<0.5',
-        'psutil>5,<6',
-        'tinydb>3,<4'
+        'prettytable',
+        'pyasn1',
+        'psutil',
+        'tinydb'
     ],
     entry_points={
         'console_scripts':
