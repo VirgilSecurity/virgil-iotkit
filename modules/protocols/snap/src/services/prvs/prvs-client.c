@@ -69,6 +69,7 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
 
     if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
 
+#if 0
         // Check is already present
         for (i = 0; i < _prvs_dnid_list->count; i++) {
             p = &_prvs_dnid_list->elements[i];
@@ -76,6 +77,7 @@ _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *respo
                 return VS_CODE_COMMAND_NO_RESPONSE;
             }
         }
+#endif
 
         // Add discovered device
         VS_IOT_MEMCPY(
