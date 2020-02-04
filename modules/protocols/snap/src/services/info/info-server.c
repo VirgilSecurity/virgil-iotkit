@@ -368,7 +368,7 @@ _info_server_periodical_processor(void) {
         _poll_ctx.time_counter = 0;
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
-            STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
+            STATUS_CHECK_RET(_fill_ginf_data(&general_info), "Error _fill_ginf_data");
             vs_snap_send_request(NULL,
                                  &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
