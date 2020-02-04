@@ -62,22 +62,9 @@ static uint8_t _last_data[PRVS_BUF_SZ];
 /******************************************************************************/
 static vs_status_e
 _prvs_dnid_process_response(const struct vs_netif_t *netif, const uint8_t *response, const uint16_t response_sz) {
-    uint16_t i;
-
     vs_snap_prvs_dnid_element_t *dnid_response = (vs_snap_prvs_dnid_element_t *)response;
-    vs_snap_prvs_dnid_element_t *p;
 
     if (_prvs_dnid_list && _prvs_dnid_list->count < DNID_LIST_SZ_MAX) {
-
-#if 0
-        // Check is already present
-        for (i = 0; i < _prvs_dnid_list->count; i++) {
-            p = &_prvs_dnid_list->elements[i];
-            if (0 == VS_IOT_MEMCMP(p->mac_addr.bytes, dnid_response->mac_addr.bytes, ETH_ADDR_LEN)) {
-                return VS_CODE_COMMAND_NO_RESPONSE;
-            }
-        }
-#endif
 
         // Add discovered device
         VS_IOT_MEMCPY(
