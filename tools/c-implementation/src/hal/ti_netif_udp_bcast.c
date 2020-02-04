@@ -204,12 +204,12 @@ static void
 _prepare_dst_addr(void) {
     const char *_bcast_addr_str = getenv("VS_BCAST_SUBNET_ADDR");
     if (!_bcast_addr_str) {
-        VS_LOG_INFO("VS_BCAST_SUBNET_ADDR = 255.255.255.255");
+        printf("VS_BCAST_SUBNET_ADDR = 255.255.255.255\n");
         _dst_addr = INADDR_BROADCAST;
         return;
     }
 
-    VS_LOG_INFO("VS_BCAST_SUBNET_ADDR = %s", _bcast_addr_str);
+    printf("VS_BCAST_SUBNET_ADDR = %s\n", _bcast_addr_str);
     _dst_addr = inet_addr(_bcast_addr_str);
 }
 
