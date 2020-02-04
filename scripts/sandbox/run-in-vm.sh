@@ -24,7 +24,7 @@ run_vm() {
 
 run_sandbox() {
     print_info_header "Running IoT Sandbox inside VM"
-    vagrant ssh ${VM_NAME} -c "${START_SCRIPT}"
+    vagrant ssh ${VM_NAME} -c "${START_SCRIPT} vagrant"
 }
 
 halt_vm() {
