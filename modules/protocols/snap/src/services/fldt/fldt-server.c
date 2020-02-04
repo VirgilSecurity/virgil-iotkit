@@ -112,6 +112,8 @@ _delete_mapping_element(vs_fldt_server_file_type_mapping_t *file_element_to_dele
                             file_element_to_delete->update_context->storage_context, &file_element_to_delete->type);
                 }
                 if (file_element_to_delete->file_header) {
+                    VS_LOG_DEBUG("Delete file header : %s",
+                                 VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element_to_delete->type));
                     VS_IOT_FREE(file_element_to_delete->file_header);
                     file_element_to_delete->file_header = NULL;
                 }
@@ -147,9 +149,11 @@ _update_object_info(const vs_update_file_type_t *file_type,
     }
 
     if (file_element->file_header) {
+        VS_LOG_DEBUG("Free file header before malloc: %s", VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
         VS_IOT_FREE(file_element->file_header);
     }
 
+    VS_LOG_DEBUG("Malloc file header : %s", VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
     file_element->file_header = VS_IOT_MALLOC(file_header_size);
 
     ret_code = update_context->get_header(update_context->storage_context,
@@ -188,6 +192,7 @@ _update_object_info(const vs_update_file_type_t *file_type,
 
 terminate:
     if (file_element->file_header) {
+        VS_LOG_DEBUG("Free file header : %s", VS_UPDATE_FILE_TYPE_STR_STATIC(&file_element->type));
         VS_IOT_FREE(file_element->file_header);
         file_element->file_header = NULL;
     }
@@ -582,12 +587,16 @@ terminate:;
 static vs_status_e
 _fldt_destroy_server(void) {
     uint32_t id;
+    char type_str[FLDT_DESC_BUF];
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
+    VS_LOG_DEBUG("_fldt_destroy_server");
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_mapping) {
         file_type_mapping->update_context->free_item(file_type_mapping->update_context->storage_context,
                                                      &file_type_mapping->type);
         if (file_type_mapping->file_header) {
+            VS_LOG_DEBUG("Destroy file header : %s",
+                         vs_update_file_type_str(&file_type_mapping->type, type_str, sizeof(type_str)));
             VS_IOT_FREE(file_type_mapping->file_header);
             file_type_mapping->file_header = NULL;
         }
