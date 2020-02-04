@@ -3,15 +3,6 @@ MEMORY=3072
 CPUS=2
 
 
-$install_docker = <<-SHELL
-    sudo dnf -y install dnf-plugins-core
-    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install -y docker-ce docker-ce-cli containerd.io
-    sudo systemctl enable --now docker
-    sudo usermod -aG docker vagrant
-SHELL
-
-
 Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox"
 
@@ -27,11 +18,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "sandbox_f29" do |fc29|
     # box settings
-  	fc29.vm.box = "fedora/29-cloud-base"
-  	fc29.vm.box_version = "29.20181024.1"
-
-  	# provision
-  	fc29.vm.provision "shell", inline: $install_docker
+  	fc29.vm.box = "dhrytsenko/fc29-docker"
+  	fc29.vm.box_version = "0.1.0"
 
   end
 
