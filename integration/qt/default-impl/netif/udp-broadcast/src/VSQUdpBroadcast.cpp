@@ -99,5 +99,7 @@ VSQUdpBroadcast::macAddr() const {
 
 void
 VSQUdpBroadcast::onHasInputData() {
-    processData(m_socket.receiveDatagram().data());
+    while (m_socket.hasPendingDatagrams()) {
+        processData(m_socket.receiveDatagram().data());
+    }
 }
