@@ -74,7 +74,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
 
-You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc.
 
 <div id='modules'/>
 
@@ -133,7 +133,7 @@ Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Fol
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
 
 ```shell
-$ sude apt-get install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+$ sudo apt-get install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
 
 To add repository to preferred OS, use the following command:
