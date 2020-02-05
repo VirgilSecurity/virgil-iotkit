@@ -64,7 +64,7 @@ vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size
 
 /******************************************************************/
 const char *
-vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz) {
+vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz) {
     static char _buf[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
     int res;
     char *buf = opt_buf != NULL ? opt_buf : _buf;
@@ -81,14 +81,11 @@ vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t 
                               (char)file_type->info.device_type[2],
                               (char)file_type->info.device_type[3]);
 
-        if (res <= 0) {
-            buf[0] = 0;
-        } else if(res > sz) {
-            buf[sz - 1] = 0;
-        }
+        break;
 
     case VS_UPDATE_TRUST_LIST:
-        buf = "Trust List";
+        res = VS_IOT_SNPRINTF(buf,
+                              sz,"Trust List");
         break;
     default:
         if (file_type->type <= VS_UPDATE_USER_FILES) {
@@ -102,15 +99,17 @@ vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t 
                                   (char)file_type->info.device_type[2],
                                   (char)file_type->info.device_type[3]);
 
-            if (res <= 0) {
-                buf[0] = 0;
-            } else if(res > sz) {
-                buf[sz - 1] = 0;
-            }
-            return buf;
-        }
-        buf = "Unknown type";
+        } else {
+            res = VS_IOT_SNPRINTF(buf,
+                                  sz,"Unknown type");
+         }
         break;
+    }
+
+    if (res <= 0) {
+        buf[0] = 0;
+    } else if(res > sz) {
+        buf[sz - 1] = 0;
     }
 
     return buf;
