@@ -7,13 +7,10 @@
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/iotkit/IoTKit.png" align="left" hspace="1" vspace="3"></a>
 
 ## Introduction
-[Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application or IoT device.
+Virgil IoTKit Qt integration is a C library wrapper for C++ based on [Virgil IoTKit]() security framework and [Qt crossplatform framework](https://www.qt.io/). Such combination allows developers to add security to IoT devices faster using their preferred framework. 
 
-Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Security Platform. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for securely provisioning and authenticating devices, updating firmware and TrustLists, and exchanging messages using any transport protocols.
-
-This is Virgil IoTKit C library wrapper for C++ based on Qt crossplatform framework.
-
-Qt is a crossplatform framework for creating modern console and GUI applications. It supports wide range of desktop and mobile platforms like Windows, Linux, MacOS, Android, iOS etc.
+- **Virgil IoTKit** is a C library for connecting IoT devices to the Virgil IoT Security Platform. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for securely provisioning and authenticating devices, updating firmware and TrustLists, and exchanging messages using any transport protocols.
+- **Qt** is a crossplatform framework for creating modern console and GUI applications. It supports wide range of desktop and mobile platforms like Windows, Linux, MacOS, Android, iOS etc.
 
 ## Content
 - [Features](#features)
