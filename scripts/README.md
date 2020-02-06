@@ -39,8 +39,6 @@ This section contains information on how to perform installation and running pro
 ### Prerequisites
 Before you start, you need to install the **Virgil CLI** - a unified tool to manage your Virgil Cloud services and perform all required commands to configure the Sandbox. Follow this guide to [install the Virgil CLI](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/install) on your platform.
 
-- **Docker** is a tool designed to make it easier to create, deploy, and run applications by using containers. Follow this guide to [install the Docker](https://docs.docker.com/install/) for your platform.
-
 #### Windows:
 
 - Install [Vagrant](https://www.vagrantup.com/docs/installation/)
