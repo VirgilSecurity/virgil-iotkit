@@ -63,7 +63,9 @@ Before you start, you need to install the **Virgil CLI** - a unified tool to man
 - Install [Docker](https://docs.docker.com/install/). 
 
 ### Generate App Token
-To start working with the Sandbox, you need to specify your `App Token`. In case you don't have App Token follow [this guide](https://developer.virgilsecurity.com/docs/platform/cli/manage-app-tokens/) to generate it. If you don't have a Virgil Account yet you can create it using [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or using Virgil CLI with the help of [this guide](https://developer.virgilsecurity.com/docs/platform/cli/manage-account/).
+To start working with the Sandbox, you need to specify your `Virgil App Token`. In case you don't have an App Token you can generate it using the [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or the [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/). 
+
+If you don't have a Virgil Account yet  you can create it using [Virgil Dashboard](https://dashboard.virgilsecurity.com/) as well as using [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/).
 
 > Store the App Token in a secure place and use it to initialize the Sandbox.
 
