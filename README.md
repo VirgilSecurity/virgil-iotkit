@@ -101,8 +101,9 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
 - `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
   - To get a library for Android : `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
   - To get a library for iOS : `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for iOS-simulator: `ext/virgil-iotkit/scripts/build-for-qt.sh ios-sim`
   - To get a library for Linux : `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
-  - To get a library for MacOS : `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for MacOS : `ext/virgil-iotkit/scripts/build-for-qt.sh macos`
   - To get a library for Windows by using mingw32 on another host platform : `ext/virgil-iotkit/scripts/build-for-qt.sh mingw32`
   - To get a library for Windows : `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
 
