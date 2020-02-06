@@ -66,31 +66,6 @@ Before you start, you need to install the **Virgil CLI** - a unified tool to man
 ### Generate App Token
 To start working with the Sandbox, you need to specify your `App Token`. In case you don't have App Token follow [this guide](https://developer.virgilsecurity.com/docs/platform/cli/manage-app-tokens/) to generate it. If you don't have a Virgil Account yet you can create it using [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or using Virgil CLI with the help of [this guide](https://developer.virgilsecurity.com/docs/platform/cli/manage-account/).
 
-To generate an `App Token` go through the following steps:
-- Launch the Virgil CLI
-```shell
-$ virgil
-# or virgil.exe for Windows OS
-```
-- Register Virgil Account (omit this step, in case you have it). Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-account).
-```shell
-$ virgil register <email>
-```
-- Log into your Virgil Account:
-```shell
-$ virgil login
-```
-- Create Virgil Application. Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-applications).
-```shell
-$ virgil app create <App Name>
-```
-As a result, you'll get `App_ID`.
-- Generate App Token specifying `App_ID` and `App Name`. Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-apptokens).
-```shell
-$ virgil app token create --app-id <App ID> --name <Name>
-```
-As a result, you'll get `Token`.
-
 > Store the App Token in a secure place and use it to initialize the Sandbox.
 
 ### Run Sandbox
