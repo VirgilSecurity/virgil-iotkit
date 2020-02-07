@@ -7,7 +7,7 @@
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/iotkit/IoTKit.png" align="left" hspace="1" vspace="3"></a>
 
 ## Introduction
-Virgil IoTKit Qt integration is a C library wrapper for C++ based on Virgil IoTKit security framework and [Qt crossplatform framework](https://www.qt.io/). Such combination allows developers to run Sandbox on desktop or mobile devices to communicate with IoT devices. 
+Virgil IoTKit Qt integration is a C library wrapper for C++ based on Virgil IoTKit security framework and [Qt crossplatform framework](https://www.qt.io/). Such combination allows developers to run Sandbox on desktop or mobile devices to communicate with IoT devices.
 
 - **Virgil IoTKit** is a C library for connecting IoT devices to the Virgil IoT Security Platform. IoTKit helps you easily add security to your IoT devices at any lifecycle stage for securely provisioning and authenticating devices, updating firmware and TrustLists, and exchanging messages using any transport protocols.
 - **Qt** is a crossplatform framework for creating modern console and GUI applications. It supports wide range of desktop and mobile platforms like Windows, Linux, MacOS, Android, iOS etc.
@@ -39,8 +39,9 @@ Virgil IoTKit Qt framework provides you with the following possibilities:
 - After that you should compile Virgil IoTKit for the necessary platform. To do this, use the script `scripts/build-for-qt.sh` and indicate the preferred platform. Example:
   - To get a library for Android: `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
   - To get a library for iOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for iOS-simulator: `ext/virgil-iotkit/scripts/build-for-qt.sh ios-sim`
   - To get a library for Linux library: `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
-  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for MacOS library: `ext/virgil-iotkit/scripts/build-for-qt.sh macos`
   - To get a library for Windows library: `ext/virgil-iotkit/scripts/build-for-qt.sh windows`
   - To get a library for Windows by using mingw32 on another host platform : `ext/virgil-iotkit/scripts/build-for-qt.sh mingw32`
 
