@@ -110,9 +110,6 @@ private slots:
     void
     onHasInputData();
 
-    void
-    onStateChanged(QAbstractSocket::SocketState state);
-
 private:
     quint16 m_port;
     QUdpSocket m_socket;

@@ -36,18 +36,8 @@
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
 
 VSQUdpBroadcast::VSQUdpBroadcast(quint16 port) : m_port(port) {
-    connect(&m_socket, &QUdpSocket::stateChanged, this, &VSQUdpBroadcast::onStateChanged);
+    connect(&m_socket, &QUdpSocket::stateChanged, this, &VSQNetifBase::fireStateChanged);
     connect(&m_socket, &QUdpSocket::readyRead, this, &VSQUdpBroadcast::onHasInputData);
-}
-
-void
-VSQUdpBroadcast::onStateChanged(QAbstractSocket::SocketState state) {
-    emit fireStateChanged(state);
-
-    qDebug() << "VSQUdpBroadcast::state = " << state;
-
-    VSQSnapPacket packet;
-    emit fireNewPacket(packet);
 }
 
 bool
