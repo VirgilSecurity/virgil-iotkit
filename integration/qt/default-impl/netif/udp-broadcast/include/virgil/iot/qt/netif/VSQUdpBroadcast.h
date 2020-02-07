@@ -90,6 +90,9 @@ public:
         return m_socket.state();
     }
 
+    void
+    restart();
+
 protected:
     bool
     init() override;
@@ -106,6 +109,9 @@ protected:
 private slots:
     void
     onHasInputData();
+
+    void
+    onStateChanged(QAbstractSocket::SocketState state);
 
 private:
     quint16 m_port;

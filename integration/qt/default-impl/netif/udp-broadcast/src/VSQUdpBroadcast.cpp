@@ -36,7 +36,18 @@
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
 
 VSQUdpBroadcast::VSQUdpBroadcast(quint16 port) : m_port(port) {
-    connect(&m_socket, &QUdpSocket::stateChanged, static_cast<VSQNetifBase *>(this), &VSQNetifBase::fireStateChanged);
+    connect(&m_socket, &QUdpSocket::stateChanged, this, &VSQUdpBroadcast::onStateChanged);
+    connect(&m_socket, &QUdpSocket::readyRead, this, &VSQUdpBroadcast::onHasInputData);
+}
+
+void
+VSQUdpBroadcast::onStateChanged(QAbstractSocket::SocketState state) {
+    emit fireStateChanged(state);
+
+    qDebug() << "VSQUdpBroadcast::state = " << state;
+
+    VSQSnapPacket packet;
+    emit fireNewPacket(packet);
 }
 
 bool
@@ -64,14 +75,12 @@ VSQUdpBroadcast::init() {
         break;
     }
 
-    connect(&m_socket, &QUdpSocket::readyRead, this, &VSQUdpBroadcast::onHasInputData);
-
     return true;
 }
 
 bool
 VSQUdpBroadcast::deinit() {
-    m_socket.disconnectFromHost();
+    m_socket.close();
     return true;
 }
 
@@ -99,7 +108,14 @@ VSQUdpBroadcast::macAddr() const {
 
 void
 VSQUdpBroadcast::onHasInputData() {
+
     while (m_socket.hasPendingDatagrams()) {
         processData(m_socket.receiveDatagram().data());
     }
+}
+
+void
+VSQUdpBroadcast::restart() {
+    deinit();
+    init();
 }
