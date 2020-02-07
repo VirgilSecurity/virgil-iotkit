@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE="virgilsecurity-docker-iotl-demo.bintray.io/testing/iot-sdk-demo:0.1.3.69"
+IMAGE="virgilsecurity-docker-iotl-demo.bintray.io/testing/iot-sdk-demo:0.1.3.70"
 
 if [ "${1}" = "vagrant" ]; then
     sleep 5s
