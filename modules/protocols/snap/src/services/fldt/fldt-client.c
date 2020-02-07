@@ -647,8 +647,8 @@ vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_i
     vs_fldt_client_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_client_file_type_mapping_t file_element_to_add;
     vs_fldt_gnfh_header_request_t gnfh_request;
-    char type_str[FLDT_DESC_BUF];
-    char version_str[FLDT_DESC_BUF];
+    char type_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
+    char version_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
 
     vs_status_e ret_code;
     uint32_t header_size;
