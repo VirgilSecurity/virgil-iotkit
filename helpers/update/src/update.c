@@ -35,7 +35,6 @@
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/update/update.h>
 
-#define VS_UPDATE_DEFAULT_DESC_BUF_SZ (64)
 /******************************************************************/
 const char *
 vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz) {
@@ -43,16 +42,16 @@ vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size
     char *buf = opt_buf != NULL ? opt_buf : _buf;
     size_t sz = opt_buf != NULL ? buf_sz : sizeof(_buf);
 
-            VS_IOT_ASSERT(sz);
+    VS_IOT_ASSERT(sz);
 
     int res = VS_IOT_SNPRINTF(buf,
                               sz,
                               "ver %u.%u.%u.%u, timestamp %u",
-                              (int)version->major,
-                              (int)version->minor,
-                              (int)version->patch,
-                              (int)version->build,
-                              (int)version->timestamp);
+                              version->major,
+                              version->minor,
+                              version->patch,
+                              version->build,
+                              version->timestamp);
     if (res <= 0) {
         buf[0] = 0;
     } else if(res > sz) {
@@ -69,19 +68,27 @@ vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, s
     int res;
     char *buf = opt_buf != NULL ? opt_buf : _buf;
     size_t sz = opt_buf != NULL ? buf_sz : sizeof(_buf);
-            VS_IOT_ASSERT(sz);
+
+    uint8_t manufacture_id[sizeof(vs_device_manufacture_id_t) + 1];
+    VS_IOT_MEMSET(manufacture_id, 0, sizeof(manufacture_id));
+    VS_IOT_MEMCPY(manufacture_id, file_type->info.manufacture_id, sizeof(file_type->info.manufacture_id));
+
+    VS_IOT_ASSERT(sz);
+
     switch (file_type->type) {
     case VS_UPDATE_FIRMWARE:
-        res = VS_IOT_SNPRINTF(buf,
+        {
+            res = VS_IOT_SNPRINTF(buf,
                               sz,
                               "Firmware (\"%s\", \"%c%c%c%c\")",
-                              file_type->info.manufacture_id,
+                              manufacture_id,
                               (char)file_type->info.device_type[0],
                               (char)file_type->info.device_type[1],
                               (char)file_type->info.device_type[2],
                               (char)file_type->info.device_type[3]);
 
-        break;
+    }
+    break;
 
     case VS_UPDATE_TRUST_LIST:
         res = VS_IOT_SNPRINTF(buf,
@@ -93,7 +100,7 @@ vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, s
                                   sz,
                                   "User file, type = %u (\"%s\", \"%c%c%c%c\")",
                                   file_type->type,
-                                  file_type->info.manufacture_id,
+                                  manufacture_id,
                                   (char)file_type->info.device_type[0],
                                   (char)file_type->info.device_type[1],
                                   (char)file_type->info.device_type[2],

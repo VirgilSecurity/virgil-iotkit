@@ -523,8 +523,8 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
                              bool broadcast_file_info) {
     vs_fldt_server_file_type_mapping_t *existing_file_element = NULL;
     vs_fldt_server_file_type_mapping_t file_element_to_add;
-    char type_str[FLDT_DESC_BUF];
-    char version_str[FLDT_DESC_BUF];
+    char type_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
+    char version_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
     vs_fldt_file_info_t new_file;
     vs_status_e ret_code;
 
@@ -587,7 +587,7 @@ terminate:;
 static vs_status_e
 _fldt_destroy_server(void) {
     uint32_t id;
-    char type_str[FLDT_DESC_BUF];
+    char type_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
     vs_fldt_server_file_type_mapping_t *file_type_mapping = _server_file_type_mapping;
 
     VS_LOG_DEBUG("_fldt_destroy_server");

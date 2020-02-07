@@ -96,13 +96,18 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
 
-/** Create a string with version of file
+/** Min size of buffer for description string
+ */
+#define VS_UPDATE_DEFAULT_DESC_BUF_SZ (49)
+
+/** Print file version into memory buffer
  *
- * \param[in] version File version structure. Cannot be NULL.
- * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
- * \param[in] buf_sz Size of #opt_buf.
+ * \param version File version structure. Cannot be NULL.
+ * \param opt_buf Optional pointer to a buffer for an output of a version string.
+ * Can be NULL, in this case internal static buffer is used.
+ * \param buf_sz Size of #opt_buf. It makes sense with nonull opt_buff param.
  *
- * \return String with version of file.
+ * \return Pointer to a buffer with the string.
  */
 const char *
 vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz);
@@ -111,13 +116,14 @@ vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size
  */
 #define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
 
-/** Create a string with file type
+/** Print file type description into memory buffer
  *
- * \param[in] file_type File type. Cannot be NULL.
- * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
- * \param[in] buf_sz Size of #opt_buf.
+ * \param file_type File type. Cannot be NULL.
+ * \param opt_buf Optional pointer to a buffer for an output of a description string.
+ * Can be NULL, in this case internal static buffer is used.
+ * \param buf_sz Size of #opt_buf. It makes sense with nonull opt_buff param.
  *
- * \return String with file type.
+ * \return Pointer to a buffer with the string.
  */
 const char *
 vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
