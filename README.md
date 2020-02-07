@@ -173,17 +173,17 @@ To add repository to preferred OS use the following command:
 
 #### Fedora 29
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/29/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/29/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 #### Fedora 30
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 #### Fedora 31
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 <div id='macos'/>
