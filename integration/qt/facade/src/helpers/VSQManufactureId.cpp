@@ -58,11 +58,13 @@ VSQManufactureId::operator const uint8_t *() const {
 QString
 VSQManufactureId::description(bool stopOnZero, char nonPrintableSymbols) const {
     QString str;
+    static const uint8_t ASCII_PRINTABLE_FIRST = 32;
+    static const uint8_t ASCII_PRINTABLE_LAST = 126;
 
     str.reserve(m_manufactureId.size());
 
     for (auto symbol : m_manufactureId) {
-        if (symbol >= 32 && symbol < 127)
+        if (symbol >= ASCII_PRINTABLE_FIRST && symbol <= ASCII_PRINTABLE_LAST)
             str += symbol;
         else if (symbol > 0 || !stopOnZero)
             str += nonPrintableSymbols;

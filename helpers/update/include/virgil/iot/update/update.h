@@ -96,14 +96,34 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
 
+/** Create a string with version of file
+ *
+ * \param[in] version File version structure. Cannot be NULL.
+ * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
+ * \param[in] buf_sz Size of #opt_buf.
+ *
+ * \return String with version of file.
+ */
 const char *
 vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz);
 
+/** Wrapper for #vs_update_file_version_str to use static buffer
+ */
 #define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
 
+/** Create a string with file type
+ *
+ * \param[in] file_type File type. Cannot be NULL.
+ * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
+ * \param[in] buf_sz Size of #opt_buf.
+ *
+ * \return String with file type.
+ */
 const char *
 vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
 
+/** Wrapper for #vs_update_file_type_str to use static buffer
+ */
 #define VS_UPDATE_FILE_TYPE_STR_STATIC(TYPE_PTR) vs_update_file_type_str(TYPE_PTR, NULL, 0)
 
 /** Get file type header size
