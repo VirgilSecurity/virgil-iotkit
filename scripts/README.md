@@ -45,7 +45,7 @@ Before you start, you need to install the **Virgil CLI** - a unified tool to man
 
 - Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
-- Install VirtualBox Guest Additions plugin: vagrant plugin install vagrant-vbguest
+- Install VirtualBox Guest Additions plugin: `vagrant plugin install vagrant-vbguest`
 
 - Enable VT-X (Intel Virtualization Technology) in your computer bios settings.
 
@@ -60,10 +60,10 @@ Before you start, you need to install the **Virgil CLI** - a unified tool to man
 - Install VirtualBox Guest Additions plugin: vagrant plugin install vagrant-vbguest
 
 #### Linux
-- Install [Docker](https://docs.docker.com/install/). 
+- Install [Docker](https://docs.docker.com/install/).
 
 ### Generate App Token
-To start working with the Sandbox, you need to specify your `Virgil App Token`. In case you don't have an App Token you can generate it using the [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or the [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/). 
+To start working with the Sandbox, you need to specify your `Virgil App Token`. In case you don't have an App Token you can generate it using the [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or the [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/).
 
 If you don't have a Virgil Account yet  you can create it using [Virgil Dashboard](https://dashboard.virgilsecurity.com/) as well as using [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/).
 
@@ -75,7 +75,7 @@ Now, you can run the Sandbox.
 - First of all, check whether the Docker is launched (if you are using Linux).
 - Navigate to your CLI terminal and run the Sandbox starting script from the scripts folder of the downloaded IoTKit package:
   - Unix-like OS: `run.sh`  
-  - Windows: `run.bat`
+  - Windows(sh.exe from mingw terminal): `run.bat`
   - MacOS: `./run-in-vm.sh`
 - Specify your `App_Token` in the appeared window to run the Sandbox
 
@@ -87,8 +87,8 @@ If you did everything correctly, you would see the following Sandbox window:
 ### Sandbox Cautions
 
 - You can run only one Sandbox in a subnetwork
-- You can have only one gateway inside of Sandbox
-- If you are using Linux or a virtual machine with Linux OS you must have a network bridge
+- You can have only one active gateway inside of Sandbox
+- Above mentioned scripts are not allowed yet to be used in virtual machines
 
 
 ### Run Logs Viewer
