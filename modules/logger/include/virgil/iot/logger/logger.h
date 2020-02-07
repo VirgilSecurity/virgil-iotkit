@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -104,6 +104,14 @@ typedef enum {
 /** Set \a LOGLEV_VALUE as current logging level */
 #define VS_LOG_SET_LOGLEVEL(LOGLEV_VALUE) vs_logger_set_loglev(LOGLEV_VALUE)
 
+
+#if VS_IOT_LOGGER_USE_LIBRARY
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib-config.h>
+
+
 /** Log message
  *
  * Sends \a FRMT message by calling #vs_logger_message function.
@@ -125,31 +133,51 @@ typedef enum {
 #define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE)                                                                           \
     vs_logger_message_hex((LGLVL), __FILENAME__, __LINE__, (PREFIX), (BUF), (SIZE))
 
+/** Set current thread description
+ *
+ * \note This function does nothing if #VS_IOT_LOGGER_OUTPUT_THREAD_ID is not set to 1
+ *
+ * \param description Human readable thread description.
+ * \warning description must be static string pointer valid during program functioning
+ *
+ * \return false if no space is available to store thread description
+ */
+bool
+vs_log_thread_descriptor(const char *description);
+
+#ifdef __cplusplus
+#define VS_LOG_MAKE_LEVEL(LEVEL) VirgilIoTKit::LEVEL
+#else
+#define VS_LOG_MAKE_LEVEL(LEVEL) LEVEL
+#endif
+
 /** Log message with #VS_LOGLEV_INFO level */
-#define VS_LOG_INFO(FRMT, ...) vs_logger_message(VS_LOGLEV_INFO, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_INFO(FRMT, ...)                                                                                         \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_INFO), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_FATAL level */
-#define VS_LOG_FATAL(FRMT, ...) vs_logger_message(VS_LOGLEV_FATAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_FATAL(FRMT, ...)                                                                                        \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_FATAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_ALERT level */
-#define VS_LOG_ALERT(FRMT, ...) vs_logger_message(VS_LOGLEV_ALERT, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_ALERT(FRMT, ...)                                                                                        \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ALERT), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_CRITICAL level */
-#define VS_LOG_CRITICAL(FRMT, ...) vs_logger_message(VS_LOGLEV_CRITICAL, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_CRITICAL(FRMT, ...)                                                                                     \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_CRITICAL), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_ERROR level */
-#define VS_LOG_ERROR(FRMT, ...) vs_logger_message(VS_LOGLEV_ERROR, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_ERROR(FRMT, ...)                                                                                        \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_ERROR), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_WARNING level */
-#define VS_LOG_WARNING(FRMT, ...) vs_logger_message(VS_LOGLEV_WARNING, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_WARNING(FRMT, ...)                                                                                      \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_WARNING), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_NOTICE level */
-#define VS_LOG_NOTICE(FRMT, ...) vs_logger_message(VS_LOGLEV_NOTICE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_NOTICE(FRMT, ...)                                                                                       \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_NOTICE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_TRACE level */
-#define VS_LOG_TRACE(FRMT, ...) vs_logger_message(VS_LOGLEV_TRACE, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
+#define VS_LOG_TRACE(FRMT, ...)                                                                                        \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_TRACE), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 /** Log message with #VS_LOGLEV_DEBUG level */
-#define VS_LOG_DEBUG(FRMT, ...) vs_logger_message(VS_LOGLEV_DEBUG, __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
-
-#if VS_IOT_LOGGER_USE_LIBRARY
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib-config.h>
-
+#define VS_LOG_DEBUG(FRMT, ...)                                                                                        \
+    vs_logger_message(VS_LOG_MAKE_LEVEL(VS_LOGLEV_DEBUG), __FILENAME__, __LINE__, (FRMT), ##__VA_ARGS__)
 
 // Functions
 
@@ -179,6 +207,9 @@ void
 vs_logger_message(vs_log_level_t level, const char *cur_filename, uint32_t line_num, const char *log_format, ...);
 
 /** Initialize logging level
+ *
+ * \a log_level is initialized and default title for thread is provided. You can change this name by
+ * #vs_log_thread_descriptor call
  *
  * \param[int] log_level Message log level
  */
@@ -269,20 +300,9 @@ vs_logger_message_hex(vs_log_level_t level,
 #define vs_logger_set_loglev(log_level) (void)log_level;
 #define vs_logger_get_loglev() VS_LOGLEV_NO_LOGGER
 #define vs_logger_is_loglev(level) ((level) == VS_LOGLEV_NO_LOGGER)
+#define vs_log_thread_descriptor() (true)
 
 #define VS_IOT_LOGGER_VOID(a) (void)a;
-
-#undef VS_LOG
-#undef VS_LOG_HEX
-#undef VS_LOG_INFO
-#undef VS_LOG_FATAL
-#undef VS_LOG_ALERT
-#undef VS_LOG_CRITICAL
-#undef VS_LOG_ERROR
-#undef VS_LOG_WARNING
-#undef VS_LOG_NOTICE
-#undef VS_LOG_TRACE
-#undef VS_LOG_DEBUG
 
 #define VS_LOG(LGLVL, FRMT, ...) VS_IOT_MAP(VS_IOT_LOGGER_VOID, FRMT, ##__VA_ARGS__)
 #define VS_LOG_HEX(LGLVL, PREFIX, BUF, SIZE) VS_IOT_MAP(VS_IOT_LOGGER_VOID, PREFIX, BUF, SIZE)

@@ -1,0 +1,9 @@
+####
+# Default output folder for tools
+output/
+
+# Auto-generated script
+run-initializer.sh
+
+# Vagrant
+.vagrant/

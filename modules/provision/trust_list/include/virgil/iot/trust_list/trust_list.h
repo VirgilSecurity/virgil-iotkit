@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -137,7 +137,7 @@ extern "C" {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
+vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule, vs_file_ver_info_cb_t ver_info_cb);
 
 /** Trust List destruction
  *
@@ -148,7 +148,7 @@ vs_tl_init(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *secmodule);
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_tl_deinit();
+vs_tl_deinit(void);
 
 /** Trust List element saving
  *

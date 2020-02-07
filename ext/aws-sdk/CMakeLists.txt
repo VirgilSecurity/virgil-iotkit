@@ -23,8 +23,6 @@ set(AWS_MQTT_INCLUDE  "${AWS_MQTT_ROOT}/include")
 set(AWS_MQTT_EXT_LIBS  "${AWS_MQTT_ROOT}/external_libs")
 
 # Include and build external libraries
-include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
-set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
         CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
@@ -71,6 +69,17 @@ target_include_directories (aws-sdk
         "${CMAKE_CURRENT_LIST_DIR}/platform/common"
         "${CMAKE_CURRENT_LIST_DIR}/platform/mbedtls"
         "${CMAKE_CURRENT_LIST_DIR}/platform/pthread"
+
+        INTERFACE
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
+install(TARGETS aws-sdk
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
 
+install(DIRECTORY ${AWS_MQTT_INCLUDE}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/aws-sdk
+        )

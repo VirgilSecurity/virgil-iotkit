@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -74,18 +74,6 @@ typedef struct __attribute__((__packed__)) {
 
 struct vs_update_interface_t;
 
-/** Describe file type
- *
- * \param[in] file_type File type. Cannot be NULL.
- * \param[in] update_context Update interface for current file type. Cannot be NULL.
- * \param[out] buf Buffer to store description. Cannot be NULL.
- * \param[in] buf_size Output buffer size. Must not be zero.
- *
- * \return Output buffer \a buf with file type description or NULL in case of error.
- */
-char *
-vs_update_type_descr(vs_update_file_type_t *file_type, const struct vs_update_interface_t *update_context, char *buf, uint32_t buf_size);
-
 /** Compare two files types
  *
  * \param file_type Known file type. Cannot be NULL.
@@ -107,6 +95,36 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
  */
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
+
+/** Create a string with version of file
+ *
+ * \param[in] version File version structure. Cannot be NULL.
+ * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
+ * \param[in] buf_sz Size of #opt_buf.
+ *
+ * \return String with version of file.
+ */
+const char *
+vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz);
+
+/** Wrapper for #vs_update_file_version_str to use static buffer
+ */
+#define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
+
+/** Create a string with file type
+ *
+ * \param[in] file_type File type. Cannot be NULL.
+ * \param[in] opt_buf Buffer to be used for a result string. Can be NULL, in this case internal static buffer is used.
+ * \param[in] buf_sz Size of #opt_buf.
+ *
+ * \return String with file type.
+ */
+const char *
+vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
+
+/** Wrapper for #vs_update_file_type_str to use static buffer
+ */
+#define VS_UPDATE_FILE_TYPE_STR_STATIC(TYPE_PTR) vs_update_file_type_str(TYPE_PTR, NULL, 0)
 
 /** Get file type header size
  *
@@ -229,16 +247,25 @@ typedef vs_status_e (*vs_update_set_data_cb_t)(void *context, vs_update_file_typ
  */
 typedef vs_status_e (*vs_update_set_footer_cb_t)(void *context, vs_update_file_type_t *file_type, const void *file_header, const void *file_footer, uint32_t footer_size);
 
-/** Check if a file is newer than the current one
+/** Delete object of defined type
  *
  * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[in] available_file Available file version. Cannot be NULL.
- * \param[in] new_file New file version. Cannot be NULL.
+ * \param[in] file_type Current file type.  Cannot be NULL.
  *
- * \return true if \new_file is newer than \a available_file
+ * \return #VS_CODE_OK in case of success or error code.
+ *
  */
-typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *available_file, const vs_file_version_t *new_file);
+typedef void (*vs_update_delete_object_cb_t)(void *context, vs_update_file_type_t *file_type);
+
+/** Verify object of defined type
+ *
+ * \param[in] context File context.
+ * \param[in] file_type Current file type.  Cannot be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ *
+ */
+typedef vs_status_e (*vs_update_verify_object_cb_t)(void *context, vs_update_file_type_t *file_type);
 
 /** Free item during update destruction
  *
@@ -246,30 +273,6 @@ typedef bool (*vs_update_file_is_newer_cb_t)(void *context, vs_update_file_type_
  * \param[in] file_type Current file type.  Cannot be NULL.
  */
 typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *file_type);
-
-/** Describe file type
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[out] buffer Output buffer to describe current file type. Cannot be NULL.
- * \param[in] buf_size Buffer size. Cannot be zero.
- *
- * \return \a buffer with file type description
- */
-typedef char* (*vs_update_describe_type_cb_t)(void *context, vs_update_file_type_t *file_type, char *buffer, uint32_t buf_size);
-
-/** Describe file version
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[in] version Current file version. Cannot be NULL.
- * \param[out] buffer Output buffer to store file version description. Cannot be NULL.
- * \param[in] buf_size Output buffer size. Cannot be zero.
- * \param[in] add_filetype_description If true, \a vs_update_describe_type_cb_t is called and stored to the \a buffer before current file version description
- *
- * \return \a buffer with file type description
- */
-typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, uint32_t buf_size, bool add_filetype_description);
 
 /** Update interface context */
 typedef struct __attribute__((__packed__)) vs_update_interface_t {
@@ -286,11 +289,9 @@ typedef struct __attribute__((__packed__)) vs_update_interface_t {
     vs_update_set_data_cb_t           set_data; /**< Set data */
     vs_update_set_footer_cb_t         set_footer; /**< Set footer */
 
+    vs_update_delete_object_cb_t        delete_object; /**< Delete item */
+    vs_update_verify_object_cb_t        verify_object; /**< Verify item */
     vs_update_free_item_cb_t          free_item; /**< Free item */
-
-    vs_update_file_is_newer_cb_t      file_is_newer; /**< File is newer */
-    vs_update_describe_type_cb_t      describe_type; /**< Describe file type */
-    vs_update_describe_version_cb_t   describe_version; /**< Describe file version */
 
     vs_storage_op_ctx_t *storage_context; /**< Storage context */
 

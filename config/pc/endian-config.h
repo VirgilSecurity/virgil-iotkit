@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -33,13 +33,17 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file endian-config.h
- * \brief Endianness configuration
+ * \brief PC configuration : endianness configuration
  */
 
 #ifndef VS_IOT_SDK_ENDIAN_CONFIG_H
 #define VS_IOT_SDK_ENDIAN_CONFIG_H
 
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <arpa/inet.h>
+#endif
 
 /** Converts the unsigned short integer from network byte order to host byte order */
 #define VS_IOT_NTOHS ntohs

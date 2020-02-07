@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -138,12 +138,12 @@ vs_snap_fldt_client(vs_fldt_got_file got_file_callback);
  * one.
  *
  * \param[in] file_type File type to be added. Must not be NULL.
- * \param[in] update_ctx Update context for current file type. Must not be NULL.
+ * \param[in] update_interface Update interface for current file type. Must not be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_ctx);
+vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_interface);
 
 /** Request all files data
  *

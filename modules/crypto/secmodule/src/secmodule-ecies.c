@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -43,16 +43,7 @@
 #include <virgil/iot/secmodule/secmodule-helpers.h>
 #include <private/asn1-cryptogram.h>
 
-#define VS_AES_256_KEY_SIZE (32)
-#define VS_AES_256_KEY_BITLEN (VS_AES_256_KEY_SIZE * 8)
-#define VS_AES_256_BLOCK_SIZE (16)
-
-#define VS_AES_256_GCM_IV_SIZE (12)
-#define VS_AES_256_GCM_AUTH_TAG_SIZE (16)
-
-#define VS_AES_256_CBC_IV_SIZE (16)
-
-#define VS_HMAC_SHA384_SIZE (48)
+#define VS_HMAC_SHA384_SIZE (VS_HASH_SHA384_LEN)
 
 #define VS_VIRGIL_PUBKEY_MAX_SIZE (100)
 

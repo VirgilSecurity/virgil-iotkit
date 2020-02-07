@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -40,9 +40,9 @@
 #ifndef VS_SNAP_STRUCTS_H
 #define VS_SNAP_STRUCTS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <virgil/iot/provision/provision-structs.h>
 
 #ifdef __cplusplus
@@ -107,12 +107,13 @@ typedef vs_status_e (*vs_netif_process_cb_t)(struct vs_netif_t *netif, const uin
  * This callback is used to send data.
  * Called from #vs_snap_send call.
  *
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] data Data buffer. Cannot be NULL.
  * \param[in] data_sz Size in bytes of data portion. Cannot be zero.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz);
+typedef vs_status_e (*vs_netif_tx_t)(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 /** Get MAC address
  *
@@ -120,11 +121,12 @@ typedef vs_status_e (*vs_netif_tx_t)(const uint8_t *data, const uint16_t data_sz
  * This callback is used to receive current MAC address.
  * Called from #vs_snap_mac_addr call.
  *
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[out] mac_addr #vs_mac_addr_t MAC address buffer. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
+typedef vs_status_e (*vs_netif_mac_t)(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 /** Initializer
  *
@@ -132,12 +134,15 @@ typedef vs_status_e (*vs_netif_mac_t)(struct vs_mac_addr_t *mac_addr);
  * This callback is used to initialize SNAP implementation.
  * Called from #vs_snap_init call.
  *
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
  * \param[in] rx_cb #vs_netif_rx_cb_t callback. Cannot be NULL.
  * \param[in] process_cb #vs_netif_process_cb_t callback. Cannot be NULL.
  *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+typedef vs_status_e (*vs_netif_init_t)(struct vs_netif_t *netif,
+                                       const vs_netif_rx_cb_t rx_cb,
+                                       const vs_netif_process_cb_t process_cb);
 
 /** Destructor
  *
@@ -145,9 +150,11 @@ typedef vs_status_e (*vs_netif_init_t)(const vs_netif_rx_cb_t rx_cb, const vs_ne
  * This callback is used to destroy SNAP implementation.
  * Called from #vs_snap_deinit call.
  *
+ * \param[in] netif #vs_netif_t Network interface. Cannot be NULL.
+ *
  * \return #VS_CODE_OK in case of success or error code.
  */
-typedef vs_status_e (*vs_netif_deinit_t)(void);
+typedef vs_status_e (*vs_netif_deinit_t)(struct vs_netif_t *netif);
 
 /** SNAP Service Request Processor
  *

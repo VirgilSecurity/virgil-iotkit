@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,7 +87,6 @@ typedef enum {
     VS_KEYPAIR_EC_SECP_MAX = VS_KEYPAIR_EC_SECP256K1,
     VS_KEYPAIR_EC_CURVE25519, /**< Curve25519 */
     VS_KEYPAIR_EC_ED25519,    /**< Ed25519 */
-    VS_KEYPAIR_RSA_2048,      /**< RSA 2048 bit */
     VS_KEYPAIR_MAX
 } vs_secmodule_keypair_type_e;
 

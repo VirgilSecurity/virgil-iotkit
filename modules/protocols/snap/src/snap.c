@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const vs_netif_t *_snap_default_netif = 0;
+static vs_netif_t *_snap_default_netif = 0;
 
 #define RESPONSE_SZ_MAX (1024)
 #define RESPONSE_RESERVED_SZ (sizeof(vs_snap_packet_t))
@@ -86,7 +86,7 @@ _is_broadcast(const vs_mac_addr_t *mac_addr) {
 static bool
 _is_my_mac(const vs_netif_t *netif, const vs_mac_addr_t *mac_addr) {
     vs_mac_addr_t netif_mac_addr;
-    netif->mac_addr(&netif_mac_addr);
+    netif->mac_addr(netif, &netif_mac_addr);
 
     return 0 == memcmp(mac_addr->bytes, netif_mac_addr.bytes, ETH_ADDR_LEN);
 }
@@ -341,7 +341,7 @@ vs_snap_init(vs_netif_t *default_netif,
     _snap_default_netif = default_netif;
 
     // Init default network interface
-    default_netif->init(_snap_rx_cb, _snap_process_cb);
+    default_netif->init(default_netif, _snap_rx_cb, _snap_process_cb);
 
     return VS_CODE_OK;
 }
@@ -354,7 +354,7 @@ vs_snap_deinit() {
     CHECK_NOT_ZERO_RET(_snap_default_netif->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
-    _snap_default_netif->deinit();
+    _snap_default_netif->deinit(_snap_default_netif);
 
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
@@ -393,7 +393,7 @@ vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     }
 
     if (!netif || netif == _snap_default_netif) {
-        return _snap_default_netif->tx(data, data_sz);
+        return _snap_default_netif->tx(_snap_default_netif, data, data_sz);
     }
 
     return VS_CODE_ERR_SNAP_UNKNOWN;
@@ -424,7 +424,7 @@ vs_snap_mac_addr(const vs_netif_t *netif, vs_mac_addr_t *mac_addr) {
     if (!netif || netif == _snap_default_netif) {
         VS_IOT_ASSERT(_snap_default_netif);
         VS_IOT_ASSERT(_snap_default_netif->mac_addr);
-        _snap_default_netif->mac_addr(mac_addr);
+        _snap_default_netif->mac_addr(_snap_default_netif, mac_addr);
         return VS_CODE_OK;
     }
 

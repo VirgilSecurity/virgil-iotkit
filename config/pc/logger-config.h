@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file logger-config.h
- * \brief Logger settings
+ * \brief PC configuration : logger settings
  *
  * This file provides defines that set up logger behavior.
  *
@@ -45,7 +45,7 @@
 /** Enable logger
  *
  * Enables logger library.
- * Logger macroses will be empty if it is disabled.
+ * Logger macros will be empty if it is disabled.
  */
 #define VS_IOT_LOGGER_ENABLE 1
 
@@ -94,6 +94,13 @@
  * Requires #vs_logger_current_time_hal function implementation.
  */
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
+
+/** Output current thread title
+ *
+ * Enables current thread title. #VS_IOT_GET_THREAD_ID is used to obtain current thread identifier. Call
+ * #vs_log_thread_descriptor to set human readable thread description. Instead numerical identifier will be output
+ */
+#define VS_IOT_LOGGER_OUTPUT_THREAD_ID 1
 
 #else  // VS_IOT_LOGGER_ENABLE
 #define VS_IOT_LOGGER_USE_LIBRARY 0

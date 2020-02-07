@@ -77,11 +77,6 @@ function(add_snap _targetname _firmware_update _definitions)
             )
 
     #
-    #   -Wall -Werror
-    #
-    set_target_properties(${_targetname} PROPERTIES COMPILE_FLAGS "-Wall -Werror")
-
-    #
     #   Config path
     #
 
@@ -95,9 +90,19 @@ function(add_snap _targetname _firmware_update _definitions)
     target_include_directories(${_targetname}
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 
             PRIVATE
             $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+            )
+    install(TARGETS ${_targetname}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            )
+
+    install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
             )
 
     #
@@ -130,7 +135,7 @@ function(add_snap _targetname _firmware_update _definitions)
             )
 
     #
-    # Format code
+    #   Format code
     #
     if (COMMAND add_clangformat)
         add_clangformat(${_targetname})
@@ -143,17 +148,25 @@ endfunction()
 #
 add_snap("vs-module-snap-factory" 1 "PRVS_CLIENT=1 INFO_CLIENT=1")
 
-#
-#   SNAP Devices initializer
-#
-add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1")
+if (NOT MOBILE_PLATFORM)
+
+    #
+    #   SNAP Devices initializer
+    #
+    add_snap("vs-module-snap-initializer" 0 "PRVS_SERVER=1 INFO_SERVER=1")
+
+    #
+    #   SNAP For Thing
+    #
+    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
+
+    #
+    #   SNAP For Gateway
+    #
+    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+endif()
 
 #
-#   SNAP For Thing
+#   SNAP For Control
 #
-add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1")
-
-#
-#   SNAP For Gateway
-#
-add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1")
+add_snap("vs-module-snap-control" 0 "INFO_CLIENT=1")

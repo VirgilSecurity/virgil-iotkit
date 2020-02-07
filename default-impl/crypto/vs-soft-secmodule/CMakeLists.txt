@@ -40,6 +40,17 @@ if(NOT VIRGIL_IOT_DIRECTORY)
     message(FATAL_ERROR "[vs-default-soft-secmodule] VIRGIL_IOT_DIRECTORY variable containing path to the Virgil IOT SDK source is not specified")
 endif()
 
+# Include and build external libraries
+include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
+
+set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+virgil_depends (
+        PACKAGE_NAME "MbedTLS"
+        CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
+        CMAKE_ARGS "${MBEDTLS_CMAKE_ARGS}"
+)
+virgil_find_package (MbedTLS 2.4)
+
 add_library(vs-default-soft-secmodule)
 
 target_sources(vs-default-soft-secmodule
@@ -59,50 +70,40 @@ target_sources(vs-default-soft-secmodule
         )
 
 #
-#	Path to crypto lib
-#
-if (BIGENDIAN_64_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips64")
-elseif(BIGENDIAN_32_BIT_BUILD)
-    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/mips32")
-else()
-    set(CRYPTO_C_BASE_DIR "${VIRGIL_IOT_DIRECTORY}/ext/deps/host")
-endif ()
-
-include(GNUInstallDirs)
-if(EXISTS "${CRYPTO_C_BASE_DIR}")
-    set(CRYPTO_C_INCLUDES "${CRYPTO_C_BASE_DIR}/include")
-    set(CRYPTO_C_LIBS "${CRYPTO_C_BASE_DIR}/lib")
-else()
-    set(CRYPTO_C_INCLUDES "/usr/include/cryptoc-shsm")
-    set(CRYPTO_C_LIBS "/usr/${CMAKE_INSTALL_LIBDIR}/cryptoc-shsm")
-endif ()
-
-#
 #   Common include directories
 #
 target_include_directories(vs-default-soft-secmodule
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        ${CRYPTO_C_INCLUDES}
-        ${CRYPTO_C_INCLUDES}/virgil/crypto/common
+
 
         INTERFACE
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )
+
+install(TARGETS vs-default-soft-secmodule
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 #
 #   Link libraries
 #
 target_link_libraries(vs-default-soft-secmodule
-        PUBLIC
+        PRIVATE
+        mbedtls::mbedcrypto
+        mbedtls::ed25519
         converters
+
+        PUBLIC
         vs-module-secmodule
         storage_hal
-        ${CRYPTO_C_LIBS}/libvsc_foundation.a
-        ${CRYPTO_C_LIBS}/libvsc_common.a
-        ${CRYPTO_C_LIBS}/libmbedcrypto.a
-        ${CRYPTO_C_LIBS}/libed25519.a
+
         )
 
 if(COMMAND add_clangformat)

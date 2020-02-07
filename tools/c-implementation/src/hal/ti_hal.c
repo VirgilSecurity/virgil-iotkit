@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,3 +55,7 @@ vs_logger_output_hal(const char *buffer) {
 }
 
 /******************************************************************************/
+bool
+vs_logger_current_time_hal(void) {
+    return true;
+}

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file global-hal.h
- * \brief Implementation for shared functions.
+ * \brief PC configuration : implementation for shared functions.
  *
  * This file provides signatures for platform specific functions.
  *

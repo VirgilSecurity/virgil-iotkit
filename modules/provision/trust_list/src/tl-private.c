@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -548,7 +548,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     int key_len;
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_pubkey_dated_t element;
-    //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLC, handle};
     vs_storage_element_id_t file_id;
     uint16_t _sz;
 
@@ -588,7 +587,6 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
 vs_status_e
 vs_tl_invalidate(size_t storage_type) {
     vs_tl_header_t header;
-    //    vs_tl_element_info_hal_t el = {storage_type, VS_TL_ELEMENT_TLH, 0};
 
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_storage_element_id_t file_id;
@@ -617,7 +615,7 @@ vs_tl_invalidate(size_t storage_type) {
         return VS_CODE_OK;
     }
 
-    for (i = 0; i < header.pub_keys_count; ++i) {
+    for (i = 0; i < VS_IOT_NTOHS(header.pub_keys_count); ++i) {
         // cppcheck-suppress uninitvar
         _create_data_filename(storage_type, VS_TL_ELEMENT_TLC, i, file_id);
         if (VS_CODE_OK != tl_ctx->storage_ctx->impl_func.del(tl_ctx->storage_ctx->impl_data, file_id)) {

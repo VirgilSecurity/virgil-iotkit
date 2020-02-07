@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -77,7 +77,7 @@ _soft_secmodule_intern(void) {
 
 /******************************************************************************/
 const char *
-get_slot_name(vs_iot_secmodule_slot_e slot) {
+_get_slot_name(vs_iot_secmodule_slot_e slot) {
     switch (slot) {
     case VS_KEY_SLOT_STD_OTP_0:
         return "STD_OTP_0";

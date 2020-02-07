@@ -46,10 +46,6 @@ else()
     message(STATUS "[converters] path to the Virgil IOT SDK config : ${VIRGIL_IOT_CONFIG_DIRECTORY}")
 endif()
 
-# Include and build external libraries
-include (${VIRGIL_IOT_DIRECTORY}/cmake/virgil_depends.cmake)
-
-set(VIRGIL_DEPENDS_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 virgil_depends (
         PACKAGE_NAME "MbedTLS"
         CONFIG_DIR "${VIRGIL_IOT_DIRECTORY}/ext/mbedtls"
@@ -103,7 +99,7 @@ target_include_directories(converters
 
         INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 target_link_libraries (converters
@@ -112,6 +108,16 @@ target_link_libraries (converters
         mbedtls::ed25519
         vs-module-secmodule
         virgil-iot-status-code
+        )
+
+install(TARGETS converters
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 
 if(COMMAND add_clangformat)

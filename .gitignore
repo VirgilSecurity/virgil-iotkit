@@ -1,4 +1,6 @@
 #####
+debug.*/
+release.*/
 build*/
 install*/
 .depends_cache/
@@ -18,8 +20,7 @@ profile
 #####
 # CLion
 .idea
-cmake-build-*/
-VERSION
+cmake-build*/
 
 ####
 # Sublime Text 3
@@ -37,3 +38,7 @@ Carthage
 
 ####
 format_list.txt
+
+####
+# Python
+__pycache__/

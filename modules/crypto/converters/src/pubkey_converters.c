@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -42,36 +42,6 @@
 #include <private/macros.h>
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <stdlib-config.h>
-
-/******************************************************************************/
-static bool
-_keypair_is_25519(vs_secmodule_keypair_type_e keypair_type) {
-    return VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type;
-}
-
-/******************************************************************************/
-static bool
-_keypair_is_rsa(vs_secmodule_keypair_type_e keypair_type) {
-    switch (keypair_type) {
-    case VS_KEYPAIR_RSA_2048:
-        return true;
-    default:
-        break;
-    }
-    return false;
-}
-
-/******************************************************************************/
-static uint16_t
-_keypair_rsa_key_size(vs_secmodule_keypair_type_e keypair_type) {
-    switch (keypair_type) {
-    case VS_KEYPAIR_RSA_2048:
-        return (2048 / 8);
-    default:
-        break;
-    }
-    return 0;
-}
 
 /******************************************************************************/
 static uint16_t
@@ -156,58 +126,25 @@ _keypair_ec_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
 
     mpi_size = _keypair_ec_mpi_size(keypair_type);
 
+    if (public_key_in_sz < mpi_size * 2 + 1) {
+        return false;
+    }
+
     if (0 == mbedtls_mpi_read_binary(&ec_key.Q.X, public_key_in + 1, mpi_size) &&
         0 == mbedtls_mpi_read_binary(&ec_key.Q.Y, public_key_in + 1 + mpi_size, mpi_size) &&
         0 == mbedtls_mpi_copy(&ec_key.Q.Z, &ec_key.Q.Y)) {
 
-        *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
+        mbedtls_res = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
 
-        if (buf_sz > *public_key_out_sz) {
+        if (mbedtls_res > 0 && buf_sz > mbedtls_res) {
+            *public_key_out_sz = mbedtls_res;
             VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+            res = true;
         }
-        res = true;
     }
 
 terminate:
     mbedtls_ecp_keypair_free(&ec_key);
-
-    return res;
-}
-
-/******************************************************************************/
-static bool
-_keypair_rsa_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
-                             const uint8_t *public_key_in,
-                             uint16_t public_key_in_sz,
-                             uint8_t *public_key_out,
-                             uint16_t buf_sz,
-                             uint16_t *public_key_out_sz) {
-    bool res = false;
-    mbedtls_rsa_context rsa_key;
-    mbedtls_pk_info_t pk_info;
-    mbedtls_pk_context pk_ctx;
-    uint8_t buf[3] = {0x01, 0x00, 0x01};
-
-    VS_IOT_MEMSET(&rsa_key, 0, sizeof(rsa_key));
-    VS_IOT_MEMSET(&pk_info, 0, sizeof(pk_info));
-    VS_IOT_MEMSET(&pk_ctx, 0, sizeof(pk_ctx));
-
-    pk_ctx.pk_info = &pk_info;
-    pk_ctx.pk_ctx = &rsa_key;
-
-    pk_info.type = MBEDTLS_PK_RSA;
-
-    if (0 == mbedtls_mpi_read_binary(&rsa_key.N, public_key_in, public_key_in_sz) &&
-        0 == mbedtls_mpi_read_binary(&rsa_key.E, buf, sizeof(buf))) {
-        *public_key_out_sz = mbedtls_pk_write_pubkey_der(&pk_ctx, public_key_out, buf_sz);
-
-        if (buf_sz > *public_key_out_sz) {
-            VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
-        }
-        res = true;
-    }
-
-    mbedtls_rsa_free(&rsa_key);
 
     return res;
 }
@@ -252,7 +189,7 @@ _keypair_25519_key_to_internal(vs_secmodule_keypair_type_e keypair_type,
     *public_key_out_sz = (uint16_t)res;
 
     if (buf_sz > *public_key_out_sz) {
-        memmove(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
+        VS_IOT_MEMMOVE(public_key_out, &public_key_out[buf_sz - *public_key_out_sz], *public_key_out_sz);
     }
 
     return true;
@@ -279,28 +216,11 @@ vs_converters_pubkey_to_raw(vs_secmodule_keypair_type_e keypair_type,
     VS_IOT_MEMSET(&bs, 0, sizeof(mbedtls_asn1_bitstring));
     mbedtls_asn1_get_bitstring(&p, end, &bs);
 
-    if (_keypair_is_rsa(keypair_type)) {
-        // Get RSA key
-        p = bs.p;
-        if (0 != mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE))
-            return false;
-
-        if (0 != mbedtls_asn1_get_tag(&p, end, &len, MBEDTLS_ASN1_INTEGER))
-            return false;
-
-        bs.p = p;
-        bs.len = len;
-        if (bs.len > _keypair_rsa_key_size(keypair_type)) {
-            bs.p += bs.len - _keypair_rsa_key_size(keypair_type);
-            bs.len = _keypair_rsa_key_size(keypair_type);
-        }
-    }
-
     if (bs.len > buf_sz) {
         return false;
     }
 
-    VS_IOT_MEMCPY(pubkey_raw, bs.p, bs.len);
+    VS_IOT_MEMMOVE(pubkey_raw, bs.p, bs.len);
     *pubkey_raw_sz = bs.len;
 
     return true;
@@ -314,10 +234,7 @@ vs_converters_pubkey_to_virgil(vs_secmodule_keypair_type_e keypair_type,
                                uint8_t *public_key_out,
                                uint16_t buf_sz,
                                uint16_t *public_key_out_sz) {
-    if (_keypair_is_rsa(keypair_type)) {
-        return _keypair_rsa_key_to_internal(
-                keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
-    } else if (_keypair_is_25519(keypair_type)) {
+    if (VS_KEYPAIR_EC_CURVE25519 == keypair_type || VS_KEYPAIR_EC_ED25519 == keypair_type) {
         return _keypair_25519_key_to_internal(
                 keypair_type, public_key_in, public_key_in_sz, public_key_out, buf_sz, public_key_out_sz);
     } else {
