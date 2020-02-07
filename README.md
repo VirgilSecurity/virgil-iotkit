@@ -123,7 +123,7 @@ To start working with Virgil IoTKit the following components are required:
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/) for default NIX implementation
 
-Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Following components are required to use Qt integration :
+Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Following components are required to use Qt integration:
 - C++14.
 - Qt 5.12.6 or higher.
 - Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
