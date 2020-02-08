@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Main.qml</file>
+        <file>qml/DevicesList.qml</file>
+        <file>qml/Sniffer.qml</file>
+        <file>qml/BLEManager.qml</file>
+        <file>qml/default.png</file>
+        <file>qml/InitDialog.qml</file>
+        <file>qml/Title.qml</file>
+    </qresource>
+</RCC>

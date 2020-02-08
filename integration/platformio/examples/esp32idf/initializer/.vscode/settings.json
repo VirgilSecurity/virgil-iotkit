@@ -1,0 +1,5 @@
+{
+    "files.associations": {
+        "flash_nvs.h": "c"
+    }
+}

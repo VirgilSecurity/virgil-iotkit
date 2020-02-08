@@ -1,0 +1,56 @@
+{
+  "name": "virgil-iotkit",
+  "keywords": "virgil, iot, sdk",
+  "description": "Virgil IOT SDK",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VirgilSecurity/virgil-iotkit.git"
+  },
+  "build": {
+    "flags": [
+      "-I include/config",
+      "-I src/modules/logger/include",
+      "-I src/modules/protocols/snap/include",
+      "-I src/modules/provision/include",
+      "-I src/modules/firmware/include",
+      "-I src/modules/provision/trust_list/include",
+      "-I src/modules/crypto/secmodule/include",
+      "-I src/modules/crypto/converters/include",
+      "-I src/helpers/status_code/include",
+      "-I src/tests/include",
+      "-I src/helpers/macros/include",
+      "-I src/helpers/storage_hal/include",
+      "-I src/helpers/update/include"
+    ],
+    "srcFilter": [
+      "+<modules/logger/src/*.c>",
+      "+<modules/protocols/snap/src/*.c>",
+      "+<modules/protocols/snap/src/services/cfg/*.c>",
+      "+<modules/protocols/snap/src/services/info/*.c>",
+      "+<modules/protocols/snap/src/services/prvs/*.c>",
+      "+<modules/protocols/snap/src/services/fldt/*.c>",
+      "+<modules/protocols/snap/src/generated/*.c>",
+      "+<modules/provision/trust_list/src/*.c>",
+      "+<modules/provision/src/*.c>",
+      "+<modules/firmware/src/*.c>",
+      "+<modules/crypto/secmodule/src/*.c>",
+      "+<modules/firmware/src/*.c>",
+      "+<helpers/update/src/*.c>",
+      "+<tests/src/crypto/*.c>",
+      "+<tests/src/helpers/crypto_helpers.c>",
+      "+<tests/src/test_data/*.c>",
+      "+<../defaults/logger/*.c>",
+      "+<../defaults/firmware/*.c>",
+      "+<../defaults/helpers/*.c>",
+      "+<../defaults/logger/*.c>",
+      "+<../defaults/storage/*.c>",
+      "+<../defaults/vs-soft-secmodule/*.c>",
+      "+<../defaults/helpers/*.c>",
+      "+<../defaults/netif/*.c>",
+      "+<../defaults/platform/init/idf/*.c>"
+    ]
+  },
+  "version": "0.1.0a",
+  "frameworks": "*",
+  "platforms": "*"
+}
