@@ -50,8 +50,6 @@ extern "C" {
 //  Internal structures
 //
 
-#define FLDT_DESC_BUF (64)
-
 #define FLDT_MAC_PRINT_TEMPLATE "%x:%x:%x:%x:%x:%x"
 #define FLDT_MAC_PRINT_ARG(MAC_ADDR)                                                                                   \
     (MAC_ADDR).bytes[0], (MAC_ADDR).bytes[1], (MAC_ADDR).bytes[2], (MAC_ADDR).bytes[3], (MAC_ADDR).bytes[4],           \

@@ -4,3 +4,6 @@ output/
 
 # Auto-generated script
 run-initializer.sh
+
+# Vagrant
+.vagrant/

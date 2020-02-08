@@ -90,6 +90,9 @@ public:
         return m_socket.state();
     }
 
+    void
+    restart();
+
 protected:
     bool
     init() override;

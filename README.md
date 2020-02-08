@@ -74,7 +74,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
 
-You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc. 
+You can try to use [Demo IoTKit Qt](https://github.com/VirgilSecurity/demo-iotkit-qt/) open project on your platform to test Qt integration usage. This software grants you modern GUI application able to be started on many desktop and mobile platforms like Linux, Windows, Android, iOS etc.
 
 <div id='modules'/>
 
@@ -101,8 +101,9 @@ Virgil IoTKit also contains a set of scripts that can be run from the [scripts f
 - `build-for-qt.sh` is used to generate Virgil IoTKit libraries for different platform. If you run this script without parameters, it will output all supported platforms. Usage examples :
   - To get a library for Android : `ext/virgil-iotkit/scripts/build-for-qt.sh android armeabi-v7a`
   - To get a library for iOS : `ext/virgil-iotkit/scripts/build-for-qt.sh ios`
+  - To get a library for iOS-simulator: `ext/virgil-iotkit/scripts/build-for-qt.sh ios-sim`
   - To get a library for Linux : `ext/virgil-iotkit/scripts/build-for-qt.sh linux`
-  - To get a library for MacOS : `ext/virgil-iotkit/scripts/build-for-qt.sh mac`
+  - To get a library for MacOS : `ext/virgil-iotkit/scripts/build-for-qt.sh macos`
   - To get a library for Windows by using mingw32 on another host platform : `ext/virgil-iotkit/scripts/build-for-qt.sh mingw32`
   - To get a library for Windows : `ext/virgil-iotkit/scripts/build-for-qt.sh windows`. See [Windows installation](/windows-installation) for running script details.
 
@@ -122,7 +123,7 @@ To start working with Virgil IoTKit the following components are required:
 - [git](https://git-scm.com/) for Virgil Crypto installation and update
 - [curl](https://curl.haxx.se/) for default NIX implementation
 
-Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Following components are required to use Qt integration :
+Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Following components are required to use Qt integration:
 - C++14.
 - Qt 5.12.6 or higher.
 - Qt built for your target platform: Android, iOS, Linux, MacOS, Windows etc.
@@ -133,7 +134,7 @@ Also Virgil IoTKit has C++/Qt integration based on Qt crossplatform library. Fol
 To download and install the Virgil IoTKit on Ubuntu, use the following command:
 
 ```shell
-$ sude apt-get install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
+$ sudo apt-get install make gcc cmake golang git libcurl4-openssl-dev doxygen swig
 ```
 
 To add repository to preferred OS, use the following command:
@@ -172,17 +173,17 @@ To add repository to preferred OS use the following command:
 
 #### Fedora 29
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/29/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/29/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 #### Fedora 30
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/30/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 #### Fedora 31
 ```shell
-yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
+$ sudo yum install https://virgilsecurity.bintray.com/iot-rpm/Fedora/31/x86_64/virgil-bintray-release-0.1.0-1.1.noarch.rpm
 ```
 
 <div id='macos'/>

@@ -53,11 +53,18 @@ win32 {
     QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
 
-unix:mac:       OS_NAME = macos
-unix:ios:       OS_NAME = ios
-linux:android:  OS_NAME = android.$$ANDROID_TARGET_ARCH
-linux:!android: OS_NAME = linux
-win32:          OS_NAME = windows
+unix:mac:                   OS_NAME = macos
+linux:android:              OS_NAME = android.$$ANDROID_TARGET_ARCH
+linux:!android:             OS_NAME = linux
+win32:                      OS_NAME = windows
+
+CONFIG(iphonesimulator, iphoneos | iphonesimulator) {
+    OS_NAME = ios-sim
+}
+
+CONFIG(iphoneos, iphoneos | iphonesimulator) {
+    OS_NAME = ios
+}
 
 VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
 

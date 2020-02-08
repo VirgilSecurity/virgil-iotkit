@@ -34,58 +34,62 @@ $ git clone https://github.com/VirgilSecurity/virgil-iotkit.git
 ```
 
 ## Configure and Run Sandbox
-To launch the Sandbox you will need to run the Docker and generate Virgil application token (`App Token`).
+This section contains information on how to perform installation and running processes.
 
 ### Prerequisites
-Before you start, you need to install the following:
-- **Virgil CLI** is a unified tool to manage your Virgil Cloud services and perform all required commands to configure the Sandbox. Follow this guide to [install the Virgil CLI](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/install) on your platform.
-- **Docker** is a tool designed to make it easier to create, deploy, and run applications by using containers. Follow this guide to [install the Docker](https://docs.docker.com/install/) for your platform.
+Before you start, you need to install the **Virgil CLI** - a unified tool to manage your Virgil Cloud services and perform all required commands to configure the Sandbox. Follow this guide to [install the Virgil CLI](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/install) on your platform.
+
+#### Windows:
+
+- Install [Vagrant](https://www.vagrantup.com/docs/installation/)
+
+- Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+- Install VirtualBox Guest Additions plugin: `vagrant plugin install vagrant-vbguest`
+
+- Enable VT-X (Intel Virtualization Technology) in your computer bios settings.
+
+- Disable Hyper-V on "program and features page" in the control panel.
+
+#### MacOS:
+
+- Install [Vagrant](https://www.vagrantup.com/docs/installation/)
+
+- Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+- Install VirtualBox Guest Additions plugin: vagrant plugin install vagrant-vbguest
+
+#### Linux
+- Install [Docker](https://docs.docker.com/install/).
 
 ### Generate App Token
-To start working with the Sandbox, you need to specify your `App Token`. In case you don't have App Token you need to generate it using Virgil CLI.
+To start working with the Sandbox, you need to specify your `Virgil App Token`. In case you don't have an App Token you can generate it using the [Virgil Dashboard](https://dashboard.virgilsecurity.com/) or the [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/).
 
-To generate an `App Token` go through the following steps:
-- Launch the Virgil CLI
-```shell
-$ virgil
-# or virgil.exe for Windows OS
-```
-- Register Virgil Account (omit this step, in case you have it). Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-account).
-```shell
-$ virgil register <email>
-```
-- Log into your Virgil Account:
-```shell
-$ virgil login
-```
-- Create Virgil Application. Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-applications).
-```shell
-$ virgil app create <App Name>
-```
-As a result, you'll get `App_ID`.
-- Generate App Token specifying `App_ID` and `App Name`. Find examples [here](https://developer.virgilsecurity.com/docs/sdk-and-tools/virgil-cli/manage-apptokens).
-```shell
-$ virgil app token create --app-id <App ID> --name <Name>
-```
-As a result, you'll get `Token`.
+If you don't have a Virgil Account yet  you can create it using [Virgil Dashboard](https://dashboard.virgilsecurity.com/) as well as using [Virgil CLI](https://developer.virgilsecurity.com/docs/platform/cli/).
 
 > Store the App Token in a secure place and use it to initialize the Sandbox.
 
 ### Run Sandbox
 Now, you can run the Sandbox.
 
-- First of all, check whether the Docker is launched.
-- Navigate to your CLI terminal and run the Sandbox script (Unix-like OS: `run-sandbox.sh` and Windows:`run-sandbox.bat`) from the scripts folder of the downloaded IoTKit package.
-```shell
-# for MacOS
-$ ./run-sandbox.sh
-```
+- First of all, check whether the Docker is launched (if you are using Linux).
+- Navigate to your CLI terminal and run the Sandbox starting script from the scripts folder of the downloaded IoTKit package:
+  - Unix-like OS: `run.sh`  
+  - Windows(sh.exe from mingw terminal): `run.bat`
+  - MacOS: `./run-in-vm.sh`
 - Specify your `App_Token` in the appeared window to run the Sandbox
 
 If you did everything correctly, you would see the following Sandbox window:
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
+&nbsp;
 
 &nbsp;
+### Sandbox Cautions
+
+- You can run only one Sandbox in a subnetwork
+- You can have only one active gateway inside of Sandbox
+- Above mentioned scripts are not allowed yet to be used in virtual machines
+
 
 ### Run Logs Viewer
 While working with the Sandbox you can:

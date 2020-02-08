@@ -34,6 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+#
+#   Version
+#
+set (PACKAGE_VERSION "0")
+set (PACKAGE_VERSION_MAJOR "1")
+set (PACKAGE_VERSION_MINOR "3")
+
 include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------
@@ -68,9 +75,9 @@ endif()
 #   Project
 # ---------------------------------------------------------------------------
 if (GO_DISABLE)
-    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C)
+    project(virgil-iot-sdk VERSION ${PACKAGE_VERSION}.${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR} LANGUAGES C)
 else()
-    project(virgil-iot-sdk VERSION 0.0.1 LANGUAGES C Go)
+    project(virgil-iot-sdk VERSION ${PACKAGE_VERSION}.${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR} LANGUAGES C Go)
 endif()
 set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Virgil IoT SDK")
 
@@ -79,17 +86,12 @@ set(VIRGIL_IOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Path to the Vir
 # ---------------------------------------------------------------------------
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include (clangformat)
+include (TransitiveToolchainArgs)
 
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_IOT_SDK_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
-
-file(WRITE "${CMAKE_CURRENT_LIST_DIR}/VERSION" "${virgil-iot-sdk-VERSION}")
-
-if(VIRGIL_IOT_SDK_VERSION_LABEL)
-    file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "-${VIRGIL_IOT_SDK_VERSION_LABEL}")
-endif()
+file(WRITE "${CMAKE_CURRENT_LIST_DIR}/VERSION" "${PACKAGE_VERSION}.${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}")
 
 file(APPEND "${CMAKE_CURRENT_LIST_DIR}/VERSION" "\n")
 

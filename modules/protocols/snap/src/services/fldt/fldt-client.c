@@ -64,7 +64,7 @@ typedef struct {
     uint32_t command;
     uint8_t data[VS_FLDT_REQUEST_SZ_MAX];
     uint16_t data_sz;
-} vs_fldt_update_ctx_t;
+} vs_fldt_client_retry_ctx_t;
 
 typedef struct {
     vs_update_file_type_t type;
@@ -74,7 +74,7 @@ typedef struct {
     void *file_header;
     uint32_t file_size;
     vs_mac_addr_t gateway_mac;
-    vs_fldt_update_ctx_t update_ctx;
+    vs_fldt_client_retry_ctx_t retry_ctx;
 } vs_fldt_client_file_type_mapping_t;
 
 static uint32_t _file_type_mapping_array_size = 0;
@@ -89,10 +89,10 @@ _ask_file_type_info(const char *file_type_descr,
 static void
 _update_process_reset(vs_fldt_client_file_type_mapping_t *object_info) {
     CHECK_NOT_ZERO(object_info);
-    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
+    vs_fldt_client_retry_ctx_t *retry_ctx = &object_info->retry_ctx;
 
-    if (object_info->update_ctx.in_progress) {
-        switch (object_info->update_ctx.command) {
+    if (object_info->retry_ctx.in_progress) {
+        switch (object_info->retry_ctx.command) {
         case VS_FLDT_GNFH:
         case VS_FLDT_GNFD:
         case VS_FLDT_GNFF:
@@ -105,9 +105,44 @@ _update_process_reset(vs_fldt_client_file_type_mapping_t *object_info) {
         }
     }
 
-    VS_FLDT_PRINT_DEBUG(object_info->type.type, update_ctx->command, "_update_process_reset");
-    VS_IOT_MEMSET(update_ctx, 0, sizeof(*update_ctx));
+    VS_FLDT_PRINT_DEBUG(object_info->type.type, retry_ctx->command, "_update_process_reset");
+    VS_IOT_MEMSET(retry_ctx, 0, sizeof(*retry_ctx));
 terminate:;
+}
+
+/******************************************************************/
+static void
+_delete_mapping_element(vs_fldt_client_file_type_mapping_t *file_element_to_delete) {
+    vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
+    uint32_t id;
+    bool found = false;
+    if (0 == _file_type_mapping_array_size) {
+        return;
+    }
+
+    for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
+        if (!found) {
+            if (file_element_to_delete == file_type_info) {
+                if (file_element_to_delete->update_interface && file_element_to_delete->update_interface->free_item) {
+                    file_element_to_delete->update_interface->free_item(
+                            file_element_to_delete->update_interface->storage_context, &file_element_to_delete->type);
+                }
+
+                if (file_element_to_delete->file_header) {
+                    VS_IOT_FREE(file_element_to_delete->file_header);
+                    file_element_to_delete->file_header = NULL;
+                }
+                found = true;
+            }
+        } else {
+            _client_file_type_mapping[id - 1] = *file_type_info;
+            VS_IOT_MEMSET(file_type_info, 0, sizeof(vs_fldt_client_file_type_mapping_t));
+        }
+    }
+
+    if (found) {
+        _file_type_mapping_array_size--;
+    }
 }
 
 /******************************************************************/
@@ -121,20 +156,20 @@ _update_process_set(vs_fldt_client_file_type_mapping_t *object_info,
     CHECK_RET(
             request_data_sz <= VS_FLDT_REQUEST_SZ_MAX, VS_CODE_ERR_TOO_SMALL_BUFFER, "Small buffer for Retry command");
 
-    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
+    vs_fldt_client_retry_ctx_t *retry_ctx = &object_info->retry_ctx;
 
-    if (update_ctx->command != command) {
+    if (retry_ctx->command != command) {
         VS_FLDT_PRINT_DEBUG(object_info->type.type, command, "_update_process_set");
     }
 
-    update_ctx->in_progress = true;
-    update_ctx->tick_cnt = 0;
-    update_ctx->retry_used = 0;
-    update_ctx->command = command;
-    update_ctx->gateway_mac = object_info->gateway_mac;
-    update_ctx->expected_offset = expected_offset;
-    VS_IOT_MEMCPY(update_ctx->data, request_data, request_data_sz);
-    update_ctx->data_sz = request_data_sz;
+    retry_ctx->in_progress = true;
+    retry_ctx->tick_cnt = 0;
+    retry_ctx->retry_used = 0;
+    retry_ctx->command = command;
+    retry_ctx->gateway_mac = object_info->gateway_mac;
+    retry_ctx->expected_offset = expected_offset;
+    VS_IOT_MEMCPY(retry_ctx->data, request_data, request_data_sz);
+    retry_ctx->data_sz = request_data_sz;
     return VS_CODE_OK;
 }
 
@@ -143,25 +178,25 @@ static vs_status_e
 _update_process_retry(vs_fldt_client_file_type_mapping_t *object_info) {
 
     CHECK_NOT_ZERO_RET(object_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    vs_fldt_update_ctx_t *update_ctx = &object_info->update_ctx;
+    vs_fldt_client_retry_ctx_t *retry_ctx = &object_info->retry_ctx;
 
-    update_ctx->retry_used++;
+    retry_ctx->retry_used++;
 
-    if (update_ctx->retry_used > VS_FLDT_RETRY_MAX) {
+    if (retry_ctx->retry_used > VS_FLDT_RETRY_MAX) {
         VS_FLDT_PRINT_DEBUG(
-                object_info->type.type, update_ctx->command, "Update process has been stopped, because of retry limit");
+                object_info->type.type, retry_ctx->command, "Update process has been stopped, because of retry limit");
         _update_process_reset(object_info);
         return VS_CODE_OK;
     }
 
-    VS_FLDT_PRINT_DEBUG(object_info->type.type, update_ctx->command, "_update_process_retry");
+    VS_FLDT_PRINT_DEBUG(object_info->type.type, retry_ctx->command, "_update_process_retry");
 
     CHECK_RET(!vs_snap_send_request(NULL,
-                                    &update_ctx->gateway_mac,
+                                    &retry_ctx->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
-                                    update_ctx->command,
-                                    update_ctx->data,
-                                    update_ctx->data_sz),
+                                    retry_ctx->command,
+                                    retry_ctx->data,
+                                    retry_ctx->data_sz),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Unable to re-send FLDT request");
 
@@ -317,7 +352,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               "Unregistered file type");
 
     if (!_check_download_need("GNFH", &file_type_info->cur_file_version, file_ver)) {
-        file_type_info->update_ctx.in_progress = false;
+        file_type_info->retry_ctx.in_progress = false;
         VS_LOG_WARNING("[FLDT:GNFH] File [type %d] header contains an old version", file_type->type);
         return VS_CODE_OLD_VERSION;
     }
@@ -576,7 +611,7 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
     successfully_updated = (ret_code == VS_CODE_OK);
 
     // Stop retries
-    file_type_info->update_ctx.in_progress = !successfully_updated;
+    file_type_info->retry_ctx.in_progress = !successfully_updated;
 
     _got_file_callback(file_type,
                        &file_type_info->prev_file_version,
@@ -594,71 +629,83 @@ vs_fldt_GNFF_response_processor(bool is_ack, const uint8_t *response, const uint
 }
 
 /******************************************************************/
+static vs_status_e
+_new_mapping_element(vs_fldt_client_file_type_mapping_t **file_element_to_add) {
+    VS_IOT_ASSERT(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1));
+    CHECK_RET(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1),
+              VS_CODE_ERR_NO_MEMORY,
+              "[FLDT] Can't add new file type. Array is full");
+    *file_element_to_add = &_client_file_type_mapping[_file_type_mapping_array_size++];
+    VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d", _file_type_mapping_array_size);
+    VS_IOT_MEMSET(*file_element_to_add, 0, sizeof(vs_fldt_client_file_type_mapping_t));
+    return VS_CODE_OK;
+}
+
+/******************************************************************/
 vs_status_e
 vs_fldt_client_add_file_type(const vs_update_file_type_t *file_type, vs_update_interface_t *update_interface) {
-    vs_fldt_client_file_type_mapping_t *file_type_info = NULL;
+    vs_fldt_client_file_type_mapping_t *existing_file_element = NULL;
+    vs_fldt_client_file_type_mapping_t file_element_to_add;
     vs_fldt_gnfh_header_request_t gnfh_request;
-    char type_str[FLDT_DESC_BUF];
-    char version_str[FLDT_DESC_BUF];
+    char type_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
+    char version_str[VS_UPDATE_DEFAULT_DESC_BUF_SZ];
 
     vs_status_e ret_code;
     uint32_t header_size;
 
     CHECK_NOT_ZERO_RET(file_type, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(update_interface, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    VS_IOT_MEMSET(&file_element_to_add, 0, sizeof(file_element_to_add));
 
-    file_type_info = _get_mapping_elem(file_type);
+    file_element_to_add.type = *file_type;
+    file_element_to_add.update_interface = update_interface;
 
-    if (!file_type_info) {
-        VS_IOT_ASSERT(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1));
-        CHECK_RET(_file_type_mapping_array_size < (CLIENT_FILE_TYPE_ARRAY_SIZE - 1),
-                  VS_CODE_ERR_NO_MEMORY,
-                  "[FLDT] Can't add new file type. Array is full");
-        file_type_info = &_client_file_type_mapping[_file_type_mapping_array_size++];
-        VS_LOG_DEBUG("[FLDT] File type was not initialized, add new entry. Array size = %d",
-                     _file_type_mapping_array_size);
-        VS_IOT_MEMSET(file_type_info, 0, sizeof(*file_type_info));
-    } else {
-        VS_LOG_DEBUG("[FLDT] File type is initialized present, update");
+    VS_LOG_DEBUG("[FLDT] Add file type %s",
+                 vs_update_file_type_str(&file_element_to_add.type, type_str, sizeof(type_str)));
+
+    ret_code = update_interface->get_header_size(
+            update_interface->storage_context, &file_element_to_add.type, &header_size);
+    if (VS_CODE_OK != ret_code || !header_size) {
+        VS_LOG_ERROR("Unable to get header size for file type %s", type_str);
+        return (VS_CODE_OK == ret_code) ? VS_CODE_ERR_VERIFY : ret_code;
     }
 
-    _update_process_reset(file_type_info);
+    file_element_to_add.file_header = VS_IOT_MALLOC(header_size);
 
-    file_type_info->type = *file_type;
-    file_type_info->update_interface = update_interface;
+    file_element_to_add.file_size = 0;
 
-    VS_LOG_DEBUG("[FLDT] Add file type %s", vs_update_file_type_str(&file_type_info->type, type_str, sizeof(type_str)));
-
-    STATUS_CHECK_RET(file_type_info->update_interface->get_header_size(
-                             file_type_info->update_interface->storage_context, &file_type_info->type, &header_size),
-                     "Unable to calculate header size for file type %s",
-                     type_str);
-    if (header_size) {
-        file_type_info->file_header = VS_IOT_MALLOC(header_size);
-    }
-
-    file_type_info->file_size = 0;
-
-    ret_code = file_type_info->update_interface->get_header(file_type_info->update_interface->storage_context,
-                                                            &file_type_info->type,
-                                                            file_type_info->file_header, // Version is here
-                                                            header_size,
-                                                            &header_size);
+    ret_code = update_interface->get_header(update_interface->storage_context,
+                                            &file_element_to_add.type,
+                                            file_element_to_add.file_header, // Version is here
+                                            header_size,
+                                            &header_size);
     if (VS_CODE_OK == ret_code) {
-        VS_LOG_INFO("[FLDT] Current file version : %s",
-                    vs_update_file_version_str(&file_type_info->type.info.version, version_str, sizeof(version_str)));
+        VS_LOG_INFO(
+                "[FLDT] Current file version : %s",
+                vs_update_file_version_str(&file_element_to_add.type.info.version, version_str, sizeof(version_str)));
 
-        file_type_info->cur_file_version = file_type_info->type.info.version;
-        file_type_info->prev_file_version = file_type_info->cur_file_version;
+        file_element_to_add.cur_file_version = file_element_to_add.type.info.version;
+        file_element_to_add.prev_file_version = file_element_to_add.cur_file_version;
     } else {
         VS_LOG_WARNING("[FLDT] File type was not found by Update library");
-        VS_IOT_FREE(file_type_info->file_header);
-        file_type_info->file_header = NULL;
+        VS_IOT_FREE(file_element_to_add.file_header);
+        file_element_to_add.file_header = NULL;
     }
 
-    VS_IOT_MEMSET(&file_type_info->gateway_mac, 0, sizeof(file_type_info->gateway_mac));
+    existing_file_element = _get_mapping_elem(file_type);
+
+    if (!existing_file_element) {
+        STATUS_CHECK_RET(_new_mapping_element(&existing_file_element), "[FLDT] Error to create new mapping element");
+    } else {
+        _update_process_reset(existing_file_element);
+        _delete_mapping_element(existing_file_element);
+        VS_LOG_DEBUG("[FLDT] File type is initialized present, update it");
+    }
+
+    *existing_file_element = file_element_to_add;
 
     gnfh_request.type = *file_type;
-    STATUS_CHECK_RET(_ask_file_type_info(type_str, &gnfh_request, file_type_info),
+    STATUS_CHECK_RET(_ask_file_type_info(type_str, &gnfh_request, existing_file_element),
                      "Unable to ask current file information");
 
     return VS_CODE_OK;
@@ -750,14 +797,14 @@ _fldt_client_response_processor(const struct vs_netif_t *netif,
 static int
 _fldt_client_periodical_processor(void) {
     vs_fldt_client_file_type_mapping_t *file_type_info = _client_file_type_mapping;
-    vs_fldt_update_ctx_t *_update_ctx;
+    vs_fldt_client_retry_ctx_t *_retry_ctx;
     uint32_t id;
 
     for (id = 0; id < _file_type_mapping_array_size; ++id, ++file_type_info) {
-        _update_ctx = &file_type_info->update_ctx;
-        if (_update_ctx->in_progress) {
-            _update_ctx->tick_cnt++;
-            if (_update_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
+        _retry_ctx = &file_type_info->retry_ctx;
+        if (_retry_ctx->in_progress) {
+            _retry_ctx->tick_cnt++;
+            if (_retry_ctx->tick_cnt > VS_FLDT_WAIT_MAX) {
                 _update_process_retry(file_type_info);
             }
         }

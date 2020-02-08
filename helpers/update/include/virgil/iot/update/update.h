@@ -96,14 +96,40 @@ vs_update_equal_file_type(vs_update_file_type_t *file_type, const vs_update_file
 vs_status_e
 vs_update_compare_version(const vs_file_version_t *update_ver, const vs_file_version_t *current_ver);
 
+/** Min size of buffer for description string
+ */
+#define VS_UPDATE_DEFAULT_DESC_BUF_SZ (49)
+
+/** Print file version into memory buffer
+ *
+ * \param version File version structure. Cannot be NULL.
+ * \param opt_buf Optional pointer to a buffer for an output of a version string.
+ * Can be NULL, in this case internal static buffer is used.
+ * \param buf_sz Size of #opt_buf. It makes sense with nonull opt_buff param.
+ *
+ * \return Pointer to a buffer with the string.
+ */
 const char *
 vs_update_file_version_str(const vs_file_version_t *version, char *opt_buf, size_t buf_sz);
 
+/** Wrapper for #vs_update_file_version_str to use static buffer
+ */
 #define VS_UPDATE_FILE_VERSION_STR_STATIC(VER_PTR) vs_update_file_version_str(VER_PTR, NULL, 0)
 
+/** Print file type description into memory buffer
+ *
+ * \param file_type File type. Cannot be NULL.
+ * \param opt_buf Optional pointer to a buffer for an output of a description string.
+ * Can be NULL, in this case internal static buffer is used.
+ * \param buf_sz Size of #opt_buf. It makes sense with nonull opt_buff param.
+ *
+ * \return Pointer to a buffer with the string.
+ */
 const char *
-vs_update_file_type_str(vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
+vs_update_file_type_str(const vs_update_file_type_t *file_type, char *opt_buf, size_t buf_sz);
 
+/** Wrapper for #vs_update_file_type_str to use static buffer
+ */
 #define VS_UPDATE_FILE_TYPE_STR_STATIC(TYPE_PTR) vs_update_file_type_str(TYPE_PTR, NULL, 0)
 
 /** Get file type header size
@@ -253,19 +279,6 @@ typedef vs_status_e (*vs_update_verify_object_cb_t)(void *context, vs_update_fil
  * \param[in] file_type Current file type.  Cannot be NULL.
  */
 typedef void (*vs_update_free_item_cb_t)(void *context, vs_update_file_type_t *file_type);
-
-/** Describe file version
- *
- * \param[in] context File context.
- * \param[in] file_type Current file type. Cannot be NULL.
- * \param[in] version Current file version. Cannot be NULL.
- * \param[out] buffer Output buffer to store file version description. Cannot be NULL.
- * \param[in] buf_size Output buffer size. Cannot be zero.
- * \param[in] add_filetype_description If true, \a vs_update_describe_type_cb_t is called and stored to the \a buffer before current file version description
- *
- * \return \a buffer with file type description
- */
-typedef char* (*vs_update_describe_version_cb_t)(void *context, vs_update_file_type_t *file_type, const vs_file_version_t *version, char *buffer, uint32_t buf_size, bool add_filetype_description);
 
 /** Update interface context */
 typedef struct __attribute__((__packed__)) vs_update_interface_t {

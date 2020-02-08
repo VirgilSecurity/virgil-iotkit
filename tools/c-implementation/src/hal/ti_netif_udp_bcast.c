@@ -70,6 +70,8 @@ static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;
 static int _udp_bcast_sock = -1;
 static pthread_t receive_thread;
 
+static in_addr_t _dst_addr = INADDR_BROADCAST;
+
 #define UDP_BCAST_PORT (4100)
 
 #define RX_BUF_SZ (2048)
@@ -185,12 +187,26 @@ _udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_
 
     memset((void *)&broadcast_addr, 0, sizeof(struct sockaddr_in));
     broadcast_addr.sin_family = AF_INET;
-    broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+    broadcast_addr.sin_addr.s_addr = _dst_addr;
     broadcast_addr.sin_port = htons(UDP_BCAST_PORT);
 
     sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
 
     return VS_CODE_OK;
+}
+
+/******************************************************************************/
+static void
+_prepare_dst_addr(void) {
+    const char *_bcast_addr_str = getenv("VS_BCAST_SUBNET_ADDR");
+    if (!_bcast_addr_str) {
+        printf("VS_BCAST_SUBNET_ADDR = 255.255.255.255\n");
+        _dst_addr = INADDR_BROADCAST;
+        return;
+    }
+
+    printf("VS_BCAST_SUBNET_ADDR = %s\n", _bcast_addr_str);
+    _dst_addr = inet_addr(_bcast_addr_str);
 }
 
 /******************************************************************************/
@@ -200,6 +216,7 @@ _udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
     _netif_udp_bcast.packet_buf_filled = 0;
+    _prepare_dst_addr();
     _udp_bcast_connect();
 
     return VS_CODE_OK;
