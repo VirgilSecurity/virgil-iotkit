@@ -537,12 +537,11 @@ vs_fldt_server_add_file_type(const vs_update_file_type_t *file_type,
 
     existing_file_element = _get_mapping_elem(file_type);
 
-    if (!existing_file_element) {
-        STATUS_CHECK_RET(_new_mapping_element(&existing_file_element), "[FLDT] Error to create new mapping element");
-    } else {
+    if (existing_file_element) {
         _delete_mapping_element(existing_file_element);
         VS_LOG_DEBUG("[FLDT] File type is initialized and present, update it");
     }
+    STATUS_CHECK_RET(_new_mapping_element(&existing_file_element), "[FLDT] Error to create new mapping element");
 
     *existing_file_element = file_element_to_add;
 
