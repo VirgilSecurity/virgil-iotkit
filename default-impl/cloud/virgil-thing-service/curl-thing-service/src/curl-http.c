@@ -115,6 +115,7 @@ _curl_http_hal(vs_cloud_http_method_e method,
             break;
         default:
             res = VS_CODE_ERR_INCORRECT_PARAMETER;
+            curl_easy_cleanup(curl);
             goto terminate;
         }
 
@@ -124,10 +125,10 @@ _curl_http_hal(vs_cloud_http_method_e method,
             res = VS_CODE_ERR_REQUEST_SEND;
         }
         *in_out_size = resp.used_size;
+        curl_easy_cleanup(curl);
     }
 
 terminate:
-    curl_easy_cleanup(curl);
     curl_global_cleanup();
 
     return res;
