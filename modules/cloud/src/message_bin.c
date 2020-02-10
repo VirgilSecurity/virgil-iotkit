@@ -114,6 +114,7 @@ _str_to_int(const char *str) {
 static vs_status_e
 _get_message_bin_credentials() {
     const char *cloud_url;
+    jobj_t jobj;
 
     if (_mb_ctx.is_filled) {
         return VS_CODE_OK;
@@ -133,8 +134,9 @@ _get_message_bin_credentials() {
         return VS_CODE_ERR_NO_MEMORY;
     }
 
+    VS_IOT_MEMSET(&jobj, 0, sizeof(jobj));
+
     if (VS_CODE_OK == vs_cloud_fetch_message_bin_credentials(cloud_url, answer, &answer_size)) {
-        jobj_t jobj;
         int len;
         int val;
         char *tmp;
@@ -314,12 +316,14 @@ _get_message_bin_credentials() {
         }
 
         _mb_ctx.is_filled = true;
+        json_parse_stop(&jobj);
         VS_IOT_FREE(answer);
         VS_LOG_DEBUG("[MB] Credentials are loaded successfully");
         return VS_CODE_OK;
     }
 
 terminate:
+    json_parse_stop(&jobj);
     _mb_mqtt_ctx_free();
     VS_IOT_FREE(answer);
     return VS_CODE_ERR_CLOUD;
