@@ -23,6 +23,7 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
   - [Fedora OS](#fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
+  - [Ready Linux packets](#ready-linux-packets)
   - [Qt integration](#qt-integration)
 - [Tests](#tests)
 - [IoTKit Usage](#iotkit-usage)
@@ -222,6 +223,13 @@ If some software has not been found, check PATH system variable.
 After these steps you can clone Git repository and use `build-for-qt.sh` script.
 
 <div id='qt-integration'/>
+
+### Ready Linux packets
+IoTKit also contains ready-made (pre-compiled) packets for Linux OS, that can be installed using an OS package manager.
+- `virgil-iot-sdk-tools` - a set of tools [mentioned above](#iot-dev-tools) for secure device lifecycle management
+- `virgil-iot-sdk-snapd` - a local web utility which allows you to obtain information and statistics from your IoT devices. Virgil SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. Read more [here](/tools/virgil-snapd)
+- `virgil-iot-sdk-libs` - a set of libraries necessary for interacting Virgil IoTKit modules with your IoT devices
+
 
 ### Qt integration
 - Setup Qt with your target platforms support. Each platform has its own requirement. See Qt documentation for details.
