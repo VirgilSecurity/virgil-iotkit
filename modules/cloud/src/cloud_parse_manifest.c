@@ -316,35 +316,28 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
     jobj_t jobj;
     vs_firmware_manifest_entry_t fm_entry;
     int url_len;
+    int res = VS_CODE_ERR_JSON;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(fw_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     VS_LOG_DEBUG("NEW FIRMWARE: %s", (char *)payload);
+    CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, payload, payload_len), "[FW] Error. Invalid JSON");
 
-    if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
-        VS_LOG_ERROR("[FW] Error. Invalid JSON");
-        return VS_CODE_ERR_JSON;
-    }
-
-    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 ||
-        url_len > VS_UPD_URL_STR_SIZE) {
-        VS_LOG_ERROR("[FW] Wrong url field length");
-        return VS_CODE_ERR_JSON;
-    }
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_FW_URL_FIELD, &url_len) || url_len <= 0 ||
+                  url_len > VS_UPD_URL_STR_SIZE,
+          "[FW] Wrong url field length");
 
     if (VS_JSON_ERR_OK ==
         json_get_val_str(&jobj, VS_FW_URL_FIELD, fm_entry.fw_file_url, sizeof(fm_entry.fw_file_url))) {
-        if (json_get_composite_object(&jobj, VS_MANIFEST_FILED)) {
-            VS_LOG_ERROR("[FW] Get composite JSON obj failed");
-            return VS_CODE_ERR_JSON;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_composite_object(&jobj, VS_MANIFEST_FILED),
+              "[FW] Get composite JSON obj failed");
     } else {
         VS_LOG_ERROR("[FW] Get firmware url failed");
-        return VS_CODE_ERR_JSON;
+        goto terminate;
     }
 
-    int res = VS_CODE_ERR_JSON;
+    res = VS_CODE_ERR_JSON;
 
     if (VS_JSON_ERR_OK == json_get_val_str(&jobj,
                                            VS_FW_MANUFACTURER_ID_FIELD,
@@ -368,6 +361,9 @@ vs_cloud_parse_firmware_manifest(void *payload, size_t payload_len, char *fw_url
         }
     }
 
+terminate:
+    VS_LOG_INFO("[FW] manifest released=%d", json_release_composite_object(&jobj));
+    json_parse_stop(&jobj);
     return res;
 }
 
@@ -376,6 +372,7 @@ vs_status_e
 vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
     jobj_t jobj;
     int url_len;
+    int res = VS_CODE_ERR_JSON;
 
     CHECK_NOT_ZERO_RET(payload, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(tl_url, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -384,28 +381,20 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
 
     VS_LOG_DEBUG("NEW TL: %s", (char *)payload);
 
-    if (VS_JSON_ERR_OK != json_parse_start(&jobj, payload, payload_len)) {
-        VS_LOG_ERROR("[TL] Error. Invalid JSON");
-        return VS_CODE_ERR_JSON;
-    }
+    CHECK(VS_JSON_ERR_OK == json_parse_start(&jobj, payload, payload_len), "[TL] Error. Invalid JSON");
 
-    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 ||
-        url_len > VS_UPD_URL_STR_SIZE) {
-        VS_LOG_ERROR("[TL] Wrong url field length");
-        return VS_CODE_ERR_JSON;
-    }
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_TL_URL_FIELD, &url_len) || url_len <= 0 ||
+                  url_len > VS_UPD_URL_STR_SIZE,
+          "[TL] Wrong url field length");
 
     if (VS_JSON_ERR_OK == json_get_val_str(&jobj, VS_TL_URL_FIELD, tl_entry.file_url, sizeof(tl_entry.file_url))) {
-        if (json_get_composite_object(&jobj, "manifest")) {
-            VS_LOG_ERROR("[TL] Get composite JSON obj failed");
-            return VS_CODE_ERR_JSON;
-        }
+        CHECK(VS_JSON_ERR_OK == json_get_composite_object(&jobj, "manifest"), "[TL] Get composite JSON obj failed");
     } else {
         VS_LOG_ERROR("[TL] Get tl url failed");
-        return VS_CODE_ERR_JSON;
+        goto terminate;
     }
 
-    int res = VS_CODE_ERR_CLOUD;
+    res = VS_CODE_ERR_CLOUD;
 
     if (VS_JSON_ERR_OK == json_get_val_int(&jobj, VS_TL_TYPE_FIELD, &tl_entry.info.type) &&
         VS_JSON_ERR_OK ==
@@ -425,8 +414,8 @@ vs_cloud_parse_tl_mainfest(void *payload, size_t payload_len, char *tl_url) {
         }
     }
 
-    int released = json_release_composite_object(&jobj);
-    VS_LOG_INFO("[TL] manifest released=%d", released);
+terminate:
+    VS_LOG_INFO("[TL] manifest released=%d", json_release_composite_object(&jobj));
     json_parse_stop(&jobj);
     return res;
 }
