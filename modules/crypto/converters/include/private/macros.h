@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -48,7 +48,7 @@
 #define NOT_ZERO(VAL)                                                                                                  \
     do {                                                                                                               \
         if (!(VAL)) {                                                                                                  \
-            return -1;                                                                                                 \
+            return (false);                                                                                            \
         }                                                                                                              \
     } while (0)
 

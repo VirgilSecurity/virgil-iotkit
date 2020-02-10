@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -46,12 +46,27 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/logger/logger-hal.h>
 #include <private/utoa_fast_div.h>
+#if VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
+#include <pthread.h>
+#endif // VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
 
 static vs_log_level_t _log_level = VS_LOGLEV_UNKNOWN;
 static bool _last_res = true;
 
 // Output directly string without single '%' in the string
 #define VS_IOT_LOGGER_OPTIMIZE_NONFORMAT_CALL 1
+
+// Thread ID descriptors
+#if VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
+typedef struct {
+    pthread_t id;
+    const char *description;
+} vs_logger_thread_descriptor_t;
+static vs_logger_thread_descriptor_t _thread_descriptor[10];
+int _thread_descriptors;
+bool _no_thread_output;
+
+#endif // VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
 
 /******************************************************************************/
 bool
@@ -63,6 +78,18 @@ vs_logger_last_result(void) {
 void
 vs_logger_init(vs_log_level_t log_level) {
     vs_logger_set_loglev(log_level);
+
+#if VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
+    int f;
+
+    _thread_descriptors = 0;
+
+    for (f = 0; f < sizeof(_thread_descriptor) / sizeof(_thread_descriptor[0]); ++f) {
+        _thread_descriptor[f].description = NULL;
+    }
+
+    vs_log_thread_descriptor("main thr");
+#endif
 }
 
 /******************************************************************************/
@@ -163,6 +190,30 @@ vs_logger_output_preface(vs_log_level_t level, const char *cur_filename, uint32_
         VS_LOGGER_OUTPUT(utoa_fast_div((uint32_t)line_num, buf));
         VS_LOGGER_OUTPUT("] ");
     }
+
+#if VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
+    if (!_no_thread_output) {
+        pthread_t current_thread = pthread_self();
+        int f;
+
+        for (f = 0; f < _thread_descriptors; ++f) {
+            if (_thread_descriptor[f].id == current_thread) {
+                break;
+            }
+        }
+
+        VS_LOGGER_OUTPUT(" [");
+        if (f < _thread_descriptors) {
+            VS_LOGGER_OUTPUT(_thread_descriptor[f].description);
+        } else {
+            char thread_id_str[17];
+            VS_IOT_SNPRINTF(thread_id_str, sizeof(thread_id_str), "%X", (unsigned int)current_thread);
+            VS_LOGGER_OUTPUT("thread ");
+            VS_LOGGER_OUTPUT(thread_id_str);
+        }
+        VS_LOGGER_OUTPUT("] ");
+    }
+#endif
 
 terminate:
 
@@ -317,4 +368,24 @@ terminate:
     return;
 }
 
+/******************************************************************************/
+bool
+vs_log_thread_descriptor(const char *description) {
+#if VS_IOT_LOGGER_OUTPUT_THREAD_ID == 1
+    VS_IOT_ASSERT(description != NULL && "description pointer must not be NULL");
+
+    if (_thread_descriptors == sizeof(_thread_descriptor) / sizeof(_thread_descriptor[0]) || description == NULL) {
+        return false;
+    }
+
+    _thread_descriptor[_thread_descriptors].id = pthread_self();
+    _thread_descriptor[_thread_descriptors].description = description;
+
+    _no_thread_output = !_thread_descriptors;
+
+    ++_thread_descriptors;
+
+#endif
+    return true;
+}
 #endif // VS_IOT_LOGGER_USE_LIBRARY == 1

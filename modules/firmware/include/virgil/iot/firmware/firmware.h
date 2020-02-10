@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -254,6 +254,7 @@ typedef struct __attribute__((__packed__)) {
  * \param[in] secmodule #vs_secmodule_impl_t Security Module implementation. Must not be NULL.
  * \param[in] manufacture Manufacture ID
  * \param[in] device_type Device type
+ * \param[out] ver Pointer to #vs_file_version_t. Will be filled by a current version of firmware.
  *
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
@@ -261,7 +262,8 @@ vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
-                 vs_device_type_t device_type);
+                 vs_device_type_t device_type,
+                 vs_file_version_t *ver);
 
 /**  Destroy firmware module
  *
@@ -417,19 +419,6 @@ vs_firmware_delete_firmware(const vs_firmware_descriptor_t *descriptor);
  */
 vs_status_e
 vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor);
-
-/** Describe firmware version
- *
- * Makes ASCIIZ description of firmware version.
- *
- * \param[in] fw_ver #vs_file_version_t File version. Must not be NULL.
- * \param[out] buffer Output buffer. Must not be NULL.
- * \param[in] buf_size Buffer size. Must not be zero.
- *
- * \return Buffer with description stored in \buffer
- */
-char *
-vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size);
 
 /** Compare own firmware version with the given one
  *

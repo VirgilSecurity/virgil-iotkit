@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 /*! \file stdlib-config.h
- * \brief Standart Library calls configuration
+ * \brief PC configuration : Standart Library calls configuration
  */
 #ifndef VS_IOT_SDK_STDLIB_CONFIG_H
 #define VS_IOT_SDK_STDLIB_CONFIG_H
@@ -97,5 +97,8 @@
 /** conversion from time_t to ASCIIZ */
 #define VS_IOT_ASCTIME(TIME_T)  asctime(localtime(&(TIME_T)))
 
+#include <pthread.h>
+/** Get current thread ID */
+#define VS_IOT_GET_THREAD_ID    pthread_self()
 
 #endif // VS_IOT_SDK_STDLIB_CONFIG_H

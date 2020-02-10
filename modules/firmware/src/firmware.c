@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -147,7 +147,14 @@ vs_status_e
 vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
-                 vs_device_type_t device_type) {
+                 vs_device_type_t device_type,
+                 vs_file_version_t *ver) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_firmware_descriptor_t fw_descr;
+
+    VS_IOT_ASSERT(ver);
+
+    CHECK_NOT_ZERO_RET(ver, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(secmodule, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -155,7 +162,20 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
     _storage_ctx = storage_ctx;
     _secmodule = secmodule;
 
-    return vs_update_firmware_init(storage_ctx, manufacture, device_type);
+    STATUS_CHECK_RET(vs_update_firmware_init(storage_ctx, manufacture, device_type),
+                     "Unable to initialize Firmware module");
+
+    STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
+
+    VS_LOG_DEBUG("Current Firmware version: %d.%d.%d.%d",
+                 fw_descr.info.version.major,
+                 fw_descr.info.version.minor,
+                 fw_descr.info.version.patch,
+                 fw_descr.info.version.build);
+
+    *ver = fw_descr.info.version;
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -712,43 +732,10 @@ vs_firmware_install_firmware(const vs_firmware_descriptor_t *descriptor) {
     STATUS_CHECK_RET(vs_firmware_load_firmware_footer(descriptor, buf, footer_sz, &read_sz),
                      "Unable to load firmware footer");
 
-    return vs_firmware_install_append_data_hal(buf, read_sz);
+    STATUS_CHECK_RET(vs_firmware_install_append_data_hal(buf, read_sz), "Unable to append data");
+
+    return ret_code;
 }
-
-/*************************************************************************/
-char *
-vs_firmware_describe_version(const vs_file_version_t *fw_ver, char *buffer, size_t buf_size) {
-    CHECK_NOT_ZERO_RET(fw_ver, NULL);
-    CHECK_NOT_ZERO_RET(buffer, NULL);
-    CHECK_NOT_ZERO_RET(buf_size, NULL);
-
-#ifdef VS_IOT_ASCTIME
-    time_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
-#else
-    uint32_t timestamp = fw_ver->timestamp + VS_START_EPOCH;
-#endif //   VS_IOT_ASCTIME
-
-    VS_IOT_SNPRINTF(buffer,
-                    buf_size,
-#ifdef VS_IOT_ASCTIME
-                    "ver %d.%d.%d.%llu, %s",
-#else
-                    "ver %d.%d.%d.%llu, UNIX timestamp %u",
-#endif //   VS_IOT_ASCTIME
-                    fw_ver->major,
-                    fw_ver->minor,
-                    fw_ver->patch,
-                    (unsigned long long)fw_ver->build,
-#ifdef VS_IOT_ASCTIME
-                    fw_ver->timestamp ? VS_IOT_ASCTIME(timestamp) : "0"
-#else
-                    timestamp
-#endif //   VS_IOT_ASCTIME
-    );
-
-    return buffer;
-}
-
 
 /*************************************************************************/
 void

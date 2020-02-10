@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -49,12 +49,6 @@
 #include <stdlib-config.h>
 #include <endian-config.h>
 
-// Commands
-
-static vs_storage_op_ctx_t *_tl_ctx;
-static vs_storage_op_ctx_t *_fw_ctx;
-#define FW_DESCR_BUF 128
-
 // Polling
 typedef struct {
     uint32_t elements_mask;
@@ -66,6 +60,9 @@ typedef struct {
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
 static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
 
+static vs_file_version_t _firmware_ver = {0, 0, 0, 0, 0};
+static vs_file_version_t _tl_ver = {0, 0, 0, 0, 0};
+
 /******************************************************************/
 static vs_status_e
 _fill_enum_data(vs_info_enum_response_t *enum_data) {
@@ -76,7 +73,9 @@ _fill_enum_data(vs_info_enum_response_t *enum_data) {
 
     // Set MAC address for default network interface
     default_netif = vs_snap_default_netif();
-    CHECK_RET(!default_netif->mac_addr(&enum_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!default_netif->mac_addr(default_netif, &enum_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set current device roles
     enum_data->device_roles = vs_snap_device_roles();
@@ -151,15 +150,13 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 
     // Set MAC address for default network interface
     defautl_netif = vs_snap_default_netif();
-    CHECK_RET(!defautl_netif->mac_addr(&stat_data->mac), -1, "Cannot get MAC for Default Network Interface");
+    CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &stat_data->mac),
+              -1,
+              "Cannot get MAC for Default Network Interface");
 
     // Set statistics data
     stat_data->received = stat.received;
     stat_data->sent = stat.sent;
-
-    VS_LOG_DEBUG("[INFO] Send statistics: sent = %lu, received = %lu",
-                 (unsigned long)stat_data->sent,
-                 (unsigned long)stat_data->received);
 
     // Normalize byte order
     vs_info_stat_response_t_encode(stat_data);
@@ -169,99 +166,25 @@ _fill_stat_data(vs_info_stat_response_t *stat_data) {
 
 /******************************************************************/
 static vs_status_e
-_stat_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-
-    vs_status_e ret_code = VS_CODE_ERR_INCORRECT_ARGUMENT;
-    vs_info_stat_response_t *stat = (vs_info_stat_response_t *)response;
-
-    CHECK_NOT_ZERO(request);
-    CHECK_NOT_ZERO(response_sz);
-    CHECK(response_buf_sz >= sizeof(vs_info_stat_response_t), "Wrong data size");
-
-    STATUS_CHECK_RET(_fill_stat_data(stat), "Cannot fill SNAP statistics");
-
-    *response_sz = sizeof(*stat);
-    ret_code = VS_CODE_OK;
-
-terminate:
-
-    return ret_code;
-}
-
-/******************************************************************/
-static vs_status_e
 _fill_ginf_data(vs_info_ginf_response_t *general_info) {
-    vs_firmware_descriptor_t fw_descr;
     const vs_netif_t *defautl_netif;
-    vs_tl_element_info_t tl_elem_info;
-    vs_tl_header_t tl_header;
-    uint16_t tl_header_sz = sizeof(tl_header);
-    vs_status_e ret_code;
-    char filever_descr[FW_DESCR_BUF];
 
     CHECK_NOT_ZERO_RET(general_info, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     defautl_netif = vs_snap_default_netif();
 
-    CHECK_RET(!defautl_netif->mac_addr(&general_info->default_netif_mac),
+    CHECK_RET(!defautl_netif->mac_addr(defautl_netif, &general_info->default_netif_mac),
               -1,
               "Cannot get MAC for Default Network Interface");
 
-    STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
-
-    tl_elem_info.id = VS_TL_ELEMENT_TLH;
-    STATUS_CHECK_RET(vs_tl_load_part(&tl_elem_info, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz),
-                     "Unable to obtain Trust List version");
-    vs_tl_header_to_host(&tl_header, &tl_header);
-
     VS_IOT_MEMCPY(general_info->manufacture_id, vs_snap_device_manufacture(), sizeof(vs_device_manufacture_id_t));
     VS_IOT_MEMCPY(general_info->device_type, vs_snap_device_type(), sizeof(vs_device_type_t));
-    VS_IOT_MEMCPY(&general_info->fw_version, &fw_descr.info.version, sizeof(fw_descr.info.version));
-    VS_IOT_MEMCPY(&general_info->tl_version, &tl_header.version, sizeof(tl_header.version));
+    general_info->fw_version = _firmware_ver;
+    general_info->tl_version = _tl_ver;
     general_info->device_roles = vs_snap_device_roles();
-
-    VS_LOG_DEBUG(
-            "[INFO] Send current information: manufacture id = \"%s\", device type = \"%c%c%c%c\", firmware version = "
-            "%s, trust list "
-            "version = %d.%d.%d.%d",
-            general_info->manufacture_id,
-            general_info->device_type[0],
-            general_info->device_type[1],
-            general_info->device_type[2],
-            general_info->device_type[3],
-            vs_firmware_describe_version(&general_info->fw_version, filever_descr, sizeof(filever_descr)),
-            general_info->tl_version.major,
-            general_info->tl_version.minor,
-            general_info->tl_version.patch,
-            general_info->tl_version.build);
 
     // Normalize byte order
     vs_info_ginf_response_t_encode(general_info);
-
-    return VS_CODE_OK;
-}
-
-/******************************************************************/
-static vs_status_e
-_ginf_request_processing(const uint8_t *request,
-                         const uint16_t request_sz,
-                         uint8_t *response,
-                         const uint16_t response_buf_sz,
-                         uint16_t *response_sz) {
-    vs_info_ginf_response_t *general_info = (vs_info_ginf_response_t *)response;
-    vs_status_e ret_code;
-
-    CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(response_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(response_buf_sz > sizeof(vs_info_ginf_response_t), VS_CODE_ERR_TOO_SMALL_BUFFER, 0);
-
-    STATUS_CHECK_RET(_fill_ginf_data(general_info), 0);
-
-    *response_sz = sizeof(vs_info_ginf_response_t);
 
     return VS_CODE_OK;
 }
@@ -280,7 +203,7 @@ _snot_request_processor(const uint8_t *request,
     vs_mac_addr_t self_mac;
 #endif
 
-    VS_LOG_DEBUG("[INFO] SNOT received");
+    VS_LOG_DEBUG("[INFO:SNOT] Request from device " FLDT_MAC_PRINT_TEMPLATE, FLDT_MAC_PRINT_ARG(enum_data->mac));
 
     CHECK_NOT_ZERO_RET(enum_data != NULL, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(request_sz == sizeof(*enum_data),
@@ -336,14 +259,11 @@ _info_request_processor(const struct vs_netif_t *netif,
         return _poll_request_processing(request, request_sz, response, response_buf_sz, response_sz);
 
     case VS_INFO_GINF:
-        return _ginf_request_processing(request, request_sz, response, response_buf_sz, response_sz);
-
     case VS_INFO_STAT:
-        return _stat_request_processing(request, request_sz, response, response_buf_sz, response_sz);
+        return VS_CODE_COMMAND_NO_RESPONSE;
 
     default:
         VS_LOG_ERROR("Unsupported INFO command");
-        VS_IOT_ASSERT(false);
         return VS_CODE_COMMAND_NO_RESPONSE;
     }
 }
@@ -353,22 +273,15 @@ static vs_status_e
 _info_server_periodical_processor(void) {
     vs_status_e ret_code;
 
-    static bool started = false;
-
-    // Send broadcast notification about self start
-    if (!started) {
-        started = true;
-        vs_snap_info_start_notification(NULL);
-    }
-
     _poll_ctx.time_counter++;
     if (_poll_ctx.time_counter >= _poll_ctx.period_seconds) {
         _poll_ctx.time_counter = 0;
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
-            STATUS_CHECK_RET(_fill_ginf_data(&general_info), 0);
+            STATUS_CHECK_RET(_fill_ginf_data(&general_info), "Error _fill_ginf_data");
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
+                                 vs_snap_broadcast_mac(),
+                                 // &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_GINF,
                                  (uint8_t *)&general_info,
@@ -379,7 +292,8 @@ _info_server_periodical_processor(void) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SNAP statistics");
             vs_snap_send_request(NULL,
-                                 &_poll_ctx.dest_mac,
+                                 vs_snap_broadcast_mac(),
+                                 // &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
                                  VS_INFO_STAT,
                                  (uint8_t *)&stat_data,
@@ -392,17 +306,10 @@ _info_server_periodical_processor(void) {
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_info_server(vs_storage_op_ctx_t *tl_ctx,
-                    vs_storage_op_ctx_t *fw_ctx,
-                    vs_snap_info_start_notif_srv_cb_t startup_cb) {
+vs_snap_info_server(vs_snap_info_start_notif_srv_cb_t startup_cb) {
 
     static vs_snap_service_t _info = {0};
 
-    CHECK_NOT_ZERO_RET(tl_ctx, NULL);
-    CHECK_NOT_ZERO_RET(fw_ctx, NULL);
-
-    _tl_ctx = tl_ctx;
-    _fw_ctx = fw_ctx;
     _startup_notification_cb = startup_cb;
 
     _info.user_data = NULL;
@@ -433,6 +340,18 @@ vs_snap_info_start_notification(const vs_netif_t *netif) {
                      "Cannot send data");
 
     return VS_CODE_OK;
+}
+
+/******************************************************************************/
+void
+vs_snap_info_set_firmware_ver(vs_file_version_t ver) {
+    _firmware_ver = ver;
+}
+
+/******************************************************************************/
+void
+vs_snap_info_set_tl_ver(vs_file_version_t ver) {
+    _tl_ver = ver;
 }
 
 /******************************************************************************/

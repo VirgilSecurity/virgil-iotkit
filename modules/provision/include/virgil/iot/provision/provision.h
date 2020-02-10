@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -117,7 +117,7 @@ extern "C" {
  * \return #VS_CODE_OK in case of success or error code.
  */
 vs_status_e
-vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule);
+vs_provision_init(vs_storage_op_ctx_t *tl_storage_ctx, vs_secmodule_impl_t *secmodule, vs_provision_events_t events_cb);
 
 /** Provision destruction
  *

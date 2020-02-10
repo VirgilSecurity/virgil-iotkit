@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -43,10 +43,6 @@
 int
 vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
-#if USE_RSA
-    case VS_KEYPAIR_RSA_2048:
-        return VS_PUBKEY_RSA2048_LEN;
-#endif
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
         return VS_PUBKEY_SECP192_LEN;
@@ -73,10 +69,6 @@ vs_secmodule_get_pubkey_len(vs_secmodule_keypair_type_e keypair_type) {
 int
 vs_secmodule_get_signature_len(vs_secmodule_keypair_type_e keypair_type) {
     switch (keypair_type) {
-#if USE_RSA
-    case VS_KEYPAIR_RSA_2048:
-        return VS_SIGNATURE_RSA2048_LEN;
-#endif
     case VS_KEYPAIR_EC_SECP192R1:
     case VS_KEYPAIR_EC_SECP192K1:
         return VS_SIGNATURE_SECP192_LEN;
@@ -138,8 +130,6 @@ vs_secmodule_keypair_type_descr(vs_secmodule_keypair_type_e type) {
         return "Curve 25519";
     case VS_KEYPAIR_EC_ED25519:
         return "Ed 25519";
-    case VS_KEYPAIR_RSA_2048:
-        return "RSA 2048 bit";
     default:
         VS_LOG_WARNING("Unsupported keypair type");
         return NULL;

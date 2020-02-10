@@ -34,20 +34,27 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Default Crypto implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
-endif()
+if (VIRGIL_IOT_DEFAULT_IMPL AND NOT MOBILE_PLATFORM)
 
-#
-#   Default cloud implementations module
-#
-if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
-endif()
+    #
+    #   Default Crypto implementations module
+    #
+    if (VIRGIL_IOT_DEFAULT_CRYPTO_VS_SOFT_SECMODULE)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto/vs-soft-secmodule)
+    endif()
 
-if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
+    #
+    #   Default cloud implementations module
+    #
+
+    if (VIRGIL_IOT_DEFAULT_CLOUD_CURL_HTTP)
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-thing-service/curl-thing-service)
+    endif()
+
+    if (VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS)
+        #   aws-sdk
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ext/aws-sdk aws-sdk)
+        #   message bin
+        add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/cloud/virgil-message-bin/aws-message-bin)
+    endif()
 endif()

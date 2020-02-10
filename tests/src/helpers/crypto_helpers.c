@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -121,7 +121,8 @@ vs_test_erase_otp_provision(vs_secmodule_impl_t *secmodule_impl) {
     VS_HEADER_SUBCASE("Erase otp slots");
     if (VS_CODE_OK != secmodule_impl->slot_clean(PRIVATE_KEY_SLOT) ||
         VS_CODE_OK != secmodule_impl->slot_clean(REC1_KEY_SLOT) ||
-        VS_CODE_OK != secmodule_impl->slot_clean(REC2_KEY_SLOT)) {
+        VS_CODE_OK != secmodule_impl->slot_clean(REC2_KEY_SLOT) ||
+        VS_CODE_OK != secmodule_impl->slot_clean(SIGNATURE_SLOT)) {
         VS_LOG_ERROR("[AP] Error. Can't erase OTP slots. ");
         return false;
     }

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -103,7 +103,7 @@ vs_snap_info_set_polling(const vs_netif_t *netif,
     request.enable = enable ? 1 : 0;
     request.period_seconds = period_seconds;
     if (default_netif && default_netif->mac_addr) {
-        default_netif->mac_addr(&request.recipient_mac);
+        default_netif->mac_addr(default_netif, &request.recipient_mac);
     } else {
         VS_IOT_MEMSET(request.recipient_mac.bytes, 0xFF, ETH_ADDR_LEN);
     }

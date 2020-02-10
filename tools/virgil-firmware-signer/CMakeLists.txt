@@ -87,6 +87,7 @@ add_custom_target(${LIBS_TARGET}
         ${INITIALIZER_LIB_DIR}
         )
 
+install(DIRECTORY ${CMAKE_BINARY_DIR}/depends/installed/lib DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #
 #   Virgil Signer
 #

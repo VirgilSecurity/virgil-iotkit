@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -102,7 +102,7 @@ extern "C" {
  *
  * Timestamps are stored as seconds since January 1, 2015 UTC. This is constant for UNIX time conversions
  */
-#define VS_START_EPOCH (1420070400);
+#define VS_START_EPOCH (1420070400)
 
 /** Device serial ID size */
 #define VS_DEVICE_SERIAL_SIZE (32)
@@ -238,6 +238,22 @@ typedef struct {
     vs_key_type_e key_type;
     uint8_t element_buf[VS_TL_STORAGE_MAX_PART_SIZE];
 } vs_provision_tl_find_ctx_t;
+
+/** Callback function to inform system about current version of file
+ *
+ * \param[in] ver #vs_file_version_t Current version of file
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
+typedef void (*vs_file_ver_info_cb_t)(vs_file_version_t ver);
+
+/** Container of pointers to callback functions for Provision Events
+ *
+ * Fill required callbacks to receive information about different events of Provision module
+ */
+typedef struct {
+    vs_file_ver_info_cb_t tl_ver_info_cb;
+} vs_provision_events_t;
 
 #ifdef __cplusplus
 } // extern "C"

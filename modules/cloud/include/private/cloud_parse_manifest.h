@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -42,7 +42,7 @@
 
 #define VS_MANUFACTURE_ID_STR_LEN (32 + 1)
 #define VS_DEV_TYPE_ID_STR_LEN (sizeof(uint32_t) + 1)
-#define VS_VERSION_STR_LEN (16 + 1)
+#define VS_VERSION_STR_LEN (22 + 1)
 #define VS_TIMESTAMP_STR_LEN (8 + 1)
 typedef union {
     uint8_t id[VS_DEVICE_TYPE_SIZE];
