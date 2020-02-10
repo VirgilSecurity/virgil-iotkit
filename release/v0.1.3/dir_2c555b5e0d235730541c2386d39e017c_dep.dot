@@ -1,0 +1,14 @@
+digraph "cloud" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_fda2655504b22c1723d40a6b36928f6b {
+    graph [ bgcolor="#ddddee", pencolor="black", label="iot" fontname="Helvetica", fontsize="10", URL="dir_fda2655504b22c1723d40a6b36928f6b.html"]
+  dir_2c555b5e0d235730541c2386d39e017c [shape=box, label="cloud", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_2c555b5e0d235730541c2386d39e017c.html"];
+  }
+  dir_0d1d4944cba7f334923ee9c099e4674f [shape=box label="firmware" fillcolor="white" style="filled" color="red" URL="dir_0d1d4944cba7f334923ee9c099e4674f.html"];
+  dir_861f50189fda057e6c57d1c1130602b3 [shape=box label="helpers" fillcolor="white" style="filled" color="red" URL="dir_861f50189fda057e6c57d1c1130602b3.html"];
+  dir_0d1d4944cba7f334923ee9c099e4674f->dir_861f50189fda057e6c57d1c1130602b3 [headlabel="4", labeldistance=1.5 headhref="dir_000038_000052.html"];
+  dir_2c555b5e0d235730541c2386d39e017c->dir_0d1d4944cba7f334923ee9c099e4674f [headlabel="1", labeldistance=1.5 headhref="dir_000013_000038.html"];
+  dir_2c555b5e0d235730541c2386d39e017c->dir_861f50189fda057e6c57d1c1130602b3 [headlabel="1", labeldistance=1.5 headhref="dir_000013_000052.html"];
+}

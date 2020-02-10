@@ -1,0 +1,13 @@
+digraph "integration" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_31b277648a83fb9e4f2036de3792f5c5 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_31b277648a83fb9e4f2036de3792f5c5.html"];
+    dir_31b277648a83fb9e4f2036de3792f5c5 [shape=plaintext label="integration"];
+    dir_9cf90153fc3842147262cc3866e7b46e [shape=box label="platformio" color="red" fillcolor="white" style="filled" URL="dir_9cf90153fc3842147262cc3866e7b46e.html"];
+    dir_47bd454d18051baacf39ebfefc0d6739 [shape=box label="qt" color="red" fillcolor="white" style="filled" URL="dir_47bd454d18051baacf39ebfefc0d6739.html"];
+  }
+  dir_e05d7e2b1ecd646af5bb94391405f3b5 [shape=box label="modules" fillcolor="white" style="filled" color="red" URL="dir_e05d7e2b1ecd646af5bb94391405f3b5.html"];
+  dir_47bd454d18051baacf39ebfefc0d6739->dir_e05d7e2b1ecd646af5bb94391405f3b5 [headlabel="14", labeldistance=1.5 headhref="dir_000074_000008.html"];
+}

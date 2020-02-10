@@ -1,0 +1,17 @@
+digraph "VSQDeviceInfo"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="VSQDeviceInfo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Device information."];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_deviceType" ,fontname="Helvetica"];
+  Node2 [label="VSQDeviceType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_device_type.html",tooltip="Device type."];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_deviceRoles" ,fontname="Helvetica"];
+  Node3 [label="VSQDeviceRoles",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_device_roles.html",tooltip="Device roles."];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_fwVer\nm_tlVer" ,fontname="Helvetica"];
+  Node4 [label="VSQFileVersion",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_file_version.html",tooltip="Virgil IoT Kit file version."];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_mac" ,fontname="Helvetica"];
+  Node5 [label="VSQMac",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_mac.html",tooltip="Virgil IoT Kit device MAC address."];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_manufactureId" ,fontname="Helvetica"];
+  Node6 [label="VSQManufactureId",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_manufacture_id.html",tooltip="Manufacture identifier."];
+}

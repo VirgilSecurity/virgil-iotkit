@@ -1,0 +1,15 @@
+digraph "virgil" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_ad718b6f3c91d605e84fa3a733445aa7 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="include" fontname="Helvetica", fontsize="10", URL="dir_ad718b6f3c91d605e84fa3a733445aa7.html"]
+  subgraph clusterdir_ee9c0de018b5cda383646235604029da {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_ee9c0de018b5cda383646235604029da.html"];
+    dir_ee9c0de018b5cda383646235604029da [shape=plaintext label="virgil"];
+    dir_8f8648e7d8a36446ac64cd6286ee611b [shape=box label="iot" color="red" fillcolor="white" style="filled" URL="dir_8f8648e7d8a36446ac64cd6286ee611b.html"];
+  }
+  }
+  dir_e05d7e2b1ecd646af5bb94391405f3b5 [shape=box label="modules" fillcolor="white" style="filled" color="red" URL="dir_e05d7e2b1ecd646af5bb94391405f3b5.html"];
+  dir_8f8648e7d8a36446ac64cd6286ee611b->dir_e05d7e2b1ecd646af5bb94391405f3b5 [headlabel="1", labeldistance=1.5 headhref="dir_000066_000008.html"];
+}

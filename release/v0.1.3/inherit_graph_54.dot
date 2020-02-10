@@ -1,0 +1,22 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node59 [label="QObject",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node59 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="VSQIoTKitFacade",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_io_t_kit_facade.html",tooltip="Facade pattern for Virgil IoTKit Qt integration."];
+  Node59 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="VSQNetifBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_netif_base.html",tooltip="SNAP network interface base class."];
+  Node60 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="VSQUdpBroadcast",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_udp_broadcast.html",tooltip="UDP Broadcast network interface implementation."];
+  Node59 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="VSQSnapInfoClient",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_snap_info_client.html",tooltip="SNAP protocol's INFO Client implementation."];
+  Node8 [label="VSQSingleton\< VSQIoTKitFacade \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_singleton.html",tooltip=" "];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="VSQSingleton\< VSQSnapInfo\lClient \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_singleton.html",tooltip=" "];
+  Node7 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="VSQSnapServiceBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_snap_service_base.html",tooltip="SNAP service base class."];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

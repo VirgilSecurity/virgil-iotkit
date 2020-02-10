@@ -1,0 +1,10 @@
+digraph "VSQManufactureId::operator=="
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="VSQManufactureId::operator==",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Compare manufacture identifiers."];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="VSQManufactureId::equal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_manufacture_id.html#afc741379f3cfb5b2123f2269dd45ac93",tooltip="Compare manufacture identifiers."];
+}

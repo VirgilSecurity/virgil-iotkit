@@ -1,0 +1,17 @@
+digraph "cloud" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_d563e644c4cb9c27aef16a9fa48c79cd {
+    graph [ bgcolor="#ddddee", pencolor="black", label="default-impl" fontname="Helvetica", fontsize="10", URL="dir_d563e644c4cb9c27aef16a9fa48c79cd.html"]
+  subgraph clusterdir_bf28982248357f897f1b2cedc59d3553 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_bf28982248357f897f1b2cedc59d3553.html"];
+    dir_bf28982248357f897f1b2cedc59d3553 [shape=plaintext label="cloud"];
+    dir_477f7b9efd969e5b99232c7c570cebf4 [shape=box label="virgil-message-bin" color="red" fillcolor="white" style="filled" URL="dir_477f7b9efd969e5b99232c7c570cebf4.html"];
+    dir_db42ac3611a87427112d9d87a544b613 [shape=box label="virgil-thing-service" color="red" fillcolor="white" style="filled" URL="dir_db42ac3611a87427112d9d87a544b613.html"];
+  }
+  }
+  dir_e05d7e2b1ecd646af5bb94391405f3b5 [shape=box label="modules" fillcolor="white" style="filled" color="red" URL="dir_e05d7e2b1ecd646af5bb94391405f3b5.html"];
+  dir_db42ac3611a87427112d9d87a544b613->dir_e05d7e2b1ecd646af5bb94391405f3b5 [headlabel="1", labeldistance=1.5 headhref="dir_000020_000008.html"];
+  dir_477f7b9efd969e5b99232c7c570cebf4->dir_e05d7e2b1ecd646af5bb94391405f3b5 [headlabel="1", labeldistance=1.5 headhref="dir_000002_000008.html"];
+}

@@ -1,0 +1,17 @@
+digraph "crypto" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_e05d7e2b1ecd646af5bb94391405f3b5 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="modules" fontname="Helvetica", fontsize="10", URL="dir_e05d7e2b1ecd646af5bb94391405f3b5.html"]
+  subgraph clusterdir_fdd8a560e62e0c17cb1c1d2c36eb6160 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_fdd8a560e62e0c17cb1c1d2c36eb6160.html"];
+    dir_fdd8a560e62e0c17cb1c1d2c36eb6160 [shape=plaintext label="crypto"];
+    dir_125cf8f713a76480557c0fbe9c0cf00e [shape=box label="converters" color="red" fillcolor="white" style="filled" URL="dir_125cf8f713a76480557c0fbe9c0cf00e.html"];
+    dir_6c7f0c2bb230089ff4f25c4b7818f39c [shape=box label="secmodule" color="red" fillcolor="white" style="filled" URL="dir_6c7f0c2bb230089ff4f25c4b7818f39c.html"];
+  }
+  }
+  dir_861f50189fda057e6c57d1c1130602b3 [shape=box label="helpers" fillcolor="white" style="filled" color="red" URL="dir_861f50189fda057e6c57d1c1130602b3.html"];
+  dir_125cf8f713a76480557c0fbe9c0cf00e->dir_6c7f0c2bb230089ff4f25c4b7818f39c [headlabel="1", labeldistance=1.5 headhref="dir_000015_000080.html"];
+  dir_6c7f0c2bb230089ff4f25c4b7818f39c->dir_861f50189fda057e6c57d1c1130602b3 [headlabel="1", labeldistance=1.5 headhref="dir_000080_000052.html"];
+}

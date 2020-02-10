@@ -1,0 +1,15 @@
+digraph "vs_snap_info_client_service_t"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="vs_snap_info_client\l_service_t",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="INFO client implementations."];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" statistics" ,fontname="Helvetica"];
+  Node2 [label="vs_info_statistics_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structvs__info__statistics__t.html",tooltip="Device statistics."];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" general_info" ,fontname="Helvetica"];
+  Node3 [label="vs_info_general_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structvs__info__general__t.html",tooltip="Device general information."];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fw_ver\ntl_ver" ,fontname="Helvetica"];
+  Node4 [label="vs_file_version_unpacked_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structvs__file__version__unpacked__t.html",tooltip="File version."];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" device_start" ,fontname="Helvetica"];
+  Node5 [label="vs_snap_info_device_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structvs__snap__info__device__t.html",tooltip="Device information."];
+}

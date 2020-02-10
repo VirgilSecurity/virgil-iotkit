@@ -1,0 +1,10 @@
+digraph "VSQImplementations::netif"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="VSQImplementations\l::netif",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Initialised network interface implementation."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="VSQImplementations\l::operator\<\<",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_v_s_q_implementations.html#ae1b2b1e01ec15626e249cb79320f3575",tooltip="Add network interface implementation."];
+}
