@@ -42,3 +42,7 @@ format_list.txt
 ####
 # Python
 __pycache__/
+
+
+
+!sdk/config
