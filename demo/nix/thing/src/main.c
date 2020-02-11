@@ -103,8 +103,8 @@ main(int argc, char *argv[]) {
     // ---------- Create implementations ----------
     //
 
-    // Network interface
-    netifs_impl[0] = vs_app_create_netif_impl(forced_mac_addr);
+    //    // Network interface
+    //    netifs_impl[0] = vs_app_create_netif_impl(forced_mac_addr);
 
     // TrustList storage
     STATUS_CHECK(vs_app_storage_init_impl(&tl_storage_impl, vs_app_trustlist_dir(), VS_TL_STORAGE_MAX_PART_SIZE),

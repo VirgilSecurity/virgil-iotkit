@@ -60,9 +60,9 @@ target_sources(gateway
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/message-bin-thread.c
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/main-thread.c
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/file-download-thread.c
-		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket.c
-		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket-utils.c
-		${CMAKE_CURRENT_LIST_DIR}/src/netif/netif-websocket.c
+#		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket.c
+#		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket-utils.c
+#		${CMAKE_CURRENT_LIST_DIR}/src/netif/netif-websocket.c
         )
 
 #
@@ -132,7 +132,7 @@ if(NOT GO_DISABLE)
 
 	sign_firmware(gateway-signed
 			${VIRGIL_FIRMWARE_SIGNER_CONFIG_FILE_PATH}
-			${CMAKE_BINARY_DIR}/gateway/gateway
+			${CMAKE_BINARY_DIR}/demo/nix/gateway/gateway
 			${GW_APP_FILE_SIZE}
 			${APP_VERSION}
 			${GATEWAY_MANUFACTURE}

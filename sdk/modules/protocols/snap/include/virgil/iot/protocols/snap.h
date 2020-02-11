@@ -141,7 +141,7 @@ vs_snap_device_roles(void);
  * \return #vs_netif_t Device network interface. Cannot be NULL.
  */
 const vs_netif_t *
-vs_snap_netif_default(void);
+vs_snap_default_netif(void);
 
 /** Return device network interface constant for packet routing
  *

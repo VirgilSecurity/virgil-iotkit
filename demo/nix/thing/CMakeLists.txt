@@ -112,7 +112,7 @@ if(NOT GO_DISABLE)
 
 	sign_firmware(thing-signed
 			${VIRGIL_FIRMWARE_SIGNER_CONFIG_FILE_PATH}
-			${CMAKE_BINARY_DIR}/thing/thing
+			${CMAKE_BINARY_DIR}/demo/nix/thing/thing
 			${THING_APP_FILE_SIZE}
 			${APP_VERSION}
 			${THING_MANUFACTURE}

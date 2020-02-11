@@ -44,23 +44,23 @@ static vs_netif_t *test_netif;
 static bool
 test_snap_init_deinit(void) {
 
-    const vs_device_manufacture_id_t manufacturer_id = {0};
-    const vs_device_type_t device_type = {0};
-    const vs_device_serial_t device_serial = {0};
-    uint32_t device_roles = 0;
+    //    const vs_device_manufacture_id_t manufacturer_id = {0};
+    //    const vs_device_type_t device_type = {0};
+    //    const vs_device_serial_t device_serial = {0};
+    //    uint32_t device_roles = 0;
 
     netif_state.membuf = 0;
 
-    CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
-          "vs_snap_init call");
+    //    CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
+    //          "vs_snap_init call");
     CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_snap_init has not been called");
 
     CHECK(VS_CODE_OK == vs_snap_deinit(test_netif), "vs_snap_deinit call");
     CHECK((netif_state.deinitialized && !netif_state.initialized),
           "netif operation vs_snap_deinit has not been called");
 
-    CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
-          "vs_snap_init call");
+    //    CHECK(VS_CODE_OK == vs_snap_init(test_netif, manufacturer_id, device_type, device_serial, device_roles),
+    //          "vs_snap_init call");
     CHECK((netif_state.initialized && !netif_state.deinitialized), "netif operation vs_snap_init has not been called");
 
     return true;

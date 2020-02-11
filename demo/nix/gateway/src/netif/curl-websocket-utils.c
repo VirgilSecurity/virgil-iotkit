@@ -30,7 +30,7 @@
 #include <string.h>
 
 
- static void
+static void
 _cws_sha1(const void *input, const size_t input_len, void *output) {
     //    static const EVP_MD *md = NULL;
     //    EVP_MD_CTX ctx;
@@ -49,7 +49,7 @@ _cws_sha1(const void *input, const size_t input_len, void *output) {
     //    EVP_MD_CTX_cleanup(&ctx);
 }
 
- static void
+static void
 _cws_encode_base64(const uint8_t *input, const size_t input_len, char *output) {
     static const char base64_map[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     size_t i, o;
@@ -95,7 +95,7 @@ _cws_encode_base64(const uint8_t *input, const size_t input_len, char *output) {
     }
 }
 
- static void
+static void
 _cws_get_random(void *buffer, size_t len) {
     //    uint8_t *bytes = buffer;
     //    uint8_t *bytes_end = bytes + len;
@@ -117,7 +117,7 @@ _cws_get_random(void *buffer, size_t len) {
     //    }
 }
 
- static inline void
+static inline void
 _cws_trim(const char **p_buffer, size_t *p_len) {
     const char *buffer = *p_buffer;
     size_t len = *p_len;
@@ -134,7 +134,7 @@ _cws_trim(const char **p_buffer, size_t *p_len) {
     *p_len = len;
 }
 
- static inline bool
+static inline bool
 _cws_header_has_prefix(const char *buffer, const size_t buflen, const char *prefix) {
     const size_t prefixlen = strlen(prefix);
     if (buflen < prefixlen)
@@ -142,7 +142,7 @@ _cws_header_has_prefix(const char *buffer, const size_t buflen, const char *pref
     return strncasecmp(buffer, prefix, prefixlen) == 0;
 }
 
- static inline void
+static inline void
 _cws_hton(void *mem, uint8_t len) {
 #if __BYTE_ORDER__ != __BIG_ENDIAN
     uint8_t *bytes;
@@ -161,7 +161,7 @@ _cws_hton(void *mem, uint8_t len) {
 #endif
 }
 
- static inline void
+static inline void
 _cws_ntoh(void *mem, uint8_t len) {
 #if __BYTE_ORDER__ != __BIG_ENDIAN
     uint8_t *bytes;
