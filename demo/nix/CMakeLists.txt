@@ -60,14 +60,15 @@ if(BIGENDIAN_32_BIT_BUILD)
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake/mips32.toolchain.cmake")
 endif()
 
+set(VIRGIL_IOT_SDK_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../sdk CACHE STRING "Path to the Virgil IoT SDK")
 
 #------------------------------------------------------------------------------
 #   Includes
 #------------------------------------------------------------------------------
 
 # Clang format
-include(${CMAKE_CURRENT_LIST_DIR}/ext/virgil-iot-sdk/cmake/clangformat.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/helpers.cmake)
+include(${VIRGIL_IOT_SDK_DIRECTORY}/cmake/clangformat.cmake)
+include(${VIRGIL_IOT_SDK_DIRECTORY}/cmake/helpers.cmake)
 
 
 #
@@ -103,25 +104,25 @@ option(GATEWAY_SIMULATOR "On/Off Test message" OFF)
 #   Golang
 #------------------------------------------------------------------------------
 if(NOT GO_DISABLE)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmake/golang.cmake)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmake/flags.cmake)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+    include(${VIRGIL_IOT_SDK_DIRECTORY}/cmake/golang.cmake)
+    include(${VIRGIL_IOT_SDK_DIRECTORY}/cmake/flags.cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${VIRGIL_IOT_SDK_DIRECTORY}/cmake")
 endif()
 
 #------------------------------------------------------------------------------
 #   Setup project
 #------------------------------------------------------------------------------
 if(GO_DISABLE)
-    project(iot-rpi VERSION 0.1.0 LANGUAGES C)
+    project(iot-demo-nix VERSION 0.1.0 LANGUAGES C)
 else()
-    project(iot-rpi VERSION 0.1.0 LANGUAGES C Go)
+    project(iot-demo-nix VERSION 0.1.0 LANGUAGES C Go)
 endif()
 
 #
 #   Virgil IoT SDK
 #
-set(VIRGIL_IOT_CONFIG_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/ext/virgil-iot-sdk/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/ext/virgil-iot-sdk)
+set(VIRGIL_IOT_CONFIG_DIRECTORY ${VIRGIL_IOT_SDK_DIRECTORY}/config/pc CACHE STRING "Path to the Virgil IoT SDK configuration")
+add_subdirectory(${VIRGIL_IOT_SDK_DIRECTORY} iotkit)
 
 #
 #   Common code library
