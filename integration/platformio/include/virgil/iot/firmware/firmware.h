@@ -258,7 +258,7 @@ typedef struct __attribute__((__packed__)) {
  * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
  */
 vs_status_e
-vs_firmware_init(vs_storage_op_ctx_t *ctx,
+vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
                  vs_secmodule_impl_t *secmodule,
                  vs_device_manufacture_id_t manufacture,
                  vs_device_type_t device_type);
