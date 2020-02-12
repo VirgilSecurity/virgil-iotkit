@@ -56,6 +56,7 @@ _sw_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
     vs_firmware_header_t header;
     vs_update_file_type_t *fw_info = NULL;
     int res;
+    int old_cancel_state;
 
     // It should be immediately available given that this starts first
     if (0 == pthread_mutex_lock(&gtwy->firmware_mutex)) {
@@ -63,7 +64,10 @@ _sw_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
 
         VS_LOG_DEBUG("[MB_NOTIFY]: Fetch new firmware from URL %s", request->upd_file_url);
 
+        THREAD_CANCEL_DISABLE;
         res = vs_cloud_fetch_and_store_fw_file(request->upd_file_url, &header);
+        THREAD_CANCEL_RESTORE;
+
         if (VS_CODE_OK == res) {
             VS_LOG_DEBUG("[MB_NOTIFY]:FW image stored successfully");
 
@@ -110,11 +114,17 @@ _tl_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
     vs_tl_element_info_t elem = {.id = VS_TL_ELEMENT_TLH};
     vs_tl_header_t tl_header;
     uint16_t tl_header_sz = sizeof(tl_header);
+    int res;
+    int old_cancel_state;
 
     if (0 == pthread_mutex_lock(&gtwy->tl_mutex)) {
         VS_LOG_DEBUG("[MB_NOTIFY]:In while loop and got TL semaphore\r\n");
 
-        if (VS_CODE_OK == vs_cloud_fetch_and_store_tl(request->upd_file_url)) {
+        THREAD_CANCEL_DISABLE;
+        res = vs_cloud_fetch_and_store_tl(request->upd_file_url);
+        THREAD_CANCEL_RESTORE;
+
+        if (VS_CODE_OK == res) {
             VS_LOG_DEBUG("[MB_NOTIFY]:TL Successful fetched\r\n");
 
             CHECK(VS_CODE_OK == vs_tl_load_part(&elem, (uint8_t *)&tl_header, tl_header_sz, &tl_header_sz) &&

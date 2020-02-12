@@ -45,6 +45,21 @@
 #include <helpers/event-group-bits.h>
 #include <global-hal.h>
 
+#define THREAD_CANCEL_DISABLE                                                                                          \
+    do {                                                                                                               \
+        if (0 != pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &old_cancel_state)) {                                  \
+            VS_LOG_ERROR("[MB] Failed to disable thread cancel, errno = %d (%s)", errno, strerror(errno));             \
+            exit(-1);                                                                                                  \
+        }                                                                                                              \
+    } while (0)
+#define THREAD_CANCEL_RESTORE                                                                                          \
+    do {                                                                                                               \
+        if (0 != pthread_setcancelstate(old_cancel_state, &old_cancel_state)) {                                        \
+            VS_LOG_ERROR("[MB] Failed to disable thread cancel, errno = %d (%s)", errno, strerror(errno));             \
+            exit(-1);                                                                                                  \
+        }                                                                                                              \
+    } while (0)
+
 typedef struct gtwy_s {
     vs_event_group_bits_t shared_events;
     vs_event_group_bits_t message_bin_events;
@@ -63,4 +78,6 @@ vs_gateway_ctx(void);
 void
 vs_main_start_threads(void);
 
+void
+vs_main_stop_threads(void);
 #endif // GATEWAY_H

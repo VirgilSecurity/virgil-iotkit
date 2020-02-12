@@ -167,6 +167,8 @@ terminate:
     VS_LOG_INFO("\n\n\n");
     VS_LOG_INFO("Terminating application ...");
 
+    vs_main_stop_threads();
+
     // De-initialize IoTKit internals
     vs_high_level_deinit();
 

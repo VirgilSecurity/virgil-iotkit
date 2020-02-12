@@ -102,12 +102,17 @@ _tl_topic_process(const uint8_t *url, uint16_t length) {
 /*************************************************************************/
 static void *
 _mb_mqtt_task(void *params) {
-    vs_log_thread_descriptor("msg bin thr");
+    int old_cancel_state;
+    vs_status_e res;
 
+    vs_log_thread_descriptor("msg bin thr");
     VS_LOG_DEBUG("message bin thread started");
 
     while (true) {
-        if (VS_CODE_OK == vs_cloud_message_bin_process()) {
+        THREAD_CANCEL_DISABLE;
+        res = vs_cloud_message_bin_process();
+        THREAD_CANCEL_RESTORE;
+        if (VS_CODE_OK == res) {
             vs_impl_msleep(500);
         } else {
             vs_impl_msleep(5000);

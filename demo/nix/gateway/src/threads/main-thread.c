@@ -48,9 +48,9 @@
 
 static gtwy_t _gtwy = {.firmware_mutex = PTHREAD_MUTEX_INITIALIZER, .tl_mutex = PTHREAD_MUTEX_INITIALIZER};
 
-
-static bool is_threads_started = false;
 static pthread_t gateway_starter_thread;
+static volatile bool is_threads_started = false;
+static volatile bool stop_threads = false;
 
 #define MAIN_THREAD_SLEEP_S (2)
 
@@ -106,9 +106,8 @@ _cancel_thread(pthread_t *thread) {
 }
 
 /*************************************************************************/
-static void
-_restart_app() {
-
+void
+_stop_all_threads(void) {
     // Stop message bin thread
     if (0 != _cancel_thread(message_bin_thread)) {
         VS_LOG_ERROR("Unable to cancel message_bin_thread");
@@ -131,7 +130,12 @@ _restart_app() {
     vs_event_group_destroy(&_gtwy.shared_events);
     vs_event_group_destroy(&_gtwy.incoming_data_events);
     vs_event_group_destroy(&_gtwy.message_bin_events);
+}
 
+/*************************************************************************/
+static void
+_restart_app() {
+    _stop_all_threads();
     vs_app_restart();
     pthread_exit(0);
 }
@@ -154,7 +158,7 @@ _gateway_task(void *pvParameters) {
     CHECK_NOT_ZERO_RET(upd_http_retrieval_thread, (void *)-1);
 
     // Main cycle
-    while (true) {
+    while (!stop_threads) {
         vs_event_group_wait_bits(&_gtwy.incoming_data_events, EID_BITS_ALL, true, false, MAIN_THREAD_SLEEP_S);
         vs_event_group_set_bits(&_gtwy.shared_events, SNAP_INIT_FINITE_BIT);
 
@@ -205,6 +209,9 @@ _gateway_task(void *pvParameters) {
         }
 #endif
     }
+    _stop_all_threads();
+    stop_threads = false;
+    is_threads_started = false;
     return NULL;
 }
 
@@ -219,6 +226,16 @@ vs_main_start_threads(void) {
             VS_LOG_ERROR("Error during starting main gateway thread");
             exit(-1);
         }
+    }
+}
+
+/******************************************************************************/
+void
+vs_main_stop_threads(void) {
+    // Stop main thread
+    if (is_threads_started) {
+        stop_threads = true;
+        pthread_join(gateway_starter_thread, NULL);
     }
 }
 
