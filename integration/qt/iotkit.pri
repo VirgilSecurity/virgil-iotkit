@@ -38,7 +38,7 @@ CONFIG += c++14
 #   Project relative path
 #
 
-VIRGIL_IOTKIT_SOURCE_PATH = $$PWD/../../
+VIRGIL_IOTKIT_SOURCE_PATH = $$PWD/../../sdk
 VIRGIL_IOTKIT_BUILD_PATH_BASE = $${VIRGIL_IOTKIT_SOURCE_PATH}
 
 CONFIG(debug, debug|release) {

@@ -42,7 +42,7 @@ TARGET = demo-iotkit-qt
 #   Include IoTKit Qt wrapper
 #
 
-include(ext/virgil-iotkit/integration/qt/iotkit.pri)
+include(../../integration/qt/iotkit.pri)
 
 #
 #   Defines
