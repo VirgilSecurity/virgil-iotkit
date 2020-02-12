@@ -114,8 +114,8 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 #endif // FLDT_SERVER || FLDT_CLIENT
 
     // SNAP module
-    //    STATUS_CHECK(vs_snap_init(netif_impl[0], manufacture_id, device_type, serial, device_roles),
-    //                 "Unable to initialize SNAP module");
+    STATUS_CHECK(vs_snap_init(netif_impl[0], NULL, manufacture_id, device_type, serial, device_roles),
+                 "Unable to initialize SNAP module");
 
     //
     // ---------- Register SNAP services ----------

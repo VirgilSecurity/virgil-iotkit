@@ -167,7 +167,7 @@ vs_firmware_init(vs_storage_op_ctx_t *storage_ctx,
 
     STATUS_CHECK_RET(vs_firmware_get_own_firmware_descriptor(&fw_descr), "Unable to get own firmware descriptor");
 
-    VS_LOG_DEBUG("Current Firmware version: %d.%d.%d.%d",
+    VS_LOG_DEBUG("Current Firmware version: %u.%u.%u.%u",
                  fw_descr.info.version.major,
                  fw_descr.info.version.minor,
                  fw_descr.info.version.patch,

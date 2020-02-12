@@ -210,6 +210,16 @@ _snap_periodical(void) {
 }
 
 /******************************************************************************/
+#if VS_ENABLE_ROUTING
+static bool
+_need_routing(const vs_netif_t *netif, const vs_mac_addr_t *src_mac, const vs_mac_addr_t *dest_mac) {
+    bool dst_is_broadcast = _is_broadcast(dest_mac);
+    bool dst_is_my_mac = _is_my_mac(netif, dest_mac);
+    bool src_is_my_mac = _is_my_mac(netif, src_mac);
+    return !src_is_my_mac && (dst_is_broadcast || !dst_is_my_mac);
+}
+#endif
+/******************************************************************************/
 static vs_status_e
 _snap_rx_cb(vs_netif_t *netif,
             const uint8_t *data,
@@ -294,12 +304,11 @@ _snap_rx_cb(vs_netif_t *netif,
 
             // Reset filled packet
             netif->packet_buf_filled = 0;
+            // Normalize byte order
+            vs_snap_packet_t_decode(packet);
 
             // Check is my packet
             if (_accept_packet(netif, &packet->eth_header.src, &packet->eth_header.dest)) {
-
-                // Normalize byte order
-                vs_snap_packet_t_decode(packet);
 
                 // Prepare for processing
                 *packet_data = (uint8_t *)packet;
@@ -308,6 +317,7 @@ _snap_rx_cb(vs_netif_t *netif,
             }
 
             packet = 0;
+            netif->packet_buf_filled = 0;
         }
     }
 
@@ -446,6 +456,7 @@ vs_status_e
 vs_snap_send(const vs_netif_t *netif, const uint8_t *data, uint16_t data_sz) {
     size_t i;
 
+    VS_IOT_ASSERT(_default_netif());
     VS_IOT_ASSERT(netif);
 
     vs_snap_packet_t *packet = (vs_snap_packet_t *)data;

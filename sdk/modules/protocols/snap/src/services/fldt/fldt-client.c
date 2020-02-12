@@ -191,7 +191,7 @@ _update_process_retry(vs_fldt_client_file_type_mapping_t *object_info) {
 
     VS_FLDT_PRINT_DEBUG(object_info->type.type, retry_ctx->command, "_update_process_retry");
 
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                     &retry_ctx->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
                                     retry_ctx->command,
@@ -312,7 +312,7 @@ vs_fldt_INFV_request_processor(const uint8_t *request,
                                                     sizeof(header_request)),
                   VS_CODE_ERR_INCORRECT_SEND_REQUEST,
                   "Can't set up retry process");
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFH,
@@ -409,7 +409,7 @@ vs_fldt_GNFH_response_processor(bool is_ack, const uint8_t *response, const uint
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Can't set up retry process");
 
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                     &file_type_info->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GNFD,
@@ -489,7 +489,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                   VS_CODE_ERR_INCORRECT_SEND_REQUEST,
                   "Can't set up retry process");
 
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFD,
@@ -516,7 +516,7 @@ vs_fldt_GNFD_response_processor(bool is_ack, const uint8_t *response, const uint
                   VS_CODE_ERR_INCORRECT_SEND_REQUEST,
                   "Can't set up retry process");
 
-        CHECK_RET(!vs_snap_send_request(NULL,
+        CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                         &file_type_info->gateway_mac,
                                         VS_FLDT_SERVICE_ID,
                                         VS_FLDT_GNFF,
@@ -547,7 +547,7 @@ _ask_file_type_info(const char *file_type_descr,
                               file_type_info, VS_FLDT_GNFH, 0, (const uint8_t *)gnfh_request, sizeof(*gnfh_request)),
               VS_CODE_ERR_INCORRECT_SEND_REQUEST,
               "Can't set up retry process");
-    CHECK_RET(!vs_snap_send_request(NULL,
+    CHECK_RET(!vs_snap_send_request(vs_snap_default_netif(),
                                     &file_type_info->gateway_mac,
                                     VS_FLDT_SERVICE_ID,
                                     VS_FLDT_GNFH,

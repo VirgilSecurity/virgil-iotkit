@@ -45,10 +45,13 @@
 #include "helpers/app-helpers.h"
 #include "helpers/file-cache.h"
 #include "helpers/app-storage.h"
-#include "sdk-impl/firmware/firmware-nix-impl.h"
 #include <virgil/iot/vs-aws-message-bin/aws-message-bin.h>
 #include <threads/message-bin-thread.h>
 #include <virgil/iot/protocols/snap/info/info-server.h>
+
+#include "sdk-impl/firmware/firmware-nix-impl.h"
+#include "sdk-impl/netif/netif-udp-broadcast.h"
+#include "sdk-impl/netif/packets-queue.h"
 
 /******************************************************************************/
 int
@@ -96,8 +99,9 @@ main(int argc, char *argv[]) {
     // ---------- Create implementations ----------
     //
 
-    //    // Network interface
-    //    netifs_impl[0] = vs_app_create_netif_impl(forced_mac_addr);
+    // Network interface
+    vs_packets_queue_init(vs_snap_default_processor);
+    netifs_impl[0] = vs_hal_netif_udp_bcast(forced_mac_addr);
 
     // TrustList storage
     STATUS_CHECK(vs_app_storage_init_impl(&tl_storage_impl, vs_app_trustlist_dir(), VS_TL_STORAGE_MAX_PART_SIZE),
@@ -148,7 +152,7 @@ main(int argc, char *argv[]) {
     vs_main_start_threads();
 
     // Send broadcast notification about self start
-    vs_snap_info_start_notification(NULL);
+    vs_snap_info_start_notification(vs_snap_default_netif());
 
     // Sleep until CTRL_C
     vs_app_sleep_until_stop();
