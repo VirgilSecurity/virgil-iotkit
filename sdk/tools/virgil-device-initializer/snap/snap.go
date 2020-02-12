@@ -181,7 +181,7 @@ func (p *DeviceProcessor) Process() error {
 func (p *Processor) DiscoverDevices() error {
     list := C.vs_snap_prvs_dnid_list_t{}
 
-    if 0 != C.vs_snap_prvs_enum_devices(nil, &list, DEFAULT_TIMEOUT_MS) {
+    if 0 != C.vs_snap_prvs_enum_devices(C.vs_snap_netif_routing(), &list, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("can't find SNAP:PRVS uninitialized devices")
     }
 
@@ -229,7 +229,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     headerBytes := binBuf.Bytes()
     headerPtr := (*C.uchar)(unsafe.Pointer(&headerBytes[0]))
 
-    if 0 != C.vs_snap_prvs_set_tl_header(nil,
+    if 0 != C.vs_snap_prvs_set_tl_header(C.vs_snap_netif_routing(),
                                          &mac,
                                          headerPtr,
                                          C.uint16_t(len(headerBytes)),
@@ -270,7 +270,7 @@ func (p *DeviceProcessor) SetTrustList() error {
     footerBytes := binBuf.Bytes()
     dataPtr := (*C.uchar)(unsafe.Pointer(&footerBytes[0]))
 
-    if 0 != C.vs_snap_prvs_set_tl_footer(nil,
+    if 0 != C.vs_snap_prvs_set_tl_footer(C.vs_snap_netif_routing(),
                                        &mac,
                                        dataPtr,
                                        C.uint16_t(len(footerBytes)),
@@ -289,7 +289,7 @@ func (p *DeviceProcessor) InitDevice() error {
     asavInfoPtr := (*C.uchar)(unsafe.Pointer(&asavInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_snap_prvs_save_provision(nil, &mac, asavInfoPtr, bufSize, DEFAULT_TIMEOUT_MS) {
+    if 0 != C.vs_snap_prvs_save_provision(C.vs_snap_netif_routing(), &mac, asavInfoPtr, bufSize, DEFAULT_TIMEOUT_MS) {
         return fmt.Errorf("InitDevice: vs_snap_prvs_save_provision error")
     }
 
@@ -308,7 +308,7 @@ func (p *DeviceProcessor) uploadData(element C.vs_snap_prvs_element_e, data []by
 
     mac := p.deviceInfo.mac_addr
     dataPtr := (*C.uchar)(unsafe.Pointer(&data[0]))
-    if 0 != C.vs_snap_prvs_set(nil,
+    if 0 != C.vs_snap_prvs_set(C.vs_snap_netif_routing(),
                                &mac,
                                element,
                                dataPtr,
@@ -443,7 +443,7 @@ func (p *DeviceProcessor) GetProvisionInfo() error {
     deviceInfoPtr := (*C.vs_snap_prvs_devi_t)(unsafe.Pointer(&devInfoBuf[0]))
     mac := p.deviceInfo.mac_addr
 
-    if 0 != C.vs_snap_prvs_device_info(nil,
+    if 0 != C.vs_snap_prvs_device_info(C.vs_snap_netif_routing(),
                                        &mac,
                                        deviceInfoPtr,
                                        C.uint16_t(bufSize),
@@ -489,7 +489,7 @@ func (p *DeviceProcessor) SignDataInDevice(data []byte) ([]byte, error) {
     signaturePtr := (*C.uchar)(unsafe.Pointer(&signatureBuf[0]))
     dataPtr := (*C.uchar)(unsafe.Pointer(&requestBytes[0]))
 
-    signRes := C.vs_snap_prvs_sign_data(nil,
+    signRes := C.vs_snap_prvs_sign_data(C.vs_snap_netif_routing(),
                                         &mac,
                                         dataPtr,
                                         C.uint16_t(len(requestBytes)),
