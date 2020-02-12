@@ -210,9 +210,6 @@ public slots:
                 {VSQSnapInfoClient::GENERAL_INFO, VSQSnapInfoClient::STATISTICS}, deviceMac, true, periodSeconds);
     }
 
-    devicesList() const {
-        return m_devicesInfo;
-    }
 signals:
 
     /** Signal "New information has been received"

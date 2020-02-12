@@ -49,6 +49,7 @@ VSQApplication::run() {
     QQmlApplicationEngine engine;
     VSQNetifBLEEnumerator bleEnumerator;
     auto netifUDPbcast = QSharedPointer<VSQUdpBroadcast>::create();
+    auto netifBLE = QSharedPointer<VSQNetifBLE>::create();
 
     auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT
                                   << VSQFeatures::SNAP_SNIFFER

@@ -84,7 +84,7 @@ VSQIoTKitFacade::initSnap() {
         throw QString("There is no default network implementation");
     }
 
-    if (vs_snap_init(*m_impl.netifs().first().get(),
+    if (vs_snap_init(m_impl.netifs().first().get()->lowLevelNetif(),
                      netifProcessCb,
                      m_appConfig.manufactureId(),
                      m_appConfig.deviceType(),
@@ -101,7 +101,7 @@ VSQIoTKitFacade::initSnap() {
             continue;
         }
 
-        if (VirgilIoTKit::VS_CODE_OK != vs_snap_netif_add(*netif.get())) {
+        if (VirgilIoTKit::VS_CODE_OK != vs_snap_netif_add(netif.get()->lowLevelNetif())) {
             throw QString("Unable to add SNAP network interface");
         }
     }
