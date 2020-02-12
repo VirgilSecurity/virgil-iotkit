@@ -279,7 +279,7 @@ _info_server_periodical_processor(void) {
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_GENERAL) {
             vs_info_ginf_response_t general_info;
             STATUS_CHECK_RET(_fill_ginf_data(&general_info), "Error _fill_ginf_data");
-            vs_snap_send_request(NULL,
+            vs_snap_send_request(vs_snap_netif_routing(),
                                  vs_snap_broadcast_mac(),
                                  // &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
@@ -291,7 +291,7 @@ _info_server_periodical_processor(void) {
         if (_poll_ctx.elements_mask & VS_SNAP_INFO_STATISTICS) {
             vs_info_stat_response_t stat_data;
             STATUS_CHECK_RET(_fill_stat_data(&stat_data), "Cannot fill SNAP statistics");
-            vs_snap_send_request(NULL,
+            vs_snap_send_request(vs_snap_netif_routing(),
                                  vs_snap_broadcast_mac(),
                                  // &_poll_ctx.dest_mac,
                                  VS_INFO_SERVICE_ID,
