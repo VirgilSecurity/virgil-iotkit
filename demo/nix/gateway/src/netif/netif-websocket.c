@@ -32,21 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <arpa/inet.h>
 #include <assert.h>
 #include <pthread.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#include <unistd.h>
 #include <ctype.h>
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/cloud/base64.h>
+#include <virgil/iot/json/json_parser.h>
+#include <virgil/iot/json/json_generator.h>
 #include "netif/curl-websocket.h"
 #include <mbedtls/sha1.h>
+
 
 static vs_status_e
 _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
@@ -163,40 +163,11 @@ _get_random(void *buffer, size_t len) {
     VS_IOT_ASSERT(VS_CODE_OK == _secmodule_impl->random(buffer, len));
 }
 
-///******************************************************************************/
-// static bool
-// send_dummy(CURL *easy, bool text, size_t lines) {
-//    size_t len = lines * 80;
-//    char *buf = malloc(len);
-//    const size_t az_range = 'Z' - 'A';
-//    size_t i;
-//    bool ret;
-//
-//    for (i = 0; i < lines; i++) {
-//        char *ln = buf + i * 80;
-//        uint8_t chr;
-//
-//        snprintf(ln, 11, "%9zd ", i + 1);
-//        if (text)
-//            chr = (i % az_range) + 'A';
-//        else
-//            chr = i & 0xff;
-//        memset(ln + 10, chr, 69);
-//        ln[79] = '\n';
-//    }
-//
-//    ret = cws_send(easy, text, buf, len);
-//    free(buf);
-//    return ret;
-//}
-
 /******************************************************************************/
 static void
 on_connect(void *data, CURL *easy, const char *websocket_protocols) {
-    // struct websocket_ctx *ctx = data;
     VS_LOG_DEBUG("INFO: connected, websocket_protocols='%s'", websocket_protocols);
-    cws_ping(easy, "ping", SIZE_MAX);
-    // send_dummy(easy, true, ++ctx->text_lines);
+    _netif_websock.tx(&_netif_websock, (uint8_t *)"Hello", strlen("Hello"));
 }
 
 /******************************************************************************/
@@ -215,12 +186,12 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
         }
     }
 }
+
 /******************************************************************************/
 static void
 on_text(void *data, CURL *easy, const char *text, size_t len) {
-    //    struct myapp_ctx *ctx = data;
     VS_LOG_DEBUG("INFO: TEXT={\n%s\n}", text);
-
+    _process_recv_data((uint8_t *)text, len);
     (void)len;
 }
 
@@ -295,21 +266,18 @@ _websock_connect() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     _websocket_ctx.easy = cws_new(_url, NULL, &cbs);
-    if (!_websocket_ctx.easy)
+    if (!_websocket_ctx.easy) {
         goto error_easy;
+    }
 
     /* here you should do any extra sets, like cookies, auth... */
     curl_easy_setopt(_websocket_ctx.easy, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(_websocket_ctx.easy, CURLOPT_VERBOSE, 1L);
 
-    /*
-     * This is a traditional curl_multi app, see:
-     *
-     * https://curl.haxx.se/libcurl/c/multi-app.html
-     */
     _websocket_ctx.multi = curl_multi_init();
-    if (!_websocket_ctx.multi)
+    if (!_websocket_ctx.multi) {
         goto error_multi;
+    }
 
     curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
 
@@ -334,17 +302,64 @@ error_easy:
 }
 
 /******************************************************************************/
+static bool
+_make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat) {
+
+    *message = 0;
+    CHECK_NOT_ZERO_RET(message, false);
+    CHECK_NOT_ZERO_RET(_account, false);
+
+    char *frame;
+    size_t frame_size = base64encode_len(data_sz) + strlen(_account) + 48;
+
+    frame = (char *)malloc(frame_size);
+    VS_IOT_ASSERT(frame != 0);
+
+    struct json_str json;
+    json_str_init(&json, frame, frame_size);
+    json_start_object(&json);
+
+    json_set_val_str(&json, "account_id", _account);
+
+    json_set_val_int(&json, "s", is_stat ? 1 : 0);
+
+    int base64_sz = base64encode_len(data_sz);
+    char *data_b64 = (char *)malloc(base64_sz);
+    base64encode((const unsigned char *)data, data_sz, data_b64, &base64_sz);
+    json_set_val_str(&json, "payload", data_b64);
+    free(data_b64);
+    json_close_object(&json);
+
+    *message = (char *)json.buff;
+
+    VS_LOG_DEBUG("strlen msg = %d", strlen(*message));
+    return true;
+}
+
+/******************************************************************************/
 static vs_status_e
 _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     (void)netif;
-    return cws_send_binary(_websocket_ctx.easy, data, data_sz) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+    vs_status_e ret;
+    char *msg = NULL;
+    CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
+    CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "Unable to create websocket frame");
+    CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
+
+    ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+    free(msg);
+    return ret;
 }
 
 /******************************************************************************/
 static vs_status_e
 _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
-    assert(rx_cb);
     (void)netif;
+
+    VS_IOT_ASSERT(rx_cb);
+    CHECK_NOT_ZERO_RET(rx_cb, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     _websock_rx_cb = rx_cb;
     _websock_process_cb = process_cb;
     _netif_websock.packet_buf_filled = 0;
@@ -355,6 +370,7 @@ _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_n
 /******************************************************************************/
 static vs_status_e
 _websock_deinit(struct vs_netif_t *netif) {
+    (void)netif;
 
     if (_websocket_ctx.running) {
         _websocket_ctx.running = false;
@@ -414,11 +430,10 @@ vs_hal_netif_websock(const char *url,
 
     if (NULL == _url || NULL == account) {
         _websock_deinit(&_netif_websock);
-        VS_LOG_ERROR("Can't allocate ");
+        VS_LOG_ERROR("Can't allocate memory for websocket creds");
         return NULL;
     }
 
     return &_netif_websock;
 }
-
 /******************************************************************************/

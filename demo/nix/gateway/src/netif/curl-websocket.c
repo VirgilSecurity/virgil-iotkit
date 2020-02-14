@@ -52,6 +52,7 @@ enum cws_opcode {
     CWS_OPCODE_PONG = 0xa,
 };
 
+/******************************************************************************/
 static bool
 cws_opcode_is_control(enum cws_opcode opcode) {
     switch (opcode) {
@@ -68,6 +69,7 @@ cws_opcode_is_control(enum cws_opcode opcode) {
     return true;
 }
 
+/******************************************************************************/
 static bool
 cws_close_reason_is_valid(enum cws_close_reason r) {
     switch (r) {
@@ -178,6 +180,7 @@ struct cws_data {
     bool deleted;
 };
 
+/******************************************************************************/
 static inline void
 _cws_trim(const char **p_buffer, size_t *p_len) {
     const char *buffer = *p_buffer;
@@ -195,6 +198,7 @@ _cws_trim(const char **p_buffer, size_t *p_len) {
     *p_len = len;
 }
 
+/******************************************************************************/
 static inline bool
 _cws_header_has_prefix(const char *buffer, const size_t buflen, const char *prefix) {
     const size_t prefixlen = strlen(prefix);
@@ -203,6 +207,7 @@ _cws_header_has_prefix(const char *buffer, const size_t buflen, const char *pref
     return strncasecmp(buffer, prefix, prefixlen) == 0;
 }
 
+/******************************************************************************/
 static inline void
 _cws_hton(void *mem, uint8_t len) {
 #if __BYTE_ORDER__ != __BIG_ENDIAN
@@ -222,6 +227,7 @@ _cws_hton(void *mem, uint8_t len) {
 #endif
 }
 
+/******************************************************************************/
 static inline void
 _cws_ntoh(void *mem, uint8_t len) {
 #if __BYTE_ORDER__ != __BIG_ENDIAN
@@ -241,7 +247,7 @@ _cws_ntoh(void *mem, uint8_t len) {
 #endif
 }
 
-
+/******************************************************************************/
 static bool
 _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
     /* optimization note: we could grow by some rounded amount (ie:
@@ -263,6 +269,7 @@ _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
     return true;
 }
 
+/******************************************************************************/
 /*
  * Mask is:
  *
@@ -291,6 +298,7 @@ _cws_write_masked(struct cws_data *priv, const uint8_t mask[static 4], const voi
     return true;
 }
 
+/******************************************************************************/
 static bool
 _cws_send(struct cws_data *priv, enum cws_opcode opcode, const void *msg, size_t msglen) {
     struct cws_frame_header fh = {
@@ -329,6 +337,7 @@ _cws_send(struct cws_data *priv, enum cws_opcode opcode, const void *msg, size_t
     return _cws_write_masked(priv, mask, msg, msglen);
 }
 
+/******************************************************************************/
 bool
 cws_send(CURL *easy, bool text, const void *msg, size_t msglen) {
     struct cws_data *priv;
@@ -344,6 +353,7 @@ cws_send(CURL *easy, bool text, const void *msg, size_t msglen) {
     return _cws_send(priv, text ? CWS_OPCODE_TEXT : CWS_OPCODE_BINARY, msg, msglen);
 }
 
+/******************************************************************************/
 bool
 cws_ping(CURL *easy, const char *reason, size_t len) {
     struct cws_data *priv;
@@ -366,6 +376,7 @@ cws_ping(CURL *easy, const char *reason, size_t len) {
     return _cws_send(priv, CWS_OPCODE_PING, reason, len);
 }
 
+/******************************************************************************/
 bool
 cws_pong(CURL *easy, const char *reason, size_t len) {
     struct cws_data *priv;
@@ -388,6 +399,7 @@ cws_pong(CURL *easy, const char *reason, size_t len) {
     return _cws_send(priv, CWS_OPCODE_PONG, reason, len);
 }
 
+/******************************************************************************/
 static void
 _cws_cleanup(struct cws_data *priv) {
     CURL *easy;
@@ -412,6 +424,7 @@ _cws_cleanup(struct cws_data *priv) {
     curl_easy_cleanup(easy);
 }
 
+/******************************************************************************/
 bool
 cws_close(CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len) {
     struct cws_data *priv;
@@ -454,6 +467,7 @@ cws_close(CURL *easy, enum cws_close_reason reason, const char *reason_text, siz
     return ret;
 }
 
+/******************************************************************************/
 static void
 _cws_check_accept(struct cws_data *priv, const char *buffer, size_t len) {
     priv->accepted = false;
@@ -471,6 +485,7 @@ _cws_check_accept(struct cws_data *priv, const char *buffer, size_t len) {
     priv->accepted = true;
 }
 
+/******************************************************************************/
 static void
 _cws_check_protocol(struct cws_data *priv, const char *buffer, size_t len) {
     if (priv->websocket_protocols.received)
@@ -479,6 +494,7 @@ _cws_check_protocol(struct cws_data *priv, const char *buffer, size_t len) {
     priv->websocket_protocols.received = strndup(buffer, len);
 }
 
+/******************************************************************************/
 static void
 _cws_check_upgrade(struct cws_data *priv, const char *buffer, size_t len) {
     priv->connection_websocket = false;
@@ -491,6 +507,7 @@ _cws_check_upgrade(struct cws_data *priv, const char *buffer, size_t len) {
     priv->connection_websocket = true;
 }
 
+/******************************************************************************/
 static void
 _cws_check_connection(struct cws_data *priv, const char *buffer, size_t len) {
     priv->upgraded = false;
@@ -503,6 +520,7 @@ _cws_check_connection(struct cws_data *priv, const char *buffer, size_t len) {
     priv->upgraded = true;
 }
 
+/******************************************************************************/
 static size_t
 _cws_receive_header(const char *buffer, size_t count, size_t nitems, void *data) {
     struct cws_data *priv = data;
@@ -568,6 +586,7 @@ _cws_receive_header(const char *buffer, size_t count, size_t nitems, void *data)
     return len;
 }
 
+/******************************************************************************/
 static bool
 _cws_dispatch_validate(struct cws_data *priv) {
     if (priv->closed && priv->recv.current.opcode != CWS_OPCODE_CLOSE)
@@ -584,6 +603,7 @@ _cws_dispatch_validate(struct cws_data *priv) {
     return false;
 }
 
+/******************************************************************************/
 static void
 _cws_dispatch(struct cws_data *priv) {
     if (!_cws_dispatch_validate(priv))
@@ -711,6 +731,7 @@ _cws_dispatch(struct cws_data *priv) {
     }
 }
 
+/******************************************************************************/
 static size_t
 _cws_process_frame(struct cws_data *priv, const char *buffer, size_t len) {
     size_t used = 0;
@@ -837,6 +858,7 @@ _cws_process_frame(struct cws_data *priv, const char *buffer, size_t len) {
     return used;
 }
 
+/******************************************************************************/
 static size_t
 _cws_receive_data(const char *buffer, size_t count, size_t nitems, void *data) {
     struct cws_data *priv = data;
@@ -850,6 +872,7 @@ _cws_receive_data(const char *buffer, size_t count, size_t nitems, void *data) {
     return count * nitems;
 }
 
+/******************************************************************************/
 static size_t
 _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     struct cws_data *priv = data;
@@ -881,6 +904,7 @@ _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     return todo;
 }
 
+/******************************************************************************/
 static const char *
 _cws_fill_websocket_key(struct cws_data *priv, char key_header[static 44]) {
     uint8_t key[16];
@@ -902,6 +926,7 @@ _cws_fill_websocket_key(struct cws_data *priv, char key_header[static 44]) {
     return key_header;
 }
 
+/******************************************************************************/
 CURL *
 cws_new(const char *url, const char *websocket_protocols, const struct cws_callbacks *callbacks) {
     CURL *easy;
@@ -1004,6 +1029,7 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
     return easy;
 }
 
+/******************************************************************************/
 void
 cws_free(CURL *easy) {
     struct cws_data *priv;
