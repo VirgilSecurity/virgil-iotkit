@@ -34,6 +34,30 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
+option(BIGENDIAN_64_BIT_BUILD "Build for MIPS 64 big endian" OFF)
+option(BIGENDIAN_32_BIT_BUILD "Build for MIPS 32 big endian" OFF)
+
+if(BIGENDIAN_64_BIT_BUILD)
+    set(GO_DISABLE ON CACHE BOOL "Disable Go apps" FORCE)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/sdk/cmake/mips64.toolchain.cmake")
+    message("### CMAKE_TOOLCHAIN_FILE [${CMAKE_TOOLCHAIN_FILE}]")    
+    message("### ENABLE BIGENDIAN_64_BIT")
+endif()
+
+if(BIGENDIAN_32_BIT_BUILD)
+    set(GO_DISABLE ON CACHE BOOL "Disable Go apps" FORCE)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/sdk/cmake/mips32.toolchain.cmake")
+    message("### CMAKE_TOOLCHAIN_FILE [${CMAKE_TOOLCHAIN_FILE}]")        
+    message("### ENABLE BIGENDIAN_32_BIT")    
+endif()
+
+message("### CMAKE_TOOLCHAIN_FILE [${CMAKE_TOOLCHAIN_FILE}]")    
+message("### CMAKE_C_COMPILER   [${CMAKE_C_COMPILER}]")
+message("### CMAKE_CXX_COMPILER  [${CMAKE_CXX_COMPILER}]")
+
+project(iot-rpi VERSION 0.1.0 LANGUAGES C)
+
+
 #
 #   Build nix demo project
 #
