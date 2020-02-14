@@ -127,6 +127,9 @@ struct cws_callbacks cbs = {
         .data = &_websocket_ctx,
 };
 
+#define VS_WB_PAYLOAD_FILEND "payload"
+#define VS_WB_ACCOUNT_ID_FILEND "account_id"
+
 /******************************************************************************/
 static void
 _calc_sha1(const void *input, const size_t input_len, void *output) {
@@ -175,16 +178,60 @@ static void
 _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     const uint8_t *packet_data = NULL;
     uint16_t packet_data_sz = 0;
+    char *message = NULL;
+    jobj_t jobj;
+    int len;
+    char *tmp = NULL;
+    int decode_len;
+
+    if (VS_JSON_ERR_OK != json_parse_start(&jobj, (char *)received_data, recv_sz)) {
+        VS_LOG_ERROR("[WS]_process_recv_data. Unable to parse incoming message");
+        return;
+    }
+
+    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_WB_PAYLOAD_FILEND, &len) || len < 0) {
+        VS_LOG_ERROR("[WS] _process_recv_data answer not contain [payload] filed");
+        return;
+    }
+
+    ++len;
+    tmp = (char *)VS_IOT_MALLOC((size_t)len);
+    if (NULL != tmp) {
+        VS_LOG_ERROR("[WS] Can't allocate memory");
+        return;
+    }
+
+    json_get_val_str(&jobj, VS_WB_PAYLOAD_FILEND, tmp, len);
+
+    decode_len = base64decode_len(tmp, len);
+
+    if (0 >= decode_len) {
+        VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong size [ca_certificate]");
+        goto terminate;
+    }
+
+    message = (char *)VS_IOT_MALLOC((size_t)decode_len);
+    if (NULL == message) {
+        VS_LOG_ERROR("[MB] Can't allocate memory");
+        goto terminate;
+    }
+
+    base64decode(tmp, len, (uint8_t *)message, &decode_len);
+    VS_IOT_FREE(tmp);
+
 
     // Pass received data to upper level via callback
     if (_websock_rx_cb) {
-        if (0 == _websock_rx_cb(&_netif_websock, received_data, recv_sz, &packet_data, &packet_data_sz)) {
+        if (0 == _websock_rx_cb(&_netif_websock, (uint8_t *)message, decode_len, &packet_data, &packet_data_sz)) {
             // Ready to process packet
             if (_websock_process_cb) {
                 _websock_process_cb(&_netif_websock, packet_data, packet_data_sz);
             }
         }
     }
+terminate:
+    free(tmp);
+    free(message);
 }
 
 /******************************************************************************/
@@ -319,14 +366,14 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
     json_str_init(&json, frame, frame_size);
     json_start_object(&json);
 
-    json_set_val_str(&json, "account_id", _account);
+    json_set_val_str(&json, VS_WB_ACCOUNT_ID_FILEND, _account);
 
     json_set_val_int(&json, "s", is_stat ? 1 : 0);
 
     int base64_sz = base64encode_len(data_sz);
     char *data_b64 = (char *)malloc(base64_sz);
     base64encode((const unsigned char *)data, data_sz, data_b64, &base64_sz);
-    json_set_val_str(&json, "payload", data_b64);
+    json_set_val_str(&json, VS_WB_PAYLOAD_FILEND, data_b64);
     free(data_b64);
     json_close_object(&json);
 
