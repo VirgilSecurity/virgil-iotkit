@@ -34,8 +34,6 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#include "curl-websocket-utils.c"
-
 #define ERR(fmt, ...) fprintf(stderr, "ERROR: " fmt "\n", ##__VA_ARGS__)
 
 #define STR_OR_EMPTY(p) (p != NULL ? p : "")
@@ -180,6 +178,70 @@ struct cws_data {
     bool deleted;
 };
 
+static inline void
+_cws_trim(const char **p_buffer, size_t *p_len) {
+    const char *buffer = *p_buffer;
+    size_t len = *p_len;
+
+    while (len > 0 && isspace(buffer[0])) {
+        buffer++;
+        len--;
+    }
+
+    while (len > 0 && isspace(buffer[len - 1]))
+        len--;
+
+    *p_buffer = buffer;
+    *p_len = len;
+}
+
+static inline bool
+_cws_header_has_prefix(const char *buffer, const size_t buflen, const char *prefix) {
+    const size_t prefixlen = strlen(prefix);
+    if (buflen < prefixlen)
+        return false;
+    return strncasecmp(buffer, prefix, prefixlen) == 0;
+}
+
+static inline void
+_cws_hton(void *mem, uint8_t len) {
+#if __BYTE_ORDER__ != __BIG_ENDIAN
+    uint8_t *bytes;
+    uint8_t i, mid;
+
+    if (len % 2)
+        return;
+
+    mid = len / 2;
+    bytes = mem;
+    for (i = 0; i < mid; i++) {
+        uint8_t tmp = bytes[i];
+        bytes[i] = bytes[len - i - 1];
+        bytes[len - i - 1] = tmp;
+    }
+#endif
+}
+
+static inline void
+_cws_ntoh(void *mem, uint8_t len) {
+#if __BYTE_ORDER__ != __BIG_ENDIAN
+    uint8_t *bytes;
+    uint8_t i, mid;
+
+    if (len % 2)
+        return;
+
+    mid = len / 2;
+    bytes = mem;
+    for (i = 0; i < mid; i++) {
+        uint8_t tmp = bytes[i];
+        bytes[i] = bytes[len - i - 1];
+        bytes[len - i - 1] = tmp;
+    }
+#endif
+}
+
+
 static bool
 _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
     /* optimization note: we could grow by some rounded amount (ie:
@@ -244,7 +306,7 @@ _cws_send(struct cws_data *priv, enum cws_opcode opcode, const void *msg, size_t
         return false;
     }
 
-    _cws_get_random(mask, sizeof(mask));
+    priv->cbs.get_random(mask, sizeof(mask));
 
     if (!_cws_write(priv, &fh, sizeof(fh)))
         return false;
@@ -828,13 +890,13 @@ _cws_fill_websocket_key(struct cws_data *priv, char key_header[static 44]) {
     char buf[60] = "01234567890123456789....258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
     uint8_t sha1hash[20];
 
-    _cws_get_random(key, sizeof(key));
+    priv->cbs.get_random(key, sizeof(key));
 
-    _cws_encode_base64(key, sizeof(key), buf);
+    priv->cbs.encode_base64(key, sizeof(key), buf, sizeof(buf));
     memcpy(key_header + strlen("Sec-WebSocket-Key: "), buf, 24);
 
-    _cws_sha1(buf, sizeof(buf), sha1hash);
-    _cws_encode_base64(sha1hash, sizeof(sha1hash), priv->accept_key);
+    priv->cbs.calc_sha1(buf, sizeof(buf), sha1hash);
+    priv->cbs.encode_base64(sha1hash, sizeof(sha1hash), priv->accept_key, sizeof(priv->accept_key));
     priv->accept_key[sizeof(priv->accept_key) - 1] = '\0';
 
     return key_header;

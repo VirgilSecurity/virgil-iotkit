@@ -60,9 +60,8 @@ target_sources(gateway
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/message-bin-thread.c
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/main-thread.c
 		${CMAKE_CURRENT_LIST_DIR}/src/threads/file-download-thread.c
-#		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket.c
-#		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket-utils.c
-#		${CMAKE_CURRENT_LIST_DIR}/src/netif/netif-websocket.c
+		${CMAKE_CURRENT_LIST_DIR}/src/netif/curl-websocket.c
+		${CMAKE_CURRENT_LIST_DIR}/src/netif/netif-websocket.c
         )
 
 #

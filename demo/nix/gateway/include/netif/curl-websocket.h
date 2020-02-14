@@ -30,6 +30,7 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,6 +97,11 @@ struct cws_callbacks {
                      enum cws_close_reason reason,
                      const char *reason_text,
                      size_t reason_text_len);
+
+    void (*calc_sha1)(const void *input, const size_t input_len, void *output);
+    void (*encode_base64)(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz);
+    void (*get_random)(void *buffer, size_t len);
+
     const void *data;
 };
 

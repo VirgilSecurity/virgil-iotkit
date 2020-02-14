@@ -82,7 +82,7 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
                    vs_iotkit_events_t iotkit_events) {
     vs_status_e res = VS_CODE_ERR_INIT_SNAP;
     vs_status_e ret_code;
-
+    uint8_t i = 1;
     VS_IOT_ASSERT(secmodule_impl);
     VS_IOT_ASSERT(tl_storage_impl);
     VS_IOT_ASSERT(netif_impl);
@@ -116,6 +116,12 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     // SNAP module
     STATUS_CHECK(vs_snap_init(netif_impl[0], NULL, manufacture_id, device_type, serial, device_roles),
                  "Unable to initialize SNAP module");
+
+
+    while (netif_impl[i] != NULL) {
+        STATUS_CHECK_RET(vs_snap_netif_add(netif_impl[i]), "Unable to add netif to a SNAP module");
+        ++i;
+    }
 
     //
     // ---------- Register SNAP services ----------

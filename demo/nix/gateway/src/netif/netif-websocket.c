@@ -40,24 +40,25 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/socket.h>
+#include <ctype.h>
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/logger/logger.h>
-
+#include <virgil/iot/cloud/base64.h>
 #include "netif/curl-websocket.h"
+#include <mbedtls/sha1.h>
 
 static vs_status_e
-_websock_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+_websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 static vs_status_e
-_websock_deinit(const vs_netif_t *netif);
+_websock_deinit(struct vs_netif_t *netif);
 
 static vs_status_e
-_websock_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+_websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 static vs_status_e
-_websock_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
+_websock_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 static vs_netif_t _netif_websock = {.user_data = NULL,
                                     .init = _websock_init,
@@ -66,17 +67,39 @@ static vs_netif_t _netif_websock = {.user_data = NULL,
                                     .mac_addr = _websock_mac,
                                     .packet_buf_filled = 0};
 
+static pthread_t main_loop_thread;
 static vs_netif_rx_cb_t _websock_rx_cb = 0;
 static vs_netif_process_cb_t _websock_process_cb = 0;
 static char *_url = NULL;
 static char *_account = NULL;
+static const vs_secmodule_impl_t *_secmodule_impl;
+
+static void
+on_connect(void *data, CURL *easy, const char *websocket_protocols);
+static void
+on_text(void *data, CURL *easy, const char *text, size_t len);
+static void
+on_binary(void *data, CURL *easy, const void *mem, size_t len);
+static void
+on_ping(void *data, CURL *easy, const char *reason, size_t len);
+static void
+on_pong(void *data, CURL *easy, const char *reason, size_t len);
+static void
+on_close(void *data, CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len);
+
+static void
+_calc_sha1(const void *input, const size_t input_len, void *output);
+static void
+_encode_base64(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz);
+static void
+_get_random(void *buffer, size_t len);
 
 // static pthread_t receive_thread;
 static uint8_t _sim_mac_addr[6] = {2, 2, 2, 2, 2, 2};
 
 #define RX_BUF_SZ (2048)
 
-struct myapp_ctx {
+struct websocket_ctx {
     CURL *easy;
     CURLM *multi;
     int text_lines;
@@ -85,51 +108,118 @@ struct myapp_ctx {
     bool running;
 };
 
+struct websocket_ctx _websocket_ctx = {
+        .text_lines = 0,
+        .binary_lines = 0,
+        .exitval = EXIT_SUCCESS,
+};
+
+struct cws_callbacks cbs = {
+        .on_connect = on_connect,
+        .on_text = on_text,
+        .on_binary = on_binary,
+        .on_ping = on_ping,
+        .on_pong = on_pong,
+        .on_close = on_close,
+        .calc_sha1 = _calc_sha1,
+        .encode_base64 = _encode_base64,
+        .get_random = _get_random,
+        .data = &_websocket_ctx,
+};
+
 /******************************************************************************/
-static bool
-send_dummy(CURL *easy, bool text, size_t lines) {
-    size_t len = lines * 80;
-    char *buf = malloc(len);
-    const size_t az_range = 'Z' - 'A';
-    size_t i;
-    bool ret;
+static void
+_calc_sha1(const void *input, const size_t input_len, void *output) {
+    VS_IOT_ASSERT(input);
+    VS_IOT_ASSERT(output);
+    VS_IOT_ASSERT(input_len);
+    mbedtls_sha1_context ctx;
 
-    for (i = 0; i < lines; i++) {
-        char *ln = buf + i * 80;
-        uint8_t chr;
+    mbedtls_sha1_init(&ctx);
+    mbedtls_sha1(input, input_len, output);
 
-        snprintf(ln, 11, "%9zd ", i + 1);
-        if (text)
-            chr = (i % az_range) + 'A';
-        else
-            chr = i & 0xff;
-        memset(ln + 10, chr, 69);
-        ln[79] = '\n';
-    }
-
-    ret = cws_send(easy, text, buf, len);
-    free(buf);
-    return ret;
+    mbedtls_sha1_free(&ctx);
 }
+
+/******************************************************************************/
+static void
+_encode_base64(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz) {
+    int out_len = base64encode_len(input_len);
+
+    VS_IOT_ASSERT(input);
+    VS_IOT_ASSERT(input_len);
+    VS_IOT_ASSERT(buf_sz < INT_MAX && buf_sz >= (size_t)out_len);
+
+    char enc[out_len];
+    VS_IOT_ASSERT(base64encode(input, input_len, enc, &out_len));
+    memcpy(output, enc, out_len - 1);
+}
+
+/******************************************************************************/
+static void
+_get_random(void *buffer, size_t len) {
+    VS_IOT_ASSERT(buffer);
+    VS_IOT_ASSERT(len);
+    VS_IOT_ASSERT(VS_CODE_OK == _secmodule_impl->random(buffer, len));
+}
+
+///******************************************************************************/
+// static bool
+// send_dummy(CURL *easy, bool text, size_t lines) {
+//    size_t len = lines * 80;
+//    char *buf = malloc(len);
+//    const size_t az_range = 'Z' - 'A';
+//    size_t i;
+//    bool ret;
+//
+//    for (i = 0; i < lines; i++) {
+//        char *ln = buf + i * 80;
+//        uint8_t chr;
+//
+//        snprintf(ln, 11, "%9zd ", i + 1);
+//        if (text)
+//            chr = (i % az_range) + 'A';
+//        else
+//            chr = i & 0xff;
+//        memset(ln + 10, chr, 69);
+//        ln[79] = '\n';
+//    }
+//
+//    ret = cws_send(easy, text, buf, len);
+//    free(buf);
+//    return ret;
+//}
 
 /******************************************************************************/
 static void
 on_connect(void *data, CURL *easy, const char *websocket_protocols) {
-    struct myapp_ctx *ctx = data;
-    fprintf(stderr, "INFO: connected, websocket_protocols='%s'\n", websocket_protocols);
-    send_dummy(easy, true, ++ctx->text_lines);
+    // struct websocket_ctx *ctx = data;
+    VS_LOG_DEBUG("INFO: connected, websocket_protocols='%s'", websocket_protocols);
+    cws_ping(easy, "ping", SIZE_MAX);
+    // send_dummy(easy, true, ++ctx->text_lines);
 }
 
 /******************************************************************************/
 static void
-on_text(void *data, CURL *easy, const char *text, size_t len) {
-    struct myapp_ctx *ctx = data;
-    fprintf(stderr, "INFO: TEXT={\n%s\n}\n", text);
+_process_recv_data(const uint8_t *received_data, size_t recv_sz) {
+    const uint8_t *packet_data = NULL;
+    uint16_t packet_data_sz = 0;
 
-    if (ctx->text_lines < 5)
-        send_dummy(easy, true, ++ctx->text_lines);
-    else
-        send_dummy(easy, false, ++ctx->binary_lines);
+    // Pass received data to upper level via callback
+    if (_websock_rx_cb) {
+        if (0 == _websock_rx_cb(&_netif_websock, received_data, recv_sz, &packet_data, &packet_data_sz)) {
+            // Ready to process packet
+            if (_websock_process_cb) {
+                _websock_process_cb(&_netif_websock, packet_data, packet_data_sz);
+            }
+        }
+    }
+}
+/******************************************************************************/
+static void
+on_text(void *data, CURL *easy, const char *text, size_t len) {
+    //    struct myapp_ctx *ctx = data;
+    VS_LOG_DEBUG("INFO: TEXT={\n%s\n}", text);
 
     (void)len;
 }
@@ -137,51 +227,36 @@ on_text(void *data, CURL *easy, const char *text, size_t len) {
 /******************************************************************************/
 static void
 on_binary(void *data, CURL *easy, const void *mem, size_t len) {
-    struct myapp_ctx *ctx = data;
+
     const uint8_t *bytes = mem;
-    size_t i;
 
-    fprintf(stderr, "INFO: BINARY=%zd bytes {\n", len);
-
-    for (i = 0; i < len; i++) {
-        uint8_t b = bytes[i];
-        if (isprint(b))
-            fprintf(stderr, " %#04x(%c)", b, b);
-        else
-            fprintf(stderr, " %#04x", b);
-    }
-
-    fprintf(stderr, "\n}\n");
-
-    if (ctx->binary_lines < 5)
-        send_dummy(easy, false, ++ctx->binary_lines);
-    else
-        cws_ping(easy, "will close on pong", SIZE_MAX);
+    VS_LOG_DEBUG("[WS] INFO: BINARY=%zd bytes", len);
+    VS_LOG_HEX(VS_LOGLEV_DEBUG, "[WS] {}", bytes, len);
+    _process_recv_data(mem, len);
+    cws_ping(easy, "ping", SIZE_MAX);
 }
 
 /******************************************************************************/
 static void
 on_ping(void *data, CURL *easy, const char *reason, size_t len) {
-    fprintf(stderr, "INFO: PING %zd bytes='%s'\n", len, reason);
-    cws_pong(easy, "just pong", SIZE_MAX);
+    VS_LOG_DEBUG("[WS] INFO: PING %zd bytes='%s'", len, reason);
+    cws_pong(easy, "pong", SIZE_MAX);
     (void)data;
 }
 
 /******************************************************************************/
 static void
 on_pong(void *data, CURL *easy, const char *reason, size_t len) {
-    fprintf(stderr, "INFO: PONG %zd bytes='%s'\n", len, reason);
-
-    cws_close(easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
+    VS_LOG_DEBUG("[WS] INFO: PONG %zd bytes='%s'", len, reason);
+    //    cws_close(easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
     (void)data;
-    (void)easy;
 }
 
 /******************************************************************************/
 static void
 on_close(void *data, CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len) {
-    struct myapp_ctx *ctx = data;
-    fprintf(stderr, "INFO: CLOSE=%4d %zd bytes '%s'\n", reason, reason_text_len, reason_text);
+    struct websocket_ctx *ctx = data;
+    VS_LOG_DEBUG("[WS] INFO: CLOSE=%4d %zd bytes '%s'", reason, reason_text_len, reason_text);
 
     ctx->exitval = (reason == CWS_CLOSE_REASON_NORMAL ? EXIT_SUCCESS : EXIT_FAILURE);
     ctx->running = false;
@@ -189,155 +264,69 @@ on_close(void *data, CURL *easy, enum cws_close_reason reason, const char *reaso
 }
 
 /******************************************************************************/
-// static void *
-//_udp_bcast_receive_processor(void *sock_desc) {
-//    static uint8_t received_data[RX_BUF_SZ];
-//    struct sockaddr_in client_addr;
-//    ssize_t recv_sz;
-//    socklen_t addr_sz = sizeof(struct sockaddr_in);
-//    const uint8_t *packet_data = NULL;
-//    uint16_t packet_data_sz = 0;
-//
-//    while (1) {
-//        memset(received_data, 0, RX_BUF_SZ);
-//
-//        recv_sz = recvfrom(
-//                _udp_bcast_sock, received_data, sizeof received_data, 0, (struct sockaddr *)&client_addr, &addr_sz);
-//        if (recv_sz < 0) {
-//            VS_LOG_ERROR("UDP broadcast: recv stop");
-//            break;
-//        }
-//
-//        if (!recv_sz) {
-//            continue;
-//        }
-//
-//        // Pass received data to upper level via callback
-//        if (_netif_udp_bcast_rx_cb) {
-//            if (0 == _netif_udp_bcast_rx_cb(&_netif_udp_bcast, received_data, recv_sz, &packet_data, &packet_data_sz))
-//            {
-//                // Ready to process packet
-//                if (_netif_udp_bcast_process_cb) {
-//                    _netif_udp_bcast_process_cb(&_netif_udp_bcast, packet_data, packet_data_sz);
-//                }
-//            }
-//        }
-//    }
-//
-//    return NULL;
-//}
+static void *
+_websocket_main_loop_processor(void *sock_desc) {
+    int still_running;
+    vs_log_thread_descriptor("websock");
+    do {
+        // websocket cycle
+        CURLMcode mc; /* curl_multi_poll() return code */
+        int numfds;
+
+        /* we start some action by calling perform right away */
+        mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
+
+        if (still_running)
+            /* wait for activity, timeout or "nothing" */
+            mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 1000, &numfds);
+
+        if (mc != CURLM_OK) {
+            fprintf(stderr, "curl_multi_wait() failed, code %d.\n", mc);
+            break;
+        }
+    } while (_websocket_ctx.running && still_running);
+
+    return NULL;
+}
 
 /******************************************************************************/
 static vs_status_e
 _websock_connect() {
-    //    struct sockaddr_in server;
-    //    struct timeval tv;
-    //    int enable = 1;
-
-    struct myapp_ctx myapp_ctx = {
-            .text_lines = 0,
-            .binary_lines = 0,
-            .exitval = EXIT_SUCCESS,
-    };
-    struct cws_callbacks cbs = {
-            .on_connect = on_connect,
-            .on_text = on_text,
-            .on_binary = on_binary,
-            .on_ping = on_ping,
-            .on_pong = on_pong,
-            .on_close = on_close,
-            .data = &myapp_ctx,
-    };
-
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    myapp_ctx.easy = cws_new(url, protocols, &cbs);
-    if (!myapp_ctx.easy)
+    _websocket_ctx.easy = cws_new(_url, NULL, &cbs);
+    if (!_websocket_ctx.easy)
         goto error_easy;
 
     /* here you should do any extra sets, like cookies, auth... */
-    curl_easy_setopt(myapp_ctx.easy, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(myapp_ctx.easy, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(_websocket_ctx.easy, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(_websocket_ctx.easy, CURLOPT_VERBOSE, 1L);
 
     /*
      * This is a traditional curl_multi app, see:
      *
      * https://curl.haxx.se/libcurl/c/multi-app.html
      */
-    myapp_ctx.multi = curl_multi_init();
-    if (!myapp_ctx.multi)
+    _websocket_ctx.multi = curl_multi_init();
+    if (!_websocket_ctx.multi)
         goto error_multi;
 
-    curl_multi_add_handle(myapp_ctx.multi, myapp_ctx.easy);
+    curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
 
-    myapp_ctx.running = true;
-    a_main_loop(&myapp_ctx);
+    _websocket_ctx.running = true;
 
-    curl_multi_remove_handle(myapp_ctx.multi, myapp_ctx.easy);
-    curl_multi_cleanup(myapp_ctx.multi);
+    // Start receive thread
+    if (0 == pthread_create(&main_loop_thread, NULL, _websocket_main_loop_processor, NULL)) {
+        return VS_CODE_OK;
+    }
+
+    VS_LOG_ERROR("Can't start websocket thread");
 
 error_multi:
-    cws_free(myapp_ctx.easy);
+    cws_free(_websocket_ctx.easy);
 error_easy:
     curl_global_cleanup();
-
-    return myapp_ctx.exitval;
-
-
-    //
-    //    // Create socket
-    //    _udp_bcast_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    //    if (_udp_bcast_sock == -1) {
-    //        VS_LOG_ERROR("UDP Broadcast: Could not create socket. %s\n", strerror(errno));
-    //        return VS_CODE_ERR_SOCKET;
-    //    }
-    //
-    //    // Set infinite timeout
-    //    tv.tv_sec = 0;
-    //    tv.tv_usec = 0;
-    //    if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
-    //        VS_LOG_ERROR("UDP Broadcast: Cannot set infinite timeout on receive. %s\n", strerror(errno));
-    //        goto terminate;
-    //    }
-    //
-    //#if __APPLE__
-    //    // Set SO_REUSEPORT
-    //    if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
-    //        VS_LOG_ERROR("UDP Broadcast: Cannot set SO_REUSEPORT. %s\n", strerror(errno));
-    //        goto terminate;
-    //    }
-    //#else
-    //    // Set SO_REUSEADDR
-    //    if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-    //        printf("UDP Broadcast: Cannot set SO_REUSEADDR. %s\n", strerror(errno));
-    //        goto terminate;
-    //    }
-    //#endif
-    //
-    //    // Set SO_BROADCAST
-    //    if (setsockopt(_udp_bcast_sock, SOL_SOCKET, SO_BROADCAST, &enable, sizeof(int)) < 0) {
-    //        VS_LOG_ERROR("UDP Broadcast: Cannot set SO_BROADCAST. %s\n", strerror(errno));
-    //        goto terminate;
-    //    }
-    //
-    //    // Bind to port
-    //    memset((void *)&server, 0, sizeof(struct sockaddr_in));
-    //    server.sin_family = AF_INET;
-    //    server.sin_addr.s_addr = htons(INADDR_ANY);
-    //    server.sin_port = htons(UDP_BCAST_PORT);
-    //    if (bind(_udp_bcast_sock, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) < 0) {
-    //        VS_LOG_ERROR("UDP Broadcast: UDP Broadcast: Bind error. %s\n", strerror(errno));
-    //        goto terminate;
-    //    }
-    //
-    //    VS_LOG_INFO("Opened connection for UDP broadcast\n");
-    //
-    //    // Start receive thread
-    //    pthread_create(&receive_thread, NULL, _udp_bcast_receive_processor, NULL);
-    //
-    return VS_CODE_OK;
-
-terminate:
+    _websocket_ctx.running = false;
 
     _websock_deinit(&_netif_websock);
 
@@ -346,49 +335,51 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_websock_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-    //    struct sockaddr_in broadcast_addr;
-    //
-    //    memset((void *)&broadcast_addr, 0, sizeof(struct sockaddr_in));
-    //    broadcast_addr.sin_family = AF_INET;
-    //    broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-    //    broadcast_addr.sin_port = htons(UDP_BCAST_PORT);
-    //
-    //    sendto(_udp_bcast_sock, data, data_sz, 0, (struct sockaddr *)&broadcast_addr, sizeof(struct sockaddr_in));
-
-    return VS_CODE_OK;
+_websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+    (void)netif;
+    return cws_send_binary(_websocket_ctx.easy, data, data_sz) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
 }
 
 /******************************************************************************/
 static vs_status_e
-_websock_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
+_websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
+    (void)netif;
     _websock_rx_cb = rx_cb;
     _websock_process_cb = process_cb;
     _netif_websock.packet_buf_filled = 0;
 
-    _websock_connect();
+    return _websock_connect();
+}
+
+/******************************************************************************/
+static vs_status_e
+_websock_deinit(struct vs_netif_t *netif) {
+
+    if (_websocket_ctx.running) {
+        _websocket_ctx.running = false;
+        pthread_join(main_loop_thread, NULL);
+
+        cws_close(_websocket_ctx.easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
+
+        curl_multi_remove_handle(_websocket_ctx.multi, _websocket_ctx.easy);
+        curl_multi_cleanup(_websocket_ctx.multi);
+        cws_free(_websocket_ctx.easy);
+        curl_global_cleanup();
+    }
+
+    free(_url);
+    _url = NULL;
+    free(_account);
+    _account = NULL;
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_websock_deinit(const vs_netif_t *netif) {
-    //    if (_udp_bcast_sock >= 0) {
-    //#if !defined(__APPLE__)
-    //        shutdown(_udp_bcast_sock, SHUT_RDWR);
-    //#endif
-    //        close(_udp_bcast_sock);
-    //    }
-    //    _udp_bcast_sock = -1;
-    //    pthread_join(receive_thread, NULL);
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-static vs_status_e
-_websock_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
+_websock_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
+    (void)netif;
 
     if (mac_addr) {
         memcpy(mac_addr->bytes, _sim_mac_addr, sizeof(vs_mac_addr_t));
@@ -400,18 +391,33 @@ _websock_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
 
 /******************************************************************************/
 vs_netif_t *
-vs_hal_netif_websock(const char *url, const char *account, vs_mac_addr_t mac_addr) {
+vs_hal_netif_websock(const char *url,
+                     const char *account,
+                     vs_secmodule_impl_t *secmodule_impl,
+                     vs_mac_addr_t mac_addr) {
 
-    CHECK_NOT_ZERO_RET(url, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(account, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    VS_IOT_ASSERT(url);
+    VS_IOT_ASSERT(account);
+    VS_IOT_ASSERT(secmodule_impl);
 
-    memcpy(_sim_mac_addr, mac_addr.bytes, 6);
-    free(_url);
-    _url = NULL;
-    free(_account);
-    _account = NULL;
+    CHECK_NOT_ZERO_RET(url, NULL);
+    CHECK_NOT_ZERO_RET(account, NULL);
+    CHECK_NOT_ZERO_RET(secmodule_impl, NULL);
+
+    _websock_deinit(&_netif_websock);
+
+    memcpy(_sim_mac_addr, mac_addr.bytes, sizeof(vs_mac_addr_t));
+
+    _secmodule_impl = secmodule_impl;
     _url = strdup(url);
     _account = strdup(account);
+
+    if (NULL == _url || NULL == account) {
+        _websock_deinit(&_netif_websock);
+        VS_LOG_ERROR("Can't allocate ");
+        return NULL;
+    }
+
     return &_netif_websock;
 }
 

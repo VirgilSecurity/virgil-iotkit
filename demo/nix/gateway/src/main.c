@@ -52,7 +52,7 @@
 #include "sdk-impl/firmware/firmware-nix-impl.h"
 #include "sdk-impl/netif/netif-udp-broadcast.h"
 #include "sdk-impl/netif/packets-queue.h"
-
+#include "netif/netif-websocket.h"
 /******************************************************************************/
 int
 main(int argc, char *argv[]) {
@@ -62,7 +62,7 @@ main(int argc, char *argv[]) {
 
     // Implementation variables
     vs_secmodule_impl_t *secmodule_impl = NULL;
-    vs_netif_t *netifs_impl[2] = {NULL, NULL};
+    vs_netif_t *netifs_impl[3] = {NULL, NULL, NULL};
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
@@ -99,10 +99,6 @@ main(int argc, char *argv[]) {
     // ---------- Create implementations ----------
     //
 
-    // Network interface
-    vs_packets_queue_init(vs_snap_default_processor);
-    netifs_impl[0] = vs_hal_netif_udp_bcast(forced_mac_addr);
-
     // TrustList storage
     STATUS_CHECK(vs_app_storage_init_impl(&tl_storage_impl, vs_app_trustlist_dir(), VS_TL_STORAGE_MAX_PART_SIZE),
                  "Cannot create TrustList storage");
@@ -117,6 +113,12 @@ main(int argc, char *argv[]) {
 
     // Soft Security Module
     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
+
+    // Network interface
+    vs_packets_queue_init(vs_snap_default_processor);
+    netifs_impl[0] = vs_hal_netif_udp_bcast(forced_mac_addr);
+    netifs_impl[1] = vs_hal_netif_websock(
+            "wss://websocket-stg.virgilsecurity.com/ws", "test_acc", secmodule_impl, forced_mac_addr);
 
     //
     // ---------- Initialize IoTKit internals ----------

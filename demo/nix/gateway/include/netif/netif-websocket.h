@@ -37,13 +37,14 @@
 
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/secmodule/secmodule.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 vs_netif_t *
-vs_hal_netif_websock(const char *url, const char *account, vs_mac_addr_t mac_addr);
+vs_hal_netif_websock(const char *url, const char *account, vs_secmodule_impl_t *secmodule_impl, vs_mac_addr_t mac_addr);
 
 #ifdef __cplusplus
 }
