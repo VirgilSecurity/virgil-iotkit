@@ -196,7 +196,7 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
 
     ++len;
     tmp = (char *)VS_IOT_MALLOC((size_t)len);
-    if (NULL != tmp) {
+    if (NULL == tmp) {
         VS_LOG_ERROR("[WS] Can't allocate memory");
         return;
     }
@@ -217,8 +217,6 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     }
 
     base64decode(tmp, len, (uint8_t *)message, &decode_len);
-    VS_IOT_FREE(tmp);
-
 
     // Pass received data to upper level via callback
     if (_websock_rx_cb) {
@@ -266,7 +264,6 @@ on_ping(void *data, CURL *easy, const char *reason, size_t len) {
 static void
 on_pong(void *data, CURL *easy, const char *reason, size_t len) {
     VS_LOG_DEBUG("[WS] INFO: PONG %zd bytes='%s'", len, reason);
-    //    cws_close(easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
     (void)data;
 }
 
@@ -294,9 +291,10 @@ _websocket_main_loop_processor(void *sock_desc) {
         /* we start some action by calling perform right away */
         mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
 
-        if (still_running)
+        if (CURLM_OK == mc) {
             /* wait for activity, timeout or "nothing" */
             mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 1000, &numfds);
+        }
 
         if (mc != CURLM_OK) {
             fprintf(stderr, "curl_multi_wait() failed, code %d.\n", mc);
@@ -378,8 +376,6 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
     json_close_object(&json);
 
     *message = (char *)json.buff;
-
-    VS_LOG_DEBUG("strlen msg = %d", strlen(*message));
     return true;
 }
 
@@ -394,6 +390,7 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
 
+    VS_LOG_DEBUG("[WS] send message = %d", msg);
     ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
     free(msg);
     return ret;
