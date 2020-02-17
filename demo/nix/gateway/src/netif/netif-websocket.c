@@ -256,7 +256,7 @@ on_binary(void *data, CURL *easy, const void *mem, size_t len) {
 static void
 on_ping(void *data, CURL *easy, const char *reason, size_t len) {
     VS_LOG_DEBUG("[WS] INFO: PING %zd bytes='%s'", len, reason);
-    cws_pong(easy, "pong", SIZE_MAX);
+    cws_pong(easy, reason, len);
     (void)data;
 }
 
@@ -293,13 +293,15 @@ _websocket_main_loop_processor(void *sock_desc) {
 
         if (CURLM_OK == mc) {
             /* wait for activity, timeout or "nothing" */
-            mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 1000, &numfds);
+            mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 20000, &numfds);
+            if (mc != CURLM_OK) {
+                VS_LOG_ERROR("curl_multi_wait() failed, code %d.\n", mc);
+                break;
+            }
+        } else {
+            VS_LOG_ERROR("curl_multi_perform() failed, code %d.\n", mc);
         }
 
-        if (mc != CURLM_OK) {
-            fprintf(stderr, "curl_multi_wait() failed, code %d.\n", mc);
-            break;
-        }
     } while (_websocket_ctx.running && still_running);
 
     return NULL;
@@ -390,7 +392,7 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
 
-    VS_LOG_DEBUG("[WS] send message = %d", msg);
+    VS_LOG_DEBUG("[WS] send message = %s", msg);
     ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
     free(msg);
     return ret;
