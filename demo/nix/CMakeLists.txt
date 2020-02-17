@@ -52,12 +52,12 @@ option(USE_TSAN "On/Off Thread sanitizer." OFF)
 
 if(BIGENDIAN_64_BIT_BUILD)
     set(GO_DISABLE ON CACHE BOOL "Disable Go apps" FORCE)
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/../../cmake/mips64.toolchain.cmake")
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/../../sdk/cmake/mips64.toolchain.cmake")
 endif()
 
 if(BIGENDIAN_32_BIT_BUILD)
     set(GO_DISABLE ON CACHE BOOL "Disable Go apps" FORCE)
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/../../cmake/mips32.toolchain.cmake")
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/../../sdk/cmake/mips32.toolchain.cmake")
 endif()
 
 set(VIRGIL_IOT_SDK_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../sdk CACHE STRING "Path to the Virgil IoT SDK")

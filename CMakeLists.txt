@@ -35,9 +35,9 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 
-project(iotkit-demo-nix VERSION 0.1.0 LANGUAGES C)
-
 #
 #   Build nix demo project
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/demo/nix)
+
+project(iotkit-demo-nix VERSION 0.1.0 LANGUAGES C)
