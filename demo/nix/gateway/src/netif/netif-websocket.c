@@ -127,8 +127,8 @@ struct cws_callbacks cbs = {
         .data = &_websocket_ctx,
 };
 
-#define VS_WB_PAYLOAD_FILEND "payload"
-#define VS_WB_ACCOUNT_ID_FILEND "account_id"
+#define VS_WB_PAYLOAD_FIELD "payload"
+#define VS_WB_ACCOUNT_ID_FIELD "account_id"
 
 /******************************************************************************/
 static void
@@ -189,32 +189,20 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
         return;
     }
 
-    if (VS_JSON_ERR_OK != json_get_val_str_len(&jobj, VS_WB_PAYLOAD_FILEND, &len) || len < 0) {
-        VS_LOG_ERROR("[WS] _process_recv_data answer not contain [payload] filed");
-        return;
-    }
+    CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_WB_PAYLOAD_FIELD, &len) && len > 0,
+          "[WS] _process_recv_data answer not contain [payload] filed");
 
     ++len;
-    tmp = (char *)VS_IOT_MALLOC((size_t)len);
-    if (NULL == tmp) {
-        VS_LOG_ERROR("[WS] Can't allocate memory");
-        return;
-    }
+    tmp = (char *)malloc((size_t)len);
+    CHECK(tmp != NULL, "[WS] Can't allocate memory");
 
-    json_get_val_str(&jobj, VS_WB_PAYLOAD_FILEND, tmp, len);
+    json_get_val_str(&jobj, VS_WB_PAYLOAD_FIELD, tmp, len);
 
     decode_len = base64decode_len(tmp, len);
+    CHECK(0 < decode_len, "[MB] cloud_get_message_bin_credentials(...) wrong size [ca_certificate]");
 
-    if (0 >= decode_len) {
-        VS_LOG_ERROR("[MB] cloud_get_message_bin_credentials(...) wrong size [ca_certificate]");
-        goto terminate;
-    }
-
-    message = (char *)VS_IOT_MALLOC((size_t)decode_len);
-    if (NULL == message) {
-        VS_LOG_ERROR("[MB] Can't allocate memory");
-        goto terminate;
-    }
+    message = (char *)malloc((size_t)decode_len);
+    CHECK(message != NULL, "[WS] Can't allocate memory");
 
     base64decode(tmp, len, (uint8_t *)message, &decode_len);
 
@@ -228,6 +216,7 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
         }
     }
 terminate:
+    json_parse_stop(&jobj);
     free(tmp);
     free(message);
 }
@@ -247,9 +236,8 @@ on_binary(void *data, CURL *easy, const void *mem, size_t len) {
     const uint8_t *bytes = mem;
 
     VS_LOG_DEBUG("[WS] INFO: BINARY=%zd bytes", len);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "[WS] {}", bytes, len);
+    VS_LOG_HEX(VS_LOGLEV_DEBUG, "[WS] ", bytes, len);
     _process_recv_data(mem, len);
-    cws_ping(easy, "ping", SIZE_MAX);
 }
 
 /******************************************************************************/
@@ -283,10 +271,12 @@ static void *
 _websocket_main_loop_processor(void *sock_desc) {
     int still_running;
     vs_log_thread_descriptor("websock");
+
     do {
         // websocket cycle
         CURLMcode mc; /* curl_multi_poll() return code */
         int numfds;
+
 
         /* we start some action by calling perform right away */
         mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
@@ -295,11 +285,11 @@ _websocket_main_loop_processor(void *sock_desc) {
             /* wait for activity, timeout or "nothing" */
             mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 20000, &numfds);
             if (mc != CURLM_OK) {
-                VS_LOG_ERROR("curl_multi_wait() failed, code %d.\n", mc);
+                VS_LOG_ERROR("curl_multi_wait() failed, code %d.", mc);
                 break;
             }
         } else {
-            VS_LOG_ERROR("curl_multi_perform() failed, code %d.\n", mc);
+            VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
         }
 
     } while (_websocket_ctx.running && still_running);
@@ -366,14 +356,14 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
     json_str_init(&json, frame, frame_size);
     json_start_object(&json);
 
-    json_set_val_str(&json, VS_WB_ACCOUNT_ID_FILEND, _account);
+    json_set_val_str(&json, VS_WB_ACCOUNT_ID_FIELD, _account);
 
     json_set_val_int(&json, "s", is_stat ? 1 : 0);
 
     int base64_sz = base64encode_len(data_sz);
     char *data_b64 = (char *)malloc(base64_sz);
     base64encode((const unsigned char *)data, data_sz, data_b64, &base64_sz);
-    json_set_val_str(&json, VS_WB_PAYLOAD_FILEND, data_b64);
+    json_set_val_str(&json, VS_WB_PAYLOAD_FIELD, data_b64);
     free(data_b64);
     json_close_object(&json);
 
