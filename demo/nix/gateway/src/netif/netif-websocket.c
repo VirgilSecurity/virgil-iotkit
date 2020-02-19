@@ -194,6 +194,7 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
 
     ++len;
     tmp = (char *)malloc((size_t)len);
+    VS_IOT_ASSERT(tmp);
     CHECK(tmp != NULL, "[WS] Can't allocate memory");
 
     json_get_val_str(&jobj, VS_WB_PAYLOAD_FIELD, tmp, len);
@@ -202,6 +203,7 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     CHECK(0 < decode_len, "[WS] Wrong payload size");
 
     message = (char *)malloc((size_t)decode_len);
+    VS_IOT_ASSERT(message);
     CHECK(message != NULL, "[WS] Can't allocate memory");
 
     base64decode(tmp, len, (uint8_t *)message, &decode_len);
@@ -348,6 +350,7 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
 
     frame = (char *)malloc(frame_size);
     VS_IOT_ASSERT(frame != 0);
+    CHECK_NOT_ZERO_RET(frame, false);
 
     struct json_str json;
     json_str_init(&json, frame, frame_size);
