@@ -96,8 +96,6 @@ _curl_http_hal(vs_cloud_http_method_e method,
 
     resp_buff_t resp = {(uint8_t *)out_data, *in_out_size, 0, fetch_handler, fetch_hander_data};
 
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
     curl = curl_easy_init();
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -129,7 +127,6 @@ _curl_http_hal(vs_cloud_http_method_e method,
     }
 
 terminate:
-    curl_global_cleanup();
 
     return res;
 }

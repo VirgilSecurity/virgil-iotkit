@@ -53,6 +53,8 @@
 #include "sdk-impl/netif/netif-udp-broadcast.h"
 #include "sdk-impl/netif/packets-queue.h"
 #include "netif/netif-websocket.h"
+
+#include <curl/curl.h>
 /******************************************************************************/
 int
 main(int argc, char *argv[]) {
@@ -115,6 +117,7 @@ main(int argc, char *argv[]) {
     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
     // Network interface
+    curl_global_init(CURL_GLOBAL_DEFAULT);
     vs_packets_queue_init(vs_snap_default_processor);
     netifs_impl[0] = vs_hal_netif_udp_bcast(forced_mac_addr);
     netifs_impl[1] = vs_hal_netif_websock(
@@ -176,6 +179,7 @@ terminate:
 
     // Deinit Soft Security Module
     vs_soft_secmodule_deinit();
+    curl_global_cleanup();
 
     res = vs_firmware_nix_update(argc, argv);
 

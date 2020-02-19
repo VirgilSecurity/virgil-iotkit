@@ -300,8 +300,6 @@ _websocket_main_loop_processor(void *sock_desc) {
 /******************************************************************************/
 static vs_status_e
 _websock_connect() {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
     _websocket_ctx.easy = cws_new(_url, NULL, &cbs);
     if (!_websocket_ctx.easy) {
         goto error_easy;
@@ -330,7 +328,6 @@ _websock_connect() {
 error_multi:
     cws_free(_websocket_ctx.easy);
 error_easy:
-    curl_global_cleanup();
     _websocket_ctx.running = false;
 
     _websock_deinit(&_netif_websock);
@@ -417,7 +414,6 @@ _websock_deinit(struct vs_netif_t *netif) {
         curl_multi_remove_handle(_websocket_ctx.multi, _websocket_ctx.easy);
         curl_multi_cleanup(_websocket_ctx.multi);
         cws_free(_websocket_ctx.easy);
-        curl_global_cleanup();
     }
 
     free(_url);
