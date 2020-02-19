@@ -185,12 +185,12 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     int decode_len;
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, (char *)received_data, recv_sz)) {
-        VS_LOG_ERROR("[WS]_process_recv_data. Unable to parse incoming message");
+        VS_LOG_ERROR("[WS] Unable to parse incoming message");
         return;
     }
 
     CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_WB_PAYLOAD_FIELD, &len) && len > 0,
-          "[WS] _process_recv_data answer not contain [payload] filed");
+          "[WS] Message does not contain [payload] filed");
 
     ++len;
     tmp = (char *)malloc((size_t)len);
@@ -199,7 +199,7 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     json_get_val_str(&jobj, VS_WB_PAYLOAD_FIELD, tmp, len);
 
     decode_len = base64decode_len(tmp, len);
-    CHECK(0 < decode_len, "[MB] cloud_get_message_bin_credentials(...) wrong size [ca_certificate]");
+    CHECK(0 < decode_len, "[WS] Wrong payload size");
 
     message = (char *)malloc((size_t)decode_len);
     CHECK(message != NULL, "[WS] Can't allocate memory");
@@ -285,11 +285,11 @@ _websocket_main_loop_processor(void *sock_desc) {
             /* wait for activity, timeout or "nothing" */
             mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 20000, &numfds);
             if (mc != CURLM_OK) {
-                VS_LOG_ERROR("curl_multi_wait() failed, code %d.", mc);
+                VS_LOG_ERROR("[WS] curl_multi_wait() failed, code %d.", mc);
                 break;
             }
         } else {
-            VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
+            VS_LOG_ERROR("[WS] curl_multi_perform() failed, code %d.", mc);
         }
 
     } while (_websocket_ctx.running && still_running);
@@ -325,7 +325,7 @@ _websock_connect() {
         return VS_CODE_OK;
     }
 
-    VS_LOG_ERROR("Can't start websocket thread");
+    VS_LOG_ERROR("[WS] Can't start websocket thread");
 
 error_multi:
     cws_free(_websocket_ctx.easy);
@@ -379,7 +379,7 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
     char *msg = NULL;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
-    CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "Unable to create websocket frame");
+    CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
 
     VS_LOG_DEBUG("[WS] send message = %s", msg);
@@ -466,7 +466,7 @@ vs_hal_netif_websock(const char *url,
 
     if (NULL == _url || NULL == account) {
         _websock_deinit(&_netif_websock);
-        VS_LOG_ERROR("Can't allocate memory for websocket creds");
+        VS_LOG_ERROR("[WS] Can't allocate memory for websocket creds");
         return NULL;
     }
 
