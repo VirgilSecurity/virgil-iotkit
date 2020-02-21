@@ -98,8 +98,8 @@ struct cws_callbacks {
                      const char *reason_text,
                      size_t reason_text_len);
 
-    void (*calc_sha1)(const void *input, const size_t input_len, void *output);
-    void (*encode_base64)(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz);
+    void (*calc_sha1)(const void *input, size_t input_len, void *output);
+    void (*encode_base64)(const uint8_t *input, size_t input_len, char *output, size_t buf_sz);
     void (*get_random)(void *buffer, size_t len);
 
     const void *data;
@@ -190,7 +190,7 @@ cws_ping(CURL *easy, const char *reason, size_t len);
 /**
  * Send a PONG (opcode 0xA) frame with @a reason as payload.
  *
- * Note that pong is sent automatically if no "on_ping" callback is
+ * Note that pong is sent automatically if no "_cws_on_ping_rcv_cb" callback is
  * defined. If one is defined you must send pong manually.
  *
  * @param easy the CURL easy handle created with cws_new()

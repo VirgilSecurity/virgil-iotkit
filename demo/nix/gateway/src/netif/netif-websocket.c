@@ -35,9 +35,14 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
+
+#include <poll.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/logger/logger.h>
@@ -47,6 +52,7 @@
 #include "netif/curl-websocket.h"
 #include <mbedtls/sha1.h>
 
+#include <helpers/event-group-bits.h>
 
 static vs_status_e
 _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
@@ -67,7 +73,9 @@ static vs_netif_t _netif_websock = {.user_data = NULL,
                                     .mac_addr = _websock_mac,
                                     .packet_buf_filled = 0};
 
-static pthread_t main_loop_thread;
+static pthread_t socket_pool_thread;
+static pthread_t curl_perform_loop_thread;
+
 static vs_netif_rx_cb_t _websock_rx_cb = 0;
 static vs_netif_process_cb_t _websock_process_cb = 0;
 static char *_url = NULL;
@@ -75,24 +83,34 @@ static char *_account = NULL;
 static const vs_secmodule_impl_t *_secmodule_impl;
 
 static void
-on_connect(void *data, CURL *easy, const char *websocket_protocols);
+_cws_on_connect_cb(void *data, CURL *easy, const char *websocket_protocols);
 static void
-on_text(void *data, CURL *easy, const char *text, size_t len);
+_cws_on_text_rcv_cb(void *data, CURL *easy, const char *text, size_t len);
 static void
-on_binary(void *data, CURL *easy, const void *mem, size_t len);
+_cws_on_binary_rcv_cb(void *data, CURL *easy, const void *mem, size_t len);
 static void
-on_ping(void *data, CURL *easy, const char *reason, size_t len);
+_cws_on_ping_rcv_cb(void *data, CURL *easy, const char *reason, size_t len);
 static void
-on_pong(void *data, CURL *easy, const char *reason, size_t len);
+_cws_on_pong_rcv_cb(void *data, CURL *easy, const char *reason, size_t len);
 static void
-on_close(void *data, CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len);
+_cws_on_close_cb(void *data, CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len);
 
 static void
-_calc_sha1(const void *input, const size_t input_len, void *output);
+_cws_calc_sha1(const void *input, size_t input_len, void *output);
 static void
-_encode_base64(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz);
+_cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t buf_sz);
 static void
-_get_random(void *buffer, size_t len);
+_cws_get_random(void *buffer, size_t len);
+
+
+static void *
+_websocket_curl_perform_loop_processor(void *param);
+static void *
+_websocket_pool_socket_processor(void *param);
+static vs_status_e
+_websocket_connect(void);
+static vs_status_e
+_websocket_reconnect(void);
 
 // static pthread_t receive_thread;
 static uint8_t _sim_mac_addr[6] = {2, 2, 2, 2, 2, 2};
@@ -100,39 +118,44 @@ static uint8_t _sim_mac_addr[6] = {2, 2, 2, 2, 2, 2};
 #define RX_BUF_SZ (2048)
 
 struct websocket_ctx {
+    bool is_initialized;
     CURL *easy;
     CURLM *multi;
-    int text_lines;
-    int binary_lines;
+    struct sockaddr_in servaddr;
+    curl_socket_t sockfd;
     int exitval;
-    bool running;
+    vs_event_group_bits_t ws_events;
 };
 
 struct websocket_ctx _websocket_ctx = {
-        .text_lines = 0,
-        .binary_lines = 0,
         .exitval = EXIT_SUCCESS,
 };
 
 struct cws_callbacks cbs = {
-        .on_connect = on_connect,
-        .on_text = on_text,
-        .on_binary = on_binary,
-        .on_ping = on_ping,
-        .on_pong = on_pong,
-        .on_close = on_close,
-        .calc_sha1 = _calc_sha1,
-        .encode_base64 = _encode_base64,
-        .get_random = _get_random,
+        .on_connect = _cws_on_connect_cb,
+        .on_text = _cws_on_text_rcv_cb,
+        .on_binary = _cws_on_binary_rcv_cb,
+        .on_ping = _cws_on_ping_rcv_cb,
+        .on_pong = _cws_on_pong_rcv_cb,
+        .on_close = _cws_on_close_cb,
+        .calc_sha1 = _cws_calc_sha1,
+        .encode_base64 = _cws_encode_base64,
+        .get_random = _cws_get_random,
         .data = &_websocket_ctx,
 };
+
+// thread safe event flags
+#define WS_EVF_STOP_ALL_THREADS (1 << 0)
+#define WS_EVF_STOP_PERFORM_THREAD (1 << 1)
+#define WS_EVF_SOCKET_CONNECTED (1 << 2)
+#define WS_EVF_CONNECTION_CLOSED (1 << 3)
 
 #define VS_WB_PAYLOAD_FIELD "payload"
 #define VS_WB_ACCOUNT_ID_FIELD "account_id"
 
 /******************************************************************************/
 static void
-_calc_sha1(const void *input, const size_t input_len, void *output) {
+_cws_calc_sha1(const void *input, size_t input_len, void *output) {
     VS_IOT_ASSERT(input);
     VS_IOT_ASSERT(output);
     VS_IOT_ASSERT(input_len);
@@ -146,7 +169,7 @@ _calc_sha1(const void *input, const size_t input_len, void *output) {
 
 /******************************************************************************/
 static void
-_encode_base64(const uint8_t *input, const size_t input_len, char *output, size_t buf_sz) {
+_cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t buf_sz) {
     int out_len = base64encode_len(input_len);
 
     VS_IOT_ASSERT(input);
@@ -160,17 +183,10 @@ _encode_base64(const uint8_t *input, const size_t input_len, char *output, size_
 
 /******************************************************************************/
 static void
-_get_random(void *buffer, size_t len) {
+_cws_get_random(void *buffer, size_t len) {
     VS_IOT_ASSERT(buffer);
     VS_IOT_ASSERT(len);
     VS_IOT_ASSERT(VS_CODE_OK == _secmodule_impl->random(buffer, len));
-}
-
-/******************************************************************************/
-static void
-on_connect(void *data, CURL *easy, const char *websocket_protocols) {
-    VS_LOG_DEBUG("INFO: connected, websocket_protocols='%s'", websocket_protocols);
-    _netif_websock.tx(&_netif_websock, (uint8_t *)"Hello", strlen("Hello"));
 }
 
 /******************************************************************************/
@@ -225,16 +241,28 @@ terminate:
 
 /******************************************************************************/
 static void
-on_text(void *data, CURL *easy, const char *text, size_t len) {
-    VS_LOG_DEBUG("INFO: TEXT={\n%s\n}", text);
-    _process_recv_data((uint8_t *)text, len);
-    (void)len;
+_cws_on_connect_cb(void *data, CURL *easy, const char *websocket_protocols) {
+    (void)data;
+    (void)easy;
+    VS_LOG_DEBUG("INFO: connected, websocket_protocols='%s'", websocket_protocols);
+    _netif_websock.tx(&_netif_websock, (uint8_t *)"Hello", strlen("Hello"));
 }
 
 /******************************************************************************/
 static void
-on_binary(void *data, CURL *easy, const void *mem, size_t len) {
+_cws_on_text_rcv_cb(void *data, CURL *easy, const char *text, size_t len) {
+    (void)data;
+    (void)easy;
+    VS_LOG_DEBUG("INFO: TEXT={\n%s\n}", text);
 
+    _process_recv_data((uint8_t *)text, len);
+}
+
+/******************************************************************************/
+static void
+_cws_on_binary_rcv_cb(void *data, CURL *easy, const void *mem, size_t len) {
+    (void)data;
+    (void)easy;
     const uint8_t *bytes = mem;
 
     VS_LOG_DEBUG("[WS] INFO: BINARY=%zd bytes", len);
@@ -244,7 +272,7 @@ on_binary(void *data, CURL *easy, const void *mem, size_t len) {
 
 /******************************************************************************/
 static void
-on_ping(void *data, CURL *easy, const char *reason, size_t len) {
+_cws_on_ping_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
     VS_LOG_DEBUG("[WS] INFO: PING %zd bytes='%s'", len, reason);
     cws_pong(easy, reason, len);
     (void)data;
@@ -252,89 +280,232 @@ on_ping(void *data, CURL *easy, const char *reason, size_t len) {
 
 /******************************************************************************/
 static void
-on_pong(void *data, CURL *easy, const char *reason, size_t len) {
-    VS_LOG_DEBUG("[WS] INFO: PONG %zd bytes='%s'", len, reason);
+_cws_on_pong_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
     (void)data;
+    (void)easy;
+    VS_LOG_DEBUG("[WS] INFO: PONG %zd bytes='%s'", len, reason);
 }
 
 /******************************************************************************/
 static void
-on_close(void *data, CURL *easy, enum cws_close_reason reason, const char *reason_text, size_t reason_text_len) {
+_cws_on_close_cb(void *data,
+                 CURL *easy,
+                 enum cws_close_reason reason,
+                 const char *reason_text,
+                 size_t reason_text_len) {
     struct websocket_ctx *ctx = data;
     VS_LOG_DEBUG("[WS] INFO: CLOSE=%4d %zd bytes '%s'", reason, reason_text_len, reason_text);
 
     ctx->exitval = (reason == CWS_CLOSE_REASON_NORMAL ? EXIT_SUCCESS : EXIT_FAILURE);
-    ctx->running = false;
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_CONNECTION_CLOSED);
     (void)easy;
 }
 
 /******************************************************************************/
+static curl_socket_t
+_curl_opensocket_cb(void *clientp, curlsocktype purpose, struct curl_sockaddr *address) {
+    (void)purpose;
+    (void)clientp;
+
+    VS_LOG_DEBUG("Try to open socket");
+    /* Create the socket "manually" */
+    _websocket_ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_websocket_ctx.sockfd == CURL_SOCKET_BAD) {
+        VS_LOG_ERROR("Error creating listening socket.");
+        return CURL_SOCKET_BAD;
+    }
+
+    memcpy(&_websocket_ctx.servaddr, &address->addr, sizeof(_websocket_ctx.servaddr));
+
+    if (connect(_websocket_ctx.sockfd, (struct sockaddr *)&_websocket_ctx.servaddr, sizeof(_websocket_ctx.servaddr)) ==
+        -1) {
+        close(_websocket_ctx.sockfd);
+        VS_LOG_ERROR("client error: connect: %s", strerror(errno));
+        return CURL_SOCKET_BAD;
+    }
+
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
+
+    return _websocket_ctx.sockfd;
+}
+
+/******************************************************************************/
+static int
+_curl_socketopt_cb(void *clientp, curl_socket_t curlfd, curlsocktype purpose) {
+    (void)clientp;
+    (void)curlfd;
+    (void)purpose;
+    /* This return code was added in libcurl 7.21.5 */
+    return CURL_SOCKOPT_ALREADY_CONNECTED;
+}
+
+/******************************************************************************/
+static CURL *
+_cws_config(void) {
+    CURL *easy = cws_new(_url, NULL, &cbs);
+    if (!easy) {
+        return NULL;
+    }
+
+    /* here you should do any extra sets, like cookies, auth... */
+    curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(easy, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(easy, CURLOPT_OPENSOCKETFUNCTION, _curl_opensocket_cb);
+    curl_easy_setopt(easy, CURLOPT_OPENSOCKETDATA, &_websocket_ctx.sockfd);
+    curl_easy_setopt(easy, CURLOPT_SOCKOPTFUNCTION, _curl_socketopt_cb);
+    return easy;
+}
+
+/******************************************************************************/
+static void
+_cws_cleanup_resources(void) {
+
+    curl_multi_remove_handle(_websocket_ctx.multi, _websocket_ctx.easy);
+    cws_free(_websocket_ctx.easy);
+
+    if (vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0)) {
+        vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
+    }
+}
+
+/******************************************************************************/
+static vs_status_e
+_websocket_connect(void) {
+    vs_event_bits_t stat;
+    _websocket_ctx.easy = _cws_config();
+    CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
+
+    _websocket_ctx.multi = curl_multi_init();
+    if (!_websocket_ctx.multi) {
+        VS_LOG_ERROR("Can't create curl easy ctx");
+        cws_free(_websocket_ctx.easy);
+        return VS_CODE_ERR_INIT_SNAP;
+    }
+
+    curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
+    // Start receive thread
+    if (0 == pthread_create(&curl_perform_loop_thread, NULL, _websocket_curl_perform_loop_processor, NULL)) {
+        do {
+            stat = vs_event_group_wait_bits(
+                    &_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS, false, false, 5);
+
+            if (stat & WS_EVF_STOP_ALL_THREADS) {
+                _cws_cleanup_resources();
+                return VS_CODE_ERR_DEINIT_SNAP;
+            }
+
+            if (0 == stat) {
+                CHECK_RET(VS_CODE_OK == _websocket_reconnect(), VS_CODE_ERR_INIT_SNAP, "Can't reconnect");
+            }
+        } while (0 == stat);
+        return VS_CODE_OK;
+    }
+
+    VS_LOG_ERROR("Can't start websocket main loop processor");
+
+    return VS_CODE_ERR_INIT_SNAP;
+}
+
+/******************************************************************************/
+static vs_status_e
+_websocket_reconnect(void) {
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+    pthread_join(curl_perform_loop_thread, NULL);
+
+    _cws_cleanup_resources();
+    curl_multi_cleanup(_websocket_ctx.multi);
+    return _websocket_connect();
+}
+
+/******************************************************************************/
 static void *
-_websocket_main_loop_processor(void *sock_desc) {
+_websocket_curl_perform_loop_processor(void *param) {
+    (void)param;
     int still_running;
-    vs_log_thread_descriptor("websock");
+    vs_log_thread_descriptor("ws loop");
+    vs_event_bits_t stat;
 
     do {
         // websocket cycle
         CURLMcode mc; /* curl_multi_poll() return code */
         int numfds;
-
-
         /* we start some action by calling perform right away */
         mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
 
         if (CURLM_OK == mc) {
             /* wait for activity, timeout or "nothing" */
-            mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 20000, &numfds);
+            mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 1000, &numfds);
+
             if (mc != CURLM_OK) {
-                VS_LOG_ERROR("[WS] curl_multi_wait() failed, code %d.", mc);
+                VS_LOG_ERROR("curl_multi_wait() failed, code %d.", mc);
                 break;
             }
         } else {
-            VS_LOG_ERROR("[WS] curl_multi_perform() failed, code %d.", mc);
+            VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
         }
-
-    } while (_websocket_ctx.running && still_running);
+        stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
+    } while (!stat && still_running);
 
     return NULL;
 }
 
 /******************************************************************************/
-static vs_status_e
-_websock_connect() {
-    _websocket_ctx.easy = cws_new(_url, NULL, &cbs);
-    if (!_websocket_ctx.easy) {
-        goto error_easy;
+static void *
+_websocket_pool_socket_processor(void *param) {
+    (void)param;
+    vs_event_bits_t stat;
+    vs_log_thread_descriptor("ws poll");
+
+
+    while (1) {
+        if (VS_CODE_OK != _websocket_connect()) {
+            curl_multi_cleanup(_websocket_ctx.multi);
+            return NULL;
+        }
+
+        VS_LOG_DEBUG("Socket has been opened successfully");
+
+        stat = 0;
+        struct pollfd pfd;
+        bool is_poll = true;
+        pfd.fd = _websocket_ctx.sockfd;
+        pfd.events = POLLIN | POLLHUP | POLLRDNORM;
+        pfd.revents = 0;
+
+        while (is_poll && 0 == stat) {
+            // call poll with a timeout of 100 ms
+            if (poll(&pfd, 1, 100) > 0) {
+                // if result > 0, this means that there is either data available on the
+                // socket, or the socket has been closed
+                char buffer;
+                if (recv(_websocket_ctx.sockfd, &buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    // if recv returns zero, that means the connection has been closed:
+                    // cleanup resources and go to reconnect
+                    VS_LOG_WARNING("Socket has been closed suddenly");
+                    _cws_cleanup_resources();
+                    is_poll = false;
+                }
+            }
+            stat = vs_event_group_wait_bits(
+                    &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_CONNECTION_CLOSED, true, false, 1);
+        }
+
+
+        if (stat & WS_EVF_STOP_ALL_THREADS) {
+            break;
+        } else if (stat & WS_EVF_CONNECTION_CLOSED) {
+            VS_LOG_WARNING("Socket has been closed suddenly");
+            _cws_cleanup_resources();
+        }
     }
 
-    /* here you should do any extra sets, like cookies, auth... */
-    curl_easy_setopt(_websocket_ctx.easy, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(_websocket_ctx.easy, CURLOPT_VERBOSE, 1L);
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+    pthread_join(curl_perform_loop_thread, NULL);
 
-    _websocket_ctx.multi = curl_multi_init();
-    if (!_websocket_ctx.multi) {
-        goto error_multi;
-    }
+    _cws_cleanup_resources();
+    curl_multi_cleanup(_websocket_ctx.multi);
 
-    curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
-
-    _websocket_ctx.running = true;
-
-    // Start receive thread
-    if (0 == pthread_create(&main_loop_thread, NULL, _websocket_main_loop_processor, NULL)) {
-        return VS_CODE_OK;
-    }
-
-    VS_LOG_ERROR("[WS] Can't start websocket thread");
-
-error_multi:
-    cws_free(_websocket_ctx.easy);
-error_easy:
-    _websocket_ctx.running = false;
-
-    _websock_deinit(&_netif_websock);
-
-    return VS_CODE_ERR_SOCKET;
+    return NULL;
 }
 
 /******************************************************************************/
@@ -378,6 +549,9 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
     vs_status_e ret;
     char *msg = NULL;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    vs_event_bits_t stat =
+            vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
+    CHECK_RET(stat & WS_EVF_SOCKET_CONNECTED, VS_CODE_ERR_SOCKET, "[WS] Websocket isn't connected");
 
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
@@ -400,29 +574,42 @@ _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_n
     _websock_process_cb = process_cb;
     _netif_websock.packet_buf_filled = 0;
 
-    return _websock_connect();
+    CHECK_RET(
+            0 == vs_event_group_init(&_websocket_ctx.ws_events), VS_CODE_ERR_INIT_SNAP, "Can't initialize event group");
+
+    // Start receive thread
+    if (0 == pthread_create(&socket_pool_thread, NULL, _websocket_pool_socket_processor, NULL)) {
+        _websocket_ctx.is_initialized = true;
+        return VS_CODE_OK;
+    }
+
+    _websock_deinit(&_netif_websock);
+
+    return VS_CODE_ERR_SOCKET;
 }
 
 /******************************************************************************/
 static vs_status_e
 _websock_deinit(struct vs_netif_t *netif) {
     (void)netif;
+    if (_websocket_ctx.is_initialized) {
+        vs_event_bits_t stat =
+                vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
 
-    if (_websocket_ctx.running) {
-        _websocket_ctx.running = false;
-        pthread_join(main_loop_thread, NULL);
+        if (stat & WS_EVF_SOCKET_CONNECTED) {
+            cws_close(_websocket_ctx.easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
 
-        cws_close(_websocket_ctx.easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
+            vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS);
+            pthread_join(socket_pool_thread, NULL);
+            vs_event_group_destroy(&_websocket_ctx.ws_events);
+        }
 
-        curl_multi_remove_handle(_websocket_ctx.multi, _websocket_ctx.easy);
-        curl_multi_cleanup(_websocket_ctx.multi);
-        cws_free(_websocket_ctx.easy);
+        free(_url);
+        _url = NULL;
+        free(_account);
+        _account = NULL;
+        _websocket_ctx.is_initialized = false;
     }
-
-    free(_url);
-    _url = NULL;
-    free(_account);
-    _account = NULL;
 
     return VS_CODE_OK;
 }
@@ -464,7 +651,6 @@ vs_hal_netif_websock(const char *url,
     _account = strdup(account);
 
     if (NULL == _url || NULL == account) {
-        _websock_deinit(&_netif_websock);
         VS_LOG_ERROR("[WS] Can't allocate memory for websocket creds");
         return NULL;
     }
