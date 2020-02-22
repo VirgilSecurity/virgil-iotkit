@@ -181,6 +181,8 @@ terminate:
     vs_soft_secmodule_deinit();
     curl_global_cleanup();
 
+    vs_packets_queue_deinit();
+
     res = vs_firmware_nix_update(argc, argv);
 
     // Clean File cache

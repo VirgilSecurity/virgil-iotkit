@@ -173,6 +173,8 @@ terminate:
     // Deinit Soft Security Module
     vs_soft_secmodule_deinit();
 
+    vs_packets_queue_deinit();
+
     res = vs_firmware_nix_update(argc, argv);
 
     return res;

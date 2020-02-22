@@ -148,6 +148,8 @@ terminate:
     // De-initialize Soft Security Module
     vs_soft_secmodule_deinit();
 
+    vs_packets_queue_deinit();
+
     return VS_CODE_OK;
 }
 

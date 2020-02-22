@@ -102,7 +102,7 @@ vs_packets_queue_init(vs_netif_process_cb_t packet_processor) {
 
     // Initialize RX Queue
     _queue_ctx = vs_msg_queue_init(VS_NETIF_QUEUE_SZ, 1, 1);
-    CHECK_RET(_queue_ctx, -1, "Cannot create message queue.");
+    CHECK_RET(_queue_ctx, VS_CODE_ERR_THREAD, "Cannot create message queue.");
 
     // Create thread for periodical actions
     if (0 == pthread_create(&_periodical_thread, NULL, _periodical_processing, NULL)) {
