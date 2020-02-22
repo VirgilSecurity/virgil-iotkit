@@ -148,7 +148,6 @@ struct cws_callbacks cbs = {
 #define WS_EVF_STOP_ALL_THREADS (1 << 0)
 #define WS_EVF_STOP_PERFORM_THREAD (1 << 1)
 #define WS_EVF_SOCKET_CONNECTED (1 << 2)
-#define WS_EVF_CONNECTION_CLOSED (1 << 3)
 
 #define VS_WB_PAYLOAD_FIELD "payload"
 #define VS_WB_ACCOUNT_ID_FIELD "account_id"
@@ -297,7 +296,7 @@ _cws_on_close_cb(void *data,
                  size_t reason_text_len) {
     struct websocket_ctx *ctx = data;
     vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
-    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_CONNECTION_CLOSED);
+    close(ctx->sockfd);
 
     VS_LOG_DEBUG("[WS] INFO: CLOSE=%4d %zd bytes '%s'", reason, reason_text_len, reason_text);
 
@@ -490,16 +489,12 @@ _websocket_pool_socket_processor(void *param) {
                     is_poll = false;
                 }
             }
-            stat = vs_event_group_wait_bits(
-                    &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_CONNECTION_CLOSED, true, false, 1);
+            stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS, true, false, 1);
         }
 
 
         if (stat & WS_EVF_STOP_ALL_THREADS) {
             break;
-        } else if (stat & WS_EVF_CONNECTION_CLOSED) {
-            VS_LOG_WARNING("Socket has been closed suddenly");
-            _cws_cleanup_resources();
         }
     }
 
@@ -550,7 +545,7 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
 static vs_status_e
 _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     (void)netif;
-    vs_status_e ret;
+    vs_status_e ret = VS_CODE_ERR_SOCKET;
     char *msg = NULL;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
@@ -559,9 +554,12 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
 
     vs_event_bits_t stat =
             vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
-    CHECK_RET(stat & WS_EVF_SOCKET_CONNECTED, VS_CODE_ERR_SOCKET, "[WS] Websocket isn't connected");
+    CHECK(stat & WS_EVF_SOCKET_CONNECTED, "[WS] Websocket isn't connected");
+
     VS_LOG_DEBUG("[WS] send message = %s", msg);
+
     ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+terminate:
     free(msg);
     return ret;
 }
@@ -602,11 +600,10 @@ _websock_deinit(struct vs_netif_t *netif) {
 
         if (stat & WS_EVF_SOCKET_CONNECTED) {
             cws_close(_websocket_ctx.easy, CWS_CLOSE_REASON_NORMAL, "close it!", SIZE_MAX);
-
-            vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS);
-            pthread_join(socket_pool_thread, NULL);
-            vs_event_group_destroy(&_websocket_ctx.ws_events);
         }
+        vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS);
+        pthread_join(socket_pool_thread, NULL);
+        vs_event_group_destroy(&_websocket_ctx.ws_events);
 
         free(_url);
         _url = NULL;
