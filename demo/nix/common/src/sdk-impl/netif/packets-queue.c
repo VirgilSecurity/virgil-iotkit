@@ -104,15 +104,15 @@ vs_packets_queue_init(vs_netif_process_cb_t packet_processor) {
     _queue_ctx = vs_msg_queue_init(VS_NETIF_QUEUE_SZ, 1, 1);
     CHECK_RET(_queue_ctx, VS_CODE_ERR_THREAD, "Cannot create message queue.");
 
-    // Create thread for periodical actions
-    if (0 == pthread_create(&_periodical_thread, NULL, _periodical_processing, NULL)) {
-        _periodical_ready = true;
-    }
-
     // Create thread to call Callbacks on data receive
     if (0 == pthread_create(&_queue_thread, NULL, _msg_processing, NULL)) {
         _queue_thread_ready = true;
         return VS_CODE_OK;
+    }
+
+    // Create thread for periodical actions
+    if (0 == pthread_create(&_periodical_thread, NULL, _periodical_processing, NULL)) {
+        _periodical_ready = true;
     }
 
     VS_LOG_ERROR("Cannot start thread to process RX Queue");
@@ -124,21 +124,24 @@ vs_packets_queue_init(vs_netif_process_cb_t packet_processor) {
 vs_status_e
 vs_packets_queue_deinit(void) {
     // Stop RX processing thread
-    if (_queue_thread_ready) {
-        _stop_queue = true;
-        pthread_join(_queue_thread, NULL);
-        _queue_thread_ready = false;
-    }
-
-    // Free RX Queue
-    vs_msg_queue_free(_queue_ctx);
-
     // Stop periodical thread
     if (_periodical_ready) {
         _stop_periodical = true;
         pthread_join(_periodical_thread, NULL);
         _periodical_ready = false;
     }
+
+    if (_queue_thread_ready) {
+        _stop_queue = true;
+        CHECK_RET(VS_CODE_OK == vs_msg_queue_push(_queue_ctx, NULL, NULL, 0),
+                  VS_CODE_ERR_QUEUE,
+                  "Error while writing message to queue");
+        pthread_join(_queue_thread, NULL);
+        _queue_thread_ready = false;
+    }
+
+    // Free RX Queue
+    vs_msg_queue_free(_queue_ctx);
 
     return VS_CODE_OK;
 }
