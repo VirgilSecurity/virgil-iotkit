@@ -177,6 +177,8 @@ _cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t 
     VS_IOT_ASSERT(buf_sz < INT_MAX && buf_sz >= (size_t)(out_len - 1));
 
     char enc[out_len];
+    memset(enc, 0, out_len);
+
     VS_IOT_ASSERT(base64encode(input, input_len, enc, &out_len));
     memcpy(output, enc, out_len - 1);
 }
