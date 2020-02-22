@@ -174,7 +174,7 @@ _cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t 
 
     VS_IOT_ASSERT(input);
     VS_IOT_ASSERT(input_len);
-    VS_IOT_ASSERT(buf_sz < INT_MAX && buf_sz >= (size_t)out_len);
+    VS_IOT_ASSERT(buf_sz < INT_MAX && buf_sz >= (size_t)(out_len - 1));
 
     char enc[out_len];
     VS_IOT_ASSERT(base64encode(input, input_len, enc, &out_len));
@@ -650,7 +650,7 @@ vs_hal_netif_websock(const char *url,
     _url = strdup(url);
     _account = strdup(account);
 
-    if (NULL == _url || NULL == account) {
+    if (NULL == _url || NULL == _account) {
         VS_LOG_ERROR("[WS] Can't allocate memory for websocket creds");
         return NULL;
     }

@@ -34,6 +34,8 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#include <virgil/iot/macros/macros.h>
+
 #define ERR(fmt, ...) fprintf(stderr, "ERROR: " fmt "\n", ##__VA_ARGS__)
 
 #define STR_OR_EMPTY(p) (p != NULL ? p : "")
@@ -456,6 +458,8 @@ cws_close(CURL *easy, enum cws_close_reason reason, const char *reason_text, siz
 
     len = sizeof(uint16_t) + reason_text_len;
     p = malloc(len);
+    BOOL_CHECK_RET(p, "Can't allocate memory");
+
     memcpy(p, &r, sizeof(uint16_t));
     _cws_hton(p, sizeof(uint16_t));
     if (reason_text_len)
@@ -735,9 +739,12 @@ _cws_dispatch(struct cws_data *priv) {
 static size_t
 _cws_process_frame(struct cws_data *priv, const char *buffer, size_t len) {
     size_t used = 0;
-
-    while (len > 0 && priv->recv.done < priv->recv.needed) {
+    while (len > 0) {
         uint64_t frame_len;
+
+        if (priv->recv.done >= priv->recv.needed) {
+            break;
+        }
 
         if (priv->recv.done < priv->recv.needed) {
             size_t todo = priv->recv.needed - priv->recv.done;
@@ -946,6 +953,8 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
         return NULL;
 
     priv = calloc(1, sizeof(struct cws_data));
+    BOOL_CHECK_RET(priv, "Can't a;llocate memory");
+
     priv->easy = easy;
     curl_easy_setopt(easy, CURLOPT_PRIVATE, priv);
     curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, _cws_receive_header);
@@ -964,11 +973,13 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
     /* curl doesn't support ws:// or wss:// scheme, rewrite to http/https */
     if (strncmp(url, "ws://", strlen("ws://")) == 0) {
         tmp = malloc(strlen(url) - strlen("ws://") + strlen("http://") + 1);
+        CHECK(tmp, "Can't allocate memory");
         memcpy(tmp, "http://", strlen("http://"));
         memcpy(tmp + strlen("http://"), url + strlen("ws://"), strlen(url) - strlen("ws://") + 1);
         url = tmp;
     } else if (strncmp(url, "wss://", strlen("wss://")) == 0) {
         tmp = malloc(strlen(url) - strlen("wss://") + strlen("https://") + 1);
+        CHECK(tmp, "Can't allocate memory");
         memcpy(tmp, "https://", strlen("https://"));
         memcpy(tmp + strlen("https://"), url + strlen("wss://"), strlen(url) - strlen("wss://") + 1);
         url = tmp;
@@ -1016,6 +1027,7 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
 
     if (websocket_protocols) {
         char *tmp = malloc(strlen("Sec-WebSocket-Protocol: ") + strlen(websocket_protocols) + 1);
+        CHECK(tmp, "Can't allocate memory");
         memcpy(tmp, "Sec-WebSocket-Protocol: ", strlen("Sec-WebSocket-Protocol: "));
         memcpy(tmp + strlen("Sec-WebSocket-Protocol: "), websocket_protocols, strlen(websocket_protocols) + 1);
 
@@ -1027,6 +1039,9 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
     curl_easy_setopt(easy, CURLOPT_HTTPHEADER, priv->headers);
 
     return easy;
+terminate:
+    free(priv);
+    return NULL;
 }
 
 /******************************************************************************/
