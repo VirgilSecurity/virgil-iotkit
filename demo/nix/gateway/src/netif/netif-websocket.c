@@ -296,10 +296,12 @@ _cws_on_close_cb(void *data,
                  const char *reason_text,
                  size_t reason_text_len) {
     struct websocket_ctx *ctx = data;
+    vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_CONNECTION_CLOSED);
+
     VS_LOG_DEBUG("[WS] INFO: CLOSE=%4d %zd bytes '%s'", reason, reason_text_len, reason_text);
 
     ctx->exitval = (reason == CWS_CLOSE_REASON_NORMAL ? EXIT_SUCCESS : EXIT_FAILURE);
-    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_CONNECTION_CLOSED);
     (void)easy;
 }
 
@@ -351,7 +353,7 @@ _cws_config(void) {
 
     /* here you should do any extra sets, like cookies, auth... */
     curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(easy, CURLOPT_VERBOSE, 1L);
+    //    curl_easy_setopt(easy, CURLOPT_VERBOSE, 1L);
     curl_easy_setopt(easy, CURLOPT_OPENSOCKETFUNCTION, _curl_opensocket_cb);
     curl_easy_setopt(easy, CURLOPT_OPENSOCKETDATA, &_websocket_ctx.sockfd);
     curl_easy_setopt(easy, CURLOPT_SOCKOPTFUNCTION, _curl_socketopt_cb);
@@ -551,13 +553,13 @@ _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_s
     vs_status_e ret;
     char *msg = NULL;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
-    vs_event_bits_t stat =
-            vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
-    CHECK_RET(stat & WS_EVF_SOCKET_CONNECTED, VS_CODE_ERR_SOCKET, "[WS] Websocket isn't connected");
 
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
 
+    vs_event_bits_t stat =
+            vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
+    CHECK_RET(stat & WS_EVF_SOCKET_CONNECTED, VS_CODE_ERR_SOCKET, "[WS] Websocket isn't connected");
     VS_LOG_DEBUG("[WS] send message = %s", msg);
     ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
     free(msg);
