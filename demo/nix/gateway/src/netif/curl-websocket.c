@@ -744,9 +744,7 @@ _cws_process_frame(struct cws_data *priv, const char *buffer, size_t len) {
 
         if (priv->recv.done >= priv->recv.needed) {
             break;
-        }
-
-        if (priv->recv.done < priv->recv.needed) {
+        } else {
             size_t todo = priv->recv.needed - priv->recv.done;
             if (todo > len)
                 todo = len;
@@ -956,13 +954,13 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
     BOOL_CHECK_RET(priv, "Can't a;llocate memory");
 
     priv->easy = easy;
-    curl_easy_setopt(easy, CURLOPT_PRIVATE, priv);
+    curl_easy_setopt(easy, CURLOPT_PRIVATE, priv); // V568
     curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, _cws_receive_header);
-    curl_easy_setopt(easy, CURLOPT_HEADERDATA, priv);
+    curl_easy_setopt(easy, CURLOPT_HEADERDATA, priv); // V568
     curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, _cws_receive_data);
-    curl_easy_setopt(easy, CURLOPT_WRITEDATA, priv);
+    curl_easy_setopt(easy, CURLOPT_WRITEDATA, priv); // V568
     curl_easy_setopt(easy, CURLOPT_READFUNCTION, _cws_send_data);
-    curl_easy_setopt(easy, CURLOPT_READDATA, priv);
+    curl_easy_setopt(easy, CURLOPT_READDATA, priv); // V568
 
     if (callbacks)
         priv->cbs = *callbacks;
@@ -1036,7 +1034,7 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
         priv->websocket_protocols.requested = strdup(websocket_protocols);
     }
 
-    curl_easy_setopt(easy, CURLOPT_HTTPHEADER, priv->headers);
+    curl_easy_setopt(easy, CURLOPT_HTTPHEADER, priv->headers); // V568
 
     return easy;
 terminate:
