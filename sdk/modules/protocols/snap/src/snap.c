@@ -406,7 +406,11 @@ vs_snap_deinit() {
     CHECK_NOT_ZERO_RET(_default_netif()->deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     // Stop network
-    _default_netif()->deinit(_default_netif());
+    for (i = 0; i < _netifs_cnt; i++) {
+        if (_netifs[i]->deinit) {
+            _netifs[i]->deinit(_netifs[i]);
+        }
+    }
 
     // Deinit all services
     for (i = 0; i < _snap_services_num; i++) {
