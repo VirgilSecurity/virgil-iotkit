@@ -468,25 +468,15 @@ static void *
 _websocket_pool_socket_processor(void *param) {
     (void)param;
     vs_event_bits_t stat = 0;
-    bool is_start = true;
     vs_log_thread_descriptor("ws poll");
 
-    while (1) {
-        if (is_start) {
-            if (VS_CODE_OK != _websocket_connect()) {
-                curl_multi_cleanup(_websocket_ctx.multi);
-                VS_LOG_ERROR("Fatal error during websocket connection");
-                return NULL;
-            }
-            is_start = false;
-        } else {
-            if (VS_CODE_OK != _websocket_reconnect(stat)) {
-                curl_multi_cleanup(_websocket_ctx.multi);
-                VS_LOG_ERROR("Fatal error during websocket connection");
-                return NULL;
-            }
-        }
+    if (VS_CODE_OK != _websocket_connect()) {
+        curl_multi_cleanup(_websocket_ctx.multi);
+        VS_LOG_ERROR("Fatal error during websocket connection");
+        return NULL;
+    }
 
+    while (1) {
         VS_LOG_DEBUG("Websocket has been connected successfully");
 
         stat = 0;
@@ -515,6 +505,12 @@ _websocket_pool_socket_processor(void *param) {
 
         if (stat & WS_EVF_STOP_ALL_THREADS) {
             break;
+        }
+
+        if (VS_CODE_OK != _websocket_reconnect(stat)) {
+            curl_multi_cleanup(_websocket_ctx.multi);
+            VS_LOG_ERROR("Fatal error during websocket connection");
+            return NULL;
         }
     }
 
