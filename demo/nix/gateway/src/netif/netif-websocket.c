@@ -110,7 +110,7 @@ _websocket_pool_socket_processor(void *param);
 static vs_status_e
 _websocket_connect(void);
 static vs_status_e
-_websocket_reconnect(void);
+_websocket_reconnect(vs_event_bits_t stat);
 
 // static pthread_t receive_thread;
 static uint8_t _sim_mac_addr[6] = {2, 2, 2, 2, 2, 2};
@@ -145,9 +145,10 @@ struct cws_callbacks cbs = {
 };
 
 // thread safe event flags
-#define WS_EVF_STOP_ALL_THREADS (1 << 0)
-#define WS_EVF_STOP_PERFORM_THREAD (1 << 1)
-#define WS_EVF_SOCKET_CONNECTED (1 << 2)
+#define WS_EVF_STOP_ALL_THREADS EVENT_BIT(0)
+#define WS_EVF_STOP_PERFORM_THREAD EVENT_BIT(1)
+#define WS_EVF_SOCKET_CONNECTED EVENT_BIT(2)
+#define WS_EVF_PERFORM_THREAD_EXIT EVENT_BIT(3)
 
 #define VS_WB_PAYLOAD_FIELD "payload"
 #define VS_WB_ACCOUNT_ID_FIELD "account_id"
@@ -202,26 +203,26 @@ _process_recv_data(const uint8_t *received_data, size_t recv_sz) {
     int decode_len;
 
     if (VS_JSON_ERR_OK != json_parse_start(&jobj, (char *)received_data, recv_sz)) {
-        VS_LOG_ERROR("[WS] Unable to parse incoming message");
+        VS_LOG_ERROR("Unable to parse incoming message");
         return;
     }
 
     CHECK(VS_JSON_ERR_OK == json_get_val_str_len(&jobj, VS_WB_PAYLOAD_FIELD, &len) && len > 0,
-          "[WS] Message does not contain [payload] filed");
+          "Message does not contain [payload] filed");
 
     ++len;
     tmp = (char *)malloc((size_t)len);
     VS_IOT_ASSERT(tmp);
-    CHECK(tmp != NULL, "[WS] Can't allocate memory");
+    CHECK(tmp != NULL, "Can't allocate memory");
 
     json_get_val_str(&jobj, VS_WB_PAYLOAD_FIELD, tmp, len);
 
     decode_len = base64decode_len(tmp, len);
-    CHECK(0 < decode_len, "[WS] Wrong payload size");
+    CHECK(0 < decode_len, "Wrong payload size");
 
     message = (char *)malloc((size_t)decode_len);
     VS_IOT_ASSERT(message);
-    CHECK(message != NULL, "[WS] Can't allocate memory");
+    CHECK(message != NULL, "Can't allocate memory");
 
     base64decode(tmp, len, (uint8_t *)message, &decode_len);
 
@@ -266,7 +267,7 @@ _cws_on_binary_rcv_cb(void *data, CURL *easy, const void *mem, size_t len) {
     (void)easy;
     const uint8_t *bytes = mem;
 
-    VS_LOG_DEBUG("[WS] INFO: BINARY=%zd bytes", len);
+    VS_LOG_DEBUG("INFO: BINARY=%zd bytes", len);
     VS_LOG_HEX(VS_LOGLEV_DEBUG, "[WS] ", bytes, len);
     _process_recv_data(mem, len);
 }
@@ -274,7 +275,7 @@ _cws_on_binary_rcv_cb(void *data, CURL *easy, const void *mem, size_t len) {
 /******************************************************************************/
 static void
 _cws_on_ping_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
-    VS_LOG_DEBUG("[WS] INFO: PING %zd bytes='%s'", len, reason);
+    VS_LOG_DEBUG("INFO: PING %zd bytes='%s'", len, reason);
     cws_pong(easy, reason, len);
     (void)data;
 }
@@ -284,7 +285,7 @@ static void
 _cws_on_pong_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
     (void)data;
     (void)easy;
-    VS_LOG_DEBUG("[WS] INFO: PONG %zd bytes='%s'", len, reason);
+    VS_LOG_DEBUG("INFO: PONG %zd bytes='%s'", len, reason);
 }
 
 /******************************************************************************/
@@ -398,7 +399,7 @@ _websocket_connect(void) {
             }
 
             if (0 == stat) {
-                CHECK_RET(VS_CODE_OK == _websocket_reconnect(), VS_CODE_ERR_INIT_SNAP, "Can't reconnect");
+                CHECK_RET(VS_CODE_OK == _websocket_reconnect(0), VS_CODE_ERR_INIT_SNAP, "Can't reconnect");
             }
         } while (0 == stat);
         return VS_CODE_OK;
@@ -411,10 +412,11 @@ _websocket_connect(void) {
 
 /******************************************************************************/
 static vs_status_e
-_websocket_reconnect(void) {
-    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
-    pthread_join(curl_perform_loop_thread, NULL);
-
+_websocket_reconnect(vs_event_bits_t stat) {
+    if (!(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
+        vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+        pthread_join(curl_perform_loop_thread, NULL);
+    }
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
     return _websocket_connect();
@@ -435,7 +437,7 @@ _websocket_curl_perform_loop_processor(void *param) {
         /* we start some action by calling perform right away */
         mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
 
-        if (CURLM_OK == mc) {
+        if (CURLM_OK == mc && still_running) {
             /* wait for activity, timeout or "nothing" */
             mc = curl_multi_wait(_websocket_ctx.multi, NULL, 0, 1000, &numfds);
 
@@ -443,12 +445,17 @@ _websocket_curl_perform_loop_processor(void *param) {
                 VS_LOG_ERROR("curl_multi_wait() failed, code %d.", mc);
                 break;
             }
+        } else if (!still_running) {
+            VS_LOG_ERROR("curl_multi_perform(). still_running = false");
+            break;
         } else {
             VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
+            break;
         }
         stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
-    } while (!stat && still_running);
+    } while (!stat);
 
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
     return NULL;
 }
 
@@ -456,17 +463,27 @@ _websocket_curl_perform_loop_processor(void *param) {
 static void *
 _websocket_pool_socket_processor(void *param) {
     (void)param;
-    vs_event_bits_t stat;
+    vs_event_bits_t stat = 0;
+    bool is_start = true;
     vs_log_thread_descriptor("ws poll");
 
-
     while (1) {
-        if (VS_CODE_OK != _websocket_connect()) {
-            curl_multi_cleanup(_websocket_ctx.multi);
-            return NULL;
+        if (is_start) {
+            if (VS_CODE_OK != _websocket_connect()) {
+                curl_multi_cleanup(_websocket_ctx.multi);
+                VS_LOG_ERROR("Fatal error during websocket connection");
+                return NULL;
+            }
+            is_start = false;
+        } else {
+            if (VS_CODE_OK != _websocket_reconnect(stat)) {
+                curl_multi_cleanup(_websocket_ctx.multi);
+                VS_LOG_ERROR("Fatal error during websocket connection");
+                return NULL;
+            }
         }
 
-        VS_LOG_DEBUG("Socket has been opened successfully");
+        VS_LOG_DEBUG("Websocket has been connected successfully");
 
         stat = 0;
         struct pollfd pfd;
@@ -485,13 +502,12 @@ _websocket_pool_socket_processor(void *param) {
                     // if recv returns zero, that means the connection has been closed:
                     // cleanup resources and go to reconnect
                     VS_LOG_WARNING("Socket has been closed suddenly");
-                    _cws_cleanup_resources();
                     is_poll = false;
                 }
             }
-            stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS, true, false, 1);
+            stat = vs_event_group_wait_bits(
+                    &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT, true, false, 1);
         }
-
 
         if (stat & WS_EVF_STOP_ALL_THREADS) {
             break;

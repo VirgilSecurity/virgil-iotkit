@@ -39,6 +39,8 @@
 #include <stdbool.h>
 #include <pthread.h>
 
+#define EVENT_BIT(NUM) ((vs_event_bits_t)1 << (vs_event_bits_t)NUM)
+
 typedef uint32_t vs_event_bits_t;
 typedef struct vs_event_group_bits_s {
     pthread_cond_t cond;
