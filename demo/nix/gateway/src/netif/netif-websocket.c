@@ -99,7 +99,7 @@ static void
 _cws_calc_sha1(const void *input, size_t input_len, void *output);
 static void
 _cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t buf_sz);
-static void
+static int
 _cws_get_random(void *buffer, size_t len);
 
 
@@ -184,11 +184,15 @@ _cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t 
 }
 
 /******************************************************************************/
-static void
+static int
 _cws_get_random(void *buffer, size_t len) {
+    vs_status_e ret;
     VS_IOT_ASSERT(buffer);
     VS_IOT_ASSERT(len);
-    VS_IOT_ASSERT(VS_CODE_OK == _secmodule_impl->random(buffer, len));
+    ret = _secmodule_impl->random(buffer, len);
+    VS_IOT_ASSERT(VS_CODE_OK == ret);
+
+    return (VS_CODE_OK == ret) ? 0 : -1;
 }
 
 /******************************************************************************/

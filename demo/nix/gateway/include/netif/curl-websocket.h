@@ -100,7 +100,7 @@ struct cws_callbacks {
 
     void (*calc_sha1)(const void *input, size_t input_len, void *output);
     void (*encode_base64)(const uint8_t *input, size_t input_len, char *output, size_t buf_sz);
-    void (*get_random)(void *buffer, size_t len);
+    int (*get_random)(void *buffer, size_t len);
 
     const void *data;
 };

@@ -316,7 +316,10 @@ _cws_send(struct cws_data *priv, enum cws_opcode opcode, const void *msg, size_t
         return false;
     }
 
-    priv->cbs.get_random(mask, sizeof(mask));
+    if (0 != priv->cbs.get_random(mask, sizeof(mask))) {
+        ERR("cannot get random array");
+        return false;
+    }
 
     if (!_cws_write(priv, &fh, sizeof(fh)))
         return false;
