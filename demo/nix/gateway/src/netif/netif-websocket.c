@@ -398,7 +398,6 @@ _websocket_connect(void) {
                     &_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS, false, false, 5);
 
             if (stat & WS_EVF_STOP_ALL_THREADS) {
-                _cws_cleanup_resources();
                 return VS_CODE_ERR_DEINIT_SNAP;
             }
 
@@ -410,6 +409,7 @@ _websocket_connect(void) {
     }
 
     VS_LOG_ERROR("Can't start websocket main loop processor");
+    _cws_cleanup_resources();
 
     return VS_CODE_ERR_INIT_SNAP;
 }
@@ -467,13 +467,19 @@ _websocket_curl_perform_loop_processor(void *param) {
 static void *
 _websocket_pool_socket_processor(void *param) {
     (void)param;
+    vs_status_e res;
     vs_event_bits_t stat = 0;
     vs_log_thread_descriptor("ws poll");
 
-    if (VS_CODE_OK != _websocket_connect()) {
-        curl_multi_cleanup(_websocket_ctx.multi);
-        VS_LOG_ERROR("Fatal error during websocket connection");
-        return NULL;
+    res = _websocket_connect();
+    if (VS_CODE_OK != res) {
+        if (VS_CODE_ERR_DEINIT_SNAP == res) {
+            VS_LOG_WARNING("Interface has been cancelled during connect");
+            goto terminate;
+        } else {
+            VS_LOG_ERROR("Fatal error during websocket connection");
+            return NULL;
+        }
     }
 
     while (1) {
@@ -507,13 +513,19 @@ _websocket_pool_socket_processor(void *param) {
             break;
         }
 
-        if (VS_CODE_OK != _websocket_reconnect(stat)) {
-            curl_multi_cleanup(_websocket_ctx.multi);
-            VS_LOG_ERROR("Fatal error during websocket connection");
-            return NULL;
+        res = _websocket_reconnect(stat);
+        if (VS_CODE_OK != res) {
+            if (VS_CODE_ERR_DEINIT_SNAP == res) {
+                VS_LOG_WARNING("Interface has been cancelled during reconnect");
+                break;
+            } else {
+                VS_LOG_ERROR("Fatal error during websocket reconnection");
+                return NULL;
+            }
         }
     }
 
+terminate:
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
     pthread_join(curl_perform_loop_thread, NULL);
 
