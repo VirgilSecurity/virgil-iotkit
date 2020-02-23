@@ -107,12 +107,12 @@ vs_packets_queue_init(vs_netif_process_cb_t packet_processor) {
     // Create thread to call Callbacks on data receive
     if (0 == pthread_create(&_queue_thread, NULL, _msg_processing, NULL)) {
         _queue_thread_ready = true;
-        return VS_CODE_OK;
     }
 
     // Create thread for periodical actions
     if (0 == pthread_create(&_periodical_thread, NULL, _periodical_processing, NULL)) {
         _periodical_ready = true;
+        return VS_CODE_OK;
     }
 
     VS_LOG_ERROR("Cannot start thread to process RX Queue");
