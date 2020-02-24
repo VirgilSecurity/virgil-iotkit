@@ -393,11 +393,10 @@ _websocket_connect(void) {
     curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
 
     while (1) {
-        VS_LOG_DEBUG("Start preform thread");
         // Start receive thread
         CHECK(0 == pthread_create(&curl_perform_loop_thread, NULL, _websocket_curl_perform_loop_processor, NULL),
               "Can't start websocket main loop processor");
-        VS_LOG_DEBUG("Preform thread has been started");
+        VS_LOG_DEBUG("Perform thread has been started");
 
         do {
             stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events,
@@ -454,6 +453,7 @@ _websocket_curl_perform_loop_processor(void *param) {
     vs_log_thread_descriptor("ws loop");
     vs_event_bits_t stat;
 
+    VS_LOG_DEBUG("Perform thread enter");
     do {
         // websocket cycle
         CURLMcode mc; /* curl_multi_poll() return code */
@@ -479,7 +479,7 @@ _websocket_curl_perform_loop_processor(void *param) {
         stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
     } while (!stat);
 
-    VS_LOG_DEBUG("Exit from loop");
+    VS_LOG_DEBUG("Perform thread exit");
 
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
     return NULL;
@@ -493,15 +493,15 @@ _websocket_pool_socket_processor(void *param) {
     vs_event_bits_t stat = 0;
     vs_log_thread_descriptor("ws poll");
 
+    VS_LOG_DEBUG("Poll thread enter");
+
     res = _websocket_connect();
-    if (VS_CODE_OK != res) {
-        if (VS_CODE_ERR_DEINIT_SNAP == res) {
-            VS_LOG_WARNING("Interface has been cancelled during connect");
-            goto terminate;
-        } else {
-            VS_LOG_ERROR("Fatal error during websocket connection");
-            return NULL;
-        }
+    if (VS_CODE_ERR_DEINIT_SNAP == res) {
+        VS_LOG_WARNING("Interface has been cancelled during connect");
+        goto terminate;
+    } else if (VS_CODE_OK != res) {
+        VS_LOG_ERROR("Fatal error during websocket connection");
+        return NULL;
     }
 
     while (1) {
@@ -536,26 +536,23 @@ _websocket_pool_socket_processor(void *param) {
         }
 
         res = _websocket_reconnect(stat);
-        if (VS_CODE_OK != res) {
-            if (VS_CODE_ERR_DEINIT_SNAP == res) {
-                VS_LOG_WARNING("Interface has been cancelled during reconnect");
-                break;
-            } else {
-                VS_LOG_ERROR("Fatal error during websocket reconnection");
-                return NULL;
-            }
+        if (VS_CODE_ERR_DEINIT_SNAP == res) {
+            VS_LOG_WARNING("Interface has been cancelled during reconnect");
+            break;
+        } else if (VS_CODE_OK != res) {
+            VS_LOG_ERROR("Fatal error during websocket reconnection");
+            return NULL;
         }
     }
 
 terminate:
-    VS_LOG_DEBUG("Try to stop preform thread");
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
     pthread_join(curl_perform_loop_thread, NULL);
-    VS_LOG_DEBUG("Preform thread hasd been stopped");
+    VS_LOG_DEBUG("Perform thread hasd been stopped");
 
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
-
+    VS_LOG_DEBUG("Poll thread exit");
     return NULL;
 }
 
@@ -647,6 +644,7 @@ static vs_status_e
 _websock_deinit(struct vs_netif_t *netif) {
     (void)netif;
     if (_websocket_ctx.is_initialized) {
+        VS_LOG_DEBUG("_websock_deinit");
         vs_event_bits_t stat =
                 vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
 
