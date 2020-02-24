@@ -317,7 +317,6 @@ _snap_rx_cb(vs_netif_t *netif,
             }
 
             packet = 0;
-            netif->packet_buf_filled = 0;
         }
     }
 

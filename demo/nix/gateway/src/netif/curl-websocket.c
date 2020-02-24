@@ -658,7 +658,6 @@ _cws_dispatch(struct cws_data *priv) {
             priv->recv.current.used = 0;
             priv->recv.current.total = 0;
             priv->recv.current.opcode = 0;
-            priv->recv.current.fin = 0;
         }
         break;
 
@@ -677,7 +676,6 @@ _cws_dispatch(struct cws_data *priv) {
             priv->recv.current.used = 0;
             priv->recv.current.total = 0;
             priv->recv.current.opcode = 0;
-            priv->recv.current.fin = 0;
         }
         break;
 
