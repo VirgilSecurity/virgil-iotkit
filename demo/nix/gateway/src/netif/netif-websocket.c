@@ -391,26 +391,44 @@ _websocket_connect(void) {
     }
 
     curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
-    // Start receive thread
-    if (0 == pthread_create(&curl_perform_loop_thread, NULL, _websocket_curl_perform_loop_processor, NULL)) {
+
+    while (1) {
+        VS_LOG_DEBUG("Start preform thread");
+        // Start receive thread
+        CHECK(0 == pthread_create(&curl_perform_loop_thread, NULL, _websocket_curl_perform_loop_processor, NULL),
+              "Can't start websocket main loop processor");
+        VS_LOG_DEBUG("Preform thread has been started");
+
         do {
-            stat = vs_event_group_wait_bits(
-                    &_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS, false, false, 5);
+            stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events,
+                                            WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS |
+                                                    WS_EVF_PERFORM_THREAD_EXIT,
+                                            false,
+                                            false,
+                                            5);
 
             if (stat & WS_EVF_STOP_ALL_THREADS) {
                 return VS_CODE_ERR_DEINIT_SNAP;
             }
 
             if (0 == stat) {
-                CHECK_RET(VS_CODE_OK == _websocket_reconnect(0), VS_CODE_ERR_INIT_SNAP, "Can't reconnect");
+                _cws_cleanup_resources();
+                _websocket_ctx.easy = _cws_config();
+                CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
+                curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
             }
+
         } while (0 == stat);
+
+        if (stat & WS_EVF_PERFORM_THREAD_EXIT) {
+            vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
+            continue;
+        }
         return VS_CODE_OK;
     }
 
-    VS_LOG_ERROR("Can't start websocket main loop processor");
+terminate:
     _cws_cleanup_resources();
-
     return VS_CODE_ERR_INIT_SNAP;
 }
 
@@ -418,8 +436,10 @@ _websocket_connect(void) {
 static vs_status_e
 _websocket_reconnect(vs_event_bits_t stat) {
     if (!(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
+        VS_LOG_DEBUG("Try to stop preform thread");
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
         pthread_join(curl_perform_loop_thread, NULL);
+        VS_LOG_DEBUG("Preform thread has bee stopped");
     }
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
@@ -458,6 +478,8 @@ _websocket_curl_perform_loop_processor(void *param) {
         }
         stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
     } while (!stat);
+
+    VS_LOG_DEBUG("Exit from loop");
 
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
     return NULL;
@@ -526,8 +548,10 @@ _websocket_pool_socket_processor(void *param) {
     }
 
 terminate:
+    VS_LOG_DEBUG("Try to stop preform thread");
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
     pthread_join(curl_perform_loop_thread, NULL);
+    VS_LOG_DEBUG("Preform thread hasd been stopped");
 
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
