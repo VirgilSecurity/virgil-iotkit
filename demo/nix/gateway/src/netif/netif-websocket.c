@@ -188,7 +188,10 @@ _cws_encode_base64(const uint8_t *input, size_t input_len, char *output, size_t 
     char enc[out_len];
     memset(enc, 0, out_len);
 
-    VS_IOT_ASSERT(base64encode(input, input_len, enc, &out_len));
+    if (!base64encode(input, input_len, enc, &out_len)) {
+        VS_IOT_ASSERT(false);
+    }
+
     memcpy(output, enc, out_len - 1);
 }
 
@@ -503,7 +506,7 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
     size_t data_sz = 0;
     vs_status_e ret;
 
-    assert(_queue_ctx);
+    VS_IOT_ASSERT(_queue_ctx);
     if (!_queue_ctx) {
         return VS_CODE_ERR_QUEUE;
     }
@@ -572,7 +575,8 @@ _websocket_pool_socket_processor(void *param) {
         bool is_subscr_msg_sent = false;
 
         while (is_poll && 0 == stat) {
-            VS_IOT_ASSERT(VS_CODE_OK == _message_queue_processing(&is_subscr_msg_sent));
+            res = _message_queue_processing(&is_subscr_msg_sent);
+            VS_IOT_ASSERT(VS_CODE_OK == res);
             // call poll with a timeout of 100 ms
             if (poll(&pfd, 1, 100) > 0) {
                 // if result > 0, this means that there is either data available on the
