@@ -53,6 +53,10 @@
 #include <mbedtls/sha1.h>
 
 #include <helpers/event-group-bits.h>
+#include <helpers/msg-queue.h>
+
+#define WS_QUEUE_SZ (100)
+static vs_msg_queue_ctx_t *_queue_ctx = 0;
 
 static vs_status_e
 _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
@@ -112,6 +116,10 @@ _websocket_connect(void);
 static vs_status_e
 _websocket_reconnect(vs_event_bits_t stat);
 
+
+static bool
+_make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat);
+
 // static pthread_t receive_thread;
 static uint8_t _sim_mac_addr[6] = {2, 2, 2, 2, 2, 2};
 
@@ -149,6 +157,7 @@ struct cws_callbacks cbs = {
 #define WS_EVF_STOP_PERFORM_THREAD EVENT_BIT(1)
 #define WS_EVF_SOCKET_CONNECTED EVENT_BIT(2)
 #define WS_EVF_PERFORM_THREAD_EXIT EVENT_BIT(3)
+#define WS_EVF_WS_CONNECTED EVENT_BIT(4)
 
 #define VS_WB_PAYLOAD_FIELD "payload"
 #define VS_WB_ACCOUNT_ID_FIELD "account_id"
@@ -251,7 +260,7 @@ _cws_on_connect_cb(void *data, CURL *easy, const char *websocket_protocols) {
     (void)data;
     (void)easy;
     VS_LOG_DEBUG("INFO: connected, websocket_protocols='%s'", websocket_protocols);
-    _netif_websock.tx(&_netif_websock, (uint8_t *)"Hello", strlen("Hello"));
+    vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_WS_CONNECTED);
 }
 
 /******************************************************************************/
@@ -300,7 +309,7 @@ _cws_on_close_cb(void *data,
                  const char *reason_text,
                  size_t reason_text_len) {
     struct websocket_ctx *ctx = data;
-    vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
+    vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED | WS_EVF_WS_CONNECTED);
     close(ctx->sockfd);
 
     VS_LOG_DEBUG("[WS] INFO: CLOSE=%4d %zd bytes '%s'", reason, reason_text_len, reason_text);
@@ -372,7 +381,7 @@ _cws_cleanup_resources(void) {
     cws_free(_websocket_ctx.easy);
 
     if (vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0)) {
-        vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED);
+        vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED | WS_EVF_WS_CONNECTED);
     }
 }
 
@@ -450,7 +459,7 @@ static void *
 _websocket_curl_perform_loop_processor(void *param) {
     (void)param;
     int still_running;
-    vs_log_thread_descriptor("ws loop");
+    vs_log_thread_descriptor("ws perform");
     vs_event_bits_t stat;
 
     VS_LOG_DEBUG("Perform thread enter");
@@ -486,6 +495,53 @@ _websocket_curl_perform_loop_processor(void *param) {
 }
 
 /******************************************************************************/
+static vs_status_e
+_message_queue_processing(bool *is_subscr_msg_sent) {
+    vs_event_bits_t stat;
+    vs_netif_t *netif = 0;
+    const uint8_t *data = 0;
+    size_t data_sz = 0;
+    vs_status_e ret;
+
+    assert(_queue_ctx);
+    if (!_queue_ctx) {
+        return VS_CODE_ERR_QUEUE;
+    }
+
+    stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_WS_CONNECTED, false, false, 0);
+    if (!stat) {
+        *is_subscr_msg_sent = false;
+        return VS_CODE_OK;
+    }
+
+    if (!(*is_subscr_msg_sent)) {
+        char *msg = NULL;
+
+        _make_message(&msg, (uint8_t *)"Hello", strlen("Hello"), false);
+        CHECK_RET(NULL != msg, VS_CODE_ERR_QUEUE, "Can't create subscribing message");
+
+        ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+        free(msg);
+        CHECK_RET(VS_CODE_OK == ret, VS_CODE_ERR_QUEUE, "Can't send subscribing message");
+        VS_LOG_DEBUG("Subscribing message has been sent");
+        *is_subscr_msg_sent = true;
+    }
+
+    if (!vs_msg_queue_data_present(_queue_ctx)) {
+        return VS_CODE_OK;
+    }
+
+    CHECK_RET(VS_CODE_OK == vs_msg_queue_pop(_queue_ctx, (const void **)&netif, &data, &data_sz),
+              VS_CODE_ERR_QUEUE,
+              "Error while reading message from queue");
+
+    VS_LOG_DEBUG("Send message = %s", (char *)data);
+    ret = cws_send_text(_websocket_ctx.easy, (char *)data) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+    free((void *)data);
+    return ret;
+}
+
+/******************************************************************************/
 static void *
 _websocket_pool_socket_processor(void *param) {
     (void)param;
@@ -513,8 +569,10 @@ _websocket_pool_socket_processor(void *param) {
         pfd.fd = _websocket_ctx.sockfd;
         pfd.events = POLLIN | POLLHUP | POLLRDNORM;
         pfd.revents = 0;
+        bool is_subscr_msg_sent = false;
 
         while (is_poll && 0 == stat) {
+            VS_IOT_ASSERT(VS_CODE_OK == _message_queue_processing(&is_subscr_msg_sent));
             // call poll with a timeout of 100 ms
             if (poll(&pfd, 1, 100) > 0) {
                 // if result > 0, this means that there is either data available on the
@@ -527,6 +585,7 @@ _websocket_pool_socket_processor(void *param) {
                     is_poll = false;
                 }
             }
+
             stat = vs_event_group_wait_bits(
                     &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT, true, false, 1);
         }
@@ -548,7 +607,7 @@ _websocket_pool_socket_processor(void *param) {
 terminate:
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
     pthread_join(curl_perform_loop_thread, NULL);
-    VS_LOG_DEBUG("Perform thread hasd been stopped");
+    VS_LOG_DEBUG("Perform thread has been stopped");
 
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
@@ -593,22 +652,14 @@ _make_message(char **message, const uint8_t *data, size_t data_sz, bool is_stat)
 /******************************************************************************/
 static vs_status_e
 _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-    (void)netif;
-    vs_status_e ret = VS_CODE_ERR_SOCKET;
+    vs_status_e ret;
     char *msg = NULL;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);
 
-    vs_event_bits_t stat =
-            vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
-    CHECK(stat & WS_EVF_SOCKET_CONNECTED, "[WS] Websocket isn't connected");
-
-    VS_LOG_DEBUG("[WS] send message = %s", msg);
-
-    ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
-terminate:
+    ret = vs_msg_queue_push(_queue_ctx, netif, (uint8_t *)msg, strlen(msg) + 1);
     free(msg);
     return ret;
 }
@@ -628,13 +679,21 @@ _websock_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_n
     CHECK_RET(
             0 == vs_event_group_init(&_websocket_ctx.ws_events), VS_CODE_ERR_INIT_SNAP, "Can't initialize event group");
 
+    _queue_ctx = vs_msg_queue_init(WS_QUEUE_SZ, 1, 1);
+    if (!_queue_ctx) {
+        VS_LOG_ERROR("Cannot create message queue.");
+        vs_event_group_destroy(&_websocket_ctx.ws_events);
+        return VS_CODE_ERR_THREAD;
+    }
+
     // Start receive thread
     if (0 == pthread_create(&socket_pool_thread, NULL, _websocket_pool_socket_processor, NULL)) {
         _websocket_ctx.is_initialized = true;
         return VS_CODE_OK;
     }
 
-    _websock_deinit(&_netif_websock);
+    vs_msg_queue_free(_queue_ctx);
+    vs_event_group_destroy(&_websocket_ctx.ws_events);
 
     return VS_CODE_ERR_SOCKET;
 }
@@ -654,6 +713,8 @@ _websock_deinit(struct vs_netif_t *netif) {
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS);
         pthread_join(socket_pool_thread, NULL);
         vs_event_group_destroy(&_websocket_ctx.ws_events);
+
+        vs_msg_queue_free(_queue_ctx);
 
         free(_url);
         _url = NULL;
