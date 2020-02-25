@@ -291,9 +291,10 @@ _cws_on_binary_rcv_cb(void *data, CURL *easy, const void *mem, size_t len) {
 /******************************************************************************/
 static void
 _cws_on_ping_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
-    VS_LOG_DEBUG("INFO: PING %zd bytes='%s'", len, reason);
-    cws_pong(easy, reason, len);
     (void)data;
+    (void)easy;
+    //    VS_LOG_DEBUG("INFO: PING %zd bytes='%s'", len, reason);
+    cws_pong(easy, reason, len);
 }
 
 /******************************************************************************/
@@ -301,7 +302,9 @@ static void
 _cws_on_pong_rcv_cb(void *data, CURL *easy, const char *reason, size_t len) {
     (void)data;
     (void)easy;
-    VS_LOG_DEBUG("INFO: PONG %zd bytes='%s'", len, reason);
+    (void)reason;
+    (void)len;
+    //    VS_LOG_DEBUG("INFO: PONG %zd bytes='%s'", len, reason);
 }
 
 /******************************************************************************/
@@ -538,7 +541,7 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
               VS_CODE_ERR_QUEUE,
               "Error while reading message from queue");
 
-    VS_LOG_DEBUG("Send message = %s", (char *)data);
+    //    VS_LOG_DEBUG("Send message = %s", (char *)data);
     ret = cws_send_text(_websocket_ctx.easy, (char *)data) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
     free((void *)data);
     return ret;
