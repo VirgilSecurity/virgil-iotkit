@@ -658,6 +658,11 @@ static vs_status_e
 _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_status_e ret;
     char *msg = NULL;
+    if (!_websocket_ctx.is_initialized) {
+        VS_LOG_DEBUG("Websocket iface is not initialized");
+        return VS_CODE_OK;
+    }
+
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
@@ -707,6 +712,7 @@ static vs_status_e
 _websock_deinit(struct vs_netif_t *netif) {
     (void)netif;
     if (_websocket_ctx.is_initialized) {
+        _websocket_ctx.is_initialized = false;
         VS_LOG_DEBUG("_websock_deinit");
         vs_event_bits_t stat =
                 vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_SOCKET_CONNECTED, false, false, 0);
@@ -724,7 +730,6 @@ _websock_deinit(struct vs_netif_t *netif) {
         _url = NULL;
         free(_account);
         _account = NULL;
-        _websocket_ctx.is_initialized = false;
     }
 
     return VS_CODE_OK;
