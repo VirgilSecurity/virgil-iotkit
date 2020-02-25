@@ -159,6 +159,11 @@ _gateway_task(void *pvParameters) {
 
     // Main cycle
     while (!stop_threads) {
+#if SIMULATOR
+        if (_test_message[0] != 0) { //-V547
+            VS_LOG_INFO(_test_message);
+        }
+#endif
         vs_event_group_wait_bits(&_gtwy.incoming_data_events, EID_BITS_ALL, true, false, MAIN_THREAD_SLEEP_S);
         vs_event_group_set_bits(&_gtwy.shared_events, SNAP_INIT_FINITE_BIT);
 
@@ -202,13 +207,8 @@ _gateway_task(void *pvParameters) {
 
             free(queued_file);
         }
-
-#if SIMULATOR
-        if (_test_message[0] != 0) { //-V547
-            VS_LOG_INFO(_test_message);
-        }
-#endif
     }
+
     _stop_all_threads();
     stop_threads = false;
     is_threads_started = false;
