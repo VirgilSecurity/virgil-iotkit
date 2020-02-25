@@ -507,7 +507,7 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
     vs_netif_t *netif = 0;
     const uint8_t *data = 0;
     size_t data_sz = 0;
-    vs_status_e ret;
+    bool ret;
 
     VS_IOT_ASSERT(_queue_ctx);
     if (!_queue_ctx) {
@@ -533,18 +533,22 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
         *is_subscr_msg_sent = true;
     }
 
-    if (!vs_msg_queue_data_present(_queue_ctx)) {
-        return VS_CODE_OK;
+    while (vs_msg_queue_data_present(_queue_ctx)) {
+        CHECK_RET(VS_CODE_OK == vs_msg_queue_pop(_queue_ctx, (const void **)&netif, &data, &data_sz),
+                  VS_CODE_ERR_QUEUE,
+                  "Error while reading message from queue");
+
+//        VS_LOG_DEBUG("Send message = %s", (char *)data);
+        ret = cws_send_text(_websocket_ctx.easy, (char *)data);
+        free((void *)data);
+
+        if (!ret) {
+            vs_msg_queue_reset(_queue_ctx);
+            return VS_CODE_ERR_SOCKET;
+        }
     }
 
-    CHECK_RET(VS_CODE_OK == vs_msg_queue_pop(_queue_ctx, (const void **)&netif, &data, &data_sz),
-              VS_CODE_ERR_QUEUE,
-              "Error while reading message from queue");
-
-    //    VS_LOG_DEBUG("Send message = %s", (char *)data);
-    ret = cws_send_text(_websocket_ctx.easy, (char *)data) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
-    free((void *)data);
-    return ret;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
