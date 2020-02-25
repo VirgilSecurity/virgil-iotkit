@@ -413,32 +413,30 @@ _websocket_connect(void) {
               "Can't start websocket main loop processor");
         VS_LOG_DEBUG("Perform thread has been started");
 
-        do {
-            stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events,
-                                            WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS |
-                                                    WS_EVF_PERFORM_THREAD_EXIT,
-                                            false,
-                                            false,
-                                            5);
+        stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events,
+                                        WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT,
+                                        false,
+                                        false,
+                                        5);
 
-            if (stat & WS_EVF_STOP_ALL_THREADS) {
-                return VS_CODE_ERR_DEINIT_SNAP;
-            }
+        if (stat & WS_EVF_STOP_ALL_THREADS) {
+            return VS_CODE_ERR_DEINIT_SNAP;
+        }
 
-            if (0 == stat) {
-                _cws_cleanup_resources();
-                _websocket_ctx.easy = _cws_config();
-                CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
-                curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
-            }
-
-        } while (0 == stat);
+        if (stat & WS_EVF_SOCKET_CONNECTED && !(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
+            return VS_CODE_OK;
+        }
 
         if (stat & WS_EVF_PERFORM_THREAD_EXIT) {
             vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
-            continue;
         }
-        return VS_CODE_OK;
+
+        vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+        pthread_join(curl_perform_loop_thread, NULL);
+        _cws_cleanup_resources();
+        _websocket_ctx.easy = _cws_config();
+        CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
+        curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
     }
 
 terminate:
@@ -453,8 +451,9 @@ _websocket_reconnect(vs_event_bits_t stat) {
         VS_LOG_DEBUG("Try to stop preform thread");
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
         pthread_join(curl_perform_loop_thread, NULL);
-        VS_LOG_DEBUG("Preform thread has bee stopped");
+        VS_LOG_DEBUG("Preform thread has been stopped");
     }
+
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
     return _websocket_connect();
