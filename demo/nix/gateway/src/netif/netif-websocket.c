@@ -592,10 +592,12 @@ _websocket_pool_socket_processor(void *param) {
         bool is_subscr_msg_sent = false;
 
         while (is_poll && 0 == stat) {
+            int poll_stat;
             res = _message_queue_processing(&is_subscr_msg_sent);
             VS_IOT_ASSERT(VS_CODE_OK == res);
             // call poll with a timeout of 10 ms
-            if (poll(&pfd, 1, 10) > 0) {
+            poll_stat = poll(&pfd, 1, 100) > 0;
+            if (poll_stat > 0) {
                 // if result > 0, this means that there is either data available on the
                 // socket, or the socket has been closed
                 char buffer;
@@ -605,10 +607,13 @@ _websocket_pool_socket_processor(void *param) {
                     VS_LOG_WARNING("Socket has been closed suddenly");
                     is_poll = false;
                 }
+            } else if (poll_stat < 0) {
+                VS_LOG_WARNING("Connection is lost");
+                is_poll = false;
             }
 
             stat = vs_event_group_wait_bits(
-                    &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT, true, false, 1);
+                    &_websocket_ctx.ws_events, WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT, true, false, 0);
         }
 
         if (stat & WS_EVF_STOP_ALL_THREADS) {
