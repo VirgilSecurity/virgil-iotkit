@@ -596,7 +596,7 @@ _websocket_pool_socket_processor(void *param) {
             res = _message_queue_processing(&is_subscr_msg_sent);
             VS_IOT_ASSERT(VS_CODE_OK == res);
             // call poll with a timeout of 10 ms
-            poll_stat = poll(&pfd, 1, 100) > 0;
+            poll_stat = poll(&pfd, 1, 100);
             if (poll_stat > 0) {
                 // if result > 0, this means that there is either data available on the
                 // socket, or the socket has been closed
