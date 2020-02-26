@@ -430,14 +430,15 @@ _websocket_connect(void) {
             return VS_CODE_OK;
         }
 
-        // The thread with curl multi has been closed because of error
         if (stat & WS_EVF_PERFORM_THREAD_EXIT) {
+            // The thread with curl multi has been closed because of error
             vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
+        } else {
+            vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+            pthread_join(curl_perform_loop_thread, NULL);
         }
 
         // The connection attempt has been fail. Repeat
-        vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
-        pthread_join(curl_perform_loop_thread, NULL);
         _cws_cleanup_resources();
         _websocket_ctx.easy = _cws_config();
         CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
