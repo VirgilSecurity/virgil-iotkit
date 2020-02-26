@@ -183,6 +183,31 @@ vs_app_restart(void) {
     _need_restart = true;
     pthread_mutex_unlock(&_sleep_lock);
 }
+/******************************************************************************/
+bool
+vs_app_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len) {
+    const uint8_t hex_str[] = "0123456789abcdef";
+
+    VS_IOT_ASSERT(_in_out_len);
+    VS_IOT_ASSERT(_data);
+    VS_IOT_ASSERT(_out_data);
+    VS_IOT_ASSERT(*_in_out_len >= _len * 2 + 1);
+
+    CHECK_NOT_ZERO_RET(_len, false);
+    CHECK_NOT_ZERO_RET(_data, false);
+    CHECK_NOT_ZERO_RET(_in_out_len, false);
+    BOOL_CHECK_RET(*_in_out_len >= _len * 2 + 1, "Output buffer is too small");
+
+    *_in_out_len = _len * 2 + 1;
+    _out_data[*_in_out_len - 1] = 0;
+    size_t i;
+
+    for (i = 0; i < _len; i++) {
+        _out_data[i * 2 + 0] = hex_str[(_data[i] >> 4) & 0x0F];
+        _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
+    }
+    return true;
+}
 
 /******************************************************************************/
 void

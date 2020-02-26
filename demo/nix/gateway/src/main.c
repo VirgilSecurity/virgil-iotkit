@@ -55,6 +55,9 @@
 #include "netif/netif-websocket.h"
 
 #include <curl/curl.h>
+
+#define WEBSOCKET_URL "wss://websocket-stg.virgilsecurity.com/ws"
+
 /******************************************************************************/
 int
 main(int argc, char *argv[]) {
@@ -73,6 +76,8 @@ main(int argc, char *argv[]) {
     vs_device_manufacture_id_t manufacture_id = {0};
     vs_device_type_t device_type = {0};
     vs_device_serial_t serial = {0};
+    char account[sizeof(vs_device_serial_t) * 2 + 1];
+    uint32_t account_sz = sizeof(account);
 
     // Initialize Logger module
     vs_logger_init(VS_LOGLEV_DEBUG);
@@ -116,12 +121,13 @@ main(int argc, char *argv[]) {
     // Soft Security Module
     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
-    // Network interface
+    // Network interfaces
     curl_global_init(CURL_GLOBAL_DEFAULT);
     vs_packets_queue_init(vs_snap_default_processor);
     netifs_impl[0] = vs_hal_netif_udp_bcast(forced_mac_addr);
-    netifs_impl[1] = vs_hal_netif_websock(
-            "wss://websocket-stg.virgilsecurity.com/ws", "test_acc", secmodule_impl, forced_mac_addr);
+
+    CHECK(vs_app_data_to_hex(serial, sizeof(serial), (uint8_t *)account, &account_sz), "Wrong serial");
+    netifs_impl[1] = vs_hal_netif_websock(WEBSOCKET_URL, account, secmodule_impl, forced_mac_addr);
 
     //
     // ---------- Initialize IoTKit internals ----------

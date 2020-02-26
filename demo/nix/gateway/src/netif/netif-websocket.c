@@ -338,6 +338,7 @@ _curl_opensocket_cb(void *clientp, curlsocktype purpose, struct curl_sockaddr *a
         return CURL_SOCKET_BAD;
     }
 
+    // Because sockaddr_in and sockadd structs can be mapped to each other
     memcpy(&_websocket_ctx.servaddr, &address->addr, sizeof(_websocket_ctx.servaddr));
 
     if (connect(_websocket_ctx.sockfd, (struct sockaddr *)&_websocket_ctx.servaddr, sizeof(_websocket_ctx.servaddr)) ==
@@ -419,18 +420,22 @@ _websocket_connect(void) {
                                         false,
                                         5);
 
+        // Stop interface
         if (stat & WS_EVF_STOP_ALL_THREADS) {
             return VS_CODE_ERR_DEINIT_SNAP;
         }
 
+        // Socket has been connected successfully
         if (stat & WS_EVF_SOCKET_CONNECTED && !(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
             return VS_CODE_OK;
         }
 
+        // The thread with curl multi has been closed because of error
         if (stat & WS_EVF_PERFORM_THREAD_EXIT) {
             vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
         }
 
+        // The connection attempt has been fail. Repeat
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
         pthread_join(curl_perform_loop_thread, NULL);
         _cws_cleanup_resources();
@@ -470,7 +475,7 @@ _websocket_curl_perform_loop_processor(void *param) {
     VS_LOG_DEBUG("Perform thread enter");
     do {
         // websocket cycle
-        CURLMcode mc; /* curl_multi_poll() return code */
+        CURLMcode mc;
         int numfds;
         /* we start some action by calling perform right away */
         mc = curl_multi_perform(_websocket_ctx.multi, &still_running);
@@ -490,6 +495,8 @@ _websocket_curl_perform_loop_processor(void *param) {
             VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
             break;
         }
+
+        // Check if need to stop curl multi polling
         stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
     } while (!stat);
 
@@ -519,16 +526,17 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
         return VS_CODE_OK;
     }
 
+    // If we have just connected to broker then send subscribing message
     if (!(*is_subscr_msg_sent)) {
         char *msg = NULL;
 
-        _make_message(&msg, (uint8_t *)"Hello", strlen("Hello"), false);
+        _make_message(&msg, (uint8_t *)"\x30\x81\xA1", strlen("\x30\x81\xA1"), false);
         CHECK_RET(NULL != msg, VS_CODE_ERR_QUEUE, "Can't create subscribing message");
 
         ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
         free(msg);
         CHECK_RET(VS_CODE_OK == ret, VS_CODE_ERR_QUEUE, "Can't send subscribing message");
-        VS_LOG_DEBUG("Subscribing message has been sent");
+        VS_LOG_DEBUG("Subscribing message has been sent. %s", msg);
         *is_subscr_msg_sent = true;
     }
 

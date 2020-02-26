@@ -57,6 +57,9 @@ vs_app_sleep_until_stop(void);
 void
 vs_app_restart(void);
 
+bool
+vs_app_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len);
+
 void
 vs_app_str_to_bytes(uint8_t *dst, const char *src, size_t elem_buf_size);
 
