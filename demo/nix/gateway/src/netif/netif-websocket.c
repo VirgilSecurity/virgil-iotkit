@@ -161,7 +161,7 @@ struct cws_callbacks cbs = {
 
 #define VS_WB_PAYLOAD_FIELD "payload"
 #define VS_WB_ACCOUNT_ID_FIELD "account_id"
-
+#define VS_WB_SUBSCR_MESSAGE "\x30\x81\xA1"
 /******************************************************************************/
 static void
 _cws_calc_sha1(const void *input, size_t input_len, void *output) {
@@ -531,7 +531,7 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
     if (!(*is_subscr_msg_sent)) {
         char *msg = NULL;
 
-        _make_message(&msg, (uint8_t *)"\x30\x81\xA1", strlen("\x30\x81\xA1"), false);
+        _make_message(&msg, (uint8_t *)VS_WB_SUBSCR_MESSAGE, strlen(VS_WB_SUBSCR_MESSAGE), false);
         CHECK_RET(NULL != msg, VS_CODE_ERR_QUEUE, "Can't create subscribing message");
 
         ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
