@@ -377,6 +377,8 @@ _cws_config(void) {
     curl_easy_setopt(easy, CURLOPT_OPENSOCKETFUNCTION, _curl_opensocket_cb);
     curl_easy_setopt(easy, CURLOPT_OPENSOCKETDATA, &_websocket_ctx.sockfd);
     curl_easy_setopt(easy, CURLOPT_SOCKOPTFUNCTION, _curl_socketopt_cb);
+    curl_easy_setopt(easy, CURLOPT_TCP_KEEPALIVE, 1L);
+    curl_easy_setopt(easy, CURLOPT_TCP_KEEPINTVL, 20L);
     return easy;
 }
 
@@ -455,7 +457,6 @@ terminate:
 static vs_status_e
 _websocket_reconnect(vs_event_bits_t stat) {
     if (!(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
-        VS_LOG_DEBUG("Try to stop preform thread");
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
         pthread_join(curl_perform_loop_thread, NULL);
         VS_LOG_DEBUG("Preform thread has been stopped");
