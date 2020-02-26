@@ -446,6 +446,7 @@ _websocket_connect(void) {
 
 terminate:
     _cws_cleanup_resources();
+    curl_multi_cleanup(_websocket_ctx.multi);
     return VS_CODE_ERR_INIT_SNAP;
 }
 
