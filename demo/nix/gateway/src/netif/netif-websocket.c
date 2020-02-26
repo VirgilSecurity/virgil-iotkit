@@ -534,9 +534,9 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
         CHECK_RET(NULL != msg, VS_CODE_ERR_QUEUE, "Can't create subscribing message");
 
         ret = cws_send_text(_websocket_ctx.easy, msg) ? VS_CODE_OK : VS_CODE_ERR_SOCKET;
+        VS_LOG_DEBUG("Subscribing message has been sent. %s", msg);
         free(msg);
         CHECK_RET(VS_CODE_OK == ret, VS_CODE_ERR_QUEUE, "Can't send subscribing message");
-        VS_LOG_DEBUG("Subscribing message has been sent. %s", msg);
         *is_subscr_msg_sent = true;
     }
 
