@@ -681,12 +681,11 @@ static vs_status_e
 _websock_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     vs_status_e ret;
     char *msg = NULL;
-    if (!_websocket_ctx.is_initialized) {
-        VS_LOG_DEBUG("Websocket iface is not initialized");
-        return VS_CODE_OK;
-    }
 
+    CHECK_RET(_websocket_ctx.is_initialized, VS_CODE_ERR_TX_SNAP, "Websocket iface is not initialized");
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    // We will have to drop the message if a connection isn't established for a long time, so as not to block the thread
+    CHECK_RET(!vs_msg_queue_is_full(_queue_ctx), VS_CODE_ERR_TX_SNAP, "Can't send message because of a queue is full");
 
     CHECK_RET(_make_message(&msg, data, data_sz, false), VS_CODE_ERR_TX_SNAP, "[WS] Unable to create websocket frame");
     CHECK_NOT_ZERO_RET(msg, VS_CODE_ERR_TX_SNAP);

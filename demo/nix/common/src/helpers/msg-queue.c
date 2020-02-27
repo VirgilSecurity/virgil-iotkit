@@ -428,6 +428,18 @@ vs_msg_queue_data_present(vs_msg_queue_ctx_t *ctx) {
 }
 
 /******************************************************************************/
+bool
+vs_msg_queue_is_full(vs_msg_queue_ctx_t *ctx) {
+    CHECK_NOT_ZERO_RET(ctx, false);
+    bool is_full;
+    _safe_mutex_lock(ctx->mut);
+    is_full = (ctx->n == ctx->mem);
+    _safe_mutex_unlock(ctx->mut);
+
+    return is_full;
+}
+
+/******************************************************************************/
 void
 vs_msg_queue_reset(vs_msg_queue_ctx_t *ctx) {
     if (ctx) {

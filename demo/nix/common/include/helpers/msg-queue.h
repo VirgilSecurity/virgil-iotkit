@@ -51,6 +51,9 @@ vs_msg_queue_pop(vs_msg_queue_ctx_t *ctx, const void **info, const uint8_t **dat
 bool
 vs_msg_queue_data_present(vs_msg_queue_ctx_t *ctx);
 
+bool
+vs_msg_queue_is_full(vs_msg_queue_ctx_t *ctx);
+
 void
 vs_msg_queue_reset(vs_msg_queue_ctx_t *ctx);
 
