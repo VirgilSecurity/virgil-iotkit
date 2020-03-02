@@ -1,0 +1,60 @@
+{
+    "name": "virgil-iotkit",
+    "keywords": "virgil, iot, sdk",
+    "description": "Virgil IOT SDK",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/VirgilSecurity/virgil-iotkit.git"
+    },
+    "build": {
+        "srcDir": "../../sdk",
+        "includeDir": "include",
+        "flags": [
+            "-I include",
+            "-I include/config",
+            "-I ../../sdk/modules/logger/include",
+            "-I ../../sdk/modules/protocols/snap/include",
+            "-I ../../sdk/modules/provision/include",
+            "-I ../../sdk/modules/firmware/include",
+            "-I ../../sdk/modules/provision/trust_list/include",
+            "-I ../../sdk/modules/crypto/secmodule/include",
+            "-I ../../sdk/modules/crypto/converters/include",
+            "-I ../../sdk/helpers/status_code/include",
+            "-I ../../sdk/tests/include",
+            "-I ../../sdk/helpers/macros/include",
+            "-I ../../sdk/helpers/storage_hal/include",
+            "-I ../../sdk/helpers/update/include"
+        ],
+        "srcFilter": [
+            "+<modules/logger/src/*.c>",
+            "+<modules/protocols/snap/src/*.c>",
+            "+<modules/protocols/snap/src/services/info/*.c>",
+            "+<modules/protocols/snap/src/services/prvs/*.c>",
+            "+<modules/protocols/snap/src/services/fldt/*.c>",
+            "+<modules/protocols/snap/src/generated/*.c>",
+            "+<modules/provision/trust_list/src/*.c>",
+            "+<modules/provision/src/*.c>",
+            "+<modules/firmware/src/*.c>",
+            "+<modules/crypto/secmodule/src/*.c>",
+            "+<modules/firmware/src/*.c>",
+            "+<high-level/src/*.c>",
+            "+<helpers/update/src/*.c>",
+            "+<tests/src/crypto/*.c>",
+            "+<tests/src/helpers/crypto_helpers.c>",
+            "+<tests/src/test_data/*.c>",
+            "+<../demo/esp32/defaults/logger/*.c>",
+            "+<../demo/esp32/defaults/firmware/*.c>",
+            "+<../demo/esp32/defaults/helpers/*.c>",
+            "+<../demo/esp32/defaults/logger/*.c>",
+            "+<../demo/esp32/defaults/storage/*.c>",
+            "+<../demo/esp32/defaults/vs-soft-secmodule/*.c>",
+            "+<../demo/esp32/defaults/helpers/*.c>",
+            "+<../demo/esp32/defaults/netif/*.c>",
+            "+<../demo/esp32/defaults/platform/init/idf/*.c>"
+        ]
+    },
+    "libLDFMode": "deep+",
+    "version": "0.1.0b",
+    "frameworks": "*",
+    "platforms": "*"
+}
