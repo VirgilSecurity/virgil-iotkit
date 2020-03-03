@@ -50,8 +50,10 @@
 
 static vs_snap_service_t _prvs_server = {0, 0, 0, 0, 0, 0};
 static bool _prvs_service_ready = false;
+static bool _storage_initialized = false;
 
 static vs_secmodule_impl_t *_secmodule = NULL;
+static int32_t _last_request_id = 0;
 
 #define VS_PRVS_SERVER_PROFILE 0
 
@@ -59,7 +61,6 @@ static vs_secmodule_impl_t *_secmodule = NULL;
 #include <sys/time.h>
 static long long _processing_time = 0;
 static long _calls_counter = 0;
-
 /******************************************************************************/
 static long long
 current_timestamp() {
@@ -188,10 +189,14 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
     VS_IOT_ASSERT(_secmodule->create_keypair);
     VS_IOT_ASSERT(_secmodule->get_pubkey);
 
-    STATUS_CHECK_RET(_secmodule->slot_clean(PRIVATE_KEY_SLOT), "Unable to delete PRIVATE slot");
-    STATUS_CHECK_RET(_secmodule->slot_clean(REC1_KEY_SLOT), "Unable to delete REC1_KEY slot");
-    STATUS_CHECK_RET(_secmodule->slot_clean(REC2_KEY_SLOT), "Unable to delete REC2_KEY slot");
-    STATUS_CHECK_RET(_secmodule->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1), "Unable to create keypair");
+    if (!_storage_initialized) {
+        STATUS_CHECK_RET(_secmodule->slot_clean(PRIVATE_KEY_SLOT), "Unable to delete PRIVATE slot");
+        STATUS_CHECK_RET(_secmodule->slot_clean(REC1_KEY_SLOT), "Unable to delete REC1_KEY slot");
+        STATUS_CHECK_RET(_secmodule->slot_clean(REC2_KEY_SLOT), "Unable to delete REC2_KEY slot");
+        STATUS_CHECK_RET(_secmodule->create_keypair(PRIVATE_KEY_SLOT, VS_KEYPAIR_EC_SECP256R1),
+                         "Unable to create keypair");
+    }
+
     STATUS_CHECK_RET(
             _secmodule->get_pubkey(PRIVATE_KEY_SLOT, asav_response->meta_and_pubkey, PUBKEY_MAX_SZ, &key_sz, &ec_type),
             "Unable to get public key");
@@ -203,6 +208,7 @@ vs_prvs_finalize_storage(vs_pubkey_t *asav_response, uint16_t *resp_sz) {
 
     VS_PRVS_SERVER_PROFILE_END(vs_prvs_finalize_storage);
 
+    _storage_initialized = true;
     return VS_CODE_OK;
 }
 
@@ -352,11 +358,22 @@ _prvs_dnid_process_request(const struct vs_netif_t *netif,
 static vs_status_e
 _prvs_key_save_process_request(const struct vs_netif_t *netif,
                                vs_snap_element_t element_id,
-                               const uint8_t *key,
-                               const uint16_t key_sz) {
+                               const uint8_t *request,
+                               const uint16_t request_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_snap_prvs_set_data_t *data = (vs_snap_prvs_set_data_t *)request;
     VS_PRVS_SERVER_PROFILE_START;
 
-    vs_status_e ret_code = vs_prvs_save_data(element_id, key, key_sz);
+    CHECK_RET(request_sz > sizeof(vs_snap_prvs_set_data_t),
+              VS_CODE_ERR_INCORRECT_PARAMETER,
+              "Wrong provision key save request");
+
+    vs_snap_prvs_set_data_t_decode(data);
+
+    if (_last_request_id != data->request_id) {
+        ret_code = vs_prvs_save_data(element_id, data->data, request_sz - sizeof(vs_snap_prvs_set_data_t));
+        _last_request_id = data->request_id;
+    }
 
     VS_PRVS_SERVER_PROFILE_END(_prvs_key_save_process_request);
 
@@ -436,7 +453,17 @@ _prvs_asgn_process_request(const struct vs_netif_t *netif,
 static vs_status_e
 _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_start_save_tl(request, request_sz), "Unable to start save Trust List");
+    vs_snap_prvs_set_data_t *data = (vs_snap_prvs_set_data_t *)request;
+
+    CHECK_RET(request_sz > sizeof(vs_snap_prvs_set_data_t), VS_CODE_ERR_INCORRECT_PARAMETER, "Wrong TLH request");
+
+    vs_snap_prvs_set_data_t_decode(data);
+
+    if (_last_request_id != data->request_id) {
+        STATUS_CHECK_RET(vs_prvs_start_save_tl(data->data, request_sz - sizeof(vs_snap_prvs_set_data_t)),
+                         "Unable to start save Trust List");
+        _last_request_id = data->request_id;
+    }
     return VS_CODE_OK;
 }
 
@@ -444,7 +471,17 @@ _prvs_start_tl_process_request(const struct vs_netif_t *netif, const uint8_t *re
 static vs_status_e
 _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_save_tl_part(request, request_sz), "Unable to save Trust List part");
+    vs_snap_prvs_set_data_t *data = (vs_snap_prvs_set_data_t *)request;
+
+    CHECK_RET(request_sz > sizeof(vs_snap_prvs_set_data_t), VS_CODE_ERR_INCORRECT_PARAMETER, "Wrong TLC request");
+
+    vs_snap_prvs_set_data_t_decode(data);
+
+    if (_last_request_id != data->request_id) {
+        STATUS_CHECK_RET(vs_prvs_save_tl_part(data->data, request_sz - sizeof(vs_snap_prvs_set_data_t)),
+                         "Unable to save Trust List part");
+        _last_request_id = data->request_id;
+    }
     return VS_CODE_OK;
 }
 
@@ -452,7 +489,17 @@ _prvs_tl_part_process_request(const struct vs_netif_t *netif, const uint8_t *req
 static vs_status_e
 _prvs_finalize_tl_process_request(const struct vs_netif_t *netif, const uint8_t *request, const uint16_t request_sz) {
     vs_status_e ret_code;
-    STATUS_CHECK_RET(vs_prvs_finalize_tl(request, request_sz), "Unable to finalize Trust List");
+    vs_snap_prvs_set_data_t *data = (vs_snap_prvs_set_data_t *)request;
+
+    CHECK_RET(request_sz > sizeof(vs_snap_prvs_set_data_t), VS_CODE_ERR_INCORRECT_PARAMETER, "Wrong TLF request");
+
+    vs_snap_prvs_set_data_t_decode(data);
+
+    if (_last_request_id != data->request_id) {
+        STATUS_CHECK_RET(vs_prvs_finalize_tl(data->data, request_sz - sizeof(vs_snap_prvs_set_data_t)),
+                         "Unable to finalize Trust List");
+        _last_request_id = data->request_id;
+    }
     return VS_CODE_OK;
 }
 
@@ -521,6 +568,7 @@ const vs_snap_service_t *
 vs_snap_prvs_server(vs_secmodule_impl_t *secmodule) {
 
     CHECK_NOT_ZERO_RET(secmodule, NULL);
+    _last_request_id = 0;
 
     if (!_prvs_service_ready) {
         _prepare_prvs_service();
