@@ -1,6 +1,8 @@
 #####
+.pio
 debug.*/
 release.*/
+release/
 build*/
 install*/
 .depends_cache/

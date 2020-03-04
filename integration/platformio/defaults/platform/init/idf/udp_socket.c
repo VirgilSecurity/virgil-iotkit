@@ -38,15 +38,17 @@ static int udb_broadcast_sock;
 static uint16_t udb_broadcast_port = 0;
 uint8_t *rx_buffer = NULL;
 uint16_t rx_buffer_size = 0;
+static uint8_t initialized = 0;
 //*****************************************************************************
 // ********************* Receive pkgs callback ********************************
 void __attribute__((weak)) udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t recv_size) {
-    //...
+    VS_LOG_DEBUG("Default empty udp_server_recv_cb has been called");
 }
 
 //******************************************************************************
 static void
 udp_server_task(void *pvParameters) {
+    // static uint8_t static_buff[128];
     struct sockaddr_in source_addr;
     socklen_t source_socklen = sizeof(source_addr);
     struct sockaddr_in bindaddr;
@@ -69,7 +71,6 @@ udp_server_task(void *pvParameters) {
             ret_res = ESP_FAIL;
             break;
         }
-
         // Bind socket
         ret_res = bind(udb_broadcast_sock, (struct sockaddr *)&bindaddr, sizeof(bindaddr));
         if (ret_res < 0) {
@@ -83,7 +84,7 @@ udp_server_task(void *pvParameters) {
             recv_len = recvfrom(
                     udb_broadcast_sock, rx_buffer, rx_buffer_size, 0, (struct sockaddr *)&source_addr, &source_socklen);
             // Error occured during receiving
-            VS_LOG_ERROR("Socket recvfrom err:  %d", recv_len);
+            VS_LOG_DEBUG("Socket recvfrom. recv_len:  %d", recv_len);
             if (recv_len < 0) {
                 VS_LOG_ERROR("Socket recvfrom failed: errno %d", errno);
                 break;
@@ -91,7 +92,7 @@ udp_server_task(void *pvParameters) {
 
             // Data received
             else {
-                VS_LOG_HEX(VS_LOGLEV_DEBUG, "UDP RECV:", rx_buffer, recv_len);
+                VS_LOG_HEX(VS_LOGLEV_DEBUG, "udp_server_task. RECV DUMP:", rx_buffer, recv_len);
                 udp_server_recv_cb(source_addr, rx_buffer, recv_len);
             }
         }
@@ -109,12 +110,25 @@ udp_server_task(void *pvParameters) {
 int
 udp_socket_send_broadcast(const void *tx_buffer, size_t size, int flags) {
     struct sockaddr_in dstaddr_broadcast;
+    // static uint8_t tx_buf[128];
+    // static int send_flag = 1;
+
+    // if (send_flag)
+    //{
+    //    send_flag = 0;
+    //  }
+    //  else
+    // return ESP_OK;
+
+    // memcpy(tx_buf, tx_buffer, size);
+
+    // memset(&dstaddr_broadcast, 0, sizeof(struct sockaddr_in));
     dstaddr_broadcast.sin_addr.s_addr = htonl(INADDR_BROADCAST);
     dstaddr_broadcast.sin_family = AF_INET;
     dstaddr_broadcast.sin_port = htons(udb_broadcast_port);
 
     VS_LOG_DEBUG("Sending broadcast: size %d", size);
-    VS_LOG_HEX(VS_LOGLEV_DEBUG, "UDP SEND:", tx_buffer, size);
+    VS_LOG_HEX(VS_LOGLEV_DEBUG, "udp_socket_send_broadcast. SEND DUMP:", tx_buffer, size);
 
     int err = sendto(udb_broadcast_sock,
                      tx_buffer,
@@ -123,10 +137,11 @@ udp_socket_send_broadcast(const void *tx_buffer, size_t size, int flags) {
                      (struct sockaddr *)&dstaddr_broadcast,
                      sizeof(dstaddr_broadcast));
 
-    VS_LOG_DEBUG("POST: Sending broadcast: size %d, ERR/SENT: [%d]", size, err);
+    VS_LOG_DEBUG("POST: Sending broadcast: size %d, ERR/SENDED: [%d]", size, err);
+    // vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     if (err < 0) {
-        VS_LOG_DEBUG("Error occured during socket sending: errno %s", strerror(errno));
+        VS_LOG_DEBUG("Error occured during socket sending: errno %d", errno);
         return err;
     }
     return ESP_OK;
@@ -156,7 +171,5 @@ BaseType_t
 udp_socket_init(uint16_t udb_port, uint16_t rxbuf_size) {
     udb_broadcast_port = udb_port;
     rx_buffer_size = rxbuf_size;
-    return xTaskCreate(udp_server_task, "udp_server", 3 * 4096, NULL, 5, NULL);
+    return xTaskCreate(udp_server_task, "udp_server", 4 * 4096, NULL, 3, NULL);
 }
-
-//******************************************************************************

@@ -52,7 +52,7 @@ static uint16_t
 _ec_mpi_size(vs_secmodule_keypair_type_e keypair_type) {
     int ec_size = vs_secmodule_get_signature_len(keypair_type);
 
-    if(ec_size < 0) {
+    if (ec_size < 0) {
         return 0;
     }
 
@@ -286,7 +286,7 @@ _mbedtls_sign_to_raw_ec(vs_secmodule_keypair_type_e keypair_type,
     const uint16_t component_sz = _ec_mpi_size(keypair_type);
 
     CHECK_NOT_ZERO_RET(component_sz, false);
-    
+
     if (buf_sz < component_sz * 2) {
         return false;
     }
@@ -337,13 +337,13 @@ vs_converters_mbedtls_sign_to_raw(vs_secmodule_keypair_type_e keypair_type,
     NOT_ZERO(mbedtls_sign_sz);
     NOT_ZERO(raw_sign);
     NOT_ZERO(raw_sz);
- 
+
     if (VS_KEYPAIR_EC_SECP_MIN > keypair_type || VS_KEYPAIR_EC_SECP_MAX < keypair_type) {
         return false;
     }
 
     return _mbedtls_sign_to_raw_ec(keypair_type, mbedtls_sign, mbedtls_sign_sz, raw_sign, buf_sz, raw_sz);
- }
+}
 
 /******************************************************************************/
 static bool

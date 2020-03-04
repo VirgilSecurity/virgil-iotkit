@@ -36,17 +36,15 @@
 #include <platform/init/idf/flash_nvs.h>
 
 //******************************************************************************
-esp_err_t flash_nvs_init(void)
-{
-  esp_err_t ret_res = ESP_OK;
-  ret_res = nvs_flash_init();
-  if (ret_res == ESP_ERR_NVS_NO_FREE_PAGES || ret_res == ESP_ERR_NVS_NEW_VERSION_FOUND)
-  {
-    INIT_STATUS_CHECK(ret_res = nvs_flash_erase(),"Error erase NVS flash");
-    INIT_STATUS_CHECK(ret_res = nvs_flash_init(),"Error NVS flash init");
-  }
+esp_err_t
+flash_nvs_init(void) {
+    esp_err_t ret_res = ESP_OK;
+    ret_res = nvs_flash_init();
+    if (ret_res == ESP_ERR_NVS_NO_FREE_PAGES || ret_res == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        INIT_STATUS_CHECK(ret_res = nvs_flash_erase(), "Error erase NVS flash");
+        INIT_STATUS_CHECK(ret_res = nvs_flash_init(), "Error NVS flash init");
+    }
 
-  terminate:
-  return  ret_res;
+terminate:
+    return ret_res;
 }
-

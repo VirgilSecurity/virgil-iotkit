@@ -32,57 +32,80 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
+
 #include <defaults/storage/storage-esp-impl.h>
+#include <helpers/kdf2.h>
+#include <sdkconfig.h>
 
-#define VS_FIO_PROFILE_WRITE 0
-#define VS_FIO_PROFILE_GETLEN 0
-#define VS_FIO_PROFILE_READ 0
-#define VS_FIO_PROFILE_SYNC 0
-
-#if VS_FIO_PROFILE_WRITE || VS_FIO_PROFILE_READ || VS_FIO_PROFILE_SYNC || VS_FIO_PROFILE_GETLEN
-#include <sys/time.h>
-static long long _processing_time = 0;
-static long _calls_counter = 0;
-
-static long long
-current_timestamp()
-{
-    struct timeval te;
-    gettimeofday(&te, NULL);                            // get current time
-    long long _us = te.tv_sec * 1000000LL + te.tv_usec; // calculate us
-    return _us;
-}
-
+#if VS_FIO_PROFILE_WRITE || VS_FIO_PROFILE_READ || VS_FIO_PROFILE_SYNC || VS_FIO_PROFILE_GETLEN || VS_FIO_PROFILE_REMOVE
+#include <helpers/profiling.h>
+#else
+#define VS_PROFILE_START
+#define VS_PROFILE_END_IN_MS(DESC)
 #endif
 
-typedef struct
-{
+typedef struct {
     char *dir;
-
 } vs_esp_storage_ctx_t;
 
-static const char *_tl_dir = "tl";
-static const char *_firmware_dir = "fw";
-static const char *_slots_dir = "slt";
-static const char *_secbox_dir = "sb";
+static const char *_tl_dir = "/" TL_PARTITION_NAME "/tl";
+static const char *_firmware_dir = "/" FW_STORAGE_PARTITION_NAME "/fw";
+static const char *_slots_dir = "/" SLOTS_PARTITION_NAME "/slt";
+static const char *_secbox_dir = "/" SECBOX_PARTITION_NAME "/sb";
+
 
 /******************************************************************************/
-vs_status_e
-vs_app_prepare_storage(const char *devices_dir)
-{
-    STATUS_CHECK(flash_data_init(), "Error flash data initialization)");
+static void
+_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len) {
+    const uint8_t hex_str[] = "0123456789abcdef";
 
-    CHECK_NOT_ZERO_RET(devices_dir && devices_dir[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    VS_IOT_ASSERT(_in_out_len);
+    VS_IOT_ASSERT(_data);
+    VS_IOT_ASSERT(_out_data);
+    VS_IOT_ASSERT(*_in_out_len >= _len * 2 + 1);
 
-    return vs_files_set_base_dir(devices_dir) ? VS_CODE_OK : VS_CODE_ERR_FILE;
-terminate:
-    return VS_CODE_ERR_FILE;
+    *_in_out_len = _len * 2 + 1;
+    _out_data[*_in_out_len - 1] = 0;
+    size_t i;
+
+    for (i = 0; i < _len; i++) {
+        _out_data[i * 2 + 0] = hex_str[(_data[i] >> 4) & 0x0F];
+        _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
+    }
+}
+
+/******************************************************************************/
+static void
+_create_filename(const vs_storage_element_id_t id, uint8_t *filename, uint32_t out_len) {
+    uint8_t buf[(out_len - 1) / 2];
+    vs_mbedtls_kdf2(
+            mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), id, sizeof(vs_storage_element_id_t), buf, sizeof(buf));
+    _data_to_hex(buf, sizeof(buf), filename, &out_len);
 }
 
 /******************************************************************************/
 vs_status_e
-vs_app_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *base_dir, size_t file_size_max)
-{
+vs_app_init_partition(const char *flash_part) {
+    CHECK_NOT_ZERO_RET(flash_part && flash_part[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_RET(ESP_OK == flash_data_init(flash_part), VS_CODE_ERR_FILE, "Error flash data initialization");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_app_deinit_partition(const char *flash_part) {
+    CHECK_NOT_ZERO_RET(flash_part && flash_part[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_RET(ESP_OK == flash_data_deinit(flash_part), VS_CODE_ERR_FILE, "Error unmount flash data partition");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_app_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *base_dir, size_t file_size_max) {
     CHECK_NOT_ZERO_RET(storage_impl, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(base_dir, VS_CODE_ERR_INCORRECT_ARGUMENT);
 
@@ -98,85 +121,57 @@ vs_app_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *base_dir
 
 /******************************************************************************/
 const char *
-vs_app_trustlist_dir(void)
-{
+vs_app_trustlist_dir(void) {
     return _tl_dir;
 }
 
 /******************************************************************************/
 const char *
-vs_app_firmware_dir(void)
-{
+vs_app_firmware_dir(void) {
     return _firmware_dir;
 }
 
 /******************************************************************************/
 const char *
-vs_app_slots_dir(void)
-{
+vs_app_slots_dir(void) {
     return _slots_dir;
 }
 
 /******************************************************************************/
 const char *
-vs_app_secbox_dir(void)
-{
+vs_app_secbox_dir(void) {
     return _secbox_dir;
 }
 
 /******************************************************************************/
-static void
-_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len)
-{
-    const uint8_t hex_str[] = "0123456789abcdef";
-
-    VS_IOT_ASSERT(_in_out_len);
-    VS_IOT_ASSERT(_data);
-    VS_IOT_ASSERT(_out_data);
-    VS_IOT_ASSERT(*_in_out_len >= _len * 2 + 1);
-
-    *_in_out_len = _len * 2 + 1;
-    _out_data[*_in_out_len - 1] = 0;
-    size_t i;
-
-    for (i = 0; i < _len; i++)
-    {
-        _out_data[i * 2 + 0] = hex_str[(_data[i] >> 4) & 0x0F];
-        _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
-    }
-}
-
-/******************************************************************************/
 vs_storage_impl_data_ctx_t
-vs_esp_storage_impl_data_init(const char *relative_dir)
-{
+vs_esp_storage_impl_data_init(const char *folder) {
     vs_esp_storage_ctx_t *ctx = NULL;
 
-    CHECK_NOT_ZERO_RET(relative_dir, NULL);
+    CHECK_NOT_ZERO_RET(folder, NULL);
 
     ctx = VS_IOT_CALLOC(1, sizeof(vs_esp_storage_ctx_t));
     CHECK_NOT_ZERO_RET(ctx, NULL);
 
-    ctx->dir = (char *)VS_IOT_CALLOC(1, strlen(relative_dir) + 1);
-    if (NULL == ctx->dir)
-    {
+    ctx->dir = (char *)VS_IOT_CALLOC(1, strlen(folder) + 1);
+
+    if (NULL == ctx->dir) {
         VS_LOG_ERROR("Can't allocate memory");
         VS_IOT_FREE(ctx);
         return NULL;
     }
 
-    VS_IOT_STRCPY(ctx->dir, relative_dir);
-
+    VS_IOT_STRCPY(ctx->dir, folder);
+    VS_LOG_DEBUG("Storage folder [%s]", ctx->dir);
     // Create path
-    vs_files_create_subdir(relative_dir);
+    vs_files_create_subdir(folder);
 
     return ctx;
 }
 
 /******************************************************************************/
 static vs_status_e
-vs_esp_storage_deinit_hal(vs_storage_impl_data_ctx_t storage_ctx)
-{
+_esp_storage_deinit_hal(vs_storage_impl_data_ctx_t storage_ctx) {
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
 
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_INCORRECT_PARAMETER);
@@ -190,26 +185,25 @@ vs_esp_storage_deinit_hal(vs_storage_impl_data_ctx_t storage_ctx)
 
 /******************************************************************************/
 static vs_storage_file_t
-vs_esp_storage_open_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id)
-{
+_esp_storage_open_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id) {
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
 
     CHECK_NOT_ZERO_RET(id, NULL);
     CHECK_NOT_ZERO_RET(storage_ctx, NULL);
     CHECK_NOT_ZERO_RET(ctx->dir, NULL);
+    CHECK_RET(sizeof(vs_storage_element_id_t) > strlen(ctx->dir) + 1, NULL, "File name too long");
+    uint32_t len = sizeof(vs_storage_element_id_t) - strlen(ctx->dir) - 1;
 
-    uint32_t len = sizeof(vs_storage_element_id_t) * 2 + 1;
     uint8_t *file = (uint8_t *)VS_IOT_CALLOC(1, len);
     CHECK_NOT_ZERO_RET(file, NULL);
-
-    _data_to_hex(id, sizeof(vs_storage_element_id_t), file, &len);
+    _create_filename(id, file, len);
 
     return file;
 }
 
 /******************************************************************************/
-vs_status_e static vs_esp_storage_sync_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_file_t file)
-{
+static vs_status_e
+_esp_storage_sync_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_file_t file) {
     vs_status_e res = VS_CODE_ERR_FILE;
 
     CHECK_NOT_ZERO_RET(file, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -217,28 +211,22 @@ vs_status_e static vs_esp_storage_sync_hal(const vs_storage_impl_data_ctx_t stor
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
 
 #if VS_FIO_PROFILE_SYNC
-    long long t;
-    long long dt;
-    _calls_counter++;
-    t = current_timestamp();
+    VS_PROFILE_START;
 #endif
-
-    if (vs_files_sync(ctx->dir, (char *)file))
-    {
+    if (vs_files_sync(ctx->dir, (char *)file)) {
         res = VS_CODE_OK;
     }
+
 #if VS_FIO_PROFILE_SYNC
-    dt = current_timestamp() - t;
-    _processing_time += dt;
-    VS_LOG_INFO("[Sync]. Time op = %lld us Total time: %lld us Calls: %ld", dt, _processing_time, _calls_counter);
+    VS_PROFILE_END_IN_MS("sync");
 #endif
+
     return res;
 }
 
 /******************************************************************************/
 static vs_status_e
-vs_esp_storage_close_hal(const vs_storage_impl_data_ctx_t storage_ctx, vs_storage_file_t file)
-{
+_esp_storage_close_hal(const vs_storage_impl_data_ctx_t storage_ctx, vs_storage_file_t file) {
     CHECK_NOT_ZERO_RET(file, VS_CODE_ERR_INCORRECT_PARAMETER);
 
     VS_IOT_FREE(file);
@@ -248,45 +236,40 @@ vs_esp_storage_close_hal(const vs_storage_impl_data_ctx_t storage_ctx, vs_storag
 
 /******************************************************************************/
 static vs_status_e
-vs_esp_storage_save_hal(const vs_storage_impl_data_ctx_t storage_ctx,
-                        const vs_storage_file_t file,
-                        size_t offset,
-                        const uint8_t *data,
-                        size_t data_sz)
-{
-    vs_status_e res = VS_CODE_ERR_FILE_WRITE;
+_esp_storage_save_hal(const vs_storage_impl_data_ctx_t storage_ctx,
+                      const vs_storage_file_t file,
+                      size_t offset,
+                      const uint8_t *data,
+                      size_t data_sz) {
 
+    vs_status_e res = VS_CODE_ERR_FILE_WRITE;
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(file, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
+
 #if VS_FIO_PROFILE_WRITE
-    long long t;
-    long long dt;
-    _calls_counter++;
-    t = current_timestamp();
+    VS_PROFILE_START;
 #endif
 
-    if (vs_files_write(ctx->dir, (char *)file, offset, data, data_sz))
-    {
+    if (vs_files_write(ctx->dir, (char *)file, offset, data, data_sz)) {
         res = VS_CODE_OK;
     }
+
 #if VS_FIO_PROFILE_WRITE
-    dt = current_timestamp() - t;
-    _processing_time += dt;
-    VS_LOG_INFO("[Write]. Time op = %lld us Total time: %lld us Calls: %ld", dt, _processing_time, _calls_counter);
+    VS_PROFILE_END_IN_MS("Save");
 #endif
+
     return res;
 }
 
 /******************************************************************************/
 static vs_status_e
-vs_esp_storage_load_hal(const vs_storage_impl_data_ctx_t storage_ctx,
-                        const vs_storage_file_t file,
-                        size_t offset,
-                        uint8_t *out_data,
-                        size_t data_sz)
-{
+_esp_storage_load_hal(const vs_storage_impl_data_ctx_t storage_ctx,
+                      const vs_storage_file_t file,
+                      size_t offset,
+                      uint8_t *out_data,
+                      size_t data_sz) {
     size_t read_sz;
     vs_status_e res = VS_CODE_ERR_FILE_READ;
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
@@ -297,89 +280,96 @@ vs_esp_storage_load_hal(const vs_storage_impl_data_ctx_t storage_ctx,
     CHECK_NOT_ZERO_RET(ctx->dir, VS_CODE_ERR_INCORRECT_PARAMETER);
 
 #if VS_FIO_PROFILE_READ
-    long long t;
-    long long dt;
-    _calls_counter++;
-    t = current_timestamp();
+    VS_PROFILE_START;
 #endif
-    if (vs_files_read(ctx->dir, (char *)file, offset, out_data, data_sz, &read_sz) && read_sz == data_sz)
-    {
+
+    if (vs_files_read(ctx->dir, (char *)file, offset, out_data, data_sz, &read_sz) && read_sz == data_sz) {
         res = VS_CODE_OK;
     }
 
 #if VS_FIO_PROFILE_READ
-    dt = current_timestamp() - t;
-    _processing_time += dt;
-    VS_LOG_INFO("[Read]. Time op = %lld us Total time: %lld us Calls: %ld", dt, _processing_time, _calls_counter);
+    VS_PROFILE_END_IN_MS("Read");
 #endif
+
     return res;
 }
 
 /*******************************************************************************/
 static ssize_t
-vs_esp_storage_file_size_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id)
-{
+_esp_storage_file_size_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id) {
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
     ssize_t res;
-    uint32_t len = sizeof(vs_storage_element_id_t) * 2 + 1;
-    uint8_t file[len];
 
     CHECK_NOT_ZERO_RET(id, VS_CODE_ERR_INCORRECT_PARAMETER);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_INCORRECT_PARAMETER);
     CHECK_NOT_ZERO_RET(ctx->dir, VS_CODE_ERR_INCORRECT_PARAMETER);
+    CHECK_RET(sizeof(vs_storage_element_id_t) > strlen(ctx->dir) + 1,
+              VS_CODE_ERR_INCORRECT_PARAMETER,
+              "File name too long");
+    uint32_t len = sizeof(vs_storage_element_id_t) - strlen(ctx->dir) - 1;
 
-    _data_to_hex(id, sizeof(vs_storage_element_id_t), file, &len);
+    uint8_t file[len];
+    VS_IOT_MEMSET(file, 0, len);
+    _create_filename(id, file, len);
 
 #if VS_FIO_PROFILE_GETLEN
-    long long t;
-    long long dt;
-    _calls_counter++;
-    t = current_timestamp();
+    VS_PROFILE_START;
 #endif
+
     res = vs_files_get_len(ctx->dir, (char *)file);
+
 #if VS_FIO_PROFILE_GETLEN
-    dt = current_timestamp() - t;
-    _processing_time += dt;
-    VS_LOG_INFO(
-        "[Get file len]. Time op = %lld us Total time: %lld us Calls: %ld", dt, _processing_time, _calls_counter);
+    VS_PROFILE_END_IN_MS("Get file len");
 #endif
+
     return res;
 }
 
 /******************************************************************************/
 static vs_status_e
-vs_esp_storage_del_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id)
-{
+_esp_storage_del_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_storage_element_id_t id) {
     vs_esp_storage_ctx_t *ctx = (vs_esp_storage_ctx_t *)storage_ctx;
-
+    vs_status_e res;
     CHECK_NOT_ZERO_RET(id, VS_CODE_ERR_INCORRECT_PARAMETER);
     CHECK_NOT_ZERO_RET(storage_ctx, VS_CODE_ERR_INCORRECT_PARAMETER);
     CHECK_NOT_ZERO_RET(ctx->dir, VS_CODE_ERR_INCORRECT_PARAMETER);
+    CHECK_RET(sizeof(vs_storage_element_id_t) > strlen(ctx->dir) + 1,
+              VS_CODE_ERR_INCORRECT_PARAMETER,
+              "File name too long");
+    uint32_t len = sizeof(vs_storage_element_id_t) - strlen(ctx->dir) - 1;
 
-    uint32_t len = sizeof(vs_storage_element_id_t) * 2 + 1;
     uint8_t file[len];
+    VS_IOT_MEMSET(file, 0, len);
+    _create_filename(id, file, len);
 
-    _data_to_hex(id, sizeof(vs_storage_element_id_t), file, &len);
+#if VS_FIO_PROFILE_REMOVE
+    VS_PROFILE_START;
+#endif
 
-    return vs_files_remove(ctx->dir, (char *)file) ? VS_CODE_OK : VS_CODE_ERR_FILE_DELETE;
+    res = vs_files_remove(ctx->dir, (char *)file) ? VS_CODE_OK : VS_CODE_ERR_FILE_DELETE;
+
+#if VS_FIO_PROFILE_REMOVE
+    VS_PROFILE_END_IN_MS("Remove");
+#endif
+
+    return res;
 }
 
 /******************************************************************************/
 vs_storage_impl_func_t
-vs_esp_storage_impl_func(void)
-{
+vs_esp_storage_impl_func(void) {
     vs_storage_impl_func_t impl;
 
     memset(&impl, 0, sizeof(impl));
 
-    impl.size = vs_esp_storage_file_size_hal;
-    impl.deinit = vs_esp_storage_deinit_hal;
-    impl.open = vs_esp_storage_open_hal;
-    impl.sync = vs_esp_storage_sync_hal;
-    impl.close = vs_esp_storage_close_hal;
-    impl.save = vs_esp_storage_save_hal;
-    impl.load = vs_esp_storage_load_hal;
-    impl.del = vs_esp_storage_del_hal;
+    impl.size = _esp_storage_file_size_hal;
+    impl.deinit = _esp_storage_deinit_hal;
+    impl.open = _esp_storage_open_hal;
+    impl.sync = _esp_storage_sync_hal;
+    impl.close = _esp_storage_close_hal;
+    impl.save = _esp_storage_save_hal;
+    impl.load = _esp_storage_load_hal;
+    impl.del = _esp_storage_del_hal;
 
     return impl;
 }

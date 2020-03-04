@@ -47,11 +47,10 @@
 #include <virgil/iot/macros/macros.h>
 
 // Mount path for the partitions
-#define PART_HSM "hsm"
 #define FATFS_MAX_OPEN_FILES 10
 
-esp_err_t flash_data_deinit(void);
-esp_err_t flash_data_init(void);
+esp_err_t flash_data_deinit(const char *flash_part);
+esp_err_t flash_data_init(const char *flash_part);
 
 
 #endif //FLASH_DATA_H

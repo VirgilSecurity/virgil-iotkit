@@ -46,6 +46,7 @@
 #include <mbedtls/gcm.h>
 #include <mbedtls/cipher.h>
 
+#include <helpers/kdf2.h>
 #include <defaults/vs-soft-secmodule/private/vs-soft-secmodule-internal.h>
 
 #include <virgil/iot/secmodule/secmodule.h>
@@ -54,6 +55,15 @@
 #include <virgil/iot/converters/crypto_format_converters.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/status_code/status_code.h>
+
+#if VS_CRYPTO_PROFILE
+#include <helpers/profiling.h>
+#else
+#define VS_PROFILE_START
+#define VS_PROFILE_END_IN_MS(DESC)
+#define VS_PROFILE_START
+#define VS_PROFILE_END_IN_MKS(DESC)
+#endif
 
 #define RNG_MAX_REQUEST (256)
 
@@ -72,6 +82,10 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
     CHECK_NOT_ZERO_RET(hash_buf_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(hash_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
     vs_status_e res = VS_CODE_OK;
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
 
     switch (hash_type) {
     case VS_HASH_SHA_256:
@@ -95,6 +109,9 @@ vs_secmodule_hash_create(vs_secmodule_hash_type_e hash_type,
         res = VS_CODE_ERR_NOT_IMPLEMENTED;
         break;
     }
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("Hash creating");
+#endif
 
     return res;
 }
@@ -186,6 +203,11 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
                      "Unable to load private key data from slot %s",
                      _get_slot_name(key_slot));
     ret_code = VS_CODE_ERR_CRYPTO;
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
     mbedtls_pk_init(&private_key_ctx);
@@ -211,6 +233,10 @@ vs_secmodule_ecdsa_sign(vs_iot_secmodule_slot_e key_slot,
     mbedtls_ctr_drbg_free(&ctr_drbg);
     mbedtls_pk_free(&private_key_ctx);
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MS("ecdsa signing");
+#endif
+
     return ret_code;
 }
 
@@ -233,6 +259,10 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
     CHECK_NOT_ZERO_RET(signature, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(signature_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     mbedtls_pk_init(&public_key_ctx);
 
     if (_create_context_for_public_key(&public_key_ctx, keypair_type, public_key, public_key_sz) &&
@@ -243,6 +273,10 @@ vs_secmodule_ecdsa_verify(vs_secmodule_keypair_type_e keypair_type,
     }
 
     mbedtls_pk_free(&public_key_ctx);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MS("ecdsa verifying");
+#endif
     return ret_code;
 }
 
@@ -257,87 +291,35 @@ vs_secmodule_hmac(vs_secmodule_hash_type_e hash_type,
                   uint16_t output_buf_sz,
                   uint16_t *output_sz) {
     int hash_sz;
+    vs_status_e res;
 
     CHECK_NOT_ZERO_RET(key, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     hash_sz = vs_secmodule_get_hash_len(hash_type);
     CHECK_RET(hash_sz >= 0, VS_CODE_ERR_CRYPTO, "Unsupported hash type %d", hash_type);
     CHECK_RET(output_buf_sz >= hash_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Output buffer too small");
 
     *output_sz = (uint16_t)hash_sz;
-    return (0 == mbedtls_md_hmac(mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type)),
-                                 (const unsigned char *)key,
-                                 key_sz,
-                                 (const unsigned char *)input,
-                                 input_sz,
-                                 (unsigned char *)output))
-                   ? VS_CODE_OK
-                   : VS_CODE_ERR_CRYPTO;
-}
+    res = (0 == mbedtls_md_hmac(mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type)),
+                                (const unsigned char *)key,
+                                key_sz,
+                                (const unsigned char *)input,
+                                input_sz,
+                                (unsigned char *)output))
+                  ? VS_CODE_OK
+                  : VS_CODE_ERR_CRYPTO;
 
-/********************************************************************************/
-#define KDF2_TRY(invocation) \
-do { \
-    result = invocation; \
-    if((result) < 0) { \
-        goto exit; \
-    } \
-} while (0)
-
-#define KDF2_CEIL(x,y) (1 + ((x - 1) / y))
-
-static vs_status_e 
-_mbedtls_kdf2(const mbedtls_md_info_t *md_info, const unsigned char *input, size_t ilen,
-        unsigned char * output, size_t olen)
-{
-    int result = 0;
-    size_t counter = 1;
-    size_t counter_len = 0;
-    unsigned char counter_string[4] = {0x0};
-
-    unsigned char hash[MBEDTLS_MD_MAX_SIZE] = {0x0};
-    unsigned char hash_len = 0;
-
-    size_t olen_actual = 0;
-
-    mbedtls_md_context_t md_ctx;
-
-    CHECK_NOT_ZERO_RET(md_info, VS_CODE_ERR_CRYPTO);
-
-    // Initialize digest context
-    mbedtls_md_init(&md_ctx);
-    KDF2_TRY(mbedtls_md_setup(&md_ctx, md_info, 0));
-
-    // Get hash parameters
-    hash_len = mbedtls_md_get_size(md_info);
-
-    // Get KDF parameters
-    counter_len = KDF2_CEIL(olen, hash_len);
-
-    // Start hashing
-    for(; counter <= counter_len; ++counter) {
-        counter_string[0] = (unsigned char)((counter >> 24) & 255);
-        counter_string[1] = (unsigned char)((counter >> 16) & 255);
-        counter_string[2] = (unsigned char)((counter >> 8)) & 255;
-        counter_string[3] = (unsigned char)(counter & 255);
-        KDF2_TRY(mbedtls_md_starts(&md_ctx));
-        KDF2_TRY(mbedtls_md_update(&md_ctx, input, ilen));
-        KDF2_TRY(mbedtls_md_update(&md_ctx, counter_string, 4));
-        if (olen_actual + hash_len <= olen) {
-            KDF2_TRY(mbedtls_md_finish(&md_ctx, output + olen_actual));
-            olen_actual += hash_len;
-        } else {
-            KDF2_TRY(mbedtls_md_finish(&md_ctx, hash));
-            memcpy(output + olen_actual, hash, olen - olen_actual);
-            olen_actual = olen;
-        }
-    }
-exit:
-    mbedtls_md_free(&md_ctx); 
-    return (0 == result) ? VS_CODE_OK : VS_CODE_ERR_CRYPTO;
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("hmac");
+#endif
+    return res;
 }
 
 /********************************************************************************/
@@ -348,16 +330,27 @@ vs_secmodule_kdf(vs_secmodule_kdf_type_e kdf_type,
                  uint16_t input_sz,
                  uint8_t *output,
                  uint16_t output_sz) {
+    vs_status_e res;
 
     CHECK_NOT_ZERO_RET(input, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_RET(kdf_type == VS_KDF_2, VS_CODE_ERR_NOT_IMPLEMENTED, "KDF type %d is not implemented", kdf_type);
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     const mbedtls_md_info_t *md_info = mbedtls_md_info_from_type(_hash_to_mbedtls(hash_type));
 
     CHECK_RET(md_info, VS_CODE_ERR_CRYPTO, "Error create kdf info");
 
-    return _mbedtls_kdf2(md_info, input, input_sz, output, output_sz);
+    res = vs_mbedtls_kdf2(md_info, input, input_sz, output, output_sz);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("kdf2");
+#endif
+
+    return res;
 }
 
 /********************************************************************************/
@@ -388,6 +381,10 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
     CHECK_NOT_ZERO_RET(output, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(output_sz, VS_CODE_ERR_INCORRECT_PARAMETER);
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     if (!is_init) {
         const char *pers = "gen_random";
         mbedtls_entropy_init(&entropy);
@@ -398,6 +395,7 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
             VS_LOG_ERROR("Error drbg initialization");
             mbedtls_entropy_free(&entropy);
             mbedtls_ctr_drbg_free(&ctr_drbg);
+
             return VS_CODE_ERR_CRYPTO;
         }
         is_init = true;
@@ -412,6 +410,10 @@ vs_secmodule_random(uint8_t *output, uint16_t output_sz) {
 
         cur_off += cur_size;
     }
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("random");
+#endif
 
     return VS_CODE_OK;
 }
@@ -469,6 +471,10 @@ _aes_cbc_crypt(bool is_encrypt,
     uint8_t *padding_ptr;
     uint8_t tmp_padding[VS_AES_256_BLOCK_SIZE];
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     CHECK_RET(VS_AES_256_KEY_BITLEN == key_bitlen, VS_CODE_ERR_NOT_IMPLEMENTED, "Unsupported key len");
     CHECK_RET(0 == mbedtls_cipher_setup(&ctx, mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_CBC)),
               VS_CODE_ERR_CRYPTO,
@@ -490,6 +496,11 @@ _aes_cbc_crypt(bool is_encrypt,
 
 terminate:
     mbedtls_cipher_free(&ctx);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("aes cbc");
+#endif
+
     return res;
 }
 
@@ -512,6 +523,10 @@ _aes_gcm_crypt(bool is_encrypt,
     vs_status_e res = VS_CODE_ERR_CRYPTO;
     uint8_t add_data = 0;
     uint8_t *add_ptr = &add_data;
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
 
     CHECK_NOT_ZERO_RET(tag, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(0 == add_len || add, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -545,6 +560,10 @@ _aes_gcm_crypt(bool is_encrypt,
 terminate:
 
     mbedtls_gcm_free(&ctx);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MKS("aes gcm");
+#endif
 
     return res;
 }
@@ -676,6 +695,10 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
     mbedtls_pk_init(&private_key_ctx);
@@ -694,9 +717,9 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
             0 == mbedtls_ecp_copy(&ecdh_ctx.Q, &private_keypair->Q) &&
             0 == mbedtls_mpi_copy(&ecdh_ctx.d, &private_keypair->d) &&
             0 == mbedtls_ecdh_calc_secret(
-                             &ecdh_ctx, &required_sz, shared_secret, buf_sz, mbedtls_ctr_drbg_random, &ctr_drbg)) {
-                *shared_secret_sz = required_sz;
-                ret_code = VS_CODE_OK;
+                         &ecdh_ctx, &required_sz, shared_secret, buf_sz, mbedtls_ctr_drbg_random, &ctr_drbg)) {
+            *shared_secret_sz = required_sz;
+            ret_code = VS_CODE_OK;
         }
     }
 
@@ -705,6 +728,10 @@ vs_secmodule_ecdh(vs_iot_secmodule_slot_e slot,
     mbedtls_ctr_drbg_free(&ctr_drbg);
     mbedtls_pk_free(&private_key_ctx);
     mbedtls_pk_free(&public_key_ctx);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MS("ecdh");
+#endif
 
     return ret_code;
 }

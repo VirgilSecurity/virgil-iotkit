@@ -51,23 +51,10 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 
-#define SSID_SZ (32)
-#define PASS_SZ (64)
+esp_err_t wifi_init_sta(wifi_config_t wifi_config);
+esp_err_t wifi_ready_wait(TickType_t xTicksToWait);
+esp_err_t wifi_get_mac(uint8_t *mac);
 
-typedef void (*wifi_status_cb_t)(bool ready);
+#define ESP_WIFI_MAXIMUM_RETRY 10
 
-esp_err_t
-wifi_init_sta(wifi_status_cb_t cb);
-
-esp_err_t
-wifi_ready_wait(TickType_t xTicksToWait);
-
-esp_err_t
-wifi_get_mac(uint8_t *mac);
-
-esp_err_t
-wifi_creds_save(const char *ssid, const char *pass);
-
-#define ESP_WIFI_MAXIMUM_RETRY 5
-
-#endif // WIFI_NETWORK_H
+#endif //WIFI_NETWORK_H

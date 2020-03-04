@@ -37,10 +37,6 @@
 
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
-vs_netif_t *
-vs_hal_netif_udp_bcast(void);
-
-void
-vs_hal_netif_udp_bcast_set_active(bool is_active);
+vs_netif_t * vs_hal_netif_udp_bcast(void);
 
 #endif // VS_IOT_NETIF_UDP_BCAST_IMPL_H

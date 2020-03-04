@@ -49,6 +49,13 @@
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
 
+#if VS_CRYPTO_PROFILE
+#include <helpers/profiling.h>
+#else
+#define VS_PROFILE_START
+#define VS_PROFILE_END_IN_MS(DESC)
+#endif
+
 typedef struct __attribute__((__packed__)) {
     vs_secmodule_keypair_type_e keypair_type;
     uint16_t private_key_sz;
@@ -112,6 +119,10 @@ _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
         return VS_CODE_ERR_NOT_IMPLEMENTED;
     }
 
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_START;
+#endif
+
     mbedtls_entropy_init(&entropy);
     mbedtls_ctr_drbg_init(&ctr_drbg);
     mbedtls_pk_init(&pk_ctx);
@@ -144,6 +155,10 @@ _keypair_create_internal(vs_secmodule_keypair_type_e keypair_type,
     }
 
     mbedtls_pk_free(&pk_ctx);
+
+#if VS_CRYPTO_PROFILE
+    VS_PROFILE_END_IN_MS("Keypair generating");
+#endif
 
     return res;
 }

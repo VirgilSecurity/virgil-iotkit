@@ -60,22 +60,22 @@ vs_storage_impl_data_ctx_t vs_esp_storage_impl_data_init(const char *dir);
 vs_storage_impl_func_t vs_esp_storage_impl_func(void);
 
 vs_status_e
-vs_app_prepare_storage(const char *devices_dir);
+vs_app_prepare_storage(const char *flash_part);
 
 vs_status_e
 vs_app_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *base_dir, size_t file_size_max);
 
 const char *
-vs_app_trustlist_dir(void);
+vs_app_trustlist_dir(const char *flash_part);
 
 const char *
-vs_app_firmware_dir(void);
+vs_app_firmware_dir(const char *flash_part);
 
 const char *
-vs_app_slots_dir(void);
+vs_app_slots_dir(const char *flash_part);
 
 const char *
-vs_app_secbox_dir(void);
+vs_app_secbox_dir(const char *flash_part);
 
 #ifdef __cplusplus
 } // extern "C"

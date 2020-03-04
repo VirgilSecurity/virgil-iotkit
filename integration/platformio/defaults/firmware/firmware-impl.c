@@ -47,6 +47,7 @@
 #include <update-config.h>
 
 #include <defaults/storage/storage-esp-impl.h>
+
 #include <helpers/file-io.h>
 
 /******************************************************************************/
@@ -56,7 +57,7 @@ vs_status_e __attribute__((weak)) vs_firmware_install_prepare_space_hal(void) {
 
 /******************************************************************************/
 vs_status_e __attribute__((weak)) vs_firmware_install_append_data_hal(const void *data, uint16_t data_sz) {
-    return VS_CODE_OK;;
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/
@@ -66,12 +67,14 @@ int __attribute__((weak)) vs_firmware_nix_update(int argc, char **argv) {
 
 /******************************************************************************/
 vs_status_e __attribute__((weak)) vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
-    return VS_CODE_OK;;
+    return VS_CODE_OK;
+    ;
 }
 
 /******************************************************************************/
-void __attribute__((weak)) vs_firmware_nix_set_info(const char *app_file, const vs_device_manufacture_id_t manufacture_id_str, const vs_device_type_t device_type_str) {
-
+void __attribute__((weak)) vs_firmware_nix_set_info(const char *app_file,
+                                                    const vs_device_manufacture_id_t manufacture_id_str,
+                                                    const vs_device_type_t device_type_str) {
 }
 
 /******************************************************************************/

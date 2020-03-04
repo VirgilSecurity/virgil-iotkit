@@ -41,7 +41,7 @@ static vs_secmodule_impl_t _soft_secmodule;
 static bool _soft_secmodule_ready = false;
 
 /******************************************************************************/
-vs_secmodule_impl_t __attribute__((weak)) *vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
+vs_secmodule_impl_t __attribute__((weak)) * vs_soft_secmodule_impl(vs_storage_op_ctx_t *slots_storage_impl) {
 
     CHECK_NOT_ZERO_RET(slots_storage_impl, NULL);
 

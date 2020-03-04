@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -45,16 +45,16 @@
 #include <virgil/iot/logger/logger.h>
 
 static vs_status_e
-_udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 static vs_status_e
-_udp_bcast_deinit(const vs_netif_t *netif);
+_udp_bcast_deinit();
 
 static vs_status_e
-_udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+_udp_bcast_tx(const uint8_t *data, const uint16_t data_sz);
 
 static vs_status_e
-_udp_bcast_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
+_udp_bcast_mac(struct vs_mac_addr_t *mac_addr);
 
 static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
                                       .init = _udp_bcast_init,
@@ -66,12 +66,21 @@ static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
 static vs_netif_rx_cb_t _netif_udp_bcast_rx_cb = 0;
 static vs_netif_process_cb_t _netif_udp_bcast_process_cb = 0;
 
-static bool _active = false;
-
 #define UDP_BCAST_PORT (4100)
 
 #define RX_BUF_SZ (2048)
 
+//******************************************************************************
+static void
+periodical_task(void *pvParameters) {
+    while (1) {
+        if (_netif_udp_bcast_process_cb) {
+            _netif_udp_bcast_process_cb(&_netif_udp_bcast, NULL, 0);
+        }
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
+    }
+    vTaskDelete(NULL);
+}
 //******************************************************************************
 void
 udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t recv_size) {
@@ -80,14 +89,14 @@ udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t 
 
     char addr_str[128];
     inet_ntoa_r(((struct sockaddr_in *)&from_source)->sin_addr.s_addr, addr_str, sizeof(addr_str) - 1);
-    VS_LOG_DEBUG("Received %d bytes from %s:", recv_size, addr_str);
+    VS_LOG_DEBUG("udp_server_recv_cb. Received %d bytes from %s:", recv_size, addr_str);
 
     if (recv_size > 0) {
         if (_netif_udp_bcast_rx_cb) {
             if (0 == _netif_udp_bcast_rx_cb(&_netif_udp_bcast, rx_buffer, recv_size, &packet_data, &packet_data_sz)) {
                 // Ready to process packet
                 if (_netif_udp_bcast_process_cb) {
-                    VS_LOG_HEX(VS_LOGLEV_DEBUG, "RECV DUMP:", packet_data, packet_data_sz);
+                    VS_LOG_HEX(VS_LOGLEV_DEBUG, "udp_server_recv_cb. RECV DUMP:", packet_data, packet_data_sz);
                     _netif_udp_bcast_process_cb(&_netif_udp_bcast, packet_data, packet_data_sz);
                 }
             }
@@ -96,10 +105,7 @@ udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t 
 }
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
-    if (!_active) {
-        return VS_CODE_ERR_INCORRECT_SEND_REQUEST;
-    }
+_udp_bcast_tx(const uint8_t *data, const uint16_t data_sz) {
     VS_LOG_DEBUG("Prepare UDP sending: [%d]", (int)data_sz);
     if (udp_socket_send_broadcast(data, data_sz, 0) < 0) {
         return VS_CODE_ERR_SOCKET;
@@ -109,25 +115,26 @@ _udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
+_udp_bcast_init(const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
     _netif_udp_bcast.packet_buf_filled = 0;
+    xTaskCreate(periodical_task, "periodical_task", 4 * 4096, NULL, 3, NULL);
 
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_deinit(const vs_netif_t *netif) {
+_udp_bcast_deinit() {
     //...
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
+_udp_bcast_mac(struct vs_mac_addr_t *mac_addr) {
     uint8_t mac[6];
     wifi_get_mac(mac);
     if (mac_addr) {
@@ -142,12 +149,6 @@ _udp_bcast_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
 vs_netif_t *
 vs_hal_netif_udp_bcast(void) {
     return &_netif_udp_bcast;
-}
-
-/******************************************************************************/
-void
-vs_hal_netif_udp_bcast_set_active(bool is_active) {
-    _active = is_active;
 }
 
 /******************************************************************************/
