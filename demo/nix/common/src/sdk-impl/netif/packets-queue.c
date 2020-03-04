@@ -64,6 +64,7 @@ _msg_processing(void *ctx) {
         return NULL;
     }
 
+    vs_log_thread_descriptor("snap msg");
     while (!_stop_queue) {
         // Block until new message appears.
         CHECK_RET(VS_CODE_OK == vs_msg_queue_pop(_queue_ctx, (const void **)&netif, &data, &data_sz),
@@ -84,6 +85,7 @@ _msg_processing(void *ctx) {
 /******************************************************************************/
 static void *
 _periodical_processing(void *ctx) {
+    vs_log_thread_descriptor("snap periodical");
     while (!_stop_periodical) {
         sleep(1);
         // TODO: To improve working with periodical timer

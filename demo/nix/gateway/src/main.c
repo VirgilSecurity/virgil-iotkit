@@ -149,6 +149,7 @@ main(int argc, char *argv[]) {
                                     &tl_storage_impl,
                                     &fw_storage_impl,
                                     netifs_impl,
+                                    vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
 

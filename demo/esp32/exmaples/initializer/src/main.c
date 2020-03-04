@@ -124,6 +124,7 @@ _initializer_exec_task(void *pvParameters) {
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     netifs_impl,
+                                    vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
 

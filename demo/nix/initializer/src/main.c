@@ -120,6 +120,7 @@ main(int argc, char *argv[]) {
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     netifs_impl,
+                                    vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
 
