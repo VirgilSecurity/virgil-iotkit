@@ -111,7 +111,8 @@ wifi_init_sta(wifi_status_cb_t cb, wifi_config_t wifi_config) {
     tcpip_adapter_init();
     VS_LOG_INFO("INIT: Begin WiFi initialization");
     INIT_STATUS_CHECK(esp_event_loop_init(event_handler, NULL), "Error register event task");
-    INIT_STATUS_CHECK(ret_res = esp_wifi_init(&cfg), "Error WiFi initialization [%d]", ret_res);
+    ret_res = esp_wifi_init(&cfg);
+    INIT_STATUS_CHECK(ret_res, "Error WiFi initialization [%d]", ret_res);
     INIT_STATUS_CHECK(ret_res = esp_wifi_set_mode(WIFI_MODE_STA), "Error set Wifi mode");
     INIT_STATUS_CHECK(ret_res = esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config), "Error set Wifi configuration");
     INIT_STATUS_CHECK(ret_res = esp_wifi_start(), "Error Wifi start");
