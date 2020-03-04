@@ -68,7 +68,7 @@ vs_event_group_wait_bits(vs_event_group_bits_t *ev_group,
 
     stat = ev_group->event_flags & bits_to_wait_for;
 
-    while ((is_wait_for_all ? 0 == stat : bits_to_wait_for != stat) && ETIMEDOUT != res) {
+    while ((is_wait_for_all ? bits_to_wait_for != stat : 0 == stat) && ETIMEDOUT != res) {
         if (timeout >= 0) {
             res = pthread_cond_timedwait(&ev_group->cond, &ev_group->mtx, &thread_sleep);
         } else {

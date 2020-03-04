@@ -385,7 +385,6 @@ _cws_config(void) {
 /******************************************************************************/
 static void
 _cws_cleanup_resources(void) {
-
     curl_multi_remove_handle(_websocket_ctx.multi, _websocket_ctx.easy);
     cws_free(_websocket_ctx.easy);
 
@@ -420,7 +419,7 @@ _websocket_connect(void) {
                                         WS_EVF_SOCKET_CONNECTED | WS_EVF_STOP_ALL_THREADS | WS_EVF_PERFORM_THREAD_EXIT,
                                         false,
                                         false,
-                                        5);
+                                        20);
 
         // Stop interface
         if (stat & WS_EVF_STOP_ALL_THREADS) {
@@ -432,19 +431,18 @@ _websocket_connect(void) {
             return VS_CODE_OK;
         }
 
-        if (stat & WS_EVF_PERFORM_THREAD_EXIT) {
-            // The thread with curl multi has been closed because of error
-            vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
-        } else {
-            vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
-            pthread_join(curl_perform_loop_thread, NULL);
-        }
+
+        vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
+        pthread_join(curl_perform_loop_thread, NULL);
+        vs_event_group_clear_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT | WS_EVF_STOP_PERFORM_THREAD);
+        VS_LOG_DEBUG("_websocket_connect. Preform thread has been stopped");
 
         // The connection attempt has been fail. Repeat
         _cws_cleanup_resources();
         _websocket_ctx.easy = _cws_config();
         CHECK_RET(_websocket_ctx.easy, VS_CODE_ERR_INIT_SNAP, "Can't create curl easy ctx");
         curl_multi_add_handle(_websocket_ctx.multi, _websocket_ctx.easy);
+        sleep(5);
     }
 
 terminate:
@@ -459,7 +457,7 @@ _websocket_reconnect(vs_event_bits_t stat) {
     if (!(stat & WS_EVF_PERFORM_THREAD_EXIT)) {
         vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
         pthread_join(curl_perform_loop_thread, NULL);
-        VS_LOG_DEBUG("Preform thread has been stopped");
+        VS_LOG_DEBUG("_websocket_reconnect. Preform thread has been stopped");
     }
 
     _cws_cleanup_resources();
@@ -489,20 +487,20 @@ _websocket_curl_perform_loop_processor(void *param) {
 
             if (mc != CURLM_OK) {
                 VS_LOG_ERROR("curl_multi_wait() failed, code %d.", mc);
-                break;
+                still_running = 0;
             }
         } else if (!still_running) {
             VS_LOG_ERROR("curl_multi_perform(). still_running = false");
-            break;
         } else {
             VS_LOG_ERROR("curl_multi_perform() failed, code %d.", mc);
-            break;
+            still_running = 0;
         }
 
         // Check if need to stop curl multi polling
         stat = vs_event_group_wait_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD, true, false, 0);
-    } while (!stat);
+    } while (!stat && still_running);
 
+    curl_easy_pause(_websocket_ctx.easy, CURLPAUSE_ALL);
     VS_LOG_DEBUG("Perform thread exit");
 
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_PERFORM_THREAD_EXIT);
@@ -634,7 +632,7 @@ _websocket_pool_socket_processor(void *param) {
 terminate:
     vs_event_group_set_bits(&_websocket_ctx.ws_events, WS_EVF_STOP_PERFORM_THREAD);
     pthread_join(curl_perform_loop_thread, NULL);
-    VS_LOG_DEBUG("Perform thread has been stopped");
+    VS_LOG_DEBUG("_websocket_pool_socket_processor. Perform thread has been stopped");
 
     _cws_cleanup_resources();
     curl_multi_cleanup(_websocket_ctx.multi);
