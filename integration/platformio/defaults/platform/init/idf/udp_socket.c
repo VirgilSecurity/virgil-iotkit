@@ -39,7 +39,7 @@ static uint16_t udb_broadcast_port = 0;
 uint8_t *rx_buffer = NULL;
 uint16_t rx_buffer_size = 0;
 static uint8_t initialized = 0;
-//*****************************************************************************
+
 // ********************* Receive pkgs callback ********************************
 void __attribute__((weak)) udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t recv_size) {
     VS_LOG_DEBUG("Default empty udp_server_recv_cb has been called");
@@ -48,7 +48,6 @@ void __attribute__((weak)) udp_server_recv_cb(struct sockaddr_in from_source, ui
 //******************************************************************************
 static void
 udp_server_task(void *pvParameters) {
-    // static uint8_t static_buff[128];
     struct sockaddr_in source_addr;
     socklen_t source_socklen = sizeof(source_addr);
     struct sockaddr_in bindaddr;
@@ -89,7 +88,6 @@ udp_server_task(void *pvParameters) {
                 VS_LOG_ERROR("Socket recvfrom failed: errno %d", errno);
                 break;
             }
-
             // Data received
             else {
                 VS_LOG_HEX(VS_LOGLEV_DEBUG, "udp_server_task. RECV DUMP:", rx_buffer, recv_len);

@@ -46,6 +46,9 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 
+#define ESP_HSM_PARTITION_NAME "hsm"
+#define ESP_FW_STORAGE_PARTITION_NAME "fw_imgs"
+
 // Mount path for the partitions
 #define FATFS_MAX_OPEN_FILES 10
 

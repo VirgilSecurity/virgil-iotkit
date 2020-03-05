@@ -49,3 +49,4 @@ __pycache__/
 
 !sdk/config
 demo-iotkit-qt.pro.user
+wifi_data.ini

@@ -48,6 +48,9 @@ go_snap_init(void) {
     vs_device_serial_t serial = {0};
     uint32_t roles = VS_SNAP_DEV_CONTROL;
 
+    // Initialize Logger module
+    vs_logger_init(VS_LOGLEV_DEBUG);
+
     return vs_snap_init(vs_hal_netif_udp_bcast(), NULL, manufacture_id, device_type, serial, roles);
 }
 

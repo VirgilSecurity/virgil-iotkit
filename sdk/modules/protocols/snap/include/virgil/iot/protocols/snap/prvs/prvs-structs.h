@@ -98,6 +98,14 @@ typedef struct __attribute__((__packed__)) {
     uint8_t data[];    /**< signed data */
 } vs_snap_prvs_sgnp_req_t;
 
+/** Provision stuff data
+ *
+ */
+typedef struct __attribute__((__packed__)) {
+    uint16_t request_id; /**< request id */
+    uint8_t data[];      /**< request data */
+} vs_snap_prvs_set_data_t;
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

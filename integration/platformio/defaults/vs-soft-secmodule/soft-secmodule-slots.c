@@ -62,7 +62,7 @@ vs_secmodule_slot_save(vs_iot_secmodule_slot_e slot, const uint8_t *data, uint16
     // Save data type to file
     STATUS_CHECK(res = _storage->impl_func.save(_storage->impl_data, f, 0, data, data_sz), "Can't save data to file");
 
-    STATUS_CHECK(res = _storage->impl_func.sync(_storage->impl_data, f), "Can't sync secbox file");
+    STATUS_CHECK(res = _storage->impl_func.sync(_storage->impl_data, f), "Can't sync slot file");
 
 terminate:
 

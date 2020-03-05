@@ -105,6 +105,7 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
                    vs_storage_op_ctx_t *firmware_storage_impl,
 #endif // FLDT_SERVER || FLDT_CLIENT
                    vs_netif_t *netif_impl[],
+                   vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events);
 
 /** Destroy IoTKit
