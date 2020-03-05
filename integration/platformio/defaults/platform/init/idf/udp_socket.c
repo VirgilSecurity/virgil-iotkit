@@ -38,7 +38,7 @@ static int udb_broadcast_sock;
 static uint16_t udb_broadcast_port = 0;
 uint8_t *rx_buffer = NULL;
 uint16_t rx_buffer_size = 0;
-static uint8_t initialized = 0;
+static UBaseType_t initialized = 0;
 
 // ********************* Receive pkgs callback ********************************
 void __attribute__((weak)) udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t recv_size) {
@@ -57,6 +57,8 @@ udp_server_task(void *pvParameters) {
         VS_LOG_ERROR("Alocate RX buff size", errno);
         rx_buffer = pvPortMalloc(rx_buffer_size);
     }
+
+    initialized = 1;
 
     while (1) {
         bindaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -101,6 +103,8 @@ udp_server_task(void *pvParameters) {
             close(udb_broadcast_sock);
         }
     }
+    initialized = 0;
+    vPortFree(rx_buffer);
     vTaskDelete(NULL);
 }
 
@@ -108,22 +112,11 @@ udp_server_task(void *pvParameters) {
 int
 udp_socket_send_broadcast(const void *tx_buffer, size_t size, int flags) {
     struct sockaddr_in dstaddr_broadcast;
-    // static uint8_t tx_buf[128];
-    // static int send_flag = 1;
-
-    // if (send_flag)
-    //{
-    //    send_flag = 0;
-    //  }
-    //  else
-    // return ESP_OK;
-
-    // memcpy(tx_buf, tx_buffer, size);
-
-    // memset(&dstaddr_broadcast, 0, sizeof(struct sockaddr_in));
     dstaddr_broadcast.sin_addr.s_addr = htonl(INADDR_BROADCAST);
     dstaddr_broadcast.sin_family = AF_INET;
     dstaddr_broadcast.sin_port = htons(udb_broadcast_port);
+
+    CHECK_RET(initialized, ESP_FAIL, "upd socket isn't initialized");
 
     VS_LOG_DEBUG("Sending broadcast: size %d", size);
     VS_LOG_HEX(VS_LOGLEV_DEBUG, "udp_socket_send_broadcast. SEND DUMP:", tx_buffer, size);
@@ -150,6 +143,8 @@ int
 udp_socket_send_to(const void *tx_buffer, size_t size, int flags, in_addr_t dest) {
     struct sockaddr_in dst_addr;
     int err = 0;
+
+    CHECK_RET(initialized, ESP_FAIL, "upd socket isn't initialized");
 
     dst_addr.sin_addr.s_addr = dest;
     dst_addr.sin_family = AF_INET;

@@ -32,29 +32,29 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
 //#include <sys/socket.h>
-#include <platform/init/idf/wifi_network.h>
-#include <platform/init/idf/udp_socket.h>
 #include <defaults/netif/netif-udp-broadcast.h>
+#include <platform/init/idf/udp_socket.h>
+#include <platform/init/idf/wifi_network.h>
 
 #include <virgil/iot/logger/logger.h>
 
 static vs_status_e
-_udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
+_udp_bcast_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb);
 
 static vs_status_e
-_udp_bcast_deinit(const vs_netif_t *netif);
+_udp_bcast_deinit(struct vs_netif_t *netif);
 
 static vs_status_e
-_udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
+_udp_bcast_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz);
 
 static vs_status_e
-_udp_bcast_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
+_udp_bcast_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr);
 
 static vs_netif_t _netif_udp_bcast = {.user_data = NULL,
                                       .init = _udp_bcast_init,
@@ -109,7 +109,7 @@ _udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
+_udp_bcast_init(struct vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_process_cb_t process_cb) {
     assert(rx_cb);
     _netif_udp_bcast_rx_cb = rx_cb;
     _netif_udp_bcast_process_cb = process_cb;
@@ -120,14 +120,14 @@ _udp_bcast_init(vs_netif_t *netif, const vs_netif_rx_cb_t rx_cb, const vs_netif_
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_deinit(const vs_netif_t *netif) {
+_udp_bcast_deinit(struct vs_netif_t *netif) {
     //...
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_mac(const vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
+_udp_bcast_mac(const struct vs_netif_t *netif, struct vs_mac_addr_t *mac_addr) {
     uint8_t mac[6];
     wifi_get_mac(mac);
     if (mac_addr) {

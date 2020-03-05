@@ -58,7 +58,7 @@ typedef struct {
 } vs_poll_ctx_t;
 
 static vs_snap_info_start_notif_srv_cb_t _startup_notification_cb = NULL;
-static vs_poll_ctx_t _poll_ctx = {0, 0, 0};
+static vs_poll_ctx_t _poll_ctx = {0, 0, 0, {{0, 0, 0, 0, 0, 0}}};
 
 static vs_file_version_t _firmware_ver = {0, 0, 0, 0, 0};
 static vs_file_version_t _tl_ver = {0, 0, 0, 0, 0};
