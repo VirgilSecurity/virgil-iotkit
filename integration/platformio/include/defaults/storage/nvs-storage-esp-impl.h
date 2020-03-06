@@ -32,61 +32,29 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_ESP_STORAGE_IMPL_H
-#define VS_IOT_ESP_STORAGE_IMPL_H
+#ifndef VS_NVS_ESP_STORAGE_IMPL_H
+#define VS_NVS_ESP_STORAGE_IMPL_H
 
 #include <stdio.h>
 #include <virgil/iot/macros/macros.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/status_code/status_code.h>
 #include <global-hal.h>
-#include <virgil/iot/storage_hal/storage_hal.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-
-#include <platform/init/idf/flash_data.h>
-
-#include <helpers/file-io.h>
-
-#define SLOTS_PARTITION_NAME ESP_HSM_PARTITION_NAME
-#define TL_PARTITION_NAME ESP_HSM_PARTITION_NAME
-#define SECBOX_PARTITION_NAME ESP_HSM_PARTITION_NAME
-#define FW_STORAGE_PARTITION_NAME ESP_FW_STORAGE_PARTITION_NAME
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-vs_storage_impl_data_ctx_t
-vs_esp_storage_impl_data_init(const char *dir);
-
-vs_storage_impl_func_t
-vs_esp_storage_impl_func(void);
-
 vs_status_e
-vs_app_init_partition(const char *flash_part);
-vs_status_e
-vs_app_deinit_partition(const char *flash_part);
-
-vs_status_e
-vs_app_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *base_dir, size_t file_size_max);
+vs_app_nvs_storage_init_impl(vs_storage_op_ctx_t *storage_impl, const char *namespace, size_t file_size_max);
 
 const char *
-vs_app_trustlist_dir(void);
-
-const char *
-vs_app_firmware_dir(void);
-
-const char *
-vs_app_slots_dir(void);
-
-const char *
-vs_app_secbox_dir(void);
+vs_app_nvs_slots_namespace(void);
 
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit
 #endif
 
-
-#endif // VS_IOT_ESP_STORAGE_IMPL_H
+#endif // VS_NVS_ESP_STORAGE_IMPL_H

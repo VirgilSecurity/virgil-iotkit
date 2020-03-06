@@ -96,7 +96,7 @@ udp_server_recv_cb(struct sockaddr_in from_source, uint8_t *rx_buffer, uint16_t 
 }
 /******************************************************************************/
 static vs_status_e
-_udp_bcast_tx(const vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+_udp_bcast_tx(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
     if (!_active) {
         return VS_CODE_ERR_INCORRECT_SEND_REQUEST;
     }

@@ -24,6 +24,7 @@
 #include <defaults/netif/netif-udp-broadcast.h>
 #include <defaults/netif/packets-queue.h>
 #include <defaults/storage/storage-esp-impl.h>
+#include <defaults/storage/nvs-storage-esp-impl.h>
 #include <defaults/vs-soft-secmodule/vs-soft-secmodule.h>
 
 // Modules
@@ -59,10 +60,7 @@ app_main(void) {
 static void
 _initializer_exec_task(void *pvParameters) {
     vs_iotkit_events_t iotkit_events = {.reboot_request_cb = NULL};
-#if 0
-    const vs_snap_service_t *snap_info_server;
-    const vs_snap_service_t *snap_prvs_server;
-#endif
+
     // Implementation variables
     vs_secmodule_impl_t *secmodule_impl = NULL;
     vs_netif_t *netifs_impl[2] = {NULL, NULL};
@@ -108,8 +106,9 @@ _initializer_exec_task(void *pvParameters) {
                  "Cannot create TrustList storage");
 
     // Slots storage
-    STATUS_CHECK(vs_app_storage_init_impl(&slots_storage_impl, vs_app_slots_dir(), VS_SLOTS_STORAGE_MAX_SIZE),
-                 "Cannot create Slots storage");
+    STATUS_CHECK(
+            vs_app_nvs_storage_init_impl(&slots_storage_impl, vs_app_nvs_slots_namespace(), VS_SLOTS_STORAGE_MAX_SIZE),
+            "Cannot create Slots storage");
 
     // Soft Security Module
     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
@@ -128,35 +127,6 @@ _initializer_exec_task(void *pvParameters) {
                                     iotkit_events),
                  "Cannot initialize IoTKit");
 
-#if 0
-    // Provision module
-    VS_LOG_DEBUG("Initialization provision module");
-    ret_code = vs_provision_init(&tl_storage_impl, secmodule_impl);
-    if (VS_CODE_OK != ret_code && VS_CODE_ERR_NOINIT != ret_code) {
-        VS_LOG_ERROR("Cannot initialize Provision module");
-        goto terminate;
-    }
-
-    VS_LOG_DEBUG("Initialization snap");
-    STATUS_CHECK(vs_snap_init(netif_impl, manufacture_id, device_type, serial, device_roles),
-                 "Unable to initialize SNAP module");
-
-    //
-    // ---------- Register SNAP services ----------
-    //
-
-    //  INFO server service
-    VS_LOG_DEBUG("Initialization snap info server");
-    snap_info_server = vs_snap_info_server(NULL);
-    VS_LOG_DEBUG("Register snap info server");
-    STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO server service");
-
-    //  PRVS service
-    VS_LOG_DEBUG("Initialization snap prvs service");
-    snap_prvs_server = vs_snap_prvs_server(secmodule_impl);
-    VS_LOG_DEBUG("Register snap prvs service");
-    STATUS_CHECK(vs_snap_register_service(snap_prvs_server), "Cannot register PRVS service");
-#endif
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
     }
@@ -167,13 +137,7 @@ _initializer_exec_task(void *pvParameters) {
 
 terminate:
     VS_LOG_INFO("Application start error");
-#if 0
-    // Deinit Virgil SDK modules
-    vs_snap_deinit();
 
-    // Deinit provision
-    vs_provision_deinit();
-#endif
     // De-initialize IoTKit internals
     vs_high_level_deinit();
 
