@@ -32,6 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
+#include <helpers/kdf2.h>
 #include <helpers/file-io.h>
 #include <sdkconfig.h>
 
@@ -53,6 +56,38 @@ _check_fio_and_path(const char *folder, const char *file_name, char file_path[CO
     }
 
     return true;
+}
+
+/******************************************************************************/
+static void
+_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len) {
+    const uint8_t hex_str[] = "0123456789abcdef";
+
+    VS_IOT_ASSERT(_in_out_len);
+    VS_IOT_ASSERT(_data);
+    VS_IOT_ASSERT(_out_data);
+    VS_IOT_ASSERT(*_in_out_len >= _len * 2 + 1);
+
+    *_in_out_len = _len * 2 + 1;
+    _out_data[*_in_out_len - 1] = 0;
+    size_t i;
+
+    for (i = 0; i < _len; i++) {
+        _out_data[i * 2 + 0] = hex_str[(_data[i] >> 4) & 0x0F];
+        _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
+    }
+}
+
+/******************************************************************************/
+void
+vs_files_create_filename(const vs_storage_element_id_t id, uint8_t *filename, uint32_t out_len) {
+    VS_IOT_ASSERT(out_len);
+    VS_IOT_ASSERT(filename);
+
+    uint8_t buf[(out_len - 1) / 2];
+    vs_mbedtls_kdf2(
+            mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), id, sizeof(vs_storage_element_id_t), buf, sizeof(buf));
+    _data_to_hex(buf, sizeof(buf), filename, &out_len);
 }
 
 /******************************************************************************/
@@ -92,8 +127,10 @@ _mkdir_recursive(const char *dir) {
             VS_LOG_DEBUG("Creating directory [%s]", tmp);
 
             if (mkdir(tmp, 0777) && errno != EEXIST) {
-                VS_LOG_ERROR(
-                        "mkdir call for [%s] path has not been successful. errno = %d (%s)", tmp, errno, strerror(errno));
+                VS_LOG_ERROR("mkdir call for [%s] path has not been successful. errno = %d (%s)",
+                             tmp,
+                             errno,
+                             strerror(errno));
                 return -1;
             }
             *p = '/';

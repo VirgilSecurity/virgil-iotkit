@@ -47,6 +47,7 @@
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
 #include <platform/init/idf/flash_data.h>
+#include <virgil/iot/storage_hal/storage_hal.h>
 
 #define HSM_BASE_DIR "/hsm"
 
@@ -78,5 +79,8 @@ vs_files_remove(const char *folder, const char *file_name);
 
 bool
 vs_files_create_subdir(const char *folder);
+
+void
+vs_files_create_filename(const vs_storage_element_id_t id, uint8_t *filename, uint32_t out_len);
 
 #endif // VS_IOT_FILE_IO_HAL_H

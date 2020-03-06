@@ -32,11 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "mbedtls/md.h"
-#include "mbedtls/sha256.h"
-
 #include <defaults/storage/storage-esp-impl.h>
-#include <helpers/kdf2.h>
+
 #include <sdkconfig.h>
 
 #if VS_FIO_PROFILE_WRITE || VS_FIO_PROFILE_READ || VS_FIO_PROFILE_SYNC || VS_FIO_PROFILE_GETLEN || VS_FIO_PROFILE_REMOVE
@@ -54,36 +51,6 @@ static const char *_tl_dir = "/" TL_PARTITION_NAME "/tl";
 static const char *_firmware_dir = "/" FW_STORAGE_PARTITION_NAME "/fw";
 static const char *_slots_dir = "/" SLOTS_PARTITION_NAME "/slt";
 static const char *_secbox_dir = "/" SECBOX_PARTITION_NAME "/sb";
-
-
-/******************************************************************************/
-static void
-_data_to_hex(const uint8_t *_data, uint32_t _len, uint8_t *_out_data, uint32_t *_in_out_len) {
-    const uint8_t hex_str[] = "0123456789abcdef";
-
-    VS_IOT_ASSERT(_in_out_len);
-    VS_IOT_ASSERT(_data);
-    VS_IOT_ASSERT(_out_data);
-    VS_IOT_ASSERT(*_in_out_len >= _len * 2 + 1);
-
-    *_in_out_len = _len * 2 + 1;
-    _out_data[*_in_out_len - 1] = 0;
-    size_t i;
-
-    for (i = 0; i < _len; i++) {
-        _out_data[i * 2 + 0] = hex_str[(_data[i] >> 4) & 0x0F];
-        _out_data[i * 2 + 1] = hex_str[(_data[i]) & 0x0F];
-    }
-}
-
-/******************************************************************************/
-static void
-_create_filename(const vs_storage_element_id_t id, uint8_t *filename, uint32_t out_len) {
-    uint8_t buf[(out_len - 1) / 2];
-    vs_mbedtls_kdf2(
-            mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), id, sizeof(vs_storage_element_id_t), buf, sizeof(buf));
-    _data_to_hex(buf, sizeof(buf), filename, &out_len);
-}
 
 /******************************************************************************/
 vs_status_e
@@ -196,7 +163,7 @@ _esp_storage_open_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_sto
 
     uint8_t *file = (uint8_t *)VS_IOT_CALLOC(1, len);
     CHECK_NOT_ZERO_RET(file, NULL);
-    _create_filename(id, file, len);
+    vs_files_create_filename(id, file, len);
 
     return file;
 }
@@ -310,7 +277,7 @@ _esp_storage_file_size_hal(const vs_storage_impl_data_ctx_t storage_ctx, const v
 
     uint8_t file[len];
     VS_IOT_MEMSET(file, 0, len);
-    _create_filename(id, file, len);
+    vs_files_create_filename(id, file, len);
 
 #if VS_FIO_PROFILE_GETLEN
     VS_PROFILE_START;
@@ -340,7 +307,7 @@ _esp_storage_del_hal(const vs_storage_impl_data_ctx_t storage_ctx, const vs_stor
 
     uint8_t file[len];
     VS_IOT_MEMSET(file, 0, len);
-    _create_filename(id, file, len);
+    vs_files_create_filename(id, file, len);
 
 #if VS_FIO_PROFILE_REMOVE
     VS_PROFILE_START;
