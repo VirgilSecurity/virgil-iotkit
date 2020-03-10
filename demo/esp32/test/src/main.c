@@ -35,22 +35,9 @@
 
 #include <trust_list-config.h>
 
-static void
-_test_exec_task(void *pvParameters);
-
 //******************************************************************************
 void
 app_main(void) {
-
-    xTaskCreate(_test_exec_task, "_test_task", 8 * 4096, NULL, 5, NULL);
-    while (1) {
-        vTaskDelay(30000 / portTICK_PERIOD_MS);
-    }
-}
-
-//******************************************************************************
-static void
-_test_exec_task(void *pvParameters) {
     int res = -1;
     vs_provision_events_t _provision_event = {.tl_ver_info_cb = NULL};
 
