@@ -15,7 +15,7 @@ if [ "${1}" = "vagrant" ]; then
     ifconfig -a
     SUBNET_BCAST=$(ifconfig eth1 | grep -Eo 'broadcast (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
     echo "SUBNET_BCAST = ${SUBNET_BCAST}"
-    EXTRA_OPTIONS="-e VS_BCAST_SUBNET_ADDR='${SUBNET_BCAST}'"
+    EXTRA_OPTIONS="-e VS_BCAST_SUBNET_ADDR=${SUBNET_BCAST}"
 else
     echo "SUBNET_BCAST = 255.255.255.255"
 fi
