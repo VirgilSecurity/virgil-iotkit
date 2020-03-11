@@ -83,7 +83,7 @@ Now you have to navigate to localhost:8000 to start exploring the demo.
 
 If you did everything correctly, you would see the following Sandbox window:
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_sandbox_demo.png?demo" align="left" hspace="0" vspace="6">
 &nbsp;
 
 &nbsp;
@@ -110,9 +110,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 
 To start working with emulated IoT infrastructure you have to generate a trusted provisioning package that includes private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
 
-&nbsp;
-
-&nbsp;
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_provisioning.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -125,7 +123,7 @@ Now, you have to emulate IoT devices. There are two types of devices:
   - and IoT Device - end-device, like smart bulb, that can be controlled remotely through the IoT Gateway.
 
 Generate both of them. The information about generated devices can be found in the Sandbox window:
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/emulated_device.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_emulate.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -136,7 +134,7 @@ To make each IoT device identifiable, verifiable and trusted by each party of Io
 Sandbox uses the [Virgil Device Initializer](/tools/virgil-device-initializer) for IoT devices provisioning to securely integrate trust list and crypto library on IoT devices, then generate key pairs and create digital cards, and sign digital cards with the Factory Key.
 
 The information about initialized (provisioned) devices can be found in the Sandbox window:
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/initialized_device.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_initialize.png?demo" align="left" hspace="0" vspace="6"> &nbsp;
 
 or in browser under http://localhost:8080 in the Device Initializer section.
 
@@ -146,11 +144,11 @@ At this step the [Virgil Device Registrar](/tools/virgil-device-registrar) is us
 
 After the IoT devices were registered at Virgil they are conditionally shipped to end-user for further operations:
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/shipped_devices.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_register.png?demo" align="left" hspace="0" vspace="6">
 &nbsp;
 
 The information about registered IoT devices can be also found in Logs Viewer (http://localhost:8080/) in the Device Registrar section and in Virgil SnapD (http://localhost:8081/):
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/shipped_devices_manager.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_register_dmanager.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -162,13 +160,13 @@ Now, you can emulate the process of creating and publishing new Firmware to Virg
 
 After the Firmware is successfully uploaded to the Virgil Cloud, IoT device gets information about new firmware. Then Firmware is downloaded, verified using integrated crypto library and updated on devices for which the Firmware was created (in our case for IoT Gateway).
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/updated_devices.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_firmware.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
 The information about signed Firmware can be also found in Logs Viewer (http://localhost:8080/) in the Firmware Signer section and in Virgil SnapD (http://localhost:8081/):
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/updated_devices_manager.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_firmware_dmanager.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -179,13 +177,13 @@ After you generate a new TrustList it will be distributed to all IoT devices.
 
 After the new TrustList is successfully uploaded to the Virgil Cloud, IoT device gets information about new TrustList. Then TrustList is downloaded, verified using integrated crypto library and updated on all devices.
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/updated_devices_tl.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_trustlist.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
 The information about generated TrustList can be also found in Logs Viewer (http://localhost:8080/) and in Virgil SnapD (http://localhost:8081/):
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/updated_devices_manager_tl.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_trustlist_dmanager.png?demo" align="left" hspace="0" vspace="6">
 
 &nbsp;
 
@@ -193,6 +191,9 @@ The information about generated TrustList can be also found in Logs Viewer (http
 
 Sandbox also allows you to manage IoT devices and get information about their state in the in Virgil SnapD (http://localhost:8081/).
 
+- **Reset Sandbox**
+
+Sandbox can reset all info in case if user nedds to restart the operations.
 
 ## Support
 Our developer support team is here to help you. Find more information on our [Help Center](https://help.virgilsecurity.com/).
