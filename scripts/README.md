@@ -79,7 +79,7 @@ Now, you can run the Sandbox.
   - MacOS: `./run-in-vm.sh`
 - Specify your `App_Token` in the appeared window to run the Sandbox
 
-Now you have to navigate to localhost:8000 to start exploring the demo.
+Now you have to navigate to [localhost](http://localhost:8000/) to start exploring the demo.
 
 If you did everything correctly, you would see the following Sandbox window:
 
