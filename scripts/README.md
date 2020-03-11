@@ -119,8 +119,10 @@ Sandbox uses [Virgil Trust Provisioner](/tools/virgil-trust-provisioner) utility
 - **Step #2. Emulate IoT devices**.
 
 Now, you have to emulate IoT devices. There are two types of devices:
-  - IoT Gateway - an internet-capable smart device that communicates with other IoT devices and Clouds; NOTE! At this moment Sandbox supports only one active IoT-Gateway in network.
-  - and IoT Device - end-device, like smart bulb, that can be controlled remotely through the IoT Gateway.
+  - IoT Gateway - an internet-capable smart device that communicates with other IoT devices and Clouds; 
+  > **NOTE! At this moment Sandbox supports only one active IoT-Gateway in network.**
+  
+  - IoT Device - end-device, like smart bulb, that can be controlled remotely through the IoT Gateway.
 
 Generate both of them. The information about generated devices can be found in the Sandbox window:
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_emulate.png?demo" align="left" hspace="0" vspace="6">
