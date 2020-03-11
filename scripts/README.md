@@ -79,7 +79,10 @@ Now, you can run the Sandbox.
   - MacOS: `./run-in-vm.sh`
 - Specify your `App_Token` in the appeared window to run the Sandbox
 
+Now you have to navigate to localhost:8000 to start exploring the demo.
+
 If you did everything correctly, you would see the following Sandbox window:
+
 <img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
 &nbsp;
 
@@ -106,12 +109,6 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Step #1. Generate trusted provisioning package**.
 
 To start working with emulated IoT infrastructure you have to generate a trusted provisioning package that includes private keys (e.g. for factory, firmware) and a distributed trust list that contains public keys and signatures of trusted services providers (e.g. factory, cloud).
-
-<img width="320" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/generate_files.png?demo" align="left" hspace="0" vspace="6">  
-
-&nbsp;
-
-&nbsp;
 
 &nbsp;
 
@@ -160,12 +157,6 @@ The information about registered IoT devices can be also found in Logs Viewer (h
 - **Step 5. Sign and publish new Firmware**.
 
 Now, you can emulate the process of creating and publishing new Firmware to Virgil Cloud. Sandbox uses [Virgil Firmware Signer](/tools/virgil-firmware-signer) to sign a firmware before its distributing. Sandbox uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or trustlists before updating them.
-
-<img width="320" src="https://cdn.virgilsecurity.com/assets/images/github/iotkit_demo/update_firmware.png?demo" align="left" hspace="0" vspace="6">
-
-&nbsp;
-
-&nbsp;
 
 &nbsp;
 
