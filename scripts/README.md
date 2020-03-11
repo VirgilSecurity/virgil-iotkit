@@ -10,6 +10,7 @@ The IoT Sandbox is based on Virgil IoTKit and its dev tools to demonstrate secur
   - [Run Sandbox](#run-sandbox)
 - [Explore Sandbox](#explore-sandbox)
 - [Reference](#reference)
+- [Web services](#web-services)
 - [Support](#support)
 
 ## Functions
