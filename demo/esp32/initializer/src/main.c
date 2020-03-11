@@ -68,7 +68,7 @@ _initializer_exec_task(void *pvParameters) {
     vs_storage_op_ctx_t slots_storage_impl;
 
     // Device parameters
-    vs_device_manufacture_id_t manufacture_id = "TEST_ESP32";
+    vs_device_manufacture_id_t manufacture_id = "VIRGIL_ESP32";
     vs_device_type_t device_type = "DVB";
     vs_device_serial_t serial;
     // Device specific parameters
@@ -78,12 +78,13 @@ _initializer_exec_task(void *pvParameters) {
     uint32_t device_roles = (uint32_t)VS_SNAP_DEV_THING | (uint32_t)VS_SNAP_DEV_INITIALIZER;
 #endif
 
-    VS_IOT_MEMSET(serial, 0x04, sizeof(serial));
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     vs_logger_init(VS_LOGLEV_DEBUG);
+
     // Initialize NVS
     VS_LOG_INFO("Initialization NVS flash");
     INIT_STATUS_CHECK(flash_nvs_init(), "NVC Error");
+    INIT_STATUS_CHECK(flash_nvs_get_serial(serial), "Error read device serial");
 
     //
     // ---------- Create implementations ----------
@@ -160,6 +161,7 @@ start_wifi(wifi_config_t wifi_config) {
         VS_LOG_WARNING("Cannot initialize WiFi STA");
         return VS_CODE_ERR_INCORRECT_PARAMETER;
     }
+
     return VS_CODE_OK;
 }
 

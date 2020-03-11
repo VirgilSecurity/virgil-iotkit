@@ -40,7 +40,11 @@
 #include <platform/init/idf/init_helpers.h>
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/macros/macros.h>
+#include <virgil/iot/provision/provision-structs.h>
 
-esp_err_t flash_nvs_init(void);
+esp_err_t
+flash_nvs_init(void);
 
-#endif //FLASH_NVS_H
+esp_err_t
+flash_nvs_get_serial(vs_device_serial_t serial);
+#endif // FLASH_NVS_H
