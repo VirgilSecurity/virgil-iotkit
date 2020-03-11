@@ -196,7 +196,13 @@ Sandbox also allows you to manage IoT devices and get information about their st
 
 - **Reset Sandbox**
 
-Sandbox can reset all info in case if user nedds to restart the operations.
+Sandbox can reset it's current state in case if user nedds to restart the operations.
+
+### Web services
+- http://localhost:8000/ - Web Sandbox demo
+- http://localhost:8080/ - Logs viewer for Web Sandbox demo
+- http://localhost:8081/ - Device monitor for Web Sandbox demo
+
 
 ## Support
 Our developer support team is here to help you. Find more information on our [Help Center](https://help.virgilsecurity.com/).
