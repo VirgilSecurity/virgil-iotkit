@@ -166,7 +166,8 @@ After the Firmware is successfully uploaded to the Virgil Cloud, IoT device gets
 
 The information about signed Firmware can be also found in Logs Viewer (http://localhost:8080/) in the Firmware Signer section and in Virgil SnapD (http://localhost:8081/):
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_firmware_dmanager.png?demo" align="left" hspace="0" vspace="6">
+<img width="75%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_demo_firmware_dmanager.png?demo" align="" hspace="0" vspace="6">
+
 
 &nbsp;
 
