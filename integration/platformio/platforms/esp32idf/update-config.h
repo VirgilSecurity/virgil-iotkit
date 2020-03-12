@@ -43,7 +43,7 @@
 #define VS_IOT_SDK_UPDATE_CONFIG_H
 
 /** Maximum size for Firmware file */
-#define VS_MAX_FIRMWARE_UPDATE_SIZE (2 * 1024 * 1024)
+#define VS_MAX_FIRMWARE_UPDATE_SIZE (1024 * 1024)
 
 /*Firmware signature rules*/
 
@@ -55,9 +55,6 @@
  * Quantity MUST be equal to #VS_FW_SIGNATURES_QTY
  * It's values of vs_key_type_e from provision library
  */
-#define VS_FW_SIGNER_TYPE_LIST {                                                                                   \
-    VS_KEY_AUTH,                                                                                                   \
-    VS_KEY_FIRMWARE                                                                                                \
-};
+#define VS_FW_SIGNER_TYPE_LIST {VS_KEY_AUTH, VS_KEY_FIRMWARE};
 
-#endif //VS_IOT_SDK_UPDATE_CONFIG_H
+#endif // VS_IOT_SDK_UPDATE_CONFIG_H

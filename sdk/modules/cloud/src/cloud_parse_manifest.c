@@ -212,15 +212,15 @@ _get_firmware_version_from_manifest(vs_firmware_manifest_entry_t *fm_entry, vs_f
     STATUS_CHECK_RET(_parse_version(fm_entry->version, fw_version), "Error parse file version");
 
     /*parse build_timestamp*/
-    uint8_t timestamp[sizeof(uint32_t)];
+    uint32_t timestamp;
     CHECK_RET(_hex_str_to_bin((char *)fm_entry->timestamp,
                               VS_IOT_STRLEN((char *)fm_entry->timestamp),
-                              timestamp,
+                              (uint8_t *)&timestamp,
                               sizeof(timestamp)),
               VS_CODE_ERR_JSON,
               "Incorrect timestamp field");
 
-    fw_version->timestamp = VS_IOT_NTOHL(*(uint32_t *)timestamp); //-V1032 (PVS_IGNORE)
+    fw_version->timestamp = VS_IOT_NTOHL(timestamp);
 
     return VS_CODE_OK;
 }
@@ -248,7 +248,8 @@ _is_member_for_vendor_and_model_present(uint8_t manufacture_id[VS_DEVICE_MANUFAC
 vs_status_e
 vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new_tl_version) {
     vs_tl_header_t tl_header;
-    uint8_t tl_footer[VS_TL_STORAGE_MAX_PART_SIZE];
+    uint8_t buf[VS_TL_STORAGE_MAX_PART_SIZE];
+    vs_tl_footer_t *tl_footer = (vs_tl_footer_t *)buf;
     vs_tl_element_info_t info = {.id = VS_TL_ELEMENT_TLH, .index = 0};
     uint16_t res_sz;
     vs_status_e ret_code;
@@ -260,9 +261,9 @@ vs_cloud_is_new_tl_version_available(uint8_t new_tl_type, vs_file_version_t *new
     vs_tl_header_to_host(&tl_header, &tl_header);
 
     info.id = VS_TL_ELEMENT_TLF;
-    STATUS_CHECK_RET(vs_tl_load_part(&info, tl_footer, sizeof(tl_footer), &res_sz), "Unable to load Trust List footer");
+    STATUS_CHECK_RET(vs_tl_load_part(&info, buf, sizeof(buf), &res_sz), "Unable to load Trust List footer");
 
-    if (new_tl_type != ((vs_tl_footer_t *)tl_footer)->tl_type ||
+    if (new_tl_type != tl_footer->tl_type ||
         VS_CODE_OK != vs_update_compare_version(new_tl_version, &tl_header.version)) {
         return VS_CODE_ERR_NOT_FOUND;
     }

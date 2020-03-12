@@ -20,12 +20,15 @@
             "-I sdk/modules/provision/trust_list/include",
             "-I sdk/modules/crypto/secmodule/include",
             "-I sdk/modules/crypto/converters/include",
+            "-I sdk/modules/cloud/include",
             "-I sdk/helpers/status_code/include",
+            "-I sdk/helpers/json/include",
             "-I sdk/tests/include",
             "-I sdk/high-level/include",
             "-I sdk/helpers/macros/include",
             "-I sdk/helpers/storage_hal/include",
-            "-I sdk/helpers/update/include"
+            "-I sdk/helpers/update/include",
+            "-I sdk/default-impl/cloud/virgil-message-bin/aws-message-bin/include"
         ]
     },
     "version": "0.1.0a",
