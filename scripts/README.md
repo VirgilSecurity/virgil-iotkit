@@ -76,7 +76,7 @@ Now, you can run the Sandbox.
 - First of all, check whether the Docker is launched (if you are using Linux).
 - Navigate to your CLI terminal and run the Sandbox starting script from the scripts folder of the downloaded IoTKit package:
   - Unix-like OS: `run.sh`  
-  - Windows(sh.exe from mingw terminal): `run.bat`
+  - Windows: `run.bat`
   - MacOS: `./run-in-vm.sh`
 - Specify your `App_Token` in the appeared window to run the Sandbox
 
@@ -197,12 +197,12 @@ Sandbox also allows you to manage IoT devices and get information about their st
 
 - **Reset Sandbox**
 
-Sandbox can reset it's current state in case if user nedds to restart the operations.
+Sandbox can reset it's current state in case if user needs to restart the operations.
 
 ### Web services
-- http://localhost:8000/ - Web Sandbox demo
+- http://localhost:8000/ - Sandbox UI
 - http://localhost:8080/ - Logs viewer for Web Sandbox demo
-- http://localhost:8081/ - Device monitor for Web Sandbox demo
+- http://localhost:8081/ - Virgil SnapD for Web Sandbox demo
 
 
 ## Support
