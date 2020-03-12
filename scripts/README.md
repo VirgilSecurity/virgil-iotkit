@@ -197,7 +197,7 @@ Sandbox also allows you to manage IoT devices and get information about their st
 
 - **Reset Sandbox**
 
-Sandbox can reset it's current state in case if user needs to restart the operations.
+User can use `Reset Sandbox` button to reset Sandbox to default state.
 
 ### Web services
 - http://localhost:8000/ - Sandbox UI
