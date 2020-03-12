@@ -173,10 +173,10 @@ private:
 
 private slots:
     void
-    onDeviceInfo(const VSQDeviceInfo &deviceInfo);
+    onDeviceInfo(const VSQDeviceInfo deviceInfo);
 
     void
-    onNewDevice(const VSQDeviceInfo &deviceInfo);
+    onNewDevice(const VSQDeviceInfo deviceInfo);
 };
 
 #endif // _VIRGIL_IOTKIT_QT_SNAP_INFO_CLIENT_SERVICE_QML_H_

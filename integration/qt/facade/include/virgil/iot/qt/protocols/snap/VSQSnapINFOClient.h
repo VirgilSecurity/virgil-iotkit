@@ -217,14 +217,14 @@ signals:
      * \param deviceInfo Device information
      */
     void
-    fireDeviceInfo(const VSQDeviceInfo &deviceInfo);
+    fireDeviceInfo(const VSQDeviceInfo deviceInfo);
 
     /** Signal "New device has been activated"
      *
      * \param deviceInfo Device information
      */
     void
-    fireNewDevice(const VSQDeviceInfo &deviceInfo);
+    fireNewDevice(const VSQDeviceInfo deviceInfo);
 
 private:
     const VirgilIoTKit::vs_snap_service_t *m_snapService;

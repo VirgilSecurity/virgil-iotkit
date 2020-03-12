@@ -46,14 +46,18 @@ VSQSnapInfoClientQml::VSQSnapInfoClientQml() {
 }
 
 void
-VSQSnapInfoClientQml::onNewDevice(const VSQDeviceInfo &deviceInfo) {
+VSQSnapInfoClientQml::onNewDevice(const VSQDeviceInfo deviceInfo) {
     (void)deviceInfo;
     beginInsertRows(QModelIndex(), rowCount() - 1, rowCount() - 1);
     endInsertRows();
+
+    // Full update
+    beginResetModel();
+    endResetModel();
 }
 
 void
-VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo &deviceInfo) {
+VSQSnapInfoClientQml::onDeviceInfo(const VSQDeviceInfo deviceInfo) {
     const auto &devices = devicesList();
 
     for (int pos = 0; pos < devices.size(); ++pos) {

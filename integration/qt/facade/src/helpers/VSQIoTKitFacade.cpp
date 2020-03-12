@@ -133,9 +133,10 @@ VSQIoTKitFacade::onNetifProcess(struct VirgilIoTKit::vs_netif_t *netif, QByteArr
 
 vs_status_e
 VSQIoTKitFacade::netifProcessCb(struct vs_netif_t *netif, const uint8_t *data, const uint16_t data_sz) {
+    QByteArray ba(reinterpret_cast<const char *>(data), data_sz);
     QMetaObject::invokeMethod(&instance(), "onNetifProcess", Qt::QueuedConnection,
                             Q_ARG(VirgilIoTKit::vs_netif_t*, netif),
-                            Q_ARG(QByteArray, QByteArray::fromRawData(reinterpret_cast<const char *>(data), data_sz))
+                            Q_ARG(QByteArray, ba)
                             );
     return VS_CODE_OK;
 }
