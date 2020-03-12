@@ -1,3 +1,6 @@
 [submodule "sdk/ext/aws-sdk/aws-iot-device-sdk-embedded-C"]
 	path = sdk/ext/aws-sdk/aws-iot-device-sdk-embedded-C
 	url = https://github.com/VirgilSecurity/aws-iot-device-sdk-embedded-C
+[submodule "sdk/ext/virgil-sdk-cpp"]
+	path = sdk/ext/virgil-sdk-cpp
+	url = https://github.com/VirgilSecurity/virgil-sdk-cpp.git
