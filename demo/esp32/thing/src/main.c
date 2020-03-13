@@ -3,9 +3,11 @@
 #include "esp_spi_flash.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
-#include "freertos/task.h"
+
+#include "threads/main-thread.h"
+#include "threads/message-bin-thread.h"
+#include "threads/file-download-thread.h"
+
 #include "sdkconfig.h"
 #include <stdio.h>
 #include <string.h>
@@ -32,8 +34,9 @@
 #include <virgil/iot/high-level/high-level.h>
 
 #include <update-config.h>
-static void
-_app_exec_task(void *pvParameters);
+
+static vs_status_e
+app_start(void);
 
 static void
 wifi_status_cb(bool ready);
@@ -50,31 +53,26 @@ _on_file_updated(vs_update_file_type_t *file_type,
                  bool successfully_updated) {
 }
 
+vs_iotkit_events_t iotkit_events = {.reboot_request_cb = NULL};
+
+// Implementation variables
+static vs_secmodule_impl_t *secmodule_impl = NULL;
+static vs_netif_t *netifs_impl[2] = {NULL, NULL};
+static vs_storage_op_ctx_t tl_storage_impl;
+static vs_storage_op_ctx_t slots_storage_impl;
+static vs_storage_op_ctx_t fw_storage_impl;
+
+// Device parameters
+static vs_device_manufacture_id_t manufacture_id = "VIRGIL_ESP32";
+static vs_device_type_t device_type = "DVB";
+static vs_device_serial_t serial;
+
 //******************************************************************************
 void
 app_main(void) {
-    xTaskCreate(_app_exec_task, "_app_task", 8 * 4096, NULL, 5, NULL);
-    while (1) {
-        vTaskDelay(30000 / portTICK_PERIOD_MS);
-    }
-}
-
-//******************************************************************************
-static void
-_app_exec_task(void *pvParameters) {
-    vs_iotkit_events_t iotkit_events = {.reboot_request_cb = NULL};
-
-    // Implementation variables
-    vs_secmodule_impl_t *secmodule_impl = NULL;
-    vs_netif_t *netifs_impl[2] = {NULL, NULL};
-    vs_storage_op_ctx_t tl_storage_impl;
-    vs_storage_op_ctx_t slots_storage_impl;
-    vs_storage_op_ctx_t fw_storage_impl;
-
-    // Device parameters
-    vs_device_manufacture_id_t manufacture_id = "VIRGIL_ESP32";
-    vs_device_type_t device_type = "DVB";
-    vs_device_serial_t serial;
+    wifi_config_t wifi_config = {
+            .sta = {.ssid = ESP_WIFI_SSID, .password = ESP_WIFI_PASS},
+    };
 
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     vs_logger_init(VS_LOGLEV_DEBUG);
@@ -84,15 +82,50 @@ _app_exec_task(void *pvParameters) {
     INIT_STATUS_CHECK(flash_nvs_init(), "NVC Error");
     INIT_STATUS_CHECK(flash_nvs_get_serial(serial), "Error read device serial");
 
+    // Init gateway object
+    vs_gateway_ctx_init();
+
+    if (VS_CODE_OK != start_wifi(wifi_config)) {
+        VS_LOG_ERROR("Error to start wifi");
+    }
+
+    while (xEventGroupWaitBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT, pdFALSE, pdTRUE, portMAX_DELAY) == 0) {
+    }
+
+    if (VS_CODE_OK != app_start()) {
+        goto terminate;
+    }
+
+    while (1) {
+        vTaskDelay(30000 / portTICK_PERIOD_MS);
+    }
+
+terminate:
+    VS_LOG_ERROR("Application start error");
+
+    // De-initialize IoTKit internals
+    vs_high_level_deinit();
+
+    // Deinit Soft Security Module
+    vs_soft_secmodule_deinit();
+
+    vs_packets_queue_deinit();
+
+    while (1) {
+        vTaskDelay(30000 / portTICK_PERIOD_MS);
+    }
+}
+
+//******************************************************************************
+static vs_status_e
+app_start(void) {
+    vs_status_e res = VS_CODE_ERR_NOINIT;
     //
     // ---------- Create implementations ----------
     //
 
     //  Network interface
     VS_LOG_DEBUG("Initialization netif");
-    wifi_config_t wifi_config = {
-            .sta = {.ssid = ESP_WIFI_SSID, .password = ESP_WIFI_PASS},
-    };
     vs_packets_queue_init(vs_snap_default_processor);
     netifs_impl[0] = vs_hal_netif_udp_bcast();
 
@@ -120,6 +153,9 @@ _app_exec_task(void *pvParameters) {
     STATUS_CHECK(vs_cloud_init(vs_esp_http_impl(), vs_aws_message_bin_impl(), secmodule_impl),
                  "Unable to initialize Cloud module");
 
+    // Register message bin default handlers
+    STATUS_CHECK(vs_message_bin_register_handlers(), "Unable to register message bin handlers");
+
     //
     // ---------- Initialize Virgil SDK modules ----------
     //
@@ -134,28 +170,16 @@ _app_exec_task(void *pvParameters) {
                                     iotkit_events),
                  "Cannot initialize IoTKit");
 
-    if (VS_CODE_OK != start_wifi(wifi_config)) {
-        VS_LOG_ERROR("Error to start wifi");
-    }
+    // Send broadcast notification about self start
+    vs_snap_info_start_notification(vs_snap_netif_routing());
 
-    while (1) {
-        vTaskDelay(30000 / portTICK_PERIOD_MS);
-    }
+    // Start app
+    vs_main_start_threads();
+
+    res = VS_CODE_OK;
 
 terminate:
-    VS_LOG_INFO("Application start error");
-
-    // De-initialize IoTKit internals
-    vs_high_level_deinit();
-
-    // Deinit Soft Security Module
-    vs_soft_secmodule_deinit();
-
-    vs_packets_queue_deinit();
-
-    while (1) {
-        vTaskDelay(30000 / portTICK_PERIOD_MS);
-    }
+    return res;
 }
 
 /******************************************************************************/
@@ -174,7 +198,12 @@ start_wifi(wifi_config_t wifi_config) {
 /******************************************************************************/
 static void
 wifi_status_cb(bool ready) {
-    if (!ready) {
+    if (ready) {
+        VS_LOG_DEBUG("WiFi status ready");
+        xEventGroupSetBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT);
+    } else {
+        VS_LOG_DEBUG("WiFi status  not ready");
+        xEventGroupClearBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT);
         vs_hal_netif_udp_bcast_set_active(false);
         vs_packets_queue_enable_heart_beat(false);
         return;
@@ -186,4 +215,16 @@ wifi_status_cb(bool ready) {
     // Activate network interface
     vs_hal_netif_udp_bcast_set_active(true);
     vs_packets_queue_enable_heart_beat(true);
+}
+
+/******************************************************************************/
+void
+vs_impl_msleep(size_t msec) {
+    vTaskDelay(msec / portTICK_PERIOD_MS);
+}
+
+/******************************************************************************/
+void
+vs_impl_device_serial(vs_device_serial_t serial_number) {
+    memcpy(serial_number, vs_snap_device_serial(), VS_DEVICE_SERIAL_SIZE);
 }

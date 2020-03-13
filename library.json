@@ -28,7 +28,10 @@
             "-I sdk/helpers/macros/include",
             "-I sdk/helpers/storage_hal/include",
             "-I sdk/helpers/update/include",
-            "-I sdk/default-impl/cloud/virgil-message-bin/aws-message-bin/include"
+            "-I sdk/ext/jsmn",
+            "-I sdk/default-impl/cloud/virgil-message-bin/aws-message-bin/include",
+            "-D JSMN_PARENT_LINKS",
+            "-D JSMN_STRICT"
         ]
     },
     "version": "0.1.0a",

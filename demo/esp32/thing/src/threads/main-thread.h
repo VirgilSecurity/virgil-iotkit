@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -32,40 +32,59 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_MESSAGE_QUEUE_H
-#define VS_IOT_MESSAGE_QUEUE_H
+#ifndef GATEWAY_H
+#define GATEWAY_H
 
 #include <stdint.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <stdio.h>
 
-#ifdef __cplusplus
-namespace VirgilIoTKit {
-extern "C" {
-#endif
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/event_groups.h"
+#include "freertos/semphr.h"
+#include "freertos/queue.h"
 
-typedef struct vs_msg_queue_ctx_s vs_msg_queue_ctx_t;
+#include <virgil/iot/storage_hal/storage_hal.h>
+#include <global-hal.h>
 
-vs_msg_queue_ctx_t *
-vs_msg_queue_init(size_t queue_sz, size_t num_adders, size_t num_getters);
+/* OS priorities */
+#define OS_PRIO_0 4 /** High **/
+#define OS_PRIO_1 3
+#define OS_PRIO_2 2
+#define OS_PRIO_3 1
+#define OS_PRIO_4 0 /** Low **/
 
-vs_status_e
-vs_msg_queue_push(vs_msg_queue_ctx_t *ctx, const void *info, const uint8_t *data, size_t data_sz);
+/** Wait Forever */
+#define OS_WAIT_FOREVER portMAX_DELAY
+/** Do Not Wait */
+#define OS_NO_WAIT 0
 
-vs_status_e
-vs_msg_queue_pop(vs_msg_queue_ctx_t *ctx, const void **info, const uint8_t **data, size_t *data_sz);
+#define EVENT_BIT(NUM) ((EventBits_t)1 << (EventBits_t)NUM)
 
-bool
-vs_msg_queue_data_present(vs_msg_queue_ctx_t *ctx);
+// Shared flags (shared_events)
+#define SNAP_INIT_FINITE_BIT EVENT_BIT(0)
+#define WIFI_INIT_BIT EVENT_BIT(1)
+
+// Firmware upgrade flags (message_bin)
+#define NEW_FIRMWARE_HTTP_BIT EVENT_BIT(0)
+#define NEW_FW_URL EVENT_BIT(1)
+#define MSG_BIN_RECEIVE_BIT EVENT_BIT(2)
+
+typedef struct gtwy_s {
+    EventGroupHandle_t shared_events;
+    EventGroupHandle_t message_bin_events;
+
+    SemaphoreHandle_t firmware_mutex;
+    SemaphoreHandle_t tl_mutex;
+} gtwy_t;
+
+gtwy_t *
+vs_gateway_ctx_init(void);
+
+gtwy_t *
+vs_gateway_ctx(void);
 
 void
-vs_msg_queue_reset(vs_msg_queue_ctx_t *ctx);
+vs_main_start_threads(void);
 
-void
-vs_msg_queue_free(vs_msg_queue_ctx_t *ctx);
-
-#ifdef __cplusplus
-} // extern "C"
-} // namespace VirgilIoTKit
-#endif
-
-#endif // VS_IOT_MESSAGE_QUEUE_H
+#endif // GATEWAY_H

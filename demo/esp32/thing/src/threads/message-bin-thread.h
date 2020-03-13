@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -32,50 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_IOT_EVENT_GROUP_BITS_H
-#define VS_IOT_EVENT_GROUP_BITS_H
+/***************************************************************************/
 
-#include <stdint.h>
+#ifndef GATEWAY_MESSAGE_BIN_H
+#define GATEWAY_MESSAGE_BIN_H
+
 #include <stdbool.h>
-#include <pthread.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-namespace VirgilIoTKit {
-extern "C" {
-#endif
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
+#include "virgil/iot/cloud/cloud.h"
 
-typedef uint32_t vs_event_bits_t;
-typedef struct vs_event_group_bits_s {
-    pthread_cond_t cond;
-    pthread_mutex_t mtx;
-    vs_event_bits_t event_flags;
-} vs_event_group_bits_t;
+#define MSG_BIN_UPD_TYPE_FW 0
+#define MSG_BIN_UPD_TYPE_TL 1
 
-#define VS_EVENT_GROUP_WAIT_INFINITE (-1)
-vs_event_bits_t
-vs_event_group_wait_bits(vs_event_group_bits_t *ev_group,
-                         vs_event_bits_t bits_to_wait_for,
-                         bool is_clear_on_exit,
-                         bool is_wait_for_all,
-                         int32_t timeout);
+typedef struct __attribute__((__packed__)) {
+    char upd_file_url[VS_UPD_URL_STR_SIZE];
+    uint8_t upd_type;
+} upd_request_t;
 
-vs_event_bits_t
-vs_event_group_clear_bits(vs_event_group_bits_t *ev_group, vs_event_bits_t bits_to_clear);
+xTaskHandle *
+vs_message_bin_start_thread();
 
-vs_event_bits_t
-vs_event_group_set_bits(vs_event_group_bits_t *ev_group, vs_event_bits_t bits_to_set);
+vs_status_e
+vs_message_bin_register_handlers(void);
 
-int
-vs_event_group_init(vs_event_group_bits_t *ev_group);
+bool
+vs_message_bin_get_request(upd_request_t **request);
 
-int
-vs_event_group_destroy(vs_event_group_bits_t *ev_group);
-
-#ifdef __cplusplus
-} // extern "C"
-} // namespace VirgilIoTKit
-#endif
-
-
-#endif // VS_IOT_EVENT_GROUP_BITS_H
+#endif // GATEWAY_MESSAGE_BIN_H

@@ -121,12 +121,12 @@ _esp_http_hal(vs_cloud_http_method_e method,
 
     vs_status_e res = VS_CODE_OK;
     esp_err_t err;
-    esp_http_client_config_t config = {
-            .url = url,
-            .event_handler = _http_event_handler,
-            .transport_type = HTTP_TRANSPORT_OVER_SSL,
-            .timeout_ms = 5000,
-    };
+    esp_http_client_config_t config;
+    memset(&config, 0, sizeof(esp_http_client_config_t));
+    config.url = url;
+    config.event_handler = _http_event_handler;
+    config.transport_type = HTTP_TRANSPORT_OVER_SSL;
+    config.timeout_ms = 5000;
 
     CHECK_NOT_ZERO_RET(in_out_size, VS_CODE_ERR_REQUEST_PREPARE);
 
