@@ -4,3 +4,6 @@
 [submodule "sdk/ext/virgil-sdk-cpp"]
 	path = sdk/ext/virgil-sdk-cpp
 	url = https://github.com/VirgilSecurity/virgil-sdk-cpp.git
+[submodule "sdk/ext/libstrophe"]
+	path = sdk/ext/libstrophe
+	url = https://github.com/strophe/libstrophe.git

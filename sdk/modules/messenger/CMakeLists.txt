@@ -39,19 +39,15 @@ project(vs-module-messenger VERSION 0.1.0 LANGUAGES C CXX)
 add_library(vs-module-messenger)
 
 #
-#   Virgil C++ SDK
+#   Add dependencies as shared libraries.
 #
 set (BUILD_SHARED_LIBS ON CACHE STRING "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../ext/virgil-sdk-cpp virgil-sdk-cpp)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../ext/libstrophe libstrophe)
 set (BUILD_SHARED_LIBS OFF CACHE STRING "" FORCE)
 
 target_sources(vs-module-messenger
         PRIVATE
-#        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_include.h
-#        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_operations.h
-#        ${CMAKE_CURRENT_LIST_DIR}/include/private/cloud_parse_manifest.h
-#
-#        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/cloud/base64.h
         ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/messenger/messenger.h
 
         ${CMAKE_CURRENT_LIST_DIR}/src/messenger.cpp
@@ -64,6 +60,7 @@ target_link_libraries(vs-module-messenger
 #        storage_hal
         virgil-iot-status-code
         virgil_sdk
+        strophe
         )
 
 target_include_directories(vs-module-messenger
