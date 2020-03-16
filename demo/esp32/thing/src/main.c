@@ -83,7 +83,7 @@ app_main(void) {
     INIT_STATUS_CHECK(flash_nvs_get_serial(serial), "Error read device serial");
 
     // Init gateway object
-    vs_gateway_ctx_init();
+    vs_gateway_ctx_init(manufacture_id, device_type);
 
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
@@ -119,6 +119,7 @@ terminate:
 //******************************************************************************
 static vs_status_e
 app_start(void) {
+    vs_file_version_t ver;
     vs_status_e res = VS_CODE_ERR_NOINIT;
     //
     // ---------- Create implementations ----------
@@ -143,7 +144,7 @@ app_start(void) {
             "Cannot create Slots storage");
 
     // Firmware storage
-    STATUS_CHECK(vs_app_nvs_storage_init_impl(&fw_storage_impl, vs_app_firmware_dir(), VS_MAX_FIRMWARE_UPDATE_SIZE),
+    STATUS_CHECK(vs_app_storage_init_impl(&fw_storage_impl, vs_app_firmware_dir(), VS_MAX_FIRMWARE_UPDATE_SIZE),
                  "Cannot create FW storage");
 
     // Soft Security Module
@@ -169,6 +170,9 @@ app_start(void) {
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
+
+    STATUS_CHECK(vs_firmware_init(&fw_storage_impl, secmodule_impl, manufacture_id, device_type, &ver),
+                 "Unable to initialize Firmware module");
 
     // Send broadcast notification about self start
     vs_snap_info_start_notification(vs_snap_netif_routing());

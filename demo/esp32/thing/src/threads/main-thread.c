@@ -59,7 +59,10 @@ static xTaskHandle *upd_http_retrieval_thread;
 
 /******************************************************************************/
 gtwy_t *
-vs_gateway_ctx_init(void) {
+vs_gateway_ctx_init(uint8_t *manufacture_id, uint8_t *device_type) {
+    _gtwy.manufacture_id = manufacture_id;
+    _gtwy.device_type = device_type;
+
     _gtwy.message_bin_events = xEventGroupCreate();
     _gtwy.shared_events = xEventGroupCreate();
 
@@ -131,8 +134,8 @@ vs_main_start_threads(void) {
     CHECK_NOT_ZERO(message_bin_thread);
 
     // Start files receive thread
-    // upd_http_retrieval_thread = vs_file_download_start_thread();
-    // CHECK_NOT_ZERO(upd_http_retrieval_thread);
+    upd_http_retrieval_thread = vs_file_download_start_thread();
+    CHECK_NOT_ZERO(upd_http_retrieval_thread);
 
     xEventGroupSetBits(_gtwy.shared_events, SNAP_INIT_FINITE_BIT);
 

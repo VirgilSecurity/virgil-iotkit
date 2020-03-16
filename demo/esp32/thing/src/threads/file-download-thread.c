@@ -40,13 +40,13 @@
 #include <virgil/iot/trust_list/trust_list.h>
 
 #define FWDIST_QUEUE_SZ 10
-#define FILE_DOWNLOAD_THREAD_STACK_SZ (40 * 1024)
+#define FILE_DOWNLOAD_THREAD_STACK_SZ (10 * 1024)
 
 
 static xTaskHandle upd_retrieval_thread;
 static xQueueHandle _event_queue = 0;
 
-static bool is_retrieval_started;
+static BaseType_t is_retrieval_started;
 
 // Wrapper to wait until event group bits are set and not timed out
 /*************************************************************************/
@@ -219,17 +219,17 @@ _upd_http_retrieval_task(void *pvParameters) {
 /*************************************************************************/
 xTaskHandle *
 vs_file_download_start_thread(void) {
-    if (!is_retrieval_started) {
+    if (pdFALSE == is_retrieval_started) {
         _event_queue = xQueueCreate(FWDIST_QUEUE_SZ, sizeof(vs_update_file_type_t *));
 
-        is_retrieval_started = (pdTRUE == xTaskCreate(_upd_http_retrieval_task,
-                                                      "sw-http-retrieval",
-                                                      FILE_DOWNLOAD_THREAD_STACK_SZ,
-                                                      0,
-                                                      OS_PRIO_3,
-                                                      &upd_retrieval_thread));
+        is_retrieval_started = xTaskCreate(_upd_http_retrieval_task,
+                                           "sw-http-retrieval",
+                                           FILE_DOWNLOAD_THREAD_STACK_SZ,
+                                           0,
+                                           OS_PRIO_3,
+                                           &upd_retrieval_thread);
 
-        if (!is_retrieval_started) {
+        if (pdFALSE == is_retrieval_started) {
             return NULL;
         }
     }

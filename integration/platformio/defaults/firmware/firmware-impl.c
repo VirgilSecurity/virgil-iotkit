@@ -61,20 +61,8 @@ vs_status_e __attribute__((weak)) vs_firmware_install_append_data_hal(const void
 }
 
 /******************************************************************************/
-int __attribute__((weak)) vs_firmware_nix_update(int argc, char **argv) {
-    return 0;
-}
-
-/******************************************************************************/
 vs_status_e __attribute__((weak)) vs_firmware_get_own_firmware_footer_hal(void *footer, size_t footer_sz) {
+    memset(footer, 0, footer_sz);
     return VS_CODE_OK;
-    ;
 }
-
-/******************************************************************************/
-void __attribute__((weak)) vs_firmware_nix_set_info(const char *app_file,
-                                                    const vs_device_manufacture_id_t manufacture_id_str,
-                                                    const vs_device_type_t device_type_str) {
-}
-
 /******************************************************************************/

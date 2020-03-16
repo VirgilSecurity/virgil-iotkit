@@ -45,6 +45,7 @@
 #include "freertos/queue.h"
 
 #include <virgil/iot/storage_hal/storage_hal.h>
+#include <virgil/iot/provision/provision-structs.h>
 #include <global-hal.h>
 
 /* OS priorities */
@@ -71,6 +72,9 @@
 #define MSG_BIN_RECEIVE_BIT EVENT_BIT(2)
 
 typedef struct gtwy_s {
+    uint8_t *manufacture_id;
+    uint8_t *device_type;
+
     EventGroupHandle_t shared_events;
     EventGroupHandle_t message_bin_events;
 
@@ -79,7 +83,7 @@ typedef struct gtwy_s {
 } gtwy_t;
 
 gtwy_t *
-vs_gateway_ctx_init(void);
+vs_gateway_ctx_init(uint8_t *manufacture_id, uint8_t *device_type);
 
 gtwy_t *
 vs_gateway_ctx(void);

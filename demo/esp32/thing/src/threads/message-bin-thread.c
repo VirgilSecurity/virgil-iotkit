@@ -40,16 +40,19 @@
 
 #include <virgil/iot/logger/logger.h>
 #include <virgil/iot/firmware/firmware.h>
+#include <private/cloud_include.h>
 
 #define MB_QUEUE_SZ 10
-#define MB_THREAD_STACK_SZ (40 * 1024)
+#define MB_THREAD_STACK_SZ (16 * 1024)
 
 static xQueueHandle upd_event_queue = 0;
 static xTaskHandle _mb_thread;
+static BaseType_t is_threads_started;
 
 /*************************************************************************/
 static void
 _firmware_topic_process(const uint8_t *url, uint16_t length) {
+#if 0
     gtwy_t *gtwy = vs_gateway_ctx();
 
     upd_request_t *fw_url = (upd_request_t *)pvPortMalloc(sizeof(upd_request_t));
@@ -72,6 +75,7 @@ _firmware_topic_process(const uint8_t *url, uint16_t length) {
     }
 
     vPortFree(fw_url);
+#endif
 }
 
 /*************************************************************************/
@@ -127,21 +131,20 @@ vs_message_bin_register_handlers(void) {
                      "Error register handler for TL topic");
     STATUS_CHECK_RET(vs_cloud_message_bin_register_default_handler(VS_CLOUD_MB_TOPIC_FW, _firmware_topic_process),
                      "Error register handler for FW topic");
+
     return VS_CODE_OK;
 }
 
 /*************************************************************************/
 xTaskHandle *
 vs_message_bin_start_thread() {
-    static bool is_threads_started = 0;
 
-    if (!is_threads_started) {
+    if (pdFALSE == is_threads_started) {
         upd_event_queue = xQueueCreate(MB_QUEUE_SZ, sizeof(upd_request_t *));
 
-        is_threads_started =
-                (pdTRUE == xTaskCreate(_mb_mqtt_task, "_mb_mqtt_task", MB_THREAD_STACK_SZ, 0, OS_PRIO_3, &_mb_thread));
+        is_threads_started = xTaskCreate(_mb_mqtt_task, "_mb_mqtt_task", MB_THREAD_STACK_SZ, 0, OS_PRIO_3, &_mb_thread);
 
-        if (!is_threads_started) {
+        if (pdFALSE == is_threads_started) {
             return NULL;
         }
     }

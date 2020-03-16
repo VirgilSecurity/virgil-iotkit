@@ -376,7 +376,7 @@ _nvs_storage_file_size_hal(const vs_storage_impl_data_ctx_t storage_ctx, const v
     VS_PROFILE_START;
 #endif
     err = nvs_open(ctx->namespace, NVS_READONLY, &handle);
-    CHECK_RET(ESP_OK == err, -1, "Can't open namespace");
+    CHECK_RET(ESP_OK == err, -1, "Can't open namespace %s", ctx->namespace);
 
     err = nvs_get_blob(handle, (char *)file, NULL, (size_t *)&res);
     CHECK(ESP_OK == err, "Can't find required key");
