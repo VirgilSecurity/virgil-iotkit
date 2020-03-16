@@ -53,7 +53,7 @@ static BaseType_t is_threads_started;
 static void
 _firmware_topic_process(const uint8_t *url, uint16_t length) {
 #if 0
-    gtwy_t *gtwy = vs_gateway_ctx();
+    device_t *device = vs_device_ctx();
 
     upd_request_t *fw_url = (upd_request_t *)pvPortMalloc(sizeof(upd_request_t));
     assert(NULL != fw_url);
@@ -70,7 +70,7 @@ _firmware_topic_process(const uint8_t *url, uint16_t length) {
     if (pdTRUE != xQueueSendToBack(upd_event_queue, &fw_url, OS_NO_WAIT)) {
         VS_LOG_ERROR("[MB] Failed to send MSG BIN data to output processing!!!");
     } else {
-        xEventGroupSetBits(gtwy->message_bin_events, MSG_BIN_RECEIVE_BIT);
+        xEventGroupSetBits(device->message_bin_events, MSG_BIN_RECEIVE_BIT);
         return;
     }
 
@@ -81,7 +81,7 @@ _firmware_topic_process(const uint8_t *url, uint16_t length) {
 /*************************************************************************/
 static void
 _tl_topic_process(const uint8_t *url, uint16_t length) {
-    gtwy_t *gtwy = vs_gateway_ctx();
+    device_t *device = vs_device_ctx();
     upd_request_t *tl_url = (upd_request_t *)pvPortMalloc(sizeof(upd_request_t));
     assert(NULL != tl_url);
     if (NULL == tl_url) {
@@ -96,7 +96,7 @@ _tl_topic_process(const uint8_t *url, uint16_t length) {
     if (pdTRUE != xQueueSendToBack(upd_event_queue, &tl_url, OS_NO_WAIT)) {
         VS_LOG_ERROR("[MB] Failed to send MSG BIN data to output processing!!!");
     } else {
-        xEventGroupSetBits(gtwy->message_bin_events, MSG_BIN_RECEIVE_BIT);
+        xEventGroupSetBits(device->message_bin_events, MSG_BIN_RECEIVE_BIT);
         return;
     }
 

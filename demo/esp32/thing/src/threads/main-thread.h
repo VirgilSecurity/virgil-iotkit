@@ -71,7 +71,7 @@
 #define NEW_FW_URL EVENT_BIT(1)
 #define MSG_BIN_RECEIVE_BIT EVENT_BIT(2)
 
-typedef struct gtwy_s {
+typedef struct device_s {
     uint8_t *manufacture_id;
     uint8_t *device_type;
 
@@ -80,13 +80,13 @@ typedef struct gtwy_s {
 
     SemaphoreHandle_t firmware_mutex;
     SemaphoreHandle_t tl_mutex;
-} gtwy_t;
+} device_t;
 
-gtwy_t *
-vs_gateway_ctx_init(uint8_t *manufacture_id, uint8_t *device_type);
+device_t *
+vs_device_ctx_init(uint8_t *manufacture_id, uint8_t *device_type);
 
-gtwy_t *
-vs_gateway_ctx(void);
+device_t *
+vs_device_ctx(void);
 
 void
 vs_main_start_threads(void);

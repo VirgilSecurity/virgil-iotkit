@@ -82,14 +82,14 @@ app_main(void) {
     INIT_STATUS_CHECK(flash_nvs_init(), "NVC Error");
     INIT_STATUS_CHECK(flash_nvs_get_serial(serial), "Error read device serial");
 
-    // Init gateway object
-    vs_gateway_ctx_init(manufacture_id, device_type);
+    // Init device object
+    vs_device_ctx_init(manufacture_id, device_type);
 
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
     }
 
-    while (xEventGroupWaitBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT, pdFALSE, pdTRUE, portMAX_DELAY) == 0) {
+    while (xEventGroupWaitBits(vs_device_ctx()->shared_events, WIFI_INIT_BIT, pdFALSE, pdTRUE, portMAX_DELAY) == 0) {
     }
 
     if (VS_CODE_OK != app_start()) {
@@ -163,7 +163,7 @@ app_start(void) {
     STATUS_CHECK(vs_high_level_init(manufacture_id,
                                     device_type,
                                     serial,
-                                    VS_SNAP_DEV_GATEWAY,
+                                    VS_SNAP_DEV_THING,
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     netifs_impl,
@@ -204,10 +204,10 @@ static void
 wifi_status_cb(bool ready) {
     if (ready) {
         VS_LOG_DEBUG("WiFi status ready");
-        xEventGroupSetBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT);
+        xEventGroupSetBits(vs_device_ctx()->shared_events, WIFI_INIT_BIT);
     } else {
         VS_LOG_DEBUG("WiFi status  not ready");
-        xEventGroupClearBits(vs_gateway_ctx()->shared_events, WIFI_INIT_BIT);
+        xEventGroupClearBits(vs_device_ctx()->shared_events, WIFI_INIT_BIT);
         vs_hal_netif_udp_bcast_set_active(false);
         vs_packets_queue_enable_heart_beat(false);
         return;

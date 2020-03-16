@@ -48,7 +48,7 @@
 
 #define MAIN_THREAD_SLEEP_MS (2000)
 
-static gtwy_t _gtwy;
+static device_t _device;
 
 #if SIMULATOR
 static const char _test_message[] = TEST_UPDATE_MESSAGE;
@@ -58,24 +58,24 @@ static xTaskHandle *message_bin_thread;
 static xTaskHandle *upd_http_retrieval_thread;
 
 /******************************************************************************/
-gtwy_t *
-vs_gateway_ctx_init(uint8_t *manufacture_id, uint8_t *device_type) {
-    _gtwy.manufacture_id = manufacture_id;
-    _gtwy.device_type = device_type;
+device_t *
+vs_device_ctx_init(uint8_t *manufacture_id, uint8_t *device_type) {
+    _device.manufacture_id = manufacture_id;
+    _device.device_type = device_type;
 
-    _gtwy.message_bin_events = xEventGroupCreate();
-    _gtwy.shared_events = xEventGroupCreate();
+    _device.message_bin_events = xEventGroupCreate();
+    _device.shared_events = xEventGroupCreate();
 
-    _gtwy.firmware_mutex = xSemaphoreCreateMutex();
-    _gtwy.tl_mutex = xSemaphoreCreateMutex();
+    _device.firmware_mutex = xSemaphoreCreateMutex();
+    _device.tl_mutex = xSemaphoreCreateMutex();
 
-    return &_gtwy;
+    return &_device;
 }
 
 /******************************************************************************/
-gtwy_t *
-vs_gateway_ctx(void) {
-    return &_gtwy;
+device_t *
+vs_device_ctx(void) {
+    return &_device;
 }
 
 /*************************************************************************/
@@ -100,11 +100,11 @@ _stop_all_threads(void) {
     VS_LOG_INFO("upd_http_retrieval_thread thread canceled");
 
     /* Cleanup a mutexes */
-    vSemaphoreDelete(_gtwy.firmware_mutex);
-    vSemaphoreDelete(_gtwy.tl_mutex);
+    vSemaphoreDelete(_device.firmware_mutex);
+    vSemaphoreDelete(_device.tl_mutex);
 
-    vEventGroupDelete(_gtwy.shared_events);
-    vEventGroupDelete(_gtwy.message_bin_events);
+    vEventGroupDelete(_device.shared_events);
+    vEventGroupDelete(_device.message_bin_events);
 }
 
 /*************************************************************************/
@@ -137,7 +137,7 @@ vs_main_start_threads(void) {
     upd_http_retrieval_thread = vs_file_download_start_thread();
     CHECK_NOT_ZERO(upd_http_retrieval_thread);
 
-    xEventGroupSetBits(_gtwy.shared_events, SNAP_INIT_FINITE_BIT);
+    xEventGroupSetBits(_device.shared_events, SNAP_INIT_FINITE_BIT);
 
     // Main cycle
     while (1) {
@@ -154,17 +154,17 @@ vs_main_start_threads(void) {
             case VS_UPDATE_FIRMWARE:
                 request = &queued_file->info;
                 if (_is_self_firmware_image(request)) {
-                    while (xSemaphoreTake(_gtwy.firmware_mutex, portMAX_DELAY) == pdFALSE) {
+                    while (xSemaphoreTake(_device.firmware_mutex, portMAX_DELAY) == pdFALSE) {
                     }
 
                     if (VS_CODE_OK == vs_firmware_load_firmware_descriptor(
                                               request->manufacture_id, request->device_type, &desc) &&
                         VS_CODE_OK == vs_firmware_install_firmware(&desc)) {
-                        (void)xSemaphoreGive(_gtwy.firmware_mutex);
+                        (void)xSemaphoreGive(_device.firmware_mutex);
 
                         _restart_app();
                     }
-                    (void)xSemaphoreGive(_gtwy.firmware_mutex);
+                    (void)xSemaphoreGive(_device.firmware_mutex);
                 }
 
                 VS_LOG_DEBUG("Send info about new Firmware over SNAP");

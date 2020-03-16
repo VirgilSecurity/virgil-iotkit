@@ -78,13 +78,13 @@ _wait_indefinitely(EventGroupHandle_t xEventGroup,
 
 /*************************************************************************/
 static void
-_sw_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
+_sw_retrieval_mb_notify(device_t *device, upd_request_t *request) {
     vs_firmware_header_t header;
     vs_update_file_type_t *fw_info = NULL;
     int res;
 
     // It should be immediately available given that this starts first
-    while (xSemaphoreTake(gtwy->firmware_mutex, portMAX_DELAY) == pdFALSE) {
+    while (xSemaphoreTake(device->firmware_mutex, portMAX_DELAY) == pdFALSE) {
     }
 
 
@@ -125,17 +125,17 @@ _sw_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
     }
 
 
-    (void)xSemaphoreGive(gtwy->firmware_mutex);
+    (void)xSemaphoreGive(device->firmware_mutex);
     VS_LOG_DEBUG("[MB_NOTIFY]:Firmware semaphore freed");
 
     // This thread needs to be signaled by the off chance that there was a powerloss
-    xEventGroupSetBits(gtwy->message_bin_events, NEW_FIRMWARE_HTTP_BIT);
+    xEventGroupSetBits(device->message_bin_events, NEW_FIRMWARE_HTTP_BIT);
     free(request);
 }
 
 /*************************************************************************/
 static void
-_tl_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
+_tl_retrieval_mb_notify(device_t *device, upd_request_t *request) {
     vs_update_file_type_t *tl_info = NULL;
     vs_tl_element_info_t elem = {.id = VS_TL_ELEMENT_TLH};
     vs_tl_header_t tl_header;
@@ -143,7 +143,7 @@ _tl_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
     int res;
 
     VS_LOG_DEBUG("[MB_NOTIFY]:In while loop and got TL semaphore\r\n");
-    while (xSemaphoreTake(gtwy->tl_mutex, portMAX_DELAY) == pdFALSE) {
+    while (xSemaphoreTake(device->tl_mutex, portMAX_DELAY) == pdFALSE) {
     }
 
     res = vs_cloud_fetch_and_store_tl(request->upd_file_url);
@@ -177,7 +177,7 @@ _tl_retrieval_mb_notify(gtwy_t *gtwy, upd_request_t *request) {
     }
 
 terminate:
-    (void)xSemaphoreGive(gtwy->tl_mutex);
+    (void)xSemaphoreGive(device->tl_mutex);
     VS_LOG_DEBUG("[MB_NOTIFY]:TL semaphore freed\r\n");
     free(request);
 }
@@ -185,17 +185,17 @@ terminate:
 /*************************************************************************/
 static void
 _upd_http_retrieval_task(void *pvParameters) {
-    gtwy_t *gtwy = vs_gateway_ctx();
+    device_t *device = vs_device_ctx();
 
     // Wait for the snap stack and services to be up before looking for new firmware
-    _wait_indefinitely(gtwy->shared_events, SNAP_INIT_FINITE_BIT, false, true);
+    _wait_indefinitely(device->shared_events, SNAP_INIT_FINITE_BIT, false, true);
 
     VS_LOG_DEBUG("vs_upd_http_retrieval thread started");
 
     while (1) {
         upd_request_t *request = NULL;
 
-        _wait_indefinitely(gtwy->message_bin_events, MSG_BIN_RECEIVE_BIT, true, true);
+        _wait_indefinitely(device->message_bin_events, MSG_BIN_RECEIVE_BIT, true, true);
 
         VS_LOG_DEBUG("vs_upd_http_retrieval thread resume");
 
@@ -203,9 +203,9 @@ _upd_http_retrieval_task(void *pvParameters) {
             if (!request)
                 continue;
             if (MSG_BIN_UPD_TYPE_FW == request->upd_type) {
-                _sw_retrieval_mb_notify(gtwy, request);
+                _sw_retrieval_mb_notify(device, request);
             } else if (MSG_BIN_UPD_TYPE_TL == request->upd_type) {
-                _tl_retrieval_mb_notify(gtwy, request);
+                _tl_retrieval_mb_notify(device, request);
             } else {
                 free(request);
             }
