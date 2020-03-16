@@ -32,6 +32,33 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/iot/messenger/messenger.h>
+
+using namespace VirgilIoTKit;
+
+static vs_messenger_rx_cb_t _rx_cb = NULL;
+
+/******************************************************************************/
+extern "C" vs_status_e
+vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
+
+/******************************************************************************/
+extern "C" vs_status_e
+vs_messenger_send(const char *recipient, const char *message) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
+
+/******************************************************************************/
+extern "C" vs_status_e
+vs_messenger_stop(void) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
+
+/******************************************************************************/
+
+
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include <string.h>

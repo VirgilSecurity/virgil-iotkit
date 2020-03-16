@@ -32,8 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_MESSENGER_H
-#define VS_MESSENGER_H
+#ifndef VS_MESSENGER_VIRGIL_H
+#define VS_MESSENGER_VIRGIL_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -46,20 +46,21 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-typedef void (*vs_messenger_rx_cb_t)(const char *sender, const char *message);
+vs_status_e
+vs_messenger_virgil_init(void);
 
 vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb);
+vs_messenger_virgil_sign_in(const char *identity);
 
 vs_status_e
-vs_messenger_send(const char *recipient, const char *message);
+vs_messenger_virgil_sign_up(const char *identity);
 
 vs_status_e
-vs_messenger_stop(void);
+vs_messenger_virgil_logout(void);
 
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit
 #endif
 
-#endif // VS_MESSENGER_H
+#endif // VS_MESSENGER_VIRGIL_H

@@ -32,34 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_MESSENGER_H
-#define VS_MESSENGER_H
+#include <private/virgil.h>
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <global-hal.h>
-#include <virgil/iot/status_code/status_code.h>
+using namespace VirgilIoTKit;
 
-#ifdef __cplusplus
-namespace VirgilIoTKit {
-extern "C" {
-#endif
-
-typedef void (*vs_messenger_rx_cb_t)(const char *sender, const char *message);
-
+/******************************************************************************/
 vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb);
+vs_messenger_virgil_init(void) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
+/******************************************************************************/
 vs_status_e
-vs_messenger_send(const char *recipient, const char *message);
+vs_messenger_virgil_sign_in(const char *identity) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
+/******************************************************************************/
 vs_status_e
-vs_messenger_stop(void);
+vs_messenger_virgil_sign_up(const char *identity) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
-#ifdef __cplusplus
-} // extern "C"
-} // namespace VirgilIoTKit
-#endif
+/******************************************************************************/
+vs_status_e
+vs_messenger_virgil_logout(void) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
-#endif // VS_MESSENGER_H
+/******************************************************************************/

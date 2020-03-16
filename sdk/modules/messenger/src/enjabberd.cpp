@@ -32,34 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_MESSENGER_H
-#define VS_MESSENGER_H
+#include <private/enjabberd.h>
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <global-hal.h>
-#include <virgil/iot/status_code/status_code.h>
+using namespace VirgilIoTKit;
 
-#ifdef __cplusplus
-namespace VirgilIoTKit {
-extern "C" {
-#endif
+// URLConstants.ejabberdHost
+// URLConstants.ejabberdHostPort
+//
+// xmppStreamWillConnect(_ sender: XMPPStream)
+// xmppStreamDidConnect(_ stream: XMPPStream)
+// xmppStreamConnectDidTimeout(_ sender: XMPPStream)
+// xmppStreamDidDisconnect(_ sender: XMPPStream, withError error: Error?)
+// xmppStreamDidAuthenticate(_ sender: XMPPStream)
+// xmppStream(_ sender: XMPPStream, didNotAuthenticate error: DDXMLElement)
+// xmppStream(_ sender: XMPPStream, didSend message: XMPPMessage)
+// xmppStream(_ sender: XMPPStream, didFailToSend message: XMPPMessage, error: Error)
+// xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage)
 
-typedef void (*vs_messenger_rx_cb_t)(const char *sender, const char *message);
-
+/******************************************************************************/
 vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb);
+vs_messenger_enjabberd_connect(const char *host, uint16_t port, const char *identity, vs_messenger_rx_cb_t rx_cb) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
+/******************************************************************************/
 vs_status_e
-vs_messenger_send(const char *recipient, const char *message);
+vs_messenger_enjabberd_send(const char *identity, const char *message) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
+/******************************************************************************/
 vs_status_e
-vs_messenger_stop(void);
+vs_messenger_enjabberd_set_status(void) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
-#ifdef __cplusplus
-} // extern "C"
-} // namespace VirgilIoTKit
-#endif
+/******************************************************************************/
+vs_status_e
+vs_messenger_enjabberd_disconnect(void) {
+    return VS_CODE_ERR_NOT_IMPLEMENTED;
+}
 
-#endif // VS_MESSENGER_H
+/******************************************************************************/

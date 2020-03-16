@@ -45,6 +45,7 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-server.h>
 #include <virgil/iot/trust_list/trust_list.h>
+#include <virgil/iot/messenger/messenger.h>
 
 static gtwy_t _gtwy = {.firmware_mutex = PTHREAD_MUTEX_INITIALIZER, .tl_mutex = PTHREAD_MUTEX_INITIALIZER};
 
@@ -156,6 +157,11 @@ _gateway_task(void *pvParameters) {
     // Start files receive thread
     upd_http_retrieval_thread = vs_file_download_start_thread();
     CHECK_NOT_ZERO_RET(upd_http_retrieval_thread, (void *)-1);
+
+    // Start messenger
+    //    vs_status_e
+    // vs_messenger_rx_cb_t rx_cb
+    vs_messenger_start(NULL);
 
     // Main cycle
     while (!stop_threads) {

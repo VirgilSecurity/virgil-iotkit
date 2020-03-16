@@ -109,6 +109,7 @@ target_link_libraries(gateway
 		vs-default-aws-message-bin
 		vs-module-cloud
 		vs-module-firmware
+		vs-module-messenger
 		vs-high-level-gateway
 
 		enable_sanitizers

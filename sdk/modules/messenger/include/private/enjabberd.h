@@ -32,34 +32,31 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_MESSENGER_H
-#define VS_MESSENGER_H
+#ifndef VS_MESSENGER_ENJABBERD_H
+#define VS_MESSENGER_ENJABBERD_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <global-hal.h>
-#include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/messenger/messenger.h>
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-typedef void (*vs_messenger_rx_cb_t)(const char *sender, const char *message);
+vs_status_e
+vs_messenger_enjabberd_connect(const char *host, uint16_t port, const char *identity, vs_messenger_rx_cb_t rx_cb);
 
 vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb);
+vs_messenger_enjabberd_send(const char *identity, const char *message);
 
 vs_status_e
-vs_messenger_send(const char *recipient, const char *message);
+vs_messenger_enjabberd_set_status(void);
 
 vs_status_e
-vs_messenger_stop(void);
+vs_messenger_enjabberd_disconnect(void);
 
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit
 #endif
 
-#endif // VS_MESSENGER_H
+#endif // VS_MESSENGER_ENJABBERD_H
