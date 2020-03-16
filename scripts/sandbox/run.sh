@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE="virgilsecurity-docker-iotl-demo.bintray.io/testing/iot-sdk-demo:0.1.4.9"
+IMAGE="virgilsecurity-docker-iotl-demo.bintray.io/testing/iot-sdk-demo:0.1.4.10"
 
 #
 #   Ask for Application token
