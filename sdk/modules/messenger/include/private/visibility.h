@@ -32,56 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VS_MESSENGER_VIRGIL_H
-#define VS_MESSENGER_VIRGIL_H
+#ifndef IOTKIT_DEMO_NIX_VISIBILITY_H
+#define IOTKIT_DEMO_NIX_VISIBILITY_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <global-hal.h>
-#include <virgil/iot/status_code/status_code.h>
-
-#ifdef __cplusplus
-namespace VirgilIoTKit {
-extern "C" {
+#if defined _WIN32 || defined __CYGWIN__
+#ifdef BUILDING_DLL
+#ifdef __GNUC__
+#define DLL_PUBLIC __attribute__((dllexport))
+#else
+#define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+#endif
+#else
+#ifdef __GNUC__
+#define DLL_PUBLIC __attribute__((dllimport))
+#else
+#define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+#endif
+#endif
+#define DLL_LOCAL
+#else
+#if __GNUC__ >= 4
+#define DLL_PUBLIC __attribute__((visibility("default")))
+#define DLL_LOCAL __attribute__((visibility("hidden")))
+#else
+#define DLL_PUBLIC
+#define DLL_LOCAL
+#endif
 #endif
 
-vs_status_e
-vs_messenger_virgil_init(void);
-
-vs_status_e
-vs_messenger_virgil_sign_in(const char *identity,
-                            const uint8_t *pubkey,
-                            size_t pubkey_sz,
-                            const uint8_t *privkey,
-                            size_t privkey_sz,
-                            const uint8_t *card,
-                            size_t card_sz);
-
-vs_status_e
-vs_messenger_virgil_sign_up(const char *identity,
-                            uint8_t *pubkey,
-                            size_t pubkey_buf_sz,
-                            size_t *pubkey_sz,
-                            uint8_t *privkey,
-                            size_t priv_buf_sz,
-                            size_t *priv_sz,
-                            uint8_t *card,
-                            size_t card_buf_sz,
-                            size_t *card_sz);
-
-vs_status_e
-vs_messenger_virgil_get_token(char *token, size_t token_buf_sz);
-
-vs_status_e
-vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz);
-
-vs_status_e
-vs_messenger_virgil_logout(void);
-
-#ifdef __cplusplus
-} // extern "C"
-} // namespace VirgilIoTKit
-#endif
-
-#endif // VS_MESSENGER_VIRGIL_H
+#endif // IOTKIT_DEMO_NIX_VISIBILITY_H
