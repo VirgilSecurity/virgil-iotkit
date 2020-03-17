@@ -23,6 +23,7 @@ Virgil IoTKit is a C library for connecting IoT devices to the Virgil IoT Securi
   - [Fedora OS](#fedora-os)
   - [MacOS](#macos)
   - [Windows OS](#windows-os)
+  - [Ready Linux packets](#ready-linux-packets)
   - [Qt integration](#qt-integration)
 - [Tests](#tests)
 - [IoTKit Usage](#iotkit-usage)
@@ -69,7 +70,7 @@ The Sandbox is conditionally divided into 3 actors (Vendor, Factory and End-user
 - **Sign and publish new Firmware and TrustList**. Also, you can emulate the process of creating and publishing new Firmware or TrustList to Virgil Cloud. Sandbox uses Virgil Firmware Signer to sign a firmware before its distributing.
 - **Manage IoT devices**. Sandbox allows you to manage IoT devices and get information about their state. Sandbox uses Virgil services to notify IoT devices about new updates and then securely verify incoming firmware or TrustLists before updating them.
 
-<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/virgil_demo_iotkit_nix.png?demo" align="left" hspace="0" vspace="6">
+<img width="100%" src="https://cdn.virgilsecurity.com/assets/images/github/web_demo/web_sandbox_demo.png?demo" align="left" hspace="0" vspace="6">
 
 
 To start working with the Sandbox follow [Sandbox README](/scripts).
@@ -222,6 +223,13 @@ If some software has not been found, check PATH system variable.
 After these steps you can clone Git repository and use `build-for-qt.sh` script.
 
 <div id='qt-integration'/>
+
+### Ready Linux packets
+IoTKit also contains ready-made (pre-compiled) packets for Linux OS, that can be installed using an OS package manager.
+- `virgil-iot-sdk-tools` - a set of tools [mentioned above](#iot-dev-tools) for secure device lifecycle management
+- `virgil-iot-sdk-snapd` - a local web utility which allows you to obtain information and statistics from your IoT devices. Virgil SnapD interacts with Virgil SNAP protocol, which operates directly with your IoT devices. Read more [here](/tools/virgil-snapd)
+- `virgil-iot-sdk-libs` - a set of libraries necessary for interacting Virgil IoTKit modules with your IoT devices
+
 
 ### Qt integration
 - Setup Qt with your target platforms support. Each platform has its own requirement. See Qt documentation for details.
