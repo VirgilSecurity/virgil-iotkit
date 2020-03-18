@@ -32,26 +32,38 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_MSGR_SERVER_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_MSGR_SERVER_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
+#if MSGR_SERVER
+
 #include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
+#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
-/******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+typedef vs_status_e (*vs_snap_msgr_get_data_cb_t)(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz);
 
-{{- end}}
+typedef vs_status_e (*vs_snap_msgr_set_data_cb_t)(uint8_t *data, uint32_t data_sz);
 
-#endif //{{ .HeaderTag }}
+typedef struct {
+    vs_snap_msgr_get_data_cb_t get_data; /**< Get data to send it over snap */
+    vs_snap_msgr_set_data_cb_t set_data; /**< Set data received from snap*/
+} vs_snap_msgr_server_service_t;
+
+const vs_snap_service_t *
+vs_snap_msgr_server(vs_snap_msgr_server_service_t impl);
+
+vs_status_e
+vs_snap_msgr_start_notification(const vs_netif_t *netif);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
+#endif // MSGR_SERVER
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_MSGR_SERVER_H

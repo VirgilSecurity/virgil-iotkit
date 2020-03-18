@@ -32,26 +32,45 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_MSGR_CLIENT_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_MSGR_CLIENT_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
+#if MSGR_CLIENT
+
 #include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
+#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
 
-/******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+#ifdef __cplusplus
+namespace VirgilIoTKit {
+extern "C" {
+#endif
 
-{{- end}}
+typedef vs_status_e (*vs_snap_msgr_start_notif_cb_t)(vs_snap_msgr_device_t *device);
 
-#endif //{{ .HeaderTag }}
+typedef vs_status_e (*vs_snap_msgr_device_data_cb_t)(uint8_t *data, uint32_t data_sz);
+
+typedef struct {
+    vs_snap_msgr_start_notif_cb_t device_start; /**< Startup notification */
+    vs_snap_msgr_device_data_cb_t device_data;  /**< Process received data from a device */
+} vs_snap_msgr_client_service_t;
+
+vs_status_e
+vs_snap_msgr_enum_devices(const vs_netif_t *netif,
+                          vs_snap_msgr_device_t *devices,
+                          size_t devices_max,
+                          size_t *devices_cnt,
+                          uint32_t wait_ms);
+
+vs_status_e
+vs_snap_msgr_set_polling(const vs_netif_t *netif, const vs_mac_addr_t *mac, bool enable, uint16_t period_seconds);
+
+const vs_snap_service_t *
+vs_snap_msgr_client(vs_snap_msgr_client_service_t impl);
+
+#ifdef __cplusplus
+} // extern "C"
+} // namespace VirgilIoTKit
+#endif
+
+#endif // MSGR_CLIENT
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_MSGR_CLIENT_H

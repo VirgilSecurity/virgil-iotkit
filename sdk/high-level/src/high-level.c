@@ -79,6 +79,12 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
                    vs_storage_op_ctx_t *firmware_storage_impl,
 #endif // FLDT_SERVER || FLDT_CLIENT
                    vs_netif_t *netif_impl[],
+#if MSGR_SERVER
+                   vs_snap_msgr_server_service_t msgr_server_cb,
+#endif
+#if MSGR_CLIENT
+                   vs_snap_msgr_client_service_t msgr_client_cb,
+#endif
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events) {
     vs_status_e res = VS_CODE_ERR_INIT_SNAP;
@@ -155,6 +161,11 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
                  "Unable to add Trust List file type");
 #endif // FLDT_SERVER
 
+#if MSGR_SERVER
+    const vs_snap_service_t *snap_msgr_server = vs_snap_msgr_server(msgr_server_cb);
+    STATUS_CHECK(vs_snap_register_service(snap_msgr_server), "Cannot register MSGR server service");
+#endif
+
 
 #if FLDT_CLIENT
     //  FLDT client service
@@ -166,6 +177,11 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     STATUS_CHECK(vs_fldt_client_add_file_type(vs_tl_update_file_type(), vs_tl_update_ctx()),
                  "Unable to add firmware file type");
 #endif // FLDT_CLIENT
+
+#if MSGR_CLIENT
+    const vs_snap_service_t *snap_msgr_client = vs_snap_msgr_client(msgr_client_cb);
+    STATUS_CHECK(vs_snap_register_service(snap_msgr_client), "Cannot register MSGR client service");
+#endif
 
     res = VS_CODE_OK;
 

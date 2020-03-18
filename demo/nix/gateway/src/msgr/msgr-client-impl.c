@@ -32,26 +32,39 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#include <msgr/msgr-client-impl.h>
+#include <virgil/iot/protocols/snap.h>
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
+static vs_status_e
+_snap_msgr_start_notif_cb(vs_snap_msgr_device_t *device);
+
+static vs_status_e
+_snap_msgr_device_data_cb(uint8_t *data, uint32_t data_sz);
 
 /******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+static vs_status_e
+_snap_msgr_start_notif_cb(vs_snap_msgr_device_t *device) {
+    VS_LOG_DEBUG("MSGR thing device start. mac = %x:%x:%x:%x:%x:%x",
+                 device->mac[0],
+                 device->mac[1],
+                 device->mac[2],
+                 device->mac[3],
+                 device->mac[4],
+                 device->mac[5]);
+    vs_snap_msgr_set_polling(vs_snap_netif_routing(), (vs_mac_addr_t *)device->mac, true, MSGR_POLL_PERIOD_S);
+    return VS_CODE_OK;
+}
 
-{{- end}}
+/******************************************************************************/
+static vs_status_e
+_snap_msgr_device_data_cb(uint8_t *data, uint32_t data_sz) {
+    VS_LOG_DEBUG("MSGR device received data %s", (char *)data);
+    return VS_CODE_OK;
+}
 
-#endif //{{ .HeaderTag }}
+/******************************************************************************/
+vs_snap_msgr_client_service_t
+vs_snap_msgr_client_impl(void) {
+    vs_snap_msgr_client_service_t msgr_client_cb = {_snap_msgr_start_notif_cb, _snap_msgr_device_data_cb};
+    return msgr_client_cb;
+}

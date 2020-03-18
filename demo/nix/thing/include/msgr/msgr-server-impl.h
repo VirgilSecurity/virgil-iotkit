@@ -32,26 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#ifndef IOTKIT_DEMO_NIX_MSGR_SERVER_IMPL_H
+#define IOTKIT_DEMO_NIX_MSGR_SERVER_IMPL_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
+#include <stdint.h>
+#include <stdlib-config.h>
 
-/******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+#include <virgil/iot/protocols/snap/msgr/msgr-server.h>
 
-{{- end}}
+vs_snap_msgr_server_service_t
+vs_snap_msgr_server_impl(void);
 
-#endif //{{ .HeaderTag }}
+#endif // IOTKIT_DEMO_NIX_MSGR_SERVER_IMPL_H

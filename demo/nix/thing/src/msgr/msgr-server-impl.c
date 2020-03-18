@@ -32,26 +32,29 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#include <msgr/msgr-server-impl.h>
+#include <virgil/iot/protocols/snap.h>
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
+#define MSGR_TEST_MESSAGE "MSGR test message"
+/******************************************************************************/
+static vs_status_e
+_snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
+    memset(data, 0, buf_sz);
+    memcpy(data, MSGR_TEST_MESSAGE, strlen(MSGR_TEST_MESSAGE));
+    *data_sz = strlen(MSGR_TEST_MESSAGE) + 1;
+
+    return VS_CODE_OK;
+}
 
 /******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+static vs_status_e
+_snap_msgr_set_data_cb(uint8_t *data, uint32_t data_sz) {
+    return VS_CODE_OK;
+}
 
-{{- end}}
-
-#endif //{{ .HeaderTag }}
+/******************************************************************************/
+vs_snap_msgr_server_service_t
+vs_snap_msgr_server_impl(void) {
+    vs_snap_msgr_server_service_t msgr_server_cb = {_snap_msgr_get_data_cb, _snap_msgr_set_data_cb};
+    return msgr_server_cb;
+}

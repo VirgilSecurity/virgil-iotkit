@@ -59,6 +59,8 @@ extern "C" {
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
+#include <virgil/iot/protocols/snap/msgr/msgr-client.h>
+#include <virgil/iot/protocols/snap/msgr/msgr-server.h>
 
 // Types
 
@@ -105,6 +107,12 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
                    vs_storage_op_ctx_t *firmware_storage_impl,
 #endif // FLDT_SERVER || FLDT_CLIENT
                    vs_netif_t *netif_impl[],
+#if MSGR_SERVER
+                   vs_snap_msgr_server_service_t msgr_server_cb,
+#endif
+#if MSGR_CLIENT
+                   vs_snap_msgr_client_service_t msgr_client_cb,
+#endif
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events);
 

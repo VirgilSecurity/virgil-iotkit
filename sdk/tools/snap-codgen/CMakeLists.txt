@@ -54,8 +54,10 @@ set (SNAP_SRC_TYPES
         -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/snap-structs.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/prvs/prvs-structs.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/info/info-structs.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/msgr/msgr-structs.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/info/info-private.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/fldt/fldt-private.h
+        -i ${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include/virgil/iot/protocols/snap/msgr/msgr-private.h
         -i ${VIRGIL_IOT_DIRECTORY}/modules/provision/include/virgil/iot/provision/provision-structs.h
         -i ${VIRGIL_IOT_DIRECTORY}/helpers/update/include/virgil/iot/update/update.h
         )

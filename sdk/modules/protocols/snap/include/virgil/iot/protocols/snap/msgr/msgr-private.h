@@ -32,26 +32,48 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#ifndef VS_SECURITY_SDK_SNAP_SERVICES_MSGR_PRIVATE_H
+#define VS_SECURITY_SDK_SNAP_SERVICES_MSGR_PRIVATE_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
+#include <virgil/iot/protocols/snap/msgr/msgr-server.h>
 #include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
 
-/******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+// mute "error: multi-character character constant" message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmultichar"
+typedef enum { VS_MSGR_SERVICE_ID = HTONL_IN_COMPILE_TIME('MSGR') } vs_msgr_t;
 
-{{- end}}
+typedef enum {
+    VS_MSGR_SNOT = HTONL_IN_COMPILE_TIME('SNOT'), /* Start NOTification */
+    VS_MSGR_ENUM = HTONL_IN_COMPILE_TIME('ENUM'), /* ENUMerate devices */
+    VS_MSGR_GETD = HTONL_IN_COMPILE_TIME('GETD'), /* GET Data from a device*/
+    VS_MSGR_SETD = HTONL_IN_COMPILE_TIME('SETD'), /* SET Data to a device*/
+    VS_MSGR_STAT = HTONL_IN_COMPILE_TIME('STAT'), /* STATus data of a device*/
+    VS_MSGR_POLL = HTONL_IN_COMPILE_TIME('POLL'), /* Enable/disable POLLing */
+} vs_snap_msgr_element_e;
+#pragma GCC diagnostic pop
 
-#endif //{{ .HeaderTag }}
+typedef struct __attribute__((__packed__)) {
+    vs_mac_addr_t mac;
+} vs_msgr_enum_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t enable;
+    uint16_t period_seconds;
+    vs_mac_addr_t recipient_mac;
+} vs_msgr_poll_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t data_sz;
+    uint8_t data[];
+} vs_msgr_getd_response_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint32_t data_sz;
+    uint8_t data[];
+} vs_msgr_setd_request_t;
+
+#endif // VS_SECURITY_SDK_SNAP_SERVICES_MSGR_PRIVATE_H
