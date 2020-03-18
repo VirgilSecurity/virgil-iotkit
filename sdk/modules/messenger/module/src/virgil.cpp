@@ -36,6 +36,8 @@
 
 using namespace VirgilIoTKit;
 
+#include <virgil/iot/messenger/crypto/msgr-crypto.h>
+
 #include <virgil/sdk/Common.h>
 #include <virgil/sdk/client/CardClient.h>
 
@@ -54,6 +56,7 @@ using namespace VirgilIoTKit;
 #include <virgil/crypto/VirgilByteArrayUtils.h>
 
 #include <virgil/crypto/VirgilCipher.h>
+#include <virgil/crypto/VirgilKeyPair.h>
 
 
 #include <stdio.h>
@@ -61,6 +64,7 @@ using namespace VirgilIoTKit;
 
 using nlohmann::json;
 using virgil::sdk::VirgilBase64;
+using virgil::sdk::VirgilHashAlgorithm;
 using virgil::sdk::cards::Card;
 using virgil::sdk::cards::CardManager;
 using virgil::sdk::cards::ModelSigner;
@@ -77,8 +81,11 @@ using virgil::sdk::serialization::JsonDeserializer;
 using virgil::sdk::serialization::JsonSerializer;
 using virgil::sdk::util::JsonUtils;
 
+
+using virgil::crypto::VirgilByteArray;
 using virgil::crypto::VirgilByteArrayUtils;
 using virgil::crypto::VirgilCipher;
+using virgil::crypto::VirgilKeyPair;
 
 using virgil::crypto::bytes2hex;
 using virgil::crypto::hex2bytes;
@@ -295,8 +302,19 @@ vs_messenger_virgil_logout(void) {
 }
 
 /******************************************************************************/
+static VirgilByteArray
+_computeHashForPublicKey(const VirgilByteArray &publicKey) {
+    VirgilByteArray hash = crypto->computeHash(VirgilKeyPair::publicKeyToDER(publicKey), VirgilHashAlgorithm::SHA512);
+    hash.resize(8);
+
+    return hash;
+}
+
+/******************************************************************************/
 extern "C" vs_status_e
 vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg) {
+    uint8_t dec_data[1024];
+    size_t dec_data_sz = 0;
 
     // Get Sender's public key
     CardClient cardClient;
@@ -309,39 +327,36 @@ vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_messag
     auto encMessageTxt = VirgilByteArrayUtils::bytesToString(VirgilBase64::decode(encrypted_message));
     auto encMessageJSON = json::parse(encMessageTxt);
     std::string ciphertextBase64 = encMessageJSON["ciphertext"];
-    auto endData = VirgilBase64::decode(ciphertextBase64);
+    auto encData = VirgilBase64::decode(ciphertextBase64);
 
     std::cout << "encMessageJSON : " << encMessageJSON << std::endl;
-    std::cout << "ciphertextBase64 : " << ciphertextBase64 << std::endl;
-
-    // Import private key
-    auto privateKeyData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_privkey, _privkey_sz);
-    auto privateKey = crypto->importPrivateKey(privateKeyData);
 
     // Decrypt message
+    auto recipientId = _computeHashForPublicKey(VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_pubkey, _pubkey_sz));
+    auto senderPubkeyData = crypto->exportPublicKey(senderPubkey);
+    auto senderId = _computeHashForPublicKey(senderPubkeyData);
 
-    auto cipher = VirgilCipher();
+    vs_messenger_crypto_decrypt(encData.data(),
+                                encData.size(),
+                                _privkey,
+                                _privkey_sz,
+                                recipientId.data(),
+                                recipientId.size(),
+                                senderPubkeyData.data(),
+                                senderPubkeyData.size(),
+                                senderId.data(),
+                                senderId.size(),
+                                dec_data,
+                                sizeof(dec_data),
+                                &dec_data_sz);
 
-
-    cipher.customParams()
-    //    auto decryptedData1 = cipher.decryptWithKey(endData, hex2bytes("DF86EB6844508D10"), privateKeyData);
-
-    ///////////////
-    auto publicKeyData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_pubkey, _pubkey_sz);
-    auto publicKey = crypto->importPublicKey(publicKeyData);
-    std::vector<virgil::sdk::crypto::keys::PublicKey> r;
-    r.push_back(publicKey);
-    auto encData = crypto->signThenEncrypt(str2bytes("Test"), privateKey, r);
-    std::cout << "Enc example: " << VirgilBase64::encode(encData) << std::endl;
-    auto decData = crypto->decryptThenVerify(encData, privateKey, publicKey);
-    std::cout << "Dec example: " << VirgilByteArrayUtils::bytesToString(decData) << std::endl;
-    ///////////
-
-    auto decryptedData = crypto->decryptThenVerify(endData, privateKey, senderPubkey);
-    auto decryptedTxt = VirgilByteArrayUtils::bytesToString(decryptedData);
+    auto decData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(dec_data, dec_data_sz);
 
     // Save decrypted data
-    *msg = strdup(decryptedTxt.c_str());
+    if (dec_data_sz < sizeof(dec_data)) {
+        dec_data[dec_data_sz] = 0;
+        *msg = strdup((char *)dec_data);
+    }
 
     return VS_CODE_OK;
 }

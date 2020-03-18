@@ -34,73 +34,12 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-module-messenger VERSION 0.1.0 LANGUAGES C CXX)
-
-add_library(vs-module-messenger SHARED)
+#
+#   Messege crypto functionality
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 
 #
-#   libstrophe as dependency
+#   Messenger module
 #
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../ext/libstrophe libstrophe)
-
-#
-#   Virgil C++ SDK
-#
-set (VSCPPSDK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../ext/virgil-sdk-cpp/cmake-build-host/release/installed/usr/local")
-find_library(VSCPPSDK_LIBRARY
-        NAMES vscppsdk
-        HINTS "${VSCPPSDK_PATH}/lib"
-        )
-
-
-target_sources(vs-module-messenger
-        PRIVATE
-
-        # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/messenger/messenger.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/enjabberd.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/virgil.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/private/visibility.h
-
-        # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/messenger.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/enjabberd.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/virgil.cpp
-        )
-
-target_link_libraries(vs-module-messenger
-        PUBLIC
-#        vs-json
-#        vs-module-firmware
-#        storage_hal
-        virgil-iot-status-code
-        ${VSCPPSDK_LIBRARY}
-        strophe
-        curl
-        )
-
-target_include_directories(vs-module-messenger
-        PRIVATE
-        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        $<BUILD_INTERFACE:${VSCPPSDK_PATH}/include>
-
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
-set_target_properties(vs-module-messenger PROPERTIES CXX_VISIBILITY_PRESET hidden)
-
-install(TARGETS vs-module-messenger
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        )
-
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
-
-if(COMMAND add_clangformat)
-    add_clangformat(vs-module-messenger)
-endif()
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/module)

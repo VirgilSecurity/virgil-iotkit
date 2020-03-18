@@ -7,3 +7,6 @@
 [submodule "sdk/ext/libstrophe"]
 	path = sdk/ext/libstrophe
 	url = https://github.com/strophe/libstrophe.git
+[submodule "sdk/ext/virgil-crypto-c"]
+	path = sdk/ext/virgil-crypto-c
+	url = https://github.com/VirgilSecurity/virgil-crypto-c.git
