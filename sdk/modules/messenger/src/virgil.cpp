@@ -51,6 +51,10 @@ using namespace VirgilIoTKit;
 #include <virgil/sdk/serialization/JsonSerializer.h>
 #include <virgil/sdk/serialization/JsonDeserializer.h>
 #include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilByteArrayUtils.h>
+
+#include <virgil/crypto/VirgilCipher.h>
+
 
 #include <stdio.h>
 #include <string.h>
@@ -72,6 +76,9 @@ using virgil::sdk::crypto::Crypto;
 using virgil::sdk::serialization::JsonDeserializer;
 using virgil::sdk::serialization::JsonSerializer;
 using virgil::sdk::util::JsonUtils;
+
+using virgil::crypto::VirgilByteArrayUtils;
+using virgil::crypto::VirgilCipher;
 
 using virgil::crypto::bytes2hex;
 using virgil::crypto::hex2bytes;
@@ -95,6 +102,10 @@ static size_t _privkey_sz = 0;
 static const uint8_t *_card = NULL;
 static size_t _card_sz = 0;
 static char *_card_id = NULL;
+
+#define TOKEN_SZ_MAX (1024)
+
+static char _virgil_token[TOKEN_SZ_MAX] = {0};
 
 /******************************************************************************/
 extern "C" vs_status_e
@@ -125,7 +136,8 @@ vs_messenger_virgil_sign_in(const char *identity,
     auto parsedCard = CardManager::parseCard(rawCard, crypto);
     _card_id = strdup(parsedCard.identifier().c_str());
 
-    return VS_CODE_OK;
+    return vs_messenger_virgil_get_token(_virgil_token, TOKEN_SZ_MAX);
+    ;
 }
 
 /******************************************************************************/
@@ -212,26 +224,10 @@ vs_messenger_virgil_sign_up(const char *identity,
     std::cout << "Private key : " << VirgilBase64::encode(privateKeyData) << std::endl;
     std::cout << "Card        : " << VirgilBase64::encode(cardData) << std::endl;
 
-    return VS_CODE_OK;
+    return vs_messenger_virgil_get_token(_virgil_token, TOKEN_SZ_MAX);
+    ;
 }
 
-// private func makeAuthHeader(for identity: String) throws -> [String: String] {
-// let localKeyManager = try LocalKeyManager(identity: identity, crypto: self.crypto)
-//
-// let user = try localKeyManager.retrieveUserData()
-//
-// let stringToSign = "\(user.card.identifier).\(Int(Date().timeIntervalSince1970))"
-//
-// guard let dataToSign = stringToSign.data(using: .utf8) else {
-// throw Error.stringToDataFailed
-//}
-//
-// let signature = try crypto.generateSignature(of: dataToSign, using: user.keyPair.privateKey)
-//
-// let authHeader = "Bearer " + stringToSign + "." + signature.base64EncodedString()
-//
-// return ["Authorization": authHeader]
-//}
 /******************************************************************************/
 static vs_status_e
 _get_token(const char *endpoint, char *token, size_t token_buf_sz) {
@@ -263,13 +259,16 @@ _get_token(const char *endpoint, char *token, size_t token_buf_sz) {
 
     auto responseJSON = json::parse(response.body());
 
-    std::string tokenStd = responseJSON["token"].dump();
+    std::string tokenStd = responseJSON["token"];
 
     if (tokenStd.length() < token_buf_sz) {
         strcpy(token, tokenStd.c_str());
     }
 
     // Print results
+    std::cout << "response"
+              << " : " << response.body() << std::endl;
+
     std::cout << endpoint << " : " << token << std::endl;
 
     return VS_CODE_OK;
@@ -292,6 +291,58 @@ extern "C" vs_status_e
 vs_messenger_virgil_logout(void) {
     crypto = nullptr;
     free(_card_id);
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+extern "C" vs_status_e
+vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg) {
+
+    // Get Sender's public key
+    CardClient cardClient;
+    auto searchFuture = cardClient.searchCards(sender, _virgil_token);
+    auto rawCards = searchFuture.get();
+    auto parsedCard = CardManager::parseCard(rawCards.front(), crypto);
+    auto senderPubkey = parsedCard.publicKey();
+
+    // Get cipher text
+    auto encMessageTxt = VirgilByteArrayUtils::bytesToString(VirgilBase64::decode(encrypted_message));
+    auto encMessageJSON = json::parse(encMessageTxt);
+    std::string ciphertextBase64 = encMessageJSON["ciphertext"];
+    auto endData = VirgilBase64::decode(ciphertextBase64);
+
+    std::cout << "encMessageJSON : " << encMessageJSON << std::endl;
+    std::cout << "ciphertextBase64 : " << ciphertextBase64 << std::endl;
+
+    // Import private key
+    auto privateKeyData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_privkey, _privkey_sz);
+    auto privateKey = crypto->importPrivateKey(privateKeyData);
+
+    // Decrypt message
+
+    auto cipher = VirgilCipher();
+
+
+    cipher.customParams()
+    //    auto decryptedData1 = cipher.decryptWithKey(endData, hex2bytes("DF86EB6844508D10"), privateKeyData);
+
+    ///////////////
+    auto publicKeyData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_pubkey, _pubkey_sz);
+    auto publicKey = crypto->importPublicKey(publicKeyData);
+    std::vector<virgil::sdk::crypto::keys::PublicKey> r;
+    r.push_back(publicKey);
+    auto encData = crypto->signThenEncrypt(str2bytes("Test"), privateKey, r);
+    std::cout << "Enc example: " << VirgilBase64::encode(encData) << std::endl;
+    auto decData = crypto->decryptThenVerify(encData, privateKey, publicKey);
+    std::cout << "Dec example: " << VirgilByteArrayUtils::bytesToString(decData) << std::endl;
+    ///////////
+
+    auto decryptedData = crypto->decryptThenVerify(endData, privateKey, senderPubkey);
+    auto decryptedTxt = VirgilByteArrayUtils::bytesToString(decryptedData);
+
+    // Save decrypted data
+    *msg = strdup(decryptedTxt.c_str());
+
     return VS_CODE_OK;
 }
 

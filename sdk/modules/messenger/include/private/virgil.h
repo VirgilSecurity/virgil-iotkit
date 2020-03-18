@@ -76,6 +76,10 @@ vs_messenger_virgil_get_token(char *token, size_t token_buf_sz);
 vs_status_e
 vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz);
 
+// Pay attention: msg buffer MUST be freed
+vs_status_e
+vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg);
+
 vs_status_e
 vs_messenger_virgil_logout(void);
 

@@ -34,6 +34,7 @@
 
 #include <virgil/iot/messenger/messenger.h>
 #include "private/virgil.h"
+#include "private/enjabberd.h"
 #include "private/visibility.h"
 
 using namespace VirgilIoTKit;
@@ -45,6 +46,10 @@ static vs_messenger_rx_cb_t _rx_cb = NULL;
 #define TOKEN_SZ_MAX (1024)
 
 const char *_identity = "rk_test_7";
+
+// TODO: One file for constants
+const char *_enjabberd_host = "xmpp-stg.virgilsecurity.com";
+const uint16_t _enjabberd_port = 5222;
 
 const uint8_t _pubkey[] = {0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00, 0x30, 0xcb, 0xa2,
                            0x08, 0x8d, 0x18, 0x87, 0x96, 0x08, 0xf6, 0x07, 0x2a, 0x11, 0x13, 0xd6, 0xa7, 0xac, 0x06,
@@ -88,6 +93,23 @@ const uint8_t _card[] = {
         0x72, 0x22, 0x3a, 0x22, 0x76, 0x69, 0x72, 0x67, 0x69, 0x6c, 0x22, 0x7d, 0x5d, 0x7d};
 
 /******************************************************************************/
+extern "C" void
+_rx_encrypted_msg(const char *sender, const char *encrypted_message) {
+    char *msg = NULL;
+
+    printf("Sender: %s\n", sender);
+
+    vs_messenger_virgil_decrypt_msg(sender, encrypted_message, &msg);
+
+    if (msg) {
+        printf("  Message: %s\n", msg);
+        free(msg);
+    }
+
+    printf("\n");
+}
+
+/******************************************************************************/
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
     uint8_t pubkey[KEY_SZ_MAX];
@@ -98,8 +120,6 @@ vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
 
     uint8_t card[CARD_SZ_MAX];
     size_t card_sz = 0;
-
-    char virgil_token[TOKEN_SZ_MAX] = {0};
 
     char pass[TOKEN_SZ_MAX] = {0};
 
@@ -113,9 +133,9 @@ vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
     vs_messenger_virgil_sign_in(_identity, _pubkey, sizeof(_pubkey), _privkey, sizeof(_privkey), _card, sizeof(_card));
 #endif
 
-    vs_messenger_virgil_get_token(virgil_token, TOKEN_SZ_MAX);
-
     vs_messenger_virgil_get_xmpp_pass(pass, TOKEN_SZ_MAX);
+
+    vs_messenger_enjabberd_connect(_enjabberd_host, _enjabberd_port, _identity, pass, _rx_encrypted_msg);
 
     vs_messenger_virgil_logout();
 
