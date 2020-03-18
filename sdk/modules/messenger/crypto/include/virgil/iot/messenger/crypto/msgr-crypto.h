@@ -46,7 +46,21 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
-// Pay attention: msg buffer MUST be freed
+vs_status_e
+vs_messenger_crypto_encrypt(const uint8_t *data,
+                            size_t data_sz,
+                            const uint8_t *recipient_pubkey,
+                            size_t recipient_pubkey_sz,
+                            const uint8_t *recepient_id,
+                            size_t recepient_id_sz,
+                            const uint8_t *sender_privkey,
+                            size_t sender_privkey_sz,
+                            const uint8_t *sender_id,
+                            size_t sender_id_sz,
+                            uint8_t *encrypted_data,
+                            size_t buf_sz,
+                            size_t *encrypted_data_sz);
+
 vs_status_e
 vs_messenger_crypto_decrypt(const uint8_t *enc_data,
                             size_t enc_data_sz,

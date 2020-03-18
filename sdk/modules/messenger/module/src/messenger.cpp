@@ -107,6 +107,9 @@ _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
     }
 
     printf("\n");
+
+    vs_messenger_send(sender, "You're welcome :)");
+    //    vs_messenger_send(/*sender*/ _identity, "You're welcome :)");
 }
 
 /******************************************************************************/
@@ -139,7 +142,6 @@ vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
 
     vs_messenger_virgil_logout();
 
-
     exit(1);
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
@@ -147,7 +149,35 @@ vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
 /******************************************************************************/
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_send(const char *recipient, const char *message) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+
+    uint8_t encrypted_message[4096];
+    size_t encrypted_message_sz = 0;
+
+    static const char json_tmpl[] = "{\"type\":\"text\",\"payload\":{\"body\":\"%s\"}}";
+    char json_msg[1024];
+
+    size_t req_sz = strlen(json_tmpl) + strlen(message);
+
+    if (req_sz > sizeof(json_msg)) {
+        return VS_CODE_ERR_TOO_SMALL_BUFFER;
+    }
+
+    sprintf(json_msg, json_tmpl, message);
+
+    vs_messenger_virgil_encrypt_msg(
+            recipient, json_msg, encrypted_message, sizeof(encrypted_message), &encrypted_message_sz);
+
+    vs_messenger_enjabberd_send(recipient, (char *)encrypted_message);
+
+#if 0
+    char *msg = NULL;
+    vs_messenger_virgil_decrypt_msg(recipient, (char *)encrypted_message, &msg);
+    if (msg) {
+        printf("  Message own: %s\n", msg);
+        free(msg);
+    }
+#endif
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

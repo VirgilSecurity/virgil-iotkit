@@ -56,6 +56,9 @@ using namespace VirgilIoTKit;
 // xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage)
 
 static vs_messenger_enjabberd_rx_encrypted_cb_t _rx_encrypted_cb = NULL;
+static xmpp_stanza_t *_stanza = NULL;
+static xmpp_ctx_t *_ctx;
+static xmpp_conn_t *_conn;
 
 /******************************************************************************/
 extern "C" int
@@ -140,24 +143,17 @@ message_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
         sender = NULL;
     }
 
-    reply = xmpp_stanza_reply(stanza);
-    if (xmpp_stanza_get_type(reply) == NULL)
-        xmpp_stanza_set_type(reply, "chat");
+    // >>> Reply
+    if (!_stanza) {
+        _stanza = xmpp_stanza_reply(stanza);
 
-    if (strcmp(intext, "quit") == 0) {
-        replytext = strdup("bye!");
-        quit = 1;
-    } else {
-        replytext = (char *)malloc(strlen(" to you too!") + strlen(intext) + 1);
-        strcpy(replytext, intext);
-        strcat(replytext, " to you too!");
+        xmpp_stanza_set_from(_stanza, xmpp_stanza_get_to(stanza));
+        //        if (xmpp_stanza_get_type(reply) == NULL)
+        //                    xmpp_stanza_set_type(reply, "chat");
     }
-    xmpp_free(ctx, intext);
-    xmpp_message_set_body(reply, replytext);
 
-    xmpp_send(conn, reply);
-    xmpp_stanza_release(reply);
-    free(replytext);
+    xmpp_free(ctx, intext);
+    // <<< Reply
 
     if (quit)
         xmpp_disconnect(conn);
@@ -198,8 +194,6 @@ vs_messenger_enjabberd_connect(const char *host,
                                const char *pass,
                                vs_messenger_enjabberd_rx_encrypted_cb_t rx_cb) {
 
-    xmpp_ctx_t *ctx;
-    xmpp_conn_t *conn;
     xmpp_log_t *log;
     long flags = 0;
     int tcp_keepalive = 1;
@@ -215,38 +209,38 @@ vs_messenger_enjabberd_connect(const char *host,
     log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG);
 
     /* create a context */
-    ctx = xmpp_ctx_new(NULL, log);
+    _ctx = xmpp_ctx_new(NULL, log);
 
     /* create a connection */
-    conn = xmpp_conn_new(ctx);
+    _conn = xmpp_conn_new(_ctx);
 
     /* configure connection properties (optional) */
     //    xmpp_conn_set_flags(conn, flags);
     /* configure TCP keepalive (optional) */
     if (tcp_keepalive)
-        xmpp_conn_set_keepalive(conn, KA_TIMEOUT, KA_INTERVAL);
+        xmpp_conn_set_keepalive(_conn, KA_TIMEOUT, KA_INTERVAL);
 
     /* setup authentication information */
     jid_sz = strlen(identity) + strlen(host) + 2; // 2 is zero-terminator + '@'
     jid = (char *)(calloc(1, jid_sz));
     sprintf(jid, "%s@%s", identity, host);
 
-    xmpp_conn_set_jid(conn, jid);
-    xmpp_conn_set_pass(conn, pass);
+    xmpp_conn_set_jid(_conn, jid);
+    xmpp_conn_set_pass(_conn, pass);
 
     /* initiate connection */
-    if (XMPP_EOK != xmpp_connect_client(conn, host, port, conn_handler, ctx)) {
+    if (XMPP_EOK != xmpp_connect_client(_conn, host, port, conn_handler, _ctx)) {
         std::cerr << "Cannot connect to enjabberd" << std::endl;
         exit(-1);
     }
 
     /* enter the event loop -
        our connect handler will trigger an exit */
-    xmpp_run(ctx);
+    xmpp_run(_ctx);
 
     /* release our connection and context */
-    xmpp_conn_release(conn);
-    xmpp_ctx_free(ctx);
+    xmpp_conn_release(_conn);
+    xmpp_ctx_free(_ctx);
 
     /* final shutdown of the library */
     xmpp_shutdown();
@@ -257,7 +251,14 @@ vs_messenger_enjabberd_connect(const char *host,
 /******************************************************************************/
 extern "C" vs_status_e
 vs_messenger_enjabberd_send(const char *identity, const char *message) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+
+    if (_stanza) {
+        xmpp_message_set_body(_stanza, message);
+        xmpp_send(_conn, _stanza);
+        //    xmpp_stanza_release(reply);
+    }
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

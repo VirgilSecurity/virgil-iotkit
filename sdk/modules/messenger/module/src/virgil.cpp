@@ -144,7 +144,6 @@ vs_messenger_virgil_sign_in(const char *identity,
     _card_id = strdup(parsedCard.identifier().c_str());
 
     return vs_messenger_virgil_get_token(_virgil_token, TOKEN_SZ_MAX);
-    ;
 }
 
 /******************************************************************************/
@@ -326,6 +325,9 @@ vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_messag
     // Get cipher text
     auto encMessageTxt = VirgilByteArrayUtils::bytesToString(VirgilBase64::decode(encrypted_message));
     auto encMessageJSON = json::parse(encMessageTxt);
+
+    std::cout << encMessageJSON << std::endl;
+
     std::string ciphertextBase64 = encMessageJSON["ciphertext"];
     auto encData = VirgilBase64::decode(ciphertextBase64);
 
@@ -357,6 +359,64 @@ vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_messag
         dec_data[dec_data_sz] = 0;
         *msg = strdup((char *)dec_data);
     }
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
+extern "C" vs_status_e
+vs_messenger_virgil_encrypt_msg(const char *recipient,
+                                const char *message,
+                                uint8_t *encrypted_message,
+                                size_t buf_sz,
+                                size_t *encrypted_message_sz) {
+
+    uint8_t enc_data[2048];
+    size_t enc_data_sz = 0;
+
+    // Get Recipient's public key
+    CardClient cardClient;
+    auto searchFuture = cardClient.searchCards(recipient, _virgil_token);
+    auto rawCards = searchFuture.get();
+    auto parsedCard = CardManager::parseCard(rawCards.front(), crypto);
+    auto recipientPubkey = parsedCard.publicKey();
+
+    auto recipientPubkeyData = crypto->exportPublicKey(recipientPubkey);
+    auto recipientId = _computeHashForPublicKey(recipientPubkeyData);
+    auto senderId = _computeHashForPublicKey(VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(_pubkey, _pubkey_sz));
+
+    vs_messenger_crypto_encrypt((const uint8_t *)message,
+                                strlen(message),
+                                recipientPubkeyData.data(),
+                                recipientPubkeyData.size(),
+                                recipientId.data(),
+                                recipientId.size(),
+                                _privkey,
+                                _privkey_sz,
+                                senderId.data(),
+                                senderId.size(),
+                                enc_data,
+                                sizeof(enc_data),
+                                &enc_data_sz);
+
+    auto encData = VIRGIL_BYTE_ARRAY_FROM_PTR_AND_LEN(enc_data, enc_data_sz);
+    auto encDataBase64 = VirgilBase64::encode(encData);
+
+    json encJSON = {{"ciphertext", encDataBase64}, {"codableVersion", "v2"}, {"date", 606234680.978069}};
+
+    std::string encJsonBase64 = VirgilBase64::encode(str2bytes(encJSON.dump()));
+
+
+    //    std::cout << encJSON.dump() << std::endl;
+    //    std::cout << encJsonBase64 << std::endl;
+
+    if (buf_sz < encJsonBase64.size()) {
+        assert(false);
+    }
+
+    memset(encrypted_message, 0, buf_sz);
+    *encrypted_message_sz = encJsonBase64.size() + 1;
+    memcpy(encrypted_message, encJsonBase64.c_str(), *encrypted_message_sz);
 
     return VS_CODE_OK;
 }

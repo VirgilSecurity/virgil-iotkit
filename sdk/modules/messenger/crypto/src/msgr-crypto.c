@@ -45,6 +45,129 @@
 
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
+vs_messenger_crypto_encrypt(const uint8_t *data,
+                            size_t data_sz,
+                            const uint8_t *recipient_pubkey,
+                            size_t recipient_pubkey_sz,
+                            const uint8_t *recepient_id,
+                            size_t recepient_id_sz,
+                            const uint8_t *sender_privkey,
+                            size_t sender_privkey_sz,
+                            const uint8_t *sender_id,
+                            size_t sender_id_sz,
+                            uint8_t *encrypted_data,
+                            size_t buf_sz,
+                            size_t *encrypted_data_sz) {
+
+    vsc_data_t msg_data = vsc_data(data, data_sz);
+    vsc_data_t recipient_pubkey_data = vsc_data(recipient_pubkey, recipient_pubkey_sz);
+    vsc_data_t recipient_id_data = vsc_data(recepient_id, recepient_id_sz);
+    vsc_data_t sender_privkey_data = vsc_data(sender_privkey, sender_privkey_sz);
+    vsc_data_t sender_id_data = vsc_data(sender_id, sender_id_sz);
+
+
+    //  Prepare random.
+    //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
+
+    //
+    //  Prepare recipients / signers.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, random);
+    if (vscf_status_SUCCESS != vscf_key_provider_setup_defaults(key_provider)) {
+        assert(false);
+    }
+
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(key_provider, recipient_pubkey_data, &error);
+    if (vscf_status_SUCCESS != vscf_error_status(&error)) {
+        assert(false);
+    }
+
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, sender_privkey_data, &error);
+    if (vscf_status_SUCCESS != vscf_error_status(&error)) {
+        assert(false);
+    }
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_use_random(recipient_cipher, random);
+
+    vscf_recipient_cipher_add_key_recipient(recipient_cipher, recipient_id_data, public_key);
+
+    if (vscf_status_SUCCESS != vscf_recipient_cipher_add_signer(recipient_cipher, sender_id_data, private_key)) {
+        assert(false);
+    }
+
+    //
+    //  Encrypt.
+    //
+    if (vscf_status_SUCCESS != vscf_recipient_cipher_start_signed_encryption(recipient_cipher, msg_data.len)) {
+        assert(false);
+    }
+
+    size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
+    size_t enc_msg_data_len = vscf_recipient_cipher_encryption_out_len(recipient_cipher, msg_data.len) +
+                              vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+
+    vsc_buffer_t *enc_msg_header = vsc_buffer_new_with_capacity(message_info_len);
+    vsc_buffer_t *enc_msg_data = vsc_buffer_new_with_capacity(enc_msg_data_len);
+
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg_header);
+
+    if (vscf_status_SUCCESS != vscf_recipient_cipher_process_encryption(recipient_cipher, msg_data, enc_msg_data)) {
+        assert(false);
+    }
+
+    if (vscf_status_SUCCESS != vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg_data)) {
+        assert(false);
+    }
+
+    size_t enc_msg_info_footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
+    vsc_buffer_t *enc_msg_footer = vsc_buffer_new_with_capacity(enc_msg_info_footer_len);
+
+    if (vscf_status_SUCCESS != vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, enc_msg_footer)) {
+        assert(false);
+    }
+
+    vsc_data_t header_data = vsc_buffer_data(enc_msg_header);
+    vsc_data_t res_data = vsc_buffer_data(enc_msg_data);
+    vsc_data_t footer_data = vsc_buffer_data(enc_msg_footer);
+
+    size_t full_sz = header_data.len + res_data.len + footer_data.len;
+
+    if (full_sz <= buf_sz) {
+        *encrypted_data_sz = full_sz;
+        uint8_t *p = encrypted_data;
+
+        memcpy(p, header_data.bytes, header_data.len);
+        p += header_data.len;
+
+        memcpy(p, res_data.bytes, res_data.len);
+        p += res_data.len;
+
+        memcpy(p, footer_data.bytes, footer_data.len);
+    }
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&enc_msg_footer);
+    vsc_buffer_destroy(&enc_msg_data);
+    vsc_buffer_destroy(&enc_msg_header);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&random);
+}
+
+/******************************************************************************/
+DLL_PUBLIC vs_status_e
 vs_messenger_crypto_decrypt(const uint8_t *enc_data,
                             size_t enc_data_sz,
                             const uint8_t *privkey,

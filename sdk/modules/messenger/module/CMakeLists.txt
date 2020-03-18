@@ -41,7 +41,7 @@ add_library(vs-module-messenger SHARED)
 #
 #   libstrophe as dependency
 #
-add_subdirectory(../../../ext/libstrophe libstrophe)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../../ext/libstrophe libstrophe)
 
 #
 #   Virgil C++ SDK

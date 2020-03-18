@@ -81,6 +81,13 @@ vs_status_e
 vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg);
 
 vs_status_e
+vs_messenger_virgil_encrypt_msg(const char *recipient,
+                                const char *message,
+                                uint8_t *encrypted_message,
+                                size_t buf_sz,
+                                size_t *encrypted_message_sz);
+
+vs_status_e
 vs_messenger_virgil_logout(void);
 
 #ifdef __cplusplus
