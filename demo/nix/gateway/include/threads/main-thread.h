@@ -55,7 +55,7 @@
 #define THREAD_CANCEL_RESTORE                                                                                          \
     do {                                                                                                               \
         if (0 != pthread_setcancelstate(old_cancel_state, &old_cancel_state)) {                                        \
-            VS_LOG_ERROR("[MB] Failed to disable thread cancel, errno = %d (%s)", errno, strerror(errno));             \
+            VS_LOG_ERROR("[MB] Failed to restore thread cancel, errno = %d (%s)", errno, strerror(errno));             \
             exit(-1);                                                                                                  \
         }                                                                                                              \
     } while (0)

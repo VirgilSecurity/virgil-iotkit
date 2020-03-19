@@ -32,42 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <msgr/msgr-client-impl.h>
-#include <virgil/iot/protocols/snap.h>
+#ifndef GATEWAY_MSGR_THREAD_H
+#define GATEWAY_MSGR_THREAD_H
 
-#include "threads/msgr-thread.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <pthread.h>
 
-static vs_status_e
-_snap_msgr_start_notif_cb(vs_snap_msgr_device_t *device);
+pthread_t *
+vs_msgr_start_thread(void);
 
-static vs_status_e
-_snap_msgr_device_data_cb(uint8_t *data, uint32_t data_sz);
+bool
+vs_msgr_send_message_to_messenger(uint8_t *data, uint32_t data_sz);
 
-/******************************************************************************/
-static vs_status_e
-_snap_msgr_start_notif_cb(vs_snap_msgr_device_t *device) {
-    VS_LOG_DEBUG("MSGR thing device start. mac = %x:%x:%x:%x:%x:%x",
-                 device->mac[0],
-                 device->mac[1],
-                 device->mac[2],
-                 device->mac[3],
-                 device->mac[4],
-                 device->mac[5]);
-    vs_snap_msgr_set_polling(vs_snap_netif_routing(), (vs_mac_addr_t *)device->mac, true, MSGR_POLL_PERIOD_S);
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-static vs_status_e
-_snap_msgr_device_data_cb(uint8_t *data, uint32_t data_sz) {
-    CHECK_RET(
-            vs_msgr_send_message_to_messenger(data, data_sz), VS_CODE_ERR_REQUEST_PREPARE, "Can't process the message");
-    return VS_CODE_OK;
-}
-
-/******************************************************************************/
-vs_snap_msgr_client_service_t
-vs_snap_msgr_client_impl(void) {
-    vs_snap_msgr_client_service_t msgr_client_cb = {_snap_msgr_start_notif_cb, _snap_msgr_device_data_cb};
-    return msgr_client_cb;
-}
+#endif // GATEWAY_MSGR_THREAD_H
