@@ -40,6 +40,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/crypto)
 
 #
+#   Messege internal functionality
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/internal)
+
+#
 #   Messenger module
 #
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/module)

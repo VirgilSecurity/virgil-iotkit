@@ -33,11 +33,9 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/messenger/messenger.h>
-#include "private/virgil.h"
-#include "private/enjabberd.h"
+#include <virgil/iot/messenger/internal/virgil.h>
+#include <virgil/iot/messenger/internal/enjabberd.h>
 #include "private/visibility.h"
-
-using namespace VirgilIoTKit;
 
 static vs_messenger_rx_cb_t _rx_cb = NULL;
 
@@ -93,7 +91,7 @@ const uint8_t _card[] = {
         0x72, 0x22, 0x3a, 0x22, 0x76, 0x69, 0x72, 0x67, 0x69, 0x6c, 0x22, 0x7d, 0x5d, 0x7d};
 
 /******************************************************************************/
-extern "C" void
+void
 _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
     char *msg = NULL;
 
@@ -113,7 +111,7 @@ _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
 }
 
 /******************************************************************************/
-extern "C" DLL_PUBLIC vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
     uint8_t pubkey[KEY_SZ_MAX];
     size_t pubkey_sz = 0;
@@ -147,7 +145,7 @@ vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
 }
 
 /******************************************************************************/
-extern "C" DLL_PUBLIC vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_send(const char *recipient, const char *message) {
 
     uint8_t encrypted_message[4096];
@@ -181,7 +179,7 @@ vs_messenger_send(const char *recipient, const char *message) {
 }
 
 /******************************************************************************/
-extern "C" DLL_PUBLIC vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_stop(void) {
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }

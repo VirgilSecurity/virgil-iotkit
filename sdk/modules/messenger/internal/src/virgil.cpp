@@ -32,7 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <private/virgil.h>
+#include <virgil/iot/messenger/internal/virgil.h>
+#include "private/visibility.h"
 
 using namespace VirgilIoTKit;
 
@@ -115,14 +116,14 @@ static char *_card_id = NULL;
 static char _virgil_token[TOKEN_SZ_MAX] = {0};
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_init(void) {
     crypto = std::make_shared<Crypto>();
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_sign_in(const char *identity,
                             const uint8_t *pubkey,
                             size_t pubkey_sz,
@@ -147,7 +148,7 @@ vs_messenger_virgil_sign_in(const char *identity,
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_sign_up(const char *identity,
                             uint8_t *pubkey,
                             size_t pubkey_buf_sz,
@@ -281,19 +282,19 @@ _get_token(const char *endpoint, char *token, size_t token_buf_sz) {
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_get_token(char *token, size_t token_buf_sz) {
     return _get_token(_virgil_jwt_endpoint, token, token_buf_sz);
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz) {
     return _get_token(_ejabberd_jwt_endpoint, pass, pass_buf_sz);
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_logout(void) {
     crypto = nullptr;
     free(_card_id);
@@ -310,7 +311,7 @@ _computeHashForPublicKey(const VirgilByteArray &publicKey) {
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg) {
     uint8_t dec_data[1024];
     size_t dec_data_sz = 0;
@@ -364,7 +365,7 @@ vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_messag
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_encrypt_msg(const char *recipient,
                                 const char *message,
                                 uint8_t *encrypted_message,
@@ -405,10 +406,6 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     json encJSON = {{"ciphertext", encDataBase64}, {"codableVersion", "v2"}, {"date", 606234680.978069}};
 
     std::string encJsonBase64 = VirgilBase64::encode(str2bytes(encJSON.dump()));
-
-
-    //    std::cout << encJSON.dump() << std::endl;
-    //    std::cout << encJsonBase64 << std::endl;
 
     if (buf_sz < encJsonBase64.size()) {
         assert(false);

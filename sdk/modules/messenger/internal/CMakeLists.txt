@@ -34,37 +34,63 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-module-messenger VERSION 0.1.0 LANGUAGES C)
+project(vs-messenger-internal VERSION 0.1.0 LANGUAGES C CXX)
 
-add_library(vs-module-messenger)
+add_library(vs-messenger-internal SHARED)
 
-target_sources(vs-module-messenger
+#
+#   libstrophe as dependency
+#
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../../ext/libstrophe libstrophe)
+
+#
+#   Virgil C++ SDK
+#
+set (VSCPPSDK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-sdk-cpp/cmake-build-host/release/installed/usr/local")
+find_library(VSCPPSDK_LIBRARY
+        NAMES vscppsdk
+        HINTS "${VSCPPSDK_PATH}/lib"
+        )
+
+
+target_sources(vs-messenger-internal
         PRIVATE
 
         # Headers
-        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/messenger/messenger.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/messenger/internal/enjabberd.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/messenger/internal/virgil.h
 
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/messenger.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/enjabberd.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/virgil.cpp
         )
 
-target_link_libraries(vs-module-messenger
+target_link_libraries(vs-messenger-internal
         PUBLIC
-#        storage_hal
-        vs-messenger-internal
         virgil-iot-status-code
+        ${VSCPPSDK_LIBRARY}
+        strophe
+        curl
+        vs-messenger-crypto
         )
 
-target_include_directories(vs-module-messenger
+target_include_directories(vs-messenger-internal
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
+        $<BUILD_INTERFACE:${VSCPPSDK_PATH}/include>
 
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
-install(TARGETS vs-module-messenger
+set_target_properties(vs-messenger-internal
+        PROPERTIES
+        C_VISIBILITY_PRESET hidden
+        CXX_VISIBILITY_PRESET hidden
+        )
+
+install(TARGETS vs-messenger-internal
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -75,5 +101,5 @@ install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
         )
 
 if(COMMAND add_clangformat)
-    add_clangformat(vs-module-messenger)
+    add_clangformat(vs-messenger-internal)
 endif()

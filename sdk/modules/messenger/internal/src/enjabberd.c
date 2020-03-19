@@ -32,11 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <iostream>
-#include <private/enjabberd.h>
+#include <virgil/iot/messenger/internal/enjabberd.h>
 #include <strophe.h>
-
-using namespace VirgilIoTKit;
+#include "private/visibility.h"
 
 /* hardcoded TCP keepalive timeout and interval */
 #define KA_TIMEOUT 60
@@ -61,7 +59,7 @@ static xmpp_ctx_t *_ctx;
 static xmpp_conn_t *_conn;
 
 /******************************************************************************/
-extern "C" int
+int
 version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
     xmpp_stanza_t *reply, *query, *name, *version, *text;
     const char *ns;
@@ -108,7 +106,7 @@ version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
 }
 
 /******************************************************************************/
-extern "C" int
+int
 message_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
     xmpp_ctx_t *ctx = (xmpp_ctx_t *)userdata;
     xmpp_stanza_t *body, *reply;
@@ -162,7 +160,7 @@ message_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
 }
 
 /******************************************************************************/
-extern "C" void
+void
 conn_handler(xmpp_conn_t *const conn,
              const xmpp_conn_event_t status,
              const int error,
@@ -187,7 +185,7 @@ conn_handler(xmpp_conn_t *const conn,
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_connect(const char *host,
                                uint16_t port,
                                const char *identity,
@@ -230,7 +228,7 @@ vs_messenger_enjabberd_connect(const char *host,
 
     /* initiate connection */
     if (XMPP_EOK != xmpp_connect_client(_conn, host, port, conn_handler, _ctx)) {
-        std::cerr << "Cannot connect to enjabberd" << std::endl;
+        printf("Cannot connect to enjabberd\n");
         exit(-1);
     }
 
@@ -249,7 +247,7 @@ vs_messenger_enjabberd_connect(const char *host,
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_send(const char *identity, const char *message) {
 
     if (_stanza) {
@@ -262,13 +260,13 @@ vs_messenger_enjabberd_send(const char *identity, const char *message) {
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_set_status(void) {
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
 
 /******************************************************************************/
-extern "C" vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_disconnect(void) {
     return VS_CODE_ERR_NOT_IMPLEMENTED;
 }
