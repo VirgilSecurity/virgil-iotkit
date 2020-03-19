@@ -40,6 +40,10 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
+/** Remote device information
+ *
+ * Device information as parameter for #vs_snap_msgr_start_notif_cb_t function
+ */
 typedef struct {
     uint8_t mac[ETH_ADDR_LEN]; /**< Device MAC address */
 } vs_snap_msgr_device_t;

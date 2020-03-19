@@ -45,15 +45,52 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
+/** Startup notification
+ *
+ * Sends startup notification with remote device information.
+ *
+ * \param[in] device #vs_snap_msgr_device_t device information.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 typedef vs_status_e (*vs_snap_msgr_start_notif_cb_t)(vs_snap_msgr_device_t *device);
 
+/** Get data from a remote device
+ *
+ * This function is called by receiving response to get actual data from a remote device
+ * or a periodical VS_MSGR_STAT request with actual data.
+ *
+ * \param[out] data Output buffer to store data. Must not be NULL.
+ * \param[in] buf_sz Buffer size. Must not be zero.
+ * \param[out] data_sz Pointer to save stored data size. Must not be NULL.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 typedef vs_status_e (*vs_snap_msgr_device_data_cb_t)(uint8_t *data, uint32_t data_sz);
 
+/** MSGR client implementations
+ *
+ * \note Any callback can be NULL. In this case, there will be no actions with requests.
+ *
+ */
 typedef struct {
     vs_snap_msgr_start_notif_cb_t device_start; /**< Startup notification */
     vs_snap_msgr_device_data_cb_t device_data;  /**< Process received data from a device */
 } vs_snap_msgr_client_service_t;
 
+/** Enumerate remote devices, which support msgr service
+ *
+ * This call enumerates all devices present in the current network. It waits for \a wait_ms and returns collected
+ * information.
+ *
+ * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
+ * \param[out] devices #vs_snap_msgr_device_t Devices information list. Must not be NULL.
+ * \param[in] devices_max Maximum devices amount. Must not be zero.
+ * \param[out] devices_cnt Buffer to store devices amount. Must not be NULL.
+ * \param[in] wait_ms Time to wait response.
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_snap_msgr_enum_devices(const vs_netif_t *netif,
                           vs_snap_msgr_device_t *devices,
@@ -61,9 +98,28 @@ vs_snap_msgr_enum_devices(const vs_netif_t *netif,
                           size_t *devices_cnt,
                           uint32_t wait_ms);
 
+/** Set polling
+ *
+ * This call enables or disables polling data from remote devices
+ *
+ * \param[in] netif #vs_netif_t SNAP service descriptor. If NULL, default one will be used.
+ * \param[in] mac #vs_mac_addr_t MAC address. Must not be NULL.
+ * \param[out] enable Enable or disable \a elements to be sent.
+ * \param[in] period_seconds Period in seconds for statistics sending
+ *
+ * \return #VS_CODE_OK in case of success or error code.
+ */
 vs_status_e
 vs_snap_msgr_set_polling(const vs_netif_t *netif, const vs_mac_addr_t *mac, bool enable, uint16_t period_seconds);
 
+/** MSGR Client SNAP Service implementation
+ *
+ * This call returns MSGR client implementation. It must be called before any MSGR call.
+ *
+ * \param[in] impl Snap MSGR Client functions implementation.
+ *
+ * \return #vs_snap_service_t SNAP service description. Use this pointer to call #vs_snap_register_service.
+ */
 const vs_snap_service_t *
 vs_snap_msgr_client(vs_snap_msgr_client_service_t impl);
 
