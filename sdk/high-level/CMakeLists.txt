@@ -73,6 +73,7 @@ function(add_high_level _targetname _snap_lib)
     target_link_libraries(${_targetname}
             PUBLIC
             vs-module-provision
+            vs-module-secbox
             ${_snap_lib}
 
             PRIVATE

@@ -58,6 +58,8 @@
 
 #define WEBSOCKET_URL "wss://websocket-stg.virgilsecurity.com/ws"
 
+#define VS_MAX_SECBOX_FILE_SIZE (10 * 1024)
+
 /******************************************************************************/
 int
 main(int argc, char *argv[]) {
@@ -71,6 +73,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
+    vs_storage_op_ctx_t secbox_storage_impl;
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -118,6 +121,10 @@ main(int argc, char *argv[]) {
     STATUS_CHECK(vs_app_storage_init_impl(&fw_storage_impl, vs_app_firmware_dir(), VS_MAX_FIRMWARE_UPDATE_SIZE),
                  "Cannot create TrustList storage");
 
+    // SecBox storage
+    STATUS_CHECK(vs_app_storage_init_impl(&secbox_storage_impl, vs_app_secbox_dir(), VS_MAX_SECBOX_FILE_SIZE),
+                 "Cannot create TrustList storage");
+
     // Soft Security Module
     secmodule_impl = vs_soft_secmodule_impl(&slots_storage_impl);
 
@@ -148,6 +155,7 @@ main(int argc, char *argv[]) {
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     &fw_storage_impl,
+                                    &secbox_storage_impl,
                                     netifs_impl,
                                     vs_packets_queue_add,
                                     iotkit_events),

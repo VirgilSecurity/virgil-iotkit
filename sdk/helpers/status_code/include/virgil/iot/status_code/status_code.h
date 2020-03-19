@@ -130,6 +130,10 @@ typedef enum {
     VS_CODE_ERR_MAC_SNAP = -93,            /**< Error while #vs_netif_t . mac call */
     VS_CODE_ERR_POLLING_INFO_CLIENT = -94, /**< Error while starting polling */
 
+    VS_CODE_ERR_MSGR_CONFIG = -100,        /**< Error while work with messenger configuration */
+    VS_CODE_ERR_MSGR_VERSION = -101,       /**< Wrong version of messenger configuration */
+    VS_CODE_ERR_MSGR_INTERNAL = -102,      /**< Internal error in messenger */
+
     VS_CODE_ERR_USER = -128 /**< User specific error codes start with this value */
 
 } vs_status_e;

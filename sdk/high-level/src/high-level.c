@@ -66,6 +66,7 @@ _file_ver_info_cb(vs_file_version_t ver);
 
 static vs_provision_events_t _provision_event = {_file_ver_info_cb};
 static vs_iotkit_events_t _iotkit_events = {NULL};
+static bool _sebox_present = false;
 
 /******************************************************************************/
 vs_status_e
@@ -78,6 +79,7 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 #if FLDT_SERVER || FLDT_CLIENT
                    vs_storage_op_ctx_t *firmware_storage_impl,
 #endif // FLDT_SERVER || FLDT_CLIENT
+                   vs_storage_op_ctx_t *secbox_storage_impl,
                    vs_netif_t *netif_impl[],
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events) {
@@ -101,6 +103,16 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     if (VS_CODE_OK != ret_code && VS_CODE_ERR_NOINIT != ret_code) {
         VS_LOG_ERROR("Cannot initialize Provision module");
         goto terminate;
+    }
+
+    // SecBox module if required
+    if (secbox_storage_impl) {
+        ret_code = vs_secbox_init(secbox_storage_impl, secmodule_impl);
+        if (VS_CODE_OK != ret_code && VS_CODE_ERR_NOINIT != ret_code) {
+            VS_LOG_ERROR("Cannot initialize SecBox module");
+            goto terminate;
+        }
+        _sebox_present = true;
     }
 
 #if FLDT_SERVER || FLDT_CLIENT
@@ -249,6 +261,11 @@ vs_high_level_deinit(void) {
 
     // Deinit provision
     vs_provision_deinit();
+
+    // Deinit SecBox
+    if (_sebox_present) {
+        vs_secbox_deinit();
+    }
 
     return VS_CODE_OK;
 }

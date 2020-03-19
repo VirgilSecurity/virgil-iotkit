@@ -47,28 +47,28 @@ extern "C" {
 #endif
 
 vs_status_e
-vs_messenger_virgil_init(void);
+vs_messenger_virgil_init(const char *service_base_url);
 
 vs_status_e
 vs_messenger_virgil_sign_in(const char *identity,
                             const uint8_t *pubkey,
-                            size_t pubkey_sz,
+                            uint16_t pubkey_sz,
                             const uint8_t *privkey,
-                            size_t privkey_sz,
+                            uint16_t privkey_sz,
                             const uint8_t *card,
-                            size_t card_sz);
+                            uint16_t card_sz);
 
 vs_status_e
 vs_messenger_virgil_sign_up(const char *identity,
                             uint8_t *pubkey,
-                            size_t pubkey_buf_sz,
-                            size_t *pubkey_sz,
+                            uint16_t pubkey_buf_sz,
+                            uint16_t *pubkey_sz,
                             uint8_t *privkey,
-                            size_t priv_buf_sz,
-                            size_t *priv_sz,
+                            uint16_t priv_buf_sz,
+                            uint16_t *priv_sz,
                             uint8_t *card,
-                            size_t card_buf_sz,
-                            size_t *card_sz);
+                            uint16_t card_buf_sz,
+                            uint16_t *card_sz);
 
 vs_status_e
 vs_messenger_virgil_get_token(char *token, size_t token_buf_sz);

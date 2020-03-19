@@ -119,6 +119,7 @@ main(int argc, char *argv[]) {
                                     device_roles,
                                     secmodule_impl,
                                     &tl_storage_impl,
+                                    NULL,
                                     netifs_impl,
                                     vs_packets_queue_add,
                                     iotkit_events),

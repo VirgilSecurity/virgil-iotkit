@@ -35,8 +35,8 @@
 #include "threads/main-thread.h"
 #include "threads/message-bin-thread.h"
 #include "threads/file-download-thread.h"
+#include "threads/messenger-thread.h"
 #include "event-flags.h"
-#include "sdk-impl/storage/storage-nix-impl.h"
 #include "helpers/app-helpers.h"
 
 #include <global-hal.h>
@@ -45,7 +45,6 @@
 #include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-server.h>
 #include <virgil/iot/trust_list/trust_list.h>
-#include <virgil/iot/messenger/messenger.h>
 
 static gtwy_t _gtwy = {.firmware_mutex = PTHREAD_MUTEX_INITIALIZER, .tl_mutex = PTHREAD_MUTEX_INITIALIZER};
 
@@ -61,6 +60,7 @@ static const char _test_message[] = TEST_UPDATE_MESSAGE;
 
 static pthread_t *message_bin_thread;
 static pthread_t *upd_http_retrieval_thread;
+static pthread_t *messenger_thread;
 
 /******************************************************************************/
 gtwy_t *
@@ -123,6 +123,13 @@ _stop_all_threads(void) {
     }
     VS_LOG_INFO("upd_http_retrieval_thread thread canceled");
 
+    // Stop Messenger thread
+    if (0 != _cancel_thread(messenger_thread)) {
+        VS_LOG_ERROR("Unable to cancel messenger_thread");
+        exit(-1);
+    }
+    VS_LOG_INFO("messenger_thread thread canceled");
+
     /* Cleanup a mutexes */
     pthread_mutex_destroy(&_gtwy.firmware_mutex);
     pthread_mutex_destroy(&_gtwy.tl_mutex);
@@ -158,10 +165,9 @@ _gateway_task(void *pvParameters) {
     upd_http_retrieval_thread = vs_file_download_start_thread();
     CHECK_NOT_ZERO_RET(upd_http_retrieval_thread, (void *)-1);
 
-    // Start messenger
-    //    vs_status_e
-    // vs_messenger_rx_cb_t rx_cb
-    vs_messenger_start(NULL);
+    // Start Messenger thread
+    messenger_thread = vs_messenger_start_thread();
+    CHECK_NOT_ZERO_RET(messenger_thread, (void *)-1);
 
     // Main cycle
     while (!stop_threads) {

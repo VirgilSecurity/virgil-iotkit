@@ -50,7 +50,7 @@ target_sources(vs-module-messenger
 
 target_link_libraries(vs-module-messenger
         PUBLIC
-#        storage_hal
+        vs-module-secbox
         vs-messenger-internal
         virgil-iot-status-code
         )

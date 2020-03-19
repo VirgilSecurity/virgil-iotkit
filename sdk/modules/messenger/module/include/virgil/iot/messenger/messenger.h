@@ -40,6 +40,8 @@
 #include <stdbool.h>
 #include <global-hal.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/messenger/internal/virgil.h>
+#include <virgil/iot/messenger/internal/enjabberd.h>
 
 #ifdef __cplusplus
 namespace VirgilIoTKit {
@@ -48,8 +50,40 @@ extern "C" {
 
 typedef void (*vs_messenger_rx_cb_t)(const char *sender, const char *message);
 
+#define VS_MESSENGER_CFG_VERSION (1)     /**< Current version of messenger configuration */
+#define VS_HOST_NAME_MAX_SZ (128)        /**< Maximum size of string with host name */
+#define VS_MESSENGER_CHANNEL_MAX_SZ (32) /**< Maximum size of Messenger's channel name */
+#define VS_MESSENGER_CHANNEL_NUM_MAX (1) /**< Supported amount of channels */
+
+/** Messenger's configuration */
+typedef struct {
+    uint8_t version;                              /**< Version of #vs_messenger_config_t structure */
+    char enjabberd_host[VS_HOST_NAME_MAX_SZ];     /**< Enjabberd host */
+    uint16_t enjabberd_port;                      /**< Enjabberd port */
+    char messenger_base_url[VS_HOST_NAME_MAX_SZ]; /**< Virgil messenger service base URL */
+} vs_messenger_config_t;
+
+/** Messenger's channels to accept and connect to */
+typedef struct {
+    uint8_t channels_num;                                                    /**< Amount of available XMPP channels */
+    char channel[VS_MESSENGER_CHANNEL_NUM_MAX][VS_MESSENGER_CHANNEL_MAX_SZ]; /**< Available XMPP channels */
+} vs_messenger_channels_t;
+
+// This function saves configuration data into persistent storage
+// Use it only once, on receive  of configuration data from Cloud
+// If messenger is already started, then new configuration will be
+// used on the next boot.
 vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb);
+vs_messenger_configure(const vs_messenger_config_t *config);
+
+// This function saves available channels names into persistent storage
+// If messenger is already started, then new channels list will be
+// used on the next boot.
+vs_status_e
+vs_messenger_set_channels(const char *identity, const vs_messenger_channels_t *channels);
+
+vs_status_e
+vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb);
 
 vs_status_e
 vs_messenger_send(const char *recipient, const char *message);

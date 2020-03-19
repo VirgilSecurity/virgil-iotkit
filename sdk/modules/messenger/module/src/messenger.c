@@ -33,155 +33,366 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/iot/messenger/messenger.h>
-#include <virgil/iot/messenger/internal/virgil.h>
-#include <virgil/iot/messenger/internal/enjabberd.h>
-#include "private/visibility.h"
+#include <virgil/iot/secbox/secbox.h>
+#include <virgil/iot/macros/macros.h>
+
+
+#define IDENTITY_SZ_MAX (128)
+#define KEY_SZ_MAX (128)
+#define CARD_SZ_MAX (4 * 1024)
+#define TOKEN_SZ_MAX (1024)
+#define ENCRYPTED_MESSAGE_SZ_MAX (4 * 1024)
+#define DECRYPTED_MESSAGE_SZ_MAX (3 * 1024)
+
+/** User credentials */
+typedef struct {
+    uint8_t privkey[KEY_SZ_MAX]; /**< Private key data */
+    uint16_t privkey_sz;         /**< Private key size */
+    uint8_t pubkey[KEY_SZ_MAX];  /**< Public key data */
+    uint16_t pubkey_sz;          /**< Public key size */
+    uint8_t card[CARD_SZ_MAX];   /**< Card */
+    uint16_t card_sz;            /**< Card size */
+} vs_messenger_user_creds_t;
+
+static const char *MESSENGER_CFG_SORAGE_ID = "MSGR_CFG_ID"; /**< Storage ID of Messenger's configuration for SecBox */
+static const char *MESSENGER_USER_ID_TEMPLATE =
+        "MSGR_%s_ID"; /**< Storage ID of Messenger's user credentials for SecBox */
+static const char *MESSENGER_CHANNELS_SORAGE_ID_TEMPLATE =
+        "MSGR_%s_CHAN_ID"; /**< Storage ID of Messenger's channels list for SecBox */
 
 static vs_messenger_rx_cb_t _rx_cb = NULL;
+static vs_messenger_config_t _config = {0, {0}, 0, {0}};
+static vs_messenger_channels_t _user_channels = {0, {{0}}};
+vs_messenger_user_creds_t _user_creds = {{0}, 0, {0}, 0, {0}, 0};
 
-#define KEY_SZ_MAX (128)
-#define CARD_SZ_MAX (4096)
-#define TOKEN_SZ_MAX (1024)
+// Forward declarations
+static vs_status_e
+_load_config(vs_messenger_config_t *config);
 
-const char *_identity = "rk_test_7";
+static vs_status_e
+_load_user_channels(const char *identity, vs_messenger_channels_t *channels);
 
-// TODO: One file for constants
-const char *_enjabberd_host = "xmpp-stg.virgilsecurity.com";
-const uint16_t _enjabberd_port = 5222;
+static vs_status_e
+_load_user_cred(const char *identity, vs_messenger_user_creds_t *user_creds);
 
-const uint8_t _pubkey[] = {0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00, 0x30, 0xcb, 0xa2,
-                           0x08, 0x8d, 0x18, 0x87, 0x96, 0x08, 0xf6, 0x07, 0x2a, 0x11, 0x13, 0xd6, 0xa7, 0xac, 0x06,
-                           0x9c, 0xf6, 0x64, 0x28, 0x7f, 0x5e, 0x8e, 0x4a, 0xd9, 0x65, 0x16, 0xb0, 0x18, 0xf9};
-
-
-const uint8_t _privkey[] = {0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70,
-                            0x04, 0x22, 0x04, 0x20, 0x0a, 0x9c, 0x92, 0xdc, 0xa8, 0xab, 0x99, 0x22,
-                            0x25, 0x40, 0x22, 0xff, 0x08, 0x42, 0xec, 0xea, 0x1b, 0x32, 0xde, 0x4e,
-                            0xf1, 0xee, 0x3d, 0xbc, 0xce, 0x7c, 0x2b, 0xca, 0xbc, 0x0b, 0x1b, 0x94};
-
-const uint8_t _card[] = {
-        0x7b, 0x22, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74,
-        0x22, 0x3a, 0x22, 0x65, 0x79, 0x4a, 0x6a, 0x63, 0x6d, 0x56, 0x68, 0x64, 0x47, 0x56, 0x6b, 0x58, 0x32, 0x46,
-        0x30, 0x49, 0x6a, 0x6f, 0x78, 0x4e, 0x54, 0x67, 0x30, 0x4d, 0x7a, 0x63, 0x78, 0x4d, 0x7a, 0x67, 0x32, 0x4c,
-        0x43, 0x4a, 0x70, 0x5a, 0x47, 0x56, 0x75, 0x64, 0x47, 0x6c, 0x30, 0x65, 0x53, 0x49, 0x36, 0x49, 0x6e, 0x4a,
-        0x72, 0x58, 0x33, 0x52, 0x6c, 0x63, 0x33, 0x52, 0x66, 0x4e, 0x79, 0x49, 0x73, 0x49, 0x6e, 0x42, 0x31, 0x59,
-        0x6d, 0x78, 0x70, 0x59, 0x31, 0x39, 0x72, 0x5a, 0x58, 0x6b, 0x69, 0x4f, 0x69, 0x4a, 0x4e, 0x51, 0x32, 0x39,
-        0x33, 0x51, 0x6c, 0x46, 0x5a, 0x52, 0x45, 0x73, 0x79, 0x56, 0x6e, 0x64, 0x42, 0x65, 0x55, 0x56, 0x42, 0x54,
-        0x55, 0x31, 0x31, 0x61, 0x55, 0x4e, 0x4a, 0x4d, 0x46, 0x6c, 0x6f, 0x4e, 0x56, 0x6c, 0x4a, 0x4f, 0x57, 0x64,
-        0x6a, 0x63, 0x55, 0x56, 0x53, 0x55, 0x46, 0x64, 0x77, 0x4e, 0x6e, 0x64, 0x48, 0x62, 0x6c, 0x42, 0x61, 0x61,
-        0x30, 0x74, 0x49, 0x4f, 0x57, 0x56, 0x71, 0x61, 0x33, 0x4a, 0x61, 0x57, 0x6c, 0x4a, 0x68, 0x64, 0x30, 0x64,
-        0x51, 0x61, 0x7a, 0x30, 0x69, 0x4c, 0x43, 0x4a, 0x32, 0x5a, 0x58, 0x4a, 0x7a, 0x61, 0x57, 0x39, 0x75, 0x49,
-        0x6a, 0x6f, 0x69, 0x4e, 0x53, 0x34, 0x77, 0x49, 0x6e, 0x30, 0x3d, 0x22, 0x2c, 0x22, 0x73, 0x69, 0x67, 0x6e,
-        0x61, 0x74, 0x75, 0x72, 0x65, 0x73, 0x22, 0x3a, 0x5b, 0x7b, 0x22, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75,
-        0x72, 0x65, 0x22, 0x3a, 0x22, 0x4d, 0x46, 0x45, 0x77, 0x44, 0x51, 0x59, 0x4a, 0x59, 0x49, 0x5a, 0x49, 0x41,
-        0x57, 0x55, 0x44, 0x42, 0x41, 0x49, 0x44, 0x42, 0x51, 0x41, 0x45, 0x51, 0x43, 0x56, 0x6d, 0x36, 0x77, 0x59,
-        0x4d, 0x50, 0x58, 0x79, 0x4e, 0x63, 0x6f, 0x73, 0x51, 0x64, 0x4f, 0x6c, 0x4c, 0x52, 0x79, 0x66, 0x2b, 0x6e,
-        0x50, 0x69, 0x48, 0x7a, 0x50, 0x59, 0x70, 0x2f, 0x6d, 0x5a, 0x62, 0x4c, 0x73, 0x51, 0x4e, 0x62, 0x54, 0x2f,
-        0x2f, 0x45, 0x76, 0x59, 0x68, 0x55, 0x6e, 0x6e, 0x66, 0x65, 0x31, 0x38, 0x79, 0x46, 0x59, 0x64, 0x32, 0x4d,
-        0x6b, 0x43, 0x34, 0x78, 0x57, 0x74, 0x68, 0x30, 0x32, 0x2b, 0x55, 0x71, 0x76, 0x7a, 0x77, 0x44, 0x44, 0x7a,
-        0x37, 0x45, 0x6f, 0x38, 0x72, 0x6f, 0x77, 0x73, 0x3d, 0x22, 0x2c, 0x22, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72,
-        0x22, 0x3a, 0x22, 0x73, 0x65, 0x6c, 0x66, 0x22, 0x7d, 0x2c, 0x7b, 0x22, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74,
-        0x75, 0x72, 0x65, 0x22, 0x3a, 0x22, 0x4d, 0x46, 0x45, 0x77, 0x44, 0x51, 0x59, 0x4a, 0x59, 0x49, 0x5a, 0x49,
-        0x41, 0x57, 0x55, 0x44, 0x42, 0x41, 0x49, 0x44, 0x42, 0x51, 0x41, 0x45, 0x51, 0x42, 0x49, 0x48, 0x4e, 0x56,
-        0x4e, 0x46, 0x31, 0x48, 0x50, 0x43, 0x7a, 0x78, 0x4d, 0x42, 0x33, 0x76, 0x66, 0x32, 0x43, 0x57, 0x69, 0x73,
-        0x74, 0x34, 0x78, 0x62, 0x50, 0x36, 0x4a, 0x6f, 0x48, 0x53, 0x57, 0x52, 0x53, 0x4b, 0x78, 0x62, 0x4b, 0x67,
-        0x70, 0x42, 0x64, 0x75, 0x61, 0x69, 0x65, 0x68, 0x42, 0x66, 0x30, 0x71, 0x2f, 0x73, 0x53, 0x58, 0x6c, 0x2f,
-        0x34, 0x4c, 0x2b, 0x69, 0x39, 0x4c, 0x6d, 0x38, 0x67, 0x68, 0x39, 0x50, 0x41, 0x6e, 0x33, 0x4d, 0x53, 0x51,
-        0x6a, 0x2b, 0x73, 0x6a, 0x62, 0x4b, 0x4c, 0x67, 0x41, 0x3d, 0x22, 0x2c, 0x22, 0x73, 0x69, 0x67, 0x6e, 0x65,
-        0x72, 0x22, 0x3a, 0x22, 0x76, 0x69, 0x72, 0x67, 0x69, 0x6c, 0x22, 0x7d, 0x5d, 0x7d};
+static vs_status_e
+_save_user_cred(const char *identity, const vs_messenger_user_creds_t *user_creds);
 
 /******************************************************************************/
-void
+static void
 _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
     char *msg = NULL;
 
-    printf("Sender: %s\n", sender);
-
     vs_messenger_virgil_decrypt_msg(sender, encrypted_message, &msg);
 
-    if (msg) {
-        printf("  Message: %s\n", msg);
-        free(msg);
+    if (msg && _rx_cb) {
+        _rx_cb(sender, msg);
     }
 
-    printf("\n");
-
-    vs_messenger_send(sender, "You're welcome :)");
-    //    vs_messenger_send(/*sender*/ _identity, "You're welcome :)");
+    free(msg);
 }
 
 /******************************************************************************/
-DLL_PUBLIC vs_status_e
-vs_messenger_start(vs_messenger_rx_cb_t rx_cb) {
-    uint8_t pubkey[KEY_SZ_MAX];
-    size_t pubkey_sz = 0;
+vs_status_e
+vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+    char xmpp_pass[TOKEN_SZ_MAX] = {0};
 
-    uint8_t privkey[KEY_SZ_MAX];
-    size_t privkey_sz = 0;
+    // Check input parameters
+    CHECK_NOT_ZERO(identity && identity[0]);
 
-    uint8_t card[CARD_SZ_MAX];
-    size_t card_sz = 0;
+    // Save parameters
+    _rx_cb = rx_cb;
 
-    char pass[TOKEN_SZ_MAX] = {0};
+    // Load connection configuration
+    STATUS_CHECK(_load_config(&_config), "Cannot load Messenger configuration");
 
-    printf("\n----------------------------------------------------\n\n");
-    vs_messenger_virgil_init();
+    // Load a list of available channels for User
+    STATUS_CHECK(_load_user_channels(identity, &_user_channels), "Cannot load Messenger channels");
 
-#if 0
-    vs_messenger_virgil_sign_up(
-            _identity, pubkey, KEY_SZ_MAX, &pubkey_sz, privkey, KEY_SZ_MAX, &privkey_sz, card, CARD_SZ_MAX, &card_sz);
-#else
-    vs_messenger_virgil_sign_in(_identity, _pubkey, sizeof(_pubkey), _privkey, sizeof(_privkey), _card, sizeof(_card));
-#endif
+    // Initialize communication with Virgil Services
+    STATUS_CHECK(vs_messenger_virgil_init(_config.messenger_base_url), "Cannot initialize Virgil SDK");
 
-    vs_messenger_virgil_get_xmpp_pass(pass, TOKEN_SZ_MAX);
+    // Try to load User's credentials
+    if (VS_CODE_OK != _load_user_cred(identity, &_user_creds)) {
+        VS_LOG_INFO("User %s is not registered. Sign up ...", identity);
 
-    vs_messenger_enjabberd_connect(_enjabberd_host, _enjabberd_port, _identity, pass, _rx_encrypted_msg);
+        STATUS_CHECK(vs_messenger_virgil_sign_up(identity,
+                                                 _user_creds.pubkey,
+                                                 KEY_SZ_MAX,
+                                                 &_user_creds.pubkey_sz,
+                                                 _user_creds.privkey,
+                                                 KEY_SZ_MAX,
+                                                 &_user_creds.privkey_sz,
+                                                 _user_creds.card,
+                                                 CARD_SZ_MAX,
+                                                 &_user_creds.card_sz),
+                     "Cannot Sign up User %s",
+                     identity);
 
-    vs_messenger_virgil_logout();
+        STATUS_CHECK(_save_user_cred(identity, &_user_creds), "Cannot Save credentials of User %s", identity);
 
-    exit(1);
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    } else {
+        VS_LOG_INFO("User %s is registered. Sign in ...", identity);
+        STATUS_CHECK(vs_messenger_virgil_sign_in(identity,
+                                                 _user_creds.pubkey,
+                                                 _user_creds.pubkey_sz,
+                                                 _user_creds.privkey,
+                                                 _user_creds.privkey_sz,
+                                                 _user_creds.card,
+                                                 _user_creds.card_sz),
+                     "Cannot Sign in User %s",
+                     identity);
+    }
+
+    // Get Enjabberd token from Virgil Messenger service and use it as XMPP password
+    STATUS_CHECK(vs_messenger_virgil_get_xmpp_pass(xmpp_pass, TOKEN_SZ_MAX), "Cannot get XMPP password");
+
+    // Open connection with Enjabberd
+    STATUS_CHECK(vs_messenger_enjabberd_connect(
+                         _config.enjabberd_host, _config.enjabberd_port, identity, xmpp_pass, _rx_encrypted_msg),
+                 "Cannot connect to Enjabberd");
+
+    res = VS_CODE_OK;
+terminate:
+
+    return res;
 }
 
 /******************************************************************************/
-DLL_PUBLIC vs_status_e
+vs_status_e
 vs_messenger_send(const char *recipient, const char *message) {
-
-    uint8_t encrypted_message[4096];
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+    uint8_t encrypted_message[ENCRYPTED_MESSAGE_SZ_MAX];
     size_t encrypted_message_sz = 0;
 
+    // Create JSON-formatted message to be sent
     static const char json_tmpl[] = "{\"type\":\"text\",\"payload\":{\"body\":\"%s\"}}";
-    char json_msg[1024];
+    char json_msg[DECRYPTED_MESSAGE_SZ_MAX];
 
     size_t req_sz = strlen(json_tmpl) + strlen(message);
-
     if (req_sz > sizeof(json_msg)) {
         return VS_CODE_ERR_TOO_SMALL_BUFFER;
     }
-
     sprintf(json_msg, json_tmpl, message);
 
-    vs_messenger_virgil_encrypt_msg(
-            recipient, json_msg, encrypted_message, sizeof(encrypted_message), &encrypted_message_sz);
+    // Encrypt message
+    STATUS_CHECK(vs_messenger_virgil_encrypt_msg(
+                         recipient, json_msg, encrypted_message, sizeof(encrypted_message), &encrypted_message_sz),
+                 "Cannot encrypt message");
 
-    vs_messenger_enjabberd_send(recipient, (char *)encrypted_message);
+    // Send encrypted message
+    STATUS_CHECK(vs_messenger_enjabberd_send(recipient, (char *)encrypted_message), "Cannot send XMPP message");
 
-#if 0
-    char *msg = NULL;
-    vs_messenger_virgil_decrypt_msg(recipient, (char *)encrypted_message, &msg);
-    if (msg) {
-        printf("  Message own: %s\n", msg);
-        free(msg);
-    }
-#endif
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_messenger_stop(void) {
+    vs_messenger_virgil_logout();
     return VS_CODE_OK;
 }
 
 /******************************************************************************/
-DLL_PUBLIC vs_status_e
-vs_messenger_stop(void) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+static vs_status_e
+_fill_storage_id(vs_storage_element_id_t *storage_element_id, const char *str_id, const char *identity) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+    size_t requred_id_sz = 0;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(storage_element_id);
+    CHECK_NOT_ZERO(str_id);
+
+    // Prepare storage id
+    VS_IOT_MEMSET(storage_element_id, 0, sizeof(*storage_element_id));
+
+    // Check if identity present
+    if (identity) {
+        requred_id_sz = strnlen(identity, IDENTITY_SZ_MAX) + strlen(str_id);
+        CHECK_RET(requred_id_sz <= VS_STORAGE_ELEMENT_ID_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Identity too big");
+        sprintf((char *)storage_element_id, str_id, identity);
+    } else {
+        VS_IOT_MEMCPY(storage_element_id, str_id, strlen(str_id));
+    }
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_save_data(const uint8_t *data, size_t data_sz, const char *str_id, const char *identity) {
+    vs_storage_element_id_t storage_element_id;
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(str_id && str_id[0]);
+    CHECK_NOT_ZERO(data && data_sz);
+
+    // Prepare storage id
+    STATUS_CHECK(_fill_storage_id(&storage_element_id, str_id, identity), "");
+
+    // Save configuration
+    STATUS_CHECK(vs_secbox_save(VS_SECBOX_SIGNED_AND_ENCRYPTED, storage_element_id, data, data_sz),
+                 "Cannot save Messenger data to SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_load_data(const char *str_id, const char *identity, uint8_t *data, size_t data_sz) {
+    vs_storage_element_id_t storage_element_id;
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(data && data_sz);
+
+    // Prepare storage id
+    STATUS_CHECK(_fill_storage_id(&storage_element_id, str_id, identity), "");
+
+    // Save configuration
+    STATUS_CHECK(vs_secbox_load(storage_element_id, data, data_sz), "Cannot load Messenger data from SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_load_config(vs_messenger_config_t *config) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(config);
+
+    // Save configuration
+    STATUS_CHECK(_load_data(MESSENGER_CFG_SORAGE_ID, NULL, (uint8_t *)config, sizeof(*config)),
+                 "Cannot load Messenger configuration from SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_load_user_channels(const char *identity, vs_messenger_channels_t *channels) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(identity && identity[0]);
+    CHECK_NOT_ZERO(channels);
+
+    // Save configuration
+    STATUS_CHECK(_load_data(MESSENGER_CHANNELS_SORAGE_ID_TEMPLATE, identity, (uint8_t *)channels, sizeof(*channels)),
+                 "Cannot load Messenger channels from SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_load_user_cred(const char *identity, vs_messenger_user_creds_t *user_creds) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(identity && identity[0]);
+    CHECK_NOT_ZERO(user_creds);
+
+    // Save configuration
+    STATUS_CHECK(_load_data(MESSENGER_USER_ID_TEMPLATE, identity, (uint8_t *)user_creds, sizeof(*user_creds)),
+                 "Cannot load User's credentials from SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+static vs_status_e
+_save_user_cred(const char *identity, const vs_messenger_user_creds_t *user_creds) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(identity && identity[0]);
+    CHECK_NOT_ZERO(user_creds);
+
+    // Save configuration
+    STATUS_CHECK(_save_data((const uint8_t *)user_creds, sizeof(*user_creds), MESSENGER_USER_ID_TEMPLATE, identity),
+                 "Cannot save User's credentials to SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_messenger_configure(const vs_messenger_config_t *config) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(config);
+    CHECK_NOT_ZERO(config->enjabberd_host);
+    CHECK_NOT_ZERO(config->messenger_base_url);
+    CHECK_RET(VS_MESSENGER_CFG_VERSION == config->version, VS_CODE_ERR_MSGR_VERSION, "Wrong version of configuration");
+
+    // Save configuration
+    STATUS_CHECK(_save_data((const uint8_t *)config, sizeof(*config), MESSENGER_CFG_SORAGE_ID, NULL),
+                 "Cannot save Messenger configuration to SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_messenger_set_channels(const char *identity, const vs_messenger_channels_t *channels) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(channels);
+    CHECK(channels->channels_num <= VS_MESSENGER_CHANNEL_MAX_SZ, "Not supported amount of Messenger's channels");
+
+    // Save configuration
+    STATUS_CHECK(
+            _save_data((const uint8_t *)channels, sizeof(*channels), MESSENGER_CHANNELS_SORAGE_ID_TEMPLATE, identity),
+            "Cannot save Messenger channels to SecBox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
 }
 
 /******************************************************************************/

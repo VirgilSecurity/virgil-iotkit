@@ -137,6 +137,7 @@ main(int argc, char *argv[]) {
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     &fw_storage_impl,
+                                    NULL,
                                     netifs_impl,
                                     vs_packets_queue_add,
                                     iotkit_events),

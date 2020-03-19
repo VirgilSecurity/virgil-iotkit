@@ -58,6 +58,8 @@ extern "C" {
 #include <virgil/iot/provision/provision-structs.h>
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
+
+#include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/protocols/snap/snap-structs.h>
 
 // Types
@@ -88,6 +90,7 @@ typedef struct {
  * \param[in] device_roles Device roles. Mask formed from vs_snap_device_role_e element.
  * \param[in] secmodule Security module implementation. You can use default implementation
  * \param[in] tl_storage_impl Storage context. Must not be NULL.
+ * \param[in] secbox_storage_impl Storage context. Can be NULL.
  * \param[in] netif_impl NULL-terminated array of #vs_netif_t
  * \param[in] iotkit_events #vs_iotkit_events_t Callbacks for different IoTKit events
  *
@@ -104,6 +107,7 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 #if FLDT_SERVER || FLDT_CLIENT
                    vs_storage_op_ctx_t *firmware_storage_impl,
 #endif // FLDT_SERVER || FLDT_CLIENT
+                   vs_storage_op_ctx_t *secbox_storage_impl,
                    vs_netif_t *netif_impl[],
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events);

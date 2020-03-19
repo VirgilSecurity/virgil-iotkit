@@ -94,15 +94,12 @@ using virgil::crypto::str2bytes;
 
 #include <iostream>
 
-static const char *_service_base_url = "https://messenger-stg.virgilsecurity.com";
-
 static const char *_virgil_jwt_endpoint = "/virgil-jwt/";
 static const char *_ejabberd_jwt_endpoint = "/ejabberd-jwt/";
 static const char *_sign_up_endpoint = "/signup/";
 
 static std::shared_ptr<Crypto> crypto;
 
-static const char *_identity = NULL;
 static const uint8_t *_pubkey = NULL;
 static size_t _pubkey_sz = 0;
 static const uint8_t *_privkey = NULL;
@@ -114,11 +111,13 @@ static char *_card_id = NULL;
 #define TOKEN_SZ_MAX (1024)
 
 static char _virgil_token[TOKEN_SZ_MAX] = {0};
+static char *_service_base_url = NULL;
 
 /******************************************************************************/
 extern "C" DLL_PUBLIC vs_status_e
-vs_messenger_virgil_init(void) {
+vs_messenger_virgil_init(const char *service_base_url) {
     crypto = std::make_shared<Crypto>();
+    _service_base_url = strdup(service_base_url);
     return VS_CODE_OK;
 }
 
@@ -126,13 +125,12 @@ vs_messenger_virgil_init(void) {
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_sign_in(const char *identity,
                             const uint8_t *pubkey,
-                            size_t pubkey_sz,
+                            uint16_t pubkey_sz,
                             const uint8_t *privkey,
-                            size_t privkey_sz,
+                            uint16_t privkey_sz,
                             const uint8_t *card,
-                            size_t card_sz) {
+                            uint16_t card_sz) {
 
-    _identity = identity;
     _pubkey = pubkey;
     _pubkey_sz = pubkey_sz;
     _privkey = privkey;
@@ -151,14 +149,14 @@ vs_messenger_virgil_sign_in(const char *identity,
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_sign_up(const char *identity,
                             uint8_t *pubkey,
-                            size_t pubkey_buf_sz,
-                            size_t *pubkey_sz,
+                            uint16_t pubkey_buf_sz,
+                            uint16_t *pubkey_sz,
                             uint8_t *privkey,
-                            size_t privkey_buf_sz,
-                            size_t *privkey_sz,
+                            uint16_t privkey_buf_sz,
+                            uint16_t *privkey_sz,
                             uint8_t *card,
-                            size_t card_buf_sz,
-                            size_t *card_sz) {
+                            uint16_t card_buf_sz,
+                            uint16_t *card_sz) {
 
     auto identityStd = std::string(identity);
 
@@ -198,10 +196,6 @@ vs_messenger_virgil_sign_up(const char *identity,
     auto cardJSON = responseJSON["virgil_card"].dump();
     auto readyCard = JsonDeserializer<RawSignedModel>::fromJsonString(cardJSON);
     auto parsedCard = CardManager::parseCard(rawCard, crypto);
-    _card_id = strdup(parsedCard.identifier().c_str());
-
-    auto cardContent = RawCardContent::parse(readyCard.contentSnapshot());
-    _card_id = strdup(cardContent.identity().c_str());
 
     // Prepare result
     auto privateKeyData = crypto->exportPrivateKey(keyPair.privateKey());
@@ -231,8 +225,15 @@ vs_messenger_virgil_sign_up(const char *identity,
     std::cout << "Private key : " << VirgilBase64::encode(privateKeyData) << std::endl;
     std::cout << "Card        : " << VirgilBase64::encode(cardData) << std::endl;
 
+    _pubkey = pubkey;
+    _pubkey_sz = *pubkey_sz;
+    _privkey = privkey;
+    _privkey_sz = *privkey_sz;
+    _card = card;
+    _card_sz = *card_sz;
+    _card_id = strdup(parsedCard.identifier().c_str());
+
     return vs_messenger_virgil_get_token(_virgil_token, TOKEN_SZ_MAX);
-    ;
 }
 
 /******************************************************************************/
