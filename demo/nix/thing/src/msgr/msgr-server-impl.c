@@ -40,12 +40,14 @@
 #include "helpers/app-helpers.h"
 
 #define ENV_VAR_PREFIX "SENS_"
+
+static uint8_t env_var_name[strlen(ENV_VAR_PREFIX) + sizeof(struct vs_mac_addr_t) * 2 + 1];
+
 /******************************************************************************/
 static vs_status_e
 _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
     vs_status_e ret_code;
     vs_mac_addr_t mac_addr;
-    uint8_t env_var_name[strlen(ENV_VAR_PREFIX) + sizeof(struct vs_mac_addr_t) * 2 + 1];
     uint32_t hex_len = sizeof(struct vs_mac_addr_t) * 2 + 1;
     char *env_var_value;
 
@@ -55,14 +57,16 @@ _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
     memset(data, 0, buf_sz);
     *data_sz = 0;
 
-    STATUS_CHECK_RET(vs_snap_mac_addr(NULL, &mac_addr), "Can't get mac addr");
+    if (0 == env_var_name[0]) {
+        STATUS_CHECK_RET(vs_snap_mac_addr(NULL, &mac_addr), "Can't get mac addr");
 
-    memcpy(env_var_name, ENV_VAR_PREFIX, strlen(ENV_VAR_PREFIX));
-    CHECK_RET(
-            vs_app_data_to_hex(mac_addr.bytes, sizeof(vs_mac_addr_t), env_var_name + strlen(ENV_VAR_PREFIX), &hex_len),
-            VS_CODE_ERR_INCORRECT_ARGUMENT,
-            "Error while convert to env var name");
-    VS_LOG_DEBUG("Environment variable name : %s", env_var_name);
+        CHECK_RET(vs_app_data_to_hex(
+                          mac_addr.bytes, sizeof(vs_mac_addr_t), env_var_name + strlen(ENV_VAR_PREFIX), &hex_len),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Error while convert to env var name");
+        memcpy(env_var_name, ENV_VAR_PREFIX, strlen(ENV_VAR_PREFIX));
+        VS_LOG_DEBUG("Environment variable name : %s", env_var_name);
+    }
 
     env_var_value = getenv((char *)env_var_name);
     if (NULL != env_var_value) {
