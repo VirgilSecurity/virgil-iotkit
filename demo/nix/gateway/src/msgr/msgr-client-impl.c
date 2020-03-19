@@ -58,7 +58,11 @@ _snap_msgr_start_notif_cb(vs_snap_msgr_device_t *device) {
 /******************************************************************************/
 static vs_status_e
 _snap_msgr_device_data_cb(uint8_t *data, uint32_t data_sz) {
-    VS_LOG_DEBUG("MSGR device received data %s", (char *)data);
+    if (data_sz) {
+        VS_LOG_DEBUG("MSGR device received data \"%s\"", (char *)data);
+    } else {
+        VS_LOG_DEBUG("MSGR device received an empty data");
+    }
     return VS_CODE_OK;
 }
 

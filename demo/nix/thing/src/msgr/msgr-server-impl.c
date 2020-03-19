@@ -31,17 +31,47 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <msgr/msgr-server-impl.h>
 #include <virgil/iot/protocols/snap.h>
 
-#define MSGR_TEST_MESSAGE "MSGR test message"
+#include "helpers/app-helpers.h"
+
+#define ENV_VAR_PREFIX "SENS_"
 /******************************************************************************/
 static vs_status_e
 _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
+    vs_status_e ret_code;
+    vs_mac_addr_t mac_addr;
+    uint8_t env_var_name[strlen(ENV_VAR_PREFIX) + sizeof(struct vs_mac_addr_t) * 2 + 1];
+    uint32_t hex_len = sizeof(struct vs_mac_addr_t) * 2 + 1;
+    char *env_var_value;
+
+    CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+
     memset(data, 0, buf_sz);
-    memcpy(data, MSGR_TEST_MESSAGE, strlen(MSGR_TEST_MESSAGE));
-    *data_sz = strlen(MSGR_TEST_MESSAGE) + 1;
+    *data_sz = 0;
+
+    STATUS_CHECK_RET(vs_snap_mac_addr(NULL, &mac_addr), "Can't get mac addr");
+
+    memcpy(env_var_name, ENV_VAR_PREFIX, strlen(ENV_VAR_PREFIX));
+    CHECK_RET(
+            vs_app_data_to_hex(mac_addr.bytes, sizeof(vs_mac_addr_t), env_var_name + strlen(ENV_VAR_PREFIX), &hex_len),
+            VS_CODE_ERR_INCORRECT_ARGUMENT,
+            "Error while convert to env var name");
+    VS_LOG_DEBUG("Environment variable name : %s", env_var_name);
+
+    env_var_value = getenv((char *)env_var_name);
+    if (NULL != env_var_value) {
+        uint32_t val_len = strlen(env_var_value);
+        CHECK_RET(val_len < buf_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Input buffer is too small");
+        memcpy(data, env_var_value, val_len);
+        *data_sz = strlen(env_var_value) + 1;
+        VS_LOG_DEBUG("Environment variable value : %s", (char *)data);
+    }
 
     return VS_CODE_OK;
 }
