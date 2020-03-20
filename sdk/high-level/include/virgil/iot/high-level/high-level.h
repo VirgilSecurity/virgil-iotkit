@@ -61,6 +61,7 @@ extern "C" {
 #include <virgil/iot/protocols/snap/snap-structs.h>
 #include <virgil/iot/protocols/snap/msgr/msgr-client.h>
 #include <virgil/iot/protocols/snap/msgr/msgr-server.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-server.h>
 
 // Types
 
@@ -112,6 +113,9 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 #endif
 #if MSGR_CLIENT
                    vs_snap_msgr_client_service_t msgr_client_cb,
+#endif
+#if CFG_SERVER
+                   vs_snap_cfg_server_service_t cfg_server_cb,
 #endif
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events);

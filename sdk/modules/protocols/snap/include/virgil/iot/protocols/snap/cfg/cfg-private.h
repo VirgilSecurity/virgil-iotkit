@@ -50,7 +50,9 @@
 typedef enum { VS_CFG_SERVICE_ID = HTONL_IN_COMPILE_TIME('_CFG') } vs_cfg_t;
 
 typedef enum {
-    VS_CFG_CONF = HTONL_IN_COMPILE_TIME('CONF'), /* CONFigure device */
+    VS_CFG_WIFI = HTONL_IN_COMPILE_TIME('WIFI'), /* configure WIFI creds */
+    VS_CFG_MSCR = HTONL_IN_COMPILE_TIME('MSCR'), /* configure MeSsenger CReds */
+    VS_CFG_MSCH = HTONL_IN_COMPILE_TIME('MSCH'), /* configure MeSsenger CHannel */
 } vs_snap_cfg_element_e;
 #pragma GCC diagnostic pop
 
@@ -58,6 +60,18 @@ typedef struct __attribute__((__packed__)) {
     uint8_t ssid[VS_CFG_STR_MAX];
     uint8_t pass[VS_CFG_STR_MAX];
     uint8_t account[VS_CFG_STR_MAX];
-} vs_cfg_conf_request_t;
+} vs_cfg_conf_wifi_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t version;
+    char enjabberd_host[VS_HOST_NAME_MAX_SZ];
+    uint16_t enjabberd_port;
+    char messenger_base_url[VS_HOST_NAME_MAX_SZ];
+} vs_cfg_messenger_config_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t channels_num;
+    char channel[VS_MESSENGER_CHANNEL_NUM_MAX][VS_MESSENGER_CHANNEL_MAX_SZ];
+} vs_cfg_messenger_channels_request_t;
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_PRIVATE_H
