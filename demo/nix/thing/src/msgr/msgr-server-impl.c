@@ -75,7 +75,7 @@ _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
                                      &hex_len),
                   VS_CODE_ERR_INCORRECT_ARGUMENT,
                   "Error while convert to env var name");
-        memcpy(device_file_path, DEVICE_FILENAME_PREFIX, strlen(DEVICE_FILENAME_PREFIX));
+        memcpy(device_file_path, DEVICE_FILENAME_PREFIX, strlen(DEVICE_FILENAME_PREFIX)); //-V575
         VS_LOG_DEBUG("Emulated device file path : %s", device_file_path);
     }
 
@@ -87,15 +87,16 @@ _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
 
         UNIX_CALL(fseek(fp, 0, SEEK_END));
         f_size = ftell(fp);
+
+        if (0 == f_size) {
+            goto terminate;
+        }
+
         CHECK(f_size > 0,
               "Unable to prepare file %s to read. errno = %d (%s)",
               device_file_path,
               errno,
               strerror(errno));
-
-        if (0 == f_size) {
-            goto terminate;
-        }
 
         CHECK(f_size < buf_sz, "Input buffer is too small");
 
