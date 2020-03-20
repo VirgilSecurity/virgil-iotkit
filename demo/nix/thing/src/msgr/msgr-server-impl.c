@@ -33,23 +33,32 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include <msgr/msgr-server-impl.h>
 #include <virgil/iot/protocols/snap.h>
 
 #include "helpers/app-helpers.h"
 
-#define ENV_VAR_PREFIX "SENS_"
+#define DEVICE_FILENAME_PREFIX "/tmp/SENS_"
+static uint8_t device_file_path[sizeof(DEVICE_FILENAME_PREFIX) - 1 + sizeof(struct vs_mac_addr_t) * 2 + 1];
 
-static uint8_t env_var_name[strlen(ENV_VAR_PREFIX) + sizeof(struct vs_mac_addr_t) * 2 + 1];
+#define UNIX_CALL(OPERATION)                                                                                           \
+    do {                                                                                                               \
+        if (OPERATION) {                                                                                               \
+            VS_LOG_ERROR("Unix call " #OPERATION " error. errno = %d (%s)", errno, strerror(errno));                   \
+            goto terminate;                                                                                            \
+        }                                                                                                              \
+    } while (0)
 
 /******************************************************************************/
 static vs_status_e
 _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
-    vs_status_e ret_code;
+    vs_status_e ret_code = VS_CODE_OK;
     vs_mac_addr_t mac_addr;
     uint32_t hex_len = sizeof(struct vs_mac_addr_t) * 2 + 1;
-    char *env_var_value;
+    FILE *fp = NULL;
 
     CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
@@ -57,27 +66,61 @@ _snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
     memset(data, 0, buf_sz);
     *data_sz = 0;
 
-    if (0 == env_var_name[0]) {
+    if (0 == device_file_path[0]) {
         STATUS_CHECK_RET(vs_snap_mac_addr(NULL, &mac_addr), "Can't get mac addr");
 
-        CHECK_RET(vs_app_data_to_hex(
-                          mac_addr.bytes, sizeof(vs_mac_addr_t), env_var_name + strlen(ENV_VAR_PREFIX), &hex_len),
+        CHECK_RET(vs_app_data_to_hex(mac_addr.bytes,
+                                     sizeof(vs_mac_addr_t),
+                                     device_file_path + strlen(DEVICE_FILENAME_PREFIX),
+                                     &hex_len),
                   VS_CODE_ERR_INCORRECT_ARGUMENT,
                   "Error while convert to env var name");
-        memcpy(env_var_name, ENV_VAR_PREFIX, strlen(ENV_VAR_PREFIX));
-        VS_LOG_DEBUG("Environment variable name : %s", env_var_name);
+        memcpy(device_file_path, DEVICE_FILENAME_PREFIX, strlen(DEVICE_FILENAME_PREFIX)); //-V575
+        VS_LOG_DEBUG("Emulated device file path : %s", device_file_path);
     }
 
-    env_var_value = getenv((char *)env_var_name);
-    if (NULL != env_var_value) {
-        uint32_t val_len = strlen(env_var_value);
-        CHECK_RET(val_len < buf_sz, VS_CODE_ERR_TOO_SMALL_BUFFER, "Input buffer is too small");
-        memcpy(data, env_var_value, val_len);
-        *data_sz = strlen(env_var_value) + 1;
-        VS_LOG_DEBUG("Environment variable value : %s", (char *)data);
+    fp = fopen((char *)device_file_path, "rb");
+
+    if (fp) {
+        ssize_t f_size = -1;
+        ret_code = VS_CODE_ERR_FILE_READ;
+
+        UNIX_CALL(fseek(fp, 0, SEEK_END));
+        f_size = ftell(fp);
+
+        if (0 == f_size) {
+            goto terminate;
+        }
+
+        CHECK(f_size > 0,
+              "Unable to prepare file %s to read. errno = %d (%s)",
+              device_file_path,
+              errno,
+              strerror(errno));
+
+        CHECK(f_size < buf_sz, "Input buffer is too small");
+
+        UNIX_CALL(fseek(fp, 0, SEEK_SET));
+
+        CHECK(1 == fread((void *)data, f_size, 1, fp),
+              "Unable to read %d bytes from %s, errno = %d (%s)",
+              f_size,
+              device_file_path,
+              errno,
+              strerror(errno));
+
+        *data_sz = f_size + 1;
+        VS_LOG_DEBUG("Remote device variable value : %s", (char *)data);
+
+        ret_code = VS_CODE_OK;
     }
 
-    return VS_CODE_OK;
+terminate:
+    if (fp) {
+        fclose(fp);
+    }
+
+    return ret_code;
 }
 
 /******************************************************************************/

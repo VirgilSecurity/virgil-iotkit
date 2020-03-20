@@ -243,7 +243,7 @@ list(char *path, char *match) {
 
     uint32_t tot = 0, used = 0;
     esp_spiffs_info(NULL, &tot, &used);
-    printf("SPIFFS: free %d KB of %d KB\n", (tot - used) / 1024, tot / 1024);
+    printf("SPIFFS: free %u KB of %u KB\n", (tot - used) / 1024, tot / 1024);
     printf("-----------------------------------\n\n");
 }
 
