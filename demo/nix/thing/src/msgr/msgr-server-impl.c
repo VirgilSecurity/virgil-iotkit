@@ -42,7 +42,7 @@
 #include "helpers/app-helpers.h"
 
 #define DEVICE_FILENAME_PREFIX "/tmp/SENS_"
-static uint8_t device_file_path[strlen(DEVICE_FILENAME_PREFIX) + sizeof(struct vs_mac_addr_t) * 2 + 1];
+static uint8_t device_file_path[sizeof(DEVICE_FILENAME_PREFIX) - 1 + sizeof(struct vs_mac_addr_t) * 2 + 1];
 
 #define UNIX_CALL(OPERATION)                                                                                           \
     do {                                                                                                               \
