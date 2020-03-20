@@ -33,9 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pwd.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <errno.h>
 
 #include <msgr/msgr-server-impl.h>
