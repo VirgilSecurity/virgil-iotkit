@@ -53,6 +53,7 @@ target_link_libraries(vs-module-messenger
         vs-module-secbox
         vs-messenger-internal
         virgil-iot-status-code
+        jsmn
         )
 
 target_include_directories(vs-module-messenger

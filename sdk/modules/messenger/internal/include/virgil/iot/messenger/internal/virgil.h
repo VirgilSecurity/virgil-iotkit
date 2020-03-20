@@ -46,39 +46,40 @@ namespace VirgilIoTKit {
 extern "C" {
 #endif
 
+#define VS_MESSENGER_VIRGIL_IDENTITY_SZ_MAX (128) /**< Maximum size of Messenger's User Identity */
+#define VS_MESSENGER_VIRGIL_KEY_SZ_MAX (128)      /**< Maximum size of Messenger's User key */
+#define VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX (128)  /**< Maximum size of Messenger's Card identifier */
+#define VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX (1024)   /**< Maximum size of Messenger's token */
+#define VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ (8)      /**< Size of Public key ID */
+
+/** User credentials */
+typedef struct {
+    uint8_t privkey[VS_MESSENGER_VIRGIL_KEY_SZ_MAX];     /**< Private key data */
+    uint16_t privkey_sz;                                 /**< Private key size */
+    uint8_t pubkey[VS_MESSENGER_VIRGIL_KEY_SZ_MAX];      /**< Public key data */
+    uint16_t pubkey_sz;                                  /**< Public key size */
+    uint8_t pubkey_id[VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ]; /**< ID of Public key */
+    char card_id[VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX];    /**< Card identifier string */
+} vs_messenger_virgil_user_creds_t;
+
 vs_status_e
 vs_messenger_virgil_init(const char *service_base_url);
 
 vs_status_e
-vs_messenger_virgil_sign_in(const char *identity,
-                            const uint8_t *pubkey,
-                            uint16_t pubkey_sz,
-                            const uint8_t *privkey,
-                            uint16_t privkey_sz,
-                            const uint8_t *card,
-                            uint16_t card_sz);
+vs_messenger_virgil_sign_in(const vs_messenger_virgil_user_creds_t *creds);
 
 vs_status_e
-vs_messenger_virgil_sign_up(const char *identity,
-                            uint8_t *pubkey,
-                            uint16_t pubkey_buf_sz,
-                            uint16_t *pubkey_sz,
-                            uint8_t *privkey,
-                            uint16_t priv_buf_sz,
-                            uint16_t *priv_sz,
-                            uint8_t *card,
-                            uint16_t card_buf_sz,
-                            uint16_t *card_sz);
-
-vs_status_e
-vs_messenger_virgil_get_token(char *token, size_t token_buf_sz);
+vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds_t *creds);
 
 vs_status_e
 vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz);
 
-// Pay attention: msg buffer MUST be freed
 vs_status_e
-vs_messenger_virgil_decrypt_msg(const char *sender, const char *encrypted_message, char **msg);
+vs_messenger_virgil_decrypt_msg(const char *sender,
+                                const char *encrypted_message,
+                                uint8_t *decrypted_message,
+                                size_t buf_sz,
+                                size_t *decrypted_message_sz);
 
 vs_status_e
 vs_messenger_virgil_encrypt_msg(const char *recipient,

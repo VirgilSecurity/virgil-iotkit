@@ -36,14 +36,13 @@
 #include <stdint.h>
 
 #include "threads/messenger-thread.h"
-#include "threads/main-thread.h"
 #include <virgil/iot/messenger/messenger.h>
 #include <virgil/iot/logger/logger.h>
 
 static pthread_t _messenger_thread;
 
 // TODO: create some mechanism to calculate Identity
-static const char *_identity = "rk_test_12";
+static const char *_identity = "rk_test_16";
 
 // TODO: Use configuration from User's device
 static const char *_enjabberd_host = "xmpp-stg.virgilsecurity.com";
@@ -58,6 +57,9 @@ static void
 _messenger_rx_cb(const char *sender, const char *message) {
     if (sender && message) {
         VS_LOG_DEBUG("Message from: %s  <%s>", sender, message);
+
+        // Echo back message
+        vs_messenger_send(sender, message);
     }
 }
 

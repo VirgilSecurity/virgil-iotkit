@@ -164,6 +164,8 @@ vs_messenger_crypto_encrypt(const uint8_t *data,
     vscf_impl_destroy(&public_key);
     vscf_key_provider_destroy(&key_provider);
     vscf_impl_destroy(&random);
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

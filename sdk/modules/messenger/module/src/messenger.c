@@ -32,27 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include "jsmn.h"
 #include <virgil/iot/messenger/messenger.h>
 #include <virgil/iot/secbox/secbox.h>
 #include <virgil/iot/macros/macros.h>
 
-
-#define IDENTITY_SZ_MAX (128)
-#define KEY_SZ_MAX (128)
-#define CARD_SZ_MAX (4 * 1024)
-#define TOKEN_SZ_MAX (1024)
 #define ENCRYPTED_MESSAGE_SZ_MAX (4 * 1024)
 #define DECRYPTED_MESSAGE_SZ_MAX (3 * 1024)
-
-/** User credentials */
-typedef struct {
-    uint8_t privkey[KEY_SZ_MAX]; /**< Private key data */
-    uint16_t privkey_sz;         /**< Private key size */
-    uint8_t pubkey[KEY_SZ_MAX];  /**< Public key data */
-    uint16_t pubkey_sz;          /**< Public key size */
-    uint8_t card[CARD_SZ_MAX];   /**< Card */
-    uint16_t card_sz;            /**< Card size */
-} vs_messenger_user_creds_t;
 
 static const char *MESSENGER_CFG_SORAGE_ID = "MSGR_CFG_ID"; /**< Storage ID of Messenger's configuration for SecBox */
 static const char *MESSENGER_USER_ID_TEMPLATE =
@@ -63,7 +49,7 @@ static const char *MESSENGER_CHANNELS_SORAGE_ID_TEMPLATE =
 static vs_messenger_rx_cb_t _rx_cb = NULL;
 static vs_messenger_config_t _config = {0, {0}, 0, {0}};
 static vs_messenger_channels_t _user_channels = {0, {{0}}};
-vs_messenger_user_creds_t _user_creds = {{0}, 0, {0}, 0, {0}, 0};
+vs_messenger_virgil_user_creds_t _user_creds = {{0}, 0, {0}, 0, {0}};
 
 // Forward declarations
 static vs_status_e
@@ -73,30 +59,83 @@ static vs_status_e
 _load_user_channels(const char *identity, vs_messenger_channels_t *channels);
 
 static vs_status_e
-_load_user_cred(const char *identity, vs_messenger_user_creds_t *user_creds);
+_load_user_cred(const char *identity, vs_messenger_virgil_user_creds_t *user_creds);
 
 static vs_status_e
-_save_user_cred(const char *identity, const vs_messenger_user_creds_t *user_creds);
+_save_user_cred(const char *identity, const vs_messenger_virgil_user_creds_t *user_creds);
+
+
+#define MAXNUMBER_OF_TOKENS (32)
+#define MAX_TOKEN_LENGTH (1024)
 
 /******************************************************************************/
 static void
 _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
-    char *msg = NULL;
+    static uint8_t decrypted_message[DECRYPTED_MESSAGE_SZ_MAX];
+    static size_t decrypted_message_sz = 0;
+    int jsmn_res;
+    jsmn_parser p;
+    jsmntok_t tokens[MAXNUMBER_OF_TOKENS];
+    char key_str[MAX_TOKEN_LENGTH];
+    char prev_key_str[MAX_TOKEN_LENGTH];
+    int i;
+    char *json_msg = (char *)decrypted_message;
+    bool done = false;
 
-    vs_messenger_virgil_decrypt_msg(sender, encrypted_message, &msg);
+    if (!_rx_cb)
+        return;
 
-    if (msg && _rx_cb) {
-        _rx_cb(sender, msg);
+    // Decrypt message
+    // DECRYPTED_MESSAGE_SZ_MAX - 1  - This is required for a Zero-terminated string
+    if (VS_CODE_OK !=
+        vs_messenger_virgil_decrypt_msg(
+                sender, encrypted_message, decrypted_message, DECRYPTED_MESSAGE_SZ_MAX - 1, &decrypted_message_sz)) {
+        VS_LOG_WARNING("Received message cannot be decrypted");
+        return;
     }
 
-    free(msg);
+    // Get message from JSON
+    jsmn_init(&p);
+    jsmn_res = jsmn_parse(&p, json_msg, strnlen(json_msg, DECRYPTED_MESSAGE_SZ_MAX), tokens, MAXNUMBER_OF_TOKENS);
+
+    if (jsmn_res <= 0) {
+        VS_LOG_WARNING("Received message cannot be parsed");
+        return;
+    }
+
+    for (i = 1; i <= jsmn_res - 1; i++) // jsmn_res == 0 => whole json string
+    {
+        jsmntok_t key = tokens[i];
+        uint16_t length = key.end - key.start;
+
+        if (length < MAX_TOKEN_LENGTH) {
+            VS_IOT_MEMCPY(key_str, &json_msg[key.start], length);
+            key_str[length] = '\0';
+
+            if (0 == strcmp(prev_key_str, "body")) {
+                strcpy(json_msg, key_str);
+                done = true;
+                break;
+            }
+
+            strcpy(prev_key_str, key_str);
+        }
+    }
+
+    if (!done) {
+        VS_LOG_WARNING("Received message does not contain correct body");
+        return;
+    }
+
+    // Pass decrypted data for a processing
+    _rx_cb(sender, (char *)decrypted_message);
 }
 
 /******************************************************************************/
 vs_status_e
 vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
-    char xmpp_pass[TOKEN_SZ_MAX] = {0};
+    char xmpp_pass[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
 
     // Check input parameters
     CHECK_NOT_ZERO(identity && identity[0]);
@@ -117,36 +156,18 @@ vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb) {
     if (VS_CODE_OK != _load_user_cred(identity, &_user_creds)) {
         VS_LOG_INFO("User %s is not registered. Sign up ...", identity);
 
-        STATUS_CHECK(vs_messenger_virgil_sign_up(identity,
-                                                 _user_creds.pubkey,
-                                                 KEY_SZ_MAX,
-                                                 &_user_creds.pubkey_sz,
-                                                 _user_creds.privkey,
-                                                 KEY_SZ_MAX,
-                                                 &_user_creds.privkey_sz,
-                                                 _user_creds.card,
-                                                 CARD_SZ_MAX,
-                                                 &_user_creds.card_sz),
-                     "Cannot Sign up User %s",
-                     identity);
+        STATUS_CHECK(vs_messenger_virgil_sign_up(identity, &_user_creds), "Cannot Sign up User %s", identity);
 
         STATUS_CHECK(_save_user_cred(identity, &_user_creds), "Cannot Save credentials of User %s", identity);
 
     } else {
         VS_LOG_INFO("User %s is registered. Sign in ...", identity);
-        STATUS_CHECK(vs_messenger_virgil_sign_in(identity,
-                                                 _user_creds.pubkey,
-                                                 _user_creds.pubkey_sz,
-                                                 _user_creds.privkey,
-                                                 _user_creds.privkey_sz,
-                                                 _user_creds.card,
-                                                 _user_creds.card_sz),
-                     "Cannot Sign in User %s",
-                     identity);
+        STATUS_CHECK(vs_messenger_virgil_sign_in(&_user_creds), "Cannot Sign in User %s", identity);
     }
 
     // Get Enjabberd token from Virgil Messenger service and use it as XMPP password
-    STATUS_CHECK(vs_messenger_virgil_get_xmpp_pass(xmpp_pass, TOKEN_SZ_MAX), "Cannot get XMPP password");
+    STATUS_CHECK(vs_messenger_virgil_get_xmpp_pass(xmpp_pass, VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX),
+                 "Cannot get XMPP password");
 
     // Open connection with Enjabberd
     STATUS_CHECK(vs_messenger_enjabberd_connect(
@@ -213,7 +234,7 @@ _fill_storage_id(vs_storage_element_id_t *storage_element_id, const char *str_id
 
     // Check if identity present
     if (identity) {
-        requred_id_sz = strnlen(identity, IDENTITY_SZ_MAX) + strlen(str_id);
+        requred_id_sz = strnlen(identity, VS_MESSENGER_VIRGIL_IDENTITY_SZ_MAX) + strlen(str_id);
         CHECK_RET(requred_id_sz <= VS_STORAGE_ELEMENT_ID_MAX, VS_CODE_ERR_INCORRECT_ARGUMENT, "Identity too big");
         sprintf((char *)storage_element_id, str_id, identity);
     } else {
@@ -314,7 +335,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_load_user_cred(const char *identity, vs_messenger_user_creds_t *user_creds) {
+_load_user_cred(const char *identity, vs_messenger_virgil_user_creds_t *user_creds) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
 
     // Check input parameters
@@ -334,7 +355,7 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
-_save_user_cred(const char *identity, const vs_messenger_user_creds_t *user_creds) {
+_save_user_cred(const char *identity, const vs_messenger_virgil_user_creds_t *user_creds) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
 
     // Check input parameters
