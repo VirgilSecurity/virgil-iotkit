@@ -64,7 +64,7 @@ target_link_libraries(vs-messenger-crypto
         ${VSCRYPTOC_LIBRARY}
 
         PRIVATE
-#        enable_pedantic_mode
+        enable_pedantic_mode
         )
 
 target_include_directories(vs-messenger-crypto

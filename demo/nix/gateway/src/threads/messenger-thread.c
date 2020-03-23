@@ -42,7 +42,7 @@
 static pthread_t _messenger_thread;
 
 // TODO: create some mechanism to calculate Identity
-static const char *_identity = "rk_test_16";
+static const char *_identity = "rk_test_17";
 
 // TODO: Use configuration from User's device
 static const char *_enjabberd_host = "xmpp-stg.virgilsecurity.com";

@@ -190,6 +190,8 @@ vs_messenger_send(const char *recipient, const char *message) {
     uint8_t encrypted_message[ENCRYPTED_MESSAGE_SZ_MAX];
     size_t encrypted_message_sz = 0;
 
+    VS_LOG_DEBUG("Message to: %s  <%s>", recipient, message);
+
     // Create JSON-formatted message to be sent
     static const char json_tmpl[] = "{\"type\":\"text\",\"payload\":{\"body\":\"%s\"}}";
     char json_msg[DECRYPTED_MESSAGE_SZ_MAX];
