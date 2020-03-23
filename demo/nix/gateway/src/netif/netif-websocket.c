@@ -547,7 +547,6 @@ _message_queue_processing(bool *is_subscr_msg_sent) {
                   VS_CODE_ERR_QUEUE,
                   "Error while reading message from queue");
 
-        //        VS_LOG_DEBUG("Send message = %s", (char *)data);
         result = cws_send_text(_websocket_ctx.easy, (char *)data);
         free((void *)data);
 

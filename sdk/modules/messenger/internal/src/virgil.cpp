@@ -193,15 +193,16 @@ _computeHashForPublicKey(const VirgilByteArray &publicKey) {
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_init(const char *service_base_url) {
 
-    // Check input parameters
-    CHECK_NOT_ZERO_RET(service_base_url && service_base_url[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
-
     if (_is_initialized) {
         VS_LOG_WARNING("Virgil Messenger is initialized");
         return VS_CODE_ERR_MSGR_INTERNAL;
     }
 
     vs_logger_init(VS_LOGLEV_DEBUG);
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(service_base_url && service_base_url[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+
     crypto = std::make_shared<Crypto>();
     _service_base_url = strdup(service_base_url);
 
@@ -279,7 +280,7 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
 
         // Check and parse response
         if (response.fail()) {
-            VS_LOG_ERROR("%s : %s", response.statusCodeRaw(), response.body().c_str());
+            VS_LOG_ERROR("%d : %s", response.statusCodeRaw(), response.body().c_str());
             return VS_CODE_ERR_MSGR_INTERNAL;
         }
         auto responseJSON = json::parse(response.body());

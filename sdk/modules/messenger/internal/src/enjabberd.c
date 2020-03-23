@@ -336,7 +336,10 @@ vs_messenger_enjabberd_disconnect(void) {
     _is_ready = false;
 
     // terminate connection
-    xmpp_disconnect(_conn);
+    if (_conn) {
+        xmpp_conn_release(_conn);
+        _conn = NULL;
+    }
 
     // Clean data
     free(_host);
