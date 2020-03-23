@@ -40,32 +40,28 @@
 #define KA_TIMEOUT 60
 #define KA_INTERVAL 1
 
-// URLConstants.ejabberdHost
-// URLConstants.ejabberdHostPort
-//
-// xmppStreamWillConnect(_ sender: XMPPStream)
-// xmppStreamDidConnect(_ stream: XMPPStream)
-// xmppStreamConnectDidTimeout(_ sender: XMPPStream)
-// xmppStreamDidDisconnect(_ sender: XMPPStream, withError error: Error?)
-// xmppStreamDidAuthenticate(_ sender: XMPPStream)
-// xmppStream(_ sender: XMPPStream, didNotAuthenticate error: DDXMLElement)
-// xmppStream(_ sender: XMPPStream, didSend message: XMPPMessage)
-// xmppStream(_ sender: XMPPStream, didFailToSend message: XMPPMessage, error: Error)
-// xmppStream(_ sender: XMPPStream, didReceive message: XMPPMessage)
-
 static vs_messenger_enjabberd_rx_encrypted_cb_t _rx_encrypted_cb = NULL;
-static xmpp_stanza_t *_stanza = NULL;
 static xmpp_ctx_t *_ctx;
 static xmpp_conn_t *_conn;
+static char *_host = NULL;
 
 /******************************************************************************/
-int
-version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
+static int
+_version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
     xmpp_stanza_t *reply, *query, *name, *version, *text;
     const char *ns;
     xmpp_ctx_t *ctx = (xmpp_ctx_t *)userdata;
+    int default_res = 1;
 
-    printf("Received version request from %s\n", xmpp_stanza_get_from(stanza));
+    // Check input parameters
+    VS_IOT_ASSERT(conn);
+    VS_IOT_ASSERT(stanza);
+    VS_IOT_ASSERT(userdata);
+    CHECK_NOT_ZERO_RET(conn, default_res);
+    CHECK_NOT_ZERO_RET(stanza, default_res);
+    CHECK_NOT_ZERO_RET(userdata, default_res);
+
+    VS_LOG_DEBUG("Received version request from %s", xmpp_stanza_get_from(stanza));
 
     reply = xmpp_stanza_reply(stanza);
     xmpp_stanza_set_type(reply, "result");
@@ -83,7 +79,7 @@ version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
     xmpp_stanza_release(name);
 
     text = xmpp_stanza_new(ctx);
-    xmpp_stanza_set_text(text, "libstrophe example bot");
+    xmpp_stanza_set_text(text, "Virgil IoT Messenger");
     xmpp_stanza_add_child(name, text);
     xmpp_stanza_release(text);
 
@@ -93,7 +89,7 @@ version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
     xmpp_stanza_release(version);
 
     text = xmpp_stanza_new(ctx);
-    xmpp_stanza_set_text(text, "1.0");
+    xmpp_stanza_set_text(text, "0.1.5");
     xmpp_stanza_add_child(version, text);
     xmpp_stanza_release(text);
 
@@ -102,86 +98,110 @@ version_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *cons
 
     xmpp_send(conn, reply);
     xmpp_stanza_release(reply);
+
     return 1;
 }
 
 /******************************************************************************/
-int
-message_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
+static int
+_message_handler(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata) {
     xmpp_ctx_t *ctx = (xmpp_ctx_t *)userdata;
-    xmpp_stanza_t *body, *reply;
+    xmpp_stanza_t *body;
     const char *type;
-    char *intext, *replytext;
-    int quit = 0;
+    char *intext;
     char *sender = NULL;
     char *at_symbol = NULL;
+    int default_res = 1;
 
+    // Check input parameters
+    VS_IOT_ASSERT(conn);
+    VS_IOT_ASSERT(stanza);
+    VS_IOT_ASSERT(userdata);
+    CHECK_NOT_ZERO_RET(conn, default_res);
+    CHECK_NOT_ZERO_RET(stanza, default_res);
+    CHECK_NOT_ZERO_RET(userdata, default_res);
+
+    // Do not process message if callback function is not set
+    if (!_rx_encrypted_cb) {
+        VS_LOG_WARNING("Message callback is not present");
+        return 1;
+    }
+
+    // Check is message body present
     body = xmpp_stanza_get_child_by_name(stanza, "body");
-    if (body == NULL)
+    if (body == NULL) {
         return 1;
-    type = xmpp_stanza_get_type(stanza);
-    if (type != NULL && strcmp(type, "error") == 0)
-        return 1;
+    }
 
+    // Check is not an error
+    type = xmpp_stanza_get_type(stanza);
+    if (type != NULL && 0 == strcmp(type, "error")) {
+        return 1;
+    }
+
+    // Get message body
     intext = xmpp_stanza_get_text(body);
 
-    printf("Incoming message from %s: %s\n", xmpp_stanza_get_from(stanza), intext);
-
-    // Process received message
-    if (_rx_encrypted_cb) {
-        // Get sender's identity
-        sender = strdup(xmpp_stanza_get_from(stanza));
-        at_symbol = strchr(sender, '@');
-        if (at_symbol) {
-            *at_symbol = 0;
-        }
-        _rx_encrypted_cb(sender, intext);
-
-        free(sender);
-        sender = NULL;
+    // Get sender's identity
+    sender = strdup(xmpp_stanza_get_from(stanza));
+    at_symbol = strchr(sender, '@');
+    if (at_symbol) {
+        *at_symbol = 0;
     }
 
-    // >>> Reply
-    if (!_stanza) {
-        _stanza = xmpp_stanza_reply(stanza);
+    // Pass received message to a callback function
+    _rx_encrypted_cb(sender, intext);
 
-        xmpp_stanza_set_from(_stanza, xmpp_stanza_get_to(stanza));
-        //        if (xmpp_stanza_get_type(reply) == NULL)
-        //                    xmpp_stanza_set_type(reply, "chat");
-    }
-
+    // Clean-up
+    free(sender);
     xmpp_free(ctx, intext);
-    // <<< Reply
-
-    if (quit)
-        xmpp_disconnect(conn);
 
     return 1;
 }
 
 /******************************************************************************/
-void
-conn_handler(xmpp_conn_t *const conn,
-             const xmpp_conn_event_t status,
-             const int error,
-             xmpp_stream_error_t *const stream_error,
-             void *const userdata) {
+static void
+_conn_handler(xmpp_conn_t *const conn,
+              const xmpp_conn_event_t status,
+              const int error,
+              xmpp_stream_error_t *const stream_error,
+              void *const userdata) {
     xmpp_ctx_t *ctx = (xmpp_ctx_t *)userdata;
+
+    // Check input parameters
+    VS_IOT_ASSERT(conn);
+    VS_IOT_ASSERT(userdata);
 
     if (status == XMPP_CONN_CONNECT) {
         xmpp_stanza_t *pres;
-        fprintf(stderr, "DEBUG: connected\n");
-        xmpp_handler_add(conn, version_handler, "jabber:iq:version", "iq", NULL, ctx);
-        xmpp_handler_add(conn, message_handler, NULL, "message", NULL, ctx);
+        VS_LOG_INFO("connected");
+        xmpp_handler_add(conn, _version_handler, "jabber:iq:version", "iq", NULL, ctx);
+        xmpp_handler_add(conn, _message_handler, NULL, "message", NULL, ctx);
 
-        /* Send initial <presence/> so that we appear online to contacts */
+        // Send initial <presence/> so that we appear online to contacts
         pres = xmpp_presence_new(ctx);
         xmpp_send(conn, pres);
         xmpp_stanza_release(pres);
     } else {
-        fprintf(stderr, "DEBUG: disconnected\n");
+        VS_LOG_INFO("disconnected");
         xmpp_stop(ctx);
     }
+}
+
+/******************************************************************************/
+static char *
+_jid_from_identity(const char *identity) {
+    char *jid = NULL;
+    size_t jid_sz = 0;
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(identity && identity[0], NULL);
+
+    jid_sz = strlen(identity) + strlen(_host) + 2; // 2 is zero-terminator + '@'
+    jid = (char *)(calloc(1, jid_sz));
+    sprintf(jid, "%s@%s", identity, _host);
+
+    return jid;
 }
 
 /******************************************************************************/
@@ -192,71 +212,109 @@ vs_messenger_enjabberd_connect(const char *host,
                                const char *pass,
                                vs_messenger_enjabberd_rx_encrypted_cb_t rx_cb) {
 
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
     xmpp_log_t *log;
-    long flags = 0;
-    int tcp_keepalive = 1;
     char *jid = NULL;
-    size_t jid_sz = 0;
+
+    // Check input parameters
+    CHECK_NOT_ZERO(host && host[0]);
+    CHECK_NOT_ZERO(identity && identity[0]);
+    CHECK_NOT_ZERO(pass && pass[0]);
+    CHECK_NOT_ZERO(rx_cb);
 
     _rx_encrypted_cb = rx_cb;
 
-    /* init library */
+    // Save host name
+    free(_host);
+    _host = strdup(host);
+    CHECK_NOT_ZERO_RET(_host, VS_CODE_ERR_NO_MEMORY);
+
+    // init library
     xmpp_initialize();
 
-    /* pass NULL instead to silence output */
-    log = xmpp_get_default_logger(XMPP_LEVEL_DEBUG);
+    // pass NULL instead to silence output
+    log = xmpp_get_default_logger(XMPP_LEVEL_WARN);
 
-    /* create a context */
+    // create a context
     _ctx = xmpp_ctx_new(NULL, log);
 
-    /* create a connection */
+    // create a connection
     _conn = xmpp_conn_new(_ctx);
 
-    /* configure connection properties (optional) */
-    //    xmpp_conn_set_flags(conn, flags);
-    /* configure TCP keepalive (optional) */
-    if (tcp_keepalive)
-        xmpp_conn_set_keepalive(_conn, KA_TIMEOUT, KA_INTERVAL);
+    // configure TCP keepalive (optional)
+    xmpp_conn_set_keepalive(_conn, KA_TIMEOUT, KA_INTERVAL);
 
-    /* setup authentication information */
-    jid_sz = strlen(identity) + strlen(host) + 2; // 2 is zero-terminator + '@'
-    jid = (char *)(calloc(1, jid_sz));
-    sprintf(jid, "%s@%s", identity, host);
-
+    // setup authentication information
+    jid = _jid_from_identity(identity);
+    CHECK_NOT_ZERO_RET(jid, VS_CODE_ERR_NO_MEMORY);
     xmpp_conn_set_jid(_conn, jid);
     xmpp_conn_set_pass(_conn, pass);
+    free(jid);
 
-    /* initiate connection */
-    if (XMPP_EOK != xmpp_connect_client(_conn, host, port, conn_handler, _ctx)) {
-        printf("Cannot connect to enjabberd\n");
-        exit(-1);
+    // initiate connection
+    if (XMPP_EOK != xmpp_connect_client(_conn, host, port, _conn_handler, _ctx)) {
+        VS_LOG_ERROR("Cannot connect to enjabberd");
+        return VS_CODE_ERR_MSGR_INTERNAL;
     }
 
-    /* enter the event loop -
-       our connect handler will trigger an exit */
+    // enter the event loop - our connect handler will trigger an exit
     xmpp_run(_ctx);
 
-    /* release our connection and context */
+    // release our connection and context
     xmpp_conn_release(_conn);
     xmpp_ctx_free(_ctx);
 
-    /* final shutdown of the library */
+    // final shutdown of the library
     xmpp_shutdown();
 
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
 }
 
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_send(const char *identity, const char *message) {
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+    xmpp_stanza_t *msg, *body, *text;
+    char *jid = NULL;
 
-    if (_stanza) {
-        xmpp_message_set_body(_stanza, message);
-        xmpp_send(_conn, _stanza);
-        //    xmpp_stanza_release(reply);
-    }
+    // Check input parameters
+    CHECK_NOT_ZERO(identity && identity[0]);
+    CHECK_NOT_ZERO(message);
 
-    return VS_CODE_OK;
+    // Create JID for identity
+    jid = _jid_from_identity(identity);
+    CHECK_NOT_ZERO_RET(jid, VS_CODE_ERR_NO_MEMORY);
+
+    // Set message information
+    msg = xmpp_stanza_new(_ctx);
+    xmpp_stanza_set_name(msg, "message");
+    xmpp_stanza_set_type(msg, "chat");
+    xmpp_stanza_set_attribute(msg, "to", jid);
+    free(jid);
+
+    // Set message body
+    body = xmpp_stanza_new(_ctx);
+    xmpp_stanza_set_name(body, "body");
+    text = xmpp_stanza_new(_ctx);
+    xmpp_stanza_set_text(text, message);
+    xmpp_stanza_add_child(body, text);
+    xmpp_stanza_add_child(msg, body);
+
+    // Send message
+    xmpp_send(_conn, msg);
+
+    // Clean data
+    xmpp_stanza_release(msg);
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    return res;
 }
 
 /******************************************************************************/
@@ -268,7 +326,14 @@ vs_messenger_enjabberd_set_status(void) {
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_disconnect(void) {
-    return VS_CODE_ERR_NOT_IMPLEMENTED;
+    // terminate connection
+    xmpp_disconnect(_conn);
+
+    // Clean data
+    free(_host);
+    _host = NULL;
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

@@ -94,6 +94,9 @@ _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
         return;
     }
 
+    // Add Zero termination
+    decrypted_message[decrypted_message_sz] = 0;
+
     // Get message from JSON
     jsmn_init(&p);
     jsmn_res = jsmn_parse(&p, json_msg, strnlen(json_msg, DECRYPTED_MESSAGE_SZ_MAX), tokens, MAXNUMBER_OF_TOKENS);
@@ -215,8 +218,14 @@ terminate:
 /******************************************************************************/
 vs_status_e
 vs_messenger_stop(void) {
-    vs_messenger_virgil_logout();
-    return VS_CODE_OK;
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    STATUS_CHECK(vs_messenger_enjabberd_disconnect(), "Enjabberd disconnection error");
+    STATUS_CHECK(vs_messenger_virgil_logout(), "Virgil Logout error");
+
+terminate:
+    res = VS_CODE_OK;
+    return res;
 }
 
 /******************************************************************************/
