@@ -36,6 +36,7 @@
 #include "threads/message-bin-thread.h"
 #include "threads/file-download-thread.h"
 #include "threads/messenger-thread.h"
+#include "threads/msgr-thread.h"
 #include "event-flags.h"
 #include "helpers/app-helpers.h"
 
@@ -61,6 +62,7 @@ static const char _test_message[] = TEST_UPDATE_MESSAGE;
 static pthread_t *message_bin_thread;
 static pthread_t *upd_http_retrieval_thread;
 static pthread_t *messenger_thread;
+static pthread_t *msgr_thread;
 
 /******************************************************************************/
 gtwy_t *
@@ -130,6 +132,13 @@ _stop_all_threads(void) {
     }
     VS_LOG_INFO("messenger_thread thread canceled");
 
+    // Stop msgr thread
+    if (0 != _cancel_thread(msgr_thread)) {
+        VS_LOG_ERROR("Unable to cancel msgr_thread");
+        exit(-1);
+    }
+    VS_LOG_INFO("msgr_thread thread canceled");
+
     /* Cleanup a mutexes */
     pthread_mutex_destroy(&_gtwy.firmware_mutex);
     pthread_mutex_destroy(&_gtwy.tl_mutex);
@@ -168,6 +177,10 @@ _gateway_task(void *pvParameters) {
     // Start Messenger thread
     messenger_thread = vs_messenger_start_thread();
     CHECK_NOT_ZERO_RET(messenger_thread, (void *)-1);
+
+    // Start msgr thread
+    msgr_thread = vs_msgr_start_thread();
+    CHECK_NOT_ZERO_RET(msgr_thread, (void *)-1);
 
     // Main cycle
     while (!stop_threads) {

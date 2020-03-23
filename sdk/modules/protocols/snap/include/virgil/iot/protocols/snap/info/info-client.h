@@ -223,7 +223,7 @@ vs_snap_info_enum_devices(const vs_netif_t *netif,
                           size_t *devices_cnt,
                           uint32_t wait_ms);
 
-/** Set pooling
+/** Set polling
  *
  * This call enables or disables polling for elements masked in \a elements field that contains mask  with
  * #vs_snap_info_element_mask_e fields.

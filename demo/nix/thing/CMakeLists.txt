@@ -46,8 +46,12 @@ add_executable(thing)
 #
 target_sources(thing
         PRIVATE
+		# Headers
+		${CMAKE_CURRENT_LIST_DIR}/include/msgr/msgr-server-impl.h
+
         # Sources
-        ${CMAKE_CURRENT_LIST_DIR}/src/main.c
+		${CMAKE_CURRENT_LIST_DIR}/src/main.c
+		${CMAKE_CURRENT_LIST_DIR}/src/msgr/msgr-server-impl.c
 		)
 
 #

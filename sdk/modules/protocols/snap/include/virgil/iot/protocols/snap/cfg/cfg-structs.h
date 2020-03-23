@@ -52,7 +52,26 @@ typedef struct {
     uint8_t ssid[VS_CFG_STR_MAX];
     uint8_t pass[VS_CFG_STR_MAX];
     uint8_t account[VS_CFG_STR_MAX];
-} vs_cfg_configuration_t;
+} vs_cfg_wifi_configuration_t;
+
+#define VS_MESSENGER_CFG_VERSION (1)     /**< Current version of messenger configuration */
+#define VS_HOST_NAME_MAX_SZ (128)        /**< Maximum size of string with host name */
+#define VS_MESSENGER_CHANNEL_MAX_SZ (32) /**< Maximum size of Messenger's channel name */
+#define VS_MESSENGER_CHANNEL_NUM_MAX (1) /**< Suported amount of channels */
+
+/** Messenger's configuration */
+typedef struct {
+    uint8_t version;                              /**< Version of #vs_messenger_config_t structure */
+    char enjabberd_host[VS_HOST_NAME_MAX_SZ];     /**< Enjabberd host */
+    uint16_t enjabberd_port;                      /**< Enjabberd port */
+    char messenger_base_url[VS_HOST_NAME_MAX_SZ]; /**< Virgil messenger service base URL */
+} vs_cfg_messenger_config_t;
+
+/** Messenger's channels to accept and connect to */
+typedef struct {
+    uint8_t channels_num;                                                    /**< Amount of available XMPP channels */
+    char channel[VS_MESSENGER_CHANNEL_NUM_MAX][VS_MESSENGER_CHANNEL_MAX_SZ]; /**< Available XMPP channels */
+} vs_cfg_messenger_channels_t;
 
 #ifdef __cplusplus
 } // extern "C"

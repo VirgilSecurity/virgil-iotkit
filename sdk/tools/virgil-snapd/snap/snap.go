@@ -64,13 +64,13 @@ static int _set_polling(void) {
 
 static int _set_test_config(void) {
 
-    vs_cfg_configuration_t config;
+    vs_cfg_wifi_configuration_t config;
 
     strcpy((char *)config.ssid, "test_ssid");
     strcpy((char *)config.pass, "test_pass");
     strcpy((char *)config.account, "test_account");
 
-    return vs_snap_cfg_configure_device(vs_snap_netif_routing(),
+    return vs_snap_cfg_wifi_configure_device(vs_snap_netif_routing(),
                                         vs_snap_broadcast_mac(),
                                         &config);
 }

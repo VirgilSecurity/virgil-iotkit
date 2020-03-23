@@ -1,0 +1,40 @@
+{
+    "name": "virgil-iotkit",
+    "keywords": "virgil, iotkit, iot, sdk",
+    "description": "Virgil IOTKIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/VirgilSecurity/virgil-iotkit.git"
+    },
+    "build": {
+        "includeDir": "integration/platformio/include",
+        "extraScript": "integration/platformio/scripts/vs_build_prep.py",
+        "flags": [
+            "-I integration/platformio",
+            "-I integration/platformio/platforms",
+            "-I integration/platformio/defaults",
+            "-I sdk/modules/logger/include",
+            "-I sdk/modules/protocols/snap/include",
+            "-I sdk/modules/provision/include",
+            "-I sdk/modules/firmware/include",
+            "-I sdk/modules/provision/trust_list/include",
+            "-I sdk/modules/crypto/secmodule/include",
+            "-I sdk/modules/crypto/converters/include",
+            "-I sdk/modules/cloud/include",
+            "-I sdk/helpers/status_code/include",
+            "-I sdk/helpers/json/include",
+            "-I sdk/tests/include",
+            "-I sdk/high-level/include",
+            "-I sdk/helpers/macros/include",
+            "-I sdk/helpers/storage_hal/include",
+            "-I sdk/helpers/update/include",
+            "-I sdk/ext/jsmn",
+            "-I sdk/default-impl/cloud/virgil-message-bin/aws-message-bin/include",
+            "-D JSMN_PARENT_LINKS",
+            "-D JSMN_STRICT"
+        ]
+    },
+    "version": "0.1.0a",
+    "frameworks": "*",
+    "platforms": "*"
+}

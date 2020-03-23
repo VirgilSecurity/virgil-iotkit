@@ -53,7 +53,7 @@
 #include "sdk-impl/netif/netif-udp-broadcast.h"
 #include "sdk-impl/netif/packets-queue.h"
 #include "netif/netif-websocket.h"
-
+#include "msgr/msgr-client-impl.h"
 #include <curl/curl.h>
 
 #define WEBSOCKET_URL "wss://websocket-stg.virgilsecurity.com/ws"
@@ -74,6 +74,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
     vs_storage_op_ctx_t secbox_storage_impl;
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL};
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -157,6 +158,8 @@ main(int argc, char *argv[]) {
                                     &fw_storage_impl,
                                     &secbox_storage_impl,
                                     netifs_impl,
+                                    vs_snap_msgr_client_impl(),
+                                    cfg_server_cb,
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
@@ -173,6 +176,8 @@ main(int argc, char *argv[]) {
 
     // Send broadcast notification about self start
     vs_snap_info_start_notification(vs_snap_netif_routing());
+
+    vs_snap_msgr_set_polling(vs_snap_netif_routing(), vs_snap_broadcast_mac(), true, MSGR_POLL_PERIOD_S);
 
     // Sleep until CTRL_C
     vs_app_sleep_until_stop();

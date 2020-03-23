@@ -49,6 +49,7 @@
 #include "sdk-impl/firmware/firmware-nix-impl.h"
 #include "sdk-impl/netif/netif-udp-broadcast.h"
 #include "sdk-impl/netif/packets-queue.h"
+#include "msgr/msgr-server-impl.h"
 
 #if SIMULATOR
 static const char _test_message[] = TEST_UPDATE_MESSAGE;
@@ -73,6 +74,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL};
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -139,6 +141,8 @@ main(int argc, char *argv[]) {
                                     &fw_storage_impl,
                                     NULL,
                                     netifs_impl,
+                                    vs_snap_msgr_server_impl(),
+                                    cfg_server_cb,
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
@@ -155,6 +159,9 @@ main(int argc, char *argv[]) {
 
     // Send broadcast notification about self start
     vs_snap_info_start_notification(vs_snap_netif_routing());
+
+    // Send broadcast notification about msgr server start
+    vs_snap_msgr_start_notification(vs_snap_netif_routing());
 
     // Sleep until CTRL_C
     vs_app_sleep_until_stop();
@@ -187,5 +194,3 @@ void
 vs_impl_device_serial(vs_device_serial_t serial_number) {
     memcpy(serial_number, vs_snap_device_serial(), VS_DEVICE_SERIAL_SIZE);
 }
-
-/******************************************************************************/

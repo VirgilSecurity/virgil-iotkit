@@ -225,7 +225,7 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     vs_device_serial_t serial_number;
     uint32_t _in_out_len = sizeof(serial_hex_str);
     int encoded_len;
-
+    uint8_t *request_body = NULL;
     uint16_t sign_sz = (uint16_t)vs_secmodule_get_signature_len(VS_KEYPAIR_EC_SECP256R1);
     uint8_t sign[sign_sz];
 
@@ -238,7 +238,7 @@ _get_credentials(const char *host, char *ep, char *id, char *out_answer, size_t 
     char *url = (char *)VS_IOT_MALLOC(MAX_EP_SIZE);
     CHECK(NULL != url, "No memory to allocate %lu bytes for an url", MAX_EP_SIZE);
 
-    uint8_t *request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
+    request_body = (uint8_t *)VS_IOT_MALLOC(VS_REQUEST_BODY_MAX_SIZE);
     CHECK(NULL != request_body, "No memory to allocate %lu bytes for a request body", VS_REQUEST_BODY_MAX_SIZE);
 
     vs_impl_device_serial(serial_number);

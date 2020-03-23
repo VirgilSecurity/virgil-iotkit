@@ -68,6 +68,10 @@ function(add_snap _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-client.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-private.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/cfg/cfg-structs.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/msgr/msgr-server.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/msgr/msgr-client.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/msgr/msgr-private.h
+            ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/msgr/msgr-structs.h
             ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/protocols/snap/generated/snap_cvt.h
 
             ${CMAKE_CURRENT_LIST_DIR}/src/snap.c
@@ -79,6 +83,8 @@ function(add_snap _targetname _firmware_update _definitions)
             ${CMAKE_CURRENT_LIST_DIR}/src/services/info/info-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/cfg/cfg-server.c
             ${CMAKE_CURRENT_LIST_DIR}/src/services/cfg/cfg-client.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/msgr/msgr-server.c
+            ${CMAKE_CURRENT_LIST_DIR}/src/services/msgr/msgr-client.c
             ${CMAKE_CURRENT_LIST_DIR}/src/generated/snap_cvt.c
             )
 
@@ -164,12 +170,12 @@ if (NOT MOBILE_PLATFORM)
     #
     #   SNAP For Thing
     #
-    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1 CFG_SERVER=1")
+    add_snap("vs-module-snap-thing" 1 "FLDT_CLIENT=1 INFO_SERVER=1 CFG_SERVER=1 MSGR_SERVER=1")
 
     #
     #   SNAP For Gateway
     #
-    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1 CFG_SERVER=1")
+    add_snap("vs-module-snap-gateway" 1 "FLDT_SERVER=1 INFO_SERVER=1 CFG_SERVER=1 MSGR_CLIENT=1")
 endif()
 
 #
