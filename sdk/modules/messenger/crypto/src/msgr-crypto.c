@@ -39,7 +39,7 @@
 #include "vscf_recipient_cipher.h"
 #include "vscf_key_provider.h"
 #include "vscf_fake_random.h"
-#include "vscf_key_material_rng.h"
+#include "vscf_ctr_drbg.h"
 
 /******************************************************************************/
 static void
@@ -102,22 +102,12 @@ vs_messenger_crypto_encrypt(const uint8_t *data,
     vsc_data_t sender_privkey_data = vsc_data(sender_privkey, sender_privkey_sz);
     vsc_data_t sender_id_data = vsc_data(sender_id, sender_id_sz);
 
-
     //
     //  Prepare random.
     //
-
-    // TODO: USE REAL RNG !!!
-#if 0
-    vsc_data_t key_material = vsc_data(key_material_arr, (*jenv)->GetArrayLength(jenv, jkeyMaterial));
-    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
-    vscf_key_material_rng_reset_key_material(key_material_rng, key_material);
-    vscf_impl_t *random = vscf_key_material_rng_impl(key_material_rng);
-#endif
-
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_impl_t *random = vscf_ctr_drbg_impl(rng);
+    CHECK(vscf_status_SUCCESS == vscf_ctr_drbg_setup_defaults(rng), "");
 
     //
     //  Prepare recipients / signers.
@@ -243,16 +233,9 @@ vs_messenger_crypto_decrypt(const uint8_t *enc_data,
     //
     //  Prepare random.
     //
-    // TODO: USE REAL RNG !!!
-#if 0
-    vsc_data_t key_material = vsc_data(key_material_arr, (*jenv)->GetArrayLength(jenv, jkeyMaterial));
-    vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
-    vscf_key_material_rng_reset_key_material(key_material_rng, key_material);
-    vscf_impl_t *random = vscf_key_material_rng_impl(key_material_rng);
-#endif
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_impl_t *random = vscf_ctr_drbg_impl(rng);
+    CHECK(vscf_status_SUCCESS == vscf_ctr_drbg_setup_defaults(rng), "");
 
     //
     //  Prepare recipients / verifiers.
