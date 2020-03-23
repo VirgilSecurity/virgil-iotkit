@@ -54,6 +54,9 @@ target_link_libraries(vs-module-messenger
         vs-messenger-internal
         virgil-iot-status-code
         jsmn
+
+        PRIVATE
+        enable_pedantic_mode
         )
 
 target_include_directories(vs-module-messenger

@@ -61,6 +61,9 @@ target_link_libraries(vs-module-secbox
         vs-module-provision
         macros
         storage_hal
+
+        PRIVATE
+        enable_pedantic_mode
         )
 #
 #   Common include directories

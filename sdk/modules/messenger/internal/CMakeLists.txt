@@ -72,6 +72,9 @@ target_link_libraries(vs-messenger-internal
         strophe
         curl
         vs-messenger-crypto
+
+        PRIVATE
+        enable_pedantic_mode
         )
 
 target_include_directories(vs-messenger-internal
