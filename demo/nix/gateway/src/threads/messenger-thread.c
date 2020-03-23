@@ -57,9 +57,6 @@ static void
 _messenger_rx_cb(const char *sender, const char *message) {
     if (sender && message) {
         VS_LOG_DEBUG("Message from: %s  <%s>", sender, message);
-
-        // Echo back message
-        vs_messenger_send(sender, message);
     }
 }
 

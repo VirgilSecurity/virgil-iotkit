@@ -88,6 +88,9 @@ vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb);
 vs_status_e
 vs_messenger_send(const char *recipient, const char *message);
 
+const char *
+vs_messenger_default_channel(void);
+
 vs_status_e
 vs_messenger_stop(void);
 

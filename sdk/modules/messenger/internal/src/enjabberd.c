@@ -44,6 +44,7 @@ static vs_messenger_enjabberd_rx_encrypted_cb_t _rx_encrypted_cb = NULL;
 static xmpp_ctx_t *_ctx;
 static xmpp_conn_t *_conn;
 static char *_host = NULL;
+static bool _is_ready = false;
 
 /******************************************************************************/
 static int
@@ -182,6 +183,8 @@ _conn_handler(xmpp_conn_t *const conn,
         pres = xmpp_presence_new(ctx);
         xmpp_send(conn, pres);
         xmpp_stanza_release(pres);
+
+        _is_ready = true;
     } else {
         VS_LOG_INFO("disconnected");
         xmpp_stop(ctx);
@@ -230,6 +233,7 @@ vs_messenger_enjabberd_connect(const char *host,
     CHECK_NOT_ZERO_RET(_host, VS_CODE_ERR_NO_MEMORY);
 
     // init library
+    _is_ready = false;
     xmpp_initialize();
 
     // pass NULL instead to silence output
@@ -285,6 +289,9 @@ vs_messenger_enjabberd_send(const char *identity, const char *message) {
     CHECK_NOT_ZERO(identity && identity[0]);
     CHECK_NOT_ZERO(message);
 
+    // Check is correctly connected
+    CHECK(_is_ready, "Enjabberd connection is not ready.");
+
     // Create JID for identity
     jid = _jid_from_identity(identity);
     CHECK_NOT_ZERO_RET(jid, VS_CODE_ERR_NO_MEMORY);
@@ -326,6 +333,8 @@ vs_messenger_enjabberd_set_status(void) {
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_enjabberd_disconnect(void) {
+    _is_ready = false;
+
     // terminate connection
     xmpp_disconnect(_conn);
 

@@ -76,8 +76,8 @@ _rx_encrypted_msg(const char *sender, const char *encrypted_message) {
     int jsmn_res;
     jsmn_parser p;
     jsmntok_t tokens[MAXNUMBER_OF_TOKENS];
-    char key_str[MAX_TOKEN_LENGTH];
-    char prev_key_str[MAX_TOKEN_LENGTH];
+    char key_str[MAX_TOKEN_LENGTH] = {0};
+    char prev_key_str[MAX_TOKEN_LENGTH] = {0};
     int i;
     char *json_msg = (char *)decrypted_message;
     bool done = false;
@@ -184,23 +184,51 @@ terminate:
 }
 
 /******************************************************************************/
+static char *
+_fix_chars(char *str, char find, char replace) {
+    char *current_pos = strchr(str, find);
+    while (current_pos) {
+        *current_pos = replace;
+        current_pos = strchr(current_pos, find);
+    }
+    return str;
+}
+
+/******************************************************************************/
+static char *
+_fixed_str(const char *str) {
+    char *res = NULL;
+    if (!str) {
+        return NULL;
+    }
+    res = strdup(str);
+    return _fix_chars(res, '\n', ' ');
+}
+
+/******************************************************************************/
 vs_status_e
 vs_messenger_send(const char *recipient, const char *message) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
     uint8_t encrypted_message[ENCRYPTED_MESSAGE_SZ_MAX];
     size_t encrypted_message_sz = 0;
+    char *fixed_message = NULL;
 
-    VS_LOG_DEBUG("Message to: %s  <%s>", recipient, message);
+    // Check input parameters
+    CHECK_NOT_ZERO(recipient && recipient[0]);
+    CHECK_NOT_ZERO(message && message[0]);
+
+    fixed_message = _fixed_str(message);
+    VS_LOG_DEBUG("Message to: %s  <%s>", recipient, fixed_message);
 
     // Create JSON-formatted message to be sent
     static const char json_tmpl[] = "{\"type\":\"text\",\"payload\":{\"body\":\"%s\"}}";
     char json_msg[DECRYPTED_MESSAGE_SZ_MAX];
 
-    size_t req_sz = strlen(json_tmpl) + strlen(message);
+    size_t req_sz = strlen(json_tmpl) + strlen(fixed_message);
     if (req_sz > sizeof(json_msg)) {
         return VS_CODE_ERR_TOO_SMALL_BUFFER;
     }
-    sprintf(json_msg, json_tmpl, message);
+    sprintf(json_msg, json_tmpl, fixed_message);
 
     // Encrypt message
     STATUS_CHECK(vs_messenger_virgil_encrypt_msg(
@@ -213,6 +241,8 @@ vs_messenger_send(const char *recipient, const char *message) {
     res = VS_CODE_OK;
 
 terminate:
+
+    free(fixed_message);
 
     return res;
 }
@@ -425,6 +455,16 @@ vs_messenger_set_channels(const char *identity, const vs_messenger_channels_t *c
 terminate:
 
     return res;
+}
+
+/******************************************************************************/
+const char *
+vs_messenger_default_channel(void) {
+    if (_user_channels.channels_num) {
+        return (char *)_user_channels.channel[0];
+    }
+
+    return NULL;
 }
 
 /******************************************************************************/

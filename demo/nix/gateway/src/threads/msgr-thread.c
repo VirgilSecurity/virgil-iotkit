@@ -37,6 +37,7 @@
 #include "event-flags.h"
 
 #include <virgil/iot/logger/logger.h>
+#include <virgil/iot/messenger/messenger.h>
 #include "helpers/msg-queue.h"
 
 static pthread_t msgr_thread;
@@ -65,6 +66,7 @@ _msgr_task(void *pvParameters) {
         if (VS_CODE_OK == vs_msg_queue_pop(_event_queue, &info, &data, &data_sz)) {
             if (data_sz) {
                 VS_LOG_DEBUG("MSGR device sent data \"%s\"", (char *)data);
+                vs_messenger_send(vs_messenger_default_channel(), (char *)data);
             } else {
                 VS_LOG_DEBUG("MSGR device sent an empty data");
             }

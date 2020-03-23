@@ -469,7 +469,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     size_t enc_data_sz = 0;
 
     // Check is correctly initialized
-    VS_IOT_ASSERT(_is_initialized);
+    CHECK_RET(_is_initialized, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not ready for a communication");
     CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not ready for a communication");
 
     // Get Recipient's public key

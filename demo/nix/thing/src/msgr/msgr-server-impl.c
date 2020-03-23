@@ -135,3 +135,5 @@ vs_snap_msgr_server_impl(void) {
     vs_snap_msgr_server_service_t msgr_server_cb = {_snap_msgr_get_data_cb, _snap_msgr_set_data_cb};
     return msgr_server_cb;
 }
+
+/******************************************************************************/
