@@ -85,6 +85,16 @@ using virgil::crypto::str2bytes;
 // Limits
 #define VS_VIRGIL_MESSENGER_ENC_DATA_MAX_SZ (4 * 1024) /**< Maximum size of encrypted data */
 
+/** Container of information about Public key */
+typedef struct {
+    VirgilByteArray pubkey;
+    VirgilByteArray pubkeyId;
+} vs_pubkey_info_t;
+
+
+/** Cache for Public keys */
+typedef std::map<std::string, vs_pubkey_info_t> vs_pubkey_cache_t;
+
 // Endpoints
 static const char *_virgil_jwt_endpoint = "/virgil-jwt/";
 static const char *_ejabberd_jwt_endpoint = "/ejabberd-jwt/";
@@ -96,6 +106,7 @@ static bool _is_credentials_ready = false;
 static std::shared_ptr<Crypto> crypto;
 static vs_messenger_virgil_user_creds_t _creds = {{0}, 0, {0}, 0, {0}};
 static char *_service_base_url = NULL;
+static vs_pubkey_cache_t _pubkey_cache;
 
 /******************************************************************************/
 static vs_status_e
@@ -346,12 +357,20 @@ vs_messenger_virgil_logout(void) {
 
 /******************************************************************************/
 static vs_status_e
-_pubkey_by_identity(const char *identity, VirgilByteArray &pubkey, VirgilByteArray &pubkeyId) {
+_pubkey_by_identity(const char *identity, vs_pubkey_info_t &pubkeyInfo) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+    auto found_it = _pubkey_cache.find(identity);
 
     // Check input parameters
     CHECK_NOT_ZERO(identity && identity[0]);
 
+    // Try to find by identity in cache
+    if (found_it != _pubkey_cache.end()) {
+        pubkeyInfo = _pubkey_cache[identity];
+        return VS_CODE_OK;
+    }
+
+    // There is no cached public key, let's get it from the Cloud
     try {
         // Get Sender's public key
         CardClient cardClient;
@@ -362,8 +381,11 @@ _pubkey_by_identity(const char *identity, VirgilByteArray &pubkey, VirgilByteArr
         auto rawCards = searchFuture.get();
         auto parsedCard = CardManager::parseCard(rawCards.front(), crypto);
         auto sdkPubkey = parsedCard.publicKey();
-        pubkey = crypto->exportPublicKey(sdkPubkey);
-        pubkeyId = _computeHashForPublicKey(pubkey);
+        pubkeyInfo.pubkey = crypto->exportPublicKey(sdkPubkey);
+        pubkeyInfo.pubkeyId = _computeHashForPublicKey(pubkeyInfo.pubkey);
+
+        // Save data to cache
+        _pubkey_cache[identity] = pubkeyInfo;
 
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
@@ -384,8 +406,7 @@ vs_messenger_virgil_decrypt_msg(const char *sender,
                                 size_t buf_sz,
                                 size_t *decrypted_message_sz) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
-    VirgilByteArray senderPubkeyData;
-    VirgilByteArray senderId;
+    vs_pubkey_info_t senderPubkeyInfo;
 
     // Check input parameters
     CHECK_NOT_ZERO(sender && sender[0]);
@@ -398,7 +419,7 @@ vs_messenger_virgil_decrypt_msg(const char *sender,
     CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not ready for a communication");
 
     // Get Sender's public key
-    STATUS_CHECK(_pubkey_by_identity(sender, senderPubkeyData, senderId), "Cannot get Sender's public key");
+    STATUS_CHECK(_pubkey_by_identity(sender, senderPubkeyInfo), "Cannot get Sender's public key");
 
     try {
 
@@ -415,10 +436,10 @@ vs_messenger_virgil_decrypt_msg(const char *sender,
                                                  _creds.privkey_sz,
                                                  _creds.pubkey_id,
                                                  VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ,
-                                                 senderPubkeyData.data(),
-                                                 senderPubkeyData.size(),
-                                                 senderId.data(),
-                                                 senderId.size(),
+                                                 senderPubkeyInfo.pubkey.data(),
+                                                 senderPubkeyInfo.pubkey.size(),
+                                                 senderPubkeyInfo.pubkeyId.data(),
+                                                 senderPubkeyInfo.pubkeyId.size(),
                                                  decrypted_message,
                                                  buf_sz,
                                                  decrypted_message_sz),
@@ -452,19 +473,18 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not ready for a communication");
 
     // Get Recipient's public key
-    VirgilByteArray recipientPubkeyData;
-    VirgilByteArray recipientId;
-    STATUS_CHECK(_pubkey_by_identity(recipient, recipientPubkeyData, recipientId), "Cannot get Recipient's public key");
+    vs_pubkey_info_t recipientPubkey;
+    STATUS_CHECK(_pubkey_by_identity(recipient, recipientPubkey), "Cannot get Recipient's public key");
 
     try {
 
         // Encrypt message
         STATUS_CHECK(vs_messenger_crypto_encrypt((const uint8_t *)message,
                                                  strlen(message),
-                                                 recipientPubkeyData.data(),
-                                                 recipientPubkeyData.size(),
-                                                 recipientId.data(),
-                                                 recipientId.size(),
+                                                 recipientPubkey.pubkey.data(),
+                                                 recipientPubkey.pubkey.size(),
+                                                 recipientPubkey.pubkeyId.data(),
+                                                 recipientPubkey.pubkeyId.size(),
                                                  _creds.privkey,
                                                  _creds.privkey_sz,
                                                  _creds.pubkey_id,
