@@ -31,43 +31,27 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
 
-#include <msgr/msgr-server-impl.h>
-#if SMART_MAC_COUNTER_SUPPORT_THING == 1
-#include <smart-mac-counter-data-impl.h>
-#else
-#include <remote-device-emulator-data-impl.h>
-#endif
+#ifndef IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H
+#define IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H
 
+#include <stdint.h>
+#include <virgil/iot/status_code/status_code.h>
 
-/******************************************************************************/
-static vs_status_e
-_snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
-#if SMART_MAC_COUNTER_SUPPORT_THING == 1
-    return vs_smart_mac_counter_get_data(data, buf_sz, data_sz);
-#else
-    return vs_emulated_device_get_data(data, buf_sz, data_sz);
-#endif
-}
+#define SMART_MAC_COUNTER_HOST_MAX_STR_SZ (50)
+#define SMART_MAC_COUNTER_ID_MAX_STR_SZ (11)
+#define SMART_MAC_COUNTER_PASS_MAX_STR_SZ (11)
 
-/******************************************************************************/
-static vs_status_e
-_snap_msgr_set_data_cb(uint8_t *data, uint32_t data_sz) {
-#if SMART_MAC_COUNTER_SUPPORT_THING == 1
-    return vs_smart_mac_counter_set_data(data, data_sz);
-#else
-    return vs_emulated_device_set_data(data, data_sz);
-#endif
-}
+vs_status_e
+vs_init_smart_mac_counter(const char *url, size_t url_len, const char *id, size_t id_len, const char *pass, size_t pass_sz);
 
+vs_status_e
+vs_deinit_smart_mac_counter(void);
 
-/******************************************************************************/
-vs_snap_msgr_server_service_t
-vs_snap_msgr_server_impl(void) {
-    vs_snap_msgr_server_service_t msgr_server_cb = {_snap_msgr_get_data_cb, _snap_msgr_set_data_cb};
-    return msgr_server_cb;
-}
+vs_status_e
+vs_smart_mac_counter_get_data(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz);
+
+vs_status_e
+vs_smart_mac_counter_set_data(uint8_t *data, uint32_t data_sz);
+
+#endif // IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H

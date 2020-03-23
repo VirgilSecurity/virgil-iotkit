@@ -51,6 +51,17 @@
 #include "sdk-impl/netif/packets-queue.h"
 #include "msgr/msgr-server-impl.h"
 
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+
+#include "smart-mac-counter-data-impl.h"
+#include <curl/curl.h>
+
+#define SMART_MAC_COUNTER_URL "http://192.168.1.1"
+#define SMART_MAC_COUNTER_ID "12345"
+#define SMART_MAC_COUNTER_PASS "12345"
+
+#endif
+
 #if SIMULATOR
 static const char _test_message[] = TEST_UPDATE_MESSAGE;
 #endif
@@ -103,6 +114,17 @@ main(int argc, char *argv[]) {
     // Enable cached file IO
     vs_file_cache_enable(true);
 
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    STATUS_CHECK(vs_init_smart_mac_counter(SMART_MAC_COUNTER_URL,
+                                           sizeof(SMART_MAC_COUNTER_URL),
+                                           SMART_MAC_COUNTER_ID,
+                                           sizeof(SMART_MAC_COUNTER_ID),
+                                           SMART_MAC_COUNTER_PASS,
+                                           sizeof(SMART_MAC_COUNTER_PASS)),
+                 "Cannot initialize remote device");
+#endif
 
     //
     // ---------- Create implementations ----------
@@ -175,6 +197,10 @@ terminate:
     VS_LOG_INFO("\n\n\n");
     VS_LOG_INFO("Terminating application ...");
 
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+    vs_deinit_smart_mac_counter();
+#endif
+
     // De-initialize IoTKit internals
     vs_high_level_deinit();
 
@@ -182,6 +208,10 @@ terminate:
     vs_soft_secmodule_deinit();
 
     vs_packets_queue_deinit();
+
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+    curl_global_cleanup();
+#endif
 
     res = vs_firmware_nix_update(argc, argv);
 

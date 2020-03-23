@@ -65,6 +65,7 @@ target_compile_definitions(thing
 		THING_DEVICE_MODEL="${THING_MODEL}"
 		SIMULATOR=$<BOOL:${GATEWAY_SIMULATOR}>
         SIM_FETCH_FIRMWARE=$<BOOL:${SIM_FETCH_FIRMWARE}>
+		SMART_MAC_COUNTER_SUPPORT_THING=$<BOOL:${SMART_MAC_COUNTER_SUPPORT_THING}>
         )
 
 #
@@ -92,6 +93,8 @@ target_link_libraries(thing
         $<$<NOT:$<BOOL:${APPLE}>>:-Wl,--whole-archive>
 		nix-common
 		nix-common-firmware
+		$<$<NOT:$<BOOL:${SMART_MAC_COUNTER_SUPPORT_THING}>>:nix-common-remote-device-emulator>
+		$<$<BOOL:${SMART_MAC_COUNTER_SUPPORT_THING}>:nix-common-smart-mac-counter>
 		$<$<NOT:$<BOOL:${APPLE}>>:-Wl,--no-whole-archive>
 
 		vs-high-level-thing
