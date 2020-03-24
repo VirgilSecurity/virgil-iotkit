@@ -37,10 +37,13 @@
 
 #include <stdint.h>
 #include <virgil/iot/status_code/status_code.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
 
 #define SMART_MAC_COUNTER_HOST_MAX_STR_SZ (50)
 #define SMART_MAC_COUNTER_ID_MAX_STR_SZ (11)
 #define SMART_MAC_COUNTER_PASS_MAX_STR_SZ (11)
+
+#define SMART_MAC_CONFIG_DATA_TYPE (0)
 
 vs_status_e
 vs_init_smart_mac_counter(const char *url, size_t url_len, const char *id, size_t id_len, const char *pass, size_t pass_sz);
@@ -53,5 +56,8 @@ vs_smart_mac_counter_get_data(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz)
 
 vs_status_e
 vs_smart_mac_counter_set_data(uint8_t *data, uint32_t data_sz);
+
+vs_status_e
+vs_snap_cfg_smart_mac_cb (const vs_cfg_user_t *configuration);
 
 #endif // IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H

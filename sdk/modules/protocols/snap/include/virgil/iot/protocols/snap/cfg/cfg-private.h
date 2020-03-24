@@ -53,6 +53,7 @@ typedef enum {
     VS_CFG_WIFI = HTONL_IN_COMPILE_TIME('WIFI'), /* configure WIFI creds */
     VS_CFG_MSCR = HTONL_IN_COMPILE_TIME('MSCR'), /* configure MeSsenger CReds */
     VS_CFG_MSCH = HTONL_IN_COMPILE_TIME('MSCH'), /* configure MeSsenger CHannel */
+    VS_CFG_USER = HTONL_IN_COMPILE_TIME('USER'), /* configure USER data */
 } vs_snap_cfg_element_e;
 #pragma GCC diagnostic pop
 
@@ -73,5 +74,11 @@ typedef struct __attribute__((__packed__)) {
     uint8_t channels_num;
     char channel[VS_MESSENGER_CHANNEL_NUM_MAX][VS_MESSENGER_CHANNEL_MAX_SZ];
 } vs_cfg_messenger_channels_request_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t data_type;
+    uint32_t data_sz;
+    uint8_t data[];
+} vs_cfg_user_config_request_t;
 
 #endif // VS_SECURITY_SDK_SNAP_SERVICES_CFG_PRIVATE_H

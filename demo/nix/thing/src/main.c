@@ -56,11 +56,7 @@
 #include "smart-mac-counter-data-impl.h"
 #include <curl/curl.h>
 
-#define SMART_MAC_COUNTER_URL "http://192.168.1.1"
-#define SMART_MAC_COUNTER_ID "12345"
-#define SMART_MAC_COUNTER_PASS "12345"
-
-#endif
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
 
 #if SIMULATOR
 static const char _test_message[] = TEST_UPDATE_MESSAGE;
@@ -85,7 +81,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
-    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL};
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL, NULL};
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -116,15 +112,8 @@ main(int argc, char *argv[]) {
 
 #if SMART_MAC_COUNTER_SUPPORT_THING == 1
     curl_global_init(CURL_GLOBAL_DEFAULT);
-
-    STATUS_CHECK(vs_init_smart_mac_counter(SMART_MAC_COUNTER_URL,
-                                           sizeof(SMART_MAC_COUNTER_URL),
-                                           SMART_MAC_COUNTER_ID,
-                                           sizeof(SMART_MAC_COUNTER_ID),
-                                           SMART_MAC_COUNTER_PASS,
-                                           sizeof(SMART_MAC_COUNTER_PASS)),
-                 "Cannot initialize remote device");
-#endif
+    cfg_server_cb.user_config_cb = vs_snap_cfg_smart_mac_cb;
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
 
     //
     // ---------- Create implementations ----------
@@ -199,7 +188,8 @@ terminate:
 
 #if SMART_MAC_COUNTER_SUPPORT_THING == 1
     vs_deinit_smart_mac_counter();
-#endif
+    curl_global_cleanup();
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
 
     // De-initialize IoTKit internals
     vs_high_level_deinit();
@@ -208,10 +198,6 @@ terminate:
     vs_soft_secmodule_deinit();
 
     vs_packets_queue_deinit();
-
-#if SMART_MAC_COUNTER_SUPPORT_THING == 1
-    curl_global_cleanup();
-#endif
 
     res = vs_firmware_nix_update(argc, argv);
 

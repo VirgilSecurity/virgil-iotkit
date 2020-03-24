@@ -136,6 +136,36 @@ vs_snap_cfg_channels_configure_device(const vs_netif_t *netif,
 }
 
 /******************************************************************************/
+vs_status_e
+vs_snap_cfg_user_configure_device(const vs_netif_t *netif, const vs_mac_addr_t *mac, const vs_cfg_user_t *config) {
+    const vs_mac_addr_t *dst_mac;
+    vs_status_e ret_code;
+    vs_cfg_user_config_request_t *request;
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(config, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // Set destination mac
+    dst_mac = mac ? mac : vs_snap_broadcast_mac();
+
+    uint32_t request_sz = config->data_sz + sizeof(vs_cfg_user_config_request_t);
+    uint8_t buf[request_sz];
+    request = (vs_cfg_user_config_request_t *)buf;
+    request->data_type = config->data_type;
+    request->data_sz = config->data_sz;
+    VS_IOT_MEMCPY(request->data, config->data, config->data_sz);
+
+    // Normalize byte order
+    vs_cfg_user_config_request_t_encode(request);
+
+    // Send request
+    STATUS_CHECK_RET(vs_snap_send_request(netif, dst_mac, VS_CFG_SERVICE_ID, VS_CFG_USER, buf, request_sz),
+                     "Cannot send request");
+
+    return VS_CODE_OK;
+}
+
+/******************************************************************************/
 static vs_status_e
 _conf_response_processor(bool is_ack, const uint8_t *response, const uint16_t response_sz) {
     return VS_CODE_OK;
@@ -155,6 +185,7 @@ _cfg_client_response_processor(const struct vs_netif_t *netif,
     case VS_CFG_MSCR:
     case VS_CFG_MSCH:
     case VS_CFG_WIFI:
+    case VS_CFG_USER:
         return _conf_response_processor(is_ack, response, response_sz);
 
     default:

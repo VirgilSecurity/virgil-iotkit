@@ -62,7 +62,7 @@ main(int argc, char *argv[]) {
     vs_device_manufacture_id_t manufacture_id = {0};
     vs_device_type_t device_type = {0};
     vs_device_serial_t serial = {0};
-    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL};
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL, NULL};
 
     // Device specific parameters
 #if GATEWAY

@@ -186,6 +186,53 @@ terminate:
 }
 
 /******************************************************************************/
+static bool
+_search_next_str(char *str, size_t len, char **next_str, size_t *start_str_len) {
+    size_t i;
+
+    for (i = 0; i < len; ++i) {
+        if (str[i] == 0 && (i + 1 != len)) {
+            *start_str_len = i + 1;
+            *next_str = &str[i + 1];
+            return true;
+        }
+    }
+    return false;
+}
+
+/******************************************************************************/
+vs_status_e
+vs_snap_cfg_smart_mac_cb(const vs_cfg_user_t *configuration) {
+    char *url;
+    size_t url_len;
+    char *id;
+    size_t id_len;
+    char *pass;
+    size_t pass_len;
+
+    CHECK_NOT_ZERO_RET(configuration, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(configuration->data_type == SMART_MAC_CONFIG_DATA_TYPE,
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Incorrect data type");
+    CHECK_RET(configuration->data[configuration->data_sz - 1] == 0,
+              VS_CODE_ERR_INCORRECT_ARGUMENT,
+              "Incorrect data type");
+
+    url = (char *)configuration->data;
+
+    CHECK_RET(_search_next_str(url, configuration->data_sz, &id, &url_len),
+              VS_CODE_ERR_INCORRECT_PARAMETER,
+              "Can't find counter id");
+    CHECK_RET(_search_next_str(id, configuration->data_sz - url_len, &pass, &id_len),
+              VS_CODE_ERR_INCORRECT_PARAMETER,
+              "Can't find counter pass");
+
+    pass_len = configuration->data_sz - url_len - id_len;
+
+    return vs_init_smart_mac_counter(url, url_len, id, id_len, pass, pass_len);
+}
+
+/******************************************************************************/
 vs_status_e
 vs_deinit_smart_mac_counter(void) {
     vs_status_e ret = VS_CODE_OK;

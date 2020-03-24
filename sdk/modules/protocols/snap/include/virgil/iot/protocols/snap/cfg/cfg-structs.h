@@ -73,6 +73,14 @@ typedef struct {
     char channel[VS_MESSENGER_CHANNEL_NUM_MAX][VS_MESSENGER_CHANNEL_MAX_SZ]; /**< Available XMPP channels */
 } vs_cfg_messenger_channels_t;
 
+
+/** User data configuration */
+typedef struct {
+    uint8_t data_type; /**< User data type */
+    uint32_t data_sz;  /**< User data size */
+    uint8_t data[];    /**< User data */
+} vs_cfg_user_t;
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

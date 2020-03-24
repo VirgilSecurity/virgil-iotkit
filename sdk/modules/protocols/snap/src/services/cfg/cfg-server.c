@@ -45,7 +45,7 @@
 #include <stdlib-config.h>
 #include <endian-config.h>
 
-static vs_snap_cfg_server_service_t _impl = {NULL, NULL, NULL};
+static vs_snap_cfg_server_service_t _impl = {NULL, NULL, NULL, NULL};
 
 /******************************************************************/
 static vs_status_e
@@ -54,6 +54,7 @@ _conf_wifi_request_processor(const uint8_t *request,
                              uint8_t *response,
                              const uint16_t response_buf_sz,
                              uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
     vs_cfg_conf_wifi_request_t *conf_request = (vs_cfg_conf_wifi_request_t *)request;
     vs_cfg_wifi_configuration_t config_data;
 
@@ -67,10 +68,10 @@ _conf_wifi_request_processor(const uint8_t *request,
         VS_IOT_MEMCPY(config_data.ssid, conf_request->ssid, VS_CFG_STR_MAX);
         VS_IOT_MEMCPY(config_data.pass, conf_request->pass, VS_CFG_STR_MAX);
         VS_IOT_MEMCPY(config_data.account, conf_request->account, VS_CFG_STR_MAX);
-        _impl.wifi_config_cb(&config_data);
+        ret_code = _impl.wifi_config_cb(&config_data);
     }
 
-    return VS_CODE_OK;
+    return ret_code;
 }
 
 /******************************************************************/
@@ -80,6 +81,7 @@ _conf_messenger_request_processor(const uint8_t *request,
                                   uint8_t *response,
                                   const uint16_t response_buf_sz,
                                   uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
     vs_cfg_messenger_config_request_t *conf_request = (vs_cfg_messenger_config_request_t *)request;
     vs_cfg_messenger_config_t config_data;
 
@@ -100,10 +102,10 @@ _conf_messenger_request_processor(const uint8_t *request,
                       sizeof(conf_request->messenger_base_url));
         config_data.version = conf_request->version;
         config_data.enjabberd_port = conf_request->enjabberd_port;
-        _impl.messenger_config_cb(&config_data);
+        ret_code = _impl.messenger_config_cb(&config_data);
     }
 
-    return VS_CODE_OK;
+    return ret_code;
 }
 
 /******************************************************************/
@@ -114,6 +116,7 @@ _conf_channel_request_processor(const uint8_t *request,
                                 const uint16_t response_buf_sz,
                                 uint16_t *response_sz) {
     uint8_t i;
+    vs_status_e ret_code = VS_CODE_OK;
     vs_cfg_messenger_channels_request_t *conf_request = (vs_cfg_messenger_channels_request_t *)request;
     vs_cfg_messenger_channels_t config_data;
 
@@ -130,10 +133,46 @@ _conf_channel_request_processor(const uint8_t *request,
         }
 
         config_data.channels_num = conf_request->channels_num;
-        _impl.channel_config_cb(&config_data);
+        ret_code = _impl.channel_config_cb(&config_data);
     }
 
-    return VS_CODE_OK;
+    return ret_code;
+}
+
+/******************************************************************/
+static vs_status_e
+_conf_user_request_processor(const uint8_t *request,
+                             const uint16_t request_sz,
+                             uint8_t *response,
+                             const uint16_t response_buf_sz,
+                             uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_cfg_user_config_request_t *conf_request = (vs_cfg_user_config_request_t *)request;
+    vs_cfg_user_t *config_data;
+
+    if (_impl.user_config_cb) {
+        // Check input parameters
+        CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+        CHECK_RET(request_sz >= sizeof(vs_cfg_user_config_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Unsupported request structure vs_cfg_user_config_request_t");
+        CHECK_RET(request_sz == conf_request->data_sz + sizeof(vs_cfg_user_config_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Wrong data size");
+
+        // Normalize byte order
+        vs_cfg_user_config_request_t_decode(conf_request);
+
+        uint8_t buf[request_sz];
+        config_data = (vs_cfg_user_t *)buf;
+        config_data->data_type = conf_request->data_type;
+        config_data->data_sz = conf_request->data_sz;
+        VS_IOT_MEMCPY(config_data->data, conf_request->data, conf_request->data_sz);
+
+        ret_code = _impl.user_config_cb(config_data);
+    }
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -158,6 +197,9 @@ _cfg_request_processor(const struct vs_netif_t *netif,
 
     case VS_CFG_WIFI:
         return _conf_wifi_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_CFG_USER:
+        return _conf_user_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     default:
         VS_LOG_ERROR("Unsupported _CFG command");

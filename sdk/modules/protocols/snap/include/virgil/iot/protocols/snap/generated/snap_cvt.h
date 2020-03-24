@@ -48,25 +48,32 @@
 
 
 /******************************************************************************/
-// Converting functions for (vs_snap_packet_t)
+// Converting functions for (vs_pubkey_dated_t)
 void
-vs_snap_packet_t_encode(vs_snap_packet_t *src_data);
+vs_pubkey_dated_t_encode(vs_pubkey_dated_t *src_data);
 void
-vs_snap_packet_t_decode(vs_snap_packet_t *src_data);
+vs_pubkey_dated_t_decode(vs_pubkey_dated_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_snap_prvs_set_data_t)
+// Converting functions for (vs_fldt_gnff_footer_request_t)
 void
-vs_snap_prvs_set_data_t_encode(vs_snap_prvs_set_data_t *src_data);
+vs_fldt_gnff_footer_request_t_encode(vs_fldt_gnff_footer_request_t *src_data);
 void
-vs_snap_prvs_set_data_t_decode(vs_snap_prvs_set_data_t *src_data);
+vs_fldt_gnff_footer_request_t_decode(vs_fldt_gnff_footer_request_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_fldt_file_info_t)
+// Converting functions for (vs_update_file_type_t)
 void
-vs_fldt_file_info_t_encode(vs_fldt_file_info_t *src_data);
+vs_update_file_type_t_encode(vs_update_file_type_t *src_data);
 void
-vs_fldt_file_info_t_decode(vs_fldt_file_info_t *src_data);
+vs_update_file_type_t_decode(vs_update_file_type_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_msgr_setd_request_t)
+void
+vs_msgr_setd_request_t_encode(vs_msgr_setd_request_t *src_data);
+void
+vs_msgr_setd_request_t_decode(vs_msgr_setd_request_t *src_data);
 
 /******************************************************************************/
 // Converting functions for (vs_info_stat_response_t)
@@ -76,18 +83,67 @@ void
 vs_info_stat_response_t_decode(vs_info_stat_response_t *src_data);
 
 /******************************************************************************/
+// Converting functions for (vs_info_ginf_response_t)
+void
+vs_info_ginf_response_t_encode(vs_info_ginf_response_t *src_data);
+void
+vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_info_poll_request_t)
+void
+vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data);
+void
+vs_info_poll_request_t_decode(vs_info_poll_request_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_cfg_user_config_request_t)
+void
+vs_cfg_user_config_request_t_encode(vs_cfg_user_config_request_t *src_data);
+void
+vs_cfg_user_config_request_t_decode(vs_cfg_user_config_request_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_snap_prvs_set_data_t)
+void
+vs_snap_prvs_set_data_t_encode(vs_snap_prvs_set_data_t *src_data);
+void
+vs_snap_prvs_set_data_t_decode(vs_snap_prvs_set_data_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_ethernet_header_t)
+void
+vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data);
+void
+vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_fldt_gnff_footer_response_t)
+void
+vs_fldt_gnff_footer_response_t_encode(vs_fldt_gnff_footer_response_t *src_data);
+void
+vs_fldt_gnff_footer_response_t_decode(vs_fldt_gnff_footer_response_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_file_info_t)
+void
+vs_file_info_t_encode(vs_file_info_t *src_data);
+void
+vs_file_info_t_decode(vs_file_info_t *src_data);
+
+/******************************************************************************/
+// Converting functions for (vs_snap_packet_t)
+void
+vs_snap_packet_t_encode(vs_snap_packet_t *src_data);
+void
+vs_snap_packet_t_decode(vs_snap_packet_t *src_data);
+
+/******************************************************************************/
 // Converting functions for (vs_fldt_gnfh_header_request_t)
 void
 vs_fldt_gnfh_header_request_t_encode(vs_fldt_gnfh_header_request_t *src_data);
 void
 vs_fldt_gnfh_header_request_t_decode(vs_fldt_gnfh_header_request_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_cfg_messenger_config_request_t)
-void
-vs_cfg_messenger_config_request_t_encode(vs_cfg_messenger_config_request_t *src_data);
-void
-vs_cfg_messenger_config_request_t_decode(vs_cfg_messenger_config_request_t *src_data);
 
 /******************************************************************************/
 // Converting functions for (vs_fldt_gnfh_header_response_t)
@@ -104,46 +160,18 @@ void
 vs_fldt_gnfd_data_request_t_decode(vs_fldt_gnfd_data_request_t *src_data);
 
 /******************************************************************************/
+// Converting functions for (vs_msgr_poll_request_t)
+void
+vs_msgr_poll_request_t_encode(vs_msgr_poll_request_t *src_data);
+void
+vs_msgr_poll_request_t_decode(vs_msgr_poll_request_t *src_data);
+
+/******************************************************************************/
 // Converting functions for (vs_msgr_getd_response_t)
 void
 vs_msgr_getd_response_t_encode(vs_msgr_getd_response_t *src_data);
 void
 vs_msgr_getd_response_t_decode(vs_msgr_getd_response_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_file_version_t)
-void
-vs_file_version_t_encode(vs_file_version_t *src_data);
-void
-vs_file_version_t_decode(vs_file_version_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_info_poll_request_t)
-void
-vs_info_poll_request_t_encode(vs_info_poll_request_t *src_data);
-void
-vs_info_poll_request_t_decode(vs_info_poll_request_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_fldt_gnfd_data_response_t)
-void
-vs_fldt_gnfd_data_response_t_encode(vs_fldt_gnfd_data_response_t *src_data);
-void
-vs_fldt_gnfd_data_response_t_decode(vs_fldt_gnfd_data_response_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_pubkey_t)
-void
-vs_pubkey_t_encode(vs_pubkey_t *src_data);
-void
-vs_pubkey_t_decode(vs_pubkey_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_file_info_t)
-void
-vs_file_info_t_encode(vs_file_info_t *src_data);
-void
-vs_file_info_t_decode(vs_file_info_t *src_data);
 
 /******************************************************************************/
 // Converting functions for (vs_snap_header_t)
@@ -153,6 +181,13 @@ void
 vs_snap_header_t_decode(vs_snap_header_t *src_data);
 
 /******************************************************************************/
+// Converting functions for (vs_pubkey_t)
+void
+vs_pubkey_t_encode(vs_pubkey_t *src_data);
+void
+vs_pubkey_t_decode(vs_pubkey_t *src_data);
+
+/******************************************************************************/
 // Converting functions for (vs_snap_prvs_devi_t)
 void
 vs_snap_prvs_devi_t_encode(vs_snap_prvs_devi_t *src_data);
@@ -160,59 +195,31 @@ void
 vs_snap_prvs_devi_t_decode(vs_snap_prvs_devi_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_info_ginf_response_t)
+// Converting functions for (vs_fldt_file_info_t)
 void
-vs_info_ginf_response_t_encode(vs_info_ginf_response_t *src_data);
+vs_fldt_file_info_t_encode(vs_fldt_file_info_t *src_data);
 void
-vs_info_ginf_response_t_decode(vs_info_ginf_response_t *src_data);
+vs_fldt_file_info_t_decode(vs_fldt_file_info_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_fldt_gnff_footer_request_t)
+// Converting functions for (vs_fldt_gnfd_data_response_t)
 void
-vs_fldt_gnff_footer_request_t_encode(vs_fldt_gnff_footer_request_t *src_data);
+vs_fldt_gnfd_data_response_t_encode(vs_fldt_gnfd_data_response_t *src_data);
 void
-vs_fldt_gnff_footer_request_t_decode(vs_fldt_gnff_footer_request_t *src_data);
+vs_fldt_gnfd_data_response_t_decode(vs_fldt_gnfd_data_response_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_fldt_gnff_footer_response_t)
+// Converting functions for (vs_cfg_messenger_config_request_t)
 void
-vs_fldt_gnff_footer_response_t_encode(vs_fldt_gnff_footer_response_t *src_data);
+vs_cfg_messenger_config_request_t_encode(vs_cfg_messenger_config_request_t *src_data);
 void
-vs_fldt_gnff_footer_response_t_decode(vs_fldt_gnff_footer_response_t *src_data);
+vs_cfg_messenger_config_request_t_decode(vs_cfg_messenger_config_request_t *src_data);
 
 /******************************************************************************/
-// Converting functions for (vs_msgr_poll_request_t)
+// Converting functions for (vs_file_version_t)
 void
-vs_msgr_poll_request_t_encode(vs_msgr_poll_request_t *src_data);
+vs_file_version_t_encode(vs_file_version_t *src_data);
 void
-vs_msgr_poll_request_t_decode(vs_msgr_poll_request_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_update_file_type_t)
-void
-vs_update_file_type_t_encode(vs_update_file_type_t *src_data);
-void
-vs_update_file_type_t_decode(vs_update_file_type_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_ethernet_header_t)
-void
-vs_ethernet_header_t_encode(vs_ethernet_header_t *src_data);
-void
-vs_ethernet_header_t_decode(vs_ethernet_header_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_msgr_setd_request_t)
-void
-vs_msgr_setd_request_t_encode(vs_msgr_setd_request_t *src_data);
-void
-vs_msgr_setd_request_t_decode(vs_msgr_setd_request_t *src_data);
-
-/******************************************************************************/
-// Converting functions for (vs_pubkey_dated_t)
-void
-vs_pubkey_dated_t_encode(vs_pubkey_dated_t *src_data);
-void
-vs_pubkey_dated_t_decode(vs_pubkey_dated_t *src_data);
+vs_file_version_t_decode(vs_file_version_t *src_data);
 
 #endif // SNAP_CVT_H

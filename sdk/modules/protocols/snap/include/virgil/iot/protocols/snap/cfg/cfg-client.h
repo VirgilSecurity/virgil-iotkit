@@ -63,6 +63,8 @@ vs_status_e
 vs_snap_cfg_channels_configure_device(const vs_netif_t *netif,
                                       const vs_mac_addr_t *mac,
                                       const vs_cfg_messenger_channels_t *config);
+vs_status_e
+vs_snap_cfg_user_configure_device(const vs_netif_t *netif, const vs_mac_addr_t *mac, const vs_cfg_user_t *config);
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit
