@@ -6,7 +6,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
-#include "sdkconfig.h"
+#include "driver/gpio.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -38,8 +39,11 @@
 #define UDP_BROADCAST_PORT 4100
 #define GPIO_LED GPIO_NUM_2
 
+static bool is_wifi_initialized = false;
 static void
 _initializer_exec_task(void *pvParameters);
+static void
+_led_exec_task(void *pvParameters);
 
 static void
 wifi_status_cb(bool ready);
@@ -51,6 +55,7 @@ start_wifi(wifi_config_t wifi_config);
 void
 app_main(void) {
     xTaskCreate(_initializer_exec_task, "_initializer_task", 8 * 4096, NULL, 5, NULL);
+    xTaskCreate(_led_exec_task, "_led_exec_task", CONFIG_ESP32_PTHREAD_TASK_STACK_SIZE_DEFAULT, NULL, 5, NULL);
     while (1) {
         vTaskDelay(30000 / portTICK_PERIOD_MS);
     }
@@ -58,7 +63,23 @@ app_main(void) {
 
 //******************************************************************************
 static void
+_led_exec_task(void *pvParameters) {
+    uint32_t led_lvl = 0;
+    uint32_t delay;
+
+    while (1) {
+        delay = !is_wifi_initialized ? 150 : 1500;
+
+        gpio_set_level(GPIO_LED, led_lvl);
+        led_lvl ^= 1;
+        vTaskDelay(delay / portTICK_PERIOD_MS);
+    }
+}
+
+//******************************************************************************
+static void
 _initializer_exec_task(void *pvParameters) {
+
     vs_iotkit_events_t iotkit_events = {.reboot_request_cb = NULL};
 
     // Implementation variables
@@ -77,6 +98,9 @@ _initializer_exec_task(void *pvParameters) {
 #else
     uint32_t device_roles = (uint32_t)VS_SNAP_DEV_THING | (uint32_t)VS_SNAP_DEV_INITIALIZER;
 #endif
+
+    // Initialize LED GPIO
+    gpio_set_direction(GPIO_LED, GPIO_MODE_OUTPUT);
 
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     vs_logger_init(VS_LOGLEV_DEBUG);
@@ -173,6 +197,8 @@ wifi_status_cb(bool ready) {
         vs_packets_queue_enable_heart_beat(false);
         return;
     }
+
+    is_wifi_initialized = ready;
 
     // Initialize UDP
     udp_socket_init(4100, 1024);
