@@ -45,35 +45,134 @@
 #include <stdlib-config.h>
 #include <endian-config.h>
 
-static vs_snap_cfg_config_cb_t _config_cb = NULL;
+static vs_snap_cfg_server_service_t _impl = {NULL, NULL, NULL, NULL};
 
 /******************************************************************/
 static vs_status_e
-_conf_request_processor(const uint8_t *request,
-                        const uint16_t request_sz,
-                        uint8_t *response,
-                        const uint16_t response_buf_sz,
-                        uint16_t *response_sz) {
-    vs_cfg_conf_request_t *conf_request = (vs_cfg_conf_request_t *)request;
-    vs_cfg_configuration_t config_data;
+_conf_wifi_request_processor(const uint8_t *request,
+                             const uint16_t request_sz,
+                             uint8_t *response,
+                             const uint16_t response_buf_sz,
+                             uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_cfg_conf_wifi_request_t *conf_request = (vs_cfg_conf_wifi_request_t *)request;
+    vs_cfg_wifi_configuration_t config_data;
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_RET(request_sz == sizeof(vs_cfg_conf_request_t),
+    CHECK_RET(request_sz == sizeof(vs_cfg_conf_wifi_request_t),
               VS_CODE_ERR_INCORRECT_ARGUMENT,
-              "Unsupported request structure vs_cfg_conf_request_t");
+              "Unsupported request structure vs_cfg_conf_wifi_request_t");
 
-    if (_config_cb) {
+    if (_impl.wifi_config_cb) {
         VS_IOT_MEMCPY(config_data.ssid, conf_request->ssid, VS_CFG_STR_MAX);
         VS_IOT_MEMCPY(config_data.pass, conf_request->pass, VS_CFG_STR_MAX);
         VS_IOT_MEMCPY(config_data.account, conf_request->account, VS_CFG_STR_MAX);
-        _config_cb(&config_data);
+        ret_code = _impl.wifi_config_cb(&config_data);
     }
 
-    // Set response size
-    *response_sz = 0;
+    return ret_code;
+}
 
-    return VS_CODE_OK;
+/******************************************************************/
+static vs_status_e
+_conf_messenger_request_processor(const uint8_t *request,
+                                  const uint16_t request_sz,
+                                  uint8_t *response,
+                                  const uint16_t response_buf_sz,
+                                  uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_cfg_messenger_config_request_t *conf_request = (vs_cfg_messenger_config_request_t *)request;
+    vs_cfg_messenger_config_t config_data;
+
+    if (_impl.messenger_config_cb) {
+        // Check input parameters
+        CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+        CHECK_RET(request_sz == sizeof(vs_cfg_messenger_config_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Unsupported request structure vs_cfg_messenger_config_request_t");
+
+
+        // Normalize byte order
+        vs_cfg_messenger_config_request_t_decode(conf_request);
+
+        VS_IOT_MEMCPY(config_data.enjabberd_host, conf_request->enjabberd_host, sizeof(conf_request->enjabberd_host));
+        VS_IOT_MEMCPY(config_data.messenger_base_url,
+                      conf_request->messenger_base_url,
+                      sizeof(conf_request->messenger_base_url));
+        config_data.version = conf_request->version;
+        config_data.enjabberd_port = conf_request->enjabberd_port;
+        ret_code = _impl.messenger_config_cb(&config_data);
+    }
+
+    return ret_code;
+}
+
+/******************************************************************/
+static vs_status_e
+_conf_channel_request_processor(const uint8_t *request,
+                                const uint16_t request_sz,
+                                uint8_t *response,
+                                const uint16_t response_buf_sz,
+                                uint16_t *response_sz) {
+    uint8_t i;
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_cfg_messenger_channels_request_t *conf_request = (vs_cfg_messenger_channels_request_t *)request;
+    vs_cfg_messenger_channels_t config_data;
+
+    if (_impl.channel_config_cb) {
+        // Check input parameters
+        CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+        CHECK_RET(request_sz == sizeof(vs_cfg_messenger_channels_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Unsupported request structure vs_cfg_messenger_channels_request_t");
+
+
+        for (i = 0; i < VS_MESSENGER_CHANNEL_NUM_MAX; ++i) {
+            VS_IOT_MEMCPY(config_data.channel[i], conf_request->channel[i], VS_MESSENGER_CHANNEL_MAX_SZ);
+        }
+
+        config_data.channels_num = conf_request->channels_num;
+        ret_code = _impl.channel_config_cb(&config_data);
+    }
+
+    return ret_code;
+}
+
+/******************************************************************/
+static vs_status_e
+_conf_user_request_processor(const uint8_t *request,
+                             const uint16_t request_sz,
+                             uint8_t *response,
+                             const uint16_t response_buf_sz,
+                             uint16_t *response_sz) {
+    vs_status_e ret_code = VS_CODE_OK;
+    vs_cfg_user_config_request_t *conf_request = (vs_cfg_user_config_request_t *)request;
+    vs_cfg_user_t *config_data;
+
+    if (_impl.user_config_cb) {
+        // Check input parameters
+        CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
+        CHECK_RET(request_sz >= sizeof(vs_cfg_user_config_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Unsupported request structure vs_cfg_user_config_request_t");
+        CHECK_RET(request_sz == conf_request->data_sz + sizeof(vs_cfg_user_config_request_t),
+                  VS_CODE_ERR_INCORRECT_ARGUMENT,
+                  "Wrong data size");
+
+        // Normalize byte order
+        vs_cfg_user_config_request_t_decode(conf_request);
+
+        uint8_t buf[request_sz];
+        config_data = (vs_cfg_user_t *)buf;
+        config_data->data_type = conf_request->data_type;
+        config_data->data_sz = conf_request->data_sz;
+        VS_IOT_MEMCPY(config_data->data, conf_request->data, conf_request->data_sz);
+
+        ret_code = _impl.user_config_cb(config_data);
+    }
+
+    return ret_code;
 }
 
 /******************************************************************************/
@@ -90,9 +189,17 @@ _cfg_request_processor(const struct vs_netif_t *netif,
     *response_sz = 0;
 
     switch (element_id) {
+    case VS_CFG_MSCR:
+        return _conf_messenger_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
-    case VS_CFG_CONF:
-        return _conf_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+    case VS_CFG_MSCH:
+        return _conf_channel_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_CFG_WIFI:
+        return _conf_wifi_request_processor(request, request_sz, response, response_buf_sz, response_sz);
+
+    case VS_CFG_USER:
+        return _conf_user_request_processor(request, request_sz, response, response_buf_sz, response_sz);
 
     default:
         VS_LOG_ERROR("Unsupported _CFG command");
@@ -103,18 +210,20 @@ _cfg_request_processor(const struct vs_netif_t *netif,
 
 /******************************************************************************/
 const vs_snap_service_t *
-vs_snap_cfg_server(vs_snap_cfg_config_cb_t config_cb) {
+vs_snap_cfg_server(vs_snap_cfg_server_service_t impl) {
 
-    static vs_snap_service_t _info;
+    static vs_snap_service_t _cfg;
 
-    _config_cb = config_cb;
+    _cfg.user_data = NULL;
+    _cfg.id = VS_CFG_SERVICE_ID;
+    _cfg.request_process = _cfg_request_processor;
+    _cfg.response_process = NULL;
+    _cfg.periodical_process = NULL;
 
-    _info.user_data = NULL;
-    _info.id = VS_CFG_SERVICE_ID;
-    _info.request_process = _cfg_request_processor;
-    _info.response_process = NULL;
-    _info.periodical_process = NULL;
-    return &_info;
+    // Save callbacks
+    VS_IOT_MEMCPY(&_impl, &impl, sizeof(impl));
+
+    return &_cfg;
 }
 
 /******************************************************************************/

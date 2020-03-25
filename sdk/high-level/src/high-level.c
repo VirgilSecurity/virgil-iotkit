@@ -37,6 +37,7 @@
 #include <virgil/iot/protocols/snap/info/info-server.h>
 #include <virgil/iot/protocols/snap/prvs/prvs-server.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-server.h>
+#include <virgil/iot/protocols/snap/cfg/cfg-server.h>
 #include <virgil/iot/protocols/snap/fldt/fldt-client.h>
 #include <virgil/iot/protocols/snap.h>
 #include <virgil/iot/provision/provision.h>
@@ -84,6 +85,9 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
 #endif
 #if MSGR_CLIENT
                    vs_snap_msgr_client_service_t msgr_client_cb,
+#endif
+#if CFG_SERVER
+                   vs_snap_cfg_server_service_t cfg_server_cb,
 #endif
                    vs_netif_process_cb_t packet_preprocessor_cb,
                    vs_iotkit_events_t iotkit_events) {
@@ -140,6 +144,12 @@ vs_high_level_init(vs_device_manufacture_id_t manufacture_id,
     snap_info_server = vs_snap_info_server(NULL);
     STATUS_CHECK(vs_snap_register_service(snap_info_server), "Cannot register INFO server service");
 #endif // INFO_SERVER
+
+#if CFG_SERVER
+    const vs_snap_service_t *snap_cfg_server;
+    snap_cfg_server = vs_snap_cfg_server(cfg_server_cb);
+    STATUS_CHECK(vs_snap_register_service(snap_cfg_server), "Cannot register CFG server service");
+#endif
 
 
 #if PRVS_SERVER

@@ -41,6 +41,8 @@ project(nix-common VERSION 0.1.0 LANGUAGES C)
 #
 add_library(nix-common)
 add_library(nix-common-firmware)
+add_library(nix-common-remote-device-emulator)
+add_library(nix-common-smart-mac-counter)
 
 #
 #	Header/Source files
@@ -77,6 +79,17 @@ target_sources(nix-common-firmware
 		${CMAKE_CURRENT_LIST_DIR}/src/sdk-impl/firmware/firmware-impl.c
 		)
 
+target_sources(nix-common-remote-device-emulator
+		PRIVATE
+		#	Sources
+		${CMAKE_CURRENT_LIST_DIR}/src/remote-device/remote-device-emulator-data-impl.c
+		)
+
+target_sources(nix-common-smart-mac-counter
+		PRIVATE
+		#	Sources
+		${CMAKE_CURRENT_LIST_DIR}/src/remote-device/smart-mac-counter-data-impl.c
+		)
 #
 #   Include directories
 #
@@ -93,6 +106,20 @@ target_include_directories(nix-common-firmware
 		${CMAKE_CURRENT_LIST_DIR}/include
 		${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
 		${VIRGIL_IOT_DIRECTORY}/modules/firmware/include
+		)
+
+target_include_directories(nix-common-remote-device-emulator
+		PUBLIC
+		${CMAKE_CURRENT_LIST_DIR}/include
+		${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
+		${CMAKE_CURRENT_LIST_DIR}/include/remote-device
+		)
+
+target_include_directories(nix-common-smart-mac-counter
+		PUBLIC
+		${CMAKE_CURRENT_LIST_DIR}/include
+		${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
+		${CMAKE_CURRENT_LIST_DIR}/include/remote-device
 		)
 
 #
@@ -122,10 +149,33 @@ target_link_libraries(nix-common-firmware
 		enable_pedantic_mode
 		enable_sanitizers
 		)
+
+target_link_libraries(nix-common-remote-device-emulator
+		PUBLIC
+		vs-module-logger
+		PRIVATE
+		vs-default-curl-http
+
+		enable_pedantic_mode
+		enable_sanitizers
+		)
+
+target_link_libraries(nix-common-smart-mac-counter
+		PUBLIC
+		vs-module-logger
+		PRIVATE
+		${CMAKE_THREAD_LIBS_INIT}
+		vs-default-curl-http
+
+		enable_pedantic_mode
+		enable_sanitizers
+		)
 #
 # Format code
 #
 if(COMMAND add_clangformat)
 	add_clangformat(nix-common)
 	add_clangformat(nix-common-firmware)
+	add_clangformat(nix-common-remote-device-emulator)
+	add_clangformat(nix-common-smart-mac-counter)
 endif()

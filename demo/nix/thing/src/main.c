@@ -51,6 +51,13 @@
 #include "sdk-impl/netif/packets-queue.h"
 #include "msgr/msgr-server-impl.h"
 
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+
+#include "smart-mac-counter-data-impl.h"
+#include <curl/curl.h>
+
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
+
 #if SIMULATOR
 static const char _test_message[] = TEST_UPDATE_MESSAGE;
 #endif
@@ -74,6 +81,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL, NULL};
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -102,6 +110,10 @@ main(int argc, char *argv[]) {
     // Enable cached file IO
     vs_file_cache_enable(true);
 
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    cfg_server_cb.user_config_cb = vs_snap_cfg_smart_mac_cb;
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
 
     //
     // ---------- Create implementations ----------
@@ -140,6 +152,7 @@ main(int argc, char *argv[]) {
                                     &fw_storage_impl,
                                     netifs_impl,
                                     vs_snap_msgr_server_impl(),
+                                    cfg_server_cb,
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
@@ -172,6 +185,11 @@ terminate:
 
     VS_LOG_INFO("\n\n\n");
     VS_LOG_INFO("Terminating application ...");
+
+#if SMART_MAC_COUNTER_SUPPORT_THING == 1
+    vs_deinit_smart_mac_counter();
+    curl_global_cleanup();
+#endif // SMART_MAC_COUNTER_SUPPORT_THING
 
     // De-initialize IoTKit internals
     vs_high_level_deinit();

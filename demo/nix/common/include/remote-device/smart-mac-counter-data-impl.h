@@ -32,28 +32,32 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef {{ .HeaderTag }}
-#define {{ .HeaderTag }}
+#ifndef IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H
+#define IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H
 
-#include <endian-config.h>
-#include <virgil/iot/protocols/snap/prvs/prvs-structs.h>
-#include <virgil/iot/protocols/snap/info/info-structs.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-structs.h>
+#include <stdint.h>
+#include <virgil/iot/status_code/status_code.h>
 #include <virgil/iot/protocols/snap/cfg/cfg-structs.h>
-#include <virgil/iot/protocols/snap/info/info-private.h>
-#include <virgil/iot/protocols/snap/fldt/fldt-private.h>
-#include <virgil/iot/protocols/snap/msgr/msgr-private.h>
-#include <virgil/iot/protocols/snap/cfg/cfg-private.h>
-#include <virgil/iot/protocols/snap/snap-structs.h>
-{{ range $Index,$StructDatas := .StructsList}}
 
-/******************************************************************************/
-// Converting functions for ({{$StructDatas.StructName}})
-void
-{{ $StructDatas.StructName }}{{ $.EncPref }}({{ $StructDatas.StructName }} *src_data );
-void
-{{ $StructDatas.StructName }}{{ $.DecPref }}({{ $StructDatas.StructName }} *src_data );
+#define SMART_MAC_COUNTER_HOST_MAX_STR_SZ (50)
+#define SMART_MAC_COUNTER_ID_MAX_STR_SZ (11)
+#define SMART_MAC_COUNTER_PASS_MAX_STR_SZ (11)
 
-{{- end}}
+#define SMART_MAC_CONFIG_DATA_TYPE (0)
 
-#endif //{{ .HeaderTag }}
+vs_status_e
+vs_init_smart_mac_counter(const char *url, size_t url_len, const char *id, size_t id_len, const char *pass, size_t pass_sz);
+
+vs_status_e
+vs_deinit_smart_mac_counter(void);
+
+vs_status_e
+vs_smart_mac_counter_get_data(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz);
+
+vs_status_e
+vs_smart_mac_counter_set_data(uint8_t *data, uint32_t data_sz);
+
+vs_status_e
+vs_snap_cfg_smart_mac_cb (const vs_cfg_user_t *configuration);
+
+#endif // IOTKIT_DEMO_NIX_SMART_MAC_COUNTER_DATA_IMPL_H

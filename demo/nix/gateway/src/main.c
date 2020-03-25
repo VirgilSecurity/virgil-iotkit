@@ -71,6 +71,7 @@ main(int argc, char *argv[]) {
     vs_storage_op_ctx_t tl_storage_impl;
     vs_storage_op_ctx_t slots_storage_impl;
     vs_storage_op_ctx_t fw_storage_impl;
+    vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL, NULL};
 
     // Device parameters
     vs_device_manufacture_id_t manufacture_id = {0};
@@ -150,6 +151,7 @@ main(int argc, char *argv[]) {
                                     &fw_storage_impl,
                                     netifs_impl,
                                     vs_snap_msgr_client_impl(),
+                                    cfg_server_cb,
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
