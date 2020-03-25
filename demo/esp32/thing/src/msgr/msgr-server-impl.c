@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -32,34 +32,40 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <stdio.h>
+#include <string.h>
+#include <msgr/msgr-server-impl.h>
+#include <private/utoa_fast_div.h>
 
-#ifndef VIRGIL_IOTKIT_H
-#define VIRGIL_IOTKIT_H
-#include <configurations/cfg_vs_logger.h>
-#include <configurations/cfg_vs_init.h>
+static uint8_t demo_counter = 0;
+/******************************************************************************/
+static vs_status_e
+_snap_msgr_get_data_cb(uint8_t *data, uint32_t buf_sz, uint32_t *data_sz) {
+    char buf[11];
+    char *result;
 
-#if INFO_SERVER
-#include <configurations/cfg_info_server.h>
-#endif
+    CHECK_NOT_ZERO_RET(data, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_NOT_ZERO_RET(data_sz, VS_CODE_ERR_NULLPTR_ARGUMENT);
+    CHECK_RET(buf_sz > 4, VS_CODE_ERR_INCORRECT_ARGUMENT, "Input buffer too small");
 
-#if FLDT_CLIENT
-#include <configurations/cfg_fldt_client.h>
-#endif
+    result = utoa_fast_div((uint32_t)demo_counter, (char *)buf);
+    memcpy(data, result, result - buf);
+    *data_sz = result - buf;
+    ++demo_counter;
 
-#if FLDT_SERVER
-#include <configurations/cfg_fldt_server.h>
-#endif
+    return VS_CODE_OK;
+}
 
-#if PRVS_SERVER
-#include <configurations/cfg_prvs_server.h>
-#endif
+/******************************************************************************/
+static vs_status_e
+_snap_msgr_set_data_cb(uint8_t *data, uint32_t data_sz) {
+    return VS_CODE_OK;
+}
 
-#if MSGR_SERVER
-#include <configurations/cfg_msgr_server.h>
-#endif
 
-#if GATEWAY
-#include <configurations/cfg_gateway.h>
-#endif
-
-#endif
+/******************************************************************************/
+vs_snap_msgr_server_service_t
+vs_snap_msgr_server_impl(void) {
+    vs_snap_msgr_server_service_t msgr_server_cb = {_snap_msgr_get_data_cb, _snap_msgr_set_data_cb};
+    return msgr_server_cb;
+}

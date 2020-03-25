@@ -32,34 +32,10 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#ifndef CFG_MSGR_SERVER_H
+#define CFG_MSGR_SERVER_H
 
-#ifndef VIRGIL_IOTKIT_H
-#define VIRGIL_IOTKIT_H
-#include <configurations/cfg_vs_logger.h>
-#include <configurations/cfg_vs_init.h>
-
-#if INFO_SERVER
-#include <configurations/cfg_info_server.h>
-#endif
-
-#if FLDT_CLIENT
-#include <configurations/cfg_fldt_client.h>
-#endif
-
-#if FLDT_SERVER
-#include <configurations/cfg_fldt_server.h>
-#endif
-
-#if PRVS_SERVER
-#include <configurations/cfg_prvs_server.h>
-#endif
-
-#if MSGR_SERVER
-#include <configurations/cfg_msgr_server.h>
-#endif
-
-#if GATEWAY
-#include <configurations/cfg_gateway.h>
-#endif
+#include <virgil/iot/protocols/snap.h>
+#include <virgil/iot/protocols/snap/msgr/msgr-server.h>
 
 #endif

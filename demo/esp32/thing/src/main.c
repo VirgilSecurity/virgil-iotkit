@@ -35,6 +35,8 @@
 
 #include <update-config.h>
 
+#include <msgr/msgr-server-impl.h>
+
 static vs_status_e
 app_start(void);
 
@@ -61,6 +63,7 @@ static vs_netif_t *netifs_impl[2] = {NULL, NULL};
 static vs_storage_op_ctx_t tl_storage_impl;
 static vs_storage_op_ctx_t slots_storage_impl;
 static vs_storage_op_ctx_t fw_storage_impl;
+vs_snap_cfg_server_service_t cfg_server_cb = {NULL, NULL, NULL, NULL};
 
 // Device parameters
 static vs_device_manufacture_id_t manufacture_id = "VIRGIL_ESP32";
@@ -167,6 +170,8 @@ app_start(void) {
                                     secmodule_impl,
                                     &tl_storage_impl,
                                     netifs_impl,
+                                    vs_snap_msgr_server_impl(),
+                                    cfg_server_cb,
                                     vs_packets_queue_add,
                                     iotkit_events),
                  "Cannot initialize IoTKit");
@@ -176,6 +181,7 @@ app_start(void) {
 
     // Send broadcast notification about self start
     vs_snap_info_start_notification(vs_snap_netif_routing());
+    vs_snap_msgr_start_notification(vs_snap_netif_routing());
 
     // Start app
     vs_main_start_threads();

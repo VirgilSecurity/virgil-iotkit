@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -31,35 +31,15 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#ifndef IOTKIT_ESP32_MSGR_SERVER_IMPL_H
+#define IOTKIT_ESP32_MSGR_SERVER_IMPL_H
 
+#include <stdint.h>
+#include <stdlib-config.h>
 
-#ifndef VIRGIL_IOTKIT_H
-#define VIRGIL_IOTKIT_H
-#include <configurations/cfg_vs_logger.h>
-#include <configurations/cfg_vs_init.h>
+#include <virgil/iot/protocols/snap/msgr/msgr-server.h>
 
-#if INFO_SERVER
-#include <configurations/cfg_info_server.h>
-#endif
+vs_snap_msgr_server_service_t
+vs_snap_msgr_server_impl(void);
 
-#if FLDT_CLIENT
-#include <configurations/cfg_fldt_client.h>
-#endif
-
-#if FLDT_SERVER
-#include <configurations/cfg_fldt_server.h>
-#endif
-
-#if PRVS_SERVER
-#include <configurations/cfg_prvs_server.h>
-#endif
-
-#if MSGR_SERVER
-#include <configurations/cfg_msgr_server.h>
-#endif
-
-#if GATEWAY
-#include <configurations/cfg_gateway.h>
-#endif
-
-#endif
+#endif // IOTKIT_ESP32_MSGR_SERVER_IMPL_H
