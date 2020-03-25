@@ -3,6 +3,7 @@
 #include "esp_spi_flash.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
+#include "driver/gpio.h"
 
 #include "threads/main-thread.h"
 #include "threads/message-bin-thread.h"
@@ -36,6 +37,8 @@
 #include <update-config.h>
 
 #include <msgr/msgr-server-impl.h>
+
+#define GPIO_LED GPIO_NUM_2
 
 static vs_status_e
 app_start(void);
@@ -71,6 +74,22 @@ static vs_device_type_t device_type = "DVB";
 static vs_device_serial_t serial;
 
 //******************************************************************************
+static void
+_led_exec_task(void *pvParameters) {
+    uint32_t led_lvl = 0;
+    uint32_t delay;
+
+    while (1) {
+        delay = (xEventGroupWaitBits(vs_device_ctx()->shared_events, WIFI_INIT_BIT, pdFALSE, pdTRUE, 0) == 0) ? 150
+                                                                                                              : 1500;
+
+        gpio_set_level(GPIO_LED, led_lvl);
+        led_lvl ^= 1;
+        vTaskDelay(delay / portTICK_PERIOD_MS);
+    }
+}
+
+//******************************************************************************
 void
 app_main(void) {
     wifi_config_t wifi_config = {
@@ -87,6 +106,10 @@ app_main(void) {
 
     // Init device object
     vs_device_ctx_init(manufacture_id, device_type);
+
+    // Initialize LED GPIO
+    gpio_set_direction(GPIO_LED, GPIO_MODE_OUTPUT);
+    xTaskCreate(_led_exec_task, "_led_exec_task", 512, NULL, 5, NULL);
 
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
