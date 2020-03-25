@@ -12,6 +12,14 @@ BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
 PLATFORM=$1
 
 #
+#   Build dependencies for vs-module-messenger
+#
+function build_messenger_deps() {
+    ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh
+    ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh
+}
+
+#
 #   Build
 #
 function build() {
@@ -30,12 +38,14 @@ function build() {
 
     rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
-    pushd ${BUILD_DIR}
-    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
 
-    make -j ${CORES} vs-module-logger
-    make -j ${CORES} vs-module-provision
-    make -j ${CORES} vs-module-snap-control
+    pushd ${BUILD_DIR}
+        cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
+
+        make -j ${CORES} vs-module-logger
+        make -j ${CORES} vs-module-provision
+        make -j ${CORES} vs-module-snap-control
+        make -j ${CORES} vs-module-messenger
 
     popd
 }
@@ -51,6 +61,7 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
     "
 
 #
@@ -137,6 +148,10 @@ else
     exit 1
 fi
 
+#
+#   Build dependencies
+#
+build_messenger_deps
 
 #
 #   Build both Debug and Release

@@ -34,6 +34,8 @@
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
 
+include_guard()
+
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(helpers VERSION 0.1.0 LANGUAGES C)

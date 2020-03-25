@@ -225,7 +225,7 @@ vs_messenger_send(const char *recipient, const char *message) {
     char json_msg[DECRYPTED_MESSAGE_SZ_MAX];
 
     size_t req_sz = strlen(json_tmpl) + strlen(fixed_message);
-    if (req_sz > sizeof(json_msg)) {
+    if (req_sz >= sizeof(json_msg)) {
         return VS_CODE_ERR_TOO_SMALL_BUFFER;
     }
     sprintf(json_msg, json_tmpl, fixed_message);

@@ -53,6 +53,8 @@ win32 {
     QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
 
+DLL_EXT = "dylib"
+
 unix:mac:                   OS_NAME = macos
 linux:android:              OS_NAME = android.$$ANDROID_TARGET_ARCH
 linux:!android:             OS_NAME = linux
@@ -127,6 +129,18 @@ SOURCES += \
         $${SRC_SNAP}/VSQSnapSnifferQml.cpp
 
 #
+#   Copy shared lobraries
+#
+unix:mac: {
+    DST_DLL = $${OUT_PWD}/$${TARGET}.app/Contents/Frameworks
+    MESSENGER_INTERNAL_DLL = $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/internal/libvs-messenger-internal.$${DLL_EXT}
+    MESSENGER_CRYPTO_DLL = $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/crypto/libvs-messenger-crypto.$${DLL_EXT}
+    QMAKE_POST_LINK += $$quote(mkdir -p $${DST_DLL}/$$escape_expand(\n\t))
+    QMAKE_POST_LINK += $$quote(cp $${MESSENGER_INTERNAL_DLL} $${DST_DLL}/$$escape_expand(\n\t))
+    QMAKE_POST_LINK += $$quote(cp $${MESSENGER_CRYPTO_DLL} $${DST_DLL}/$$escape_expand(\n\t))
+}
+
+#
 #   Libraries
 #
 
@@ -137,9 +151,13 @@ defineReplace(add_virgiliotkit_library) {
     return (-L$${VIRGIL_IOTKIT_BUILD_PATH}/$${LIBRARY_PATH} -l$${LIBRARY_NAME})
 }
 
-LIBS += $$add_virgiliotkit_library("modules/logger",         "vs-module-logger")
-LIBS += $$add_virgiliotkit_library("modules/provision",      "vs-module-provision")
-LIBS += $$add_virgiliotkit_library("modules/protocols/snap", "vs-module-snap-control")
+LIBS += $$add_virgiliotkit_library("modules/logger",            "vs-module-logger")
+LIBS += $$add_virgiliotkit_library("modules/provision",         "vs-module-provision")
+LIBS += $$add_virgiliotkit_library("modules/protocols/snap",    "vs-module-snap-control")
+LIBS += $$add_virgiliotkit_library("modules/secbox",            "vs-module-secbox")
+LIBS += $$add_virgiliotkit_library("modules/messenger/module",  "vs-module-messenger")
+LIBS += $$add_virgiliotkit_library("modules/messenger/crypto",  "vs-messenger-crypto")
+LIBS += $$add_virgiliotkit_library("modules/messenger/internal","vs-messenger-internal")
 
 win32: LIBS += -lws2_32
 
@@ -157,6 +175,10 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/provision/trust_list/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/protocols/snap/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/crypto/secmodule/include \
+                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/secbox/include \
+                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/module/include \
+                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/crypto/include \
+                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/internal/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/status_code/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/macros/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/storage_hal/include \

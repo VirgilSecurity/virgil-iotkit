@@ -72,6 +72,9 @@ vs_status_e
 vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds_t *creds);
 
 vs_status_e
+vs_messenger_virgil_search(const char *identity);
+
+vs_status_e
 vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz);
 
 vs_status_e

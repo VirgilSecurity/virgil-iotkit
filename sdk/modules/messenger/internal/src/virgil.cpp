@@ -150,6 +150,8 @@ _get_token(const char *endpoint, char *token, size_t token_buf_sz) {
 
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
+    } catch (...) {
+        CHECK(false, "Get token error");
     }
 
     res = VS_CODE_OK;
@@ -320,6 +322,8 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
         VS_IOT_MEMCPY(&_creds, creds, sizeof(*creds));
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
+    } catch (...) {
+        CHECK(false, "Sign Up error");
     }
 
     // Get Virgil token
@@ -380,6 +384,7 @@ _pubkey_by_identity(const char *identity, vs_pubkey_info_t &pubkeyInfo) {
 
         auto searchFuture = cardClient.searchCards(identity, virgil_token);
         auto rawCards = searchFuture.get();
+        CHECK_NOT_ZERO(rawCards.size());
         auto parsedCard = CardManager::parseCard(rawCards.front(), crypto);
         auto sdkPubkey = parsedCard.publicKey();
         pubkeyInfo.pubkey = crypto->exportPublicKey(sdkPubkey);
@@ -390,6 +395,8 @@ _pubkey_by_identity(const char *identity, vs_pubkey_info_t &pubkeyInfo) {
 
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
+    } catch (...) {
+        CHECK(false, "Card by identity error");
     }
 
     res = VS_CODE_OK;
@@ -448,6 +455,8 @@ vs_messenger_virgil_decrypt_msg(const char *sender,
 
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
+    } catch (...) {
+        CHECK(false, "Decryption error");
     }
 
     res = VS_CODE_OK;
@@ -514,6 +523,8 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
 
     } catch (const std::exception &exception) {
         CHECK(false, "%s", exception.what());
+    } catch (...) {
+        CHECK(false, "Encryption error");
     }
 
     res = VS_CODE_OK;
@@ -531,6 +542,22 @@ vs_logger_output_hal(const char *buffer) {
     }
 
     return !!buffer;
+}
+
+/******************************************************************************/
+extern "C" DLL_PUBLIC vs_status_e
+vs_messenger_virgil_search(const char *identity) {
+    vs_pubkey_info_t senderPubkeyInfo;
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(identity && identity[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // Check is correctly initialized
+    VS_IOT_ASSERT(_is_initialized);
+    CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not ready for a communication");
+
+    // Get Sender's public key
+    return _pubkey_by_identity(identity, senderPubkeyInfo);
 }
 
 /******************************************************************************/
