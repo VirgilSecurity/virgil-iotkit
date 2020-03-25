@@ -154,7 +154,16 @@ _initializer_exec_task(void *pvParameters) {
 
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
+        goto terminate;
     }
+
+    // Wait a WiFi connection
+    while (!is_wifi_initialized) {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+    // Send broadcast notification about self start
+    vs_snap_info_start_notification(vs_snap_netif_routing());
 
     while (1) {
         vTaskDelay(30000 / portTICK_PERIOD_MS);
