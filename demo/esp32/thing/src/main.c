@@ -109,7 +109,7 @@ app_main(void) {
 
     // Initialize LED GPIO
     gpio_set_direction(GPIO_LED, GPIO_MODE_OUTPUT);
-    xTaskCreate(_led_exec_task, "_led_exec_task", 512, NULL, 5, NULL);
+    xTaskCreate(_led_exec_task, "_led_exec_task", CONFIG_ESP32_PTHREAD_TASK_STACK_SIZE_DEFAULT, NULL, 5, NULL);
 
     if (VS_CODE_OK != start_wifi(wifi_config)) {
         VS_LOG_ERROR("Error to start wifi");
