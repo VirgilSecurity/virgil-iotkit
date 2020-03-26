@@ -269,7 +269,8 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
         auto exportedRawCard = rawCard.exportAsJson();
 
         // Registration request
-        json requestJSON = {{"raw_card", JsonSerializer<RawSignedModel>::toJson(rawCard)}};
+        auto internalJSON = json::parse(JsonSerializer<RawSignedModel>::toJson(rawCard));
+        json requestJSON = {{"raw_card", internalJSON}};
         auto httpRequest = Request();
         httpRequest.baseAddress(_service_base_url)
                 .endpoint(_sign_up_endpoint)
