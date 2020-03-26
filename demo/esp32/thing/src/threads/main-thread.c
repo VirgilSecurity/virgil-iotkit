@@ -167,8 +167,8 @@ vs_main_start_threads(void) {
                     (void)xSemaphoreGive(_device.firmware_mutex);
                 }
 
-                VS_LOG_DEBUG("Send info about new Firmware over SNAP");
 #if 0
+                VS_LOG_DEBUG("Send info about new Firmware over SNAP");
                 if (vs_fldt_server_add_file_type(queued_file, vs_firmware_update_ctx(), true)) {
                     VS_LOG_ERROR("Unable to add new firmware");
                 }
@@ -176,8 +176,8 @@ vs_main_start_threads(void) {
                 break;
 
             case VS_UPDATE_TRUST_LIST:
-                VS_LOG_DEBUG("Send info about new Trust List over SNAP");
 #if 0
+                VS_LOG_DEBUG("Send info about new Trust List over SNAP");
                 if (vs_fldt_server_add_file_type(queued_file, vs_tl_update_ctx(), true)) {
                     VS_LOG_ERROR("Unable to add new Trust List");
                 }

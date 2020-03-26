@@ -126,6 +126,7 @@ _write_data(const vs_storage_op_ctx_t *op_ctx,
 
     if (VS_CODE_OK != op_ctx->impl_func.save(op_ctx->impl_data, f, offset, data, data_sz)) {
         op_ctx->impl_func.close(op_ctx->impl_data, f);
+        op_ctx->impl_func.del(op_ctx->impl_data, id);
         VS_LOG_ERROR("Can't save data to file");
         return VS_CODE_ERR_FILE_WRITE;
     }
@@ -386,7 +387,7 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     vs_tl_context_t *tl_ctx = _get_tl_ctx(storage_type);
     vs_tl_header_t host_header;
     vs_storage_element_id_t file_id;
-
+    vs_status_e res;
     CHECK_RET(NULL != tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid storage type");
     CHECK_RET(NULL != header, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid args");
 
@@ -403,9 +404,10 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
 
     // cppcheck-suppress uninitvar
     _create_data_filename(storage_type, VS_TL_ELEMENT_TLH, 0, file_id);
-    CHECK_RET(VS_CODE_OK == _write_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)header, sizeof(vs_tl_header_t)),
-              VS_CODE_ERR_FILE_WRITE,
-              "Error TL header save");
+
+    res = _write_data(tl_ctx->storage_ctx, file_id, 0, (uint8_t *)header, sizeof(vs_tl_header_t));
+
+    CHECK_RET(VS_CODE_OK == res, res, "Error TL header save");
 
     VS_IOT_MEMCPY(&tl_ctx->header, header, sizeof(vs_tl_header_t));
     return VS_CODE_OK;
