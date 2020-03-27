@@ -38,7 +38,6 @@
 
 static EventGroupHandle_t s_wifi_event_group;
 const int WIFI_CONNECTED_BIT = BIT0;
-static int s_retry_num = 0;
 static wifi_status_cb_t _wifi_status_cb = NULL;
 
 static const char *SSID_KEY = "ssid_key";
@@ -57,7 +56,6 @@ event_handler(void *ctx, system_event_t *event) {
         break;
     case SYSTEM_EVENT_STA_GOT_IP:
         VS_LOG_INFO("got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
-        s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
         if (_wifi_status_cb) {
             _wifi_status_cb(true);
@@ -66,16 +64,10 @@ event_handler(void *ctx, system_event_t *event) {
     case SYSTEM_EVENT_STA_DISCONNECTED: {
         VS_LOG_INFO("connect to the AP fail");
 
-        if (s_retry_num < ESP_WIFI_MAXIMUM_RETRY) {
-            esp_wifi_connect();
-            xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-            s_retry_num++;
-            VS_LOG_INFO("retry to connect to the AP");
-        } else {
-            if (_wifi_status_cb) {
-                _wifi_status_cb(false);
-            }
-        }
+        esp_wifi_connect();
+        xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+
+        VS_LOG_INFO("retry to connect to the AP");
 
         break;
     }
