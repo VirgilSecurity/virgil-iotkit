@@ -72,6 +72,13 @@ logger_hal_implementation
 #include <stdarg.h>
 #include <string.h>
 
+#if VS_IOT_LOGGER_USE_LIBRARY
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib-config.h>
+#endif // VS_IOT_LOGGER_USE_LIBRARY
+
+
 #ifdef __cplusplus
 namespace VirgilIoTKit {
 extern "C" {
@@ -106,11 +113,6 @@ typedef enum {
 
 
 #if VS_IOT_LOGGER_USE_LIBRARY
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib-config.h>
-
 
 /** Log message
  *

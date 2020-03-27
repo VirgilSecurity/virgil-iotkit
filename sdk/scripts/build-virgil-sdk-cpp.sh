@@ -85,7 +85,7 @@ function build() {
 }
 
 # Common CMake arguments for the project
-CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' -DENABLE_TESTING=OFF -DINSTALL_EXT_LIBS=ON -DINSTALL_EXT_HEADERS=ON"
+CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' -DCMAKE_ARGS='-DCMAKE_POSITION_INDEPENDENT_CODE=ON' -DENABLE_TESTING=OFF -DINSTALL_EXT_LIBS=ON -DINSTALL_EXT_HEADERS=ON"
 
 #
 #   Build both Debug and Release

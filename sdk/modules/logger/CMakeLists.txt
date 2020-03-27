@@ -68,6 +68,8 @@ endif()
 target_compile_options(vs-module-logger
         PRIVATE -Wall -Werror ${CFLAGS_PLATFORM})
 
+set_property(TARGET vs-module-logger PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
 #
 #   Compile definitions
 #
