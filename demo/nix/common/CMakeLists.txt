@@ -114,6 +114,7 @@ target_include_directories(nix-common-remote-device-emulator
 		PUBLIC
 		${CMAKE_CURRENT_LIST_DIR}/include
 		${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
+		${VIRGIL_IOT_DIRECTORY}/modules/provision/include
 		${CMAKE_CURRENT_LIST_DIR}/include/remote-device
 		)
 
@@ -156,7 +157,7 @@ target_link_libraries(nix-common-remote-device-emulator
 		PUBLIC
 		vs-module-logger
 		PRIVATE
-		vs-default-curl-http
+		virgil-iot-status-code
 
 		enable_pedantic_mode
 		enable_sanitizers
@@ -168,6 +169,7 @@ target_link_libraries(nix-common-smart-mac-counter
 		PRIVATE
 		${CMAKE_THREAD_LIBS_INIT}
 		vs-default-curl-http
+		curl
 
 		enable_pedantic_mode
 		enable_sanitizers
