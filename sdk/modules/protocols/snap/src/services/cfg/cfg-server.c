@@ -163,7 +163,7 @@ _conf_user_request_processor(const uint8_t *request,
         // Normalize byte order
         vs_cfg_user_config_request_t_decode(conf_request);
 
-        uint8_t buf[request_sz];
+        uint8_t buf[sizeof(vs_cfg_user_t) + conf_request->data_sz];
         config_data = (vs_cfg_user_t *)buf;
         config_data->data_type = conf_request->data_type;
         config_data->data_sz = conf_request->data_sz;
