@@ -24,10 +24,10 @@ function pack_libs() {
       local LIBS=( "libed25519.a" "libmbedcrypto.a" "libprotobuf-nanopb.a" "libvsc_common.a" "libvsc_foundation.a" "libvsc_foundation_pb.a")
 
       # Split static lib to object files
-		  for LIB in "${LIBS[@]}"; do
-		      ar x ${LIB}
-		      rm ${LIB}
-		  done
+      for LIB in "${LIBS[@]}"; do
+          ar x ${LIB}
+          rm ${LIB}
+      done
 
 			# Combine all object files to a static lib
 			ar rcs ${FINAL_LIB} *.o
@@ -48,7 +48,8 @@ function build() {
 
     local BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
     local INSTALL_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}/installed
-    local LIBS_DIR=${INSTALL_DIR}/usr/local/lib
+    [ "$(arch)" == "x86_64" ] && LIB_ARCH="64" || LIB_ARCH=""
+    local LIBS_DIR=${INSTALL_DIR}/usr/local/lib${LIB_ARCH}
 
     echo
     echo "===================================="
