@@ -80,12 +80,14 @@ else()
 endif()
 
 target_compile_definitions(trust_list
-        PRIVATE "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        PRIVATE
+        "VIRGIL_IOT_MCU_BUILD=$<BOOL:${VIRGIL_IOT_MCU_BUILD}>"
+        "VIRGIL_IOT_THREADSAFE=$<BOOL:${VIRGIL_IOT_THREADSAFE}>"
         )
 
 target_link_libraries(trust_list
         PUBLIC
-        vs-threadsafe
+        $<$<BOOL:${VIRGIL_IOT_THREADSAFE}>:vs-threadsafe>
         vs-module-secmodule
         macros
         vs-module-provision

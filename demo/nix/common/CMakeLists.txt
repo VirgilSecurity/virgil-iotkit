@@ -97,6 +97,7 @@ target_sources(nix-common-smart-mac-counter
 target_include_directories(nix-common
 		PUBLIC
 		${CMAKE_CURRENT_LIST_DIR}/include
+		${VIRGIL_IOT_DIRECTORY}/helpers/threadsafe/include
 		${VIRGIL_IOT_DIRECTORY}/modules/protocols/snap/include
 		PRIVATE
 		${CMAKE_CURRENT_LIST_DIR}/src

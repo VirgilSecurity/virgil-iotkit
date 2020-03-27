@@ -135,6 +135,7 @@ option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
 option(VIRGIL_IOT_UPDATE "Enable 'update'" OFF)
 option(VIRGIL_IOT_HIGH_LEVEL "Enable 'high level'" ON)
+option(VIRGIL_IOT_THREADSAFE "Enable multithread support" OFF)
 
 #
 # Default crypto implementations

@@ -42,6 +42,7 @@ option(BIGENDIAN_64_BIT_BUILD "Build for MIPS 64 big endian" OFF)
 option(BIGENDIAN_32_BIT_BUILD "Build for MIPS 32 big endian" OFF)
 option(GATEWAY_SIMULATOR "On/Off code for simulator." ON)
 option(VIRGIL_IOT_MCU_BUILD "Enable build for MCU" OFF)
+option(VIRGIL_IOT_THREADSAFE "Enable multithread support" ON)
 
 # Sanitizers
 option(USE_ASAN "On/Off Address sanitizer." OFF)

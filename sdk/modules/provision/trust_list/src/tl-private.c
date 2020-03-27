@@ -370,6 +370,7 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *se
     _init_tl_ctx(TL_STORAGE_TYPE_STATIC, op_ctx, &_tl_static_ctx);
     _init_tl_ctx(TL_STORAGE_TYPE_TMP, op_ctx, &_tl_tmp_ctx);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_init(&_tl_dynamic_ctx.access_mtx),
               VS_CODE_ERR_NOINIT,
               "Error init access mutex for storage dynamic");
@@ -384,7 +385,7 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *se
               "Can't lock storage dynamic");
     CHECK(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&_tl_static_ctx.access_mtx), "Can't lock storage static");
     CHECK(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&_tl_tmp_ctx.access_mtx), "Can't lock storage tmp");
-
+#endif
     if (_verify_tl(&_tl_dynamic_ctx)) {
         ret_code = VS_CODE_OK;
         goto terminate;
@@ -398,10 +399,11 @@ vs_tl_storage_init_internal(vs_storage_op_ctx_t *op_ctx, vs_secmodule_impl_t *se
     }
 
 terminate:
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_wrunlock(&_tl_tmp_ctx.access_mtx);
     vs_threadsafe_rwlock_wrunlock(&_tl_static_ctx.access_mtx);
     vs_threadsafe_rwlock_wrunlock(&_tl_dynamic_ctx.access_mtx);
-
+#endif
     return ret_code;
 }
 
@@ -414,9 +416,11 @@ vs_tl_storage_deinit_internal() {
     CHECK_NOT_ZERO_RET(op_ctx->impl_data, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(op_ctx->impl_func.deinit, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_deinit(&_tl_dynamic_ctx.access_mtx);
     vs_threadsafe_rwlock_deinit(&_tl_static_ctx.access_mtx);
     vs_threadsafe_rwlock_deinit(&_tl_tmp_ctx.access_mtx);
+#endif
 
     VS_IOT_MEMSET(&_tl_dynamic_ctx, 0, sizeof(vs_tl_context_t));
     VS_IOT_MEMSET(&_tl_static_ctx, 0, sizeof(vs_tl_context_t));
@@ -620,9 +624,13 @@ vs_tl_header_save(size_t storage_type, const vs_tl_header_t *header) {
     CHECK_NOT_ZERO_RET(tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
     CHECK_NOT_ZERO_RET(header, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "wrlock fail");
+#endif
     res = _tl_header_save_internal(tl_ctx, header);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_wrunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -635,9 +643,13 @@ vs_tl_header_load(size_t storage_type, vs_tl_header_t *header) {
     CHECK_RET(tl_ctx->ready, VS_CODE_ERR_NULLPTR_ARGUMENT, "TL Storage is not ready");
     CHECK_NOT_ZERO_RET(header, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_rdlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "rdlock fail");
+#endif
     res = _tl_header_load_internal(tl_ctx, header);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_rdunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -649,9 +661,13 @@ vs_tl_footer_save(size_t storage_type, const uint8_t *footer, uint16_t footer_sz
 
     CHECK_NOT_ZERO_RET(tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "wrlock fail");
+#endif
     res = _tl_footer_save_internal(tl_ctx, footer, footer_sz);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_wrunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -665,9 +681,13 @@ vs_tl_footer_load(size_t storage_type, uint8_t *footer, uint16_t buf_sz, uint16_
     CHECK_RET(tl_ctx->ready, VS_CODE_ERR_NULLPTR_ARGUMENT, "TL Storage is not ready");
     CHECK_RET(NULL != footer && NULL != footer_sz, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid args");
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_rdlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "rdlock fail");
+#endif
     res = _tl_footer_load_internal(tl_ctx, footer, buf_sz, footer_sz);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_rdunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -679,9 +699,13 @@ vs_tl_key_save(size_t storage_type, const uint8_t *key, uint16_t key_sz) {
 
     CHECK_NOT_ZERO_RET(tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "wrlock fail");
+#endif
     res = _tl_key_save_internal(tl_ctx, key, key_sz);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_wrunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -695,9 +719,13 @@ vs_tl_key_load(size_t storage_type, vs_tl_key_handle handle, uint8_t *key, uint1
     CHECK_RET(tl_ctx->ready, VS_CODE_ERR_NULLPTR_ARGUMENT, "TL Storage is not ready");
     CHECK_RET(NULL != key && NULL != key_sz, VS_CODE_ERR_NULLPTR_ARGUMENT, "Invalid args");
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_rdlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "rdlock fail");
+#endif
     res = _tl_key_load_internal(tl_ctx, handle, key, buf_sz, key_sz);
+#if VIRGIL_IOT_THREADSAFE
     vs_threadsafe_rwlock_rdunlock(&tl_ctx->access_mtx);
+#endif
     return res;
 }
 
@@ -752,9 +780,10 @@ vs_tl_apply_tmp_to(size_t storage_type) {
 
     CHECK_NOT_ZERO_RET(tl_ctx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
+#if VIRGIL_IOT_THREADSAFE
     CHECK_RET(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&tl_ctx->access_mtx), VS_CODE_ERR_THREAD, "wrlock fail");
     CHECK(VS_CODE_OK == vs_threadsafe_rwlock_wrlock(&_tl_tmp_ctx.access_mtx), "wrlock fail");
-
+#endif
     ret_code = VS_CODE_ERR_FILE;
 
     if (_verify_tl(&_tl_tmp_ctx)) {
@@ -765,9 +794,11 @@ vs_tl_apply_tmp_to(size_t storage_type) {
         }
     }
 
+#if VIRGIL_IOT_THREADSAFE
 terminate:
     vs_threadsafe_rwlock_wrunlock(&_tl_tmp_ctx.access_mtx);
     vs_threadsafe_rwlock_wrunlock(&tl_ctx->access_mtx);
+#endif
     return ret_code;
 }
 

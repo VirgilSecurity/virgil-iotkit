@@ -3,9 +3,12 @@
 
 #include <virgil/iot/secmodule/secmodule.h>
 #include <virgil/iot/macros/macros.h>
-#include <virgil/iot/threadsafe/vs-lock.h>
 #include <virgil/iot/storage_hal/storage_hal.h>
 #include <virgil/iot/status_code/status_code.h>
+
+#if VIRGIL_IOT_THREADSAFE
+#include <virgil/iot/threadsafe/vs-lock.h>
+#endif
 
 typedef struct {
     size_t storage_type;
@@ -18,7 +21,9 @@ typedef struct {
 
 typedef struct {
     bool ready;
+#if VIRGIL_IOT_THREADSAFE
     vs_rwlock_t access_mtx;
+#endif
     const vs_storage_op_ctx_t *storage_ctx;
     vs_tl_storage_ctx_t storage;
     vs_tl_header_t header;
