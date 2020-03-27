@@ -37,6 +37,7 @@
 #include "virgil/iot/trust_list/tl_structs.h"
 #include <private/tl-private.h>
 #include "virgil/iot/trust_list/trust_list.h"
+
 #include <endian-config.h>
 
 static vs_file_ver_info_cb_t _ver_info_cb = NULL;

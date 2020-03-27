@@ -85,7 +85,6 @@ vs_threadsafe_rwlock_rdlock(vs_rwlock_t *mtx) {
     CHECK_RET(VS_CODE_OK == ret_code, ret_code, "Can't take r_counter_lock");
 
     if (mtx->r_counter == UINT32_MAX) {
-        ret_code = VS_CODE_ERR_THREAD;
         VS_LOG_ERROR("r_counter has a MAX value!");
         goto terminate;
     }
@@ -101,6 +100,8 @@ vs_threadsafe_rwlock_rdlock(vs_rwlock_t *mtx) {
             goto terminate;
         }
     }
+
+    VS_LOG_INFO("RD_LOCK. r_counter = %u", mtx->r_counter);
 
 terminate:
 
@@ -122,7 +123,6 @@ vs_threadsafe_rwlock_rdunlock(vs_rwlock_t *mtx) {
     CHECK_RET(VS_CODE_OK == ret_code, ret_code, "Can't take r_counter_lock");
 
     if (mtx->r_counter == 0) {
-        ret_code = VS_CODE_ERR_THREAD;
         VS_LOG_ERROR("r_counter is equal zero!");
         goto terminate;
     }
@@ -137,6 +137,7 @@ vs_threadsafe_rwlock_rdunlock(vs_rwlock_t *mtx) {
             goto terminate;
         }
     }
+    VS_LOG_INFO("RD_UNLOCK. r_counter = %u", mtx->r_counter);
 
 terminate:
     ret_code = vs_threadsafe_unlock_hal(mtx->r_counter_lock);
@@ -153,6 +154,7 @@ vs_threadsafe_rwlock_wrlock(vs_rwlock_t *mtx) {
     CHECK_NOT_ZERO_RET(mtx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(vs_threadsafe_lock_hal(mtx->w_lock), "Can't take w_lock");
+    VS_LOG_INFO("RW_LOCK");
     return VS_CODE_OK;
 }
 
@@ -163,5 +165,6 @@ vs_threadsafe_rwlock_wrunlock(vs_rwlock_t *mtx) {
     CHECK_NOT_ZERO_RET(mtx, VS_CODE_ERR_NULLPTR_ARGUMENT);
 
     STATUS_CHECK_RET(vs_threadsafe_unlock_hal(mtx->w_lock), "Can't release w_lock");
+    VS_LOG_INFO("RW_UNLOCK");
     return VS_CODE_OK;
 }
