@@ -23,6 +23,7 @@
             "-I sdk/modules/cloud/include",
             "-I sdk/helpers/status_code/include",
             "-I sdk/helpers/json/include",
+            "-I sdk/helpers/threadsafe/include",
             "-I sdk/tests/include",
             "-I sdk/high-level/include",
             "-I sdk/helpers/macros/include",
