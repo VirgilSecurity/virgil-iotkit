@@ -148,9 +148,10 @@ _conf_user_request_processor(const uint8_t *request,
                              uint16_t *response_sz) {
     vs_status_e ret_code = VS_CODE_OK;
     vs_cfg_user_config_request_t *conf_request = (vs_cfg_user_config_request_t *)request;
-    vs_cfg_user_t *config_data;
 
     if (_impl.user_config_cb) {
+        vs_cfg_user_t *config_data;
+
         // Check input parameters
         CHECK_NOT_ZERO_RET(response, VS_CODE_ERR_INCORRECT_ARGUMENT);
         CHECK_RET(request_sz >= sizeof(vs_cfg_user_config_request_t),
