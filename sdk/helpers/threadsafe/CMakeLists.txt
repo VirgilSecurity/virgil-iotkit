@@ -34,37 +34,44 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Status codes
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/status_code)
+project(update VERSION 0.1.0 LANGUAGES C)
 
-#
-#   Shared macros
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/macros)
+add_library(vs-threadsafe)
 
-#
-#   Data storage hal interface
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/storage_hal)
+target_sources(vs-threadsafe
+        PRIVATE
+        # Headers
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/threadsafe/vs-lock-hal.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/virgil/iot/threadsafe/vs-lock.h
 
-#
-#   update
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/update)
+        #  Sources
+        ${CMAKE_CURRENT_LIST_DIR}/src/vs-lock.c
+        )
 
-#
-#   jsmn
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../ext/jsmn "jsmn")
+target_link_libraries(vs-threadsafe
+        PUBLIC
+        macros
+        virgil-iot-status-code
+        )
 
-#
-#   vs-json
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/json)
+target_include_directories(vs-threadsafe
+        PRIVATE
+        $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
 
-#
-#   threadsafe
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/threadsafe)
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        )
+
+install(TARGETS vs-threadsafe
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
+if(COMMAND add_clangformat)
+    add_clangformat(vs-threadsafe)
+endif()

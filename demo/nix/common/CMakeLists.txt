@@ -65,6 +65,7 @@ target_sources(nix-common
 		${CMAKE_CURRENT_LIST_DIR}/src/sdk-impl/netif/netif-udp-broadcast.c
 		${CMAKE_CURRENT_LIST_DIR}/src/sdk-impl/storage/storage-nix-impl.c
         ${CMAKE_CURRENT_LIST_DIR}/src/sdk-impl/logger/logger-impl.c
+		${CMAKE_CURRENT_LIST_DIR}/src/sdk-impl/threadsafe/lock-nix-hal.c
 		${CMAKE_CURRENT_LIST_DIR}/src/helpers/file-io.c
 		${CMAKE_CURRENT_LIST_DIR}/src/helpers/file-cache.c
 		${CMAKE_CURRENT_LIST_DIR}/src/helpers/event-group-bits.c
