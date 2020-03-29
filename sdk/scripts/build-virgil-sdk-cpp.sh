@@ -7,6 +7,21 @@ SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 CPP_SDK_DIR="${SCRIPT_FOLDER}/../ext/virgil-sdk-cpp"
 BUILD_DIR_BASE="${CPP_SDK_DIR}"
 
+#***************************************************************************************
+check_error() {
+   RETRES=$?
+   if [ $RETRES != 0 ]; then
+        echo "----------------------------------------------------------------------"
+        echo "############# !!! PROCESS ERROR ERRORCODE=[$RETRES]  #################"
+        echo "----------------------------------------------------------------------"
+        [ "$1" == "0" ] || exit $RETRES
+   else
+        echo "-----# Process OK. ---------------------------------------------------"
+   fi
+   return $RETRES
+}
+
+
 #
 #   Arguments
 #
@@ -27,11 +42,13 @@ function pack_libs() {
       # Split static lib to object files
       for LIB in "${LIBS[@]}"; do
         ar x ${LIB}
+        check_error
         rm ${LIB}
       done
 
 			# Combine all object files to a static lib
 			ar rcs ${FINAL_LIB} *.o
+			check_error
 
       # Clean up object files
       rm *.o
@@ -66,12 +83,15 @@ function build() {
     pushd ${BUILD_DIR}
       # prepare to build
       cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G "Unix Makefiles"
+      check_error
 
       # build all targets
       make -j ${CORES}
+      check_error
 
       # install all targets
       make DESTDIR=${INSTALL_DIR} install
+      check_error
 
       # pack libraries into one
       if [ "$BUILD_TYPE" = "debug" ]; then

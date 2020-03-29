@@ -6,6 +6,21 @@
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
 
+#***************************************************************************************
+check_error() {
+   RETRES=$?
+   if [ $RETRES != 0 ]; then
+        echo "----------------------------------------------------------------------"
+        echo "############# !!! PROCESS ERROR ERRORCODE=[$RETRES]  #################"
+        echo "----------------------------------------------------------------------"
+        [ "$1" == "0" ] || exit $RETRES
+   else
+        echo "-----# Process OK. ---------------------------------------------------"
+   fi
+   return $RETRES
+}
+
+
 #
 #   Arguments
 #
@@ -41,11 +56,16 @@ function build() {
 
     pushd ${BUILD_DIR}
         cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
+        check_error
 
         make -j ${CORES} vs-module-logger
+        check_error
         make -j ${CORES} vs-module-provision
+        check_error
         make -j ${CORES} vs-module-snap-control
+        check_error
         make -j ${CORES} vs-module-messenger
+        check_error
 
     popd
 }
@@ -72,7 +92,11 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DOS=WINDOWS \
+        -DOS=WINDOWS -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
+        -DLIBXML2_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libxml2.dll.a \
+        -DOPENSSL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/openssl \
+#        -DOPENSSL_CRYPTO_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libssl.dll.a \
+        -DOPENSSL_CRYPTO_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcrypto.dll.a \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake"
     "
 
