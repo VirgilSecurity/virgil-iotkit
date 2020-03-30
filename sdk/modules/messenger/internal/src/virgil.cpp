@@ -107,6 +107,8 @@ static std::shared_ptr<Crypto> crypto;
 static vs_messenger_virgil_user_creds_t _creds = {{0}, 0, {0}, 0, {0}};
 static char *_service_base_url = NULL;
 static vs_pubkey_cache_t _pubkey_cache;
+static char virgil_token[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
+static bool _is_virgil_token_ready = false;
 
 /******************************************************************************/
 static vs_status_e
@@ -164,22 +166,20 @@ terminate:
 /******************************************************************************/
 static const char *
 _prepare_virgil_token(void) {
-    static char virgil_token[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
-    static bool is_ready = false;
 
     // TODO: Update Virgil token by time. Every 2 hours.
 
-    if (!is_ready) {
+    if (!_is_virgil_token_ready) {
         if (VS_CODE_OK == _get_token(_virgil_jwt_endpoint, virgil_token, VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX)) {
-            is_ready = true;
+            _is_virgil_token_ready = true;
         }
     }
 
-    if (!is_ready) {
+    if (!_is_virgil_token_ready) {
         VS_LOG_ERROR("Cannot get Virgil token");
     }
 
-    return is_ready ? virgil_token : NULL;
+    return _is_virgil_token_ready ? virgil_token : NULL;
 }
 
 /******************************************************************************/
@@ -356,8 +356,10 @@ vs_messenger_virgil_logout(void) {
     VS_IOT_ASSERT(_is_initialized);
     crypto = nullptr;
     free(_service_base_url);
+    _service_base_url = NULL;
     _is_credentials_ready = false;
     _is_initialized = false;
+    _is_virgil_token_ready = false;
     return VS_CODE_OK;
 }
 
