@@ -513,7 +513,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
 
         // Create JSON with ciphertext
         auto now = static_cast<double>(time(NULL));
-        json encJSON = {{"ciphertext", encDataBase64}, {"codableVersion", "v2"}, {"date", now}};
+        json encJSON = {{"ciphertext", encDataBase64}, {"version", "v2"}, {"date", now}};
 
         // Base64 of JSON structure
         std::string encJsonBase64 = VirgilBase64::encode(str2bytes(encJSON.dump()));
