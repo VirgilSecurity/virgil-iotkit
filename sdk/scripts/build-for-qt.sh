@@ -97,8 +97,6 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
     build_messenger_deps " \
         -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
         -DCYGWIN=1 \
-        -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
-        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
     "
     exit 1
     CMAKE_ARGUMENTS=" \
