@@ -6,6 +6,16 @@
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 CPP_SDK_DIR="${SCRIPT_FOLDER}/../ext/virgil-sdk-cpp"
 BUILD_DIR_BASE="${CPP_SDK_DIR}"
+CMAKE_CUSTOM_PARAM="${@}"
+
+if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
+  AR_TOOLS="i686-w64-mingw32-ar"
+  OBJ_EXT="obj"
+else
+  AR_TOOLS="ar"
+  OBJ_EXT="o"
+fi
+
 
 #***************************************************************************************
 check_error() {
@@ -41,17 +51,17 @@ function pack_libs() {
 
       # Split static lib to object files
       for LIB in "${LIBS[@]}"; do
-        ar x ${LIB}
+        $AR_TOOLS  x ${LIB}
         check_error
         rm ${LIB}
       done
 
 			# Combine all object files to a static lib
-			ar rcs ${FINAL_LIB} *.o
+			$AR_TOOLS  rcs ${FINAL_LIB} *.$OBJ_EXT
 			check_error
 
       # Clean up object files
-      rm *.o
+      rm *.$OBJ_EXT
 
     popd
 }
@@ -66,8 +76,6 @@ function build() {
 
     local BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
     local INSTALL_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}/installed
-    #[ "$(arch)" == "x86_64" ] && LIB_ARCH="64" || LIB_ARCH=""
-    #local LIBS_DIR=${INSTALL_DIR}/usr/local/lib${LIB_ARCH}
     local LIBS_DIR=${INSTALL_DIR}/usr/local/lib
 
     echo
@@ -82,6 +90,9 @@ function build() {
     mkdir -p ${INSTALL_DIR}
     pushd ${BUILD_DIR}
       # prepare to build
+      echo "##################################"
+      echo "### cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G Unix Makefiles"      
+      echo "##################################"      
       cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G "Unix Makefiles"
       check_error
 
@@ -105,7 +116,13 @@ function build() {
 }
 
 # Common CMake arguments for the project
-CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' -DCMAKE_ARGS='-DCMAKE_POSITION_INDEPENDENT_CODE=ON' -DENABLE_TESTING=OFF -DINSTALL_EXT_LIBS=ON -DINSTALL_EXT_HEADERS=ON"
+CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' \
+                 -DCMAKE_C_FLAGS='-fvisibility=hidden' \
+                 -DCMAKE_ARGS='-DCMAKE_POSITION_INDEPENDENT_CODE=ON' \
+                 -DENABLE_TESTING=OFF \
+                 -DINSTALL_EXT_LIBS=ON \
+                 -DINSTALL_EXT_HEADERS=ON \
+                 ${CMAKE_CUSTOM_PARAM}"
 
 #
 #   Build both Debug and Release

@@ -30,8 +30,13 @@ PLATFORM=$1
 #   Build dependencies for vs-module-messenger
 #
 function build_messenger_deps() {
-    ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh
-    ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh
+    echo "===================================="
+    echo "=== Building depends"
+    echo "===================================="
+    ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
+    check_error
+    ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
+    check_error
 }
 
 #
@@ -89,15 +94,22 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 #
 
 elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
-
+    build_messenger_deps " \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
+        -DCYGWIN=1 \
+        -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
+        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
+    "
+    exit 1
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOS=WINDOWS -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
         -DLIBXML2_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libxml2.dll.a \
         -DOPENSSL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/openssl \
-#        -DOPENSSL_CRYPTO_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libssl.dll.a \
         -DOPENSSL_CRYPTO_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcrypto.dll.a \
-        -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake"
+        -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
+        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake \
     "
 
 #
@@ -114,7 +126,7 @@ elif [[ "${PLATFORM}" == "windows" ]]; then
 #   Linux
 #
 elif [[ "${PLATFORM}" == "linux" ]]; then
-
+    build_messenger_deps
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
@@ -123,7 +135,7 @@ elif [[ "${PLATFORM}" == "linux" ]]; then
 #   iOS
 #
 elif [[ "${PLATFORM}" == "ios" ]]; then
-
+    build_messenger_deps
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS" \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
@@ -134,7 +146,7 @@ elif [[ "${PLATFORM}" == "ios" ]]; then
 #   iOS Simulator
 #
 elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-
+    build_messenger_deps
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS_SIM" \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
@@ -171,11 +183,6 @@ else
 
     exit 1
 fi
-
-#
-#   Build dependencies
-#
-build_messenger_deps
 
 #
 #   Build both Debug and Release
