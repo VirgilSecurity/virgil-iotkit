@@ -156,10 +156,15 @@ LIBS += $$add_virgiliotkit_library("modules/provision",         "vs-module-provi
 LIBS += $$add_virgiliotkit_library("modules/protocols/snap",    "vs-module-snap-control")
 LIBS += $$add_virgiliotkit_library("modules/secbox",            "vs-module-secbox")
 LIBS += $$add_virgiliotkit_library("modules/messenger/module",  "vs-module-messenger")
-LIBS += $$add_virgiliotkit_library("modules/messenger/crypto",  "vs-messenger-crypto")
-LIBS += $$add_virgiliotkit_library("modules/messenger/internal","vs-messenger-internal")
 
-win32: LIBS += -lws2_32
+win32: {
+	LIBS += -lws2_32
+	LIBS += $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/crypto/libvs-messenger-crypto.dll.a
+	LIBS += $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/internal/libvs-messenger-internal.dll.a
+} else: {
+	LIBS += $$add_virgiliotkit_library("modules/messenger/crypto",  "vs-messenger-crypto")
+	LIBS += $$add_virgiliotkit_library("modules/messenger/internal","vs-messenger-internal")
+}
 
 #
 #   Include path

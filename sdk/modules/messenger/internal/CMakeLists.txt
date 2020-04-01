@@ -53,6 +53,7 @@ set (VSCPPSDK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-sdk-cpp/cmake-
 find_library(VSCPPSDK_LIBRARY
         NAMES vscppsdk
         HINTS "${VSCPPSDK_PATH}/lib"
+        CMAKE_FIND_ROOT_PATH_BOTH
         )
 
 
@@ -68,6 +69,11 @@ target_sources(vs-messenger-internal
         ${CMAKE_CURRENT_LIST_DIR}/src/virgil.cpp
         )
 
+target_compile_definitions(vs-messenger-internal
+        PRIVATE
+        VS_BUILDING_DLL=1
+        )
+
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
@@ -75,6 +81,7 @@ target_link_libraries(vs-messenger-internal
         strophe
         curl
         vs-messenger-crypto
+        $<$<BOOL:${WIN32}>:kernel32>
 
         PRIVATE
         enable_pedantic_mode

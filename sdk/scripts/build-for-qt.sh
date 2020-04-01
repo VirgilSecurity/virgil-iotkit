@@ -94,11 +94,11 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 #
 
 elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
-    build_messenger_deps " \
-        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
-        -DCYGWIN=1 \
-    "
-    exit 1
+    #build_messenger_deps " \
+    #    -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
+    #    -DCYGWIN=1 \
+    #"
+
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOS=WINDOWS -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \

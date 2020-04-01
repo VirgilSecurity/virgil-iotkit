@@ -45,6 +45,7 @@ set (VSCRYPTOC_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-crypto-c/cmak
 find_library(VSCRYPTOC_LIBRARY
         NAMES vscryptoc
         HINTS "${VSCRYPTOC_PATH}/lib"
+        CMAKE_FIND_ROOT_PATH_BOTH
         )
 
 
@@ -58,10 +59,17 @@ target_sources(vs-messenger-crypto
         ${CMAKE_CURRENT_LIST_DIR}/src/msgr-crypto.c
         )
 
+
+target_compile_definitions(vs-messenger-crypto
+        PRIVATE
+        VS_BUILDING_DLL=1
+)
+
 target_link_libraries(vs-messenger-crypto
         PUBLIC
         virgil-iot-status-code
         ${VSCRYPTOC_LIBRARY}
+        $<$<BOOL:${WIN32}>:kernel32>
 
         PRIVATE
         enable_pedantic_mode
