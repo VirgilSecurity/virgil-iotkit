@@ -85,6 +85,7 @@ target_link_libraries(vs-messenger-internal
 
         PRIVATE
         enable_pedantic_mode
+        -static-libgcc -static-libstdc++ -static
         )
 
 target_include_directories(vs-messenger-internal
