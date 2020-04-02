@@ -42,7 +42,7 @@
 static pthread_t _messenger_thread;
 
 // TODO: create some mechanism to calculate Identity
-static const char *_identity = "rk_test_17";
+static const char *_identity = "gw_test_020420";
 
 // TODO: Use configuration from User's device
 static const char *_enjabberd_host = "xmpp-stg.virgilsecurity.com";
@@ -50,7 +50,7 @@ static const uint16_t _enjabberd_port = 5222;
 static const char *_service_base_url = "https://messenger-stg.virgilsecurity.com";
 
 // TODO: Use channels list from User's device
-static const char *_messenger_channel = "r";
+static const char *_messenger_channel = "WizardMD";
 
 /*************************************************************************/
 static void
