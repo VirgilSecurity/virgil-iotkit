@@ -194,8 +194,7 @@ _computeHashForPublicKey(const VirgilByteArray &publicKey) {
 /******************************************************************************/
 extern "C" DLL_PUBLIC vs_status_e
 vs_messenger_virgil_init(const char *service_base_url) {
-
-    std::setlocale(LC_NUMERIC,"C");
+    setlocale(LC_NUMERIC, "C");
     if (_is_initialized) {
         VS_LOG_WARNING("Virgil Messenger is initialized");
         return VS_CODE_ERR_MSGR_INTERNAL;
