@@ -94,22 +94,18 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 #
 
 elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
-    #build_messenger_deps " \
-    #    -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
-    #    -DCYGWIN=1 \
-    #"
+    build_messenger_deps " \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
+        -DCYGWIN=1 \
+    "
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DOS=WINDOWS -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
-        -DLIBXML2_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libxml2.dll.a \
-        -DOPENSSL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/openssl \
-        -DOPENSSL_CRYPTO_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcrypto.dll.a \
+        -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw32.cmake \
+        -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
         -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
-        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
-        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake \
+        -DOS=WINDOWS \
     "
-
 #
 #   Windows
 #
