@@ -4,6 +4,8 @@
 #   Global variables
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+. ${SCRIPT_FOLDER}/ish/error.ish
+
 CRYPTO_C_DIR="${SCRIPT_FOLDER}/../ext/virgil-crypto-c"
 BUILD_DIR_BASE="${CRYPTO_C_DIR}"
 CMAKE_CUSTOM_PARAM="${@}"
@@ -17,53 +19,12 @@ else
   [ "$(arch)" == "x86_64" ] && LIB_ARCH="64" || LIB_ARCH=""
 fi
 
-
-#***************************************************************************************
-check_error() {
-   RETRES=$?
-   if [ $RETRES != 0 ]; then
-        echo "----------------------------------------------------------------------"
-        echo "############# !!! PROCESS ERROR ERRORCODE=[$RETRES]  #################"
-        echo "----------------------------------------------------------------------"
-        [ "$1" == "0" ] || exit $RETRES
-   else
-        echo "-----# Process OK. ---------------------------------------------------"
-   fi
-   return $RETRES
-}
+. ${SCRIPT_FOLDER}/ish/lib-utils.ish
 
 #
 #   Arguments
 #
 PLATFORM="host"
-
-#
-#   Pack libraries to one
-#
-function pack_libs() {
-    LIBS_DIR=${1}
-    FINAL_LIB="libvscryptoc.a"
-
-    pushd ${LIBS_DIR}
-
-      local LIBS=( "libed25519.a" "libmbedcrypto.a" "libprotobuf-nanopb.a" "libvsc_common.a" "libvsc_foundation.a" "libvsc_foundation_pb.a")
-
-      # Split static lib to object files
-      for LIB in "${LIBS[@]}"; do
-          $AR_TOOLS x ${LIB}
-          check_error
-          rm ${LIB}
-      done
-
-			# Combine all object files to a static lib
-			$AR_TOOLS rcs ${FINAL_LIB} *.$OBJ_EXT
-			check_error
-
-      # Clean up object files
-      rm *.$OBJ_EXT
-
-    popd
-}
 
 #
 #   Build
@@ -110,7 +71,7 @@ function build() {
       make DESTDIR=${INSTALL_DIR} install
       check_error
 
-      pack_libs ${LIBS_DIR}
+      pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
 
     popd
 }
