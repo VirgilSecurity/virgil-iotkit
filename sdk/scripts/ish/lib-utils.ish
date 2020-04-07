@@ -5,7 +5,8 @@ function pack_libs() {
 
     pushd ${LIBS_DIR}
       # Split static lib to object files
-      for LIB in "${LIBS[@]}"; do
+      for LIB in ${LIBS}; do
+          echo "Proceed  $LIB..."
           $AR_TOOLS x ${LIB}
           check_error
           rm ${LIB}
