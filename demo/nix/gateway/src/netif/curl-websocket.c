@@ -180,6 +180,7 @@ struct cws_data {
     bool connection_websocket;
     bool closed;
     bool deleted;
+    pthread_mutex_t write_mut;
 };
 
 /******************************************************************************/
@@ -258,7 +259,9 @@ _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
      * extra space without realloc() (see _cws_send_data()).
      */
     //_cws_debug("WRITE", buffer, len);
+    BOOL_CHECK_RET(0 == pthread_mutex_lock(&priv->write_mut), "Can't lock write mutex");
     uint8_t *tmp = realloc(priv->send.buffer, priv->send.len + len);
+
     if (!tmp)
         return false;
     memcpy(tmp + priv->send.len, buffer, len);
@@ -268,6 +271,7 @@ _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
         priv->pause_flags &= ~CURLPAUSE_SEND;
         curl_easy_pause(priv->easy, priv->pause_flags);
     }
+    BOOL_CHECK_RET(0 == pthread_mutex_unlock(&priv->write_mut), "Can't release write mutex");
     return true;
 }
 
@@ -419,6 +423,7 @@ _cws_cleanup(struct cws_data *priv) {
 
     curl_slist_free_all(priv->headers);
 
+    pthread_mutex_destroy(&priv->write_mut);
     free(priv->websocket_protocols.requested);
     free(priv->websocket_protocols.received);
     free(priv->send.buffer);
@@ -891,7 +896,7 @@ _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     }
     if (todo > len)
         todo = len;
-
+    BOOL_CHECK_RET(0 == pthread_mutex_lock(&priv->write_mut), "Can't lock write mutex");
     memcpy(buffer, priv->send.buffer, todo);
     if (todo < priv->send.len) {
         /* optimization note: we could avoid memmove() by keeping a
@@ -907,6 +912,7 @@ _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     }
 
     priv->send.len -= todo;
+    BOOL_CHECK_RET(0 == pthread_mutex_unlock(&priv->write_mut), "Can't release write mutex");
     return todo;
 }
 
@@ -952,7 +958,9 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
         return NULL;
 
     priv = calloc(1, sizeof(struct cws_data));
-    BOOL_CHECK_RET(priv, "Can't a;llocate memory");
+    CHECK(priv, "Can't a;llocate memory");
+
+    CHECK(0 == pthread_mutex_init(&priv->write_mut, NULL), "Could not create mutex");
 
     priv->easy = easy;
     curl_easy_setopt(easy, CURLOPT_PRIVATE, priv); //-V568
@@ -1040,6 +1048,7 @@ cws_new(const char *url, const char *websocket_protocols, const struct cws_callb
     return easy;
 terminate:
     free(priv);
+    curl_easy_cleanup(easy);
     return NULL;
 }
 
