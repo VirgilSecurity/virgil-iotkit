@@ -26,6 +26,17 @@ check_error() {
 #
 PLATFORM=$1
 
+ANDROID_NDK=$2
+ANDROID_ABI=$3
+[[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
+
+
+echo ">>> PLATFORM = ${PLATFORM}"
+echo ">>> ANDROID_NDK = ${ANDROID_NDK}"
+echo ">>> ANDROID_ABI = ${ANDROID_ABI}"
+echo ">>> ANDROID_PLATFORM = ${ANDROID_PLATFORM}"
+
+
 #
 #   Build dependencies for vs-module-messenger
 #
@@ -35,8 +46,10 @@ function build_messenger_deps() {
     echo "===================================="
     ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
     check_error
+    
     ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
     check_error
+#    check_error
 }
 
 #
@@ -105,6 +118,8 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
         -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
         -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
         -DOS=WINDOWS \
+        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake \
     "
 #
 #   Windows
@@ -151,10 +166,15 @@ elif [[ "${PLATFORM}" == "ios-sim" ]]; then
 #   Android
 #
 elif [[ "${PLATFORM}" == "android" ]]; then
-
-    ANDROID_ABI=$2
-
-    [[ ! -z "$3" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$3"
+    build_messenger_deps " \
+        -DCMAKE_CROSSCOMPILING=ON \
+        -DANDROID=ON \
+        -DANDROID_QT=ON  \
+        ${ANDROID_PLATFORM} \
+        -DANDROID_ABI=${ANDROID_ABI} \
+        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+        -DUSE_LOCAL_CURL=ON \
+    "
 
 #    TODO : use fat libraries
 
@@ -182,4 +202,4 @@ fi
 #   Build both Debug and Release
 #
 build "debug" "${CMAKE_ARGUMENTS}"
-build "release" "${CMAKE_ARGUMENTS}"
+#build "release" "${CMAKE_ARGUMENTS}"

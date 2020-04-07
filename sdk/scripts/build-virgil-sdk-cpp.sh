@@ -11,6 +11,9 @@ CMAKE_CUSTOM_PARAM="${@}"
 if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
   AR_TOOLS="i686-w64-mingw32-ar"
   OBJ_EXT="obj"
+elif [[ $@ == *"android.toolchain.cmake"* ]]; then
+  AR_TOOLS="/Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
+  OBJ_EXT="o"
 else
   AR_TOOLS="ar"
   OBJ_EXT="o"
@@ -91,8 +94,8 @@ function build() {
     pushd ${BUILD_DIR}
       # prepare to build
       echo "##################################"
-      echo "### cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G Unix Makefiles"      
-      echo "##################################"      
+      echo "### cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G Unix Makefiles"
+      echo "##################################"
       cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G "Unix Makefiles"
       check_error
 
@@ -128,4 +131,4 @@ CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' \
 #   Build both Debug and Release
 #
 build "debug" "${CMAKE_ARGUMENTS}"
-build "release" "${CMAKE_ARGUMENTS}"
+#build "release" "${CMAKE_ARGUMENTS}"

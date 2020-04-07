@@ -11,6 +11,9 @@ CMAKE_CUSTOM_PARAM="${@}"
 if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
   AR_TOOLS="i686-w64-mingw32-ar"
   OBJ_EXT="obj"
+elif [[ $@ == *"android.toolchain.cmake"* ]]; then
+  AR_TOOLS="/Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
+  OBJ_EXT="o"
 else
   AR_TOOLS="ar"
   OBJ_EXT="o"
@@ -92,7 +95,7 @@ function build() {
       # prepare to build
       echo "==========="
       echo "=== Run CMAKE "
-      echo "==========="      
+      echo "==========="
       cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G "Unix Makefiles"
       check_error
 
@@ -106,7 +109,7 @@ function build() {
       # install all targets
       echo "==========="
       echo "=== Installing"
-      echo "==========="      
+      echo "==========="
       make DESTDIR=${INSTALL_DIR} install
       check_error
 
