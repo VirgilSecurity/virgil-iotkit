@@ -45,6 +45,7 @@ set (VSCRYPTOC_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-crypto-c/cmak
 find_library(VSCRYPTOC_LIBRARY
         NAMES vscryptoc
         HINTS "${VSCRYPTOC_PATH}/lib"
+        CMAKE_FIND_ROOT_PATH_BOTH
         )
 
 

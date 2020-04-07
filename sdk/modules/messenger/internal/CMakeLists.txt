@@ -53,6 +53,7 @@ set (VSCPPSDK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-sdk-cpp/cmake-
 find_library(VSCPPSDK_LIBRARY
         NAMES vscppsdk
         HINTS "${VSCPPSDK_PATH}/lib"
+        CMAKE_FIND_ROOT_PATH_BOTH
         )
 
 
