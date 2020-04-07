@@ -261,7 +261,6 @@ _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
     //_cws_debug("WRITE", buffer, len);
     BOOL_CHECK_RET(0 == pthread_mutex_lock(&priv->write_mut), "Can't lock write mutex");
     uint8_t *tmp = realloc(priv->send.buffer, priv->send.len + len);
-    BOOL_CHECK_RET(0 == pthread_mutex_unlock(&priv->write_mut), "Can't release write mutex");
 
     if (!tmp)
         return false;
@@ -272,6 +271,7 @@ _cws_write(struct cws_data *priv, const void *buffer, size_t len) {
         priv->pause_flags &= ~CURLPAUSE_SEND;
         curl_easy_pause(priv->easy, priv->pause_flags);
     }
+    BOOL_CHECK_RET(0 == pthread_mutex_unlock(&priv->write_mut), "Can't release write mutex");
     return true;
 }
 
@@ -896,7 +896,7 @@ _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     }
     if (todo > len)
         todo = len;
-
+    BOOL_CHECK_RET(0 == pthread_mutex_lock(&priv->write_mut), "Can't lock write mutex");
     memcpy(buffer, priv->send.buffer, todo);
     if (todo < priv->send.len) {
         /* optimization note: we could avoid memmove() by keeping a
@@ -912,6 +912,7 @@ _cws_send_data(char *buffer, size_t count, size_t nitems, void *data) {
     }
 
     priv->send.len -= todo;
+    BOOL_CHECK_RET(0 == pthread_mutex_unlock(&priv->write_mut), "Can't release write mutex");
     return todo;
 }
 
