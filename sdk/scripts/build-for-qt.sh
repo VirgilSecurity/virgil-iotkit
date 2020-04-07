@@ -5,21 +5,7 @@
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
-
-#***************************************************************************************
-check_error() {
-   RETRES=$?
-   if [ $RETRES != 0 ]; then
-        echo "----------------------------------------------------------------------"
-        echo "############# !!! PROCESS ERROR ERRORCODE=[$RETRES]  #################"
-        echo "----------------------------------------------------------------------"
-        [ "$1" == "0" ] || exit $RETRES
-   else
-        echo "-----# Process OK. ---------------------------------------------------"
-   fi
-   return $RETRES
-}
-
+. ${SCRIPT_FOLDER}/ish/error.ish
 
 #
 #   Arguments
@@ -108,15 +94,17 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 
 elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
     build_messenger_deps " \
-        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake  \
+        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
+        -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DCYGWIN=1 \
     "
 
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw32.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
         -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
         -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
+        -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DOS=WINDOWS \
         -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
         -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake \

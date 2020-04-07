@@ -1,0 +1,23 @@
+function pack_libs() {
+    LIBS_DIR=${1}
+    LIBS=${2}
+    FINAL_LIB=${3}
+
+    pushd ${LIBS_DIR}
+      # Split static lib to object files
+      for LIB in ${LIBS}; do
+          echo "Proceed  $LIB..."
+          $AR_TOOLS x ${LIB}
+          check_error
+          rm ${LIB}
+      done
+
+      # Combine all object files to a static lib
+      $AR_TOOLS rcs ${FINAL_LIB} *.$OBJ_EXT
+      check_error
+
+      # Clean up object files
+      rm *.$OBJ_EXT
+
+    popd
+}

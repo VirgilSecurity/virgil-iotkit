@@ -4,6 +4,8 @@
 #   Global variables
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+. ${SCRIPT_FOLDER}/ish/error.ish
+
 CPP_SDK_DIR="${SCRIPT_FOLDER}/../ext/virgil-sdk-cpp"
 BUILD_DIR_BASE="${CPP_SDK_DIR}"
 CMAKE_CUSTOM_PARAM="${@}"
@@ -19,55 +21,12 @@ else
   OBJ_EXT="o"
 fi
 
-
-#***************************************************************************************
-check_error() {
-   RETRES=$?
-   if [ $RETRES != 0 ]; then
-        echo "----------------------------------------------------------------------"
-        echo "############# !!! PROCESS ERROR ERRORCODE=[$RETRES]  #################"
-        echo "----------------------------------------------------------------------"
-        [ "$1" == "0" ] || exit $RETRES
-   else
-        echo "-----# Process OK. ---------------------------------------------------"
-   fi
-   return $RETRES
-}
-
+. ${SCRIPT_FOLDER}/ish/lib-utils.ish
 
 #
 #   Arguments
 #
 PLATFORM="host"
-
-#
-#   Pack libraries to one
-#
-function pack_libs() {
-    LIBS_DIR=${1}
-    SUFFIX=${2}
-    FINAL_LIB="libvscppsdk${SUFFIX}.a"
-
-    pushd ${LIBS_DIR}
-
-      local LIBS=( "libed25519.a" "libmbedcrypto.a" "libmbedtls.a" "libmbedx509.a" "librestless.a" "libvirgil_crypto${SUFFIX}.a" "libvirgil_sdk${SUFFIX}.a")
-
-      # Split static lib to object files
-      for LIB in "${LIBS[@]}"; do
-        $AR_TOOLS  x ${LIB}
-        check_error
-        rm ${LIB}
-      done
-
-			# Combine all object files to a static lib
-			$AR_TOOLS  rcs ${FINAL_LIB} *.$OBJ_EXT
-			check_error
-
-      # Clean up object files
-      rm *.$OBJ_EXT
-
-    popd
-}
 
 #
 #   Build
@@ -113,7 +72,7 @@ function build() {
       else
           local SUFFIX=""
       fi
-      pack_libs ${LIBS_DIR} ${SUFFIX}
+      pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk${SUFFIX}.a"
 
     popd
 }
