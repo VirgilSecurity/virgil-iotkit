@@ -6,7 +6,7 @@
 	url = https://github.com/VirgilSecurity/virgil-sdk-cpp.git
 [submodule "sdk/ext/libstrophe"]
 	path = sdk/ext/libstrophe
-	url = https://github.com/strophe/libstrophe.git
+	url = https://github.com/VirgilSecurity/libstrophe.git
 [submodule "sdk/ext/virgil-crypto-c"]
 	path = sdk/ext/virgil-crypto-c
 	url = https://github.com/VirgilSecurity/virgil-crypto-c.git
