@@ -46,22 +46,7 @@ add_library(vs-messenger-internal SHARED)
 #
 if (VIRGIL_IOT_MESSENGER_INTERNAL_XMPP)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../../ext/libstrophe libstrophe)
-else()
-
-    find_library(VSSSL_LIBRARY
-            NAMES ssl
-            HINTS "${PLATFORM_LIBS_PATH}/lib"
-            NO_CMAKE_FIND_ROOT_PATH
-            )
-
-    find_library(VSSSLCRYPTO_LIBRARY
-            NAMES crypto
-            HINTS "${PLATFORM_LIBS_PATH}/lib"
-            NO_CMAKE_FIND_ROOT_PATH
-            )
 endif()
-
-
 
 #
 #   Virgil C++ SDK
@@ -97,9 +82,12 @@ target_link_libraries(vs-messenger-internal
         virgil-iot-status-code
         ${VSCPPSDK_LIBRARY}
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
-        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${VSSSL_LIBRARY}>
-        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${VSSSLCRYPTO_LIBRARY}>
-        curl
+        $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:curl>
+
+        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
+        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
+        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
+
         vs-messenger-crypto
         $<$<BOOL:${WIN32}>:kernel32>
 

@@ -35,7 +35,7 @@ fi
 
 if [ ${PLATFORM} == "android" ]; then
     export BUILD_DIR_SUFFIX=${PLATFORM}.${ANDROID_ABI}
-    export AR_TOOLS_ANDROID=${ANDROID_NDK}/toolchains/aarch64-linux-android-4.9/prebuilt/${HOST_PLATFORM}/bin/aarch64-linux-android-ar"
+    export AR_TOOLS_ANDROID=${ANDROID_NDK}/toolchains/aarch64-linux-android-4.9/prebuilt/${HOST_PLATFORM}/bin/aarch64-linux-android-ar
 else
     export BUILD_DIR_SUFFIX=${PLATFORM}
 fi
