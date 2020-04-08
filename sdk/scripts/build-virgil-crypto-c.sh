@@ -4,7 +4,7 @@
 #   Global variables
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
-. ${SCRIPT_FOLDER}/ish/error.ish
+
 
 CRYPTO_C_DIR="${SCRIPT_FOLDER}/../ext/virgil-crypto-c"
 BUILD_DIR_BASE="${CRYPTO_C_DIR}"
@@ -14,20 +14,20 @@ if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
   AR_TOOLS="i686-w64-mingw32-ar"
   OBJ_EXT="obj"
 elif [[ $@ == *"android.toolchain.cmake"* ]]; then
-  AR_TOOLS="/Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
+  AR_TOOLS="${AR_TOOLS_ANDROID}"
   OBJ_EXT="o"
+  echo "AR_TOOLS = $AR_TOOLS"
 else
   AR_TOOLS="ar"
   OBJ_EXT="o"
   [ "$(arch)" == "x86_64" ] && LIB_ARCH="64" || LIB_ARCH=""
 fi
 
-. ${SCRIPT_FOLDER}/ish/lib-utils.ish
-
 #
-#   Arguments
+#   Includes
 #
-PLATFORM="host"
+source ${SCRIPT_FOLDER}/ish/error.ish
+source ${SCRIPT_FOLDER}/ish/lib-utils.ish
 
 #
 #   Build
@@ -37,13 +37,13 @@ function build() {
     local CMAKE_ARGUMENTS=$2
     local CORES=10
 
-    local BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
-    local INSTALL_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}/installed
+    local BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${BUILD_DIR_SUFFIX}/${BUILD_TYPE}
+    local INSTALL_DIR=${INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed
     local LIBS_DIR=${INSTALL_DIR}/usr/local/lib${LIB_ARCH}
 
     echo
     echo "===================================="
-    echo "=== ${PLATFORM} ${BUILD_TYPE} build"
+    echo "=== ${BUILD_DIR_SUFFIX} ${BUILD_TYPE} build"
     echo "=== Output directory: ${BUILD_DIR}"
     echo "===================================="
     echo
@@ -93,4 +93,5 @@ ${CMAKE_CUSTOM_PARAM}"
 #
 #   Build both Debug and Release
 #
+#build "debug" "${CMAKE_ARGUMENTS}"
 build "release" "${CMAKE_ARGUMENTS}"

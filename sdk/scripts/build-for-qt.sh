@@ -5,7 +5,12 @@
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
-. ${SCRIPT_FOLDER}/ish/error.ish
+export QT_INSTALL_DIR_BASE=${SCRIPT_FOLDER}/../../../prebuilt
+
+#
+#   Includes
+#
+source ${SCRIPT_FOLDER}/ish/error.ish
 
 #
 #   Arguments
@@ -16,8 +21,17 @@ ANDROID_NDK=$2
 ANDROID_ABI=$3
 [[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
 
+if [ ${PLATFORM} == "android" ]; then
+    export BUILD_DIR_SUFFIX=${PLATFORM}.${ANDROID_ABI}
+    export AR_TOOLS_ANDROID="/Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
+    # /Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar
+else
+    export BUILD_DIR_SUFFIX=${PLATFORM}
+fi
+
 
 echo ">>> PLATFORM = ${PLATFORM}"
+echo ">>> BUILD_DIR_SUFFIX = ${BUILD_DIR_SUFFIX}"
 echo ">>> ANDROID_NDK = ${ANDROID_NDK}"
 echo ">>> ANDROID_ABI = ${ANDROID_ABI}"
 echo ">>> ANDROID_PLATFORM = ${ANDROID_PLATFORM}"
@@ -35,7 +49,6 @@ function build_messenger_deps() {
     
     ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
     check_error
-#    check_error
 }
 
 #
@@ -59,7 +72,14 @@ function build() {
     mkdir -p ${BUILD_DIR}
 
     pushd ${BUILD_DIR}
-        cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGO_DISABLE=ON -G "Unix Makefiles"
+
+        cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+        -DVIRGIL_PLATFORM_LIBS_DIR=${QT_INSTALL_DIR_BASE} \
+        -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
+        -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
+        -DGO_DISABLE=ON \
+        -G "Unix Makefiles"
+
         check_error
 
         make -j ${CORES} vs-module-logger
@@ -69,6 +89,9 @@ function build() {
         make -j ${CORES} vs-module-snap-control
         check_error
         make -j ${CORES} vs-module-messenger
+        check_error
+
+        make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
         check_error
 
     popd
@@ -161,7 +184,6 @@ elif [[ "${PLATFORM}" == "android" ]]; then
         ${ANDROID_PLATFORM} \
         -DANDROID_ABI=${ANDROID_ABI} \
         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
-        -DUSE_LOCAL_CURL=ON \
     "
 
 #    TODO : use fat libraries
@@ -189,5 +211,5 @@ fi
 #
 #   Build both Debug and Release
 #
-build "debug" "${CMAKE_ARGUMENTS}"
-#build "release" "${CMAKE_ARGUMENTS}"
+#build "debug" "${CMAKE_ARGUMENTS}"
+build "release" "${CMAKE_ARGUMENTS}"

@@ -41,10 +41,9 @@ add_library(vs-messenger-crypto SHARED)
 #
 #   Virgil C++ SDK
 #
-set (VSCRYPTOC_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../ext/virgil-crypto-c/cmake-build-host/release/installed/usr/local")
 find_library(VSCRYPTOC_LIBRARY
         NAMES vscryptoc
-        HINTS "${VSCRYPTOC_PATH}/lib"
+        HINTS "${PLATFORM_LIBS_PATH}/lib"
         CMAKE_FIND_ROOT_PATH_BOTH
         )
 
@@ -78,10 +77,10 @@ target_link_libraries(vs-messenger-crypto
 target_include_directories(vs-messenger-crypto
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
-        $<BUILD_INTERFACE:${VSCRYPTOC_PATH}/include>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include>
 
-        $<BUILD_INTERFACE:${VSCRYPTOC_PATH}/include/virgil/crypto/common>
-        $<BUILD_INTERFACE:${VSCRYPTOC_PATH}/include/virgil/crypto/foundation>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/crypto/common>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/crypto/foundation>
 
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>

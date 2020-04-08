@@ -36,6 +36,7 @@
 #include <strophe.h>
 #include "private/visibility.h"
 
+
 /* hardcoded TCP keepalive timeout and interval */
 #define KA_TIMEOUT 60
 #define KA_INTERVAL 1

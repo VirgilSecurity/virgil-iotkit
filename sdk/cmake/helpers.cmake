@@ -178,9 +178,9 @@ target_link_libraries(enable_sanitizers
         $<$<BOOL:${USE_UBSAN}>:enable_ubsan_mode>
         )
 
-#
+# ---------------------------------------------------------------------------
 # Target options
-#
+# ---------------------------------------------------------------------------
 function(create_text_option _name _maxlen _default_val _descr)
     if ((NOT DEFINED ${_name}) OR (${_name} STREQUAL ""))
         message("* Use default ${_name}=\"${_default_val}\"")
@@ -193,4 +193,26 @@ function(create_text_option _name _maxlen _default_val _descr)
             message("* ${_name}=\"${${_name}}\"")
         endif ()
     endif()
+endfunction()
+
+# ---------------------------------------------------------------------------
+# Platform libs type
+# ---------------------------------------------------------------------------
+function(set_libs_storage _platform _external_storage)
+    if ("${_platform}" STREQUAL "")
+        if (${VIRGIL_IOT_MESSENGER})
+            message (FATAL_ERROR " Messenger module is enabled without -DVIRGIL_PLATFORM=<platform libs subdir>")
+        endif()
+
+        set (_platform host)
+    endif()
+
+    if ("${_external_storage}" STREQUAL "")
+        set (_external_storage ${CMAKE_CURRENT_LIST_DIR}/ext)
+    endif()
+
+    set (PLATFORM_LIBS_PATH ${_external_storage}/${_platform}/release/installed/usr/local PARENT_SCOPE)
+
+    message ("-- PLATFORM_LIBS_PATH: ${PLATFORM_LIBS_PATH}")
+
 endfunction()

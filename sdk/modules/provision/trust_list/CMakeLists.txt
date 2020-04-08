@@ -107,6 +107,16 @@ target_include_directories(trust_list
         $<INSTALL_INTERFACE:include>
         )
 
+install(TARGETS trust_list
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/virgil
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
+
 if(COMMAND add_clangformat)
     add_clangformat(trust_list)
 endif()

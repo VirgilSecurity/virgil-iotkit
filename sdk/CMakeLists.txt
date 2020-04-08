@@ -132,6 +132,7 @@ option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(VIRGIL_IOT_PROTOCOLS "Enable 'protocols'" ON)
 option(VIRGIL_IOT_CLOUD "Enable 'cloud'" ON)
 option(VIRGIL_IOT_MESSENGER "Enable 'messenger'" ON)
+option(VIRGIL_IOT_MESSENGER_INTERNAL_XMPP "Enable internal XMPP client" ON)
 option(VIRGIL_IOT_PROVISION "Enable 'provision'" ON)
 option(VIRGIL_IOT_SECBOX "Enable 'security box'" ON)
 option(VIRGIL_IOT_DEFAULT_IMPL "Enable Default implementations" ON)
@@ -153,6 +154,12 @@ option(VIRGIL_IOT_DEFAULT_CLOUD_MESSAGE_BIN_AWS "Enable default message bin aws 
 #   Dependencies / thirdparty libraries
 # ---------------------------------------------------------------------------
 include (virgil_depends)
+
+
+# Set external platform dependent libs dir
+set(VIRGIL_PLATFORM "" CACHE STRING "")
+set(VIRGIL_PLATFORM_LIBS_DIR "" CACHE STRING "")
+set_libs_storage("${VIRGIL_PLATFORM}" "${VIRGIL_PLATFORM_LIBS_DIR}")
 
 #
 #   Tools

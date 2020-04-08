@@ -70,7 +70,10 @@ CONFIG(iphoneos, iphoneos | iphonesimulator) {
 
 VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
 
+PREBUILT_SYSROOT = $$PREBUILT_PATH/$${OS_NAME}/release/installed/usr/local
+
 message("Virgil IoTKIT libraries : $${VIRGIL_IOTKIT_BUILD_PATH}")
+message("PREBUILT_SYSROOT : $${PREBUILT_SYSROOT}")
 
 #
 #   Headers
@@ -144,50 +147,31 @@ unix:mac: {
 #   Libraries
 #
 
-defineReplace(add_virgiliotkit_library) {
-    LIBRARY_PATH = $$1
-    LIBRARY_NAME = $$2
-    !exists($${VIRGIL_IOTKIT_BUILD_PATH}/$${LIBRARY_PATH}/*$${LIBRARY_NAME}.*): error("Library $${LIBRARY_NAME} has not been found in $${VIRGIL_IOTKIT_BUILD_PATH}/$${LIBRARY_PATH}. Need to rebuild Virgil IoTKit")
-    return (-L$${VIRGIL_IOTKIT_BUILD_PATH}/$${LIBRARY_PATH} -l$${LIBRARY_NAME})
-}
-
-LIBS += $$add_virgiliotkit_library("modules/logger",            "vs-module-logger")
-LIBS += $$add_virgiliotkit_library("modules/provision",         "vs-module-provision")
-LIBS += $$add_virgiliotkit_library("modules/protocols/snap",    "vs-module-snap-control")
-LIBS += $$add_virgiliotkit_library("modules/secbox",            "vs-module-secbox")
-LIBS += $$add_virgiliotkit_library("modules/messenger/module",  "vs-module-messenger")
+LIBS += -L$${PREBUILT_SYSROOT}/lib
+LIBS += -lvs-module-logger
+LIBS += -lvs-module-provision
+LIBS += -lvs-module-snap-control
+LIBS += -lvs-module-secbox
+LIBS += -lvs-module-messenger
 
 win32: {
 	LIBS += -lws2_32
-	LIBS += $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/crypto/libvs-messenger-crypto.dll.a
-	LIBS += $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/internal/libvs-messenger-internal.dll.a
+        LIBS += $${PREBUILT_SYSROOT}/lib/libvs-messenger-crypto.dll.a
+        LIBS += $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.dll.a
 } else: {
-	LIBS += $$add_virgiliotkit_library("modules/messenger/crypto",  "vs-messenger-crypto")
-	LIBS += $$add_virgiliotkit_library("modules/messenger/internal","vs-messenger-internal")
+        LIBS += -lvs-messenger-crypto
+        LIBS += -lvs-messenger-internal
 }
 
 #
 #   Include path
 #
-
 INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $$PWD/default-impl/netif/websocket/include \
                 $$PWD/default-impl/netif/ble/include \
                 $$PWD/facade/include \
                 \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/logger/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/provision/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/provision/trust_list/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/protocols/snap/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/crypto/secmodule/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/secbox/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/module/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/crypto/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/modules/messenger/internal/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/status_code/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/macros/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/storage_hal/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/helpers/update/include \
+                $${PREBUILT_SYSROOT}/include \
                 $${VIRGIL_IOTKIT_SOURCE_PATH}/config/pc
 
 #
