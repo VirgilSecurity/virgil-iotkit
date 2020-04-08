@@ -82,7 +82,7 @@ function build() {
 #   MacOS
 #
 if [[ "${PLATFORM}" == "macos" ]]; then
-
+    build_messenger_deps
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
