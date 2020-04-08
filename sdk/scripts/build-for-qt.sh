@@ -21,10 +21,21 @@ ANDROID_NDK=$2
 ANDROID_ABI=$3
 [[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
 
+#
+# Check platform
+#
+if [ $(uname) == "Darwin" ]; then
+  HOST_PLATFORM="darwin-x86_64"
+elif [ $(uname) == "Linux" ]; then
+  HOST_PLATFORM="linux-x86_64"
+else
+  echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
+  exit 1
+fi
+
 if [ ${PLATFORM} == "android" ]; then
     export BUILD_DIR_SUFFIX=${PLATFORM}.${ANDROID_ABI}
-    export AR_TOOLS_ANDROID="/Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar"
-    # /Users/kutashenko/android-ndk-r20b/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar
+    export AR_TOOLS_ANDROID=${ANDROID_NDK}/toolchains/aarch64-linux-android-4.9/prebuilt/${HOST_PLATFORM}/bin/aarch64-linux-android-ar"
 else
     export BUILD_DIR_SUFFIX=${PLATFORM}
 fi
