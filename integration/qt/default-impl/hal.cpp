@@ -36,6 +36,7 @@
 
 extern "C" bool
 vs_logger_output_hal(const char *buffer) {
+    (void)buffer;
 //    std::cout << buffer << std::flush;
 
     return true;
