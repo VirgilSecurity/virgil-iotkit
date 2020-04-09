@@ -195,6 +195,7 @@ elif [[ "${PLATFORM}" == "android" ]]; then
         ${ANDROID_PLATFORM} \
         -DANDROID_ABI=${ANDROID_ABI} \
         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+        -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
     "
 
 #    TODO : use fat libraries
