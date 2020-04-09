@@ -82,11 +82,11 @@ target_link_libraries(vs-messenger-internal
         virgil-iot-status-code
         ${VSCPPSDK_LIBRARY}
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
-        $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:curl>
+        $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:curl>
 
-        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
-        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
-        $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
+        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
+        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
+        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
         vs-messenger-crypto
         $<$<BOOL:${WIN32}>:kernel32>
