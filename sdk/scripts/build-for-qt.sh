@@ -85,7 +85,6 @@ function build() {
     pushd ${BUILD_DIR}
 
         cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-        --graphviz=/cmake_graph.log \
         -DVIRGIL_PLATFORM_LIBS_DIR=${QT_INSTALL_DIR_BASE} \
         -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
         -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
