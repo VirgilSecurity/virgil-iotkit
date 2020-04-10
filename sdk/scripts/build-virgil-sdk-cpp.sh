@@ -15,6 +15,10 @@ if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
 elif [[ $@ == *"android.toolchain.cmake"* ]]; then
   AR_TOOLS="${AR_TOOLS_ANDROID}"
   OBJ_EXT="o"
+elif [[ $@ == *"OS=WINDOWS"* ]]; then
+  AR_TOOLS="ar"
+  OBJ_EXT="obj"
+  IS_WINDOWS="true"
 else
   AR_TOOLS="ar"
   OBJ_EXT="o"
@@ -48,6 +52,7 @@ function build() {
     rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
     mkdir -p ${INSTALL_DIR}
+    mkdir -p ${LIBS_DIR}
     pushd ${BUILD_DIR}
       # prepare to build
       echo "##################################"
@@ -70,7 +75,13 @@ function build() {
       else
           local SUFFIX=""
       fi
-      pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk${SUFFIX}.a"
+
+      # Fix path during installation on Windows
+      if [ "$IS_WINDOWS" = "true" ]; then
+        cp -R "${INSTALL_DIR}/Program Files (x86)/virgil_sdk/." "${INSTALL_DIR}/usr/local/"
+      fi
+
+      pack_libs "${LIBS_DIR}" "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk${SUFFIX}.a"
 
     popd
 }

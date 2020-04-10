@@ -21,19 +21,15 @@ ANDROID_NDK=$2
 ANDROID_ABI=$3
 [[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
 
-#
-# Check platform
-#
-if [ $(uname) == "Darwin" ]; then
-  HOST_PLATFORM="darwin-x86_64"
-elif [ $(uname) == "Linux" ]; then
-  HOST_PLATFORM="linux-x86_64"
-else
-  echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
-  exit 1
-fi
-
 if [ ${PLATFORM} == "android" ]; then
+    if [ $(uname) == "Darwin" ]; then
+        HOST_PLATFORM="darwin-x86_64"
+    elif [ $(uname) == "Linux" ]; then
+        HOST_PLATFORM="linux-x86_64"
+    else
+        echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
+        exit 1
+    fi
     export BUILD_DIR_SUFFIX=${PLATFORM}.${ANDROID_ABI}
     export AR_TOOLS_ANDROID=${ANDROID_NDK}/toolchains/aarch64-linux-android-4.9/prebuilt/${HOST_PLATFORM}/bin/aarch64-linux-android-ar
 else
@@ -130,7 +126,7 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
     build_messenger_deps " \
         -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
         -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
-        -DCYGWIN=1 \
+        -DCYGWIN=1 -DCMAKE_OBJECT_PATH_MAX=2048\
     "
 
     CMAKE_ARGUMENTS=" \
@@ -148,9 +144,14 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
 #
 elif [[ "${PLATFORM}" == "windows" ]]; then
 
+    build_messenger_deps " \
+        -DOS=WINDOWS -DCYGWIN=1 -DCMAKE_OBJECT_PATH_MAX=2048\
+    "
+    exit 1
+
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DOS=WINDOWS \
+        -DOS=WINDOWS -DCYGWIN=1 -DCMAKE_OBJECT_PATH_MAX=2048 \
     "
 
 #
