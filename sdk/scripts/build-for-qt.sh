@@ -145,7 +145,7 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
 elif [[ "${PLATFORM}" == "windows" ]]; then
 
     build_messenger_deps " \
-        -DOS=WINDOWS -DCYGWIN=1 -DCMAKE_OBJECT_PATH_MAX=2048\
+        -DOS=WINDOWS \
     "
     exit 1
 

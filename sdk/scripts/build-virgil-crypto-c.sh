@@ -17,6 +17,10 @@ elif [[ $@ == *"android.toolchain.cmake"* ]]; then
   AR_TOOLS="${AR_TOOLS_ANDROID}"
   OBJ_EXT="o"
   echo "AR_TOOLS = $AR_TOOLS"
+elif [[ $@ == *"OS=WINDOWS"* ]]; then
+  AR_TOOLS="ar"
+  OBJ_EXT="obj"
+  IS_WINDOWS="true"
 else
   AR_TOOLS="ar"
   OBJ_EXT="o"
@@ -71,18 +75,25 @@ function build() {
       echo "==========="
       echo "=== Installing"
       echo "==========="
+
       make DESTDIR=${INSTALL_DIR} install
       check_error
 
-      pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
+      # Fix path during installation on Windows
+      if [ "$IS_WINDOWS" = "true" ]; then
+        cp -R "${INSTALL_DIR}/Program Files (x86)/virgil_crypto/." "${INSTALL_DIR}/usr/local/"
+      fi
+
+      pack_libs "${LIBS_DIR}" "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
 
     popd
 }
 
 # Common CMake arguments for the project
 CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' \
+-DENABLE_TESTING=OFF \
 -DENABLE_CLANGFORMAT=OFF \
--DENABLE_CLANGFORMAT=OFF \
+-DVIRGIL_C_TESTING=OFF \
 -DVIRGIL_PHP_TESTING=OFF \
 -DVIRGIL_LIB_PYTHIA=OFF \
 -DVIRGIL_LIB_RATCHET=OFF \
