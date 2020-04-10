@@ -77,16 +77,27 @@ target_compile_definitions(vs-messenger-internal
         VS_BUILDING_DLL=1
         )
 
+if (CMAKE_CROSSCOMPILING AND (NOT WIN32) )
+    set(VS_DISABLE_SYS_CURL TRUE)
+else()
+    set(VS_DISABLE_SYS_CURL FALSE)
+endif()
+
+message (WARNING "###= VS_CURL_SYSTEM  = ${VS_CURL_SYSTEM}")
+message (WARNING "###= CMAKE_CROSSCOMPILING  = ${CMAKE_CROSSCOMPILING}")
+message (WARNING "###= WIN32  = ${WIN32}")
+
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
         ${VSCPPSDK_LIBRARY}
-        $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
-        $<$<NOT:$<BOOL:${CMAKE_CROSSCOMPILING}>>:curl>
 
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
-        $<$<BOOL:${CMAKE_CROSSCOMPILING}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
+        $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
+        $<$<NOT:$<BOOL:${VS_DISABLE_SYS_CURL}>>:curl>
+
+        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
+        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
+        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
         vs-messenger-crypto
         $<$<BOOL:${WIN32}>:kernel32>

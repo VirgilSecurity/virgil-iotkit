@@ -24,7 +24,9 @@ extern "C" {
  * @file timer_platform.h
  */
 #include <sys/time.h>
+#ifndef WIN32
 #include <sys/select.h>
+#endif
 #include "timer_interface.h"
 
 /**
