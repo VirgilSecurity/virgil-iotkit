@@ -32,14 +32,19 @@ extern "C" {
 
 bool
 has_timer_expired(Timer *timer) {
+#ifndef WIN32
     struct timeval now, res;
     gettimeofday(&now, NULL);
     timersub(&timer->end_time, &now, &res);
     return res.tv_sec < 0 || (res.tv_sec == 0 && res.tv_usec <= 0);
+#else 
+return false;   
+#endif
 }
 
 void
 countdown_ms(Timer *timer, uint32_t timeout) {
+#ifndef WIN32
     struct timeval now;
 #ifdef __cplusplus
     struct timeval interval = {timeout / 1000, static_cast<int>((timeout % 1000) * 1000)};
@@ -48,10 +53,12 @@ countdown_ms(Timer *timer, uint32_t timeout) {
 #endif
     gettimeofday(&now, NULL);
     timeradd(&now, &interval, &timer->end_time);
+#endif    
 }
 
 uint32_t
 left_ms(Timer *timer) {
+#ifndef WIN32
     struct timeval now, res;
     uint32_t result_ms = 0;
     gettimeofday(&now, NULL);
@@ -60,26 +67,35 @@ left_ms(Timer *timer) {
         result_ms = (uint32_t)(res.tv_sec * 1000 + res.tv_usec / 1000);
     }
     return result_ms;
+#else    
+return 0;   
+#endif    
 }
 
 void
 countdown_sec(Timer *timer, uint32_t timeout) {
+#ifndef WIN32
     struct timeval now;
     struct timeval interval = {timeout, 0};
     gettimeofday(&now, NULL);
     timeradd(&now, &interval, &timer->end_time);
+#endif    
 }
 
 void
 init_timer(Timer *timer) {
+#ifndef WIN32
     timer->end_time = (struct timeval){0, 0};
+#endif    
 }
 
 void
 delay(unsigned milliseconds) {
+#ifndef WIN32
     useconds_t sleepTime = (useconds_t)(milliseconds * 1000);
 
     usleep(sleepTime);
+#endif    
 }
 
 #ifdef __cplusplus

@@ -90,16 +90,6 @@ function build() {
         -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
         -DGO_DISABLE=ON \
         -G "Unix Makefiles"
-
-        check_error
-
-        make -j ${CORES} vs-module-logger
-        check_error
-        make -j ${CORES} vs-module-provision
-        check_error
-        make -j ${CORES} vs-module-snap-control
-        check_error
-        make -j ${CORES} vs-module-messenger
         check_error
 
         make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
@@ -132,17 +122,15 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
         -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DCYGWIN=1 \
     "
-
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
-        -DLIBXML2_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/libxml2/libxml  \
+        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
         -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \
         -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DOS=WINDOWS \
-        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
-        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/mingw32.toolchain.cmake \
     "
+
 #
 #   Windows
 #
