@@ -109,6 +109,7 @@ static char *_service_base_url = NULL;
 static vs_pubkey_cache_t _pubkey_cache;
 static char virgil_token[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
 static bool _is_virgil_token_ready = false;
+static char *_custom_ca = NULL;
 
 /******************************************************************************/
 static vs_status_e
@@ -193,7 +194,7 @@ _computeHashForPublicKey(const VirgilByteArray &publicKey) {
 
 /******************************************************************************/
 extern "C" DLL_PUBLIC vs_status_e
-vs_messenger_virgil_init(const char *service_base_url) {
+vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca) {
     setlocale(LC_NUMERIC, "C");
     if (_is_initialized) {
         VS_LOG_WARNING("Virgil Messenger is initialized");
@@ -201,6 +202,13 @@ vs_messenger_virgil_init(const char *service_base_url) {
     }
 
     vs_logger_init(VS_LOGLEV_DEBUG);
+
+    // Save custom CA
+    free(_custom_ca);
+    _custom_ca = NULL;
+    if (custom_ca && custom_ca[0]) {
+        _custom_ca = strdup(custom_ca);
+    }
 
     // Check input parameters
     CHECK_NOT_ZERO_RET(service_base_url && service_base_url[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -360,6 +368,7 @@ vs_messenger_virgil_logout(void) {
     _is_credentials_ready = false;
     _is_initialized = false;
     _is_virgil_token_ready = false;
+    free(_custom_ca);
     return VS_CODE_OK;
 }
 

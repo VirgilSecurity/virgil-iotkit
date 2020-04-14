@@ -63,7 +63,7 @@ typedef struct {
 } vs_messenger_virgil_user_creds_t;
 
 vs_status_e
-vs_messenger_virgil_init(const char *service_base_url);
+vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca);
 
 vs_status_e
 vs_messenger_virgil_sign_in(const vs_messenger_virgil_user_creds_t *creds);
