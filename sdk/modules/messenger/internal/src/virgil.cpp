@@ -139,6 +139,7 @@ _get_token(const char *endpoint, char *token, size_t token_buf_sz) {
 
         // Request to service
         Connection connection;
+        connection.setCA(std::string(_custom_ca ? _custom_ca : ""));
         Response response = connection.send(httpRequest);
         CHECK(!response.fail(), "Response: %d Body: %s", response.statusCodeRaw(), response.body().c_str());
 
@@ -207,6 +208,7 @@ vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca) {
     free(_custom_ca);
     _custom_ca = NULL;
     if (custom_ca && custom_ca[0]) {
+        VS_LOG_INFO("Set custom CA: %s", custom_ca);
         _custom_ca = strdup(custom_ca);
     }
 
@@ -287,6 +289,7 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
                 .post();
 
         Connection connection;
+        connection.setCA(std::string(_custom_ca ? _custom_ca : ""));
         Response response = connection.send(httpRequest);
 
         // Check and parse response

@@ -153,7 +153,7 @@ vs_messenger_start(const char *identity, vs_messenger_rx_cb_t rx_cb) {
     STATUS_CHECK(_load_user_channels(identity, &_user_channels), "Cannot load Messenger channels");
 
     // Initialize communication with Virgil Services
-    STATUS_CHECK(vs_messenger_virgil_init(_config.messenger_base_url), "Cannot initialize Virgil SDK");
+    STATUS_CHECK(vs_messenger_virgil_init(_config.messenger_base_url, NULL), "Cannot initialize Virgil SDK");
 
     // Try to load User's credentials
     if (VS_CODE_OK != _load_user_cred(identity, &_user_creds)) {
