@@ -77,7 +77,7 @@ function build() {
     pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
     
     # Clean
-    rm -rf ${INSTALL_DIR}/${HOME}/../
+    rm -rf ${INSTALL_DIR}/$(echo "$HOME" | cut -d "/" -f2)
     
     popd
 }
