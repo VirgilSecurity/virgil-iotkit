@@ -55,11 +55,30 @@ function build_messenger_deps() {
     echo "===================================="
     echo "=== Building depends"
     echo "===================================="
-    ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
-    check_error
+
+    echo
+    echo "=== Build Virgil Crypto C libs"
+    echo
+    if [ "${CFG_BUILD_VS_CRYPTO}" == "off" ]; then
+        echo
+        echo "Skip due to config parameter CFG_BUILD_VS_CRYPTO"
+        echo
+    else
+        ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
+        check_error
+    fi
     
-    ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
-    check_error
+    echo
+    echo "=== Build Virgil SDK C++ C libs"
+    echo
+    if [ "${CFG_BUILD_VS_SDK_CPP}" == "off" ]; then
+        echo
+        echo "Skip due to config parameter CFG_BUILD_VS_SDK_CPP"
+        echo
+    else
+        ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
+        check_error
+    fi
 }
 
 #

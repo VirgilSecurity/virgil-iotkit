@@ -34,13 +34,6 @@
 
 CONFIG += c++14
 
-#
-#   Project relative path
-#
-
-VIRGIL_IOTKIT_SOURCE_PATH = $$PWD/../../sdk
-VIRGIL_IOTKIT_BUILD_PATH_BASE = $${VIRGIL_IOTKIT_SOURCE_PATH}
-
 CONFIG(debug, debug|release) {
     BUILD_TYPE = debug
 }
@@ -68,11 +61,7 @@ CONFIG(iphoneos, iphoneos | iphonesimulator) {
     OS_NAME = ios
 }
 
-VIRGIL_IOTKIT_BUILD_PATH = $${VIRGIL_IOTKIT_BUILD_PATH_BASE}/cmake-build-$${OS_NAME}/$${BUILD_TYPE}
-
 PREBUILT_SYSROOT = $$PREBUILT_PATH/$${OS_NAME}/release/installed/usr/local
-
-message("Virgil IoTKIT libraries : $${VIRGIL_IOTKIT_BUILD_PATH}")
 message("PREBUILT_SYSROOT : $${PREBUILT_SYSROOT}")
 
 #
@@ -136,8 +125,8 @@ SOURCES += \
 #
 unix:mac: {
     DST_DLL = $${OUT_PWD}/$${TARGET}.app/Contents/Frameworks
-    MESSENGER_INTERNAL_DLL = $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/internal/libvs-messenger-internal.$${DLL_EXT}
-    MESSENGER_CRYPTO_DLL = $${VIRGIL_IOTKIT_BUILD_PATH}/modules/messenger/crypto/libvs-messenger-crypto.$${DLL_EXT}
+    MESSENGER_INTERNAL_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.$${DLL_EXT}
+    MESSENGER_CRYPTO_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-crypto.$${DLL_EXT}
     QMAKE_POST_LINK += $$quote(mkdir -p $${DST_DLL}/$$escape_expand(\n\t))
     QMAKE_POST_LINK += $$quote(cp $${MESSENGER_INTERNAL_DLL} $${DST_DLL}/$$escape_expand(\n\t))
     QMAKE_POST_LINK += $$quote(cp $${MESSENGER_CRYPTO_DLL} $${DST_DLL}/$$escape_expand(\n\t))
@@ -172,7 +161,7 @@ INCLUDEPATH +=  $$PWD/default-impl/netif/udp-broadcast/include \
                 $$PWD/facade/include \
                 \
                 $${PREBUILT_SYSROOT}/include \
-                $${VIRGIL_IOTKIT_SOURCE_PATH}/config/pc
+                $$PWD/config/pc
 
 #
 #   Compiler options
