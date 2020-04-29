@@ -9,8 +9,8 @@ CPP_SDK_DIR="${SCRIPT_FOLDER}/../ext/virgil-sdk-cpp"
 BUILD_DIR_BASE="${CPP_SDK_DIR}"
 CMAKE_CUSTOM_PARAM="${@}"
 
-if [[ $@ == *"mingw32.toolchain.cmake"* ]]; then
-  AR_TOOLS="i686-w64-mingw32-ar"
+if [[ $@ == *"toolchain-mingw64.cmake"* ]]; then
+  AR_TOOLS="x86_64-w64-mingw32-ar"
   OBJ_EXT="obj"
 elif [[ $@ == *"android.toolchain.cmake"* ]]; then
   AR_TOOLS="${AR_TOOLS_ANDROID}"
