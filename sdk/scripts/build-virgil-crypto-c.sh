@@ -11,12 +11,25 @@ BUILD_DIR_BASE="${CRYPTO_C_DIR}"
 CMAKE_CUSTOM_PARAM="${@}"
 
 if [[ $@ == *"toolchain-mingw64.cmake"* ]]; then
+    echo "############"
+    echo "### mingw64 toolchain file detected"
+    echo "############"
     AR_TOOLS="x86_64-w64-mingw32-ar"
     OBJ_EXT="obj"
-    elif [[ $@ == *"android.toolchain.cmake"* ]]; then
+elif [[ $@ == *"android.toolchain.cmake"* ]]; then
+    echo "############"
+    echo "### android toolchain file detected"
+    echo "############"
     AR_TOOLS="${AR_TOOLS_ANDROID}"
     OBJ_EXT="o"
     echo "AR_TOOLS = $AR_TOOLS"
+elif [[ $@ == *"apple.cmake"* ]]; then
+    echo "############"
+    echo "### apple toolchain file detected"
+    echo "############"
+    IOS_ARCH="armv7 armv7s arm64"
+    AR_TOOLS="ar"
+    OBJ_EXT="o"
 else
     AR_TOOLS="ar"
     OBJ_EXT="o"
@@ -73,8 +86,10 @@ function build() {
     echo "==========="
     make DESTDIR=${INSTALL_DIR} install
     check_error
-    
-    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
+
+    echo "=== Packing libraries"
+#    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
+    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a  libvsc_foundation_pb.a" "libvscryptoc.a"
     
     # Clean
     rm -rf ${INSTALL_DIR}/$(echo "$HOME" | cut -d "/" -f2)

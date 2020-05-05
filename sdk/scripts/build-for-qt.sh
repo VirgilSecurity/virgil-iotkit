@@ -67,7 +67,7 @@ function build_messenger_deps() {
         ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
         check_error
     fi
-    
+
     echo
     echo "=== Build Virgil SDK C++ C libs"
     echo
@@ -147,11 +147,6 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
         -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DOS=WINDOWS \
     "
-#        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
-#        -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \    
-#        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
-#        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
-
 #
 #   Windows
 #
@@ -175,22 +170,24 @@ elif [[ "${PLATFORM}" == "linux" ]]; then
 #   iOS
 #
 elif [[ "${PLATFORM}" == "ios" ]]; then
-    build_messenger_deps
+    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" 
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS" \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
     "
 
 #
 #   iOS Simulator
 #
 elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-    build_messenger_deps
+    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" 
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS_SIM" \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+        -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \        
     "
 
 #

@@ -83,10 +83,6 @@ else()
     set(VS_DISABLE_SYS_CURL FALSE)
 endif()
 
-message (WARNING "###= VS_CURL_SYSTEM  = ${VS_CURL_SYSTEM}")
-message (WARNING "###= CMAKE_CROSSCOMPILING  = ${CMAKE_CROSSCOMPILING}")
-message (WARNING "###= WIN32  = ${WIN32}")
-
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code

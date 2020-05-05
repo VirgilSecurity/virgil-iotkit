@@ -1,23 +1,70 @@
+#!/bin/bash
+
+function unpack_arch() {
+    local SRC_LIB="${1}"
+    local SRC_LIB_ARCH="${2}"
+    [ -d "tmp.${SRC_LIB_ARCH}" ] ||  mkdir tmp.${SRC_LIB_ARCH}
+    lipo "${SRC_LIB}" -thin ${SRC_LIB_ARCH} -output "tmp.${SRC_LIB_ARCH}/${SRC_LIB}"
+    check_error
+}
+
+function pack_arch() {
+    local SRC_LIB="${1}"
+    local DST_LIB="${2}"    
+    lipo ${SRC_LIB} -create -output ${DST_LIB}
+    check_error
+}
+
 function pack_libs() {
     LIBS_DIR=${1}
     LIBS=${2}
     FINAL_LIB=${3}
+    local LIB_ARRAY=""
 
     pushd ${LIBS_DIR}
       # Split static lib to object files
       for LIB in ${LIBS}; do
           echo "Proceed  $LIB..."
-          $AR_TOOLS x ${LIB}
-          check_error
-          rm ${LIB}
+          # Extract multiarch IOS library
+          if [ ! -z "${IOS_ARCH}" ]; then 
+            for TGT_ARCH in ${IOS_ARCH}; do
+              echo "Extract multiarch library [${LIB} ${TGT_ARCH}]"
+              unpack_arch "${LIB}" "${TGT_ARCH}"
+              pushd tmp.${TGT_ARCH}
+                $AR_TOOLS x "${LIB}"
+                check_error
+              popd
+              rm -f "tmp.${TGT_ARCH}/${LIB}"              
+            done
+          else
+             $AR_TOOLS x ${LIB}
+             check_error
+          fi
+          rm ${LIB}                         
       done
 
-      # Combine all object files to a static lib
-      $AR_TOOLS rcs ${FINAL_LIB} *.$OBJ_EXT
-      check_error
-
-      # Clean up object files
-      rm *.$OBJ_EXT
-
+      # Pack multiarch IOS library
+      if [ ! -z "${IOS_ARCH}" ]; then
+         for TGT_ARCH in ${IOS_ARCH}; do
+           echo "Pack multiarch library [${LIB} ${TGT_ARCH}]"
+           pushd tmp.${TGT_ARCH}
+             $AR_TOOLS rcs ${FINAL_LIB} *.$OBJ_EXT
+             check_error
+             rm *.$OBJ_EXT
+           popd
+           LIB_ARRAY="${LIB_ARRAY} tmp.${TGT_ARCH}/${FINAL_LIB}"
+        done
+        echo "=== Packing [${LIB_ARRAY}]"
+        pack_arch "${LIB_ARRAY}" ${FINAL_LIB}
+        rm -rf tmp.*
+      else
+         # Combine all object files to a static lib
+         $AR_TOOLS rcs ${FINAL_LIB} *.$OBJ_EXT
+         check_error
+         # Clean up object files
+         rm *.$OBJ_EXT
+      fi 
     popd
 }
+
+

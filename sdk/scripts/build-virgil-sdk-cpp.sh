@@ -10,10 +10,23 @@ BUILD_DIR_BASE="${CPP_SDK_DIR}"
 CMAKE_CUSTOM_PARAM="${@}"
 
 if [[ $@ == *"toolchain-mingw64.cmake"* ]]; then
+  echo "############"
+  echo "### mingw64 toolchain file detected"  
+  echo "############"
   AR_TOOLS="x86_64-w64-mingw32-ar"
   OBJ_EXT="obj"
 elif [[ $@ == *"android.toolchain.cmake"* ]]; then
+  echo "############"
+  echo "### android toolchain file detected"  
+  echo "############"
   AR_TOOLS="${AR_TOOLS_ANDROID}"
+  OBJ_EXT="o"
+elif [[ $@ == *"apple.cmake1"* ]]; then
+  echo "############"
+  echo "### apple toolchain file detected"  
+  echo "############"
+  IOS_ARCH="armv7 armv7s arm64"
+  AR_TOOLS="ar"
   OBJ_EXT="o"
 else
   AR_TOOLS="ar"
@@ -70,6 +83,7 @@ function build() {
       else
           local SUFFIX=""
       fi
+      echo "=== Packing libraries"
       pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk${SUFFIX}.a"
 
     popd
