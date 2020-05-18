@@ -3,8 +3,7 @@
 #
 #   Global variables
 #
-SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
-
+SCRIPT_FOLDER="$(cd "$(dirname "$0")" && pwd)"
 
 CRYPTO_C_DIR="${SCRIPT_FOLDER}/../ext/virgil-crypto-c"
 BUILD_DIR_BASE="${CRYPTO_C_DIR}"
@@ -30,6 +29,7 @@ elif [[ $@ == *"apple.cmake"* ]]; then
     IOS_ARCH="armv7 armv7s arm64"
     AR_TOOLS="ar"
     OBJ_EXT="o"
+    IS_IOS="true"
 else
     AR_TOOLS="ar"
     OBJ_EXT="o"
@@ -49,22 +49,22 @@ function build() {
     local BUILD_TYPE=$1
     local CMAKE_ARGUMENTS=$2
     local CORES=10
-    
+
     local BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${BUILD_DIR_SUFFIX}/${BUILD_TYPE}
     local INSTALL_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed
     local LIBS_DIR=${INSTALL_DIR}/usr/local/lib${LIB_ARCH}
-    
+
     echo
     echo "===================================="
     echo "=== ${BUILD_DIR_SUFFIX} ${BUILD_TYPE} build"
     echo "=== Output directory: ${BUILD_DIR}"
     echo "===================================="
     echo
-    
+
     rm -rf ${BUILD_DIR}
     mkdir -p ${BUILD_DIR}
     mkdir -p ${INSTALL_DIR}
-    
+
     pushd ${BUILD_DIR}
     # prepare to build
     echo "==========="
@@ -72,14 +72,14 @@ function build() {
     echo "==========="
     cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G "Unix Makefiles"
     check_error
-    
+
     # build all targets
     echo "==========="
     echo "=== Building"
     echo "==========="
     make -j ${CORES}
     check_error
-    
+
     # install all targets
     echo "==========="
     echo "=== Installing"
@@ -87,13 +87,17 @@ function build() {
     make DESTDIR=${INSTALL_DIR} install
     check_error
 
+    if [ "${IS_IOS}" == "true" ]; then
+        get_lib_ios "${LIBS_DIR}" "VSCCommon" "libvsc_common.a"
+        get_lib_ios "${LIBS_DIR}" "VSCFoundation" "libvsc_foundation.a"
+    fi
+
     echo "=== Packing libraries"
-#    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
-    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a  libvsc_foundation_pb.a" "libvscryptoc.a"
-    
+    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
+
     # Clean
     rm -rf ${INSTALL_DIR}/$(echo "$HOME" | cut -d "/" -f2)
-    
+
     popd
 }
 

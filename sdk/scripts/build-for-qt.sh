@@ -3,7 +3,7 @@
 #
 #   Global variables
 #
-SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+SCRIPT_FOLDER="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
 export QT_INSTALL_DIR_BASE=${SCRIPT_FOLDER}/../../../prebuilt
 
@@ -25,12 +25,12 @@ ANDROID_ABI=$3
 # Check platform
 #
 if [ $(uname) == "Darwin" ]; then
-  HOST_PLATFORM="darwin-x86_64"
+    HOST_PLATFORM="darwin-x86_64"
 elif [ $(uname) == "Linux" ]; then
-  HOST_PLATFORM="linux-x86_64"
+    HOST_PLATFORM="linux-x86_64"
 else
-  echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
-  exit 1
+    echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
+    exit 1
 fi
 
 if [ ${PLATFORM} == "android" ]; then
@@ -40,13 +40,11 @@ else
     export BUILD_DIR_SUFFIX=${PLATFORM}
 fi
 
-
 echo ">>> PLATFORM = ${PLATFORM}"
 echo ">>> BUILD_DIR_SUFFIX = ${BUILD_DIR_SUFFIX}"
 echo ">>> ANDROID_NDK = ${ANDROID_NDK}"
 echo ">>> ANDROID_ABI = ${ANDROID_ABI}"
 echo ">>> ANDROID_PLATFORM = ${ANDROID_PLATFORM}"
-
 
 #
 #   Build dependencies for vs-module-messenger
@@ -103,16 +101,16 @@ function build() {
 
     pushd ${BUILD_DIR}
 
-        cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
         -DVIRGIL_PLATFORM_LIBS_DIR=${QT_INSTALL_DIR_BASE} \
         -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
         -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
         -DGO_DISABLE=ON \
         -G "Unix Makefiles"
-        check_error
+    check_error
 
-        make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
-        check_error
+    make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
+    check_error
 
     popd
 }
@@ -170,19 +168,21 @@ elif [[ "${PLATFORM}" == "linux" ]]; then
 #   iOS
 #
 elif [[ "${PLATFORM}" == "ios" ]]; then
-    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" 
+    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/"
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS" \
+        -DAPPLE_BITCODE=OFF \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
+        -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
     "
 
 #
 #   iOS Simulator
 #
 elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" 
+    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake"
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS_SIM" \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
@@ -204,7 +204,7 @@ elif [[ "${PLATFORM}" == "android" ]]; then
         -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
     "
 
-#    TODO : use fat libraries
+    #    TODO : use fat libraries
 
     CMAKE_ARGUMENTS=" \
         -DANDROID_QT=ON \
