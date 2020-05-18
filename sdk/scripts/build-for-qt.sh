@@ -182,13 +182,14 @@ elif [[ "${PLATFORM}" == "ios" ]]; then
 #   iOS Simulator
 #
 elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake"
+    build_messenger_deps "-DAPPLE_PLATFORM="IOS_SIM64" -DAPPLE_BITCODE=OFF -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/"
     CMAKE_ARGUMENTS=" \
-        -DAPPLE_PLATFORM="IOS_SIM" \
+        -DAPPLE_PLATFORM="IOS_SIM64" \
+        -DAPPLE_BITCODE=OFF \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \        
-    "
+        -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
+"
 
 #
 #   Android

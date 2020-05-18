@@ -25,7 +25,9 @@ elif [[ $@ == *"apple.cmake"* ]]; then
   echo "############"
   echo "### apple toolchain file detected"
   echo "############"
-  IOS_ARCH="armv7 armv7s arm64"
+  if [[ $@ != *"IOS_SIM"* ]]; then
+    IOS_ARCH="armv7 armv7s arm64"
+  fi
   AR_TOOLS="ar"
   OBJ_EXT="o"
   IS_IOS="true"
