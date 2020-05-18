@@ -80,6 +80,6 @@ function get_lib_ios() {
   local INC_HEADER="../include/${2}"
   mkdir -p "${INC_HEADER}"
   cp -f "${FRAMEWORK}/Headers/"* "${INC_HEADER}/"
-  #rm -rf "${FRAMEWORK}"
+  rm -rf "${FRAMEWORK}"
   popd
 }
