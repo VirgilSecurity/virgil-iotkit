@@ -92,7 +92,7 @@ function build() {
   fi
 
   echo "=== Packing libraries"
-  pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk${SUFFIX}.a"
+  pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libmbedtls.a libmbedx509.a librestless.a libvirgil_crypto${SUFFIX}.a libvirgil_sdk${SUFFIX}.a" "libvscppsdk.a"
 
   popd
 }
@@ -109,5 +109,5 @@ CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' \
 #
 #   Build both Debug and Release
 #
-#build "debug" "${CMAKE_ARGUMENTS}"
+build "debug" "${CMAKE_ARGUMENTS}"
 build "release" "${CMAKE_ARGUMENTS}"

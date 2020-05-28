@@ -94,6 +94,17 @@ function build() {
         get_lib_ios "${LIBS_DIR}" "VSCFoundation" "libvsc_foundation.a"
     fi
 
+      if [ "${BUILD_TYPE}" == "debug" ]; then 
+        pushd ${LIBS_DIR}      
+        echo "=== Rename debug library"
+        mv -f libed25519_d.a           libed25519.a
+        mv -f libprotobuf-nanopbd.a    libprotobuf-nanopb.a
+        mv -f libvsc_common_d.a        libvsc_common.a
+        mv -f libvsc_foundation_d.a    libvsc_foundation.a
+        mv -f libvsc_foundation_pb_d.a libvsc_foundation_pb.a
+        popd
+      fi 
+
     echo "=== Packing libraries"
     pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
 
@@ -117,5 +128,5 @@ ${CMAKE_CUSTOM_PARAM}"
 #
 #   Build both Debug and Release
 #
-#build "debug" "${CMAKE_ARGUMENTS}"
+build "debug" "${CMAKE_ARGUMENTS}"
 build "release" "${CMAKE_ARGUMENTS}"

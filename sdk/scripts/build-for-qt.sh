@@ -65,7 +65,6 @@ function build_messenger_deps() {
         ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
         check_error
     fi
-
     echo
     echo "=== Build Virgil SDK C++ C libs"
     echo
@@ -85,8 +84,11 @@ function build_messenger_deps() {
 function build() {
     BUILD_TYPE=$1
     CMAKE_ARGUMENTS=$2
+    CMAKE_DEPS_ARGUMENTS=$2    
     CORES=10
-
+    
+    build_messenger_deps ${CMAKE_DEPS_ARGUMENTS}
+exit 1
     BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
 
     echo
@@ -123,7 +125,8 @@ function build() {
 #   MacOS
 #
 if [[ "${PLATFORM}" == "macos" ]]; then
-    build_messenger_deps
+    CMAKE_DEPS_ARGUMENTS=" \
+    "
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
@@ -134,7 +137,7 @@ if [[ "${PLATFORM}" == "macos" ]]; then
 #
 
 elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
-    build_messenger_deps " \
+    CMAKE_DEPS_ARGUMENTS=" \
         -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
         -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
         -DCYGWIN=1 \
@@ -149,7 +152,6 @@ elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
 #   Windows
 #
 elif [[ "${PLATFORM}" == "windows" ]]; then
-
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DOS=WINDOWS \
@@ -159,7 +161,8 @@ elif [[ "${PLATFORM}" == "windows" ]]; then
 #   Linux
 #
 elif [[ "${PLATFORM}" == "linux" ]]; then
-    build_messenger_deps
+    CMAKE_DEPS_ARGUMENTS=" \
+    "
     CMAKE_ARGUMENTS=" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
     "
@@ -168,7 +171,10 @@ elif [[ "${PLATFORM}" == "linux" ]]; then
 #   iOS
 #
 elif [[ "${PLATFORM}" == "ios" ]]; then
-    build_messenger_deps "-DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/"
+    CMAKE_DEPS_ARGUMENTS=" \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+        -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
+     "
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS" \
         -DAPPLE_BITCODE=OFF \
@@ -182,20 +188,25 @@ elif [[ "${PLATFORM}" == "ios" ]]; then
 #   iOS Simulator
 #
 elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-    build_messenger_deps "-DAPPLE_PLATFORM="IOS_SIM64" -DAPPLE_BITCODE=OFF -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/"
+    CMAKE_DEPS_ARGUMENTS=" \
+        -DAPPLE_PLATFORM="IOS_SIM64" \
+        -DAPPLE_BITCODE=OFF \
+        -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+        -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
+    "
     CMAKE_ARGUMENTS=" \
         -DAPPLE_PLATFORM="IOS_SIM64" \
         -DAPPLE_BITCODE=OFF \
         -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
         -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
         -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
-"
+    "
 
 #
 #   Android
 #
 elif [[ "${PLATFORM}" == "android" ]]; then
-    build_messenger_deps " \
+    CMAKE_DEPS_ARGUMENTS=" \
         -DCMAKE_CROSSCOMPILING=ON \
         -DANDROID=ON \
         -DANDROID_QT=ON  \
@@ -230,5 +241,5 @@ fi
 #
 #   Build both Debug and Release
 #
-#build "debug" "${CMAKE_ARGUMENTS}"
-build "release" "${CMAKE_ARGUMENTS}"
+build "debug" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
+build "release" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
