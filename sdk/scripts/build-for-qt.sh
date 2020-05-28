@@ -16,7 +16,7 @@ source ${SCRIPT_FOLDER}/ish/error.ish
 #   Arguments
 #
 PLATFORM=$1
-
+PLATFORM_DIR=""
 ANDROID_NDK=$2
 ANDROID_ABI=$3
 [[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
@@ -89,7 +89,7 @@ function build() {
     CORES=10
     
     build_messenger_deps ${CMAKE_DEPS_ARGUMENTS}
-    BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
+    BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${BUILD_DIR_SUFFIX}/${BUILD_TYPE}
 
     echo
     echo "===================================="
@@ -136,7 +136,6 @@ function prep_param() {
    #
    #   Windows (mingw) over Linux
    #
-   
    elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
            -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
@@ -149,6 +148,7 @@ function prep_param() {
            -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
            -DOS=WINDOWS \
        "
+
    #
    #   Windows
    #
@@ -216,9 +216,7 @@ function prep_param() {
            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
            -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
        "
-   
        #    TODO : use fat libraries
-   
        CMAKE_ARGUMENTS=" \
            -DANDROID_QT=ON \
            ${ANDROID_PLATFORM} \
@@ -226,16 +224,14 @@ function prep_param() {
            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
        "
-       PLATFORM="${PLATFORM}.${ANDROID_ABI}"
    
    else
-       echo "Virgil IoTKIT build script usage : "
-       echo "$0 platform platform-specific"
-       echo "where : "
-       echo "   platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, mingw32, windows"
-       echo "   platform-specific for Android :"
-       echo "     android_ABI [android_platform]"
-   
+       echo " Virgil IoTKIT build script usage : "
+       echo " $0 platform platform-specific"
+       echo " where : "
+       echo "    platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, mingw32, windows"
+       echo "    platform-specific for Android :"
+       echo "      android_ABI [android_platform]"
        exit 1
    fi
 }
