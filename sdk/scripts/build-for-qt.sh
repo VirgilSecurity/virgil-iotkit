@@ -88,7 +88,6 @@ function build() {
     CORES=10
     
     build_messenger_deps ${CMAKE_DEPS_ARGUMENTS}
-exit 1
     BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
 
     echo
