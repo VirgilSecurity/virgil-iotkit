@@ -79,13 +79,22 @@ target_compile_definitions(vs-messenger-internal
 
 if (CMAKE_CROSSCOMPILING AND (NOT WIN32) )
     set(VS_DISABLE_SYS_CURL TRUE)
+    if ((APPLE_PLATFORM STREQUAL "IOS") OR (APPLE_PLATFORM STREQUAL "IOS_SIM64"))
+        set(VS_LINK_SSL_LIB FALSE)
+        set(VS_LINK_SSL_FRAMEWORK TRUE)
+    else()
+        set(VS_LINK_SSL_LIB TRUE)
+        set(VS_LINK_SSL_FRAMEWORK FALSE)
+    endif()
 else()
     set(VS_DISABLE_SYS_CURL FALSE)
+    set(VS_LINK_SSL FALSE)
 endif()
 
-message (WARNING "###= VS_CURL_SYSTEM  = ${VS_CURL_SYSTEM}")
-message (WARNING "###= CMAKE_CROSSCOMPILING  = ${CMAKE_CROSSCOMPILING}")
-message (WARNING "###= WIN32  = ${WIN32}")
+message ("VS_DISABLE_SYS_CURL = ${VS_DISABLE_SYS_CURL}")
+message ("VS_LINK_SSL_LIB = ${VS_LINK_SSL_LIB}")
+message ("VS_LINK_SSL_FRAMEWORK = ${VS_LINK_SSL_FRAMEWORK}")
+message ("${PLATFORM_LIBS_PATH}/lib/libcurl.a")
 
 target_link_libraries(vs-messenger-internal
         PUBLIC
@@ -96,8 +105,8 @@ target_link_libraries(vs-messenger-internal
         $<$<NOT:$<BOOL:${VS_DISABLE_SYS_CURL}>>:curl>
 
         $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
-        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
-        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
+        $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
+        $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
         vs-messenger-crypto
         $<$<BOOL:${WIN32}>:kernel32>
@@ -108,6 +117,14 @@ target_link_libraries(vs-messenger-internal
         $<$<BOOL:${WIN32}>:-static-libstdc++>
         $<$<BOOL:${WIN32}>:-static>
         )
+
+if (VS_LINK_SSL_FRAMEWORK)        
+        target_link_libraries(vs-messenger-internal
+                PUBLIC
+                virgil-iot-status-code
+                "-framework Security"
+        )
+endif()
 
 target_include_directories(vs-messenger-internal
         PRIVATE

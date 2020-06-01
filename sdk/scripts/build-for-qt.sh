@@ -3,7 +3,7 @@
 #
 #   Global variables
 #
-SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+SCRIPT_FOLDER="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR_BASE=${SCRIPT_FOLDER}/..
 export QT_INSTALL_DIR_BASE=${SCRIPT_FOLDER}/../../../prebuilt
 
@@ -16,7 +16,7 @@ source ${SCRIPT_FOLDER}/ish/error.ish
 #   Arguments
 #
 PLATFORM=$1
-
+PLATFORM_DIR=""
 ANDROID_NDK=$2
 ANDROID_ABI=$3
 [[ ! -z "$4" ]] && ANDROID_PLATFORM=" -DANDROID_PLATFORM=$4"
@@ -25,12 +25,12 @@ ANDROID_ABI=$3
 # Check platform
 #
 if [ $(uname) == "Darwin" ]; then
-  HOST_PLATFORM="darwin-x86_64"
+    HOST_PLATFORM="darwin-x86_64"
 elif [ $(uname) == "Linux" ]; then
-  HOST_PLATFORM="linux-x86_64"
+    HOST_PLATFORM="linux-x86_64"
 else
-  echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
-  exit 1
+    echo "Wrong platform $(uname). Supported only: [Linux, Darwin]"
+    exit 1
 fi
 
 if [ ${PLATFORM} == "android" ]; then
@@ -40,14 +40,13 @@ else
     export BUILD_DIR_SUFFIX=${PLATFORM}
 fi
 
-
 echo ">>> PLATFORM = ${PLATFORM}"
 echo ">>> BUILD_DIR_SUFFIX = ${BUILD_DIR_SUFFIX}"
 echo ">>> ANDROID_NDK = ${ANDROID_NDK}"
 echo ">>> ANDROID_ABI = ${ANDROID_ABI}"
 echo ">>> ANDROID_PLATFORM = ${ANDROID_PLATFORM}"
 
-
+###########################################################################################################################
 #
 #   Build dependencies for vs-module-messenger
 #
@@ -67,7 +66,6 @@ function build_messenger_deps() {
         ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
         check_error
     fi
-    
     echo
     echo "=== Build Virgil SDK C++ C libs"
     echo
@@ -80,16 +78,18 @@ function build_messenger_deps() {
         check_error
     fi
 }
-
+###########################################################################################################################
 #
 #   Build
 #
 function build() {
     BUILD_TYPE=$1
     CMAKE_ARGUMENTS=$2
+    CMAKE_DEPS_ARGUMENTS=$3
     CORES=10
-
-    BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${PLATFORM}/${BUILD_TYPE}
+    
+    build_messenger_deps ${CMAKE_DEPS_ARGUMENTS}
+    BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${BUILD_DIR_SUFFIX}/${BUILD_TYPE}
 
     echo
     echo "===================================="
@@ -103,134 +103,146 @@ function build() {
 
     pushd ${BUILD_DIR}
 
-        cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
         -DVIRGIL_PLATFORM_LIBS_DIR=${QT_INSTALL_DIR_BASE} \
         -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
         -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
         -DGO_DISABLE=ON \
         -G "Unix Makefiles"
-        check_error
+    check_error
 
-        make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
-        check_error
+    make DESTDIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed install
+    check_error
 
     popd
 }
-
+###########################################################################################################################
 #
 #   Prepare cmake parameters
 #
+function prep_param() {
+   local BUILD_TYPE="${1}"
+   #
+   #   MacOS
+   #
+   if [[ "${PLATFORM}" == "macos" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+       "
+       CMAKE_ARGUMENTS=" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+           -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
+       "
+   
+   #
+   #   Windows (mingw) over Linux
+   #
+   elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+           -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
+           -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
+           -DCYGWIN=1 \
+       "
+       CMAKE_ARGUMENTS=" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+           -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
+           -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
+           -DOS=WINDOWS \
+       "
 
-#
-#   MacOS
-#
-if [[ "${PLATFORM}" == "macos" ]]; then
-    build_messenger_deps
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
-    "
+   #
+   #   Windows
+   #
+   elif [[ "${PLATFORM}" == "windows" ]]; then
+       CMAKE_ARGUMENTS=" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+           -DOS=WINDOWS \
+       "
+   
+   #
+   #   Linux
+   #
+   elif [[ "${PLATFORM}" == "linux" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+       "
+       CMAKE_ARGUMENTS=" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+       "
+   
+   #
+   #   iOS
+   #
+   elif [[ "${PLATFORM}" == "ios" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+        "
+       CMAKE_ARGUMENTS=" \
+           -DAPPLE_PLATFORM="IOS" \
+           -DAPPLE_BITCODE=OFF \
+           -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+           -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
+           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+       "
+   
+   #
+   #   iOS Simulator
+   #
+   elif [[ "${PLATFORM}" == "ios-sim" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+           -DAPPLE_PLATFORM="IOS_SIM64" \
+           -DAPPLE_BITCODE=OFF \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+       "
+       CMAKE_ARGUMENTS=" \
+           -DAPPLE_PLATFORM="IOS_SIM64" \
+           -DAPPLE_BITCODE=OFF \
+           -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+           -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
+       "
+   
+   #
+   #   Android
+   #
+   elif [[ "${PLATFORM}" == "android" ]]; then
+       CMAKE_DEPS_ARGUMENTS=" \
+           -DCMAKE_CROSSCOMPILING=ON \
+           -DANDROID=ON \
+           -DANDROID_QT=ON  \
+           ${ANDROID_PLATFORM} \
+           -DANDROID_ABI=${ANDROID_ABI} \
+           -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+       "
+       #    TODO : use fat libraries
+       CMAKE_ARGUMENTS=" \
+           -DANDROID_QT=ON \
+           ${ANDROID_PLATFORM} \
+           -DANDROID_ABI=${ANDROID_ABI} \
+           -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
+       "
+   
+   else
+       echo " Virgil IoTKIT build script usage : "
+       echo " $0 platform platform-specific"
+       echo " where : "
+       echo "    platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, mingw32, windows"
+       echo "    platform-specific for Android :"
+       echo "      android_ABI [android_platform]"
+       exit 1
+   fi
+}
 
-#
-#   Windows (mingw) over Linux
-#
-
-elif [[ "${PLATFORM}" == "windows" && "$(uname)" == "Linux" ]]; then
-    build_messenger_deps " \
-        -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
-        -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
-        -DCYGWIN=1 \
-    "
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DCMAKE_TOOLCHAIN_FILE=/usr/share/mingw/toolchain-mingw64.cmake \
-        -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 \
-        -DOS=WINDOWS \
-    "
-#        -DCURL_INCLUDE_DIR=/usr/i686-w64-mingw32/sys-root/mingw/include/curl \
-#        -DCURL_LIBRARY=/usr/i686-w64-mingw32/sys-root/mingw/lib/libcurl.dll.a \    
-#        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
-#        -DCMAKE_TOOLCHAIN_FILE=${SCRIPT_FOLDER}/../cmake/mingw32.toolchain.cmake \
-
-#
-#   Windows
-#
-elif [[ "${PLATFORM}" == "windows" ]]; then
-
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-        -DOS=WINDOWS \
-    "
-
-#
-#   Linux
-#
-elif [[ "${PLATFORM}" == "linux" ]]; then
-    build_messenger_deps
-    CMAKE_ARGUMENTS=" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
-#
-#   iOS
-#
-elif [[ "${PLATFORM}" == "ios" ]]; then
-    build_messenger_deps
-    CMAKE_ARGUMENTS=" \
-        -DAPPLE_PLATFORM="IOS" \
-        -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
-#
-#   iOS Simulator
-#
-elif [[ "${PLATFORM}" == "ios-sim" ]]; then
-    build_messenger_deps
-    CMAKE_ARGUMENTS=" \
-        -DAPPLE_PLATFORM="IOS_SIM" \
-        -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-
-#
-#   Android
-#
-elif [[ "${PLATFORM}" == "android" ]]; then
-    build_messenger_deps " \
-        -DCMAKE_CROSSCOMPILING=ON \
-        -DANDROID=ON \
-        -DANDROID_QT=ON  \
-        ${ANDROID_PLATFORM} \
-        -DANDROID_ABI=${ANDROID_ABI} \
-        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
-        -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/release/installed/usr/local/ \
-    "
-
-#    TODO : use fat libraries
-
-    CMAKE_ARGUMENTS=" \
-        -DANDROID_QT=ON \
-        ${ANDROID_PLATFORM} \
-        -DANDROID_ABI=${ANDROID_ABI} \
-        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
-        -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-    "
-    PLATFORM="${PLATFORM}.${ANDROID_ABI}"
-
-else
-    echo "Virgil IoTKIT build script usage : "
-    echo "$0 platform platform-specific"
-    echo "where : "
-    echo "   platform - platform selector. Currently supported: android, ios, ios-sim, linux, macos, mingw32, windows"
-    echo "   platform-specific for Android :"
-    echo "     android_ABI [android_platform]"
-
-    exit 1
-fi
-
+#########################################################################################################   
 #
 #   Build both Debug and Release
 #
-#build "debug" "${CMAKE_ARGUMENTS}"
-build "release" "${CMAKE_ARGUMENTS}"
+prep_param "debug"
+build "debug" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
+
+prep_param "release"
+build "release" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
+         
