@@ -109,5 +109,7 @@ CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' \
 #
 #   Build both Debug and Release
 #
-build "debug" "${CMAKE_ARGUMENTS}"
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+  build "debug" "${CMAKE_ARGUMENTS}"
+fi
 build "release" "${CMAKE_ARGUMENTS}"

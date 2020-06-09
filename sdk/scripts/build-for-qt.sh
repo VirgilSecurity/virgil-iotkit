@@ -240,8 +240,10 @@ function prep_param() {
 #
 #   Build both Debug and Release
 #
-prep_param "debug"
-build "debug" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+  prep_param "debug"
+  build "debug" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
+fi
 
 prep_param "release"
 build "release" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
