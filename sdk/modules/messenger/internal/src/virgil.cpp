@@ -54,6 +54,7 @@ using namespace VirgilIoTKit;
 #include <virgil/crypto/VirgilKeyPair.h>
 
 #include <string.h>
+#include <time.h>
 
 using nlohmann::json;
 using virgil::sdk::VirgilBase64;
@@ -109,6 +110,7 @@ static char *_service_base_url = NULL;
 static vs_pubkey_cache_t _pubkey_cache;
 static char virgil_token[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
 static bool _is_virgil_token_ready = false;
+static time_t _virgil_token_time = 0;
 
 /******************************************************************************/
 static vs_status_e
@@ -166,12 +168,15 @@ terminate:
 /******************************************************************************/
 static const char *
 _prepare_virgil_token(void) {
+    static double DT_DIFF = 90 * 60; // 1.5 h
+    double dt;
 
-    // TODO: Update Virgil token by time. Every 2 hours.
+    dt = difftime(time(NULL), _virgil_token_time);
 
-    if (!_is_virgil_token_ready) {
+    if (!_is_virgil_token_ready || (dt > DT_DIFF)) {
         if (VS_CODE_OK == _get_token(_virgil_jwt_endpoint, virgil_token, VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX)) {
             _is_virgil_token_ready = true;
+            _virgil_token_time = time(NULL);
         }
     }
 
