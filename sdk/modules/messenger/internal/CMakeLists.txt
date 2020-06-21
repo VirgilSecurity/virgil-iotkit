@@ -118,7 +118,7 @@ target_link_libraries(vs-messenger-internal
         $<$<BOOL:${WIN32}>:-static>
         )
 
-if (VS_LINK_SSL_FRAMEWORK)        
+if (VS_LINK_SSL_FRAMEWORK)
         target_link_libraries(vs-messenger-internal
                 PUBLIC
                 virgil-iot-status-code
@@ -130,6 +130,7 @@ target_include_directories(vs-messenger-internal
         PRIVATE
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/crypto/common>
         $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${OPENSSL_INCLUDE_DIR}>
 
         PUBLIC

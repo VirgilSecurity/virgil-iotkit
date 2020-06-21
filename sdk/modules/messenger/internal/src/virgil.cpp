@@ -50,10 +50,24 @@ using namespace VirgilIoTKit;
 #include <virgil/sdk/serialization/JsonSerializer.h>
 #include <virgil/sdk/serialization/JsonDeserializer.h>
 #include <virgil/crypto/VirgilByteArrayUtils.h>
-
 #include <virgil/crypto/VirgilKeyPair.h>
 
+#include <virgil/crypto/common/vsc_str_mutable.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/foundation/vscf_impl.h>
+#include <virgil/crypto/foundation/vscf_key_provider.h>
+#include <virgil/crypto/foundation/vscf_key_material_rng.h>
+#include <virgil/crypto/foundation/vscf_recipient_cipher.h>
+#include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/pythia/vscp_pythia.h>
+
+#include <virgil/sdk/core/vssc_virgil_http_client.h>
+#include <virgil/sdk/pythia/vssp_pythia_client.h>
+#include <virgil/sdk/keyknox/vssk_keyknox_client.h>
+
 #include <string.h>
+
 
 using nlohmann::json;
 using virgil::sdk::VirgilBase64;
@@ -100,12 +114,32 @@ static const char *_virgil_jwt_endpoint = "/virgil-jwt/";
 static const char *_ejabberd_jwt_endpoint = "/ejabberd-jwt/";
 static const char *_sign_up_endpoint = "/signup/";
 
+// Brain Key configuration
+#define MAKE_STR_CONSTANT(name, value)                                                                                 \
+    static const char name##_CHARS[] = value;                                                                          \
+    static const vsc_str_t name = {name##_CHARS, sizeof(name##_CHARS) - 1};
+
+#define MAKE_DATA_CONSTANT_FROM_STR(name, value)                                                                       \
+    static const byte name##_BYTES[] = value;                                                                          \
+    static const vsc_data_t name = {name##_BYTES, sizeof(name##_BYTES) - 1};
+
+
+MAKE_DATA_CONSTANT_FROM_STR(k_brain_key_RECIPIENT_ID, "brain_key")
+
+MAKE_STR_CONSTANT(k_brain_key_JSON_VERSION, "version")
+MAKE_STR_CONSTANT(k_brain_key_JSON_CARD_ID, "card_id")
+MAKE_STR_CONSTANT(k_brain_key_JSON_PRIVATE_KEY, "private_key")
+
+MAKE_STR_CONSTANT(k_keyknox_root_MESSENGER, "messenger")
+MAKE_STR_CONSTANT(k_keyknox_path_CREDENTIALS, "credentials")
+
 // Module variables
 static bool _is_initialized = false;
 static bool _is_credentials_ready = false;
 static std::shared_ptr<Crypto> crypto;
 static vs_messenger_virgil_user_creds_t _creds = {{0}, 0, {0}, 0, {0}};
 static char *_service_base_url = NULL;
+static vsc_str_mutable_t _custom_ca = {NULL, 0};
 static vs_pubkey_cache_t _pubkey_cache;
 static char virgil_token[VS_MESSENGER_VIRGIL_TOKEN_SZ_MAX] = {0};
 static bool _is_virgil_token_ready = false;
@@ -206,8 +240,10 @@ vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca) {
     if (custom_ca && custom_ca[0]) {
         VS_LOG_INFO("Set custom CA: %s", custom_ca);
         Connection::setCA(std::string(custom_ca));
+        _custom_ca = vsc_str_mutable_from_str(vsc_str_from_str(custom_ca));
     } else {
         Connection::setCA("");
+        _custom_ca = vsc_str_mutable_from_str(vsc_str_empty());
     }
 
     // Check input parameters
@@ -364,6 +400,7 @@ vs_messenger_virgil_logout(void) {
     VS_IOT_ASSERT(_is_initialized);
     crypto = nullptr;
     free(_service_base_url);
+    vsc_str_mutable_release(&_custom_ca);
     _service_base_url = NULL;
     _is_credentials_ready = false;
     _is_initialized = false;
@@ -569,6 +606,257 @@ vs_messenger_virgil_search(const char *identity) {
 
     // Get Sender's public key
     return _pubkey_by_identity(identity, senderPubkeyInfo);
+}
+
+/******************************************************************************/
+extern "C" DLL_PUBLIC vs_status_e
+vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, const char *pwd, const char *alias) {
+
+    // Check is correctly initialized
+    CHECK_RET(_is_initialized, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not initialized");
+    CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not signed in");
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(creds, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(creds->pubkey_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(creds->privkey_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(creds->card_id[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(pwd && pwd[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(alias && alias[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    //
+    //  Declare resources.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssp_error_t pythia_sdk_error;
+    vssp_error_reset(&pythia_sdk_error);
+
+    vssk_error_t keyknox_error;
+    vssk_error_reset(&keyknox_error);
+
+    vscp_status_t pythia_status = vscp_status_SUCCESS;
+    vscf_status_t foundation_status = vscf_status_SUCCESS;
+
+    vssc_jwt_t *jwt = NULL;
+    vssp_pythia_client_t *pythia_client = NULL;
+    vssp_brain_key_seed_t *seed = NULL;
+    vsc_buffer_t *blinded_password = NULL;
+    vsc_buffer_t *blinding_secret = NULL;
+    vsc_buffer_t *deblinded_password = NULL;
+    vscf_key_material_rng_t *key_material_rng = NULL;
+    vscf_key_provider_t *key_provider = NULL;
+    vscf_impl_t *brain_private_key = NULL;
+    vscf_impl_t *brain_public_key = NULL;
+    vssc_json_object_t *credentials_json = NULL;
+    vscf_recipient_cipher_t *cipher = NULL;
+
+    vssc_http_request_t *http_request = NULL;
+    vssc_virgil_http_response_t *http_response = NULL;
+
+    vsc_buffer_t *keyknox_meta = NULL;
+    vsc_buffer_t *keyknox_value = NULL;
+    vssk_keyknox_client_t *keyknox_client = NULL;
+    vssc_string_list_t *keyknox_identities;
+    vssk_keyknox_entry_t *keyknox_entry = NULL;
+
+    //
+    //  Import JWT.
+    //
+    jwt = vssc_jwt_parse(vsc_str_from_str(virgil_token), &core_sdk_error);
+    BOOL_CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse JWT");
+
+    //
+    //  Generate Brain Key.
+    //
+
+    // blind
+    blinded_password = vsc_buffer_new_with_capacity(vscp_pythia_blinded_password_buf_len());
+
+    blinding_secret = vsc_buffer_new_with_capacity(vscp_pythia_blinding_secret_buf_len());
+
+    pythia_status = vscp_pythia_blind(vsc_str_as_data(vsc_str_from_str(pwd)), blinded_password, blinding_secret);
+    BOOL_CHECK(pythia_status == vscp_status_SUCCESS, "Failed to blind password");
+
+    // get seed
+    pythia_client = vssp_pythia_client_new_with_base_url(vsc_str_from_str(_service_base_url));
+
+    http_request = vssp_pythia_client_make_request_generate_seed(pythia_client, vsc_buffer_data(blinded_password));
+
+    vsc_buffer_destroy(&blinded_password);
+
+    http_response = vssc_virgil_http_client_send(http_request, jwt, &core_sdk_error);
+    BOOL_CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to generate brain key seed");
+
+    seed = vssp_pythia_client_process_response_generate_seed(pythia_client, http_response, &pythia_sdk_error);
+    BOOL_CHECK(!vssp_error_has_error(&pythia_sdk_error), "Failed to generate brain key seed");
+
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+
+    deblinded_password = vsc_buffer_new_with_capacity(vscp_pythia_deblinded_password_buf_len());
+
+    pythia_status =
+            vscp_pythia_deblind(vssp_brain_key_seed_get(seed), vsc_buffer_data(blinding_secret), deblinded_password);
+
+    BOOL_CHECK(pythia_status == vscp_status_SUCCESS, "Failed to deblind password");
+
+    vsc_buffer_destroy(&blinding_secret);
+
+    // generate key
+    key_material_rng = vscf_key_material_rng_new();
+
+    vscf_key_material_rng_reset_key_material(key_material_rng, vsc_buffer_data(deblinded_password));
+
+    vsc_buffer_destroy(&deblinded_password);
+
+    key_provider = vscf_key_provider_new();
+
+    vscf_key_provider_use_random(key_provider, vscf_key_material_rng_impl(key_material_rng));
+
+    brain_private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, NULL);
+    BOOL_CHECK(brain_private_key != NULL, "Failed to generate brain key");
+
+    brain_public_key = vscf_private_key_extract_public_key(brain_private_key);
+
+    vscf_key_provider_destroy(&key_provider);
+    vscf_key_material_rng_destroy(&key_material_rng);
+
+    //
+    //  Pack Credentials.
+    //  Format:
+    //     {
+    //         "version" : "1"
+    //         "card_id" : "HEX_STRING",
+    //         "private_key" : "BASE64_STRING"
+    //     }
+    credentials_json = vssc_json_object_new();
+    vssc_json_object_add_int_value(credentials_json, k_brain_key_JSON_VERSION, 1);
+    vssc_json_object_add_string_value(
+            credentials_json, k_brain_key_JSON_CARD_ID, vsc_str(_creds.card_id, VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX));
+    vssc_json_object_add_binary_value(
+            credentials_json, k_brain_key_JSON_PRIVATE_KEY, vsc_data(_creds.privkey, _creds.privkey_sz));
+
+    //
+    //  Encrypt Credentials.
+    //
+    cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(cipher, k_brain_key_RECIPIENT_ID, brain_public_key);
+
+    foundation_status = vscf_recipient_cipher_add_signer(cipher, k_brain_key_RECIPIENT_ID, brain_private_key);
+    BOOL_CHECK(foundation_status == vscf_status_SUCCESS, "Failed encrypt credentials");
+
+    foundation_status = vscf_recipient_cipher_start_encryption(cipher);
+    BOOL_CHECK(foundation_status == vscf_status_SUCCESS, "Failed encrypt credentials");
+
+
+    keyknox_meta = vsc_buffer_new_with_capacity(vscf_recipient_cipher_message_info_len(cipher));
+    vscf_recipient_cipher_pack_message_info(cipher, keyknox_meta);
+
+    keyknox_value = vsc_buffer_new_with_capacity(
+            vscf_recipient_cipher_encryption_out_len(cipher, vssc_json_object_as_str(credentials_json).len) +
+            vscf_recipient_cipher_encryption_out_len(cipher, 0));
+
+    foundation_status = vscf_recipient_cipher_process_encryption(
+            cipher, vsc_str_as_data(vssc_json_object_as_str(credentials_json)), keyknox_value);
+    BOOL_CHECK(foundation_status == vscf_status_SUCCESS, "Failed encrypt credentials");
+
+    vssc_json_object_destroy(&credentials_json);
+
+    foundation_status = vscf_recipient_cipher_finish_encryption(cipher, keyknox_value);
+    BOOL_CHECK(foundation_status == vscf_status_SUCCESS, "Failed encrypt credentials");
+
+    vscf_recipient_cipher_destroy(&cipher);
+
+    //
+    //  Push encrypted credentials to the Keyknox.
+    //
+    keyknox_identities = vssc_string_list_new();
+    vssc_string_list_add(keyknox_identities, vssc_jwt_identity(jwt));
+
+    keyknox_entry = vssk_keyknox_entry_new_with(k_keyknox_root_MESSENGER,
+                                                k_keyknox_path_CREDENTIALS,
+                                                vsc_str_from_str(alias),
+                                                keyknox_identities,
+                                                vsc_buffer_data(keyknox_meta),
+                                                vsc_buffer_data(keyknox_value),
+                                                vsc_data_empty());
+
+    keyknox_client = vssk_keyknox_client_new_with_base_url(vsc_str_from_str(_service_base_url));
+
+    http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
+
+    http_response = vssc_virgil_http_client_send_with_custom_ca(
+            http_request, jwt, vsc_str_mutable_as_str(_custom_ca), &core_sdk_error);
+
+    BOOL_CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to send encrypted credentials to the Keyknox");
+
+    BOOL_CHECK(vssc_virgil_http_response_is_success(http_response),
+               "Failed to push encrypted credentials to the Keyknox");
+
+    res = VS_CODE_OK;
+
+terminate:
+
+    vssc_jwt_destroy(&jwt);
+    vssp_pythia_client_destroy(&pythia_client);
+    vssp_brain_key_seed_destroy(&seed);
+    vsc_buffer_destroy(&blinded_password);
+    vsc_buffer_destroy(&blinding_secret);
+    vsc_buffer_destroy(&deblinded_password);
+    vscf_key_material_rng_destroy(&key_material_rng);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&brain_private_key);
+    vscf_impl_destroy(&brain_public_key);
+    vssc_json_object_destroy(&credentials_json);
+    vscf_recipient_cipher_destroy(&cipher);
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+    vsc_buffer_destroy(&keyknox_meta);
+    vsc_buffer_destroy(&keyknox_value);
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_string_list_destroy(&keyknox_identities);
+    vssk_keyknox_entry_destroy(&keyknox_entry);
+
+    return res;
+}
+
+/******************************************************************************/
+extern "C" DLL_PUBLIC vs_status_e
+vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger_virgil_user_creds_t *creds) {
+
+    // Check is correctly initialized
+    CHECK_RET(_is_initialized, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not initialized");
+    CHECK_RET(_is_credentials_ready, VS_CODE_ERR_MSGR_INTERNAL, "Virgil Messenger is not signed in");
+
+    // Check input parameters
+    CHECK_NOT_ZERO_RET(pwd && pwd[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(alias && alias[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(creds, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    // vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
+
+    //
+    //  Declare resources.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssp_error_t pythia_sdk_error;
+    vssp_error_reset(&pythia_sdk_error);
+
+    vssk_error_t keyknox_error;
+    vssk_error_reset(&keyknox_error);
+
+    //
+    //  Pull encrypted credentials to the Keyknox.
+    //
+
+
+    return VS_CODE_OK;
 }
 
 /******************************************************************************/

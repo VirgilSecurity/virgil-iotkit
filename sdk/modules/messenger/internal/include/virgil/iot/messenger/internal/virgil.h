@@ -94,6 +94,25 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
 vs_status_e
 vs_messenger_virgil_logout(void);
 
+/**
+ *  Store given credentials protected with a password in the cloud.
+ *
+ *  Prerequisites: User is signed in.
+ *  Note, card_id can be used as alias.
+ */
+vs_status_e
+vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, const char *pwd, const char *alias);
+
+/**
+ *  Load credentials from the cloud.
+ *
+ *  Prerequisites: User is signed in.
+ *  Note, if alias is NULL, then card id used is used.
+ */
+vs_status_e
+vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger_virgil_user_creds_t *creds);
+
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VirgilIoTKit

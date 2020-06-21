@@ -94,19 +94,23 @@ function build() {
         get_lib_ios "${LIBS_DIR}" "VSCFoundation" "libvsc_foundation.a"
     fi
 
-      if [ "${BUILD_TYPE}" == "debug" ]; then 
-        pushd ${LIBS_DIR}      
+      if [ "${BUILD_TYPE}" == "debug" ]; then
+        pushd ${LIBS_DIR}
         echo "=== Rename debug library"
         mv -f libed25519_d.a           libed25519.a
         mv -f libprotobuf-nanopbd.a    libprotobuf-nanopb.a
         mv -f libvsc_common_d.a        libvsc_common.a
         mv -f libvsc_foundation_d.a    libvsc_foundation.a
         mv -f libvsc_foundation_pb_d.a libvsc_foundation_pb.a
+        mv -f libvsc_pythia_d.a        libvsc_pythia.a
+        mv -f libvsc_pythia_sdk_d.a    libvsc_pythia_sdk.a
+        mv -f libvsc_core_sdk_d.a      libvsc_core_sdk.a
+        mv -f libvsc_keyknox_sdk_d.a   libvsc_keyknox_sdk.a
         popd
-      fi 
+      fi
 
     echo "=== Packing libraries"
-    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a" "libvscryptoc.a"
+    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a libvsc_pythia.a libvsc_pythia_sdk.a libvsc_core_sdk.a libvsc_keyknox_sdk.a librelic_s.a libjson-c.a" "libvscryptoc.a"
 
     # Clean
     rm -rf ${INSTALL_DIR}/$(echo "$HOME" | cut -d "/" -f2)
@@ -117,9 +121,6 @@ function build() {
 # Common CMake arguments for the project
 CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' \
 -DENABLE_CLANGFORMAT=OFF \
--DENABLE_CLANGFORMAT=OFF \
--DVIRGIL_PHP_TESTING=OFF \
--DVIRGIL_LIB_PYTHIA=OFF \
 -DVIRGIL_LIB_RATCHET=OFF \
 -DVIRGIL_LIB_PHE=OFF \
 -DVIRGIL_POST_QUANTUM=OFF \
@@ -130,6 +131,6 @@ ${CMAKE_CUSTOM_PARAM}"
 #
 if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
   build "debug" "${CMAKE_ARGUMENTS}"
-fi  
+fi
 
 build "release" "${CMAKE_ARGUMENTS}"
