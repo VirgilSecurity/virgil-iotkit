@@ -131,6 +131,8 @@ target_include_directories(vs-messenger-internal
         $<BUILD_INTERFACE:${VIRGIL_IOT_CONFIG_DIRECTORY}>
         $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include>
         $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/crypto/common>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/crypto/foundation>
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/include/virgil/sdk/core>
         $<$<NOT:$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>>:${OPENSSL_INCLUDE_DIR}>
 
         PUBLIC
