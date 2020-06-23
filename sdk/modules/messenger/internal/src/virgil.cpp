@@ -53,7 +53,6 @@ using namespace VirgilIoTKit;
 #include <virgil/crypto/VirgilKeyPair.h>
 
 #include <virgil/crypto/common/vsc_str_mutable.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_key_material_rng.h>
