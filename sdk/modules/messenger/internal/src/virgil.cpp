@@ -254,6 +254,13 @@ vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca) {
     crypto = std::make_shared<Crypto>();
     _service_base_url = strdup(service_base_url);
 
+    // configure pythia
+    const vscp_status_t pythia_status = vscp_pythia_configure();
+    if (pythia_status != vscp_status_SUCCESS) {
+        VS_LOG_ERROR("Cannot initialize Pythia crypto library");
+        return VS_CODE_ERR_MSGR_INTERNAL;
+    }
+
     _is_initialized = true;
 
     return VS_CODE_OK;
@@ -403,6 +410,7 @@ vs_messenger_virgil_logout(void) {
     crypto = nullptr;
     free(_service_base_url);
     vsc_str_mutable_release(&_custom_ca);
+    vscp_pythia_cleanup();
     _service_base_url = NULL;
     _is_credentials_ready = false;
     _is_initialized = false;
