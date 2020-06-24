@@ -211,8 +211,10 @@ function(set_libs_storage _platform _external_storage)
         set (_external_storage ${CMAKE_CURRENT_LIST_DIR}/ext)
     endif()
 
-    set (PLATFORM_LIBS_PATH ${_external_storage}/${_platform}/release/installed/usr/local PARENT_SCOPE)
-
-    message ("-- PLATFORM_LIBS_PATH: ${PLATFORM_LIBS_PATH}")
-
+    string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
+    if (CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
+        set (PLATFORM_LIBS_PATH ${_external_storage}/${_platform}/debug/installed/usr/local PARENT_SCOPE)
+    else()
+        set (PLATFORM_LIBS_PATH ${_external_storage}/${_platform}/release/installed/usr/local PARENT_SCOPE)
+    endif()
 endfunction()
