@@ -91,7 +91,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
                                 size_t buf_sz,
                                 size_t *encrypted_message_sz);
 
-vs_status_e
+void
 vs_messenger_virgil_logout(void);
 
 /**

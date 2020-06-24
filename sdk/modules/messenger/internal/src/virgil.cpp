@@ -404,18 +404,20 @@ vs_messenger_virgil_get_xmpp_pass(char *pass, size_t pass_buf_sz) {
 }
 
 /******************************************************************************/
-extern "C" DLL_PUBLIC vs_status_e
+extern "C" DLL_PUBLIC void
 vs_messenger_virgil_logout(void) {
-    VS_IOT_ASSERT(_is_initialized);
     crypto = nullptr;
-    free(_service_base_url);
+
     vsc_str_mutable_release(&_custom_ca);
     vscp_pythia_cleanup();
+
+    free(_service_base_url);
     _service_base_url = NULL;
+
     _is_credentials_ready = false;
     _is_initialized = false;
     _is_virgil_token_ready = false;
-    return VS_CODE_OK;
+    return;
 }
 
 /******************************************************************************/
