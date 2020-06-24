@@ -42,7 +42,6 @@
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
-namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -61,6 +60,12 @@ typedef struct {
     uint8_t pubkey_id[VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ]; /**< ID of Public key */
     char card_id[VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX];    /**< Card identifier string */
 } vs_messenger_virgil_user_creds_t;
+
+bool
+vs_messenger_virgil_is_init(void);
+
+bool
+vs_messenger_virgil_is_signed_in(void);
 
 vs_status_e
 vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca);
@@ -115,7 +120,6 @@ vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_MESSENGER_VIRGIL_H

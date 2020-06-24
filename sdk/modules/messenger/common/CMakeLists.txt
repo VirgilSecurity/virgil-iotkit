@@ -34,17 +34,14 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-#
-#   Messege internal functionality
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/common)
+add_library(vs-messenger-common INTERFACE)
 
-#
-#   Messege internal functionality
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/internal)
+target_sources(vs-messenger-common
+        INTERFACE
+        "${CMAKE_CURRENT_LIST_DIR}/private/visibility.h"
+        )
 
-#
-#   Messenger module
-#
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/module)
+target_include_directories(vs-messenger-common
+        INTERFACE
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
+        )

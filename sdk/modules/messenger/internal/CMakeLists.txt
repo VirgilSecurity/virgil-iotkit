@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(vs-messenger-internal VERSION 0.1.0 LANGUAGES C CXX)
+project(vs-messenger-internal VERSION 0.1.0 LANGUAGES C)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,14 +49,13 @@ if (VIRGIL_IOT_MESSENGER_INTERNAL_XMPP)
 endif()
 
 #
-#   Virgil C++ SDK
+#   Virgil Crypto C
 #
-find_library(VSCPPSDK_LIBRARY
-        NAMES vscppsdk
+find_library(VSCRYPTOC_LIBRARY
+        NAMES vscryptoc
         HINTS "${PLATFORM_LIBS_PATH}/lib"
         CMAKE_FIND_ROOT_PATH_BOTH
         )
-
 
 target_sources(vs-messenger-internal
         PRIVATE
@@ -67,7 +66,7 @@ target_sources(vs-messenger-internal
 
         # Sources
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:${CMAKE_CURRENT_LIST_DIR}/src/enjabberd.c>
-        ${CMAKE_CURRENT_LIST_DIR}/src/virgil.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/virgil.c
         )
 
 target_compile_definitions(vs-messenger-internal
@@ -99,7 +98,8 @@ message ("${PLATFORM_LIBS_PATH}/lib/libcurl.a")
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
-        ${VSCPPSDK_LIBRARY}
+
+        ${VSCRYPTOC_LIBRARY}
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
         $<$<NOT:$<BOOL:${VS_DISABLE_SYS_CURL}>>:curl>
@@ -108,10 +108,10 @@ target_link_libraries(vs-messenger-internal
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
-        vs-messenger-crypto
         $<$<BOOL:${WIN32}>:kernel32>
 
         PRIVATE
+        vs-messenger-common
         enable_pedantic_mode
         $<$<BOOL:${WIN32}>:-static-libgcc>
         $<$<BOOL:${WIN32}>:-static-libstdc++>
