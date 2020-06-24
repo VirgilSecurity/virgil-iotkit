@@ -417,7 +417,6 @@ vs_messenger_virgil_logout(void) {
     _is_credentials_ready = false;
     _is_initialized = false;
     _is_virgil_token_ready = false;
-    return;
 }
 
 /******************************************************************************/
@@ -762,7 +761,7 @@ vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, 
     vsc_buffer_t *keyknox_meta = NULL;
     vsc_buffer_t *keyknox_value = NULL;
     vssk_keyknox_client_t *keyknox_client = NULL;
-    vssc_string_list_t *keyknox_identities;
+    vssc_string_list_t *keyknox_identities = NULL;
     vssk_keyknox_entry_t *keyknox_entry = NULL;
 
     //
