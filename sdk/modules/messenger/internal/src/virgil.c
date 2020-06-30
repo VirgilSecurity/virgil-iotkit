@@ -601,7 +601,7 @@ _generate_brain_key(const char *pwd, const vssc_jwt_t *jwt, vscf_impl_t **privat
     //
     //  Get seed.
     //
-    pythia_client = vssp_pythia_client_new_with_base_url(_base_url());
+    pythia_client = vssp_pythia_client_new();
 
     http_request = vssp_pythia_client_make_request_generate_seed(pythia_client, vsc_buffer_data(blinded_password));
 
@@ -721,7 +721,7 @@ _get_public_key_by_identity(vsc_str_t identity, const vssc_key_handler_t **key_h
     //
     status = VS_CODE_ERR_MSGR_SERVICE;
 
-    card_client = vssc_card_client_new_with_base_url(_base_url());
+    card_client = vssc_card_client_new();
 
     search_cards_request = vssc_card_client_make_request_search_cards_with_identity(card_client, identity);
 
@@ -1485,7 +1485,7 @@ vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, 
                                                 vsc_buffer_data(keyknox_value),
                                                 vsc_data_empty());
 
-    keyknox_client = vssk_keyknox_client_new_with_base_url(_base_url());
+    keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
 
@@ -1581,7 +1581,7 @@ vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger
     //
     //  Pull encrypted credentials from the Keyknox.
     //
-    keyknox_client = vssk_keyknox_client_new_with_base_url(_base_url());
+    keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_pull(keyknox_client,
                                                          k_keyknox_root_MESSENGER,
