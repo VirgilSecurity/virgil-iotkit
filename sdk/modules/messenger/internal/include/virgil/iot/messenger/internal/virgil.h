@@ -42,6 +42,7 @@
 #include <virgil/iot/status_code/status_code.h>
 
 #ifdef __cplusplus
+namespace VirgilIoTKit {
 extern "C" {
 #endif
 
@@ -120,6 +121,7 @@ vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger
 
 #ifdef __cplusplus
 } // extern "C"
+} // namespace VirgilIoTKit
 #endif
 
 #endif // VS_MESSENGER_VIRGIL_H
