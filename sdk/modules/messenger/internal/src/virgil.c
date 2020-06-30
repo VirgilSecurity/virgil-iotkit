@@ -227,7 +227,7 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     vsc_buffer_t *jwt_signature = NULL;
     vssc_http_request_t *http_request = NULL;
     vssc_http_response_t *http_response = NULL;
-    vsc_str_buffer_t *auth_url = NULL;
+    vsc_str_mutable_t auth_url = {NULL, 0};
     vsc_str_mutable_t auth_header = {NULL, 0};
     vssc_json_object_t *token_json = NULL;
 
@@ -254,6 +254,7 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     vsc_str_buffer_t *jwt = vsc_str_buffer_new_with_capacity(jwt_len);
     vsc_str_buffer_append_str(jwt, card_id);
     vsc_str_buffer_append_char(jwt, '.');
+    vsc_str_buffer_append_str(jwt, timestamp);
 
     jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
     vscf_signer_reset(signer);
@@ -273,8 +274,8 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     //
     status = VS_CODE_ERR_MSGR_SERVICE;
 
-    auth_url = vsc_str_buffer_new_with_capacity(_config.base_url.len + endpoint.len);
-    http_request = vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_buffer_str(auth_url));
+    auth_url = vsc_str_mutable_concat(_base_url(), endpoint);
+    http_request = vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_mutable_as_str(auth_url));
 
     vssc_http_request_add_header(http_request, k_auth_HEDAER_NAME, vsc_str_mutable_as_str(auth_header));
     vsc_str_mutable_release(&auth_header);
@@ -282,21 +283,17 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     http_response = vssc_virgil_http_client_send_custom_with_ca(http_request, _ca_bundle(), &core_sdk_error);
     CHECK(!vssc_error_has_error(&core_sdk_error),
           "Failed to get JWT from the endpoint: %s (cannot send request)",
-          vsc_str_buffer_chars(auth_url));
+          auth_url.chars);
 
     CHECK(vssc_http_response_is_success(http_response),
           "Failed to get JWT from the endpoint: %s (errored response)",
-          vsc_str_buffer_chars(auth_url));
+          auth_url.chars);
 
     token_json = vssc_json_object_parse(vssc_http_response_body(http_response), &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error),
-          "Failed to parse JWT from the endpoint: %s",
-          vsc_str_buffer_str(auth_url));
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse JWT from the endpoint: %s", auth_url.chars);
 
     vsc_str_t token_str = vssc_json_object_get_string_value(token_json, k_json_key_TOKEN, &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error),
-          "Failed to parse JWT from the endpoint: %s",
-          vsc_str_buffer_str(auth_url));
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse JWT from the endpoint: %s", auth_url.chars);
 
     status = VS_CODE_ERR_MSGR_INTERNAL;
 
@@ -304,7 +301,7 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     strcpy(token, token_str.chars);
 
     // Print results
-    VS_LOG_DEBUG("Token from %s : %s", vsc_str_buffer_chars(auth_url), token);
+    VS_LOG_DEBUG("Token from %s : %s", auth_url.chars, token);
 
     status = VS_CODE_OK;
 
@@ -313,7 +310,7 @@ terminate:
     vsc_buffer_destroy(&jwt_signature);
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
-    vsc_str_buffer_destroy(&auth_url);
+    vsc_str_mutable_release(&auth_url);
     vsc_str_mutable_release(&auth_header);
     vssc_json_object_destroy(&token_json);
 
@@ -390,6 +387,7 @@ _import_user_creds(const vs_messenger_virgil_user_creds_t *creds) {
     CHECK_NOT_ZERO_RET(creds, VS_CODE_ERR_MSGR_INTERNAL);
     CHECK_NOT_ZERO_RET(creds->pubkey_sz, VS_CODE_ERR_MSGR_INTERNAL);
     CHECK_NOT_ZERO_RET(creds->privkey_sz, VS_CODE_ERR_MSGR_INTERNAL);
+    CHECK_NOT_ZERO_RET(creds->card_id, VS_CODE_ERR_MSGR_INTERNAL);
     CHECK_NOT_ZERO_RET(creds->card_id[0], VS_CODE_ERR_MSGR_INTERNAL);
 
     //
@@ -418,6 +416,8 @@ _import_user_creds(const vs_messenger_virgil_user_creds_t *creds) {
 
     vsc_data_t public_key_id = vsc_data(creds->pubkey_id, VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ);
     _inner_creds.public_key_id = vsc_buffer_new_with_data(public_key_id);
+
+    _inner_creds.card_id = vsc_str_mutable_from_str(vsc_str_from_str(creds->card_id));
 
     _inner_creds.is_ready = true;
 
@@ -482,7 +482,7 @@ _export_user_creds(vs_messenger_virgil_user_creds_t *creds) {
     //
     //  Store Public Key identifier.
     //
-    CHECK(vsc_buffer_len(_inner_creds.public_key_id) != VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ,
+    CHECK(vsc_buffer_len(_inner_creds.public_key_id) == VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ,
           "Wrong size of public key id");
     VS_IOT_MEMCPY(
             creds->pubkey_id, vsc_buffer_bytes(_inner_creds.public_key_id), vsc_buffer_len(_inner_creds.public_key_id));
@@ -938,6 +938,8 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
     //
     card_manager = vssc_card_manager_new();
     vssc_card_manager_use_random(card_manager, _config.rng);
+    core_sdk_error.status = vssc_card_manager_configure(card_manager);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to register a new Card (cannot configure card manager)");
 
     initial_raw_card = vssc_card_manager_generate_raw_card(
             card_manager, vsc_str_from_str(identity), card_private_key, &core_sdk_error);
@@ -954,9 +956,12 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
 
     request_url = vsc_str_mutable_concat(_base_url(), k_url_path_SIGNUP);
 
-    http_request = vssc_http_request_new_with_body(vssc_http_request_method_get,
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post,
                                                    vsc_str_mutable_as_str(request_url),
                                                    vssc_json_object_as_str(register_raw_card_json));
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
     http_response = vssc_virgil_http_client_send_custom_with_ca(http_request, _ca_bundle(), &core_sdk_error);
 
