@@ -41,8 +41,16 @@ function(add_snap _targetname _firmware_update _definitions)
     #
     #   SNAP library
     #
-
+    
     add_library(${_targetname})
+    
+    #
+    # Independ position code
+    #
+    
+    set_property(TARGET ${_targetname} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
+
 
     #
     #   Sources

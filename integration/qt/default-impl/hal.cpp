@@ -37,9 +37,32 @@
 #include <QStandardPaths>
 #include <qdir.h>
 #include <QCoreApplication>
+#include <QFileInfo>
+
+#define LOG_ROTATE_LEVEL 2     // Log rotate num (num -1)
 
 QFile VsLogFile;
 bool VsLogErr=false;
+
+bool vs_logger_rotate(QString FileName, int LogNums) {
+    QString NewFilePath = FileName + "." + QString::number(LogNums + 1);
+    QFile HLogFile;
+    HLogFile.remove(NewFilePath);
+    for(int TmpLogNum = LogNums; TmpLogNum >= 0; TmpLogNum--) {
+        if(TmpLogNum > 0 ) HLogFile.setFileName(FileName + "." + QString::number(TmpLogNum));
+                else HLogFile.setFileName(FileName);
+        NewFilePath = FileName + "." + QString::number(TmpLogNum + 1);
+        if(HLogFile.exists()) {
+            qDebug("Rename  %s -> %s", qPrintable(HLogFile.fileName()),qPrintable(NewFilePath));
+            if(!HLogFile.rename(NewFilePath)) {
+                qWarning("ERROR rename");
+                return false;
+            }
+        }
+
+    }
+    return true;
+}
 
 bool vs_logger_check_file() {
 
@@ -55,6 +78,8 @@ bool vs_logger_check_file() {
             return false;
         }
         VsLogFile.setFileName(AppDir.absolutePath() + "/" + QCoreApplication::applicationName() + ".log");
+        qDebug("Rotate logs");
+        vs_logger_rotate(VsLogFile.fileName(),LOG_ROTATE_LEVEL);
         qDebug("Create log file [%s]", qPrintable(VsLogFile.fileName()));
         if (!VsLogFile.open(QIODevice::WriteOnly | QIODevice::Text))
             qFatal("Error create log file [%s]", qPrintable(VsLogFile.fileName()));
