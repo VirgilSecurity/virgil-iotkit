@@ -1254,8 +1254,13 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     //
     //  Encrypt message.
     //
+    vscf_random_padding_t *random_padding = vscf_random_padding_new();
+    vscf_random_padding_use_random(random_padding, _config.rng);
+
     recipient_cipher = vscf_recipient_cipher_new();
     vscf_recipient_cipher_use_random(recipient_cipher, _config.rng);
+    vscf_recipient_cipher_take_encryption_padding(recipient_cipher, vscf_random_padding_impl(random_padding));
+    random_padding = NULL;
 
     vscf_recipient_cipher_add_key_recipient(recipient_cipher,
                                             vssc_key_handler_key_id(recipient_key_handler),
@@ -1265,7 +1270,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
             recipient_cipher, vsc_buffer_data(_inner_creds.public_key_id), _inner_creds.private_key);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cannot produce signature)");
 
-    foundation_error.status = vscf_recipient_cipher_start_encryption(recipient_cipher);
+    foundation_error.status = vscf_recipient_cipher_start_signed_encryption(recipient_cipher, plaintext.len);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cipher failed)");
 
     const size_t ciphertext_len = vscf_recipient_cipher_message_info_len(recipient_cipher) +
@@ -1283,8 +1288,14 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     foundation_error.status = vscf_recipient_cipher_finish_encryption(recipient_cipher, ciphertext);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cipher failed)");
 
-    vscf_recipient_cipher_destroy(&recipient_cipher);
 
+    const size_t footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
+    vsc_buffer_reserve_unused(ciphertext, footer_len);
+
+    foundation_error.status = vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, ciphertext);
+    CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cipher failed)");
+
+    vscf_recipient_cipher_destroy(&recipient_cipher);
 
     //
     //  Pack ciphertext to base64({"ciphertext":"BASE64=","version":"v2"}).
