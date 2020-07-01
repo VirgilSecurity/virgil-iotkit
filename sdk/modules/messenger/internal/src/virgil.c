@@ -39,6 +39,7 @@
 #include <virgil/crypto/common/vsc_common_public.h>
 #include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_foundation_public.h>
+#include <virgil/crypto/foundation/private/vscf_base64_private.h>
 #include <virgil/crypto/pythia/vscp_pythia_public.h>
 
 #include <virgil/sdk/core/vssc_core_sdk_public.h>
@@ -81,28 +82,32 @@ typedef struct {
 MAKE_STR_CONSTANT(k_url_path_VIRGIL_JWT, "/virgil-jwt")
 MAKE_STR_CONSTANT(k_url_path_EJABBERD_JWT, "/ejabberd-jwt")
 MAKE_STR_CONSTANT(k_url_path_SIGNUP, "/signup")
+MAKE_STR_CONSTANT(k_url_path_SET_PASSWORD, "/set-password")
+MAKE_STR_CONSTANT(k_url_path_PWD_VIRGIL_JWT, "/pwd-virgil-jwt")
 MAKE_STR_CONSTANT(k_json_key_TOKEN, "token")
 MAKE_STR_CONSTANT(k_json_key_RAW_CARD, "raw_card")
 MAKE_STR_CONSTANT(k_json_key_VIRGIL_CARD, "virgil_card")
 MAKE_STR_CONSTANT(k_json_key_CIPHERTEXT, "ciphertext")
 MAKE_STR_CONSTANT(k_json_key_DATE, "date")
 MAKE_STR_CONSTANT(k_json_key_VERSION, "version")
+MAKE_STR_CONSTANT(k_json_key_PASSWORD, "password")
 MAKE_STR_CONSTANT(k_json_value_V2, "v2")
 
-MAKE_STR_CONSTANT(k_auth_JWT_PREFIX, "Bearer ")
-MAKE_STR_CONSTANT(k_auth_HEDAER_NAME, "Authorization")
-
+MAKE_STR_CONSTANT(k_http_header_value_PREFIX_BEARER, "Bearer ")
+MAKE_STR_CONSTANT(k_http_header_name_AUTHORIZATION, "Authorization")
+MAKE_STR_CONSTANT(k_http_header_name_IDENTITY, "Identity")
+MAKE_STR_CONSTANT(k_http_header_name_PASSWORD, "Password")
 
 MAKE_DATA_CONSTANT_FROM_STR(k_brain_key_RECIPIENT_ID, "brain_key")
 
 MAKE_STR_CONSTANT(k_brain_key_JSON_VERSION, "version")
 MAKE_STR_CONSTANT(k_brain_key_JSON_CARD_ID, "card_id")
 MAKE_STR_CONSTANT(k_brain_key_JSON_PRIVATE_KEY, "private_key")
-MAKE_STR_CONSTANT(k_brain_key_JSON_PUBLIC_KEY, "public_key")
-MAKE_STR_CONSTANT(k_brain_key_JSON_PUBLIC_KEY_ID, "public_key_id")
+MAKE_STR_CONSTANT(k_brain_V1, "v1")
 
 MAKE_STR_CONSTANT(k_keyknox_root_MESSENGER, "messenger")
 MAKE_STR_CONSTANT(k_keyknox_path_CREDENTIALS, "credentials")
+MAKE_STR_CONSTANT(k_keyknox_alias_SIGN_IN, "sign_in")
 
 //
 // Module global variables.
@@ -204,32 +209,11 @@ _ca_bundle(void) {
 
 /******************************************************************************/
 static vs_status_e
-_request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
+_generate_auth_header(vsc_str_mutable_t *auth_header) {
     //
     //  Check inner state.
     //
-    VS_IOT_ASSERT(_config.is_initialized);
-    VS_IOT_ASSERT(_inner_creds.is_ready);
-
-    //
-    //  Check input parameters.
-    //
-    CHECK_NOT_ZERO_RET(vsc_str_is_valid_and_non_empty(endpoint), VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(token, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(token_buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-
-    //
-    //  Declare resources.
-    //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
-    vsc_buffer_t *jwt_signature = NULL;
-    vssc_http_request_t *http_request = NULL;
-    vssc_http_response_t *http_response = NULL;
-    vsc_str_mutable_t auth_url = {NULL, 0};
-    vsc_str_mutable_t auth_header = {NULL, 0};
-    vssc_json_object_t *token_json = NULL;
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
 
     //
     //  Create messenger JWT.
@@ -256,7 +240,7 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     vsc_str_buffer_append_char(jwt, '.');
     vsc_str_buffer_append_str(jwt, timestamp);
 
-    jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
+    vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
     vscf_signer_reset(signer);
     vscf_signer_append_data(signer, vsc_str_as_data(vsc_str_buffer_str(jwt)));
     const vscf_status_t sign_status = vscf_signer_sign(signer, _inner_creds.private_key, jwt_signature);
@@ -265,9 +249,48 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     vsc_str_buffer_append_char(jwt, '.');
     vscf_base64_encode(vsc_buffer_data(jwt_signature), &(jwt->buffer));
 
-    auth_header = vsc_str_mutable_concat(k_auth_JWT_PREFIX, vsc_str_buffer_str(jwt));
+    *auth_header = vsc_str_mutable_concat(k_http_header_value_PREFIX_BEARER, vsc_str_buffer_str(jwt));
 
+    status = VS_CODE_OK;
+
+terminate:
+    vscf_signer_destroy(&signer);
     vsc_str_buffer_destroy(&jwt);
+    vsc_buffer_destroy(&jwt_signature);
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
+_request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Check input parameters.
+    //
+    CHECK_NOT_ZERO_RET(vsc_str_is_valid_and_non_empty(endpoint), VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(token, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(token_buf_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    //
+    //  Declare resources.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vsc_buffer_t *jwt_signature = NULL;
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vsc_str_mutable_t auth_url = {NULL, 0};
+    vsc_str_mutable_t auth_header = {NULL, 0};
+    vssc_json_object_t *token_json = NULL;
+
+    vs_status_e status = _generate_auth_header(&auth_header);
+    CHECK(VS_CODE_OK == status, "Failed to get JWT (failed to produce Auth Header)");
 
     //
     //  Perform auth and get Virgil or Ejabberd JWT depends on the given endpoint.
@@ -277,7 +300,7 @@ _request_messenger_token(vsc_str_t endpoint, char *token, size_t token_buf_sz) {
     auth_url = vsc_str_mutable_concat(_base_url(), endpoint);
     http_request = vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_mutable_as_str(auth_url));
 
-    vssc_http_request_add_header(http_request, k_auth_HEDAER_NAME, vsc_str_mutable_as_str(auth_header));
+    vssc_http_request_add_header(http_request, k_http_header_name_AUTHORIZATION, vsc_str_mutable_as_str(auth_header));
     vsc_str_mutable_release(&auth_header);
 
     http_response = vssc_virgil_http_client_send_custom_with_ca(http_request, _ca_bundle(), &core_sdk_error);
@@ -434,15 +457,85 @@ terminate:
     return status;
 }
 
+/******************************************************************************/
+static vs_status_e
+_import_loaded_creds(vsc_str_t card_id, vsc_data_t private_key_data) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_init());
+
+    //
+    //  Check input parameters.
+    //
+    VS_IOT_ASSERT(vsc_str_is_valid_and_non_empty(card_id));
+    VS_IOT_ASSERT(vsc_data_is_valid_and_non_empty(private_key_data));
+
+    //
+    //  Cleanup previous inner creds.
+    //
+    _release_inner_creds();
+
+    //
+    //  Declare vars.
+    //
+    vscf_error_t foundation_error;
+    vscf_error_reset(&foundation_error);
+
+    vscf_key_provider_t *key_provider = NULL;
+
+    vscf_impl_t *card_private_key = NULL;
+    vscf_impl_t *card_public_key = NULL;
+
+    vsc_buffer_t *card_public_key_id = NULL;
+    ;
+
+    //
+    //  Import given creds to the inner creds.
+    //
+    vs_status_e status = VS_CODE_ERR_MSGR_CRYPTO;
+
+    key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, _config.rng);
+
+    card_private_key = vscf_key_provider_import_private_key(key_provider, private_key_data, &foundation_error);
+    CHECK(!vscf_error_has_error(&foundation_error), "Failed to import private key from the given credentials");
+
+    card_public_key = vscf_private_key_extract_public_key(card_private_key);
+
+    card_public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
+
+    foundation_error.status = vscf_key_provider_calculate_key_id(key_provider, card_public_key, card_public_key_id);
+    CHECK(!vscf_error_has_error(&foundation_error), "Filed to calculate public key identifier");
+
+    //
+    //  Store inner credentials.
+    //
+    _store_inner_creds(card_id, &card_public_key_id, &card_public_key, &card_private_key);
+
+    status = VS_CODE_OK;
+
+terminate:
+
+    vscf_key_provider_destroy(&key_provider);
+
+    if (status != VS_CODE_OK) {
+        vscf_impl_destroy(&card_private_key);
+        vscf_impl_destroy(&card_public_key);
+        vsc_buffer_destroy(&card_public_key_id);
+    }
+
+    return status;
+}
+
 
 /******************************************************************************/
 static vs_status_e
 _export_user_creds(vs_messenger_virgil_user_creds_t *creds) {
     //
-    //  Check input parameters.
+    //  Check inner state.
     //
-    VS_IOT_ASSERT(_config.is_initialized);
-    VS_IOT_ASSERT(_inner_creds.is_ready);
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
 
     //
     //  Prepare vars.
@@ -562,7 +655,171 @@ _log_user_creds(const vs_messenger_virgil_user_creds_t *creds) {
 
 /******************************************************************************/
 static vs_status_e
-_generate_brain_key(const char *pwd, const vssc_jwt_t *jwt, vscf_impl_t **private_key, vscf_impl_t **public_key) {
+_set_sign_in_password(vsc_data_t pwd) {
+
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Check input parameters.
+    //
+    CHECK_NOT_ZERO_RET(vsc_data_is_valid(pwd), VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(vsc_data_len(pwd) == 32, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    //
+    //  Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vsc_str_mutable_t auth_header = {NULL, 0};
+    vsc_str_mutable_t auth_url = {NULL, 0};
+
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+
+    vssc_json_object_t *body_json = NULL;
+
+    vs_status_e status = _generate_auth_header(&auth_header);
+    CHECK(VS_CODE_OK == status, "Failed to set sign in password (failed to produce Auth Header)");
+
+    //
+    //  Perform auth and get Virgil or Ejabberd JWT depends on the given endpoint.
+    //
+    status = VS_CODE_ERR_MSGR_SERVICE;
+
+    body_json = vssc_json_object_new();
+    vssc_json_object_add_binary_value(body_json, k_json_key_PASSWORD, pwd);
+
+    auth_url = vsc_str_mutable_concat(_base_url(), k_url_path_SET_PASSWORD);
+    http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url), vssc_json_object_as_str(body_json));
+
+    vssc_json_object_destroy(&body_json);
+
+    vssc_http_request_add_header(http_request, k_http_header_name_AUTHORIZATION, vsc_str_mutable_as_str(auth_header));
+    vsc_str_mutable_release(&auth_header);
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
+    http_response = vssc_virgil_http_client_send_custom_with_ca(http_request, _ca_bundle(), &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to set sign in password (cannot send request)");
+
+    CHECK(vssc_http_response_is_success(http_response),
+          "Failed to set sign in password (errored response %d)",
+          vssc_http_response_status_code(http_response));
+
+    status = VS_CODE_OK;
+
+terminate:
+    vsc_str_mutable_release(&auth_url);
+    vsc_str_mutable_release(&auth_header);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&body_json);
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
+_get_virgil_jwt_with_sign_in_password(vsc_str_t identity, vsc_data_t pwd) {
+
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Check input parameters.
+    //
+    CHECK_NOT_ZERO_RET(vsc_data_is_valid(pwd), VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(vsc_data_len(pwd) == 32, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(vsc_str_is_valid_and_non_empty(identity), VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    //
+    //  Prepare request.
+    //
+    vsc_str_mutable_t url = vsc_str_mutable_concat(_base_url(), k_url_path_PWD_VIRGIL_JWT);
+    vssc_http_request_t *http_request =
+            vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_mutable_as_str(url));
+    vsc_str_mutable_release(&url);
+
+    vsc_buffer_t *pwd_base64 = vscf_base64_encode_new(pwd);
+    vsc_str_t pwd_base64_str = vsc_str_from_data(vsc_buffer_data(pwd_base64));
+
+    vssc_http_request_add_header(http_request, k_http_header_name_IDENTITY, identity);
+    vssc_http_request_add_header(http_request, k_http_header_name_PASSWORD, pwd_base64_str);
+
+    vsc_buffer_destroy(&pwd_base64);
+    pwd_base64_str = vsc_str_empty();
+
+    //
+    //  Declare result vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_json_object_t *token_json = NULL;
+    vssc_http_response_t *http_response = NULL;
+
+    //
+    //  Send.
+    //
+    vs_status_e status = VS_CODE_ERR_MSGR_SERVICE;
+
+    http_response = vssc_virgil_http_client_send_custom_with_ca(http_request, _ca_bundle(), &core_sdk_error);
+
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get Virgl JWT with sign in password (cannot send request)");
+
+    CHECK(vssc_http_response_is_success(http_response),
+          "Failed to get Virgl JWT with sign in password (errored response %d)",
+          vssc_http_response_status_code(http_response));
+
+    //
+    //  Get token.
+    //
+    token_json = vssc_json_object_parse(vssc_http_response_body(http_response), &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get Virgl JWT with sign in password (failed to parse Virgil JWT)");
+
+    vsc_str_t token_str = vssc_json_object_get_string_value(token_json, k_json_key_TOKEN, &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get Virgl JWT with sign in password (failed to parse Virgil JWT)");
+
+    //
+    //  Parse Virgil JWT.
+    //
+    vssc_jwt_t *jwt = vssc_jwt_parse(token_str, &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get Virgl JWT with sign in password (failed to parse Virgil JWT)");
+
+    //
+    //  Update Virgil JWT within creds.
+    //
+    vssc_jwt_destroy(&_jwt);
+
+    _jwt = jwt;
+
+    status = VS_CODE_OK;
+
+
+terminate:
+    vssc_json_object_destroy(&token_json);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+
+    return status;
+}
+
+
+/******************************************************************************/
+static vs_status_e
+_generate_brain_key(vsc_data_t pwd, const vssc_jwt_t *jwt, vscf_impl_t **private_key, vscf_impl_t **public_key) {
     //
     //  Declare resources.
     //
@@ -595,7 +852,7 @@ _generate_brain_key(const char *pwd, const vssc_jwt_t *jwt, vscf_impl_t **privat
 
     blinding_secret = vsc_buffer_new_with_capacity(vscp_pythia_blinding_secret_buf_len());
 
-    pythia_status = vscp_pythia_blind(vsc_str_as_data(vsc_str_from_str(pwd)), blinded_password, blinding_secret);
+    pythia_status = vscp_pythia_blind(pwd, blinded_password, blinding_secret);
     CHECK(pythia_status == vscp_status_SUCCESS, "Failed to blind password");
 
     //
@@ -661,12 +918,377 @@ terminate:
 
 /******************************************************************************/
 static vs_status_e
+_pack_credentials_for_keyknox(const vscf_impl_t *brain_public_key,
+                              const vscf_impl_t *brain_private_key,
+                              vsc_buffer_t *keyknox_meta,
+                              vsc_buffer_t *keyknox_value) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Check input parameters.
+    //
+    VS_IOT_ASSERT(brain_public_key != NULL);
+    VS_IOT_ASSERT(brain_private_key != NULL);
+    VS_IOT_ASSERT(keyknox_meta != NULL);
+    VS_IOT_ASSERT(keyknox_value != NULL);
+
+    //
+    //  Declare vars.
+    //
+    vscf_status_t foundation_status = vscf_status_SUCCESS;
+
+    vsc_buffer_t *exported_private_key = NULL;
+
+    vscf_key_provider_t *key_provider = NULL;
+
+    vscf_recipient_cipher_t *cipher = NULL;
+
+    vssc_json_object_t *credentials_json = NULL;
+
+    vs_status_e status = VS_CODE_ERR_MSGR_CRYPTO;
+
+
+    //
+    //  Export private key.
+    //
+
+    key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, _config.rng);
+
+    const size_t exported_private_key_len =
+            vscf_key_provider_exported_private_key_len(key_provider, _inner_creds.private_key);
+
+    exported_private_key = vsc_buffer_new_with_capacity(exported_private_key_len);
+
+    foundation_status =
+            vscf_key_provider_export_private_key(key_provider, _inner_creds.private_key, exported_private_key);
+
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to export private key)");
+
+    vscf_key_provider_destroy(&key_provider);
+
+    //
+    //  Pack Credentials.
+    //  Format:
+    //     {
+    //         "version" : "v1"
+    //         "card_id" : "HEX_STRING",
+    //         "private_key" : "BASE64_STRING"
+    //     }
+    credentials_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(credentials_json, k_brain_key_JSON_VERSION, k_brain_V1);
+    vssc_json_object_add_string_value(
+            credentials_json, k_brain_key_JSON_CARD_ID, vsc_str_mutable_as_str(_inner_creds.card_id));
+    vssc_json_object_add_binary_value(
+            credentials_json, k_brain_key_JSON_PRIVATE_KEY, vsc_buffer_data(exported_private_key));
+
+    //
+    //  Encrypt Credentials.
+    //
+    cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(cipher, k_brain_key_RECIPIENT_ID, brain_public_key);
+
+    foundation_status = vscf_recipient_cipher_add_signer(cipher, k_brain_key_RECIPIENT_ID, brain_private_key);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+
+    foundation_status = vscf_recipient_cipher_start_encryption(cipher);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+
+
+    vsc_buffer_reset_with_capacity(keyknox_meta, vscf_recipient_cipher_message_info_len(cipher));
+    vscf_recipient_cipher_pack_message_info(cipher, keyknox_meta);
+
+    vsc_buffer_reset_with_capacity(
+            keyknox_value,
+            vscf_recipient_cipher_encryption_out_len(cipher, vssc_json_object_as_str(credentials_json).len) +
+                    vscf_recipient_cipher_encryption_out_len(cipher, 0));
+
+    foundation_status = vscf_recipient_cipher_process_encryption(
+            cipher, vsc_str_as_data(vssc_json_object_as_str(credentials_json)), keyknox_value);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+
+    vssc_json_object_destroy(&credentials_json);
+
+    foundation_status = vscf_recipient_cipher_finish_encryption(cipher, keyknox_value);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+
+    status = VS_CODE_OK;
+
+terminate:
+    vsc_buffer_destroy(&exported_private_key);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_recipient_cipher_destroy(&cipher);
+    vssc_json_object_destroy(&credentials_json);
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
+_unpack_credentials_from_keyknox(const vscf_impl_t *brain_public_key,
+                                 const vscf_impl_t *brain_private_key,
+                                 vsc_data_t keyknox_meta,
+                                 vsc_data_t keyknox_value) {
+
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_init());
+
+    //
+    //  Check input parameters.
+    //
+    VS_IOT_ASSERT(brain_public_key != NULL);
+    VS_IOT_ASSERT(brain_private_key != NULL);
+    VS_IOT_ASSERT(vsc_data_is_valid_and_non_empty(keyknox_meta));
+    VS_IOT_ASSERT(vsc_data_is_valid_and_non_empty(keyknox_value));
+
+    vscf_status_t foundation_status = vscf_status_SUCCESS;
+
+    vscf_recipient_cipher_t *cipher = NULL;
+
+    vssc_json_object_t *credentials_json = NULL;
+
+    vsc_buffer_t *credentials_data = NULL;
+
+    vsc_buffer_t *credentials_private_key = NULL;
+
+    //
+    //  Decrypt Credentials.
+    //
+    vs_status_e status = VS_CODE_ERR_MSGR_CRYPTO;
+
+    cipher = vscf_recipient_cipher_new();
+
+    foundation_status = vscf_recipient_cipher_start_decryption_with_key(
+            cipher, k_brain_key_RECIPIENT_ID, brain_private_key, keyknox_meta);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+
+
+    credentials_data =
+            vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(cipher, keyknox_value.len) +
+                                         vscf_recipient_cipher_decryption_out_len(cipher, 0));
+
+    foundation_status = vscf_recipient_cipher_process_decryption(cipher, keyknox_value, credentials_data);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+
+    foundation_status = vscf_recipient_cipher_finish_decryption(cipher, credentials_data);
+    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+
+    //
+    //  Verify Credentials.
+    //
+    CHECK(vscf_recipient_cipher_is_data_signed(cipher), "Failed to unpack credentials (no signature)");
+
+    const vscf_signer_info_list_t *signer_infos = vscf_recipient_cipher_signer_infos(cipher);
+    CHECK(vscf_signer_info_list_has_item(signer_infos), "Failed to verify credentials");
+
+    const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
+    CHECK(vsc_data_equal(k_brain_key_RECIPIENT_ID, vscf_signer_info_signer_id(signer_info)),
+          "Failed to unpack credentials (failed to verify signature)");
+
+    CHECK(vscf_recipient_cipher_verify_signer_info(cipher, signer_info, brain_public_key),
+          "Failed to unpack credentials (failed to verify signature)");
+
+    vscf_recipient_cipher_destroy(&cipher);
+
+    //
+    //  Unpack Credentials.
+    //  Format:
+    //     {
+    //         "version" : "1"
+    //         "card_id" : "HEX_STRING",
+    //         "private_key" : "BASE64_STRING".
+    //     }
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    status = VS_CODE_ERR_MSGR_INTERNAL;
+
+    credentials_json = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(credentials_data)), &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to unpack credentials (invalid json)");
+
+    vsc_str_t credentials_version =
+            vssc_json_object_get_string_value(credentials_json, k_brain_key_JSON_VERSION, &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no version)");
+    CHECK(vsc_str_equal(k_brain_V1, credentials_version), "Failed to unpack credentials (version mismatch)");
+
+    vsc_str_t credentials_card_id =
+            vssc_json_object_get_string_value(credentials_json, k_brain_key_JSON_CARD_ID, &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no card_id)");
+
+    credentials_private_key =
+            vssc_json_object_get_binary_value_new(credentials_json, k_brain_key_JSON_PRIVATE_KEY, &core_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to unpack credentials (no private_key)");
+
+    //
+    //  Import credentials.
+    //
+    status = _import_loaded_creds(credentials_card_id, vsc_buffer_data(credentials_private_key));
+
+terminate:
+
+    vscf_recipient_cipher_destroy(&cipher);
+    vssc_json_object_destroy(&credentials_json);
+    vsc_buffer_destroy(&credentials_data);
+    vsc_buffer_destroy(&credentials_private_key);
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
+_push_credentials_to_keyknox(vsc_data_t meta, vsc_data_t value) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+    VS_IOT_ASSERT(!vssc_jwt_is_expired(_jwt));
+
+    //
+    //  Push.
+    //
+    vssc_string_list_t *keyknox_identities = vssc_string_list_new();
+    vssc_string_list_add(keyknox_identities, vssc_jwt_identity(_jwt));
+
+    // TODO: Request existent entry to perform re-write operation.
+    vsc_data_t previous_entry_hash = vsc_data_empty();
+
+    vssk_keyknox_entry_t *keyknox_entry = vssk_keyknox_entry_new_with(k_keyknox_root_MESSENGER,
+                                                                      k_keyknox_path_CREDENTIALS,
+                                                                      k_keyknox_alias_SIGN_IN,
+                                                                      keyknox_identities,
+                                                                      meta,
+                                                                      value,
+                                                                      previous_entry_hash);
+
+
+    vssc_string_list_destroy(&keyknox_identities);
+
+    vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new();
+
+    vssc_http_request_t *http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_virgil_http_response_t *http_response =
+            vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
+
+
+    vssk_keyknox_entry_destroy(&keyknox_entry);
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&http_request);
+
+
+    CHECK_RET(!vssc_error_has_error(&core_sdk_error),
+              VS_CODE_ERR_MSGR_SERVICE,
+              "Failed to send encrypted credentials to the Keyknox");
+
+    vs_status_e status = VS_CODE_OK;
+    if (!vssc_virgil_http_response_is_success(http_response)) {
+        VS_LOG_ERROR("Failed to push encrypted credentials to the Keyknox (errored response)");
+        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(http_response));
+
+        if (vssc_virgil_http_response_has_service_error(http_response)) {
+            VS_LOG_ERROR("    virgil error: %lu %s",
+                         vssc_virgil_http_response_service_error_code(http_response),
+                         vssc_virgil_http_response_service_error_description(http_response));
+        }
+
+        status = VS_CODE_ERR_MSGR_SERVICE;
+    }
+
+    vssc_virgil_http_response_destroy(&http_response);
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
+_pull_credentials_from_keyknox(vsc_buffer_t *keyknox_meta, vsc_buffer_t *keyknox_value) {
+
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_init());
+    VS_IOT_ASSERT(!vssc_jwt_is_expired(_jwt));
+    VS_IOT_ASSERT(keyknox_meta != NULL);
+    VS_IOT_ASSERT(keyknox_value != NULL);
+
+    //
+    //  Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_error_t keyknox_sdk_error;
+    vssk_error_reset(&keyknox_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = NULL;
+    vssc_http_request_t *http_request = NULL;
+    vssc_virgil_http_response_t *http_response = NULL;
+    vssk_keyknox_entry_t *keyknox_entry = NULL;
+
+    vs_status_e status = VS_CODE_ERR_MSGR_SERVICE;
+
+    //
+    //  Pull encrypted credentials from the Keyknox.
+    //
+    keyknox_client = vssk_keyknox_client_new();
+
+    http_request = vssk_keyknox_client_make_request_pull(keyknox_client,
+                                                         k_keyknox_root_MESSENGER,
+                                                         k_keyknox_path_CREDENTIALS,
+                                                         k_keyknox_alias_SIGN_IN,
+                                                         vssc_jwt_identity(_jwt));
+
+    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
+
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get encrypted credentials from the Keyknox (cannot send request)");
+
+    if (!vssc_virgil_http_response_is_success(http_response)) {
+        VS_LOG_ERROR("Failed to get encrypted credentials from the Keyknox (errored response)");
+        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(http_response));
+
+        if (vssc_virgil_http_response_has_service_error(http_response)) {
+            VS_LOG_ERROR("    virgil error: %lu %s",
+                         vssc_virgil_http_response_service_error_code(http_response),
+                         vssc_virgil_http_response_service_error_description(http_response));
+        }
+
+        goto terminate;
+    }
+
+
+    keyknox_entry = vssk_keyknox_client_process_response_pull(http_response, &keyknox_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to get encrypted credentials from the Keyknox (parse failed)");
+
+    vsc_buffer_reset(keyknox_meta);
+    vsc_buffer_append_data(keyknox_meta, vssk_keyknox_entry_meta(keyknox_entry));
+
+    vsc_buffer_reset(keyknox_value);
+    vsc_buffer_append_data(keyknox_value, vssk_keyknox_entry_value(keyknox_entry));
+
+    status = VS_CODE_OK;
+
+terminate:
+
+    return status;
+}
+
+/******************************************************************************/
+static vs_status_e
 _get_public_key_by_identity(vsc_str_t identity, const vssc_key_handler_t **key_handler_ref) {
     //
     //  Check inner state.
     //
-    VS_IOT_ASSERT(_config.is_initialized);
-    VS_IOT_ASSERT(_inner_creds.is_ready);
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
 
     //
     //  Check input parameters.
@@ -1366,7 +1988,7 @@ vs_messenger_virgil_search(const char *identity) {
 
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
-vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, const char *pwd, const char *alias) {
+vs_messenger_virgil_set_sign_in_password(const char *pwd) {
 
     //
     //  Check inner state.
@@ -1376,12 +1998,7 @@ vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, 
     //
     //  Check input parameters.
     //
-    CHECK_NOT_ZERO_RET(creds, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(creds->pubkey_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(creds->privkey_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(creds->card_id[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(pwd && pwd[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(alias && alias[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
 
     //
     //  Update Virgil JWT first.
@@ -1392,143 +2009,67 @@ vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, 
               "Failed to store credentials (cannot update Virgil JWT)");
 
     //
+    //  Get pwd digest.
+    //
+    vsc_buffer_t *pwd_digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+    vsc_data_t pwd_data = vsc_str_as_data(vsc_str_from_str(pwd));
+    vscf_sha512_hash(pwd_data, pwd_digest);
+
+    vsc_data_t sign_in_pwd = vsc_data_slice_beg(vsc_buffer_data(pwd_digest), 0, 32);
+    vsc_data_t brain_key_pwd = vsc_data_slice_beg(vsc_buffer_data(pwd_digest), 32, 32);
+
+    //
     //  Declare resources.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
-    vssp_error_t pythia_sdk_error;
-    vssp_error_reset(&pythia_sdk_error);
-
-    vssk_error_t keyknox_error;
-    vssk_error_reset(&keyknox_error);
-
-    vscf_status_t foundation_status = vscf_status_SUCCESS;
-
     vscf_impl_t *brain_private_key = NULL;
     vscf_impl_t *brain_public_key = NULL;
-    vssc_json_object_t *credentials_json = NULL;
-    vscf_recipient_cipher_t *cipher = NULL;
-
-    vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
 
     vsc_buffer_t *keyknox_meta = NULL;
     vsc_buffer_t *keyknox_value = NULL;
-    vssk_keyknox_client_t *keyknox_client = NULL;
-    vssc_string_list_t *keyknox_identities = NULL;
-    vssk_keyknox_entry_t *keyknox_entry = NULL;
 
 
-    vs_status_e status = VS_CODE_ERR_MSGR_CRYPTO;
+    //
+    //  Store password to the messenger backend.
+    //
+    vs_status_e status = _set_sign_in_password(sign_in_pwd);
+    CHECK(VS_CODE_OK == status, "Failed set sign in password (cannot store password within the messenger service)");
 
     //
     //  Generate Brain Key.
     //
-    STATUS_CHECK(_generate_brain_key(pwd, _jwt, &brain_private_key, &brain_public_key), "Cannot generate brain key");
+    status = _generate_brain_key(brain_key_pwd, _jwt, &brain_private_key, &brain_public_key);
+    CHECK(VS_CODE_OK == status, "Failed set sign in password (cannot generate Brain Key)");
 
     //
-    //  Pack Credentials.
-    //  Format:
-    //     {
-    //         "version" : "1"
-    //         "card_id" : "HEX_STRING",
-    //         "private_key" : "BASE64_STRING",
-    //         "public_key" : "BASE64_STRING",
-    //         "public_key_id" : "BASE64_STRING"
-    //     }
-    credentials_json = vssc_json_object_new();
-    vssc_json_object_add_int_value(credentials_json, k_brain_key_JSON_VERSION, 1);
-    vssc_json_object_add_string_value(credentials_json, k_brain_key_JSON_CARD_ID, vsc_str_from_str(creds->card_id));
-    vssc_json_object_add_binary_value(
-            credentials_json, k_brain_key_JSON_PRIVATE_KEY, vsc_data(creds->privkey, creds->privkey_sz));
-    vssc_json_object_add_binary_value(
-            credentials_json, k_brain_key_JSON_PUBLIC_KEY, vsc_data(creds->pubkey, creds->pubkey_sz));
-    vssc_json_object_add_binary_value(credentials_json,
-                                      k_brain_key_JSON_PUBLIC_KEY_ID,
-                                      vsc_data(creds->pubkey_id, VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ));
-
+    //  Pack credentials to be stored within KeyKnox.
     //
-    //  Encrypt Credentials.
-    //
-    cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_add_key_recipient(cipher, k_brain_key_RECIPIENT_ID, brain_public_key);
-
-    foundation_status = vscf_recipient_cipher_add_signer(cipher, k_brain_key_RECIPIENT_ID, brain_private_key);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to encrypt credentials");
-
-    foundation_status = vscf_recipient_cipher_start_encryption(cipher);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to encrypt credentials");
-
-
-    keyknox_meta = vsc_buffer_new_with_capacity(vscf_recipient_cipher_message_info_len(cipher));
-    vscf_recipient_cipher_pack_message_info(cipher, keyknox_meta);
-
-    keyknox_value = vsc_buffer_new_with_capacity(
-            vscf_recipient_cipher_encryption_out_len(cipher, vssc_json_object_as_str(credentials_json).len) +
-            vscf_recipient_cipher_encryption_out_len(cipher, 0));
-
-    foundation_status = vscf_recipient_cipher_process_encryption(
-            cipher, vsc_str_as_data(vssc_json_object_as_str(credentials_json)), keyknox_value);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to encrypt credentials");
-
-    vssc_json_object_destroy(&credentials_json);
-
-    foundation_status = vscf_recipient_cipher_finish_encryption(cipher, keyknox_value);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to encrypt credentials");
-
-    vscf_recipient_cipher_destroy(&cipher);
+    keyknox_meta = vsc_buffer_new();
+    keyknox_value = vsc_buffer_new();
+    status = _pack_credentials_for_keyknox(brain_public_key, brain_private_key, keyknox_meta, keyknox_value);
+    CHECK(VS_CODE_OK == status, "Failed set sign in password (cannot pack credentials)");
 
     //
     //  Push encrypted credentials to the Keyknox.
     //
-
-    status = VS_CODE_ERR_MSGR_SERVICE;
-
-    keyknox_identities = vssc_string_list_new();
-    vssc_string_list_add(keyknox_identities, vssc_jwt_identity(_jwt));
-
-    keyknox_entry = vssk_keyknox_entry_new_with(k_keyknox_root_MESSENGER,
-                                                k_keyknox_path_CREDENTIALS,
-                                                vsc_str_from_str(alias),
-                                                keyknox_identities,
-                                                vsc_buffer_data(keyknox_meta),
-                                                vsc_buffer_data(keyknox_value),
-                                                vsc_data_empty());
-
-    keyknox_client = vssk_keyknox_client_new();
-
-    http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
-
-    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
-
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to send encrypted credentials to the Keyknox");
-
-    CHECK(vssc_virgil_http_response_is_success(http_response), "Failed to push encrypted credentials to the Keyknox");
-
-    status = VS_CODE_OK;
+    status = _push_credentials_to_keyknox(vsc_buffer_data(keyknox_meta), vsc_buffer_data(keyknox_value));
+    CHECK(VS_CODE_OK == status, "Failed set sign in password (cannot push encrypted credentials to the KeyKnox)");
 
 terminate:
 
+    vsc_buffer_destroy(&pwd_digest);
     vscf_impl_destroy(&brain_private_key);
     vscf_impl_destroy(&brain_public_key);
-    vssc_json_object_destroy(&credentials_json);
-    vscf_recipient_cipher_destroy(&cipher);
-    vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
     vsc_buffer_destroy(&keyknox_meta);
     vsc_buffer_destroy(&keyknox_value);
-    vssk_keyknox_client_destroy(&keyknox_client);
-    vssc_string_list_destroy(&keyknox_identities);
-    vssk_keyknox_entry_destroy(&keyknox_entry);
 
     return status;
 }
 
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
-vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger_virgil_user_creds_t *creds) {
-
+vs_messenger_virgil_sign_in_with_password(const char *identity,
+                                          const char *pwd,
+                                          vs_messenger_virgil_user_creds_t *creds) {
     //
     //  Check inner state.
     //
@@ -1537,200 +2078,79 @@ vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger
     //
     //  Check input parameters.
     //
+    CHECK_NOT_ZERO_RET(identity && identity[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(pwd && pwd[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(alias && alias[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(creds, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    //
+    //  Get pwd digest.
+    //
+    vsc_buffer_t *pwd_digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+    vsc_data_t pwd_data = vsc_str_as_data(vsc_str_from_str(pwd));
+    vscf_sha512_hash(pwd_data, pwd_digest);
+
+    vsc_data_t sign_in_pwd = vsc_data_slice_beg(vsc_buffer_data(pwd_digest), 0, 32);
+    vsc_data_t brain_key_pwd = vsc_data_slice_beg(vsc_buffer_data(pwd_digest), 32, 32);
 
     //
     //  Declare resources.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
-    vssp_error_t pythia_sdk_error;
-    vssp_error_reset(&pythia_sdk_error);
-
-    vssk_error_t keyknox_error;
-    vssk_error_reset(&keyknox_error);
-
-    vscf_status_t foundation_status = vscf_status_SUCCESS;
-    vscf_recipient_cipher_t *cipher = NULL;
     vscf_impl_t *brain_private_key = NULL;
     vscf_impl_t *brain_public_key = NULL;
 
-    vssc_jwt_t *jwt = NULL;
-    vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vsc_buffer_t *keyknox_meta = NULL;
+    vsc_buffer_t *keyknox_value = NULL;
 
-    vssk_keyknox_client_t *keyknox_client = NULL;
-    vssk_keyknox_entry_t *keyknox_entry = NULL;
-
-    vssc_json_object_t *credentials_json = NULL;
-
-    const vscf_signer_info_list_t *signer_infos = NULL;
-    const vscf_signer_info_t *signer_info = NULL;
-
-    vsc_buffer_t *credentials_data = NULL;
-
-    int credentials_version = -1;
-    vsc_str_t credentials_card_id = vsc_str_empty();
-    vsc_buffer_t *credentials_private_key = NULL;
-    vsc_buffer_t *credentials_public_key = NULL;
-    vsc_buffer_t *credentials_public_key_id = NULL;
-
-    vs_status_e status = VS_CODE_ERR_MSGR_INTERNAL;
 
     //
-    //  FIXME: request JWT based on the user login and password.
+    //  Store password to the messenger backend.
     //
+    vs_status_e status = _get_virgil_jwt_with_sign_in_password(vsc_str_from_str(identity), sign_in_pwd);
+    CHECK(VS_CODE_OK == status, "Failed sign in with password (cannot get Virgil JWT)");
+    VS_IOT_ASSERT(_jwt != NULL);
+    VS_IOT_ASSERT(!vssc_jwt_is_expired(_jwt));
 
     //
     //  Generate Brain Key.
     //
-    STATUS_CHECK(_generate_brain_key(pwd, _jwt, &brain_private_key, &brain_public_key), "Cannot generate brain key");
+    status = _generate_brain_key(brain_key_pwd, _jwt, &brain_private_key, &brain_public_key);
+    CHECK(VS_CODE_OK == status, "Failed sign in with password (cannot generate Brain Key)");
 
     //
     //  Pull encrypted credentials from the Keyknox.
     //
-    keyknox_client = vssk_keyknox_client_new();
-
-    http_request = vssk_keyknox_client_make_request_pull(keyknox_client,
-                                                         k_keyknox_root_MESSENGER,
-                                                         k_keyknox_path_CREDENTIALS,
-                                                         vsc_str_from_str(alias),
-                                                         vssc_jwt_identity(jwt));
-
-    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
-
-    CHECK(!vssc_error_has_error(&core_sdk_error),
-          "Failed to get encrypted credentials from the Keyknox (cannot send request)");
-
-    CHECK(vssc_virgil_http_response_is_success(http_response),
-          "Failed to get encrypted credentials from the Keyknox (errored response)");
-
-
-    keyknox_entry = vssk_keyknox_client_process_response_pull(http_response, &keyknox_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to get encrypted credentials from the Keyknox");
-
+    keyknox_meta = vsc_buffer_new();
+    keyknox_value = vsc_buffer_new();
+    status = _pull_credentials_from_keyknox(keyknox_meta, keyknox_value);
+    CHECK(VS_CODE_OK == status, "Failed sign in with password (cannot pull encrypted credentials from the KeyKnox)");
 
     //
-    //  Decrypt Credentials.
+    //  Unpack credentials from the KeyKnox.
     //
-    cipher = vscf_recipient_cipher_new();
+    status = _unpack_credentials_from_keyknox(
+            brain_public_key, brain_private_key, vsc_buffer_data(keyknox_meta), vsc_buffer_data(keyknox_value));
+    CHECK(VS_CODE_OK == status, "Failed sign in with password (cannot pack credentials)");
 
-    foundation_status = vscf_recipient_cipher_start_decryption_with_key(
-            cipher, k_brain_key_RECIPIENT_ID, brain_private_key, vssk_keyknox_entry_meta(keyknox_entry));
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to decrypt credentials");
-
-
-    credentials_data = vsc_buffer_new_with_capacity(
-            vscf_recipient_cipher_decryption_out_len(cipher, vssk_keyknox_entry_value(keyknox_entry).len) +
-            vscf_recipient_cipher_decryption_out_len(cipher, 0));
-
-    foundation_status =
-            vscf_recipient_cipher_process_decryption(cipher, vssk_keyknox_entry_value(keyknox_entry), credentials_data);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to decrypt credentials");
-
-    foundation_status = vscf_recipient_cipher_finish_decryption(cipher, credentials_data);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to decrypt credentials");
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
 
     //
-    //  Verify Credentials.
+    //  Export user creds.
     //
-    CHECK(vscf_recipient_cipher_is_data_signed(cipher), "Failed to verify credentials");
-
-    signer_infos = vscf_recipient_cipher_signer_infos(cipher);
-
-    CHECK(vscf_signer_info_list_has_item(signer_infos), "Failed to verify credentials");
-
-    signer_info = vscf_signer_info_list_item(signer_infos);
-
-    CHECK(vsc_data_equal(k_brain_key_RECIPIENT_ID, vscf_signer_info_signer_id(signer_info)),
-          "Failed to verify credentials");
-
-    CHECK(vscf_recipient_cipher_verify_signer_info(cipher, signer_info, brain_public_key),
-          "Failed to verify credentials");
-
-    vscf_recipient_cipher_destroy(&cipher);
+    status = _export_user_creds(creds);
+    CHECK(VS_CODE_OK == status, "Failed sign in with password  (cannot export user credentials)");
 
     //
-    //  Unpack Credentials.
-    //  Format:
-    //     {
-    //         "version" : "1"
-    //         "card_id" : "HEX_STRING",
-    //         "private_key" : "BASE64_STRING",
-    //         "public_key" : "BASE64_STRING",
-    //         "public_key_id" : "BASE64_STRING"
-    //     }
-    credentials_json = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(credentials_data)), &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (invalid json)");
-
-    credentials_version = vssc_json_object_get_int_value(credentials_json, k_brain_key_JSON_VERSION, &core_sdk_error);
-
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no version)");
-    CHECK(1 == credentials_version, "Failed to parse credentials (version mismatch)");
-
-    credentials_card_id =
-            vssc_json_object_get_string_value(credentials_json, k_brain_key_JSON_CARD_ID, &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no card_id)");
-    CHECK(credentials_card_id.len > 0, "Failed to parse credentials (empty card_id)");
-    CHECK(credentials_card_id.len < VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX,
-          "Failed to parse credentials (card_id too big)");
-
-    credentials_private_key =
-            vssc_json_object_get_binary_value_new(credentials_json, k_brain_key_JSON_PRIVATE_KEY, &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no private_key)");
-
-    CHECK(vsc_buffer_len(credentials_private_key) <= VS_MESSENGER_VIRGIL_KEY_SZ_MAX,
-          "Failed to parse credentials (private key too big)");
-
-    credentials_public_key =
-            vssc_json_object_get_binary_value_new(credentials_json, k_brain_key_JSON_PUBLIC_KEY, &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no public_key)");
-
-    CHECK(vsc_buffer_len(credentials_public_key) <= VS_MESSENGER_VIRGIL_KEY_SZ_MAX,
-          "Failed to parse credentials (public key too big)");
-
-    credentials_public_key_id =
-            vssc_json_object_get_binary_value_new(credentials_json, k_brain_key_JSON_PUBLIC_KEY_ID, &core_sdk_error);
-    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to parse credentials (no public_key_id)");
-
-    CHECK(VS_MESSENGER_VIRGIL_PUBKEY_ID_SZ == vsc_buffer_len(credentials_public_key_id),
-          "Failed to parse credentials (public_key_id length mismatch)");
-
+    //  Log user creds.
     //
-    //  Fulfil Credentials.
-    //
-    VS_IOT_MEMCPY(
-            creds->pubkey_id, vsc_buffer_bytes(credentials_public_key_id), vsc_buffer_len(credentials_public_key_id));
-
-    creds->pubkey_sz = vsc_buffer_len(credentials_public_key);
-    VS_IOT_MEMCPY(creds->pubkey, vsc_buffer_bytes(credentials_public_key), vsc_buffer_len(credentials_public_key));
-
-    creds->privkey_sz = vsc_buffer_len(credentials_private_key);
-    VS_IOT_MEMCPY(creds->privkey, vsc_buffer_bytes(credentials_private_key), vsc_buffer_len(credentials_private_key));
-
-    VS_IOT_MEMCPY(creds->card_id, credentials_card_id.chars, credentials_card_id.len);
-    creds->card_id[credentials_card_id.len] = '\0';
-
-    status = VS_CODE_OK;
+    _log_user_creds(creds);
 
 terminate:
 
-    vscf_recipient_cipher_destroy(&cipher);
+    vsc_buffer_destroy(&pwd_digest);
     vscf_impl_destroy(&brain_private_key);
     vscf_impl_destroy(&brain_public_key);
-    vssc_jwt_destroy(&jwt);
-    vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
-    vssk_keyknox_client_destroy(&keyknox_client);
-    vssk_keyknox_entry_destroy(&keyknox_entry);
-    vssc_json_object_destroy(&credentials_json);
-    vsc_buffer_destroy(&credentials_data);
-    vsc_buffer_destroy(&credentials_private_key);
-    vsc_buffer_destroy(&credentials_public_key);
-    vsc_buffer_destroy(&credentials_public_key_id);
+    vsc_buffer_destroy(&keyknox_meta);
+    vsc_buffer_destroy(&keyknox_value);
 
     return status;
 }

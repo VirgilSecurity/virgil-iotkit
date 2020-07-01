@@ -101,22 +101,22 @@ void
 vs_messenger_virgil_logout(void);
 
 /**
- *  Store given credentials protected with a password in the cloud.
+ *  Store current (login) credentials protected with a password in the cloud.
  *
  *  Prerequisites: User is signed in.
- *  Note, card_id can be used as alias.
  */
 vs_status_e
-vs_messenger_keyknox_store_creds(const vs_messenger_virgil_user_creds_t *creds, const char *pwd, const char *alias);
+vs_messenger_virgil_set_sign_in_password(const char *pwd);
 
 /**
- *  Load credentials from the cloud.
+ *  Sign in with a password.
  *
- *  Prerequisites: User is signed in.
- *  Note, if alias is NULL, then card id used is used.
+ *  Loaded credentials are stored within given argument and can be used for a regular sign in.
  */
 vs_status_e
-vs_messenger_keyknox_load_creds(const char *pwd, const char *alias, vs_messenger_virgil_user_creds_t *creds);
+vs_messenger_virgil_sign_in_with_password(const char *identity,
+                                          const char *pwd,
+                                          vs_messenger_virgil_user_creds_t *creds);
 
 
 #ifdef __cplusplus
