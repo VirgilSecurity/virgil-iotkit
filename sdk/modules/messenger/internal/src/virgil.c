@@ -731,7 +731,7 @@ _get_virgil_jwt_with_sign_in_password(vsc_str_t identity, vsc_data_t pwd) {
     //
     //  Check inner state.
     //
-    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+    VS_IOT_ASSERT(vs_messenger_virgil_is_init());
 
     //
     //  Check input parameters.
@@ -966,7 +966,7 @@ _pack_credentials_for_keyknox(const vscf_impl_t *brain_public_key,
     foundation_status =
             vscf_key_provider_export_private_key(key_provider, _inner_creds.private_key, exported_private_key);
 
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to export private key)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to export private key)");
 
     vscf_key_provider_destroy(&key_provider);
 
@@ -985,6 +985,8 @@ _pack_credentials_for_keyknox(const vscf_impl_t *brain_public_key,
     vssc_json_object_add_binary_value(
             credentials_json, k_brain_key_JSON_PRIVATE_KEY, vsc_buffer_data(exported_private_key));
 
+    vsc_data_t credentials_json_data = vsc_str_as_data(vssc_json_object_as_str(credentials_json));
+
     //
     //  Encrypt Credentials.
     //
@@ -992,28 +994,32 @@ _pack_credentials_for_keyknox(const vscf_impl_t *brain_public_key,
     vscf_recipient_cipher_add_key_recipient(cipher, k_brain_key_RECIPIENT_ID, brain_public_key);
 
     foundation_status = vscf_recipient_cipher_add_signer(cipher, k_brain_key_RECIPIENT_ID, brain_private_key);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to encrypt credentials)");
 
-    foundation_status = vscf_recipient_cipher_start_encryption(cipher);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+    foundation_status = vscf_recipient_cipher_start_signed_encryption(cipher, credentials_json_data.len);
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to encrypt credentials)");
 
 
     vsc_buffer_reset_with_capacity(keyknox_meta, vscf_recipient_cipher_message_info_len(cipher));
     vscf_recipient_cipher_pack_message_info(cipher, keyknox_meta);
 
-    vsc_buffer_reset_with_capacity(
-            keyknox_value,
-            vscf_recipient_cipher_encryption_out_len(cipher, vssc_json_object_as_str(credentials_json).len) +
-                    vscf_recipient_cipher_encryption_out_len(cipher, 0));
+    vsc_buffer_reset_with_capacity(keyknox_value,
+                                   vscf_recipient_cipher_encryption_out_len(cipher, credentials_json_data.len) +
+                                           vscf_recipient_cipher_encryption_out_len(cipher, 0));
 
-    foundation_status = vscf_recipient_cipher_process_encryption(
-            cipher, vsc_str_as_data(vssc_json_object_as_str(credentials_json)), keyknox_value);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+    foundation_status = vscf_recipient_cipher_process_encryption(cipher, credentials_json_data, keyknox_value);
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to encrypt credentials)");
 
     vssc_json_object_destroy(&credentials_json);
 
     foundation_status = vscf_recipient_cipher_finish_encryption(cipher, keyknox_value);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to pack credentials (failed to encrypt credentials)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to encrypt credentials)");
+
+    const size_t footer_len = vscf_recipient_cipher_message_info_footer_len(cipher);
+    vsc_buffer_reserve_unused(keyknox_value, footer_len);
+
+    foundation_status = vscf_recipient_cipher_pack_message_info_footer(cipher, keyknox_value);
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to pack credentials (failed to encrypt credentials)");
 
     status = VS_CODE_OK;
 
@@ -1065,7 +1071,7 @@ _unpack_credentials_from_keyknox(const vscf_impl_t *brain_public_key,
 
     foundation_status = vscf_recipient_cipher_start_decryption_with_key(
             cipher, k_brain_key_RECIPIENT_ID, brain_private_key, keyknox_meta);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to unpack credentials (failed to decrypt)");
 
 
     credentials_data =
@@ -1073,10 +1079,10 @@ _unpack_credentials_from_keyknox(const vscf_impl_t *brain_public_key,
                                          vscf_recipient_cipher_decryption_out_len(cipher, 0));
 
     foundation_status = vscf_recipient_cipher_process_decryption(cipher, keyknox_value, credentials_data);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to unpack credentials (failed to decrypt)");
 
     foundation_status = vscf_recipient_cipher_finish_decryption(cipher, credentials_data);
-    CHECK(foundation_status == vscf_status_SUCCESS, "Failed to unpack credentials (failed to decrypt)");
+    CHECK(vscf_status_SUCCESS == foundation_status, "Failed to unpack credentials (failed to decrypt)");
 
     //
     //  Verify Credentials.
@@ -1269,11 +1275,11 @@ _pull_credentials_from_keyknox(vsc_buffer_t *keyknox_meta, vsc_buffer_t *keyknox
     CHECK(!vssc_error_has_error(&core_sdk_error),
           "Failed to get encrypted credentials from the Keyknox (parse failed)");
 
-    vsc_buffer_reset(keyknox_meta);
-    vsc_buffer_append_data(keyknox_meta, vssk_keyknox_entry_meta(keyknox_entry));
+    vsc_buffer_reset_with_capacity(keyknox_meta, vssk_keyknox_entry_meta(keyknox_entry).len);
+    vsc_buffer_write_data(keyknox_meta, vssk_keyknox_entry_meta(keyknox_entry));
 
-    vsc_buffer_reset(keyknox_value);
-    vsc_buffer_append_data(keyknox_value, vssk_keyknox_entry_value(keyknox_entry));
+    vsc_buffer_reset_with_capacity(keyknox_value, vssk_keyknox_entry_value(keyknox_entry).len);
+    vsc_buffer_write_data(keyknox_value, vssk_keyknox_entry_value(keyknox_entry));
 
     status = VS_CODE_OK;
 
@@ -2103,7 +2109,7 @@ vs_messenger_virgil_sign_in_with_password(const char *identity,
 
 
     //
-    //  Store password to the messenger backend.
+    //  Get Virgil JWT with password.
     //
     vs_status_e status = _get_virgil_jwt_with_sign_in_password(vsc_str_from_str(identity), sign_in_pwd);
     CHECK(VS_CODE_OK == status, "Failed sign in with password (cannot get Virgil JWT)");
