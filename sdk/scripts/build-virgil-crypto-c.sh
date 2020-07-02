@@ -120,6 +120,7 @@ function build() {
 
 # Common CMake arguments for the project
 CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' \
+-DENABLE_TESTING=OFF \
 -DENABLE_CLANGFORMAT=OFF \
 -DVIRGIL_LIB_RATCHET=OFF \
 -DVIRGIL_LIB_PHE=OFF \
