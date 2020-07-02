@@ -62,6 +62,12 @@ typedef struct {
     char card_id[VS_MESSENGER_VIRGIL_CARD_ID_SZ_MAX];    /**< Card identifier string */
 } vs_messenger_virgil_user_creds_t;
 
+bool
+vs_messenger_virgil_is_init(void);
+
+bool
+vs_messenger_virgil_is_signed_in(void);
+
 vs_status_e
 vs_messenger_virgil_init(const char *service_base_url, const char *custom_ca);
 
@@ -91,8 +97,38 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
                                 size_t buf_sz,
                                 size_t *encrypted_message_sz);
 
-vs_status_e
+void
 vs_messenger_virgil_logout(void);
+
+/**
+ *  Generete Authorization token to use it with Virgil Messenger Backend.
+ *
+ *  Token format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+ *
+ *  Prerequisites: User is signed in.
+ */
+vs_status_e
+vs_messenger_virgil_get_auth_token(char *token, size_t token_buf_sz);
+
+
+/**
+ *  Store current (login) credentials protected with a password in the cloud.
+ *
+ *  Prerequisites: User is signed in.
+ */
+vs_status_e
+vs_messenger_virgil_set_sign_in_password(const char *pwd);
+
+/**
+ *  Sign in with a password.
+ *
+ *  Loaded credentials are stored within given argument and can be used for a regular sign in.
+ */
+vs_status_e
+vs_messenger_virgil_sign_in_with_password(const char *identity,
+                                          const char *pwd,
+                                          vs_messenger_virgil_user_creds_t *creds);
+
 
 #ifdef __cplusplus
 } // extern "C"

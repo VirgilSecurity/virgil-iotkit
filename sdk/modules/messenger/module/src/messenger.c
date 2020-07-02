@@ -253,7 +253,6 @@ vs_messenger_stop(void) {
     vs_status_e res = VS_CODE_ERR_MSGR_INTERNAL;
 
     STATUS_CHECK(vs_messenger_enjabberd_disconnect(), "Enjabberd disconnection error");
-    STATUS_CHECK(vs_messenger_virgil_logout(), "Virgil Logout error");
 
 terminate:
     res = VS_CODE_OK;

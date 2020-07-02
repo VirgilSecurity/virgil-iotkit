@@ -66,17 +66,6 @@ function build_messenger_deps() {
         ${SCRIPT_FOLDER}/build-virgil-crypto-c.sh ${@}
         check_error
     fi
-    echo
-    echo "=== Build Virgil SDK C++ C libs"
-    echo
-    if [ "${CFG_BUILD_VS_SDK_CPP}" == "off" ]; then
-        echo
-        echo "Skip due to config parameter CFG_BUILD_VS_SDK_CPP"
-        echo
-    else
-        ${SCRIPT_FOLDER}/build-virgil-sdk-cpp.sh ${@}
-        check_error
-    fi
 }
 ###########################################################################################################################
 #
@@ -87,7 +76,7 @@ function build() {
     CMAKE_ARGUMENTS=$2
     CMAKE_DEPS_ARGUMENTS=$3
     CORES=10
-    
+
     build_messenger_deps ${CMAKE_DEPS_ARGUMENTS}
     BUILD_DIR=${BUILD_DIR_BASE}/cmake-build-${BUILD_DIR_SUFFIX}/${BUILD_TYPE}
 
@@ -132,7 +121,7 @@ function prep_param() {
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
            -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1d \
        "
-   
+
    #
    #   Windows (mingw) over Linux
    #
@@ -157,7 +146,7 @@ function prep_param() {
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
            -DOS=WINDOWS \
        "
-   
+
    #
    #   Linux
    #
@@ -167,7 +156,7 @@ function prep_param() {
        CMAKE_ARGUMENTS=" \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
        "
-   
+
    #
    #   iOS
    #
@@ -184,7 +173,7 @@ function prep_param() {
            -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
            -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
        "
-   
+
    #
    #   iOS Simulator
    #
@@ -202,7 +191,7 @@ function prep_param() {
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
            -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
        "
-   
+
    #
    #   Android
    #
@@ -224,7 +213,7 @@ function prep_param() {
            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
        "
-   
+
    else
        echo " Virgil IoTKIT build script usage : "
        echo " $0 platform platform-specific"
@@ -236,7 +225,7 @@ function prep_param() {
    fi
 }
 
-#########################################################################################################   
+#########################################################################################################
 #
 #   Build both Debug and Release
 #
@@ -247,4 +236,3 @@ fi
 
 prep_param "release"
 build "release" "${CMAKE_ARGUMENTS}" "${CMAKE_DEPS_ARGUMENTS}"
-         

@@ -160,6 +160,7 @@ include (virgil_depends)
 set(VIRGIL_PLATFORM "" CACHE STRING "")
 set(VIRGIL_PLATFORM_LIBS_DIR "" CACHE STRING "")
 set_libs_storage("${VIRGIL_PLATFORM}" "${VIRGIL_PLATFORM_LIBS_DIR}")
+message ("-- PLATFORM_LIBS_PATH: ${PLATFORM_LIBS_PATH}")
 
 #
 #   Tools
