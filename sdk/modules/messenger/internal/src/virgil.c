@@ -1993,6 +1993,33 @@ vs_messenger_virgil_search(const char *identity) {
 }
 
 /******************************************************************************/
+vs_status_e
+vs_messenger_virgil_get_auth_token(char *token, size_t token_buf_sz) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Generate token.
+    //
+    vsc_str_mutable_t auth_header = {NULL, 0};
+
+    vs_status_e status = _generate_auth_header(&auth_header);
+    CHECK(VS_CODE_OK == status, "Failed to generate authorization token (generation failed)");
+
+    status = VS_CODE_ERR_MSGR_INTERNAL;
+    CHECK(auth_header.len < token_buf_sz, "Failed to generate authorization token (given buffer too small)");
+    strcpy(token, auth_header.chars);
+
+terminate:
+    vsc_str_mutable_release(&auth_header);
+
+    return status;
+}
+
+
+/******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_virgil_set_sign_in_password(const char *pwd) {
 

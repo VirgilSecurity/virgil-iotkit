@@ -101,6 +101,17 @@ void
 vs_messenger_virgil_logout(void);
 
 /**
+ *  Generete Authorization token to use it with Virgil Messenger Backend.
+ *
+ *  Token format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+ *
+ *  Prerequisites: User is signed in.
+ */
+vs_status_e
+vs_messenger_virgil_get_auth_token(char *token, size_t token_buf_sz);
+
+
+/**
  *  Store current (login) credentials protected with a password in the cloud.
  *
  *  Prerequisites: User is signed in.
