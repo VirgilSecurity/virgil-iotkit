@@ -228,7 +228,7 @@ _generate_auth_header(vsc_str_mutable_t *auth_header) {
     vsc_str_t card_id = vsc_str_mutable_as_str(_inner_creds.card_id);
 
     char timestamp_str[22] = {'\0'};
-    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%lu", vssc_unix_time_now());
+    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
     vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
 
     const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
@@ -1197,10 +1197,10 @@ _push_credentials_to_keyknox(vsc_data_t meta, vsc_data_t value) {
     vs_status_e status = VS_CODE_OK;
     if (!vssc_virgil_http_response_is_success(http_response)) {
         VS_LOG_ERROR("Failed to push encrypted credentials to the Keyknox (errored response)");
-        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(http_response));
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(http_response));
 
         if (vssc_virgil_http_response_has_service_error(http_response)) {
-            VS_LOG_ERROR("    virgil error: %lu %s",
+            VS_LOG_ERROR("    virgil error: %zu %s",
                          vssc_virgil_http_response_service_error_code(http_response),
                          vssc_virgil_http_response_service_error_description(http_response));
         }
@@ -1259,10 +1259,10 @@ _pull_credentials_from_keyknox(vsc_buffer_t *keyknox_meta, vsc_buffer_t *keyknox
 
     if (!vssc_virgil_http_response_is_success(http_response)) {
         VS_LOG_ERROR("Failed to get encrypted credentials from the Keyknox (errored response)");
-        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(http_response));
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(http_response));
 
         if (vssc_virgil_http_response_has_service_error(http_response)) {
-            VS_LOG_ERROR("    virgil error: %lu %s",
+            VS_LOG_ERROR("    virgil error: %zu %s",
                          vssc_virgil_http_response_service_error_code(http_response),
                          vssc_virgil_http_response_service_error_description(http_response));
         }
@@ -1359,10 +1359,10 @@ _get_public_key_by_identity(vsc_str_t identity, const vssc_key_handler_t **key_h
 
     if (!vssc_virgil_http_response_is_success(search_cards_response)) {
         VS_LOG_ERROR("Failed to get card (errored response)");
-        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(search_cards_response));
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(search_cards_response));
 
         if (vssc_virgil_http_response_has_service_error(search_cards_response)) {
-            VS_LOG_ERROR("    virgil error: %lu %s",
+            VS_LOG_ERROR("    virgil error: %zu %s",
                          vssc_virgil_http_response_service_error_code(search_cards_response),
                          vssc_virgil_http_response_service_error_description(search_cards_response));
         }
@@ -1600,10 +1600,10 @@ vs_messenger_virgil_sign_up(const char *identity, vs_messenger_virgil_user_creds
 
     if (!vssc_virgil_http_response_is_success(register_card_response)) {
         VS_LOG_ERROR("Failed to register a new Card (errored response)");
-        VS_LOG_ERROR("    http status code: %lu", vssc_virgil_http_response_status_code(register_card_response));
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(register_card_response));
 
         if (vssc_virgil_http_response_has_service_error(register_card_response)) {
-            VS_LOG_ERROR("    virgil error: %lu %s",
+            VS_LOG_ERROR("    virgil error: %zu %s",
                          vssc_virgil_http_response_service_error_code(register_card_response),
                          vssc_virgil_http_response_service_error_description(register_card_response));
         }
