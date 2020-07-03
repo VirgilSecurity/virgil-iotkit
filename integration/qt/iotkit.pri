@@ -128,7 +128,6 @@ unix:mac: {
     MESSENGER_INTERNAL_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.$${DLL_EXT}
     QMAKE_POST_LINK += $$quote(mkdir -p $${DST_DLL}/$$escape_expand(\n\t))
     QMAKE_POST_LINK += $$quote(cp $${MESSENGER_INTERNAL_DLL} $${DST_DLL}/$$escape_expand(\n\t))
-    QMAKE_POST_LINK += $$quote(cp $${MESSENGER_CRYPTO_DLL} $${DST_DLL}/$$escape_expand(\n\t))
 }
 
 #
