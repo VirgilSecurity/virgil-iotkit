@@ -66,20 +66,3 @@ function pack_libs() {
   fi
   popd
 }
-
-#
-#   iOS fixer
-#
-function get_lib_ios() {
-  pushd "${1}"
-  local FRAMEWORK="${2}.framework"
-  local FRAMEWORK_FILE="${FRAMEWORK}/${2}"
-  local DST_FILE="${3}"
-  cp -f "${FRAMEWORK_FILE}" "${DST_FILE}"
-  check_error
-  local INC_HEADER="../include/${2}"
-  mkdir -p "${INC_HEADER}"
-  cp -f "${FRAMEWORK}/Headers/"* "${INC_HEADER}/"
-  rm -rf "${FRAMEWORK}"
-  popd
-}
