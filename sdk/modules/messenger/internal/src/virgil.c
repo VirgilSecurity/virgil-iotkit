@@ -682,12 +682,12 @@ _set_sign_in_password(vsc_data_t pwd) {
 
     vssc_json_object_t *body_json = NULL;
 
+    //
+    //  Perform auth.
+    //
     vs_status_e status = _generate_auth_header(&auth_header);
     CHECK(VS_CODE_OK == status, "Failed to set sign in password (failed to produce Auth Header)");
 
-    //
-    //  Perform auth and get Virgil or Ejabberd JWT depends on the given endpoint.
-    //
     status = VS_CODE_ERR_MSGR_SERVICE;
 
     body_json = vssc_json_object_new();
@@ -1155,46 +1155,73 @@ _push_credentials_to_keyknox(vsc_data_t meta, vsc_data_t value) {
     VS_IOT_ASSERT(!vssc_jwt_is_expired(_jwt));
 
     //
+    //  Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = NULL;
+    vssc_string_list_t *keyknox_identities = NULL;
+    vssc_http_request_t *http_request = NULL;
+    vssc_virgil_http_response_t *http_response = NULL;
+    vssk_keyknox_entry_t *keyknox_entry = NULL;
+
+    vsc_str_t identity = vssc_jwt_identity(_jwt);
+
+    //
+    //  Reset previous record.
+    //
+    vs_status_e status = VS_CODE_ERR_MSGR_SERVICE;
+
+    keyknox_client = vssk_keyknox_client_new();
+
+    http_request = vssk_keyknox_client_make_request_reset(
+            keyknox_client, k_keyknox_root_MESSENGER, k_keyknox_path_CREDENTIALS, k_keyknox_alias_SIGN_IN, identity);
+
+    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
+
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed reset credentials within the Keyknox (cannot send)");
+
+    if (!vssc_virgil_http_response_is_success(http_response)) {
+        VS_LOG_ERROR("Failed reset credentials within the Keyknox (errored response)");
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(http_response));
+
+        if (vssc_virgil_http_response_has_service_error(http_response)) {
+            VS_LOG_ERROR("    virgil error: %zu %s",
+                         vssc_virgil_http_response_service_error_code(http_response),
+                         vssc_virgil_http_response_service_error_description(http_response));
+        }
+
+        goto terminate;
+    }
+
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+
+    //
     //  Push.
     //
-    vssc_string_list_t *keyknox_identities = vssc_string_list_new();
-    vssc_string_list_add(keyknox_identities, vssc_jwt_identity(_jwt));
+    keyknox_identities = vssc_string_list_new();
+    vssc_string_list_add(keyknox_identities, identity);
 
-    // TODO: Request existent entry to perform re-write operation.
-    vsc_data_t previous_entry_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *keyknox_entry = vssk_keyknox_entry_new_with(k_keyknox_root_MESSENGER,
-                                                                      k_keyknox_path_CREDENTIALS,
-                                                                      k_keyknox_alias_SIGN_IN,
-                                                                      keyknox_identities,
-                                                                      meta,
-                                                                      value,
-                                                                      previous_entry_hash);
+    keyknox_entry = vssk_keyknox_entry_new_with(k_keyknox_root_MESSENGER,
+                                                k_keyknox_path_CREDENTIALS,
+                                                k_keyknox_alias_SIGN_IN,
+                                                keyknox_identities,
+                                                meta,
+                                                value,
+                                                vsc_data_empty());
 
 
     vssc_string_list_destroy(&keyknox_identities);
 
-    vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new();
+    http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
 
-    vssc_http_request_t *http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
-
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
-    vssc_virgil_http_response_t *http_response =
-            vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
+    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
 
 
-    vssk_keyknox_entry_destroy(&keyknox_entry);
-    vssk_keyknox_client_destroy(&keyknox_client);
-    vssc_http_request_destroy(&http_request);
+    CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to send encrypted credentials to the Keyknox (cannot send)");
 
-
-    CHECK_RET(!vssc_error_has_error(&core_sdk_error),
-              VS_CODE_ERR_MSGR_SERVICE,
-              "Failed to send encrypted credentials to the Keyknox");
-
-    vs_status_e status = VS_CODE_OK;
     if (!vssc_virgil_http_response_is_success(http_response)) {
         VS_LOG_ERROR("Failed to push encrypted credentials to the Keyknox (errored response)");
         VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(http_response));
@@ -1205,10 +1232,19 @@ _push_credentials_to_keyknox(vsc_data_t meta, vsc_data_t value) {
                          vssc_virgil_http_response_service_error_description(http_response));
         }
 
-        status = VS_CODE_ERR_MSGR_SERVICE;
+        goto terminate;
     }
 
+
+    status = VS_CODE_OK;
+
+terminate:
+
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_string_list_destroy(&keyknox_identities);
+    vssc_http_request_destroy(&http_request);
     vssc_virgil_http_response_destroy(&http_response);
+    vssk_keyknox_entry_destroy(&keyknox_entry);
 
     return status;
 }
