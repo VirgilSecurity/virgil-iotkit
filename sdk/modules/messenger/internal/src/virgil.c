@@ -864,7 +864,7 @@ _generate_brain_key(vsc_data_t pwd, const vssc_jwt_t *jwt, vscf_impl_t **private
 
     vsc_buffer_destroy(&blinded_password);
 
-    http_response = vssc_virgil_http_client_send(http_request, jwt, &core_sdk_error);
+    http_response = vssc_virgil_http_client_send_with_ca(http_request, jwt, _ca_bundle(), &core_sdk_error);
     CHECK(!vssc_error_has_error(&core_sdk_error), "Failed to generate brain key seed");
 
     seed = vssp_pythia_client_process_response_generate_seed(http_response, &pythia_sdk_error);
