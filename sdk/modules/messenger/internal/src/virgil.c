@@ -2009,6 +2009,17 @@ vs_logger_output_hal(const char *buffer) {
 }
 
 /******************************************************************************/
+bool
+vs_logger_current_time_hal(void) {
+    time_t result = time(NULL);
+    if (result != -1) {
+        printf("%s", asctime(gmtime(&result)));
+        return true;
+    }
+    return false;
+}
+
+/******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_virgil_search(const char *identity) {
     //
