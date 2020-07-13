@@ -97,6 +97,7 @@ function build() {
         -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
         -DVIRGIL_IOT_MESSENGER_INTERNAL_XMPP=OFF \
         -DGO_DISABLE=ON \
+        -DIOT_LOGGER_OUTPUT_TIME=ON \
         -G "Unix Makefiles"
     check_error
 

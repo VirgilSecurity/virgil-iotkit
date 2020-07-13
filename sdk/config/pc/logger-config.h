@@ -93,7 +93,9 @@
  * Enables current time output at the beginning of log string.
  * Requires #vs_logger_current_time_hal function implementation.
  */
+#ifndef VS_IOT_LOGGER_OUTPUT_TIME
 #define VS_IOT_LOGGER_OUTPUT_TIME   0
+#endif
 
 /** Output current thread title
  *

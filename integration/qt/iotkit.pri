@@ -126,10 +126,8 @@ SOURCES += \
 unix:mac: {
     DST_DLL = $${OUT_PWD}/$${TARGET}.app/Contents/Frameworks
     MESSENGER_INTERNAL_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.$${DLL_EXT}
-    MESSENGER_CRYPTO_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-crypto.$${DLL_EXT}
     QMAKE_POST_LINK += $$quote(mkdir -p $${DST_DLL}/$$escape_expand(\n\t))
     QMAKE_POST_LINK += $$quote(cp $${MESSENGER_INTERNAL_DLL} $${DST_DLL}/$$escape_expand(\n\t))
-    QMAKE_POST_LINK += $$quote(cp $${MESSENGER_CRYPTO_DLL} $${DST_DLL}/$$escape_expand(\n\t))
 }
 
 #
@@ -145,10 +143,8 @@ LIBS += -lvs-module-messenger
 
 win32: {
 	LIBS += -lws2_32
-        LIBS += $${PREBUILT_SYSROOT}/lib/libvs-messenger-crypto.dll.a
         LIBS += $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.dll.a
 } else: {
-        LIBS += -lvs-messenger-crypto
         LIBS += -lvs-messenger-internal
 }
 
