@@ -107,7 +107,7 @@ vs_logger_output_hal(const char *buffer);
  * \return true in case of success or false if any error occurs
  */
 bool
-vs_logger_current_time_hal(void);
+vs_logger_current_time_hal(char *time_buf);
 
 #endif // #if VS_IOT_LOGGER_OUTPUT_TIME == 1
 

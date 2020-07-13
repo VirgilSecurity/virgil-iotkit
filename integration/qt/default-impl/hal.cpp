@@ -39,7 +39,11 @@
 #include <QCoreApplication>
 #include <QFileInfo>
 
-#define LOG_ROTATE_LEVEL 2     // Log rotate num (num -1)
+#include <stdio.h>
+#include <time.h>
+#ifndef LOG_ROTATE_LEVEL
+#define LOG_ROTATE_LEVEL 0     // Log rotate num (num -1)
+#endif
 
 QFile VsLogFile;
 bool VsLogErr=false;
@@ -101,6 +105,17 @@ vs_logger_output_hal(const char *buffer) {
     }
     return true;
 }
+
+extern "C" bool
+vs_logger_current_time_hal(char *time_buf) {
+    time_t result = time(NULL);
+    if(result != -1) {
+        strftime(time_buf, 17, "%Y-%m-%d %H:%M", localtime(&result));
+        return true;
+    }
+    return false;
+}
+
 
 extern "C" void
 vs_impl_msleep(size_t msec) {

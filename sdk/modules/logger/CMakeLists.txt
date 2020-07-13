@@ -73,6 +73,10 @@ set_property(TARGET vs-module-logger PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 #
 #   Compile definitions
 #
+IF(IOT_LOGGER_OUTPUT_TIME)
+    add_definitions(-DVS_IOT_LOGGER_OUTPUT_TIME=1)
+endif()
+
 
 #
 #   Config path
