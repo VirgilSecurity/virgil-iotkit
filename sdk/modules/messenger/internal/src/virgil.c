@@ -1930,6 +1930,9 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
                                             vssc_key_handler_key_id(recipient_key_handler),
                                             vssc_key_handler_key(recipient_key_handler));
 
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, vsc_buffer_data(_inner_creds.public_key_id), _inner_creds.public_key);
+
     foundation_error.status = vscf_recipient_cipher_add_signer(
             recipient_cipher, vsc_buffer_data(_inner_creds.public_key_id), _inner_creds.private_key);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cannot produce signature)");
@@ -2040,7 +2043,7 @@ vs_messenger_virgil_search(const char *identity) {
 }
 
 /******************************************************************************/
-vs_status_e
+DLL_PUBLIC vs_status_e
 vs_messenger_virgil_get_auth_token(char *token, size_t token_buf_sz) {
     //
     //  Check inner state.
