@@ -166,7 +166,10 @@ vs_logger_output_preface(vs_log_level_t level, const char *cur_filename, uint32_
     const char *level_str = NULL;
     bool res = true;
     char buf[11]; // for line number less than 9'000'000'000
+
+#if VS_IOT_LOGGER_OUTPUT_TIME == 1
     char time_buf[32] = "";
+#endif // VS_IOT_LOGGER_OUTPUT_TIME == 1
 
     level_str = vs_logger_get_level_str(level);
 
