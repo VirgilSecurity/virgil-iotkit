@@ -91,7 +91,6 @@ function build() {
     mkdir -p ${BUILD_DIR}
 
     pushd ${BUILD_DIR}
-
     cmake ${BUILD_DIR_BASE} ${CMAKE_ARGUMENTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
         -DVIRGIL_PLATFORM_LIBS_DIR=${QT_INSTALL_DIR_BASE} \
         -DVIRGIL_PLATFORM=${BUILD_DIR_SUFFIX} \
