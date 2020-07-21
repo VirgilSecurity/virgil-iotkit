@@ -1321,6 +1321,11 @@ _pull_credentials_from_keyknox(vsc_buffer_t *keyknox_meta, vsc_buffer_t *keyknox
 
 terminate:
 
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+    vssk_keyknox_entry_destroy(&keyknox_entry);
+
     return status;
 }
 
@@ -2147,6 +2152,92 @@ terminate:
 
     return status;
 }
+
+/******************************************************************************/
+DLL_PUBLIC vs_status_e
+vs_messenger_virgil_has_sign_in_password(const char *identity, bool *result) {
+    //
+    //  Check inner state.
+    //
+    VS_IOT_ASSERT(vs_messenger_virgil_is_signed_in());
+
+    //
+    //  Check input parameters.
+    //
+    CHECK_NOT_ZERO_RET(identity && identity[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(result, VS_CODE_ERR_INCORRECT_ARGUMENT);
+
+    //
+    //  Update Virgil JWT first.
+    //
+    const vs_status_e update_jwt_status = _update_virgil_jwt_if_expired();
+    CHECK_RET(update_jwt_status == VS_CODE_OK,
+              update_jwt_status,
+              "Failed to store credentials (cannot update Virgil JWT)");
+
+
+    //
+    //  Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_error_t keyknox_sdk_error;
+    vssk_error_reset(&keyknox_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = NULL;
+    vssc_http_request_t *http_request = NULL;
+    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_string_list_t *keys = NULL;
+
+    vs_status_e status = VS_CODE_ERR_MSGR_SERVICE;
+
+    //
+    //  Get available key names.
+    //
+    keyknox_client = vssk_keyknox_client_new();
+
+    http_request = vssk_keyknox_client_make_request_get_keys(
+            keyknox_client, k_keyknox_root_MESSENGER, k_keyknox_path_CREDENTIALS, vssc_jwt_identity(_jwt));
+
+    http_response = vssc_virgil_http_client_send_with_ca(http_request, _jwt, _ca_bundle(), &core_sdk_error);
+
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to check if the user can sign-in with a password (cannot send request)");
+
+    if (!vssc_virgil_http_response_is_success(http_response)) {
+        VS_LOG_ERROR("Failed to check if the user can sign-in with a password (errored response)");
+        VS_LOG_ERROR("    http status code: %zu", vssc_virgil_http_response_status_code(http_response));
+
+        if (vssc_virgil_http_response_has_service_error(http_response)) {
+            VS_LOG_ERROR("    virgil error: %zu %s",
+                         vssc_virgil_http_response_service_error_code(http_response),
+                         vssc_virgil_http_response_service_error_description(http_response));
+        }
+
+        goto terminate;
+    }
+
+
+    keys = vssk_keyknox_client_process_response_get_keys(http_response, &keyknox_sdk_error);
+    CHECK(!vssc_error_has_error(&core_sdk_error),
+          "Failed to check if the user can sign-in with a password (parse failed)");
+
+
+    *result = vssc_string_list_contains(keys, k_keyknox_alias_SIGN_IN);
+
+    status = VS_CODE_OK;
+
+terminate:
+
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+    vssc_string_list_destroy(&keys);
+
+    return status;
+}
+
 
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
