@@ -121,6 +121,8 @@ vs_messenger_virgil_set_sign_in_password(const char *pwd);
 
 /**
  *  Return true if user has already set sign-in password and it can be used.
+ *
+ *  Prerequisites: User is signed in.
  */
 vs_status_e
 vs_messenger_virgil_has_sign_in_password(const char *identity, bool *result);
