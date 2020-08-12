@@ -232,7 +232,7 @@ vs_messenger_send(const char *recipient, const char *message) {
 
     // Encrypt message
     STATUS_CHECK(vs_messenger_virgil_encrypt_msg(
-                         recipient, json_msg, strlen(json_msg) + 1,encrypted_message, sizeof(encrypted_message), &encrypted_message_sz),
+                         recipient, (uint8_t*)json_msg, strlen(json_msg) + 1,encrypted_message, sizeof(encrypted_message), &encrypted_message_sz),
                  "Cannot encrypt message");
 
     // Send encrypted message
