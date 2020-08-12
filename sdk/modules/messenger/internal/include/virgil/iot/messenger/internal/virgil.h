@@ -92,7 +92,8 @@ vs_messenger_virgil_decrypt_msg(const char *sender,
 
 vs_status_e
 vs_messenger_virgil_encrypt_msg(const char *recipient,
-                                const char *message,
+                                const uint8_t *message_data,
+                                size_t message_data_sz,
                                 uint8_t *encrypted_message,
                                 size_t buf_sz,
                                 size_t *encrypted_message_sz);
