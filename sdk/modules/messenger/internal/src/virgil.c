@@ -1955,8 +1955,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
 
     vscf_recipient_cipher_pack_message_info(recipient_cipher, ciphertext);
 
-    foundation_error.status =
-            vscf_recipient_cipher_process_encryption(recipient_cipher, plaintext, ciphertext);
+    foundation_error.status = vscf_recipient_cipher_process_encryption(recipient_cipher, plaintext, ciphertext);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cipher failed)");
 
     foundation_error.status = vscf_recipient_cipher_finish_encryption(recipient_cipher, ciphertext);
