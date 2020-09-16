@@ -164,12 +164,13 @@ function prep_param() {
    #
    elif [[ "${PLATFORM}" == "ios" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
-           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+           -DAPPLE_PLATFORM=IOS \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/ext/virgil-crypto-c/cmake/apple.cmake \
            -DVSSC_HTTP_CLIENT_CURL=OFF \
            -DVSSC_HTTP_CLIENT_X=ON \
         "
        CMAKE_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS" \
+           -DAPPLE_PLATFORM=IOS \
            -DAPPLE_BITCODE=OFF \
            -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
@@ -182,14 +183,14 @@ function prep_param() {
    #
    elif [[ "${PLATFORM}" == "ios-sim" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS_SIM64" \
+           -DAPPLE_PLATFORM=IOS_SIM64 \
            -DAPPLE_BITCODE=OFF \
-           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/ext/virgil-crypto-c/cmake/apple.cmake \
            -DVSSC_HTTP_CLIENT_CURL=OFF \
            -DVSSC_HTTP_CLIENT_X=ON \
        "
        CMAKE_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS_SIM64" \
+           -DAPPLE_PLATFORM=IOS_SIM64 \
            -DAPPLE_BITCODE=OFF \
            -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
