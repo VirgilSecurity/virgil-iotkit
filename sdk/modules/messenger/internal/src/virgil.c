@@ -43,7 +43,11 @@
 #include <virgil/crypto/pythia/vscp_pythia_public.h>
 
 #include <virgil/sdk/core/vssc_core_sdk_public.h>
-#include <virgil/sdk/core/private/vssc_core_sdk_private.h>
+
+//#include <virgil/sdk/core/private/vssc_core_sdk_private.h>
+#include <virgil/sdk/core/private/vssc_json_object_private.h>
+#include <virgil/sdk/core/private/vssc_key_handler_list_private.h>
+
 #include <virgil/sdk/pythia/vssp_pythia_sdk_public.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_sdk_public.h>
 

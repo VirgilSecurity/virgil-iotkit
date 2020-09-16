@@ -76,18 +76,20 @@ target_compile_definitions(vs-messenger-internal
         VS_BUILDING_DLL=1
         )
 
-if (CMAKE_CROSSCOMPILING AND (NOT WIN32) )
-    set(VS_DISABLE_SYS_CURL TRUE)
-    if ((APPLE_PLATFORM STREQUAL "IOS") OR (APPLE_PLATFORM STREQUAL "IOS_SIM64"))
-        set(VS_LINK_SSL_LIB FALSE)
-        set(VS_LINK_SSL_FRAMEWORK TRUE)
-    else()
-        set(VS_LINK_SSL_LIB TRUE)
-        set(VS_LINK_SSL_FRAMEWORK FALSE)
-    endif()
+if (APPLE)
+    set(VS_LINK_SSL_LIB FALSE)
+    set(VS_LINK_SYS_CURL FALSE)
+    set(VS_LINK_PREBUILD_CURL FALSE)
+    set(VS_LINK_SSL_FRAMEWORK TRUE)
+
+elseif (ANDROID)
+    set(VS_LINK_SSL_LIB TRUE)
+    set(VS_LINK_SSL_FRAMEWORK FALSE)
+    set(VS_LINK_PREBUILD_CURL TRUE)
+
 else()
-    set(VS_DISABLE_SYS_CURL FALSE)
-    set(VS_LINK_SSL FALSE)
+    set(VS_LINK_SYS_CURL TRUE)
+    set(VS_LINK_SSL TRUE)
 endif()
 
 message ("VS_DISABLE_SYS_CURL = ${VS_DISABLE_SYS_CURL}")
@@ -102,9 +104,9 @@ target_link_libraries(vs-messenger-internal
         ${VSCRYPTOC_LIBRARY}
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
-        $<$<NOT:$<BOOL:${VS_DISABLE_SYS_CURL}>>:curl>
+        $<$<BOOL:${VS_LINK_SYS_CURL}>:curl>
 
-        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
+        $<$<BOOL:${VS_LINK_PREBUILD_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
@@ -122,7 +124,7 @@ if (VS_LINK_SSL_FRAMEWORK)
         target_link_libraries(vs-messenger-internal
                 PUBLIC
                 virgil-iot-status-code
-                "-framework Security"
+                "-framework Foundation"
         )
 endif()
 
