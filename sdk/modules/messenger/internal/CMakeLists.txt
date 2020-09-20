@@ -48,15 +48,6 @@ if (VIRGIL_IOT_MESSENGER_INTERNAL_XMPP)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../../ext/libstrophe libstrophe)
 endif()
 
-#
-#   Virgil Crypto C
-#
-find_library(VSCRYPTOC_LIBRARY
-        NAMES vscryptoc
-        HINTS "${PLATFORM_LIBS_PATH}/lib"
-        CMAKE_FIND_ROOT_PATH_BOTH
-        )
-
 target_sources(vs-messenger-internal
         PRIVATE
 
@@ -97,11 +88,27 @@ message ("VS_LINK_SSL_LIB = ${VS_LINK_SSL_LIB}")
 message ("VS_LINK_SSL_FRAMEWORK = ${VS_LINK_SSL_FRAMEWORK}")
 message ("${PLATFORM_LIBS_PATH}/lib/libcurl.a")
 
+target_link_directories(vs-messenger-internal
+        PRIVATE
+        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/lib>
+        )
+
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
 
-        ${VSCRYPTOC_LIBRARY}
+        ed25519
+        mbedcrypto
+        protobuf-nanopb
+        vsc_common
+        vsc_foundation
+        vsc_foundation_pb
+        vsc_pythia
+        vsc_pythia_sdk
+        vsc_core_sdk
+        vsc_keyknox_sdk
+        relic_s
+        json-c
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
         $<$<BOOL:${VS_LINK_SYS_CURL}>:curl>
