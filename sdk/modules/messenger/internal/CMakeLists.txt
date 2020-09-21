@@ -68,17 +68,20 @@ target_compile_definitions(vs-messenger-internal
         )
 
 if (APPLE)
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib")
     set(VS_LINK_SSL_LIB FALSE)
     set(VS_LINK_SYS_CURL FALSE)
     set(VS_LINK_PREBUILD_CURL FALSE)
     set(VS_LINK_SSL_FRAMEWORK TRUE)
 
 elseif (ANDROID)
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib")
     set(VS_LINK_SSL_LIB TRUE)
     set(VS_LINK_SSL_FRAMEWORK FALSE)
     set(VS_LINK_PREBUILD_CURL TRUE)
 
 else()
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib64")
     set(VS_LINK_SYS_CURL TRUE)
     set(VS_LINK_SSL TRUE)
 endif()
@@ -90,25 +93,26 @@ message ("${PLATFORM_LIBS_PATH}/lib/libcurl.a")
 
 target_link_directories(vs-messenger-internal
         PRIVATE
-        $<BUILD_INTERFACE:${PLATFORM_LIBS_PATH}/lib>
+        $<BUILD_INTERFACE:${VS_CRYPTOC_LIB_PATH}>
         )
 
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
 
-        ed25519
-        mbedcrypto
-        protobuf-nanopb
+        vsc_core_sdk
         vsc_common
         vsc_foundation
         vsc_foundation_pb
         vsc_pythia
         vsc_pythia_sdk
-        vsc_core_sdk
+
         vsc_keyknox_sdk
         relic_s
         json-c
+        mbedcrypto
+        ed25519
+        protobuf-nanopb        
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
         $<$<BOOL:${VS_LINK_SYS_CURL}>:curl>
