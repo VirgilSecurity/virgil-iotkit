@@ -121,16 +121,6 @@ SOURCES += \
         $${SRC_SNAP}/VSQSnapSnifferQml.cpp
 
 #
-#   Copy shared lobraries
-#
-unix:mac: {
-    DST_DLL = $${OUT_PWD}/$${TARGET}.app/Contents/Frameworks
-    MESSENGER_INTERNAL_DLL = $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.$${DLL_EXT}
-    QMAKE_POST_LINK += $$quote(mkdir -p $${DST_DLL}/$$escape_expand(\n\t))
-    QMAKE_POST_LINK += $$quote(cp $${MESSENGER_INTERNAL_DLL} $${DST_DLL}/$$escape_expand(\n\t))
-}
-
-#
 #   Libraries
 #
 
@@ -140,13 +130,7 @@ LIBS += -lvs-module-provision
 LIBS += -lvs-module-snap-control
 LIBS += -lvs-module-secbox
 LIBS += -lvs-module-messenger
-
-win32: {
-	LIBS += -lws2_32
-        LIBS += $${PREBUILT_SYSROOT}/lib/libvs-messenger-internal.dll.a
-} else: {
-        LIBS += -lvs-messenger-internal
-}
+LIBS += -lvs-messenger-internal
 
 #
 #   Include path

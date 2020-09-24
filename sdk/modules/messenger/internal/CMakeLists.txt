@@ -39,7 +39,7 @@ project(vs-messenger-internal VERSION 0.1.0 LANGUAGES C)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(vs-messenger-internal SHARED)
+add_library(vs-messenger-internal)
 
 #
 #   libstrophe as dependency
@@ -112,7 +112,7 @@ target_link_libraries(vs-messenger-internal
         json-c
         mbedcrypto
         ed25519
-        protobuf-nanopb        
+        protobuf-nanopb
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
         $<$<BOOL:${VS_LINK_SYS_CURL}>:curl>
