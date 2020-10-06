@@ -157,6 +157,7 @@ set_target_properties(vs-messenger-internal
         PROPERTIES
         C_VISIBILITY_PRESET hidden
         CXX_VISIBILITY_PRESET hidden
+        POSITION_INDEPENDENT_CODE TRUE
         )
 
 install(TARGETS vs-messenger-internal
