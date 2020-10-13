@@ -105,9 +105,6 @@ function build() {
         popd
     fi
 
-    echo "=== Packing libraries"
-    pack_libs ${LIBS_DIR} "libed25519.a libmbedcrypto.a libprotobuf-nanopb.a libvsc_common.a libvsc_foundation.a libvsc_foundation_pb.a libvsc_pythia.a libvsc_pythia_sdk.a libvsc_core_sdk.a libvsc_keyknox_sdk.a librelic_s.a libjson-c.a" "libvscryptoc.a"
-
     # Clean
     rm -rf ${INSTALL_DIR}/$(echo "$HOME" | cut -d "/" -f2)
 
@@ -115,8 +112,8 @@ function build() {
 }
 
 # Common CMake arguments for the project
-CMAKE_ARGUMENTS="-DCMAKE_CXX_FLAGS='-fvisibility=hidden' -DCMAKE_C_FLAGS='-fvisibility=hidden' \
--DENABLE_TESTING=OFF \
+#"-DCMAKE_C_VISIBILITY_PRESET=hidden -DCMAKE_CXX_VISIBILITY_PRESET=hidden' \
+CMAKE_ARGUMENTS="-DENABLE_TESTING=OFF \
 -DENABLE_CLANGFORMAT=OFF \
 -DVIRGIL_LIB_RATCHET=OFF \
 -DVIRGIL_LIB_PHE=OFF \

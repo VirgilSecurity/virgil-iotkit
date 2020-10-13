@@ -43,7 +43,11 @@
 #include <virgil/crypto/pythia/vscp_pythia_public.h>
 
 #include <virgil/sdk/core/vssc_core_sdk_public.h>
-#include <virgil/sdk/core/private/vssc_core_sdk_private.h>
+
+//#include <virgil/sdk/core/private/vssc_core_sdk_private.h>
+#include <virgil/sdk/core/private/vssc_json_object_private.h>
+#include <virgil/sdk/core/private/vssc_key_handler_list_private.h>
+
 #include <virgil/sdk/pythia/vssp_pythia_sdk_public.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_sdk_public.h>
 
@@ -1873,7 +1877,8 @@ terminate:
 /******************************************************************************/
 DLL_PUBLIC vs_status_e
 vs_messenger_virgil_encrypt_msg(const char *recipient,
-                                const char *message,
+                                const uint8_t *message_data,
+                                size_t message_data_sz,
                                 uint8_t *encrypted_message,
                                 size_t buf_sz,
                                 size_t *encrypted_message_sz) {
@@ -1887,7 +1892,8 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     //  Check input parameters.
     //
     CHECK_NOT_ZERO_RET(recipient && recipient[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
-    CHECK_NOT_ZERO_RET(message && message[0], VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(message_data, VS_CODE_ERR_INCORRECT_ARGUMENT);
+    CHECK_NOT_ZERO_RET(message_data_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(encrypted_message, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(encrypted_message_sz, VS_CODE_ERR_INCORRECT_ARGUMENT);
     CHECK_NOT_ZERO_RET(buf_sz > 0, VS_CODE_ERR_INCORRECT_ARGUMENT);
@@ -1910,7 +1916,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vsc_str_t plaintext = vsc_str_from_str(message);
+    vsc_data_t plaintext = vsc_data(message_data, message_data_sz);
 
     vsc_buffer_t *ciphertext = NULL;
 
@@ -1953,8 +1959,7 @@ vs_messenger_virgil_encrypt_msg(const char *recipient,
 
     vscf_recipient_cipher_pack_message_info(recipient_cipher, ciphertext);
 
-    foundation_error.status =
-            vscf_recipient_cipher_process_encryption(recipient_cipher, vsc_str_as_data(plaintext), ciphertext);
+    foundation_error.status = vscf_recipient_cipher_process_encryption(recipient_cipher, plaintext, ciphertext);
     CHECK(!vscf_error_has_error(&foundation_error), "Failed to encrypt message (cipher failed)");
 
     foundation_error.status = vscf_recipient_cipher_finish_encryption(recipient_cipher, ciphertext);
@@ -2003,28 +2008,6 @@ terminate:
     vscf_recipient_cipher_destroy(&recipient_cipher);
 
     return status;
-}
-
-/******************************************************************************/
-bool
-vs_logger_output_hal(const char *buffer) {
-    if (buffer) {
-        fprintf(stdout, "%s", buffer);
-        fflush(stdout);
-    }
-
-    return !!buffer;
-}
-
-/******************************************************************************/
-bool
-vs_logger_current_time_hal(void) {
-    time_t result = time(NULL);
-    if (result != -1) {
-        printf("%s", asctime(gmtime(&result)));
-        return true;
-    }
-    return false;
 }
 
 /******************************************************************************/

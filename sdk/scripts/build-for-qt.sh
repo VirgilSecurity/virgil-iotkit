@@ -116,6 +116,8 @@ function prep_param() {
    #
    if [[ "${PLATFORM}" == "macos" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
+       -DVSSC_HTTP_CLIENT_CURL=OFF \
+       -DVSSC_HTTP_CLIENT_X=ON \
        "
        CMAKE_ARGUMENTS=" \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
@@ -162,16 +164,17 @@ function prep_param() {
    #
    elif [[ "${PLATFORM}" == "ios" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
-           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
-           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+           -DAPPLE_PLATFORM=IOS \
+           -DAPPLE_BITCODE=ON \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/ext/virgil-crypto-c/cmake/apple.cmake \
+           -DVSSC_HTTP_CLIENT_CURL=OFF \
+           -DVSSC_HTTP_CLIENT_X=ON \
         "
        CMAKE_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS" \
-           -DAPPLE_BITCODE=OFF \
+           -DAPPLE_PLATFORM=IOS \
+           -DAPPLE_BITCODE=ON \
            -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
            -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-           -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
-           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
        "
 
    #
@@ -179,17 +182,17 @@ function prep_param() {
    #
    elif [[ "${PLATFORM}" == "ios-sim" ]]; then
        CMAKE_DEPS_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS_SIM64" \
-           -DAPPLE_BITCODE=OFF \
-           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake \
-           -DCURL_ROOT_DIR=${QT_INSTALL_DIR_BASE}/${BUILD_DIR_SUFFIX}/${BUILD_TYPE}/installed/usr/local/ \
+           -DAPPLE_PLATFORM=IOS_SIM64 \
+           -DAPPLE_BITCODE=ON \
+           -DCMAKE_TOOLCHAIN_FILE=${BUILD_DIR_BASE}/ext/virgil-crypto-c/cmake/apple.cmake \
+           -DVSSC_HTTP_CLIENT_CURL=OFF \
+           -DVSSC_HTTP_CLIENT_X=ON \
        "
        CMAKE_ARGUMENTS=" \
-           -DAPPLE_PLATFORM="IOS_SIM64" \
-           -DAPPLE_BITCODE=OFF \
+           -DAPPLE_PLATFORM=IOS_SIM64 \
+           -DAPPLE_BITCODE=ON \
            -DCMAKE_TOOLCHAIN_FILE="${BUILD_DIR_BASE}/cmake/toolchain/apple.cmake" \
-           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc \
-           -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool \
+           -DVIRGIL_IOT_CONFIG_DIRECTORY=${BUILD_DIR_BASE}/config/pc
        "
 
    #

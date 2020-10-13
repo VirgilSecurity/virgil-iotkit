@@ -39,7 +39,7 @@ project(vs-messenger-internal VERSION 0.1.0 LANGUAGES C)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(vs-messenger-internal SHARED)
+add_library(vs-messenger-internal)
 
 #
 #   libstrophe as dependency
@@ -47,15 +47,6 @@ add_library(vs-messenger-internal SHARED)
 if (VIRGIL_IOT_MESSENGER_INTERNAL_XMPP)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../../ext/libstrophe libstrophe)
 endif()
-
-#
-#   Virgil Crypto C
-#
-find_library(VSCRYPTOC_LIBRARY
-        NAMES vscryptoc
-        HINTS "${PLATFORM_LIBS_PATH}/lib"
-        CMAKE_FIND_ROOT_PATH_BOTH
-        )
 
 target_sources(vs-messenger-internal
         PRIVATE
@@ -76,18 +67,23 @@ target_compile_definitions(vs-messenger-internal
         VS_BUILDING_DLL=1
         )
 
-if (CMAKE_CROSSCOMPILING AND (NOT WIN32) )
-    set(VS_DISABLE_SYS_CURL TRUE)
-    if ((APPLE_PLATFORM STREQUAL "IOS") OR (APPLE_PLATFORM STREQUAL "IOS_SIM64"))
-        set(VS_LINK_SSL_LIB FALSE)
-        set(VS_LINK_SSL_FRAMEWORK TRUE)
-    else()
-        set(VS_LINK_SSL_LIB TRUE)
-        set(VS_LINK_SSL_FRAMEWORK FALSE)
-    endif()
+if (APPLE)
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib")
+    set(VS_LINK_SSL_LIB FALSE)
+    set(VS_LINK_SYS_CURL FALSE)
+    set(VS_LINK_PREBUILD_CURL FALSE)
+    set(VS_LINK_SSL_FRAMEWORK TRUE)
+
+elseif (ANDROID)
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib")
+    set(VS_LINK_SSL_LIB TRUE)
+    set(VS_LINK_SSL_FRAMEWORK FALSE)
+    set(VS_LINK_PREBUILD_CURL TRUE)
+
 else()
-    set(VS_DISABLE_SYS_CURL FALSE)
-    set(VS_LINK_SSL FALSE)
+    set(VS_CRYPTOC_LIB_PATH "${PLATFORM_LIBS_PATH}/lib64")
+    set(VS_LINK_SYS_CURL TRUE)
+    set(VS_LINK_SSL TRUE)
 endif()
 
 message ("VS_DISABLE_SYS_CURL = ${VS_DISABLE_SYS_CURL}")
@@ -95,16 +91,33 @@ message ("VS_LINK_SSL_LIB = ${VS_LINK_SSL_LIB}")
 message ("VS_LINK_SSL_FRAMEWORK = ${VS_LINK_SSL_FRAMEWORK}")
 message ("${PLATFORM_LIBS_PATH}/lib/libcurl.a")
 
+target_link_directories(vs-messenger-internal
+        PRIVATE
+        $<BUILD_INTERFACE:${VS_CRYPTOC_LIB_PATH}>
+        )
+
 target_link_libraries(vs-messenger-internal
         PUBLIC
         virgil-iot-status-code
 
-        ${VSCRYPTOC_LIBRARY}
+        vsc_core_sdk
+        vsc_common
+        vsc_foundation
+        vsc_foundation_pb
+        vsc_pythia
+        vsc_pythia_sdk
+
+        vsc_keyknox_sdk
+        relic_s
+        json-c
+        mbedcrypto
+        ed25519
+        protobuf-nanopb
 
         $<$<BOOL:${VIRGIL_IOT_MESSENGER_INTERNAL_XMPP}>:strophe>
-        $<$<NOT:$<BOOL:${VS_DISABLE_SYS_CURL}>>:curl>
+        $<$<BOOL:${VS_LINK_SYS_CURL}>:curl>
 
-        $<$<BOOL:${VS_DISABLE_SYS_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
+        $<$<BOOL:${VS_LINK_PREBUILD_CURL}>:${PLATFORM_LIBS_PATH}/lib/libcurl.a>
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libssl.a>
         $<$<BOOL:${VS_LINK_SSL_LIB}>:${PLATFORM_LIBS_PATH}/lib/libcrypto.a>
 
@@ -122,7 +135,7 @@ if (VS_LINK_SSL_FRAMEWORK)
         target_link_libraries(vs-messenger-internal
                 PUBLIC
                 virgil-iot-status-code
-                "-framework Security"
+                "-framework Foundation"
         )
 endif()
 
@@ -144,6 +157,7 @@ set_target_properties(vs-messenger-internal
         PROPERTIES
         C_VISIBILITY_PRESET hidden
         CXX_VISIBILITY_PRESET hidden
+        POSITION_INDEPENDENT_CODE TRUE
         )
 
 install(TARGETS vs-messenger-internal

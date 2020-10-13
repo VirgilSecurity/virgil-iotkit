@@ -231,8 +231,12 @@ vs_messenger_send(const char *recipient, const char *message) {
     sprintf(json_msg, json_tmpl, fixed_message);
 
     // Encrypt message
-    STATUS_CHECK(vs_messenger_virgil_encrypt_msg(
-                         recipient, json_msg, encrypted_message, sizeof(encrypted_message), &encrypted_message_sz),
+    STATUS_CHECK(vs_messenger_virgil_encrypt_msg(recipient,
+                                                 (uint8_t *)json_msg,
+                                                 strlen(json_msg) + 1,
+                                                 encrypted_message,
+                                                 sizeof(encrypted_message),
+                                                 &encrypted_message_sz),
                  "Cannot encrypt message");
 
     // Send encrypted message
